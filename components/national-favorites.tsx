@@ -1,39 +1,7 @@
 import Image from "next/image"
 import { Heart, ChevronRight, ChevronLeft } from "lucide-react"
 import { Button } from "@/components/ui/button"
-
-const restaurants = [
-  {
-    name: "7-Eleven",
-    rating: 4.3,
-    reviews: "(200+)",
-    distance: "1.7 mi",
-    time: "42 min",
-    delivery: "A$0 delivery fee",
-    sponsored: true,
-    image: "/placeholder.svg?height=200&width=200",
-  },
-  {
-    name: "McDonald's",
-    rating: 3.8,
-    reviews: "(200+)",
-    distance: "0.4 mi",
-    time: "34 min",
-    delivery: "A$0 delivery fee",
-    sponsored: false,
-    image: "/placeholder.svg?height=200&width=200",
-  },
-  {
-    name: "Hungry Jacks",
-    rating: 4.0,
-    reviews: "(200+)",
-    distance: "3.8 mi",
-    time: "54 min",
-    delivery: "A$0 delivery fee",
-    sponsored: false,
-    image: "/placeholder.svg?height=200&width=200",
-  },
-]
+import { restaurants } from "@/constants/restaurants"
 
 export default function NationalFavorites() {
   return (
