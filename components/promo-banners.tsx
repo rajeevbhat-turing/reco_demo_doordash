@@ -39,22 +39,6 @@ export default function PromoBanners() {
           </div>
         </div>
       </div>
-
-      <Button
-        variant="outline"
-        size="icon"
-        className="absolute left-2 top-1/2 -translate-y-1/2 rounded-full bg-white shadow-md z-10"
-      >
-        <ChevronLeft className="h-4 w-4" />
-      </Button>
-
-      <Button
-        variant="outline"
-        size="icon"
-        className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-white shadow-md z-10"
-      >
-        <ChevronRight className="h-4 w-4" />
-      </Button>
     </div>
   )
 }

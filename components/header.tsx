@@ -43,10 +43,10 @@ export default function Header() {
           <button className="h-8 w-8 rounded-full bg-[#f3f3f3] flex items-center justify-center">
             <Bell className="h-4 w-4 text-black" />
           </button>
-          <button className="relative h-8 w-14 rounded-full bg-[#ff3008] text-white text-sm font-semibold flex items-center justify-center">
+          <a href="/cart" className="relative h-8 w-14 rounded-full bg-[#ff3008] text-white text-sm font-semibold flex items-center justify-center">
           <ShoppingCart className="h-4 w-4 text-white mr-1"/>
             0
-          </button>
+          </a>
         </div>
       </div>
     </header>
