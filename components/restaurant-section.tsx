@@ -114,10 +114,10 @@ export default function RestaurantSection({ title, restaurants, seeAllLink = "#"
             <Link href={`/store/${restaurant.id}`} className="block">
               <div className="relative h-[200px] bg-gray-100">
                 <Image
-                  src={restaurant.banner || `/placeholder.svg?height=200&width=400&query=${restaurant.name} restaurant`}
+                  src={restaurant.banner}
                   alt={restaurant.name}
                   fill
-                  className="object-cover"
+                  className="object-cover rounded-lg"
                 />
               </div>
             </Link>
