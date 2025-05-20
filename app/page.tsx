@@ -180,7 +180,7 @@ export default function Home() {
   }
 
   return (
-    <div className="max-w-[1200px] mx-auto px-4">
+    <div className="w-full max-w-[1200px] mx-auto px-4">
       <div className="pt-16">
         <FoodCategories selectedCategory={selectedCategory} onCategorySelect={handleCategorySelect} />
       </div>
@@ -278,7 +278,6 @@ export default function Home() {
                       {restaurant.discount && (
                         <div className="mt-1 text-sm text-red-600 font-medium">{restaurant.discount}</div>
                       )}
-
                     </div>
                   </div>
                 ))}

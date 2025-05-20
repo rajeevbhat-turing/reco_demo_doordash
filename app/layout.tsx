@@ -9,8 +9,8 @@ import Footer from "@/components/footer"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "DoorDash Food Delivery & Takeout - From Restaurants Near You",
-  description: "DoorDash - Order food delivery or takeout from restaurants near you",
+  title: "DoorDash: Food Delivery & Takeaway",
+  description: "Order food online for delivery or pickup",
 }
 
 export default function RootLayout({
@@ -23,11 +23,9 @@ export default function RootLayout({
       <body className={inter.className}>
         <div className="flex flex-col min-h-screen">
           <Header />
-          <div className="flex flex-1">
-            <div className="w-[220px] fixed top-16 bottom-0 overflow-y-auto border-r border-gray-200">
-              <Sidebar />
-            </div>
-            <div className="ml-[220px] flex-1 flex flex-col">
+          <div className="flex flex-1 relative">
+            <Sidebar />
+            <div className="flex-1 w-0 min-w-0 md:ml-[220px]">
               <main className="flex-1">{children}</main>
               <Footer />
             </div>

@@ -48,6 +48,18 @@ body {
   }
 }
 
+/* Ensure content doesn't overflow */
+.min-w-0 {
+  min-width: 0;
+}
+
+/* Prevent horizontal overflow */
+html,
+body {
+  overflow-x: hidden;
+  max-width: 100%;
+}
+
 @layer base {
   * {
     @apply border-border;
