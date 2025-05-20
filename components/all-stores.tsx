@@ -1,91 +1,32 @@
+import React from "react"
 import Image from "next/image"
 import { Heart, Info } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
-const stores = [
-  {
-    name: "Spudshed Fresh Food Market",
-    time: "43 min",
-    delivery: "A$0 delivery fee",
-    open: true,
-    openTime: "",
-    image: "/placeholder.svg?height=80&width=80",
-    inStorePrice: true,
-    discount: "",
-  },
-  {
-    name: "IGA Supermarket",
-    time: "",
-    delivery: "A$0 delivery fee",
-    open: false,
-    openTime: "Opens Sat at 6:00 AM",
-    image: "/placeholder.svg?height=80&width=80",
-    inStorePrice: false,
-    discount: "15% off, up to A$12",
-  },
-  {
-    name: "Coles",
-    time: "",
-    delivery: "A$0 delivery fee",
-    open: false,
-    openTime: "Opens Sat at 8:00 AM",
-    image: "/placeholder.svg?height=80&width=80",
-    inStorePrice: false,
-    discount: "",
-  },
-  {
-    name: "IGA Supermarket",
-    time: "",
-    delivery: "A$0 delivery fee",
-    open: false,
-    openTime: "Opens Sat at 7:30 AM",
-    image: "/placeholder.svg?height=80&width=80",
-    inStorePrice: false,
-    discount: "",
-  },
-  {
-    name: "Bully Butcher",
-    time: "",
-    delivery: "A$0 delivery fee",
-    open: false,
-    openTime: "Opens Sat at 7:00 AM",
-    image: "/placeholder.svg?height=80&width=80",
-    inStorePrice: false,
-    discount: "",
-  },
-  {
-    name: "Five Star Meat & Poultry",
-    time: "",
-    delivery: "A$0 delivery fee",
-    open: false,
-    openTime: "Opens Sat at 8:00 AM",
-    image: "/placeholder.svg?height=80&width=80",
-    inStorePrice: false,
-    discount: "",
-  },
-  {
-    name: "Dessert Co.",
-    time: "",
-    delivery: "A$0 delivery fee",
-    open: false,
-    openTime: "Opens Sat at 10:00 AM",
-    image: "/placeholder.svg?height=80&width=80",
-    inStorePrice: false,
-    discount: "",
-  },
-]
+interface Store {
+  name: string
+  image: string
+  openTime?: string
+  time?: string
+  closed?: boolean
+  delivery: string
+  inStorePrice: boolean
+  discount: string
+}
 
-export default function AllStores() {
+interface AllStoresProps {
+  stores?: Store[]
+}
+
+export default function AllStores({ stores = [] }: AllStoresProps) {
   return (
     <div className="py-6">
-      <h2 className="text-2xl font-bold mb-4">All Stores</h2>
-
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {stores.map((store) => (
-          <div key={store.name + store.openTime} className="border border-gray-200 rounded-lg p-4">
+        {stores.map((store, index) => (
+          <div key={`${store.name}-${index}`} className="border border-gray-200 rounded-lg p-4">
             <div className="flex gap-4">
               <div className="relative w-16 h-16 rounded-full overflow-hidden bg-gray-100">
-                <Image src="/placeholder.svg?height=64&width=64" alt={store.name} fill className="object-cover" />
+                <Image src={store.image || "/placeholder.svg"} alt={store.name} fill className="object-cover" />
               </div>
 
               <div className="flex-1">
@@ -97,10 +38,10 @@ export default function AllStores() {
                   </Button>
                 </div>
 
-                {store.open ? (
-                  <div className="text-sm text-gray-500">{store.time}</div>
-                ) : (
+                {store.closed ? (
                   <div className="text-sm text-gray-500">Closed</div>
+                ) : (
+                  <div className="text-sm text-gray-500">{store.time}</div>
                 )}
 
                 <div className="text-sm text-gray-500">{store.delivery}</div>
@@ -120,4 +61,4 @@ export default function AllStores() {
       </div>
     </div>
   )
-}
+} 
