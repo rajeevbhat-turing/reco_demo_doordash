@@ -45,3 +45,52 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+.active-nav-item {
+  @apply bg-red-50 text-red-600 font-medium;
+}
+
+.category-icon {
+  @apply flex flex-col items-center justify-center gap-2 text-sm font-medium;
+}
+
+.filter-button {
+  @apply px-3 py-2 rounded-full border border-gray-200 text-sm font-medium flex items-center gap-1;
+}
+
+.promo-card {
+  @apply rounded-lg overflow-hidden;
+}
+
+.restaurant-card {
+  @apply relative rounded-lg overflow-hidden;
+}
+
+/* Prevent content jump when elements become sticky */
+.prevent-jump {
+  content-visibility: auto;
+}
+
+/* Smooth scrolling for the entire page */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Prevent flickering during scroll */
+.sticky-menu {
+  will-change: transform;
+  backface-visibility: hidden;
+}
+
+/* Ensure dropdowns are visible */
+.dropdown-container {
+  position: relative;
+}
+
+.dropdown-menu {
+  position: absolute;
+  z-index: 50;
+  background-color: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
