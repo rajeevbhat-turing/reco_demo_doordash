@@ -19,7 +19,7 @@ export default function PromoBanners() {
           </div>
           <div className="absolute right-0 top-0 h-full w-[40%]">
             <div className="relative h-full w-full">
-              <Image src="/placeholder.svg?height=200&width=200" alt="Velocity" fill className="object-cover" />
+              <Image src="https://img.cdn4dd.com/cdn-cgi/image/fit=contain,format=auto,width=800,quality=50/https://doordash-static.s3.amazonaws.com/media/store/carousel/16c6c662-fca3-45c2-b496-b2dde66ff76e.png" alt="Velocity" fill className="object-cover" />
             </div>
           </div>
         </div>
@@ -34,7 +34,7 @@ export default function PromoBanners() {
           </div>
           <div className="absolute right-0 top-0 h-full w-[40%]">
             <div className="relative h-full w-full">
-              <Image src="/placeholder.svg?height=200&width=200" alt="Hungry Jacks" fill className="object-cover" />
+              <Image src="https://img.cdn4dd.com/cdn-cgi/image/fit=contain,format=auto,width=800,quality=50/https://doordash-static.s3.amazonaws.com/media/store/carousel/8daf5764-9961-4690-9933-01a73930270c.png" alt="Hungry Jacks" fill className="object-cover" />
             </div>
           </div>
         </div>
