@@ -1,87 +1,153 @@
-import Image from "next/image"
-import { Heart, ChevronRight, ChevronLeft } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { restaurants } from "@/constants/restaurants"
-import Link from "next/link"
+"use client"
 
-export default function NationalFavorites() {
+import { useState, useEffect } from "react"
+import Image from "next/image"
+import Link from "next/link"
+import { Heart, Star } from "lucide-react"
+import { restaurants } from "@/constants/restaurants"
+import type { FilterState } from "@/components/filter-options"
+
+interface NationalFavoritesProps {
+  activeFilters: FilterState
+}
+
+export default function NationalFavorites({ activeFilters }: NationalFavoritesProps) {
+  const [filteredRestaurants, setFilteredRestaurants] = useState(restaurants)
+  const [resultsCount, setResultsCount] = useState(restaurants.length)
+
+  useEffect(() => {
+    let filtered = [...restaurants]
+
+    // Apply filters
+    if (activeFilters.underThirtyMins) {
+      filtered = filtered.filter((restaurant) => {
+        const timeStr = restaurant.time
+        const minutes = Number.parseInt(timeStr.match(/\d+/)?.[0] || "100")
+        return minutes < 30
+      })
+    }
+
+    if (activeFilters.overRating) {
+      filtered = filtered.filter((restaurant) => restaurant.rating >= activeFilters.overRating!)
+    }
+
+    if (activeFilters.dashPass) {
+      filtered = filtered.filter((restaurant) => restaurant.dashPass)
+    }
+
+    if (activeFilters.price && activeFilters.price.length > 0) {
+      filtered = filtered.filter((restaurant) => activeFilters.price!.includes(restaurant.priceRange))
+    }
+
+    // For demo purposes, we'll just simulate these filters
+    if (activeFilters.deals) {
+      // Filter restaurants that have deals (for demo, we'll just take a subset)
+      filtered = filtered.filter((_, index) => index % 2 === 0)
+    }
+
+    if (activeFilters.pickup) {
+      // For demo, we'll just take a different subset
+      filtered = filtered.filter((_, index) => index % 3 === 0)
+    }
+
+    setFilteredRestaurants(filtered)
+    setResultsCount(filtered.length)
+  }, [activeFilters])
+
+  const hasActiveFilters = () => {
+    return (
+      activeFilters.underThirtyMins ||
+      activeFilters.schedule ||
+      activeFilters.deals ||
+      activeFilters.pickup ||
+      activeFilters.overRating !== null ||
+      (activeFilters.price !== null && activeFilters.price.length > 0) ||
+      activeFilters.dashPass
+    )
+  }
+
   return (
     <div className="mt-8">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-2xl font-bold text-gray-900">National favourites</h2>
-        <Link href="#" className="text-gray-900 font-medium">
-          See All
-        </Link>
+        <h2 className="text-xl font-bold text-gray-900">{resultsCount} results</h2>
+        {hasActiveFilters() && (
+          <button
+            className="bg-gray-100 text-gray-900 font-medium text-sm rounded-full px-4 py-2"
+            onClick={() => window.location.reload()}
+          >
+            Reset
+          </button>
+        )}
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {restaurants.slice(0, 6).map((restaurant) => (
-          <div key={restaurant.id} className="restaurant-card border border-gray-200 rounded-lg overflow-hidden">
-            <Link href={`/store/${restaurant.id}`} className="block">
-              <div className="relative h-40 bg-gray-100">
-                <Image
-                  src={
-                    restaurant.banner || `/placeholder.svg?height=160&width=320&query=${restaurant.name} restaurant`
-                  }
-                  alt={restaurant.name}
-                  fill
-                  className="object-cover"
-                />
-                <button className="absolute top-3 right-3 bg-white p-1.5 rounded-full">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="h-5 w-5 text-gray-500"
-                  >
-                    <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
-                  </svg>
-                </button>
-              </div>
-              <div className="p-4">
-                <div className="flex items-center justify-between">
-                  <h3 className="font-bold">{restaurant.name}</h3>
-                  {restaurant.dashPass && (
-                    <div className="text-xs bg-blue-50 text-blue-700 px-1.5 py-0.5 rounded">DashPass</div>
-                  )}
+      {filteredRestaurants.length === 0 ? (
+        <div className="mt-8 text-center py-12 bg-gray-50 rounded-lg">
+          <h3 className="text-lg font-medium text-gray-700">No restaurants match your filters</h3>
+          <p className="text-gray-500 mt-2">Try adjusting your filters to see more options</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
+          {filteredRestaurants.map((restaurant) => (
+            <div key={restaurant.id} className="restaurant-card overflow-hidden">
+              <Link href={`/store/${restaurant.id}`} className="block">
+                <div className="relative h-[200px] bg-gray-100">
+                  <Image
+                    src={
+                      restaurant.banner || `/placeholder.svg?height=200&width=400&query=${restaurant.name} restaurant`
+                    }
+                    alt={restaurant.name}
+                    fill
+                    className="object-cover"
+                  />
                 </div>
-                <div className="flex items-center mt-1 text-sm">
-                  <div className="flex items-center">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="24"
-                      height="24"
-                      viewBox="0 0 24 24"
-                      fill="currentColor"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      className="h-4 w-4 text-gray-700"
-                    >
-                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                    </svg>
-                    <span className="ml-1">{restaurant.rating}</span>
+              </Link>
+
+              <div className="py-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <h3 className="font-bold text-lg">{restaurant.name}</h3>
+                    {restaurant.dashPass && (
+                      <div className="text-teal-600">
+                        <svg width="20" height="12" viewBox="0 0 20 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path
+                            d="M18.5 1.5L11.5 9.5L7.5 5.5L1.5 10.5"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                      </div>
+                    )}
                   </div>
-                  <span className="mx-1">•</span>
-                  <span>{restaurant.reviews}</span>
+                  <button className="text-gray-400 hover:text-gray-600">
+                    <Heart className="h-6 w-6" />
+                  </button>
+                </div>
+
+                <div className="flex items-center mt-1 text-sm text-gray-700 flex-wrap">
+                  <div className="flex items-center">
+                    <span className="font-semibold">{restaurant.rating}</span>
+                    <Star className="h-4 w-4 ml-1 text-gray-700 fill-current" />
+                  </div>
+                  <span className="mx-1">({restaurant.reviews})</span>
                   <span className="mx-1">•</span>
                   <span>{restaurant.distance}</span>
                   <span className="mx-1">•</span>
                   <span>{restaurant.time}</span>
                 </div>
-                <div className="mt-2 text-sm text-gray-500">{restaurant.deliveryFee}</div>
+
+                <div className="mt-1 text-sm text-gray-500">{restaurant.deliveryFee}</div>
+
+                {restaurant.discount && (
+                  <span className="mt-1 p-1 rounded-sm bg-red-100 text-xs text-red-600 font-medium">{restaurant.discount}</span>
+                )}
+
               </div>
-            </Link>
-          </div>
-        ))}
-      </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   )
 }
