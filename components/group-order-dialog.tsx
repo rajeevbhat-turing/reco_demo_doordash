@@ -11,8 +11,14 @@ interface GroupOrderDialogProps {
 
 export default function GroupOrderDialog({ isOpen, onClose }: GroupOrderDialogProps) {
   const dialogRef = useRef<HTMLDivElement>(null)
-  const [currentView, setCurrentView] = useState<"main" | "paying">("main")
+  const [currentView, setCurrentView] = useState<"main" | "paying" | "delivery" | "deadline">("main")
   const [selectedLimit, setSelectedLimit] = useState<string>("No Limit")
+  const [selectedDeliveryOption, setSelectedDeliveryOption] = useState<string>("Standard delivery")
+  const [selectedDeliveryTime, setSelectedDeliveryTime] = useState<string>("ASAP")
+  const [selectedDate, setSelectedDate] = useState<string>("Today")
+  const [selectedDeadlineTime, setSelectedDeadlineTime] = useState<string>("1:15 AM")
+  const [selectedCheckoutOption, setSelectedCheckoutOption] = useState<string>("Manually")
+  const [hasDeadline, setHasDeadline] = useState<boolean>(false)
 
   useEffect(() => {
     const handleEscapeKey = (event: KeyboardEvent) => {
@@ -45,6 +51,14 @@ export default function GroupOrderDialog({ isOpen, onClose }: GroupOrderDialogPr
     setCurrentView("paying")
   }
 
+  const handleDeliveryClick = () => {
+    setCurrentView("delivery")
+  }
+
+  const handleDeadlineClick = () => {
+    setCurrentView("deadline")
+  }
+
   const handleBackClick = () => {
     setCurrentView("main")
   }
@@ -55,6 +69,31 @@ export default function GroupOrderDialog({ isOpen, onClose }: GroupOrderDialogPr
 
   const handleSave = () => {
     // Save the selected limit and go back to main view
+    setCurrentView("main")
+  }
+
+  const handleDeliveryTimeSelect = (time: string) => {
+    setSelectedDeliveryTime(time)
+  }
+
+  const handleDateSelect = (date: string) => {
+    setSelectedDate(date)
+  }
+
+  const handleSaveDelivery = () => {
+    setCurrentView("main")
+  }
+
+  const handleDeadlineTimeSelect = (time: string) => {
+    setSelectedDeadlineTime(time)
+  }
+
+  const handleCheckoutOptionSelect = (option: string) => {
+    setSelectedCheckoutOption(option)
+  }
+
+  const handleSaveDeadline = () => {
+    setHasDeadline(true)
     setCurrentView("main")
   }
 
@@ -109,7 +148,10 @@ export default function GroupOrderDialog({ isOpen, onClose }: GroupOrderDialogPr
                     <ChevronRight className="h-5 w-5 text-gray-400" />
                   </div>
 
-                  <div className="flex items-center justify-between py-4 border-b border-gray-100">
+                  <div
+                    className="flex items-center justify-between py-4 border-b border-gray-100 cursor-pointer"
+                    onClick={handleDeliveryClick}
+                  >
                     <div className="flex items-center">
                       <div className="bg-gray-100 rounded-full p-2 mr-4 flex items-center justify-center w-10 h-10">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -125,13 +167,20 @@ export default function GroupOrderDialog({ isOpen, onClose }: GroupOrderDialogPr
                       </div>
                       <div>
                         <h4 className="font-medium">Standard delivery</h4>
-                        <p className="text-gray-500 text-sm">ASAP after you checkout</p>
+                        <p className="text-gray-500 text-sm">
+                          {selectedDeliveryTime === "ASAP"
+                            ? "ASAP after you checkout"
+                            : `${selectedDate}, ${selectedDeliveryTime}`}
+                        </p>
                       </div>
                     </div>
                     <ChevronRight className="h-5 w-5 text-gray-400" />
                   </div>
 
-                  <div className="flex items-center justify-between py-4 border-b border-gray-100">
+                  <div
+                    className="flex items-center justify-between py-4 border-b border-gray-100 cursor-pointer"
+                    onClick={handleDeadlineClick}
+                  >
                     <div className="flex items-center">
                       <div className="bg-gray-100 rounded-full p-2 mr-4 flex items-center justify-center w-10 h-10">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -152,8 +201,12 @@ export default function GroupOrderDialog({ isOpen, onClose }: GroupOrderDialogPr
                         </svg>
                       </div>
                       <div>
-                        <h4 className="font-medium">No order deadline</h4>
-                        <p className="text-gray-500 text-sm">People can add to cart any time</p>
+                        <h4 className="font-medium">{hasDeadline ? "Order deadline" : "No order deadline"}</h4>
+                        <p className="text-gray-500 text-sm">
+                          {hasDeadline
+                            ? `${selectedDate}, ${selectedDeadlineTime} (${selectedCheckoutOption})`
+                            : "People can add to cart any time"}
+                        </p>
                       </div>
                     </div>
                     <ChevronRight className="h-5 w-5 text-gray-400" />
@@ -186,7 +239,7 @@ export default function GroupOrderDialog({ isOpen, onClose }: GroupOrderDialogPr
               </div>
             </div>
           </>
-        ) : (
+        ) : currentView === "paying" ? (
           <>
             <div className="p-6">
               <button onClick={handleBackClick} className="mb-4 flex items-center" aria-label="Back">
@@ -248,6 +301,446 @@ export default function GroupOrderDialog({ isOpen, onClose }: GroupOrderDialogPr
                   Cancel
                 </button>
                 <button onClick={handleSave} className="px-6 py-3 bg-red-600 text-white rounded-full font-medium">
+                  Save
+                </button>
+              </div>
+            </div>
+          </>
+        ) : currentView === "delivery" ? (
+          <>
+            <div className="p-6">
+              <button onClick={handleBackClick} className="mb-4 flex items-center" aria-label="Back">
+                <ArrowLeft className="h-6 w-6 text-gray-500" />
+              </button>
+
+              <h2 className="text-[28px] font-bold text-left mb-2">Delivery time</h2>
+              <p className="text-gray-600 text-left mb-6">When you want the order to arrive</p>
+
+              {/* Date selection tabs */}
+              <div className="flex mb-6 overflow-x-auto">
+                <button
+                  className={`min-w-[140px] py-3 px-4 border rounded-lg mr-2 flex flex-col items-center ${
+                    selectedDate === "Today" ? "border-black bg-white" : "border-gray-200 bg-white"
+                  }`}
+                  onClick={() => handleDateSelect("Today")}
+                >
+                  <span className="font-medium">Today</span>
+                  <span className="text-sm text-gray-500">May 21</span>
+                  {selectedDate === "Today" && (
+                    <span className="absolute top-1/2 right-2 transform -translate-y-1/2">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                          d="M20 6L9 17L4 12"
+                          stroke="black"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                    </span>
+                  )}
+                </button>
+                <button
+                  className={`min-w-[140px] py-3 px-4 border rounded-lg mr-2 flex flex-col items-center ${
+                    selectedDate === "Tomorrow" ? "border-black bg-white" : "border-gray-200 bg-white"
+                  }`}
+                  onClick={() => handleDateSelect("Tomorrow")}
+                >
+                  <span className="font-medium">Tomorrow</span>
+                  <span className="text-sm text-gray-500">May 22</span>
+                </button>
+                <button
+                  className={`min-w-[140px] py-3 px-4 border rounded-lg mr-2 flex flex-col items-center ${
+                    selectedDate === "Friday" ? "border-black bg-white" : "border-gray-200 bg-white"
+                  }`}
+                  onClick={() => handleDateSelect("Friday")}
+                >
+                  <span className="font-medium">Friday</span>
+                  <span className="text-sm text-gray-500">May 23</span>
+                </button>
+                <button
+                  className={`min-w-[140px] py-3 px-4 border rounded-lg flex flex-col items-center ${
+                    selectedDate === "Saturday" ? "border-black bg-white" : "border-gray-200 bg-white"
+                  }`}
+                  onClick={() => handleDateSelect("Saturday")}
+                >
+                  <span className="font-medium">Saturday</span>
+                  <span className="text-sm text-gray-500">May 24</span>
+                </button>
+              </div>
+
+              {/* Time slots */}
+              <div className="space-y-4 max-h-[400px] overflow-y-auto">
+                <div className="flex items-center">
+                  <input
+                    type="radio"
+                    id="standard-delivery"
+                    name="delivery-time"
+                    className="hidden"
+                    checked={selectedDeliveryTime === "ASAP"}
+                    onChange={() => handleDeliveryTimeSelect("ASAP")}
+                  />
+                  <label
+                    htmlFor="standard-delivery"
+                    className="flex items-center cursor-pointer w-full"
+                    onClick={() => handleDeliveryTimeSelect("ASAP")}
+                  >
+                    <div
+                      className={`w-5 h-5 rounded-full border flex items-center justify-center ${
+                        selectedDeliveryTime === "ASAP" ? "border-black" : "border-gray-300"
+                      }`}
+                    >
+                      {selectedDeliveryTime === "ASAP" && <div className="w-3 h-3 bg-black rounded-full"></div>}
+                    </div>
+                    <div className="ml-3">
+                      <div className="font-medium">Standard delivery</div>
+                      <div className="text-sm text-gray-500">ASAP</div>
+                    </div>
+                  </label>
+                </div>
+
+                {[
+                  "2:20 AM - 2:40 AM",
+                  "2:40 AM - 3:00 AM",
+                  "3:00 AM - 3:20 AM",
+                  "3:20 AM - 3:40 AM",
+                  "3:40 AM - 4:00 AM",
+                  "5:30 AM - 5:40 AM",
+                  "5:40 AM - 6:00 AM",
+                  "6:00 AM - 6:20 AM",
+                  "6:20 AM - 6:40 AM",
+                  "6:40 AM - 7:00 AM",
+                  "7:00 AM - 7:20 AM",
+                  "7:20 AM - 7:40 AM",
+                  "7:40 AM - 8:00 AM",
+                  "8:00 AM - 8:20 AM",
+                  "8:20 AM - 8:40 AM",
+                  "8:40 AM - 9:00 AM",
+                  "9:00 AM - 9:20 AM",
+                  "9:20 AM - 9:40 AM",
+                  "9:40 AM - 10:00 AM",
+                  "10:00 AM - 10:20 AM",
+                  "10:20 AM - 10:40 AM",
+                  "10:40 AM - 11:00 AM",
+                  "11:00 AM - 11:20 AM",
+                  "11:20 AM - 11:40 AM",
+                  "11:40 AM - 12:00 PM",
+                ].map((time) => (
+                  <div key={time} className="flex items-center">
+                    <input
+                      type="radio"
+                      id={`time-${time}`}
+                      name="delivery-time"
+                      className="hidden"
+                      checked={selectedDeliveryTime === time}
+                      onChange={() => handleDeliveryTimeSelect(time)}
+                    />
+                    <label
+                      htmlFor={`time-${time}`}
+                      className="flex items-center cursor-pointer w-full"
+                      onClick={() => handleDeliveryTimeSelect(time)}
+                    >
+                      <div
+                        className={`w-5 h-5 rounded-full border flex items-center justify-center ${
+                          selectedDeliveryTime === time ? "border-black" : "border-gray-300"
+                        }`}
+                      >
+                        {selectedDeliveryTime === time && <div className="w-3 h-3 bg-black rounded-full"></div>}
+                      </div>
+                      <div className="ml-3">{time}</div>
+                    </label>
+                  </div>
+                ))}
+              </div>
+
+              <div className="flex justify-end space-x-3 mt-6">
+                <button
+                  onClick={handleBackClick}
+                  className="px-6 py-3 bg-gray-100 rounded-full font-medium text-gray-800"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleSaveDelivery}
+                  className="px-6 py-3 bg-red-600 text-white rounded-full font-medium"
+                >
+                  Save
+                </button>
+              </div>
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="p-6">
+              <button onClick={handleBackClick} className="mb-4 flex items-center" aria-label="Back">
+                <ArrowLeft className="h-6 w-6 text-gray-500" />
+              </button>
+
+              <h2 className="text-[28px] font-bold text-left mb-2">Order deadline</h2>
+              <p className="text-gray-600 text-left mb-6">Deadline for people to add to cart</p>
+
+              {/* Date selection tabs */}
+              <div className="flex mb-6 overflow-x-auto">
+                <button
+                  className={`min-w-[140px] py-3 px-4 border rounded-lg mr-2 flex flex-col items-center relative ${
+                    selectedDate === "Today" ? "border-black bg-white" : "border-gray-200 bg-white"
+                  }`}
+                  onClick={() => handleDateSelect("Today")}
+                >
+                  <span className="font-medium">Today</span>
+                  <span className="text-sm text-gray-500">May 21</span>
+                  {selectedDate === "Today" && (
+                    <span className="absolute top-1/2 right-2 transform -translate-y-1/2">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                          d="M20 6L9 17L4 12"
+                          stroke="black"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                    </span>
+                  )}
+                </button>
+                <button
+                  className={`min-w-[140px] py-3 px-4 border rounded-lg mr-2 flex flex-col items-center ${
+                    selectedDate === "Tomorrow" ? "border-black bg-white" : "border-gray-200 bg-white"
+                  }`}
+                  onClick={() => handleDateSelect("Tomorrow")}
+                >
+                  <span className="font-medium">Tomorrow</span>
+                  <span className="text-sm text-gray-500">May 22</span>
+                </button>
+                <button
+                  className={`min-w-[140px] py-3 px-4 border rounded-lg mr-2 flex flex-col items-center ${
+                    selectedDate === "Friday" ? "border-black bg-white" : "border-gray-200 bg-white"
+                  }`}
+                  onClick={() => handleDateSelect("Friday")}
+                >
+                  <span className="font-medium">Friday</span>
+                  <span className="text-sm text-gray-500">May 23</span>
+                </button>
+                <button
+                  className={`min-w-[140px] py-3 px-4 border rounded-lg flex flex-col items-center ${
+                    selectedDate === "Saturday" ? "border-black bg-white" : "border-gray-200 bg-white"
+                  }`}
+                  onClick={() => handleDateSelect("Saturday")}
+                >
+                  <span className="font-medium">Saturday</span>
+                  <span className="text-sm text-gray-500">May 24</span>
+                </button>
+              </div>
+
+              {/* Time slots */}
+              <div className="space-y-4 max-h-[250px] overflow-y-auto">
+                {[
+                  "1:15 AM",
+                  "1:30 AM",
+                  "1:45 AM",
+                  "2:00 AM",
+                  "2:15 AM",
+                  "2:30 AM",
+                  "2:45 AM",
+                  "3:00 AM",
+                  "3:15 AM",
+                  "3:30 AM",
+                  "3:45 AM",
+                  "4:00 AM",
+                  "4:15 AM",
+                  "4:30 AM",
+                  "4:45 AM",
+                  "5:00 AM",
+                  "5:15 AM",
+                  "5:30 AM",
+                  "5:45 AM",
+                  "6:00 AM",
+                  "6:15 AM",
+                  "6:30 AM",
+                  "6:45 AM",
+                  "7:00 AM",
+                  "7:15 AM",
+                  "7:30 AM",
+                  "7:45 AM",
+                  "8:00 AM",
+                  "8:15 AM",
+                  "8:30 AM",
+                  "8:45 AM",
+                  "9:00 AM",
+                  "9:15 AM",
+                  "9:30 AM",
+                  "9:45 AM",
+                  "10:00 AM",
+                  "10:15 AM",
+                  "10:30 AM",
+                  "10:45 AM",
+                  "11:00 AM",
+                  "11:15 AM",
+                  "11:30 AM",
+                  "11:45 AM",
+                  "12:00 PM",
+                  "12:15 PM",
+                  "12:30 PM",
+                  "12:45 PM",
+                  "1:00 PM",
+                  "1:15 PM",
+                  "1:30 PM",
+                  "1:45 PM",
+                  "2:00 PM",
+                  "2:15 PM",
+                  "2:30 PM",
+                  "2:45 PM",
+                  "3:00 PM",
+                  "3:15 PM",
+                  "3:30 PM",
+                  "3:45 PM",
+                  "4:00 PM",
+                  "4:15 PM",
+                  "4:30 PM",
+                  "4:45 PM",
+                  "5:00 PM",
+                  "5:15 PM",
+                  "5:30 PM",
+                  "5:45 PM",
+                  "6:00 PM",
+                  "6:15 PM",
+                  "6:30 PM",
+                  "6:45 PM",
+                  "7:00 PM",
+                  "7:15 PM",
+                  "7:30 PM",
+                  "7:45 PM",
+                  "8:00 PM",
+                  "8:15 PM",
+                  "8:30 PM",
+                  "8:45 PM",
+                  "9:00 PM",
+                  "9:15 PM",
+                  "9:30 PM",
+                  "9:45 PM",
+                  "10:00 PM",
+                  "10:15 PM",
+                  "10:30 PM",
+                  "10:45 PM",
+                  "11:00 PM",
+                  "11:15 PM",
+                  "11:30 PM",
+                  "11:45 PM",
+                ].map((time) => (
+                  <div key={time} className="flex items-center">
+                    <input
+                      type="radio"
+                      id={`deadline-${time}`}
+                      name="deadline-time"
+                      className="hidden"
+                      checked={selectedDeadlineTime === time}
+                      onChange={() => handleDeadlineTimeSelect(time)}
+                    />
+                    <label
+                      htmlFor={`deadline-${time}`}
+                      className="flex items-center cursor-pointer w-full"
+                      onClick={() => handleDeadlineTimeSelect(time)}
+                    >
+                      <div
+                        className={`w-5 h-5 rounded-full border flex items-center justify-center ${
+                          selectedDeadlineTime === time ? "border-black" : "border-gray-300"
+                        }`}
+                      >
+                        {selectedDeadlineTime === time && <div className="w-3 h-3 bg-black rounded-full"></div>}
+                      </div>
+                      <div className="ml-3">{time}</div>
+                    </label>
+                  </div>
+                ))}
+              </div>
+
+              {/* Estimated delivery time */}
+              <div className="my-6 text-center text-gray-600">
+                <p>Estimated delivery time: {selectedDeadlineTime === "1:15 AM" ? "1:35 AM" : "1:35 AM"}</p>
+                <p>+10 mins for A$150+ orders</p>
+              </div>
+
+              {/* Checkout options */}
+              <div className="mb-6">
+                <h3 className="font-medium mb-2">How do you want to check out?</h3>
+                <p className="text-gray-600 text-sm mb-4">We'll send you reminders before the order deadline.</p>
+
+                <div className="space-y-4">
+                  <div className="flex items-center">
+                    <input
+                      type="radio"
+                      id="manually"
+                      name="checkout-option"
+                      className="hidden"
+                      checked={selectedCheckoutOption === "Manually"}
+                      onChange={() => handleCheckoutOptionSelect("Manually")}
+                    />
+                    <label
+                      htmlFor="manually"
+                      className="flex items-center cursor-pointer w-full"
+                      onClick={() => handleCheckoutOptionSelect("Manually")}
+                    >
+                      <div
+                        className={`w-5 h-5 rounded-full border flex items-center justify-center ${
+                          selectedCheckoutOption === "Manually" ? "border-black" : "border-gray-300"
+                        }`}
+                      >
+                        {selectedCheckoutOption === "Manually" && <div className="w-3 h-3 bg-black rounded-full"></div>}
+                      </div>
+                      <div className="ml-3">
+                        <div className="font-medium">Manually</div>
+                        <div className="text-sm text-gray-500">
+                          We'll remind you to checkout at {selectedDeadlineTime}.
+                        </div>
+                      </div>
+                    </label>
+                  </div>
+
+                  <div className="flex items-center">
+                    <input
+                      type="radio"
+                      id="automatically"
+                      name="checkout-option"
+                      className="hidden"
+                      checked={selectedCheckoutOption === "Automatically"}
+                      onChange={() => handleCheckoutOptionSelect("Automatically")}
+                    />
+                    <label
+                      htmlFor="automatically"
+                      className="flex items-center cursor-pointer w-full"
+                      onClick={() => handleCheckoutOptionSelect("Automatically")}
+                    >
+                      <div
+                        className={`w-5 h-5 rounded-full border flex items-center justify-center ${
+                          selectedCheckoutOption === "Automatically" ? "border-black" : "border-gray-300"
+                        }`}
+                      >
+                        {selectedCheckoutOption === "Automatically" && (
+                          <div className="w-3 h-3 bg-black rounded-full"></div>
+                        )}
+                      </div>
+                      <div className="ml-3">
+                        <div className="font-medium">Automatically</div>
+                        <div className="text-sm text-gray-500">
+                          We'll checkout for you at {selectedDeadlineTime} and send you a confirmation.
+                        </div>
+                      </div>
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex justify-end space-x-3">
+                <button
+                  onClick={handleBackClick}
+                  className="px-6 py-3 bg-gray-100 rounded-full font-medium text-gray-800"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleSaveDeadline}
+                  className="px-6 py-3 bg-red-600 text-white rounded-full font-medium"
+                >
                   Save
                 </button>
               </div>
