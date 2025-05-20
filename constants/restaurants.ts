@@ -3,6 +3,7 @@ export interface Restaurant {
     name: string
     logo: string
     banner: string
+    bannerUrl: string
     rating: number
     reviews: string
     distance: string
@@ -23,6 +24,7 @@ export interface Restaurant {
       name: "McDonald's",
       logo: "/placeholder.svg?height=80&width=80&query=kfc logo",
       banner: "/placeholder.svg?height=300&width=1200&query=kfc banner with fried chicken",
+      bannerUrl: "https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=1000,height=300,format=auto,quality=80/https://doordash-static.s3.amazonaws.com/media/store/header/3463c133-ad91-4e2d-8cc9-bf8ed0cca603.jpg",
       rating: 3.8,
       reviews: "200+",
       distance: "0.4 mi",
@@ -41,6 +43,7 @@ export interface Restaurant {
       name: "Hungry Jacks",
       logo: "/placeholder.svg?height=80&width=80&query=kfc logo",
       banner: "/placeholder.svg?height=300&width=1200&query=kfc banner with fried chicken",
+      bannerUrl: "https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=1000,height=300,format=auto,quality=80/https://doordash-static.s3.amazonaws.com/media/store/header/123c30bf-3ae2-4b63-ae05-d904350e85ac.png",
       rating: 4.0,
       reviews: "200+",
       distance: "3.8 mi",
@@ -59,6 +62,7 @@ export interface Restaurant {
       name: "KFC",
       logo: "/placeholder.svg?height=80&width=80&query=kfc logo",
       banner: "/placeholder.svg?height=300&width=1200&query=kfc banner with fried chicken",
+      bannerUrl: "https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=1000,height=300,format=auto,quality=80/https://doordash-static.s3.amazonaws.com/media/store/header/3463c133-ad91-4e2d-8cc9-bf8ed0cca603.jpg",
       rating: 4.2,
       reviews: "300+",
       distance: "2.1 mi",
@@ -77,6 +81,7 @@ export interface Restaurant {
       name: "Subway",
       logo: "/placeholder.svg?height=80&width=80&query=subway logo",
       banner: "/placeholder.svg?height=300&width=1200&query=subway banner with sandwiches",
+      bannerUrl: "https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=1000,height=300,format=auto,quality=80/https://doordash-static.s3.amazonaws.com/media/store/header/3463c133-ad91-4e2d-8cc9-bf8ed0cca603.jpg",
       rating: 4.1,
       reviews: "150+",
       distance: "1.2 mi",
@@ -95,6 +100,7 @@ export interface Restaurant {
       name: "Domino's Pizza",
       logo: "/placeholder.svg?height=80&width=80&query=dominos pizza logo",
       banner: "/placeholder.svg?height=300&width=1200&query=dominos pizza banner",
+      bannerUrl: "https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=1000,height=300,format=auto,quality=80/https://doordash-static.s3.amazonaws.com/media/store/header/3463c133-ad91-4e2d-8cc9-bf8ed0cca603.jpg",
       rating: 3.9,
       reviews: "250+",
       distance: "1.8 mi",
@@ -113,6 +119,7 @@ export interface Restaurant {
       name: "Guzman y Gomez",
       logo: "/placeholder.svg?height=80&width=80&query=guzman y gomez logo",
       banner: "/placeholder.svg?height=300&width=1200&query=mexican food banner",
+      bannerUrl: "https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=1000,height=300,format=auto,quality=80/https://doordash-static.s3.amazonaws.com/media/store/header/3463c133-ad91-4e2d-8cc9-bf8ed0cca603.jpg",
       rating: 4.5,
       reviews: "400+",
       distance: "2.5 mi",
@@ -131,6 +138,7 @@ export interface Restaurant {
       name: "Oporto",
       logo: "/placeholder.svg?height=80&width=80&query=oporto logo",
       banner: "/placeholder.svg?height=300&width=1200&query=portuguese chicken banner",
+      bannerUrl: "https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=1000,height=300,format=auto,quality=80/https://doordash-static.s3.amazonaws.com/media/store/header/3463c133-ad91-4e2d-8cc9-bf8ed0cca603.jpg",
       rating: 4.3,
       reviews: "180+",
       distance: "1.5 mi",
