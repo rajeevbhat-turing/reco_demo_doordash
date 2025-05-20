@@ -100,6 +100,8 @@ const FilterOptions = forwardRef<FilterOptionsRef, FilterOptionsProps>(
       if (onFilterChange) {
         onFilterChange(newFilters)
       }
+
+      window.scrollTo({ top: 0, behavior: "smooth" })
     }
 
     const handleRatingSelect = (rating: number) => {
@@ -121,11 +123,13 @@ const FilterOptions = forwardRef<FilterOptionsRef, FilterOptionsProps>(
     const applyRatingFilter = () => {
       toggleFilter("overRating", selectedRating)
       setRatingDropdownOpen(false)
+      // No need to add scroll here as toggleFilter already handles it
     }
 
     const applyPriceFilter = () => {
       toggleFilter("price", selectedPrices.length > 0 ? selectedPrices : null)
       setPriceDropdownOpen(false)
+      // No need to add scroll here as toggleFilter already handles it
     }
 
     const resetRatingFilter = () => {
@@ -144,6 +148,7 @@ const FilterOptions = forwardRef<FilterOptionsRef, FilterOptionsProps>(
       const scheduledTime = `${selectedDate}, ${selectedTime}`
       toggleFilter("schedule", true)
       toggleFilter("scheduledTime", scheduledTime)
+      // No need to add scroll here as toggleFilter already handles it
     }
 
     const getPriceLabel = () => {
@@ -202,8 +207,8 @@ const FilterOptions = forwardRef<FilterOptionsRef, FilterOptionsProps>(
     }))
 
     return (
-      <div className="relative">
-        <div className="flex gap-2 py-2 overflow-x-auto">
+      <div className="sticky top-16 z-40 bg-white py-2">
+        <div className="flex gap-2 overflow-x-auto">
           <button
             className={`rounded-full h-9 px-4 text-xs font-semibold ${
               filters.underThirtyMins ? "bg-gray-900 text-white" : "bg-gray-100 hover:bg-gray-200 text-gray-900"

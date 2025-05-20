@@ -1,44 +1,47 @@
+"use client"
+
 import Image from "next/image"
-import Link from "next/link"
+import { ChevronRight } from "lucide-react"
+import { categories } from "@/constants/food-categories"
 
-const categories = [
-  { name: "Fast Food", icon: "/icons/fast-food.png" },
-  { name: "Breakfast", icon: "/icons/breakfast.png" },
-  { name: "Burgers", icon: "/icons/burger.png" },
-  { name: "Coffee", icon: "/icons/coffee.png" },
-  { name: "Sushi", icon: "/icons/sushi.png" },
-  { name: "Healthy", icon: "/icons/healthy.png" },
-  { name: "Chicken", icon: "/icons/chicken.png" },
-  { name: "Comfort Food", icon: "/icons/comfort-food.png" },
-  { name: "Desserts", icon: "/icons/desserts.png" },
-  { name: "Asian", icon: "/icons/asian.png" },
-  { name: "Bubble Tea", icon: "/icons/bubble-tea.png" },
-  { name: "Pizza", icon: "/icons/pizza.png" },
-  { name: "Smoothie", icon: "/icons/smoothie.png" },
-  { name: "Bakery", icon: "/icons/bakery.png" },
-]
+interface FoodCategoriesProps {
+  selectedCategory: string | null
+  onCategorySelect: (category: string | null) => void
+}
 
-export default function FoodCategories() {
+export default function FoodCategories({ selectedCategory, onCategorySelect }: FoodCategoriesProps) {
   return (
-    <div className="py-4 overflow-x-auto">
-      <div className="flex gap-6 min-w-max">
+    <div className="relative mt-4">
+      <div className="flex overflow-x-auto py-4 scrollbar-hide -mx-4 px-4 space-x-8">
         {categories.map((category) => (
-          <div
+          <button
             key={category.name}
-            className="flex flex-col items-center gap-2"
+            className={`category-icon flex-shrink-0 `}
+            onClick={() => onCategorySelect(selectedCategory === category.name ? null : category.name)}
           >
-            <div className="w-16 h-16 flex items-center justify-center">
+            <div
+              className={`w-16 h-16 relative rounded-full`}
+            >
               <Image
-                src="/placeholder.svg?height=64&width=64"
+                src={category.image || "/placeholder.svg"}
                 alt={category.name}
                 width={64}
                 height={64}
                 className="object-contain"
               />
             </div>
-            <span className="text-sm font-medium">{category.name}</span>
-          </div>
+            <span
+              className={`mt-1 text-sm ${selectedCategory === category.name ? "text-red-600" : "font-medium"}`}
+            >
+              {category.name}
+            </span>
+          </button>
         ))}
+      </div>
+      <div className="absolute right-0 top-1/2 transform -translate-y-1/2">
+        <button className="bg-white rounded-full p-2 shadow-md">
+          <ChevronRight className="h-5 w-5" />
+        </button>
       </div>
     </div>
   )
