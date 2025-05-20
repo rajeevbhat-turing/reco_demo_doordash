@@ -38,11 +38,6 @@ export default function FoodCategories({ selectedCategory, onCategorySelect }: F
           </button>
         ))}
       </div>
-      <div className="absolute right-0 top-1/2 transform -translate-y-1/2">
-        <button className="bg-white rounded-full p-2 shadow-md">
-          <ChevronRight className="h-5 w-5" />
-        </button>
-      </div>
     </div>
   )
 }
