@@ -137,86 +137,86 @@ interface AllStoresProps {
   stores?: Store[];
 }
 
-export default function AllStores({ stores = defaultStores }: AllStoresProps) {
+export default function GroceryAllStores({ stores = defaultStores }: AllStoresProps) {
   return (
-    <div className="py-6">
-      <h2 className="text-2xl font-bold mb-4">All Stores</h2>
+      <div className="py-6">
+        <h2 className="text-2xl font-bold mb-4">All Stores</h2>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {stores.map((store, index) => (
-          <div key={`${store.name}-${index}`} className="border border-gray-200 rounded-lg p-4">
-            <div className="flex gap-4">
-              <div className="relative w-16 h-16 rounded-full overflow-hidden bg-gray-100">
-                <Image
-                  src={store.image}
-                  alt={store.name}
-                  width={64}
-                  height={64}
-                  className="object-cover"
-                />
-              </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {stores.map((store, index) => (
+              <div key={`${store.name}-${index}`} className="border border-gray-200 rounded-lg p-4">
+                <div className="flex gap-4">
+                  <div className="relative w-16 h-16 rounded-full overflow-hidden bg-gray-100">
+                    <Image
+                        src={store.image}
+                        alt={store.name}
+                        width={64}
+                        height={64}
+                        className="object-cover"
+                    />
+                  </div>
 
-              <div className="flex-1">
-                <div className="flex justify-between">
-                  <h3 className="font-medium">{store.name}</h3>
-                  <Button variant="ghost" size="icon" className="rounded-full -mr-2 -mt-2">
-                    <Heart className="h-5 w-5" />
-                  </Button>
-                </div>
+                  <div className="flex-1">
+                    <div className="flex justify-between">
+                      <h3 className="font-medium">{store.name}</h3>
+                      <Button variant="ghost" size="icon" className="rounded-full -mr-2 -mt-2">
+                        <Heart className="h-5 w-5" />
+                      </Button>
+                    </div>
 
-                <div className="flex flex-wrap gap-x-1 gap-y-1 mt-1">
-                  {store.isSnap && (
-                    <span className="text-xs font-medium text-gray-600 bg-gray-100 px-2 py-0.5 rounded inline-flex items-center">
+                    <div className="flex flex-wrap gap-x-1 gap-y-1 mt-1">
+                      {store.isSnap && (
+                          <span className="text-xs font-medium text-gray-600 bg-gray-100 px-2 py-0.5 rounded inline-flex items-center">
                       SNAP
                     </span>
-                  )}
+                      )}
+                    </div>
+
+                    {store.rating && (
+                        <div className="text-sm text-gray-500">
+                          ★ {store.rating} ({store.numRatings || "0"})
+                        </div>
+                    )}
+
+                    {store.open ? (
+                        <div className="text-sm text-gray-500">{store.time}</div>
+                    ) : (
+                        <div className="text-sm text-gray-500">Closed</div>
+                    )}
+
+                    <div className="text-sm text-gray-500">{store.delivery}</div>
+
+                    {store.inStorePrice && (
+                        <div className="flex items-center gap-1 text-xs text-gray-500 mt-1">
+                          <Info className="h-3 w-3" />
+                          In-store prices
+                        </div>
+                    )}
+
+                    {store.discount && <div className="text-sm text-[#ff3008] mt-1">{store.discount}</div>}
+                  </div>
                 </div>
-
-                {store.rating && (
-                  <div className="text-sm text-gray-500">
-                    ★ {store.rating} ({store.numRatings || "0"})
-                  </div>
-                )}
-
-                {store.open ? (
-                  <div className="text-sm text-gray-500">{store.time}</div>
-                ) : (
-                  <div className="text-sm text-gray-500">Closed</div>
-                )}
-
-                <div className="text-sm text-gray-500">{store.delivery}</div>
-
-                {store.inStorePrice && (
-                  <div className="flex items-center gap-1 text-xs text-gray-500 mt-1">
-                    <Info className="h-3 w-3" />
-                    In-store prices
-                  </div>
-                )}
-
-                {store.discount && <div className="text-sm text-[#ff3008] mt-1">{store.discount}</div>}
               </div>
-            </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
 
-      {/*<div className="mt-6 border border-gray-200 rounded-lg p-4">*/}
-      {/*  <div className="flex gap-4">*/}
-      {/*    <div className="flex-1">*/}
-      {/*      <div className="mb-1 font-bold">See 12 more Stores</div>*/}
-      {/*      <div className="text-sm text-gray-500">*/}
-      {/*        25th Irving Market, Mainland Market, Marina Supermarket, and more*/}
-      {/*      </div>*/}
-      {/*    </div>*/}
-      {/*    <div className="flex items-center">*/}
-      {/*      <Button variant="ghost" className="h-9 w-9 rounded-full">*/}
-      {/*        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">*/}
-      {/*          <path d="m9 18 6-6-6-6"/>*/}
-      {/*        </svg>*/}
-      {/*      </Button>*/}
-      {/*    </div>*/}
-      {/*  </div>*/}
-      {/*</div>*/}
-    </div>
+        {/*<div className="mt-6 border border-gray-200 rounded-lg p-4">*/}
+        {/*  <div className="flex gap-4">*/}
+        {/*    <div className="flex-1">*/}
+        {/*      <div className="mb-1 font-bold">See 12 more Stores</div>*/}
+        {/*      <div className="text-sm text-gray-500">*/}
+        {/*        25th Irving Market, Mainland Market, Marina Supermarket, and more*/}
+        {/*      </div>*/}
+        {/*    </div>*/}
+        {/*    <div className="flex items-center">*/}
+        {/*      <Button variant="ghost" className="h-9 w-9 rounded-full">*/}
+        {/*        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">*/}
+        {/*          <path d="m9 18 6-6-6-6"/>*/}
+        {/*        </svg>*/}
+        {/*      </Button>*/}
+        {/*    </div>*/}
+        {/*  </div>*/}
+        {/*</div>*/}
+      </div>
   )
 }
