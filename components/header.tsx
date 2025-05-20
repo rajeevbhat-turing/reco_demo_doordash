@@ -5,7 +5,7 @@ import { Search, MapPin, Bell, ShoppingCart, ChevronDown, CarTaxiFront, ListOrde
 import { Button } from "@/components/ui/button"
 
 export default function Header() {
-  const [location, setLocation] = useState("Delhi6 Sweets & Savou")
+  const [location, setLocation] = useState("548 Market Street, San Francisco, CA 94104")
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-200">
@@ -29,9 +29,9 @@ export default function Header() {
 
         {/* Right: Controls */}
         <div className="flex items-center gap-2 ml-4">
-          <button className="flex items-center gap-1 px-3 py-2 rounded-full bg-[#f3f3f3] text-sm font-medium text-black">
+          <button className="flex items-center gap-1 px-3 py-2 rounded-full bg-[#f3f3f3] text-sm text-black font-semibold">
             <MapPin className="h-4 w-4" />
-            {location}
+            {location.slice(0, 25)}
             <ChevronDown className="h-4 w-4" />
           </button>
           <button className="px-4 py-2 rounded-full bg-black text-white text-sm font-semibold">
