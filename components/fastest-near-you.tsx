@@ -12,6 +12,7 @@ interface NearbyStore {
   time: string;
   image: string;
   discount?: string;
+  isDashPass?: boolean;
 }
 
 interface FastestNearYouProps {
@@ -22,12 +23,13 @@ interface FastestNearYouProps {
 const defaultStores: NearbyStore[] = [
   {
     id: "1",
-    name: "Bi-Rite Market",
-    rating: "4.7",
-    numRatings: "850+",
-    distance: "1.2 mi",
-    time: "30 min",
-    image: "https://img.cdn4dd.com/cdn-cgi/image/fit=contain,width=1200,height=672,format=auto/https://doordash-static.s3.amazonaws.com/media/restaurant/cover_square/ada746a6-4410-4b60-858c-6ca4e24e47fd.png"
+    name: "Geary Wine & Spirits",
+    rating: "4.5",
+    numRatings: "(20+)",
+    distance: "0.7 mi",
+    time: "26 min",
+    image: "https://img.cdn4dd.com/cdn-cgi/image/fit=contain,format=auto/https://doordash-static.s3.amazonaws.com/media/store/header/6cfa729f-7914-4b44-b141-4ef82b229828.9",
+    isDashPass: true
   },
   {
     id: "2",
@@ -73,13 +75,18 @@ export default function FastestNearYou({ stores = defaultStores }: FastestNearYo
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {stores.map((store) => (
           <div key={store.id} className="relative group">
-            <div className="relative h-44 w-full rounded-lg overflow-hidden">
-              <Image 
-                src={store.image} 
-                alt={store.name} 
-                fill
-                className="object-cover" 
-              />
+            <div className="w-full rounded-lg overflow-hidden bg-gray-100">
+              <div style={{ width: '100%', paddingBottom: '75%', position: 'relative' }}>
+                <div className="absolute inset-0">
+                  <img 
+                    src={store.image} 
+                    alt={store.name}
+                    className="w-full h-full object-cover" 
+                  />
+                  {/* Overlay to improve text visibility if needed */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+                </div>
+              </div>
             </div>
             <Button 
               variant="ghost" 
@@ -89,7 +96,14 @@ export default function FastestNearYou({ stores = defaultStores }: FastestNearYo
               <Heart className="h-5 w-5" />
             </Button>
             <div className="mt-2">
-              <div className="font-medium">{store.name}</div>
+              <div className="font-medium flex items-center">
+                {store.name}
+                {store.isDashPass && (
+                  <span className="ml-1 text-xs bg-blue-50 text-blue-700 px-1.5 py-0.5 rounded font-semibold">
+                    DashPass
+                  </span>
+                )}
+              </div>
               <div className="flex items-center text-sm text-gray-500">
                 <span>★ {store.rating}</span>
                 <span className="mx-1">•</span>

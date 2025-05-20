@@ -71,13 +71,18 @@ export default function GroceryFavorites({ stores = defaultFavorites }: GroceryF
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {stores.map((store) => (
           <div key={store.id} className="relative group">
-            <div className="relative h-44 w-full rounded-lg overflow-hidden">
-              <Image 
-                src={store.image} 
-                alt={store.name} 
-                fill
-                className="object-cover" 
-              />
+            <div className="w-full rounded-lg overflow-hidden bg-gray-100">
+              <div style={{ width: '100%', paddingBottom: '75%', position: 'relative' }}>
+                <div className="absolute inset-0">
+                  <img 
+                    src={store.image} 
+                    alt={store.name}
+                    className="w-full h-full object-cover" 
+                  />
+                  {/* Subtle overlay gradient for better visibility */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+                </div>
+              </div>
             </div>
             <Button 
               variant="ghost" 

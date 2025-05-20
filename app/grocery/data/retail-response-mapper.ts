@@ -11,7 +11,7 @@ export function getFilterOptions() {
         type: filter.component.id,
         customData: filter.custom ? JSON.parse(filter.custom) : {}
       };
-
+      
       return filterData;
     });
   
@@ -25,7 +25,7 @@ export function getAllStores() {
     .map(store => {
       const loggingData = store.logging ? JSON.parse(store.logging) : {};
       const badges = loggingData.badges || "";
-
+      
       return {
         name: loggingData.store_name || '',
         time: loggingData.store_display_asap_time || '',
@@ -40,7 +40,7 @@ export function getAllStores() {
         isSnap: badges.includes('SNAP') || badges.includes('snap')
       };
     });
-
+  
   return storeItems;
 }
 
@@ -55,25 +55,25 @@ export function getGroceryScheduleData() {
       const buttonText = banner.text?.custom?.find(txt => txt.key === 'button')?.value || 'Shop now';
       const customData = banner.custom ? JSON.parse(banner.custom) : {};
       const extraStyles = customData.extra_styles || {};
-
+      
       return {
         id: `promo-${index}`,
         title: banner.text?.description || '',
         description: banner.text?.title || '',
         buttonText: buttonText,
         backgroundColor: customData.styling?.background_color ? `#${customData.styling.background_color}` : '#f7f3e8',
-        buttonColor: extraStyles.button?.background_color ?
-          `bg-[#${extraStyles.button.background_color}] hover:bg-[#${extraStyles.button.background_color}]` :
+        buttonColor: extraStyles.button?.background_color ? 
+          `bg-[#${extraStyles.button.background_color}] hover:bg-[#${extraStyles.button.background_color}]` : 
           'bg-[#eb1800] hover:bg-[#cf1600]',
         textColor: extraStyles.title?.color ? `text-[#${extraStyles.title.color}]` : 'text-black',
         image: backgroundImg,
         logoImage: logoImg
       };
     });
-
+  
   // Extract popular grocery stores for the circular logos
   const storeItems = getAllStores().slice(0, 6);
-
+  
   return {
     promos: promos.length > 0 ? promos : undefined,
     stores: storeItems.map(store => ({
@@ -88,14 +88,14 @@ export function getGroceryEssentialsData() {
   // Find the essentials banner (usually showcases grocery products)
   const essentialsBanner = retailResponse.data.retailVerticalPageFeed.body[0].body
     .find(item => item.id?.includes('safeway-brands-nm-hpb'));
-
+  
   // Get the primary store information
   const primaryStore = getAllStores()[0] || {};
-
+  
   // Find product carousel (this would be more specific in a real implementation)
   const productCarousel = retailResponse.data.retailVerticalPageFeed.body[0].body
     .find(item => item.component?.id?.includes('carousel') && item.component?.category === 'carousel');
-
+  
   // Sample products (in a real implementation, you'd extract these from the response)
   const sampleProducts = Array(6).fill(null).map((_, index) => ({
     id: index,
@@ -103,7 +103,7 @@ export function getGroceryEssentialsData() {
     name: `Grocery Item ${index + 1}`,
     image: '/placeholder.svg?height=128&width=128'
   }));
-
+  
   return {
     title: essentialsBanner?.text?.title || 'Grocery Essentials',
     storeName: primaryStore.name || 'Spudshed Fresh Food Market',
@@ -123,41 +123,83 @@ export function getGroceryFavorites() {
       id: `favorite-${index}`,
       name: store.name,
       rating: store.rating,
-      numRatings: store.numRatings?.includes('k') ? store.numRatings :
-                 (parseInt(store.numRatings) > 1000 ?
-                  (Math.floor(parseInt(store.numRatings) / 100) / 10 + 'k+') :
+      numRatings: store.numRatings?.includes('k') ? store.numRatings : 
+                 (parseInt(store.numRatings) > 1000 ? 
+                  (Math.floor(parseInt(store.numRatings) / 100) / 10 + 'k+') : 
                   store.numRatings + '+'),
       distance: (Math.random() * 2 + 0.1).toFixed(1) + ' mi', // Mock distance data
       time: store.time.replace('Express ', ''),
       image: store.image
     }));
-
+  
   return favoriteStores;
 }
 
 // Get data for the Fastest Near You section
 export function getFastestNearYou() {
-  // Extract stores with quick delivery times
-  const fastestStores = getAllStores()
-    .sort((a, b) => {
-      const timeA = parseInt(a.time.replace(/\D/g, '')) || 9999;
-      const timeB = parseInt(b.time.replace(/\D/g, '')) || 9999;
-      return timeA - timeB;
-    })
-    .slice(0, 3)
-    .map((store, index) => ({
-      id: `fast-${index}`,
-      name: store.name,
-      rating: store.rating,
-      numRatings: parseInt(store.numRatings) > 500 ?
-                 (Math.floor(parseInt(store.numRatings) / 100) / 10 + 'k+') :
-                 store.numRatings + '+',
-      distance: (Math.random() * 3 + 0.1).toFixed(1) + ' mi', // Mock distance data
-      time: store.time.replace('Express ', ''),
-      image: store.image,
-      discount: store.discount
-    }));
-
+  // Try to find the fastest_near_you container in the JSON
+  const bodyContainers = retailResponse.data.retailVerticalPageFeed.body[0].body;
+  
+  // Look for a container with fastest_near_you in its logging or id
+  const fastestNearYouContainer = bodyContainers.find(container => {
+    if (container.logging && container.logging.includes('fastest_near_you')) return true;
+    if (container.id && container.id.includes('fastest_near_you')) return true;
+    return false;
+  });
+  
+  // If container found, extract store cards from it
+  let fastestStores = [];
+  
+  if (fastestNearYouContainer && fastestNearYouContainer.childrenMap) {
+    // Extract store data from children
+    fastestStores = fastestNearYouContainer.childrenMap
+      .filter(item => item.component?.id === 'card.store')
+      .map((store, index) => {
+        const loggingData = store.logging ? JSON.parse(store.logging) : {};
+        const customData = store.custom ? JSON.parse(store.custom) : {};
+        
+        // Extract distance and time from description (format: "0.7 mi • 26 min")
+        const description = store.text?.description || "";
+        const [distancePart, timePart] = description.split('•').map(s => s.trim());
+        
+        return {
+          id: store.id || `fast-${index}`,
+          name: store.text?.title || loggingData.store_name || "",
+          rating: customData.rating?.average_rating?.toString() || loggingData.star_rating || "",
+          numRatings: customData.rating?.display_num_ratings || loggingData.num_star_rating || "",
+          distance: distancePart || `${loggingData.store_distance_in_miles} mi` || "",
+          time: timePart || loggingData.store_display_asap_time || "",
+          image: customData.window_shopping?.cover?.image?.remote?.uri || 
+                 loggingData.display_image_url || "",
+          discount: loggingData.promo_tooltip || "",
+          isDashPass: store.images?.accessory?.local === "dashpass-badge" || false
+        };
+      });
+  }
+  
+  // If no data found in container, fall back to sorting all stores by delivery time
+  if (!fastestStores.length) {
+    fastestStores = getAllStores()
+      .sort((a, b) => {
+        const timeA = parseInt(a.time.replace(/\D/g, '')) || 9999;
+        const timeB = parseInt(b.time.replace(/\D/g, '')) || 9999;
+        return timeA - timeB;
+      })
+      .slice(0, 3)
+      .map((store, index) => ({
+        id: `fast-${index}`,
+        name: store.name,
+        rating: store.rating,
+        numRatings: parseInt(store.numRatings) > 500 ?
+                   (Math.floor(parseInt(store.numRatings) / 100) / 10 + 'k+') :
+                   store.numRatings + '+',
+        distance: (Math.random() * 3 + 0.1).toFixed(1) + ' mi', // Mock distance data
+        time: store.time.replace('Express ', ''),
+        image: store.image,
+        discount: store.discount
+      }));
+  }
+  
   return fastestStores;
 }
 
@@ -165,11 +207,11 @@ export function getFastestNearYou() {
 export function getProductCarouselData(storeIndex = 0) {
   // We'll create two carousels with data from the retail response
   const store = getAllStores()[storeIndex] || getAllStores()[0];
-
+  
   if (!store) {
     return null;
   }
-
+  
   // For the first carousel (snacks & drinks)
   const snackProducts = [
     {
