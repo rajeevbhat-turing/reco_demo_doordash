@@ -119,7 +119,7 @@ export default function StoreGrid({
         <div className={`flex space-x-4 pb-2 ${useCardLayout ? "" : ""}`}>
           {stores.map((store, index) => (
             <Link
-              href={`/grocery/store/${store.id}`}
+              href={`/convenience/store/${store.id}?storeType=grocery`}
               key={store.id || `store-${index}`}
               className={useCardLayout ? `min-w-[320px] md:min-w-[360px] snap-start` : "relative group min-w-[280px] md:min-w-[320px] snap-start"}
             >

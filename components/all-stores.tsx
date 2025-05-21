@@ -168,7 +168,7 @@ export default function AllStores({ stores = defaultStores }: AllStoresProps) {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {stores.map((store, index) => (
           <Link 
-            href={`/grocery/store/${store.id || index}`}
+            href={`/convenience/store/${store.id || index}?storeType=grocery`}
             key={`${store.name}-${index}`}
             className="block border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
           >
