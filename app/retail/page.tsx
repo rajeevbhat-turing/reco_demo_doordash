@@ -103,7 +103,7 @@ export default function Retail() {
             </div>
             <div
               className="border border-gray-200 rounded-lg p-4 max-w-[368px] cursor-pointer hover:bg-gray-50"
-              onClick={() => window.location.href = '/store/lowes'}
+              onClick={() => window.location.href = '/convenience/store/lowes?storeType=retail'}
             >
               <div className="flex items-center gap-3 mb-4">
                 <Image

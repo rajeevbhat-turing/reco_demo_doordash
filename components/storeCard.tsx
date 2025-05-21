@@ -5,12 +5,17 @@ import { useState } from "react"
 
 const DEFAULT_STORE_LOGO = "/store-logos/default-store.svg"
 
-export default function StoreCard({ name, image, openTime, deliveryTime, discount, isDashPass }: Store) {
+export default function StoreCard({ id, name, image, openTime, deliveryTime, discount, isDashPass, storeType = "retail" }: Store & { storeType?: string }) {
     const [imageError, setImageError] = useState(false)
     const [isFavorite, setIsFavorite] = useState(false)
+    
+    const storeUrl = `/convenience/store/${id}?storeType=${storeType}`
   
     return (
-      <div className="border border-gray-200 rounded-lg py-2 px-4 cursor-pointer hover:bg-gray-50">
+      <div 
+        className="border border-gray-200 rounded-lg py-2 px-4 cursor-pointer hover:bg-gray-50" 
+        onClick={() => window.location.href = storeUrl}
+      >
         <div className="flex items-start gap-4">
           <div className="relative w-16 h-16 rounded-full overflow-hidden bg-gray-100">
             <Image
