@@ -15,6 +15,15 @@ export default function Header() {
   useEffect(() => {
     // Initial cart count
     setCartItemCount(getTotalItems())
+
+    // Subscribe to cart store changes
+    const unsubscribeFromStore = useCartStore.subscribe((state) => {
+      setCartItemCount(state.getTotalItems())
+    })
+
+    return () => {
+      unsubscribeFromStore()
+    }
   }, [getTotalItems])
 
   const toggleCart = () => {
