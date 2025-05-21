@@ -3,7 +3,6 @@ export interface Restaurant {
   name: string
   logo: string
   banner: string
-  bannerUrl: string
   rating: number
   reviews: string
   distance: string
