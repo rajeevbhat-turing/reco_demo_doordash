@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react"
 import Image from "next/image"
 import { X, ThumbsUp, ChevronLeft, ChevronRight, ChevronRightIcon } from "lucide-react"
+import { useCartStore } from "@/store/cart-store"
 
 // Types for the menu item options
 interface MenuItemOption {
@@ -38,6 +39,7 @@ interface MenuItemDialogProps {
   onClose: () => void
   item: {
     id: string
+    restaurantId: string
     name: string
     price: string
     image: string
@@ -52,6 +54,7 @@ export default function MenuItemDialog({ isOpen, onClose, item }: MenuItemDialog
   const [selectedOption, setSelectedOption] = useState<string | null>(null)
   const [selectedCustomizations, setSelectedCustomizations] = useState<Record<string, string[]>>({})
   const dialogRef = useRef<HTMLDivElement>(null)
+  const addToCart = useCartStore((state) => state.addItem)
 
   // Track required selections
   const [requiredSelectionsCount, setRequiredSelectionsCount] = useState(0)
@@ -104,7 +107,7 @@ export default function MenuItemDialog({ isOpen, onClose, item }: MenuItemDialog
       const initialRequiredSections: Record<string, boolean> = {}
       customizationSections.forEach((section) => {
         if (section.required) {
-          initialRequiredSections[section.id] = false
+          initialRequiredSections[section.id] = section.type === "radio" ? true : false
         }
       })
       setRequiredSectionsMet(initialRequiredSections)
@@ -339,6 +342,43 @@ export default function MenuItemDialog({ isOpen, onClose, item }: MenuItemDialog
 
   const allRequiredSectionsMet = Object.values(requiredSectionsMet).every((met) => met)
 
+  const handleAddToCart = () => {
+    if (!item || !allRequiredSectionsMet) return
+
+    // Get selected customizations for display
+    const customizationText: string[] = []
+
+    // Add size
+    const sizeOption = customizationSections[0].options.find((option) =>
+      selectedCustomizations.size?.includes(option.id),
+    )
+    if (sizeOption) customizationText.push(sizeOption.name)
+
+    // Add side
+    const sideOption = customizationSections[1].options.find((option) =>
+      selectedCustomizations.side?.includes(option.id),
+    )
+    if (sideOption) customizationText.push(sideOption.name)
+
+    // Add drink
+    const drinkOption = customizationSections[2].options.find((option) =>
+      selectedCustomizations.drink?.includes(option.id),
+    )
+    if (drinkOption) customizationText.push(drinkOption.name)
+
+    // Add the item to cart with customizations
+    addToCart({
+      id: item.id + Date.now(), // Make unique ID for customized items
+      restaurantId: item.restaurantId,
+      name: item.name,
+      price: item.price,
+      image: item.image,
+      customizations: customizationText.join(" · "),
+    })
+
+    onClose()
+  }
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
       <div ref={dialogRef} className="relative bg-white rounded-lg w-full max-w-xl max-h-[90vh] overflow-auto">
@@ -482,10 +522,15 @@ export default function MenuItemDialog({ isOpen, onClose, item }: MenuItemDialog
         {/* Fixed bottom button */}
         <div className="fixed bottom-0 left-0 right-0 bg-white p-4 border-t border-gray-200 z-10 max-w-xl mx-auto">
           <button
-            className="w-full py-3 bg-red-600 text-white font-medium rounded-lg"
+            className={`w-full py-3 ${
+              allRequiredSectionsMet ? "bg-red-600" : "bg-gray-300"
+            } text-white font-medium rounded-lg`}
             disabled={!allRequiredSectionsMet}
+            onClick={handleAddToCart}
           >
-            Make {requiredSelectionsCount} required selections - A$17.80
+            {allRequiredSectionsMet
+              ? "Add to cart - A$17.80"
+              : `Make ${requiredSelectionsCount} required selections - A$17.80`}
           </button>
         </div>
       </div>
