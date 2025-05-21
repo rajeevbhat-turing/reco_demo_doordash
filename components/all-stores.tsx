@@ -1,10 +1,15 @@
+"use client"
+
+import { useState } from "react"
 import Image from "next/image"
+import Link from "next/link"
 import { Heart, Info } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
 // Default stores data (fallback)
 const defaultStores = [
   {
+    id: "1",
     name: "Sprouts Farmers Market",
     time: "Express 56 min",
     delivery: "$0 delivery fee",
@@ -18,6 +23,7 @@ const defaultStores = [
     isSnap: true
   },
   {
+    id: "2",
     name: "Safeway",
     time: "Express 34 min",
     delivery: "$0 delivery fee",
@@ -31,6 +37,7 @@ const defaultStores = [
     isSnap: true
   },
   {
+    id: "3",
     name: "DashMart",
     time: "Express 19 min",
     delivery: "$0 delivery fee",
@@ -44,6 +51,7 @@ const defaultStores = [
     isSnap: true
   },
   {
+    id: "4",
     name: "DoorDash Market",
     time: "Express 24 min",
     delivery: "$0 delivery fee",
@@ -57,6 +65,7 @@ const defaultStores = [
     isSnap: true
   },
   {
+    id: "5",
     name: "Bi-Rite Market",
     time: "Express 31 min",
     delivery: "$0 delivery fee",
@@ -69,6 +78,7 @@ const defaultStores = [
     numRatings: "3421"
   },
   {
+    id: "6",
     name: "Mollie Stone's Markets",
     time: "Express 37 min",
     delivery: "$0 delivery fee",
@@ -81,6 +91,7 @@ const defaultStores = [
     numRatings: "2891"
   },
   {
+    id: "7",
     name: "Target",
     time: "Fast 31 min",
     delivery: "$0 delivery fee",
@@ -93,6 +104,7 @@ const defaultStores = [
     numRatings: "3k+"
   },
   {
+    id: "8",
     name: "Grocery Outlet",
     time: "Express 51 min",
     delivery: "$0 delivery fee",
@@ -106,6 +118,7 @@ const defaultStores = [
     isSnap: true
   },
   {
+    id: "9",
     name: "Gus's Community Market",
     time: "Express 39 min",
     delivery: "$0 delivery fee",
@@ -120,6 +133,7 @@ const defaultStores = [
 ]
 
 interface Store {
+  id?: string;
   name: string;
   time: string;
   delivery: string;
@@ -138,13 +152,26 @@ interface AllStoresProps {
 }
 
 export default function AllStores({ stores = defaultStores }: AllStoresProps) {
+  const [favorites, setFavorites] = useState<{[key: string]: boolean}>({});
+  
+  const toggleFavorite = (storeName: string, index: number) => {
+    setFavorites(prev => ({
+      ...prev,
+      [`${storeName}-${index}`]: !prev[`${storeName}-${index}`]
+    }));
+  };
+  
   return (
     <div className="py-6">
       <h2 className="text-2xl font-bold mb-4">All Stores</h2>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {stores.map((store, index) => (
-          <div key={`${store.name}-${index}`} className="border border-gray-200 rounded-lg p-4">
+          <Link 
+            href={`/grocery/store/${store.id || index}`}
+            key={`${store.name}-${index}`}
+            className="block border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
+          >
             <div className="flex gap-4">
               <div className="relative w-16 h-16 rounded-full overflow-hidden bg-gray-100">
                 <Image
@@ -159,8 +186,16 @@ export default function AllStores({ stores = defaultStores }: AllStoresProps) {
               <div className="flex-1">
                 <div className="flex justify-between">
                   <h3 className="font-medium">{store.name}</h3>
-                  <Button variant="ghost" size="icon" className="rounded-full -mr-2 -mt-2">
-                    <Heart className="h-5 w-5" />
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    className="rounded-full -mr-2 -mt-2"
+                    onClick={(e) => {
+                      e.preventDefault(); // Prevent navigation
+                      toggleFavorite(store.name, index);
+                    }}
+                  >
+                    <Heart className={`h-5 w-5 ${favorites[`${store.name}-${index}`] ? 'fill-red-500 text-red-500' : ''}`} />
                   </Button>
                 </div>
 
@@ -196,7 +231,7 @@ export default function AllStores({ stores = defaultStores }: AllStoresProps) {
                 {store.discount && <div className="text-sm text-[#ff3008] mt-1">{store.discount}</div>}
               </div>
             </div>
-          </div>
+          </Link>
         ))}
       </div>
 
