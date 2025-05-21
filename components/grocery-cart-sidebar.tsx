@@ -12,7 +12,7 @@ interface CartSidebarProps {
   storeData: import("@/data/store-data").StoreInfo
 }
 
-export default function CartSidebar({ storeData }: CartSidebarProps) {
+export default function GroceryCartSidebar({ storeData }: CartSidebarProps) {
   const { items, removeFromCart, updateQuantity, totalItems, subtotal, deliveryFee } = useCart()
   const recommendationsRef = useRef<HTMLDivElement>(null)
   const { emptyCartMessage } = uiConfig
@@ -98,7 +98,7 @@ export default function CartSidebar({ storeData }: CartSidebarProps) {
             </div>
           </div>
         )}
-        
+
         {/* Checkout button - Moved from bottom to here */}
         <button className="w-full bg-red-600 hover:bg-red-700 text-white font-medium py-3 rounded-full mb-3 text-lg">
           Checkout

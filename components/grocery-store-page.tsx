@@ -22,7 +22,7 @@ import ProductDisplay from "@/components/product/product-display"
 import { groceryData } from "@/data/grocery-data"
 import type { ProductSection as ProductSectionType, Product } from "@/types"
 import ShopListModal from "@/components/modals/shop-list-modal"
-import CartSidebar from "@/components/cart-sidebar"
+import GroceryCartSidebar from "@/components/grocery-cart-sidebar"
 import { useCart } from "@/context/cart-context"
 import ProductDetailModal from "@/components/modals/product-detail-modal"
 import type { StoreInfo } from "@/data/store-data"
@@ -275,7 +275,7 @@ export default function GroceryStorePage({ onBackClick, storeData }: GroceryStor
 
       {/* Cart Sidebar */}
       <div className="hidden lg:block w-80 border-l p-4 flex-shrink-0 z-10">
-        <CartSidebar storeData={storeData} />
+        <GroceryCartSidebar storeData={storeData} />
       </div>
 
       {/* Shop List Modal */}
