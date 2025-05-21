@@ -159,7 +159,7 @@ export default function RestaurantPage() {
       {/* Banner Image */}
       <div className="relative w-full h-[220px] rounded-bl-xl rounded-br-xl overflow-hidden">
         <Image
-          src={restaurant.bannerUrl}
+          src={restaurant.banner}
           alt="McDonald's Banner"
           fill
           className="object-cover"
