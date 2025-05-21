@@ -18,11 +18,18 @@ export interface FilterOptionsRef {
   resetFilters: () => void
 }
 
+interface FilterOption {
+  id: string
+  name: string
+  icon: string
+}
+
 interface FilterOptionsProps {
   isGrocery?: boolean
   onFilterChange?: (filters: FilterState) => void
   onReset?: () => void
   filters?: FilterState
+  filterData?: FilterOption[]
 }
 
 interface ScheduleOption {
@@ -37,7 +44,7 @@ interface TimeOption {
 }
 
 const FilterOptions = forwardRef<FilterOptionsRef, FilterOptionsProps>(
-  ({ isGrocery = false, onFilterChange, onReset, filters: externalFilters }, ref) => {
+  ({ isGrocery = false, onFilterChange, onReset, filters: externalFilters, filterData = [] }, ref) => {
     const [filters, setFilters] = useState<FilterState>({
       underThirtyMins: false,
       schedule: false,
@@ -417,15 +424,115 @@ const FilterOptions = forwardRef<FilterOptionsRef, FilterOptionsProps>(
     return (
       <div className="sticky top-16 z-40 bg-white py-2 border-b border-gray-100">
         <div className="flex gap-2 overflow-x-auto">
-          <button
-            className={`rounded-full h-9 px-4 text-xs font-semibold ${
-              filters.underThirtyMins ? "bg-gray-900 text-white" : "bg-gray-100 hover:bg-gray-200 text-gray-900"
-            }`}
-            onClick={() => toggleFilter("underThirtyMins")}
-          >
-            Under 30 min
-          </button>
+          {/* Dynamic filter buttons from filterData */}
+          {filterData.length > 0 ? (
+            filterData.map((filter) => {
+              // Map filter id to corresponding filter state property
+              let filterKey: keyof FilterState | null = null;
+              
+              switch (filter.id) {
+                case "1": // Delivery
+                  return null; // Skip - default filter
+                case "2": // Pickup
+                  filterKey = "pickup";
+                  break;
+                case "3": // DashPass
+                  filterKey = "dashPass";
+                  break;
+                case "4": // Under 30 min
+                  filterKey = "underThirtyMins";
+                  break;
+                case "5": // Price: $
+                  return (
+                    <div key={filter.id} className="relative">
+                      <button
+                        ref={priceButtonRef}
+                        className={`rounded-full h-9 px-4 text-xs font-semibold ${
+                          filters.price && filters.price.length > 0
+                            ? "bg-gray-900 text-white" 
+                            : "bg-gray-100 hover:bg-gray-200 text-gray-900"
+                        } flex items-center gap-1`}
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          setPriceDropdownOpen(!priceDropdownOpen)
+                          setRatingDropdownOpen(false)
+                          setScheduleDropdownOpen(false)
+                        }}
+                      >
+                        {filter.icon} {getPriceLabel()}
+                        <ChevronDown className="h-4 w-4 ml-1" />
+                      </button>
+                      {/* Price dropdown (reusing existing code) */}
+                      {priceDropdownOpen && (
+                        <div
+                          ref={priceDropdownRef}
+                          className="fixed z-50 mt-2 w-[400px] bg-white rounded-lg shadow-lg p-6"
+                          style={{ left: "50%", transform: "translateX(-50%)" }}
+                        >
+                          <h3 className="text-xl font-bold mb-6">Price</h3>
+                          <div className="flex gap-3 mb-6">
+                            {["$", "$$", "$$$", "$$$$"].map((price) => (
+                              <button
+                                key={price}
+                                className={`px-6 py-2 rounded-full text-sm font-medium ${
+                                  selectedPrices.includes(price)
+                                    ? "bg-black text-white"
+                                    : "bg-gray-100 text-gray-900 hover:bg-gray-200"
+                                }`}
+                                onClick={() => handlePriceToggle(price)}
+                              >
+                                {price}
+                              </button>
+                            ))}
+                          </div>
+                          <div className="flex justify-between">
+                            <button className="text-gray-900 font-medium" onClick={resetPriceFilter}>
+                              Reset
+                            </button>
+                            <button
+                              className="bg-red-600 text-white px-4 py-2 rounded-full text-sm font-medium"
+                              onClick={applyPriceFilter}
+                            >
+                              View Results
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  );
+              }
+              
+              if (filterKey) {
+                return (
+                  <button
+                    key={filter.id}
+                    className={`rounded-full h-9 px-4 text-xs font-semibold ${
+                      filters[filterKey] ? "bg-gray-900 text-white" : "bg-gray-100 hover:bg-gray-200 text-gray-900"
+                    } flex items-center gap-1`}
+                    onClick={() => toggleFilter(filterKey as keyof FilterState)}
+                  >
+                    <span className="mr-1">{filter.icon}</span> {filter.name}
+                  </button>
+                );
+              }
+              
+              return null;
+            })
+          ) : (
+            // Fallback to default filters if no filterData provided
+            <>
+              <button
+                className={`rounded-full h-9 px-4 text-xs font-semibold ${
+                  filters.underThirtyMins ? "bg-gray-900 text-white" : "bg-gray-100 hover:bg-gray-200 text-gray-900"
+                }`}
+                onClick={() => toggleFilter("underThirtyMins")}
+              >
+                Under 30 min
+              </button>
+            </>
+          )}
 
+          {/* Schedule dropdown - only shown for non-grocery pages */}
           {!isGrocery && (
             <div className="relative">
               <button
