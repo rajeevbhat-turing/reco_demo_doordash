@@ -12,6 +12,25 @@ import { getDealsByRestaurantId } from "@/constants/deals"
 import { useCartStore } from "@/store/cart-store"
 import MenuItemDialog from "@/components/menu-item-dialog"
 import GroupOrderDialog from "@/components/group-order-dialog"
+import ReviewDialog from "@/components/review-dialog"
+
+const menuTypes = [
+  {
+    id: "overnight",
+    name: "Overnight Menu",
+    hours: "12:00 AM - 3:59 AM",
+  },
+  {
+    id: "regular",
+    name: "Regular Menu",
+    hours: "10:30 AM - 11:59 PM",
+  },
+  {
+    id: "breakfast",
+    name: "Breakfast Menu",
+    hours: "4:00 AM - 10:29 AM",
+  },
+]
 
 function SearchBar() {
   return (
@@ -49,12 +68,18 @@ export default function RestaurantPage() {
   const ticking = useRef(false)
   const featuredItemsRef = useRef<HTMLDivElement>(null)
   const dealsRef = useRef<HTMLDivElement>(null)
+  const menuDropdownRef = useRef<HTMLDivElement>(null)
 
   // Dialog states
   const [menuItemDialogOpen, setMenuItemDialogOpen] = useState(false)
   const [selectedItem, setSelectedItem] = useState<any>(null)
   const [groupOrderDialogOpen, setGroupOrderDialogOpen] = useState(false)
+  const [reviewDialogOpen, setReviewDialogOpen] = useState(false)
+  const [menuDropdownOpen, setMenuDropdownOpen] = useState(false)
 
+  const [hoverRating, setHoverRating] = useState(0)
+  const [selectedRating, setSelectedRating] = useState(0)
+  const [selectedMenuType, setSelectedMenuType] = useState("Regular Menu")
 
   useEffect(() => {
     if (id) {
@@ -153,6 +178,35 @@ export default function RestaurantPage() {
     setGroupOrderDialogOpen(true)
   }
 
+  const handleStarHover = (rating: number) => {
+    setHoverRating(rating)
+  }
+
+  const handleStarLeave = () => {
+    setHoverRating(0)
+  }
+
+  const handleStarClick = (rating: number) => {
+    setSelectedRating(rating)
+    setReviewDialogOpen(true)
+  }
+
+  const handleStartReview = () => {
+    setReviewDialogOpen(true)
+  }
+
+  const toggleMenuDropdown = () => {
+    setMenuDropdownOpen(!menuDropdownOpen)
+  }
+
+  const selectMenuType = (menuType: string) => {
+    setSelectedMenuType(menuType)
+    setMenuDropdownOpen(false)
+  }
+
+  // Find the selected menu type object
+  const selectedMenuTypeObj = menuTypes.find((menu) => menu.name === selectedMenuType)
+  
   return (
     <div className="px-8 py-16">
 
@@ -239,16 +293,11 @@ export default function RestaurantPage() {
                 <span>Service fees apply</span>
                 <Info className="h-4 w-4 ml-1" />
               </div>
-              <div className="flex justify-center mt-6">
-                <button className="text-gray-600 font-medium text-sm border border-gray-300 rounded-full px-6 py-1">
-                  See More
-                </button>
-              </div>
             </div>
-            <div ref={menuContainerRef} className="relative mt-4">
+            <div ref={menuContainerRef} className="relative mt-4 max-w-[240px]">
               <div
                 ref={menuRef}
-                className="overflow-hidden"
+                className="overflow-hidden w-full"
                 style={{
                   position: "sticky",
                   top: "80px",
@@ -256,22 +305,51 @@ export default function RestaurantPage() {
                   zIndex: 10,
                 }}
               >
-                <div className="p-4">
-                  <button className="w-full flex items-center justify-between font-medium">
-                    <span>Regular Menu</span>
+                <div className="p-4 relative" ref={menuDropdownRef}>
+                  <button className="w-full flex items-center justify-between font-medium" onClick={toggleMenuDropdown}>
+                    <span>{selectedMenuType}</span>
                     <ChevronDown className="h-5 w-5" />
                   </button>
-                  <div className="text-sm text-gray-600 mt-1">10:30 am - 11:59 pm</div>
+                  <div className="text-sm text-gray-600 mt-1">{selectedMenuTypeObj?.hours}</div>
+
+                  {/* Menu Type Dropdown */}
+                  {menuDropdownOpen && (
+                    <div className="absolute left-0 top-full mt-1 w-[350px] bg-white rounded-lg shadow-lg z-20 py-2">
+                      {menuTypes.map((menuType) => (
+                        <button
+                          key={menuType.id}
+                          className="w-full flex items-center px-4 py-3 hover:bg-gray-50"
+                          onClick={() => selectMenuType(menuType.name)}
+                        >
+                          <div
+                            className={`w-6 h-6 rounded-full border-2 flex items-center justify-center mr-4 ${
+                              selectedMenuType === menuType.name ? "border-black bg-black" : "border-gray-300 bg-white"
+                            }`}
+                          >
+                            {selectedMenuType === menuType.name && (
+                              <div className="w-2 h-2 bg-white rounded-full"></div>
+                            )}
+                          </div>
+                          <div className="text-left">
+                            <div className="font-medium">{menuType.name}</div>
+                            <div className="text-gray-500">{menuType.hours}</div>
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
-                <div className="p-2 max-h-[calc(100vh-200px)] overflow-y-auto">
+                <div className="p-0 max-h-[calc(100vh-200px)] overflow-y-auto">
                   <ul className="space-y-1">
                     {menuCategories.map((category) => (
                       <li key={category.id}>
                         <button
-                          className={`w-full text-left px-2 py-2 rounded-md ${
+                          className={`w-full text-left px-4 py-3 ${
                             activeCategory === category.name
-                              ? "bg-gray-100 font-medium"
-                              : ""
+                              ? "bg-white font-medium border-l-4 border-l-red-500"
+                              : category.name === "Beef"
+                                ? "bg-gray-50"
+                                : "bg-white"
                           }`}
                           onClick={() => scrollToSection(category.name)}
                         >
@@ -416,15 +494,21 @@ export default function RestaurantPage() {
             <div className="mt-8">
               <h2 className="text-xl font-bold mb-4">Reviews</h2>
               <div className="bg-gray-50 rounded-lg p-6">
-                <h3 className="text-lg font-medium mb-4">
-                  Be the first to review
-                </h3>
+                <h3 className="text-lg font-medium mb-4">Be the first to review</h3>
                 <div className="flex mb-4">
                   {[1, 2, 3, 4, 5].map((star) => (
-                    <Star key={star} className="h-8 w-8 text-gray-300" />
+                    <Star
+                      key={star}
+                      className={`h-8 w-8 cursor-pointer ${
+                        star <= (hoverRating || selectedRating) ? "fill-gray-700 text-gray-700" : "text-gray-300"
+                      }`}
+                      onMouseEnter={() => handleStarHover(star)}
+                      onMouseLeave={handleStarLeave}
+                      onClick={() => handleStarClick(star)}
+                    />
                   ))}
                 </div>
-                <button className="text-gray-600 font-medium">
+                <button className="text-gray-600 font-medium hover:text-gray-800" onClick={handleStartReview}>
                   Start your review
                 </button>
               </div>
@@ -671,6 +755,12 @@ export default function RestaurantPage() {
       <MenuItemDialog isOpen={menuItemDialogOpen} onClose={() => setMenuItemDialogOpen(false)} item={selectedItem} />
       {/* Group Order Dialog */}
       <GroupOrderDialog isOpen={groupOrderDialogOpen} onClose={() => setGroupOrderDialogOpen(false)} />
+      {/* Review Dialog */}
+      <ReviewDialog
+        isOpen={reviewDialogOpen}
+        onClose={() => setReviewDialogOpen(false)}
+        restaurantName={restaurant.name}
+      />
     </div>
   );
 }
