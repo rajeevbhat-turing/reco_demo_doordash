@@ -1,12 +1,13 @@
 "use client"
 
-import { useRef } from "react"
+import { useRef, useEffect } from "react"
 import { ChevronLeft, ChevronRight, Plus, Trash2 } from "lucide-react"
 import ProductCard from "@/components/product-card"
 import type { Product } from "@/types"
 import Link from "next/link"
 import Image from "next/image"
 import { useCart } from "@/context/cart-context"
+import { useCartStore, CartCategory, addProductToCart } from "@/store/cart-store"
 
 interface ProductDisplayProps {
   title: string
@@ -18,6 +19,7 @@ interface ProductDisplayProps {
   time?: string
   isSnapEligible?: boolean
   storeId?: string
+  category?: CartCategory
 }
 
 export default function ProductDisplay({
@@ -29,10 +31,19 @@ export default function ProductDisplay({
   storeImage,
   time,
   isSnapEligible,
-  storeId,
+  storeId = "1",
+  category = "grocery",
 }: ProductDisplayProps) {
   const scrollContainerRef = useRef<HTMLDivElement>(null)
+  
+  // Use both cart implementations for compatibility
   const { items, addToCart, updateQuantity, removeFromCart } = useCart()
+  const cartStore = useCartStore()
+  
+  // Set category in cart store when component mounts
+  useEffect(() => {
+    cartStore.setCategory(category)
+  }, [category])
 
   // Scroll left
   const scrollLeft = () => {
@@ -59,9 +70,44 @@ export default function ProductDisplay({
       behavior: "smooth",
     })
   }
+  
+  // Handle adding product to cart
+  const handleAddToCart = (product: Product) => {
+    // Add to both cart implementations for compatibility
+    addToCart(product, storeId)
+    
+    // Also add to cart store directly
+    cartStore.addItem({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      image: product.image,
+      storeId: category !== "restaurant" ? storeId : undefined,
+      restaurantId: category === "restaurant" ? storeId : undefined,
+    })
+  }
+  
+  // Handle removing product from cart
+  const handleRemoveFromCart = (productId: number) => {
+    removeFromCart(productId)
+    cartStore.removeItem(productId)
+  }
+  
+  // Handle updating product quantity
+  const handleUpdateQuantity = (productId: number, quantity: number) => {
+    updateQuantity(productId, quantity)
+    cartStore.updateQuantity(productId, quantity)
+  }
 
   // Create a URL-friendly version of the category title
   const categorySlug = title.toLowerCase().replace(/\s+/g, "-")
+  
+  // Find items in cart from either implementation
+  const getItemQuantity = (productId: number): number => {
+    const contextItem = items.find(item => item.id === productId)
+    const storeItem = cartStore.items.find(item => item.id === productId)
+    return contextItem?.quantity || storeItem?.quantity || 0
+  }
 
   return (
     <section className="py-6">
@@ -134,71 +180,81 @@ export default function ProductDisplay({
           {variant === "section" ? (
             <div className="flex px-4 space-x-4 pb-2">
               {products.map((product) => (
-                <ProductCard key={product.id} product={product} onProductClick={onProductClick || (() => {})} storeId={storeId} />
+                <ProductCard 
+                  key={product.id} 
+                  product={product} 
+                  onProductClick={onProductClick || (() => {})} 
+                  storeId={storeId} 
+                  category={category}
+                />
               ))}
             </div>
           ) : (
             <div className="flex space-x-4 pb-2">
-              {products.map((product) => (
-                <div key={product.id} className="border border-gray-200 rounded-lg overflow-hidden min-w-[200px] md:min-w-[220px] snap-start">
-                  <div className="relative h-32 w-full flex items-center justify-center">
-                    <Image
-                      src={product.image || "/placeholder.svg"}
-                      alt={product.name}
-                      width={128}
-                      height={128}
-                      className="object-contain"
-                    />
-                    {items.find(item => item.id === product.id) ? (
-                      <div className="absolute bottom-2 right-2">
-                        <div className="flex items-center bg-white rounded-full shadow-md px-2 py-1">
-                          <button 
-                            className="p-1 text-gray-700" 
-                            onClick={(e) => {
-                              e.preventDefault();
-                              e.stopPropagation();
-                              removeFromCart(product.id);
-                            }}
-                            aria-label="Remove from cart"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                          <span className="mx-2 text-sm font-medium">{items.find(item => item.id === product.id)?.quantity || 0} ×</span>
-                          <button 
-                            className="p-1 text-gray-700" 
-                            onClick={(e) => {
-                              e.preventDefault();
-                              e.stopPropagation();
-                              addToCart(product, storeId);
-                            }}
-                            aria-label="Add one more"
-                          >
-                            <Plus className="w-4 h-4" />
-                          </button>
+              {products.map((product) => {
+                const quantity = getItemQuantity(product.id)
+                
+                return (
+                  <div key={product.id} className="border border-gray-200 rounded-lg overflow-hidden min-w-[200px] md:min-w-[220px] snap-start">
+                    <div className="relative h-32 w-full flex items-center justify-center">
+                      <Image
+                        src={product.image || "/placeholder.svg"}
+                        alt={product.name}
+                        width={128}
+                        height={128}
+                        className="object-contain"
+                      />
+                      {quantity > 0 ? (
+                        <div className="absolute bottom-2 right-2">
+                          <div className="flex items-center bg-white rounded-full shadow-md px-2 py-1">
+                            <button 
+                              className="p-1 text-gray-700" 
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                handleRemoveFromCart(product.id);
+                              }}
+                              aria-label="Remove from cart"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                            <span className="mx-2 text-sm font-medium">{quantity} ×</span>
+                            <button 
+                              className="p-1 text-gray-700" 
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                handleAddToCart(product);
+                              }}
+                              aria-label="Add one more"
+                            >
+                              <Plus className="w-4 h-4" />
+                            </button>
+                          </div>
                         </div>
-                      </div>
-                    ) : (
-                      <button 
-                        className="absolute bottom-2 right-2 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-md"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          addToCart(product, storeId);
-                        }}
-                        aria-label="Add to cart"
-                      >
-                        <Plus className="w-5 h-5 text-green-600" />
-                      </button>
-                    )}
-                  </div>
-                  <div className="p-3">
-                    <div className="font-bold text-sm">
-                      ${typeof product.price === "number" ? product.price.toFixed(2) : product.price}
+                      ) : (
+                        <button 
+                          className="absolute bottom-2 right-2 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-md"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            handleAddToCart(product);
+                          }}
+                          aria-label="Add to cart"
+                        >
+                          <Plus className="w-5 h-5 text-green-600" />
+                        </button>
+                      )}
                     </div>
-                    <div className="text-sm text-gray-700 line-clamp-2">{product.name}</div>
+                    <div className="p-3">
+                      <div className="font-bold text-sm">
+                        ${typeof product.price === "number" ? product.price.toFixed(2) : product.price}
+                      </div>
+                      <div className="text-sm text-gray-700 line-clamp-2">{product.name}</div>
+                    </div>
                   </div>
-                </div>
-              ))}
+                )
+              })}
             </div>
           )}
         </div>
