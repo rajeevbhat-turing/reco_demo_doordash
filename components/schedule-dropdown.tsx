@@ -150,7 +150,7 @@ export default function ScheduleDropdown({ isOpen, onClose, onSave }: ScheduleDr
       <div className="relative bg-white rounded-lg shadow-lg w-full max-w-3xl mx-4">
         <div className="p-6">
           <h2 className="text-2xl font-bold mb-2">Schedule</h2>
-          <p className="text-gray-600 mb-6">Schedule your order up to 5 days later</p>
+          <p className="text-gray-600 mb-6">Schedule your order up to 2 days later</p>
 
           {/* Date selection */}
           <div className="grid grid-cols-3 gap-4 mb-6">

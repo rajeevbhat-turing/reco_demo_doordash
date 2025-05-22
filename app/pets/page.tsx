@@ -15,7 +15,10 @@ import {
   getFeaturedPetStores,
   getFeaturedPetDealsStore,
   getFeaturedPetDeals,
-  getPetProductSections
+  getPetProductSections,
+  getEnrichedPetProducts,
+  getPetCategories,
+  filterProductsByCategory
 } from "@/app/pets/data/pet-response-mapper"
 
 export default function Pets() {

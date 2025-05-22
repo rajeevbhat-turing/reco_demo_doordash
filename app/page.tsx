@@ -61,7 +61,7 @@ export default function Home() {
   }, [])
 
   const allStores = useMemo(() => {
-    return restaurants.slice(0, 8)
+    return restaurants
   }, [])
 
   // Apply filters to all restaurants

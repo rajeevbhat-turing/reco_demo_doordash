@@ -1,6 +1,6 @@
 // Pet store data mapper - following the same pattern as grocery
 
-import {allPetStores, petProductData} from "@/data/pet-data";
+import {allPetStores, petCategories, petProductData} from "@/data/pet-data";
 
 // Filter options for the pets page
 export function getFilterOptions() {
@@ -12,6 +12,8 @@ export function getFilterOptions() {
     { id: "5", name: "Over 4.5", icon: "⭐" },
   ]
 }
+
+
 
 // Return all pet stores
 export function getAllPetStores() {
@@ -113,7 +115,7 @@ export function getFeaturedPetDeals() {
 }
 
 // Get selected pet product sections
-export function getPetProductSections() {
+export function getPetProductSections(categoryFilter?: string) {
   // Filter out only the sections we want to show on the main page
   // Create a "Best Sellers" section from the first product section
   // and an "Our Picks for You" section from another product section
@@ -123,16 +125,29 @@ export function getPetProductSections() {
   }
   
   // Create a Best Sellers section using the first section
-  const bestSellers = {
+  let bestSellers = {
     ...petProductData[0],
     title: "Best Sellers"
   };
   
   // Create Our Picks for You section using the second section
-  const ourPicks = {
+  let ourPicks = {
     ...petProductData[1],
     title: "Our Picks for You"
   };
+  
+  // If we have a category filter, apply it to the products
+  if (categoryFilter && categoryFilter !== 'All') {
+    bestSellers = {
+      ...bestSellers,
+      products: filterProductsByCategory(bestSellers.products, categoryFilter)
+    };
+    
+    ourPicks = {
+      ...ourPicks,
+      products: filterProductsByCategory(ourPicks.products, categoryFilter)
+    };
+  }
   
   return [bestSellers, ourPicks];
 }
@@ -152,4 +167,46 @@ export function getFilteredPetStores(filters: string[]) {
       return store.tags?.includes(filter);
     });
   });
+}
+
+// Get pet products with enriched category data
+export function getEnrichedPetProducts() {
+  // Create a deep copy of the product data
+  const enrichedData = JSON.parse(JSON.stringify(petProductData));
+  
+  // Process each section
+  enrichedData.forEach((section: any) => {
+    // Process each product in the section
+    section.products.forEach((product: any) => {
+      // If the category is empty, set default empty array
+      if (!product.category || (Array.isArray(product.category) && product.category.length === 0) || product.category === "") {
+        product.category = [];
+      } 
+      // If it's a string, convert it to an array
+      else if (typeof product.category === 'string') {
+        product.category = product.category ? [product.category] : [];
+      }
+    });
+  });
+  
+  return enrichedData;
+}
+
+// Filter pet products by category
+export function filterProductsByCategory(products: any[], category: string): any[] {
+  if (!category || category === 'All') {
+    return products;
+  }
+  
+  return products.filter(product => 
+    Array.isArray(product.category) && product.category.includes(category)
+  );
+}
+
+// Get pet categories for UI
+export function getPetCategories() {
+  return [
+    { id: "all", name: "All", slug: "all" },
+    ...petCategories
+  ];
 }

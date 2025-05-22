@@ -95,7 +95,7 @@ export const stores: Store[] = [
     {
       id: "bloomcart",
       name: "Bloom Cart ®",
-      image: "https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=112,height=112,format=auto,quality=50/https://doordash-static.s3.amazonaws.com/media/store/cover/31ebd41c-7e40-498f-9d46-32e36421e2d5.jpg",
+      image: "https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/e9ebbf99-cf77-4159-aeb2-e080c2933abc.jpg",
       openTime: "Opens Wed at 10:20 AM",
       deliveryTime: "null min",
       isDashPass: true,
@@ -105,7 +105,7 @@ export const stores: Store[] = [
     {
       id: "bouqs",
       name: "The Bouqs Co. Flower Shop",
-      image: "https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=112,height=112,format=auto,quality=50/https://doordash-static.s3.amazonaws.com/media/store/cover/6e2d4f5e-9c91-47b8-9b2f-6c438a76b791.jpg",
+      image: "https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/012f51fe-d41a-4186-97e6-6c8c33b97f76.jpg",
       openTime: "Opens Tue at 8:00 AM",
       deliveryTime: "null min",
       isDashPass: true,
@@ -115,7 +115,7 @@ export const stores: Store[] = [
     {
       id: "designerblooms",
       name: "Designer Blooms",
-      image: "https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=112,height=112,format=auto,quality=50/https://doordash-static.s3.amazonaws.com/media/store/cover/6e2d4f5e-9c91-47b8-9b2f-6c438a76b791.jpg",
+      image: "https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/dacbbc16-db2a-45c9-80c8-9079e9dbf4c8.jpg",
       openTime: "Opens Tue at 8:30 AM",
       deliveryTime: "null min",
       discount: "15% off, up to $9",
@@ -126,7 +126,7 @@ export const stores: Store[] = [
     {
       id: "target",
       name: "Target",
-      image: "https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=112,height=112,format=auto,quality=50/https://doordash-static.s3.amazonaws.com/media/store/cover/6c459bbc-4cd4-456e-b7f3-8902e0417e1c.jpg",
+      image: "https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/1d0b3b97-92f9-4b92-a3ad-a4f65506d4a4.png",
       openTime: "Opens Tue 8:00 AM",
       deliveryTime: "Closed",
       isDashPass: true,
@@ -136,7 +136,7 @@ export const stores: Store[] = [
     {
       id: "rosethorne",
       name: "Flowers by Rose and Thorn",
-      image: "https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=112,height=112,format=auto,quality=50/https://doordash-static.s3.amazonaws.com/media/store/cover/6e2d4f5e-9c91-47b8-9b2f-6c438a76b791.jpg",
+      image: "https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/fdf29fd1-c1b3-4d36-8ec3-fa39de982da6.png",
       openTime: "Opens Tue at 10:20 AM",
       deliveryTime: "null min",
       discount: "$5 off on $35+",
@@ -147,7 +147,7 @@ export const stores: Store[] = [
     {
       id: "coley",
       name: "Flowers By Coley",
-      image: "https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=112,height=112,format=auto,quality=50/https://doordash-static.s3.amazonaws.com/media/store/cover/6e2d4f5e-9c91-47b8-9b2f-6c438a76b791.jpg",
+      image: "https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/43493379-7ccc-4a65-9d59-5c8640ac6d61.jpg",
       openTime: "Opens Tue at 9:20 AM",
       deliveryTime: "null min",
       isDashPass: true,
@@ -157,8 +157,8 @@ export const stores: Store[] = [
     {
       id: "walgreens",
       name: "Walgreens",
-      image: "https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=112,height=112,format=auto,quality=50/https://doordash-static.s3.amazonaws.com/media/store/cover/10e39cac-6336-4a32-a72e-f1924532c882.jpg",
-      openTime: "",
+      image: "https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/Screen_Shot_2020-12-08_at_9.16.57_AM.png",
+      openTime: "Opens Thu at 7:00 AM",
       deliveryTime: "18 min",
       isDashPass: true,
       isNearYou: false,
@@ -167,7 +167,7 @@ export const stores: Store[] = [
     {
       id: "silvanas",
       name: "Silvanas Party Supply",
-      image: "https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=112,height=112,format=auto,quality=50/https://doordash-static.s3.amazonaws.com/media/store/cover/silvanas-party-supply.jpg",
+      image: "https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/dbfccc91-e6b6-4a82-b4a9-1ba8aae737b0.jpg",
       openTime: "Opens Tue at 9:00 AM",
       deliveryTime: "53 min",
       isDashPass: true,
@@ -177,7 +177,7 @@ export const stores: Store[] = [
     {
       id: "cvs",
       name: "CVS",
-      image: "https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=112,height=112,format=auto,quality=50/https://doordash-static.s3.amazonaws.com/media/store/cover/cvs.jpg",
+      image: "https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/cvs_logo.png",
       openTime: "Opens Tue at 9:00 AM",
       deliveryTime: "20 min",
       discount: "$5 off $25+",
@@ -188,7 +188,7 @@ export const stores: Store[] = [
     {
       id: "safeway-flower",
       name: "Safeway Flower Shop",
-      image: "https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=112,height=112,format=auto,quality=50/https://doordash-static.s3.amazonaws.com/media/store/cover/safeway-flower.jpg",
+      image: "https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/c5fdd4df-f8e3-44ee-937d-90d5cfd92df4.jpeg",
       openTime: "Opens Wed at 10:20 AM",
       deliveryTime: "15 min",
       isDashPass: true,
@@ -198,7 +198,7 @@ export const stores: Store[] = [
     {
       id: "blooming-moment",
       name: "Blooming Moment Florist",
-      image: "https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=112,height=112,format=auto,quality=50/https://doordash-static.s3.amazonaws.com/media/store/cover/blooming-moment.jpg",
+      image: "https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/a9881f99-daed-4bb0-87a8-686d7347d468.jpg",
       openTime: "Opens Tue at 10:20 AM",
       deliveryTime: "35 min",
       discount: "15% off, up to $5",
@@ -208,8 +208,8 @@ export const stores: Store[] = [
     },
     {
       id: "revel-plants",
-      name: "Revel- Plants, Flowers & G...",
-      image: "https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=112,height=112,format=auto,quality=50/https://doordash-static.s3.amazonaws.com/media/store/cover/revel-plants.jpg",
+      name: "Revel- Plants, Flowers & Goods",
+      image: "https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/abbf2522-b978-43b9-84f1-5bb18280fbe1.jpg",
       openTime: "Opens Wed at 12:05 PM",
       deliveryTime: "25 min",
       isDashPass: true,
@@ -219,7 +219,7 @@ export const stores: Store[] = [
     {
       id: "footlocker",
       name: "Foot Locker",
-      image: "https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=112,height=112,format=auto,quality=50/https://doordash-static.s3.amazonaws.com/media/store/cover/footlocker.jpg",
+      image: "https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/fa9957cd-2c67-4c5a-be78-0be432833c99.png",
       openTime: "Opens Tue at 10:10 AM",
       deliveryTime: "40 min",
       isDashPass: true,
@@ -229,7 +229,7 @@ export const stores: Store[] = [
     {
       id: "monicas-florist",
       name: "Monica's Florist",
-      image: "https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=112,height=112,format=auto,quality=50/https://doordash-static.s3.amazonaws.com/media/store/cover/monicas-florist.jpg",
+      image: "https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/e47115ff-8eb4-4475-b393-0246c87b0dfd.png",
       openTime: "Opens Tue at 9:20 AM",
       deliveryTime: "28 min",
       isDashPass: true,
@@ -239,7 +239,7 @@ export const stores: Store[] = [
     {
       id: "sol-ambiance",
       name: "Sol Ambiance",
-      image: "https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=112,height=112,format=auto,quality=50/https://doordash-static.s3.amazonaws.com/media/store/cover/sol-ambiance.jpg",
+      image: "",
       openTime: "Opens Tue at 9:00 AM",
       deliveryTime: "45 min",
       isDashPass: true,
@@ -249,7 +249,7 @@ export const stores: Store[] = [
     {
       id: "bloom-gallery",
       name: "Bloom Gallery Flowers",
-      image: "https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=112,height=112,format=auto,quality=50/https://doordash-static.s3.amazonaws.com/media/store/cover/bloom-gallery.jpg",
+      image: "https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/43de91a5-9e4e-42ff-b391-9ce0677187d9.png",
       openTime: "Opens Tue at 11:20 AM",
       deliveryTime: "20 min",
       isDashPass: true,
@@ -259,7 +259,7 @@ export const stores: Store[] = [
     {
       id: "office-depot",
       name: "Office Depot OfficeMax",
-      image: "https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=112,height=112,format=auto,quality=50/https://doordash-static.s3.amazonaws.com/media/store/cover/office-depot.jpg",
+      image: "https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/61d55b76-4e2a-492c-bcc1-c1dc37a0180d.jpg",
       openTime: "Opens Tue at 8:30 AM",
       deliveryTime: "35 min",
       isDashPass: true,
@@ -269,7 +269,7 @@ export const stores: Store[] = [
     {
       id: "san-bruno-flower",
       name: "San Bruno Flower Fashions",
-      image: "https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=112,height=112,format=auto,quality=50/https://doordash-static.s3.amazonaws.com/media/store/cover/san-bruno-flower.jpg",
+      image: "https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/a542575a-b7c7-4046-9482-bba4fdf5bc7e.03",
       openTime: "Opens Tue at 9:05 AM",
       deliveryTime: "25 min",
       isDashPass: true,
@@ -279,7 +279,7 @@ export const stores: Store[] = [
     {
       id: "little-garden",
       name: "Little Garden SF LLC",
-      image: "https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=112,height=112,format=auto,quality=50/https://doordash-static.s3.amazonaws.com/media/store/cover/little-garden.jpg",
+      image: "https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/bb4c92d8-14a1-4efa-bf67-320612045e6c.png",
       openTime: "Opens Tue at 8:00 AM",
       deliveryTime: "15 min",
       discount: "$5 off on $30+",
@@ -290,7 +290,7 @@ export const stores: Store[] = [
     {
       id: "love-and-stem",
       name: "Love and Stem",
-      image: "https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=112,height=112,format=auto,quality=50/https://doordash-static.s3.amazonaws.com/media/store/cover/love-and-stem.jpg",
+      image: "",
       openTime: "Opens Tue at 9:00 AM",
       deliveryTime: "40 min",
       isDashPass: true,
@@ -300,7 +300,7 @@ export const stores: Store[] = [
     {
       id: "victorias-secret",
       name: "Victoria's Secret",
-      image: "https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=112,height=112,format=auto,quality=50/https://doordash-static.s3.amazonaws.com/media/store/cover/victorias-secret.jpg",
+      image: "https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/269bada2-76b6-47b2-a220-4cd8651c0ead.png",
       openTime: "Opens Tue at 11:00 AM",
       deliveryTime: "25 min",
       isDashPass: true,
@@ -310,7 +310,7 @@ export const stores: Store[] = [
     {
       id: "flower-gift-boutique",
       name: "The Flower & Gift Boutique",
-      image: "https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=112,height=112,format=auto,quality=50/https://doordash-static.s3.amazonaws.com/media/store/cover/flower-gift-boutique.jpg",
+      image: "https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/d84a759f-245a-4ad0-8ad8-0b8bf5ef7c57.jpg",
       openTime: "Opens Tue at 8:00 AM",
       deliveryTime: "35 min",
       isDashPass: true,
@@ -320,7 +320,7 @@ export const stores: Store[] = [
     {
       id: "ace-hardware",
       name: "Ace Hardware",
-      image: "https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=112,height=112,format=auto,quality=50/https://doordash-static.s3.amazonaws.com/media/store/cover/ace-hardware.jpg",
+      image: "https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/7a2ccc67-5ac3-49fa-8d46-72e9d986a70e.png",
       openTime: "Opens Tue at 9:30 AM",
       deliveryTime: "20 min",
       isDashPass: true,
@@ -330,7 +330,7 @@ export const stores: Store[] = [
     {
       id: "you-see-flowers",
       name: "You See Flowers",
-      image: "https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=112,height=112,format=auto,quality=50/https://doordash-static.s3.amazonaws.com/media/store/cover/you-see-flowers.jpg",
+      image: "https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/278f6100-2b40-46d4-9f74-6a0cbb9d309d.jpg",
       openTime: "Opens Tue at 9:50 AM",
       deliveryTime: "45 min",
       isDashPass: true,
@@ -340,7 +340,7 @@ export const stores: Store[] = [
     {
       id: "colma-floral",
       name: "Colma Floral Shop",
-      image: "https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=112,height=112,format=auto,quality=50/https://doordash-static.s3.amazonaws.com/media/store/cover/colma-floral.jpg",
+      image: "https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/a85226c0-63ed-4d17-9658-d28bf8c0ea74.jpg",
       openTime: "Opens Tue at 8:20 AM",
       deliveryTime: "25 min",
       isDashPass: true,
@@ -348,3 +348,174 @@ export const stores: Store[] = [
       tags: ["Flowers", "Retail", "Under 30 min", "Over 4.5"]
     }
   ]
+
+export const retailCategories = [
+    {
+        "id": "deals",
+        "name": "Deals",
+        "slug": "deals",
+        "image": "https://img.cdn4dd.com/s/convenience/images/deals.png",
+        "type": "RETAIL_L1_NAVIGATION_TYPE_COLLECTIONS_REQUEST",
+        "isActive": true
+    },
+    {
+        "id": "2685",
+        "name": "Dog",
+        "slug": "dog-2685",
+        "image": "https://img.cdn4dd.com/s/convenience/images/dog.png",
+        "type": "RETAIL_L1_NAVIGATION_TYPE_CATEGORY",
+        "isActive": true
+    },
+    {
+        "id": "2681",
+        "name": "Cat",
+        "slug": "cat-2681",
+        "image": "https://img.cdn4dd.com/s/convenience/images/cat.png",
+        "type": "RETAIL_L1_NAVIGATION_TYPE_CATEGORY",
+        "isActive": true
+    },
+    {
+        "id": "2683",
+        "name": "Reptile",
+        "slug": "reptile-2683",
+        "image": "https://img.cdn4dd.com/s/convenience/images/reptile.png",
+        "type": "RETAIL_L1_NAVIGATION_TYPE_CATEGORY",
+        "isActive": true
+    },
+    {
+        "id": "2684",
+        "name": "Fish",
+        "slug": "fish-2684",
+        "image": "https://img.cdn4dd.com/s/convenience/images/fish.png",
+        "type": "RETAIL_L1_NAVIGATION_TYPE_CATEGORY",
+        "isActive": true
+    },
+    {
+        "id": "2682",
+        "name": "Small pet",
+        "slug": "small pet-2682",
+        "image": "https://img.cdn4dd.com/s/convenience/images/small-pet.png",
+        "type": "RETAIL_L1_NAVIGATION_TYPE_CATEGORY",
+        "isActive": true
+    },
+    {
+        "id": "2680",
+        "name": "Bird",
+        "slug": "bird-2680",
+        "image": "https://img.cdn4dd.com/s/convenience/images/bird.png",
+        "type": "RETAIL_L1_NAVIGATION_TYPE_CATEGORY",
+        "isActive": true
+    },
+    {
+        "id": "798824451433136156",
+        "name": "Pet Parents",
+        "slug": "pet parents-798824451433136156",
+        "image": "https://img.cdn4dd.com/s/convenience/images/pet-parents.png",
+        "type": "RETAIL_L1_NAVIGATION_TYPE_CATEGORY",
+        "isActive": true
+    },
+    {
+        "id": "802234456357568539",
+        "name": "Other Pets",
+        "slug": "other pets-802234456357568539",
+        "image": "https://img.cdn4dd.com/s/convenience/images/other-pets.png",
+        "type": "RETAIL_L1_NAVIGATION_TYPE_CATEGORY",
+        "isActive": true
+    },
+    {
+        "id": "754",
+        "name": "Household",
+        "slug": "household-754",
+        "image": "https://img.cdn4dd.com/s/convenience/images/household.png",
+        "type": "RETAIL_L1_NAVIGATION_TYPE_CATEGORY",
+        "isActive": true
+    },
+    {
+        "id": "1026",
+        "name": "Pet Care",
+        "slug": "pet care-1026",
+        "image": "https://img.cdn4dd.com/s/convenience/images/pet-care.png",
+        "type": "RETAIL_L1_NAVIGATION_TYPE_CATEGORY",
+        "isActive": true
+    },
+    {
+        "id": "21150",
+        "name": "Makeup",
+        "slug": "makeup-21150",
+        "image": "https://img.cdn4dd.com/s/convenience/images/makeup.png",
+        "type": "RETAIL_L1_NAVIGATION_TYPE_CATEGORY",
+        "isActive": true
+    },
+    {
+        "id": "4732",
+        "name": "Skin Care",
+        "slug": "skin care-4732",
+        "image": "https://img.cdn4dd.com/s/convenience/images/skin-care.png",
+        "type": "RETAIL_L1_NAVIGATION_TYPE_CATEGORY",
+        "isActive": true
+    },
+    {
+        "id": "4724",
+        "name": "Hair",
+        "slug": "hair-4724",
+        "image": "https://img.cdn4dd.com/s/convenience/images/hair.png",
+        "type": "RETAIL_L1_NAVIGATION_TYPE_CATEGORY",
+        "isActive": true
+    },
+    {
+        "id": "4722",
+        "name": "Fragrances",
+        "slug": "fragrances-4722",
+        "image": "https://img.cdn4dd.com/s/convenience/images/fragrances.png",
+        "type": "RETAIL_L1_NAVIGATION_TYPE_CATEGORY",
+        "isActive": true
+    },
+    {
+        "id": "4728",
+        "name": "Tools & Brushes",
+        "slug": "tools & brushes-4728",
+        "image": "https://img.cdn4dd.com/s/convenience/images/tools-brushes.png",
+        "type": "RETAIL_L1_NAVIGATION_TYPE_CATEGORY",
+        "isActive": true
+    },
+    {
+        "id": "4720",
+        "name": "Bath & Body",
+        "slug": "bath & body-4720",
+        "image": "https://img.cdn4dd.com/s/convenience/images/bath-body.png",
+        "type": "RETAIL_L1_NAVIGATION_TYPE_CATEGORY",
+        "isActive": true
+    },
+    {
+        "id": "757",
+        "name": "Personal Care",
+        "slug": "personal care-757",
+        "image": "https://img.cdn4dd.com/s/convenience/images/personal-care.png",
+        "type": "RETAIL_L1_NAVIGATION_TYPE_CATEGORY",
+        "isActive": true
+    },
+    {
+        "id": "21149",
+        "name": "Nails",
+        "slug": "nails-21149",
+        "image": "https://img.cdn4dd.com/s/convenience/images/nails.png",
+        "type": "RETAIL_L1_NAVIGATION_TYPE_CATEGORY",
+        "isActive": true
+    },
+    {
+        "id": "28246",
+        "name": "Accessories",
+        "slug": "accessories-28246",
+        "image": "https://img.cdn4dd.com/s/convenience/images/accessories.png",
+        "type": "RETAIL_L1_NAVIGATION_TYPE_CATEGORY",
+        "isActive": true
+    },
+    {
+        "id": "1125",
+        "name": "Vitamins",
+        "slug": "vitamins-1125",
+        "image": "https://img.cdn4dd.com/s/convenience/images/vitamins.png",
+        "type": "RETAIL_L1_NAVIGATION_TYPE_CATEGORY",
+        "isActive": true
+    }
+]

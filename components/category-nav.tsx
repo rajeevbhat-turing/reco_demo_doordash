@@ -1,27 +1,15 @@
 "use client"
 
 import Image from "next/image"
-import {categories} from "@/data/category-data";
+import { Category } from "@/types"
 
 interface CategoryNavProps {
   selectedCategory: string | null
   onCategorySelect: (categoryName: string) => void
+  categories: any[] // Use any to accommodate different category structures
 }
 
-// Default categories
-// const defaultCategories = [
-//   { id: 0, name: "All", icon: "/placeholder.svg?height=40&width=40", color: "bg-gray-100" },
-//   { id: 1, name: "Deals", icon: "/placeholder.svg?height=40&width=40", color: "bg-red-100" },
-//   { id: 2, name: "Produce", icon: "/placeholder.svg?height=40&width=40", color: "bg-green-100" },
-//   { id: 3, name: "Meat", icon: "/placeholder.svg?height=40&width=40", color: "bg-red-100" },
-//   { id: 4, name: "Seafood", icon: "/placeholder.svg?height=40&width=40", color: "bg-orange-100" },
-//   { id: 5, name: "Dairy & Eggs", icon: "/placeholder.svg?height=40&width=40", color: "bg-blue-100" },
-//   { id: 6, name: "Deli", icon: "/placeholder.svg?height=40&width=40", color: "bg-red-100" },
-//   { id: 7, name: "Alcohol", icon: "/placeholder.svg?height=40&width=40", color: "bg-red-100" },
-//   { id: 8, name: "Prepared Food", icon: "/placeholder.svg?height=40&width=40", color: "bg-orange-100" },
-// ]
-
-export default function CategoryNav({ selectedCategory, onCategorySelect }: CategoryNavProps) {
+export default function CategoryNav({ selectedCategory, onCategorySelect, categories }: CategoryNavProps) {
   return (
     <div className="overflow-x-auto no-scrollbar border-b mb-4">
       <div className="flex p-4 space-x-4">
@@ -34,7 +22,7 @@ export default function CategoryNav({ selectedCategory, onCategorySelect }: Cate
             <div className="w-[72px] h-[72px] flex items-center justify-center mb-2">
               <div className="relative w-full h-full">
                 <Image
-                  src={category.image || "/placeholder.svg"}
+                  src={category.image || category.icon || "/placeholder.svg"}
                   alt={category.name}
                   fill
                   sizes="72px"

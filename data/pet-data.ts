@@ -115,13 +115,63 @@ export const allPetStores = [
 
 // Pet store categories for filtering
 export const petCategories = [
-  { name: "Pets", href: "#" },
-  { name: "Retail", href: "#" },
-  { name: "Flowers", href: "#" },
-  { name: "Convenience", href: "#" },
-  { name: "Beauty", href: "#" },
-  { name: "Packages", href: "#" },
-];
+    {
+      "id": "deals",
+      "name": "Deals",
+      "slug": "deals",
+      "image": "https://img.cdn4dd.com/s/convenience/images/deals.png",
+      "type": "RETAIL_L1_NAVIGATION_TYPE_COLLECTIONS_REQUEST",
+      "isActive": true
+    },
+    {
+      "id": "2685",
+      "name": "Dog",
+      "slug": "dog-2685",
+      "image": "https://img.cdn4dd.com/s/convenience/images/dog.png",
+      "type": "RETAIL_L1_NAVIGATION_TYPE_CATEGORY",
+      "isActive": true
+    },
+    {
+      "id": "2681",
+      "name": "Cat",
+      "slug": "cat-2681",
+      "image": "https://img.cdn4dd.com/s/convenience/images/cat.png",
+      "type": "RETAIL_L1_NAVIGATION_TYPE_CATEGORY",
+      "isActive": true
+    },
+    {
+      "id": "2683",
+      "name": "Reptile",
+      "slug": "reptile-2683",
+      "image": "https://img.cdn4dd.com/s/convenience/images/reptile.png",
+      "type": "RETAIL_L1_NAVIGATION_TYPE_CATEGORY",
+      "isActive": true
+    },
+    {
+      "id": "2684",
+      "name": "Fish",
+      "slug": "fish-2684",
+      "image": "https://img.cdn4dd.com/s/convenience/images/fish.png",
+      "type": "RETAIL_L1_NAVIGATION_TYPE_CATEGORY",
+      "isActive": true
+    },
+    {
+      "id": "2682",
+      "name": "Small pet",
+      "slug": "small pet-2682",
+      "image": "https://img.cdn4dd.com/s/convenience/images/small-pet.png",
+      "type": "RETAIL_L1_NAVIGATION_TYPE_CATEGORY",
+      "isActive": true
+    },
+    {
+      "id": "2680",
+      "name": "Bird",
+      "slug": "bird-2680",
+      "image": "https://img.cdn4dd.com/s/convenience/images/bird.png",
+      "type": "RETAIL_L1_NAVIGATION_TYPE_CATEGORY",
+      "isActive": true
+    }
+  ];
 
 // Pet product data organized by section
 export const petProductData: PetProductSection[] = [
@@ -138,28 +188,28 @@ export const petProductData: PetProductSection[] = [
         "name": "Safari Flea Dog Comb One Size",
         "price": 1.49,
         "image": "https://img.cdn4dd.com/cdn-cgi/image/fit=contain,width=1200,height=672,format=auto/https://doordash-static.s3.amazonaws.com/media/photosV2/d4979cd7-5eb0-438e-9891-c20adc8001df-retina-large.jpg",
-        "category": ""
+        "category": ["Dog"]
       },
       {
         "id": "5227876278",
         "name": "Advantage Treatment Shampoo for Cats & Kittens (8 oz)",
         "price": 16.99,
         "image": "https://img.cdn4dd.com/cdn-cgi/image/fit=contain,width=1200,height=672,format=auto/https://doordash-static.s3.amazonaws.com/media/photosV2/c7f93735-92f8-4040-9fd4-16b8226a7839-retina-large.jpg",
-        "category": ""
+        "category": ["Cat"]
       },
       {
         "id": "11826884267",
         "name": "Skout's Honor Super Sour! Anti Chew Spray Sour Apple (8 oz)",
         "price": 9.99,
         "image": "https://img.cdn4dd.com/cdn-cgi/image/fit=contain,width=1200,height=672,format=auto/https://doordash-static.s3.amazonaws.com/media/photosV2/84748ade-df8e-4095-a61e-10deffdefcce-retina-large.jpg",
-        "category": ""
+        "category": ["Dog"]
       },
       {
         "id": "12049516093",
         "name": "Wondercide Skin Tonic Spray Itch and Allergy Relief (8 oz)",
         "price": 16.99,
         "image": "https://img.cdn4dd.com/cdn-cgi/image/fit=contain,width=1200,height=672,format=auto/https://doordash-static.s3.amazonaws.com/media/photosV2/ba84cabb-c145-4517-ac49-ceb833f06be5-retina-large.jpg",
-        "category": ""
+        "category": ["Dog", "Cat"]
       },
       {
         "id": "12169842698",
@@ -354,25 +404,32 @@ export const petProductData: PetProductSection[] = [
     "isSnapEligible": false,
     "products": [
       {
+        "id": "small-pet-bedding-01",
+        "name": "Kaytee Clean & Cozy Small Animal Bedding",
+        "price": 8.99,
+        "image": "https://img.cdn4dd.com/cdn-cgi/image/fit=contain,width=1200,height=672,format=auto/https://doordash-static.s3.amazonaws.com/media/photosV2/94dfcab7-3e9c-44b8-9e93-9872c2cb8926-retina-large.jpg",
+        "category": ["Small pet"]
+      },
+      {
         "id": "13329407616",
         "name": "PetAg Nursing Kit (2 oz)",
         "price": 9.99,
         "image": "https://img.cdn4dd.com/cdn-cgi/image/fit=contain,width=1200,height=672,format=auto/https://doordash-static.s3.amazonaws.com/media/photosV2/914f12b1-0970-4c0e-9214-acdd17133cfe-retina-large.jpg",
-        "category": ""
+        "category": ["Dog", "Cat", "Small pet"]
       },
       {
         "id": "5227876237",
         "name": "Rosy's 100% Organic Kitty Grass Cat Treat for Pets One Size",
         "price": 6.99,
         "image": "https://img.cdn4dd.com/cdn-cgi/image/fit=contain,width=1200,height=672,format=auto/https://doordash-static.s3.amazonaws.com/media/photosV2/a1cc3ace-85e7-49fc-8b1f-b1700ad4ff0e-retina-large.jpg",
-        "category": ""
+        "category": ["Cat"]
       },
       {
         "id": "9686981792",
         "name": "Earth Rated Dog Poop Bags Refill Roll Unscented (120 ct)",
         "price": 9.99,
         "image": "https://img.cdn4dd.com/cdn-cgi/image/fit=contain,width=1200,height=672,format=auto/https://doordash-static.s3.amazonaws.com/media/photosV2/8dcedb8b-bca4-4fe5-aff4-457b632f4a59-retina-large.jpg",
-        "category": ""
+        "category": ["Dog"]
       },
       {
         "id": "5227874019",
@@ -498,7 +555,7 @@ export const petProductData: PetProductSection[] = [
         "name": "Icelandic+ Treats Dog Fish Treat Long Strips Cod Skin (20 ct)",
         "price": 4.99,
         "image": "https://img.cdn4dd.com/cdn-cgi/image/fit=contain,width=1200,height=672,format=auto/https://doordash-static.s3.amazonaws.com/media/photosV2/a1ec0652-73e3-49af-bb45-c9e0e790a42e-retina-large.jpg",
-        "category": ""
+        "category": ["Dog", "Fish"]
       },
       {
         "id": "9686981957",
@@ -753,28 +810,28 @@ export const petProductData: PetProductSection[] = [
         "name": "Huxley & Kent Kittybelles Funfetti Cake Catnip Cat Toy",
         "price": 5.99,
         "image": "https://img.cdn4dd.com/cdn-cgi/image/fit=contain,width=1200,height=672,format=auto/https://doordash-static.s3.amazonaws.com/media/photosV2/60813952-555f-4d3a-aeaa-fc22e036259c-retina-large.jpg",
-        "category": ""
+        "category": ["Cat"]
       },
       {
         "id": "9686982065",
         "name": "Mammoth Tirebiter II with Rope Chew Dog Toy Small",
         "price": 6.99,
         "image": "https://img.cdn4dd.com/cdn-cgi/image/fit=contain,width=1200,height=672,format=auto/https://doordash-static.s3.amazonaws.com/media/photosV2/a8086c7b-5881-414f-bb71-da638ec0635c-retina-large.jpg",
-        "category": ""
+        "category": ["Dog"]
       },
       {
         "id": "20326055926",
         "name": "goDog Flatz Skunk Squeaky Plush Flattie Dog Toy (1 lb)",
         "price": 7.99,
         "image": "https://img.cdn4dd.com/cdn-cgi/image/fit=contain,width=1200,height=672,format=auto/https://doordash-static.s3.amazonaws.com/media/photosV2/156827e3-ec75-4ba0-b5bd-5fe920ce991d-retina-large.jpg",
-        "category": ""
+        "category": ["Dog"]
       },
       {
         "id": "21961132804",
         "name": "Snugarooz Lil Baby Yellow Bone Small Dog Toy (2 oz)",
         "price": 4.99,
         "image": "https://img.cdn4dd.com/cdn-cgi/image/fit=contain,width=1200,height=672,format=auto/https://doordash-static.s3.amazonaws.com/media/photosV2/94dfcab7-3e9c-44b8-9e93-9872c2cb8926-retina-large.jpg",
-        "category": ""
+        "category": ["Dog"]
       },
       {
         "id": "11826883910",
@@ -1280,7 +1337,7 @@ export const petProductData: PetProductSection[] = [
         "name": "Tetra ReptoMin Baby Floating Food Sticks Reptile Food (0.92 oz)",
         "price": 3.99,
         "image": "https://img.cdn4dd.com/cdn-cgi/image/fit=contain,width=1200,height=672,format=auto/https://doordash-static.s3.amazonaws.com/media/photosV2/1bb00422-ca27-4ec6-839b-a6c50e4a3532-retina-large.jpg",
-        "category": ""
+        "category": ["Reptile"]
       },
       {
         "id": "9686981864_2",
@@ -1399,7 +1456,7 @@ export const petProductData: PetProductSection[] = [
         "name": "Smalls Bird Broth Chicken Broth For Cats (5 ct)",
         "price": 4.99,
         "image": "https://img.cdn4dd.com/cdn-cgi/image/fit=contain,width=1200,height=672,format=auto/https://doordash-static.s3.amazonaws.com/media/photosV2/42b51f90-f7a9-42ca-aa59-fe72c5d9f17d-retina-large.jpg",
-        "category": ""
+        "category": ["Cat", "Bird"]
       },
       {
         "id": "5227876436",
