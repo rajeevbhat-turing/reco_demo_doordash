@@ -10,9 +10,10 @@ import { useCart } from "@/context/cart-context"
 interface ProductCardProps {
   product: Product
   onProductClick: (product: Product) => void
+  storeId?: string
 }
 
-export default function ProductCard({ product, onProductClick }: ProductCardProps) {
+export default function ProductCard({ product, onProductClick, storeId }: ProductCardProps) {
   const { items, addToCart, updateQuantity, removeFromCart } = useCart()
 
   // Check if product is in cart and get quantity
@@ -21,7 +22,7 @@ export default function ProductCard({ product, onProductClick }: ProductCardProp
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.stopPropagation() // Prevent opening the modal when clicking the add button
-    addToCart(product)
+    addToCart(product, storeId)
   }
 
   const handleRemoveFromCart = (e: React.MouseEvent) => {
@@ -63,7 +64,11 @@ export default function ProductCard({ product, onProductClick }: ProductCardProp
         )}
       </div>
       <div>
-        <p className="font-medium text-red-600">${product.price.toFixed(2)}</p>
+        <p className="font-medium text-red-600">
+          ${typeof product.price === 'number' 
+            ? product.price.toFixed(2) 
+            : parseFloat(product.price.toString().replace('$', '')).toFixed(2)}
+        </p>
         <h3 className="text-sm line-clamp-2 h-10">{product.name}</h3>
         <p className="text-xs text-gray-500">{product.quantity}</p>
       </div>

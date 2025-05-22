@@ -5,8 +5,10 @@ import { CartProvider } from "@/context/cart-context"
 import { useState, useEffect } from "react"
 import type { Store, StoreConfig, ProductSection } from "@/types/store"
 import RetailStorePage from "@/components/store/retail-store-page"
+import PetStorePage from "@/components/store/pet-store-page"
 import GroceryStorePage from "@/components/grocery-store-page"
 import { stores as retailStores } from "@/constants/store"
+import { allPetStores } from "@/data/pet-data"
 import { stores as groceryStores } from "@/data/store-data"
 import { groceryData } from "@/data/grocery-data"
 
@@ -105,8 +107,7 @@ export default function ConvenienceStorePage() {
 
   useEffect(() => {
     if (storeId) {
-      // Determine if this is a grocery or retail store based on the storeType
-      // or by checking both store data sources
+      // Determine store type based on the storeType parameter or by checking data sources
       let foundStore = null
       let sourceType = storeType
       
@@ -114,6 +115,11 @@ export default function ConvenienceStorePage() {
         foundStore = groceryStores[storeId]
         sourceType = 'grocery'
         setProductData(groceryData)
+      } else if (storeType === 'pets' || allPetStores.some(store => store.id === storeId)) {
+        foundStore = allPetStores.find(store => store.id === storeId)
+        sourceType = 'pets'
+        // Pet product data is handled within the PetStorePage component
+        setProductData([])
       } else {
         foundStore = retailStores.find(store => store.id === storeId)
         sourceType = 'retail'
@@ -141,6 +147,11 @@ export default function ConvenienceStorePage() {
       {storeData.type === 'grocery' ? (
         <GroceryStorePage 
           onBackClick={() => router.push("/grocery")} 
+          storeData={storeData.data}
+        />
+      ) : storeData.type === 'pets' ? (
+        <PetStorePage 
+          onBackClick={() => router.push("/pets")} 
           storeData={storeData.data}
         />
       ) : (

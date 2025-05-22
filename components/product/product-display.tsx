@@ -1,11 +1,12 @@
 "use client"
 
 import { useRef } from "react"
-import { ChevronLeft, ChevronRight, Plus } from "lucide-react"
+import { ChevronLeft, ChevronRight, Plus, Trash2 } from "lucide-react"
 import ProductCard from "@/components/product-card"
 import type { Product } from "@/types"
 import Link from "next/link"
 import Image from "next/image"
+import { useCart } from "@/context/cart-context"
 
 interface ProductDisplayProps {
   title: string
@@ -16,6 +17,7 @@ interface ProductDisplayProps {
   storeImage?: string
   time?: string
   isSnapEligible?: boolean
+  storeId?: string
 }
 
 export default function ProductDisplay({
@@ -27,8 +29,10 @@ export default function ProductDisplay({
   storeImage,
   time,
   isSnapEligible,
+  storeId,
 }: ProductDisplayProps) {
   const scrollContainerRef = useRef<HTMLDivElement>(null)
+  const { items, addToCart, updateQuantity, removeFromCart } = useCart()
 
   // Scroll left
   const scrollLeft = () => {
@@ -130,7 +134,7 @@ export default function ProductDisplay({
           {variant === "section" ? (
             <div className="flex px-4 space-x-4 pb-2">
               {products.map((product) => (
-                <ProductCard key={product.id} product={product} onProductClick={onProductClick || (() => {})} />
+                <ProductCard key={product.id} product={product} onProductClick={onProductClick || (() => {})} storeId={storeId} />
               ))}
             </div>
           ) : (
@@ -145,9 +149,47 @@ export default function ProductDisplay({
                       height={128}
                       className="object-contain"
                     />
-                    <button className="absolute bottom-2 right-2 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-md">
-                      <Plus className="w-5 h-5 text-green-600" />
-                    </button>
+                    {items.find(item => item.id === product.id) ? (
+                      <div className="absolute bottom-2 right-2">
+                        <div className="flex items-center bg-white rounded-full shadow-md px-2 py-1">
+                          <button 
+                            className="p-1 text-gray-700" 
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              removeFromCart(product.id);
+                            }}
+                            aria-label="Remove from cart"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                          <span className="mx-2 text-sm font-medium">{items.find(item => item.id === product.id)?.quantity || 0} ×</span>
+                          <button 
+                            className="p-1 text-gray-700" 
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              addToCart(product, storeId);
+                            }}
+                            aria-label="Add one more"
+                          >
+                            <Plus className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <button 
+                        className="absolute bottom-2 right-2 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-md"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          addToCart(product, storeId);
+                        }}
+                        aria-label="Add to cart"
+                      >
+                        <Plus className="w-5 h-5 text-green-600" />
+                      </button>
+                    )}
                   </div>
                   <div className="p-3">
                     <div className="font-bold text-sm">
