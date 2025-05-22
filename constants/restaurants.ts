@@ -71,7 +71,7 @@ export const restaurants: Restaurant[] = [
   {
     id: "gateway-croissant",
     name: "Gateway Croissant",
-    logo: "https://img.cdn4dd.com/cdn-cgi/image/fit=contain,format=auto,width=800,quality=50/https://doordash-static.s3.amazonaws.com/media/photosV2/e5b254b3-bfdb-4a78-b03b-c7fb6ec2da25-retina-large.jpg",
+    logo: "",
     banner:
       "https://img.cdn4dd.com/cdn-cgi/image/fit=contain,format=auto,width=800,quality=50/https://doordash-static.s3.amazonaws.com/media/photosV2/e5b254b3-bfdb-4a78-b03b-c7fb6ec2da25-retina-large.jpg",
     detailsBanner:
@@ -94,7 +94,7 @@ export const restaurants: Restaurant[] = [
   {
     id: "pressed-acai-bowls",
     name: "Pressed Acai Bowls",
-    logo: "https://img.cdn4dd.com/cdn-cgi/image/fit=contain,format=auto,width=800,quality=50/https://cdn.doordash.com/media/photos/9f62e84d-8281-4e41-a8a1-ee72500d160c-retina-large.jpeg",
+    logo: "https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/55ec8325-0521-4d0f-96a3-68afd7fc36cf.jpeg",
     banner:
       "https://img.cdn4dd.com/cdn-cgi/image/fit=contain,format=auto,width=800,quality=50/https://cdn.doordash.com/media/photos/9f62e84d-8281-4e41-a8a1-ee72500d160c-retina-large.jpeg",
     detailsBanner:
@@ -138,9 +138,11 @@ export const restaurants: Restaurant[] = [
   {
     id: "starbucks",
     name: "Starbucks",
-    logo: "https://img.cdn4dd.com/cdn-cgi/image/fit=contain,format=auto,width=800,quality=50/https://doordash-static.s3.amazonaws.com/media/photosV2/79f1c263-68f2-4d8c-ba18-8ea65537e7ec-retina-large.jpg",
+    logo: "https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/2c09d946-5237-4271-9f64-a23a83b3e8a1.05",
     banner:
       "https://img.cdn4dd.com/cdn-cgi/image/fit=contain,format=auto,width=800,quality=50/https://doordash-static.s3.amazonaws.com/media/photosV2/79f1c263-68f2-4d8c-ba18-8ea65537e7ec-retina-large.jpg",
+    detailsBanner:
+      "https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=1000,height=300,format=auto,quality=80/https://doordash-static.s3.amazonaws.com/media/store/header/4a111d3c-0ed8-4fd3-9355-0b6a490aa3cc.jpg",
     rating: 4.6,
     reviews: "200+",
     distance: "0.4 mi",
@@ -608,10 +610,11 @@ export const restaurants: Restaurant[] = [
   {
     id: "sam-s-bakery",
     name: "Sam's Bakery",
-    logo: "https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/photosV2/d86cf49b-44ce-4b23-8b80-434b9e29df79-retina-large.JPG",
+    logo: "",
     banner:
       "https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/photosV2/d86cf49b-44ce-4b23-8b80-434b9e29df79-retina-large.JPG",
-    rating: 4.7,
+    detailsBanner: "https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=1000,height=300,format=auto,quality=80/https://doordash-static.s3.amazonaws.com/media/store/header/5cbd569b-0be9-4451-8013-062f3d7805c2.jpg",
+      rating: 4.7,
     reviews: "500+",
     distance: "1.1 mi",
     time: "18 min",

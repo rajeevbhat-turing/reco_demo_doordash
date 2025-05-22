@@ -1,18 +1,30 @@
-"use client"
+"use client";
 
-import { useEffect, useState, useRef, useCallback } from "react"
-import Image from "next/image"
-import Link from "next/link"
-import { useParams } from "next/navigation"
-import { ChevronDown, Info, ChevronLeft, ChevronRight, ExternalLink, Heart, Star, Search } from "lucide-react"
-import { getRestaurantById } from "@/constants/restaurants"
-import { getFeaturedMenuItemsByRestaurantId, getMenuItemsByCategory } from "@/constants/menu-items"
-import { getMenuCategoriesByRestaurantId } from "@/constants/menu-categories"
-import { getDealsByRestaurantId } from "@/constants/deals"
-import { useCartStore } from "@/store/cart-store"
-import MenuItemDialog from "@/components/menu-item-dialog"
-import GroupOrderDialog from "@/components/group-order-dialog"
-import ReviewDialog from "@/components/review-dialog"
+import { useEffect, useState, useRef, useCallback } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { useParams } from "next/navigation";
+import {
+  ChevronDown,
+  Info,
+  ChevronLeft,
+  ChevronRight,
+  ExternalLink,
+  Heart,
+  Star,
+  Search,
+} from "lucide-react";
+import { getRestaurantById } from "@/constants/restaurants";
+import {
+  getFeaturedMenuItemsByRestaurantId,
+  getMenuItemsByCategory,
+} from "@/constants/menu-items";
+import { getMenuCategoriesByRestaurantId } from "@/constants/menu-categories";
+import { getDealsByRestaurantId } from "@/constants/deals";
+import { useCartStore } from "@/store/cart-store";
+import MenuItemDialog from "@/components/menu-item-dialog";
+import GroupOrderDialog from "@/components/group-order-dialog";
+import ReviewDialog from "@/components/review-dialog";
 
 const menuTypes = [
   {
@@ -30,15 +42,13 @@ const menuTypes = [
     name: "Breakfast Menu",
     hours: "4:00 AM - 10:29 AM",
   },
-]
+];
 
 function SearchBar({ restaurantName }) {
   return (
-    <div className="w-2xl px-4">
+    <div className="relative flex-1 max-w-md">
       <div className="relative">
-        <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
-          <Search className="h-5 w-5 text-gray-500" />
-        </div>
+        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-500" />
         <input
           type="text"
           placeholder={`Search ${restaurantName}`}
@@ -50,37 +60,37 @@ function SearchBar({ restaurantName }) {
 }
 
 export default function RestaurantPage() {
-  const params = useParams()
-  const id = params.id as string
-  const [restaurant, setRestaurant] = useState<any>(null)
-  const [featuredItems, setFeaturedItems] = useState<any[]>([])
-  const [menuCategories, setMenuCategories] = useState<any[]>([])
-  const [deals, setDeals] = useState<any[]>([])
-  const [activeCategory, setActiveCategory] = useState("Featured Items")
-  const [mostOrderedItems, setMostOrderedItems] = useState<any[]>([])
-  const [familySharingItems, setFamilySharingItems] = useState<any[]>([])
-  const [beefItems, setBeefItems] = useState<any[]>([])
-  const [menuTopPosition, setMenuTopPosition] = useState(0)
-  const menuRef = useRef<HTMLDivElement>(null)
-  const menuContainerRef = useRef<HTMLDivElement>(null)
-  const sectionRefs = useRef<{ [key: string]: HTMLDivElement | null }>({})
-  const addToCart = useCartStore((state) => state.addItem)
-  const ticking = useRef(false)
-  const featuredItemsRef = useRef<HTMLDivElement>(null)
-  const dealsRef = useRef<HTMLDivElement>(null)
-  const menuDropdownRef = useRef<HTMLDivElement>(null)
+  const params = useParams();
+  const id = params.id as string;
+  const [restaurant, setRestaurant] = useState<any>(null);
+  const [featuredItems, setFeaturedItems] = useState<any[]>([]);
+  const [menuCategories, setMenuCategories] = useState<any[]>([]);
+  const [deals, setDeals] = useState<any[]>([]);
+  const [activeCategory, setActiveCategory] = useState("Featured Items");
+  const [mostOrderedItems, setMostOrderedItems] = useState<any[]>([]);
+  const [familySharingItems, setFamilySharingItems] = useState<any[]>([]);
+  const [beefItems, setBeefItems] = useState<any[]>([]);
+  const [menuTopPosition, setMenuTopPosition] = useState(0);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const menuContainerRef = useRef<HTMLDivElement>(null);
+  const sectionRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
+  const addToCart = useCartStore((state) => state.addItem);
+  const ticking = useRef(false);
+  const featuredItemsRef = useRef<HTMLDivElement>(null);
+  const dealsRef = useRef<HTMLDivElement>(null);
+  const menuDropdownRef = useRef<HTMLDivElement>(null);
 
   // Dialog states
-  const [menuItemDialogOpen, setMenuItemDialogOpen] = useState(false)
-  const [selectedItem, setSelectedItem] = useState<any>(null)
-  const [groupOrderDialogOpen, setGroupOrderDialogOpen] = useState(false)
-  const [reviewDialogOpen, setReviewDialogOpen] = useState(false)
-  const [menuDropdownOpen, setMenuDropdownOpen] = useState(false)
+  const [menuItemDialogOpen, setMenuItemDialogOpen] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<any>(null);
+  const [groupOrderDialogOpen, setGroupOrderDialogOpen] = useState(false);
+  const [reviewDialogOpen, setReviewDialogOpen] = useState(false);
+  const [menuDropdownOpen, setMenuDropdownOpen] = useState(false);
 
   const [isSaved, setIsSaved] = useState(false);
-  const [hoverRating, setHoverRating] = useState(0)
-  const [selectedRating, setSelectedRating] = useState(0)
-  const [selectedMenuType, setSelectedMenuType] = useState("Regular Menu")
+  const [hoverRating, setHoverRating] = useState(0);
+  const [selectedRating, setSelectedRating] = useState(0);
+  const [selectedMenuType, setSelectedMenuType] = useState("Regular Menu");
 
   useEffect(() => {
     if (id) {
@@ -189,65 +199,69 @@ export default function RestaurantPage() {
     const itemWithRestaurantId = {
       ...item,
       restaurantId: id,
-    }
-    setSelectedItem(itemWithRestaurantId)
-    setMenuItemDialogOpen(true)
-  }
+    };
+    setSelectedItem(itemWithRestaurantId);
+    setMenuItemDialogOpen(true);
+  };
 
   const openGroupOrderDialog = () => {
-    setGroupOrderDialogOpen(true)
-  }
+    setGroupOrderDialogOpen(true);
+  };
 
   const handleStarHover = (rating: number) => {
-    setHoverRating(rating)
-  }
+    setHoverRating(rating);
+  };
 
   const handleStarLeave = () => {
-    setHoverRating(0)
-  }
+    setHoverRating(0);
+  };
 
   const handleStarClick = (rating: number) => {
-    setSelectedRating(rating)
-    setReviewDialogOpen(true)
-  }
+    setSelectedRating(rating);
+    setReviewDialogOpen(true);
+  };
 
   const handleStartReview = () => {
-    setReviewDialogOpen(true)
-  }
+    setReviewDialogOpen(true);
+  };
 
   const toggleMenuDropdown = () => {
-    setMenuDropdownOpen(!menuDropdownOpen)
-  }
+    setMenuDropdownOpen(!menuDropdownOpen);
+  };
 
   const selectMenuType = (menuType: string) => {
-    setSelectedMenuType(menuType)
-    setMenuDropdownOpen(false)
-  }
+    setSelectedMenuType(menuType);
+    setMenuDropdownOpen(false);
+  };
 
   // Find the selected menu type object
-  const selectedMenuTypeObj = menuTypes.find((menu) => menu.name === selectedMenuType)
-  
+  const selectedMenuTypeObj = menuTypes.find(
+    (menu) => menu.name === selectedMenuType
+  );
+
   return (
     <div className="px-8 py-16">
       {/* Banner Image */}
       <div className="relative w-full h-[220px] rounded-bl-xl rounded-br-xl overflow-hidden">
         <Image
           src={restaurant.detailsBanner}
-          alt="McDonald's Banner"
+          alt={`${restaurant.name}'s Banner`}
           fill
           className="object-cover"
         />
-        <div className="absolute left-6 bottom-6 z-10">
-          <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-white shadow-md bg-red-600">
-            <Image
-              src={restaurant.logo}
-              alt="McDonald's"
-              width={80}
-              height={80}
-              className="object-contain"
-            />
+        {restaurant.logo && (
+          <div className="absolute left-6 bottom-6 z-10">
+            <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-white shadow-md bg-red-600">
+              <Image
+                src={restaurant.logo}
+                alt={restaurant.name}
+                width={80}
+                height={80}
+                className="object-contain"
+              />
+            </div>
           </div>
-        </div>
+        )}
         <div className="absolute top-4 right-4">
           <button
             className="bg-white rounded-full p-2 flex items-center gap-2 shadow-md hover:bg-gray-50 transition-colors"
@@ -320,7 +334,8 @@ export default function RestaurantPage() {
               )}
               <div className="flex items-center mb-1">
                 <span className="text-sm">
-                  {restaurant.rating} ★ ({restaurant.reviews} ratings) • {restaurant.distance}
+                  {restaurant.rating} ★ ({restaurant.reviews} ratings) •{" "}
+                  {restaurant.distance}
                 </span>
               </div>
               <div className="flex items-center mb-1">
@@ -350,11 +365,16 @@ export default function RestaurantPage() {
                 }}
               >
                 <div className="p-4 relative" ref={menuDropdownRef}>
-                  <button className="w-full flex items-center justify-between font-medium" onClick={toggleMenuDropdown}>
+                  <button
+                    className="w-full flex items-center justify-between font-medium"
+                    onClick={toggleMenuDropdown}
+                  >
                     <span>{selectedMenuType}</span>
                     <ChevronDown className="h-5 w-5" />
                   </button>
-                  <div className="text-sm text-gray-600 mt-1">{selectedMenuTypeObj?.hours}</div>
+                  <div className="text-sm text-gray-600 mt-1">
+                    {selectedMenuTypeObj?.hours}
+                  </div>
 
                   {/* Menu Type Dropdown */}
                   {menuDropdownOpen && (
@@ -367,7 +387,9 @@ export default function RestaurantPage() {
                         >
                           <div
                             className={`w-6 h-6 rounded-full border-2 flex items-center justify-center mr-4 ${
-                              selectedMenuType === menuType.name ? "border-black bg-black" : "border-gray-300 bg-white"
+                              selectedMenuType === menuType.name
+                                ? "border-black bg-black"
+                                : "border-gray-300 bg-white"
                             }`}
                           >
                             {selectedMenuType === menuType.name && (
@@ -376,7 +398,9 @@ export default function RestaurantPage() {
                           </div>
                           <div className="text-left">
                             <div className="font-medium">{menuType.name}</div>
-                            <div className="text-gray-500">{menuType.hours}</div>
+                            <div className="text-gray-500">
+                              {menuType.hours}
+                            </div>
                           </div>
                         </button>
                       ))}
@@ -390,7 +414,8 @@ export default function RestaurantPage() {
                         <button
                           className={`w-full text-left px-2 py-2 rounded-md ${
                             activeCategory === category.name
-                              ? "bg-gray-100 font-medium" : ""
+                              ? "bg-gray-100 font-medium"
+                              : ""
                           }`}
                           onClick={() => scrollToSection(category.name)}
                         >
@@ -434,9 +459,12 @@ export default function RestaurantPage() {
               </div>
             </div>
 
-                        {/* DashPass Promo Banner */}
-                        <div className="my-6 rounded-lg overflow-hidden">
-              <div ref={dealsRef} className="flex overflow-x-auto hide-scrollbar">
+            {/* DashPass Promo Banner */}
+            <div className="my-6 rounded-lg overflow-hidden">
+              <div
+                ref={dealsRef}
+                className="flex overflow-x-auto hide-scrollbar"
+              >
                 <div className="min-w-full flex-shrink-0 relative bg-gradient-to-r from-green-50 to-blue-50 p-4 rounded-lg">
                   <div className="flex items-center justify-between">
                     <div className="flex-1">
@@ -542,8 +570,8 @@ export default function RestaurantPage() {
                       <button
                         className="absolute bottom-3 right-3 bg-white rounded-full p-1 shadow-md"
                         onClick={(e) => {
-                          e.stopPropagation() // Prevent opening the dialog
-                          openItemDialog(item)
+                          e.stopPropagation(); // Prevent opening the dialog
+                          openItemDialog(item);
                         }}
                       >
                         <span className="text-xl font-bold">+</span>
@@ -570,7 +598,9 @@ export default function RestaurantPage() {
                     <Star
                       key={star}
                       className={`h-8 w-8 cursor-pointer ${
-                        star <= (hoverRating || selectedRating) ? "fill-gray-700 text-gray-700" : "text-gray-300"
+                        star <= (hoverRating || selectedRating)
+                          ? "fill-gray-700 text-gray-700"
+                          : "text-gray-300"
                       }`}
                       onMouseEnter={() => handleStarHover(star)}
                       onMouseLeave={handleStarLeave}
@@ -578,7 +608,10 @@ export default function RestaurantPage() {
                     />
                   ))}
                 </div>
-                <button className="text-gray-600 font-medium hover:text-gray-800" onClick={handleStartReview}>
+                <button
+                  className="text-gray-600 font-medium hover:text-gray-800"
+                  onClick={handleStartReview}
+                >
                   Start your review
                 </button>
               </div>
@@ -600,12 +633,17 @@ export default function RestaurantPage() {
                     onClick={() => openItemDialog(item)}
                   >
                     <div className="relative h-40">
-                      <Image src={item.image || "/placeholder.svg"} alt={item.name} fill className="object-cover" />
+                      <Image
+                        src={item.image || "/placeholder.svg"}
+                        alt={item.name}
+                        fill
+                        className="object-cover"
+                      />
                       <button
                         className="absolute bottom-3 right-3 bg-white rounded-full p-1 shadow-md"
                         onClick={(e) => {
-                          e.stopPropagation() // Prevent opening the dialog
-                          handleAddToCart(item)
+                          e.stopPropagation(); // Prevent opening the dialog
+                          handleAddToCart(item);
                         }}
                       >
                         <span className="text-xl font-bold">+</span>
@@ -613,12 +651,22 @@ export default function RestaurantPage() {
                     </div>
                     <div className="p-3">
                       <h3 className="font-medium">{item.name}</h3>
-                      {item.calories && <p className="text-sm text-gray-500">({item.calories})</p>}
+                      {item.calories && (
+                        <p className="text-sm text-gray-500">
+                          ({item.calories})
+                        </p>
+                      )}
                       <p className="text-gray-900 mt-1">{item.price}</p>
                       {item.rating && (
                         <div className="flex items-center mt-1">
-                          <span className="text-sm">{Math.round(item.rating * 100)}%</span>
-                          {item.ratingCount && <span className="text-sm text-gray-500 ml-1">({item.ratingCount})</span>}
+                          <span className="text-sm">
+                            {Math.round(item.rating * 100)}%
+                          </span>
+                          {item.ratingCount && (
+                            <span className="text-sm text-gray-500 ml-1">
+                              ({item.ratingCount})
+                            </span>
+                          )}
                         </div>
                       )}
                     </div>
@@ -627,8 +675,8 @@ export default function RestaurantPage() {
               </div>
             </div>
 
-             {/* Featured Creations */}
-             <div
+            {/* Featured Creations */}
+            <div
               ref={(el) => (sectionRefs.current["Featured Items"] = el)}
               className="mt-8 pt-4"
               id="featured-items"
@@ -750,7 +798,13 @@ export default function RestaurantPage() {
             {/* Add refs for other menu categories */}
             {menuCategories
               .filter(
-                (category) => !["Featured Items", "Most Ordered", "Family & Sharing", "Beef"].includes(category.name),
+                (category) =>
+                  ![
+                    "Featured Items",
+                    "Most Ordered",
+                    "Family & Sharing",
+                    "Beef",
+                  ].includes(category.name)
               )
               .map((category) => (
                 <div
@@ -770,7 +824,11 @@ export default function RestaurantPage() {
                         <div className="p-3 flex justify-between">
                           <div>
                             <h3 className="font-medium">{item.name}</h3>
-                            {item.calories && <p className="text-sm text-gray-500">({item.calories})</p>}
+                            {item.calories && (
+                              <p className="text-sm text-gray-500">
+                                ({item.calories})
+                              </p>
+                            )}
                             <p className="text-gray-900 mt-1">{item.price}</p>
                           </div>
                           <div className="relative w-24 h-24">
@@ -783,8 +841,8 @@ export default function RestaurantPage() {
                             <button
                               className="absolute bottom-1 right-1 bg-white rounded-full p-1 shadow-md"
                               onClick={(e) => {
-                                e.stopPropagation() // Prevent opening the dialog
-                                handleAddToCart(item)
+                                e.stopPropagation(); // Prevent opening the dialog
+                                handleAddToCart(item);
                               }}
                             >
                               <span className="text-lg font-bold">+</span>
@@ -806,7 +864,10 @@ export default function RestaurantPage() {
         item={selectedItem}
       />
       {/* Group Order Dialog */}
-      <GroupOrderDialog isOpen={groupOrderDialogOpen} onClose={() => setGroupOrderDialogOpen(false)} />
+      <GroupOrderDialog
+        isOpen={groupOrderDialogOpen}
+        onClose={() => setGroupOrderDialogOpen(false)}
+      />
       {/* Review Dialog */}
       <ReviewDialog
         isOpen={reviewDialogOpen}
@@ -814,5 +875,5 @@ export default function RestaurantPage() {
         restaurantName={restaurant.name}
       />
     </div>
-  )
+  );
 }
