@@ -6,6 +6,7 @@ import GrocerySchedule from "@/components/grocery-schedule"
 import StoreGrid from "@/components/store/store-grid"
 import LocalGrocers from "@/components/local-grocers"
 import ProductDisplay from "@/components/product/product-display"
+import { CartProvider } from "@/context/cart-context"
 import {
   getFilterOptions,
   getAllStores,
@@ -108,8 +109,9 @@ export default function Grocery() {
   }).filter(carousel => carousel.products.length > 0); // Only keep carousels with products
 
   return (
-    <div className="max-w-[1200px] mx-auto px-4 pt-16">
-      {/* Filter Options Bar */}
+    <CartProvider>
+      <div className="max-w-[1200px] mx-auto px-4 pt-16">
+        {/* Filter Options Bar */}
       <FilterOptions 
         ref={filterOptionsRef}
         isGrocery={true} 
@@ -158,6 +160,7 @@ export default function Grocery() {
             time={carousel.time}
             products={carousel.products}
             variant="carousel"
+            storeId={(carousel.id || index).toString()}
           />
         ))
       ) : (
@@ -171,5 +174,6 @@ export default function Grocery() {
       {/* Local Grocers Section */}
       <LocalGrocers />
     </div>
+    </CartProvider>
   )
 }
