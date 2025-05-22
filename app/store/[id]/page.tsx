@@ -1,11 +1,10 @@
 "use client"
 
-import type React from "react"
-
 import { useEffect, useState, useRef, useCallback } from "react"
 import Image from "next/image"
+import Link from "next/link"
 import { useParams } from "next/navigation"
-import { ChevronDown, Info, ChevronLeft, ChevronRight, Heart, Star, Search } from "lucide-react"
+import { ChevronDown, Info, ChevronLeft, ChevronRight, ExternalLink, Heart, Star, Search } from "lucide-react"
 import { getRestaurantById } from "@/constants/restaurants"
 import { getFeaturedMenuItemsByRestaurantId, getMenuItemsByCategory } from "@/constants/menu-items"
 import { getMenuCategoriesByRestaurantId } from "@/constants/menu-categories"
@@ -13,8 +12,27 @@ import { getDealsByRestaurantId } from "@/constants/deals"
 import { useCartStore } from "@/store/cart-store"
 import MenuItemDialog from "@/components/menu-item-dialog"
 import GroupOrderDialog from "@/components/group-order-dialog"
+import ReviewDialog from "@/components/review-dialog"
 
-function SearchBar() {
+const menuTypes = [
+  {
+    id: "overnight",
+    name: "Overnight Menu",
+    hours: "12:00 AM - 3:59 AM",
+  },
+  {
+    id: "regular",
+    name: "Regular Menu",
+    hours: "10:30 AM - 11:59 PM",
+  },
+  {
+    id: "breakfast",
+    name: "Breakfast Menu",
+    hours: "4:00 AM - 10:29 AM",
+  },
+]
+
+function SearchBar({ restaurantName }) {
   return (
     <div className="w-2xl px-4">
       <div className="relative">
@@ -23,12 +41,12 @@ function SearchBar() {
         </div>
         <input
           type="text"
-          placeholder="Search McDonald's ()"
+          placeholder={`Search ${restaurantName}`}
           className="w-full bg-gray-100 rounded-full py-3 pl-10 pr-4 text-gray-700 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-200"
         />
       </div>
     </div>
-  )
+  );
 }
 
 export default function RestaurantPage() {
@@ -50,76 +68,92 @@ export default function RestaurantPage() {
   const ticking = useRef(false)
   const featuredItemsRef = useRef<HTMLDivElement>(null)
   const dealsRef = useRef<HTMLDivElement>(null)
+  const menuDropdownRef = useRef<HTMLDivElement>(null)
 
   // Dialog states
   const [menuItemDialogOpen, setMenuItemDialogOpen] = useState(false)
   const [selectedItem, setSelectedItem] = useState<any>(null)
   const [groupOrderDialogOpen, setGroupOrderDialogOpen] = useState(false)
+  const [reviewDialogOpen, setReviewDialogOpen] = useState(false)
+  const [menuDropdownOpen, setMenuDropdownOpen] = useState(false)
+
+  const [isSaved, setIsSaved] = useState(false);
+  const [hoverRating, setHoverRating] = useState(0)
+  const [selectedRating, setSelectedRating] = useState(0)
+  const [selectedMenuType, setSelectedMenuType] = useState("Regular Menu")
 
   useEffect(() => {
     if (id) {
-      const restaurantData = getRestaurantById(id)
-      const featuredItemsData = getFeaturedMenuItemsByRestaurantId(id)
-      const menuCategoriesData = getMenuCategoriesByRestaurantId(id)
-      const dealsData = getDealsByRestaurantId(id)
-      const mostOrderedItemsData = getMenuItemsByCategory(id, "Most Ordered")
-      const familySharingItemsData = getMenuItemsByCategory(id, "Family & Sharing")
-      const beefItemsData = getMenuItemsByCategory(id, "Beef")
+      const restaurantData = getRestaurantById(id);
+      const featuredItemsData = getMenuItemsByCategory(id, "Featured Items");
+      const menuCategoriesData = getMenuCategoriesByRestaurantId(id);
+      const dealsData = getDealsByRestaurantId(id);
+      const mostOrderedItemsData = getMenuItemsByCategory(id, "Most Ordered");
+      const familySharingItemsData = getMenuItemsByCategory(
+        id,
+        "Family & Sharing"
+      );
+      const beefItemsData = getMenuItemsByCategory(id, "Beef");
 
-      setRestaurant(restaurantData)
-      setFeaturedItems(featuredItemsData)
-      setMenuCategories(menuCategoriesData)
-      setDeals(dealsData)
-      setMostOrderedItems(mostOrderedItemsData)
-      setFamilySharingItems(familySharingItemsData)
-      setBeefItems(beefItemsData)
+      setRestaurant(restaurantData);
+      setFeaturedItems(featuredItemsData);
+      setMenuCategories(menuCategoriesData);
+      setDeals(dealsData);
+      setMostOrderedItems(mostOrderedItemsData);
+      setFamilySharingItems(familySharingItemsData);
+      setBeefItems(beefItemsData);
     }
-  }, [id])
+  }, [id]);
 
   // Save the initial position of the menu after the component mounts
   useEffect(() => {
     if (menuRef.current && menuContainerRef.current) {
-      const rect = menuContainerRef.current.getBoundingClientRect()
-      setMenuTopPosition(rect.top + window.scrollY)
+      const rect = menuContainerRef.current.getBoundingClientRect();
+      setMenuTopPosition(rect.top + window.scrollY);
     }
-  }, [restaurant])
+  }, [restaurant]);
 
   const handleScroll = useCallback(() => {
     if (!ticking.current) {
-      ticking.current = true
+      ticking.current = true;
 
       requestAnimationFrame(() => {
         // Find which section is currently in view
-        const sectionPositions = Object.entries(sectionRefs.current).map(([category, ref]) => {
-          const position = ref?.getBoundingClientRect().top || 0
-          return { category, position }
-        })
+        const sectionPositions = Object.entries(sectionRefs.current).map(
+          ([category, ref]) => {
+            const position = ref?.getBoundingClientRect().top || 0;
+            return { category, position };
+          }
+        );
 
         const currentSection = sectionPositions
           .filter((section) => section.position <= 200)
-          .sort((a, b) => b.position - a.position)[0]
+          .sort((a, b) => b.position - a.position)[0];
 
         if (currentSection && currentSection.category !== activeCategory) {
-          setActiveCategory(currentSection.category)
+          setActiveCategory(currentSection.category);
         }
 
-        ticking.current = false
-      })
+        ticking.current = false;
+      });
     }
-  }, [activeCategory])
+  }, [activeCategory]);
 
   useEffect(() => {
-    window.addEventListener("scroll", handleScroll, { passive: true })
-    return () => window.removeEventListener("scroll", handleScroll)
-  }, [handleScroll])
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [handleScroll]);
 
   const scrollToSection = (category: string) => {
-    setActiveCategory(category)
-    sectionRefs.current[category]?.scrollIntoView({ behavior: "smooth", block: "start" })
-  }
+    setActiveCategory(category);
+    sectionRefs.current[category]?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  };
 
   if (!restaurant) {
-    return <div className="p-8 text-center">Loading...</div>
+    return <div className="p-8 text-center">Loading...</div>;
   }
 
   const handleAddToCart = (item: any) => {
@@ -129,20 +163,26 @@ export default function RestaurantPage() {
       name: item.name,
       price: item.price,
       image: item.image,
-    })
-  }
+    });
+  };
 
-  const scrollContainer = (containerRef: React.RefObject<HTMLDivElement | null>, direction: "left" | "right") => {
-    if (!containerRef.current) return
+  const scrollContainer = (
+    containerRef: React.RefObject<HTMLDivElement | null>,
+    direction: "left" | "right"
+  ) => {
+    if (!containerRef.current) return;
 
-    const scrollAmount = 600 // Adjust this value based on how far you want to scroll
-    const currentScroll = containerRef.current.scrollLeft
+    const scrollAmount = 600; // Adjust this value based on how far you want to scroll
+    const currentScroll = containerRef.current.scrollLeft;
 
     containerRef.current.scrollTo({
-      left: direction === "left" ? currentScroll - scrollAmount : currentScroll + scrollAmount,
+      left:
+        direction === "left"
+          ? currentScroll - scrollAmount
+          : currentScroll + scrollAmount,
       behavior: "smooth",
-    })
-  }
+    });
+  };
 
   const openItemDialog = (item: any) => {
     // Ensure the item has the restaurantId property
@@ -158,14 +198,69 @@ export default function RestaurantPage() {
     setGroupOrderDialogOpen(true)
   }
 
+  const handleStarHover = (rating: number) => {
+    setHoverRating(rating)
+  }
+
+  const handleStarLeave = () => {
+    setHoverRating(0)
+  }
+
+  const handleStarClick = (rating: number) => {
+    setSelectedRating(rating)
+    setReviewDialogOpen(true)
+  }
+
+  const handleStartReview = () => {
+    setReviewDialogOpen(true)
+  }
+
+  const toggleMenuDropdown = () => {
+    setMenuDropdownOpen(!menuDropdownOpen)
+  }
+
+  const selectMenuType = (menuType: string) => {
+    setSelectedMenuType(menuType)
+    setMenuDropdownOpen(false)
+  }
+
+  // Find the selected menu type object
+  const selectedMenuTypeObj = menuTypes.find((menu) => menu.name === selectedMenuType)
+  
   return (
     <div className="px-8 py-16">
       {/* Banner Image */}
       <div className="relative w-full h-[220px] rounded-bl-xl rounded-br-xl overflow-hidden">
-        <Image src={restaurant.banner || "/placeholder.svg"} alt="McDonald's Banner" fill className="object-cover" />
+        <Image
+          src={restaurant.detailsBanner}
+          alt="McDonald's Banner"
+          fill
+          className="object-cover"
+        />
+        <div className="absolute left-6 bottom-6 z-10">
+          <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-white shadow-md bg-red-600">
+            <Image
+              src={restaurant.logo}
+              alt="McDonald's"
+              width={80}
+              height={80}
+              className="object-contain"
+            />
+          </div>
+        </div>
         <div className="absolute top-4 right-4">
-          <button className="bg-white rounded-full p-2 flex items-center gap-2 shadow-md">
-            <Heart className="h-5 w-5" />
+          <button
+            className="bg-white rounded-full p-2 flex items-center gap-2 shadow-md hover:bg-gray-50 transition-colors"
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsSaved(!isSaved);
+            }}
+          >
+            <Heart
+              className={`h-5 w-5 ${
+                isSaved ? "fill-red-500 text-red-500" : ""
+              }`}
+            />
             <span className="font-medium pr-1">Save</span>
           </button>
         </div>
@@ -183,7 +278,7 @@ export default function RestaurantPage() {
           >
             {restaurant.name}
           </h1>
-          <SearchBar />
+          <SearchBar restaurantName={restaurant.name} />
         </div>
 
         <div className="flex flex-wrap mb-6">
@@ -254,12 +349,39 @@ export default function RestaurantPage() {
                   zIndex: 10,
                 }}
               >
-                <div className="p-4">
-                  <button className="w-full flex items-center justify-between font-medium">
-                    <span>Regular Menu</span>
+                <div className="p-4 relative" ref={menuDropdownRef}>
+                  <button className="w-full flex items-center justify-between font-medium" onClick={toggleMenuDropdown}>
+                    <span>{selectedMenuType}</span>
                     <ChevronDown className="h-5 w-5" />
                   </button>
-                  <div className="text-sm text-gray-600 mt-1">10:30 am - 11:59 pm</div>
+                  <div className="text-sm text-gray-600 mt-1">{selectedMenuTypeObj?.hours}</div>
+
+                  {/* Menu Type Dropdown */}
+                  {menuDropdownOpen && (
+                    <div className="absolute left-0 top-full mt-1 w-[350px] bg-white rounded-lg shadow-lg z-20 py-2">
+                      {menuTypes.map((menuType) => (
+                        <button
+                          key={menuType.id}
+                          className="w-full flex items-center px-4 py-3 hover:bg-gray-50"
+                          onClick={() => selectMenuType(menuType.name)}
+                        >
+                          <div
+                            className={`w-6 h-6 rounded-full border-2 flex items-center justify-center mr-4 ${
+                              selectedMenuType === menuType.name ? "border-black bg-black" : "border-gray-300 bg-white"
+                            }`}
+                          >
+                            {selectedMenuType === menuType.name && (
+                              <div className="w-2 h-2 bg-white rounded-full"></div>
+                            )}
+                          </div>
+                          <div className="text-left">
+                            <div className="font-medium">{menuType.name}</div>
+                            <div className="text-gray-500">{menuType.hours}</div>
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
                 <div className="p-2 max-h-[calc(100vh-200px)] overflow-y-auto">
                   <ul className="space-y-1">
@@ -267,7 +389,8 @@ export default function RestaurantPage() {
                       <li key={category.id}>
                         <button
                           className={`w-full text-left px-2 py-2 rounded-md ${
-                            activeCategory === category.name ? "bg-gray-100 font-medium" : ""
+                            activeCategory === category.name
+                              ? "bg-gray-100 font-medium" : ""
                           }`}
                           onClick={() => scrollToSection(category.name)}
                         >
@@ -295,7 +418,9 @@ export default function RestaurantPage() {
               <div className="flex items-center space-x-4">
                 <div className="bg-[#e8f7f7] rounded-lg p-4">
                   <div className="flex flex-col">
-                    <span className="font-medium text-[#3d8f8f]">A$0 delivery fee</span>
+                    <span className="font-medium text-[#3d8f8f]">
+                      A$0 delivery fee
+                    </span>
                     <div className="flex items-center text-gray-800 text-sm">
                       <span>pricing & fees</span>
                       <Info className="h-4 w-4 ml-1 text-gray-500" />
@@ -309,14 +434,18 @@ export default function RestaurantPage() {
               </div>
             </div>
 
-            {/* DashPass Promo Banner */}
-            <div className="my-6 rounded-lg overflow-hidden">
+                        {/* DashPass Promo Banner */}
+                        <div className="my-6 rounded-lg overflow-hidden">
               <div ref={dealsRef} className="flex overflow-x-auto hide-scrollbar">
                 <div className="min-w-full flex-shrink-0 relative bg-gradient-to-r from-green-50 to-blue-50 p-4 rounded-lg">
                   <div className="flex items-center justify-between">
                     <div className="flex-1">
-                      <h3 className="font-medium text-lg">Enjoy $0 delivery fees and lower service fees</h3>
-                      <p className="text-gray-700">on eligible orders with DashPass.</p>
+                      <h3 className="font-medium text-lg">
+                        Enjoy $0 delivery fees and lower service fees
+                      </h3>
+                      <p className="text-gray-700">
+                        on eligible orders with DashPass.
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -324,16 +453,24 @@ export default function RestaurantPage() {
                 <div className="min-w-full flex-shrink-0 relative bg-gradient-to-r from-yellow-50 to-orange-50 p-4 rounded-lg">
                   <div className="flex items-center justify-between">
                     <div className="flex-1">
-                      <h3 className="font-medium text-lg">Save 20% on orders over $25</h3>
-                      <p className="text-gray-700">Limited time offer for new customers.</p>
+                      <h3 className="font-medium text-lg">
+                        Save 20% on orders over $25
+                      </h3>
+                      <p className="text-gray-700">
+                        Limited time offer for new customers.
+                      </p>
                     </div>
                   </div>
                 </div>
                 <div className="min-w-full flex-shrink-0 relative bg-gradient-to-r from-blue-50 to-purple-50 p-4 rounded-lg">
                   <div className="flex items-center justify-between">
                     <div className="flex-1">
-                      <h3 className="font-medium text-lg">Free McFlurry with orders over $20</h3>
-                      <p className="text-gray-700">Use code MCFLURRY at checkout.</p>
+                      <h3 className="font-medium text-lg">
+                        Free McFlurry with orders over $20
+                      </h3>
+                      <p className="text-gray-700">
+                        Use code MCFLURRY at checkout.
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -382,7 +519,10 @@ export default function RestaurantPage() {
                   </button>
                 </div>
               </div>
-              <div ref={featuredItemsRef} className="flex overflow-x-auto space-x-4 pb-4 hide-scrollbar">
+              <div
+                ref={featuredItemsRef}
+                className="flex overflow-x-auto space-x-4 pb-4 hide-scrollbar"
+              >
                 {featuredItems.map((item) => (
                   <div
                     key={item.id}
@@ -391,7 +531,10 @@ export default function RestaurantPage() {
                   >
                     <div className="relative h-40">
                       <Image
-                        src={item.image || "/placeholder.svg?height=160&width=200&query=burger"}
+                        src={
+                          item.image ||
+                          "/placeholder.svg?height=160&width=200&query=burger"
+                        }
                         alt={item.name}
                         fill
                         className="object-cover"
@@ -419,54 +562,35 @@ export default function RestaurantPage() {
             <div className="mt-8">
               <h2 className="text-xl font-bold mb-4">Reviews</h2>
               <div className="bg-gray-50 rounded-lg p-6">
-                <h3 className="text-lg font-medium mb-4">Be the first to review</h3>
+                <h3 className="text-lg font-medium mb-4">
+                  Be the first to review
+                </h3>
                 <div className="flex mb-4">
                   {[1, 2, 3, 4, 5].map((star) => (
-                    <Star key={star} className="h-8 w-8 text-gray-300" />
+                    <Star
+                      key={star}
+                      className={`h-8 w-8 cursor-pointer ${
+                        star <= (hoverRating || selectedRating) ? "fill-gray-700 text-gray-700" : "text-gray-300"
+                      }`}
+                      onMouseEnter={() => handleStarHover(star)}
+                      onMouseLeave={handleStarLeave}
+                      onClick={() => handleStarClick(star)}
+                    />
                   ))}
                 </div>
-                <button className="text-gray-600 font-medium">Start your review</button>
+                <button className="text-gray-600 font-medium hover:text-gray-800" onClick={handleStartReview}>
+                  Start your review
+                </button>
               </div>
             </div>
 
-            {/* Menu Sections */}
-            <div ref={(el) => (sectionRefs.current["Featured Items"] = el)} className="mt-8 pt-4" id="featured-items">
-              <h2 className="text-xl font-bold mb-4">Featured Items</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {featuredItems.map((item) => (
-                  <div
-                    key={item.id}
-                    className="border border-gray-200 rounded-lg overflow-hidden flex cursor-pointer"
-                    onClick={() => openItemDialog(item)}
-                  >
-                    <div className="p-3 flex-1">
-                      <h3 className="font-medium">{item.name}</h3>
-                      <p className="text-sm text-gray-600 mt-1 line-clamp-2">{item.description}</p>
-                      <p className="text-gray-900 mt-2">{item.price}</p>
-                    </div>
-                    <div className="relative w-24 h-24 m-3">
-                      <Image
-                        src={item.image || "/placeholder.svg"}
-                        alt={item.name}
-                        fill
-                        className="object-cover rounded-lg"
-                      />
-                      <button
-                        className="absolute bottom-1 right-1 bg-white rounded-full p-1 shadow-md"
-                        onClick={(e) => {
-                          e.stopPropagation() // Prevent opening the dialog
-                          handleAddToCart(item)
-                        }}
-                      >
-                        <span className="text-lg font-bold">+</span>
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
+            {/* Most Ordered */}
 
-            <div ref={(el) => (sectionRefs.current["Most Ordered"] = el)} className="mt-8 pt-4" id="most-ordered">
+            <div
+              ref={(el) => (sectionRefs.current["Most Ordered"] = el)}
+              className="mt-8 pt-4"
+              id="most-ordered"
+            >
               <h2 className="text-xl font-bold mb-4">Most Ordered</h2>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {mostOrderedItems.map((item) => (
@@ -503,7 +627,51 @@ export default function RestaurantPage() {
               </div>
             </div>
 
-            <div ref={(el) => (sectionRefs.current["Family & Sharing"] = el)} className="mt-8 pt-4" id="family-sharing">
+             {/* Featured Creations */}
+             <div
+              ref={(el) => (sectionRefs.current["Featured Items"] = el)}
+              className="mt-8 pt-4"
+              id="featured-items"
+            >
+              <h2 className="text-xl font-bold mb-4">Featured Creations</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {featuredItems.map((item) => (
+                  <div
+                    key={item.id}
+                    className="border border-gray-200 rounded-lg overflow-hidden flex cursor-pointer"
+                    onClick={() => openItemDialog(item)}
+                  >
+                    <div className="p-3 flex-1">
+                      <h3 className="font-medium">{item.name}</h3>
+                      <p className="text-sm text-gray-600 mt-1 line-clamp-2">
+                        {item.description}
+                      </p>
+                      <p className="text-gray-900 mt-2">{item.price}</p>
+                    </div>
+                    <div className="relative w-24 h-24 m-3">
+                      <Image
+                        src={item.image || "/placeholder.svg"}
+                        alt={item.name}
+                        fill
+                        className="object-cover rounded-lg"
+                      />
+                      <button
+                        className="absolute bottom-1 right-1 bg-white rounded-full p-1 shadow-md"
+                        onClick={() => handleAddToCart(item)}
+                      >
+                        <span className="text-lg font-bold">+</span>
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* <div
+              ref={(el) => (sectionRefs.current["Family & Sharing"] = el)}
+              className="mt-8 pt-4"
+              id="family-sharing"
+            >
               <h2 className="text-xl font-bold mb-4">Family & Sharing</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {familySharingItems.map((item) => (
@@ -577,7 +745,7 @@ export default function RestaurantPage() {
                   </div>
                 ))}
               </div>
-            </div>
+            </div>  */}
 
             {/* Add refs for other menu categories */}
             {menuCategories
@@ -632,9 +800,19 @@ export default function RestaurantPage() {
         </div>
       </div>
       {/* Menu Item Dialog */}
-      <MenuItemDialog isOpen={menuItemDialogOpen} onClose={() => setMenuItemDialogOpen(false)} item={selectedItem} />
+      <MenuItemDialog
+        isOpen={menuItemDialogOpen}
+        onClose={() => setMenuItemDialogOpen(false)}
+        item={selectedItem}
+      />
       {/* Group Order Dialog */}
       <GroupOrderDialog isOpen={groupOrderDialogOpen} onClose={() => setGroupOrderDialogOpen(false)} />
+      {/* Review Dialog */}
+      <ReviewDialog
+        isOpen={reviewDialogOpen}
+        onClose={() => setReviewDialogOpen(false)}
+        restaurantName={restaurant.name}
+      />
     </div>
   )
 }
