@@ -19,6 +19,7 @@ export default function RestaurantSection({ title, restaurants, seeAllLink = "#"
   const [cardWidth, setCardWidth] = useState(350)
   const [visibleCards, setVisibleCards] = useState(3)
   const [containerWidth, setContainerWidth] = useState(0)
+  const [favorites, setFavorites] = useState<{ [key: string]: boolean }>({})
 
   // Calculate how many cards can fit and their optimal width
   useEffect(() => {
@@ -73,6 +74,14 @@ export default function RestaurantSection({ title, restaurants, seeAllLink = "#"
     setShowRightArrow(container.scrollLeft < container.scrollWidth - container.clientWidth - 10)
   }
 
+  const toggleFavorite = (restaurantId: string) => (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setFavorites(prev => ({
+      ...prev,
+      [restaurantId]: !prev[restaurantId]
+    }));
+  };
+
   return (
     <div className="mt-10 mb-8">
       <div className="flex items-center justify-between mb-4">
@@ -105,9 +114,9 @@ export default function RestaurantSection({ title, restaurants, seeAllLink = "#"
         className="flex overflow-x-auto gap-4 pb-4 hide-scrollbar snap-x"
         onScroll={handleScroll}
       >
-        {restaurants.map((restaurant) => (
+        {restaurants.map((restaurant, index) => (
           <div
-            key={restaurant.id}
+            key={restaurant.id+index}
             className="restaurant-card flex-shrink-0 snap-start"
             style={{ width: `${cardWidth}px` }}
           >
@@ -140,8 +149,23 @@ export default function RestaurantSection({ title, restaurants, seeAllLink = "#"
                     </div>
                   )}
                 </div>
-                <button className="text-gray-400 hover:text-gray-600">
-                  <Heart className="h-6 w-6" />
+                <button 
+                  className="p-1 hover:bg-gray-100 rounded-full"
+                  onClick={toggleFavorite(restaurant.id)}
+                >
+                  <svg 
+                    width="24" 
+                    height="24" 
+                    viewBox="0 0 24 24" 
+                    fill={favorites[restaurant.id] ? "currentColor" : "none"} 
+                    stroke="currentColor" 
+                    strokeWidth="2" 
+                    strokeLinecap="round" 
+                    strokeLinejoin="round"
+                    className={favorites[restaurant.id] ? "text-red-500" : "text-gray-500"}
+                  >
+                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                  </svg>
                 </button>
               </div>
 
