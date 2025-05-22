@@ -357,9 +357,11 @@ export const restaurants: Restaurant[] = [
   {
     id: "allstar-donuts",
     name: "ALLSTAR DONUTS",
-    logo: "https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/photosV2/9309c64a-ed96-44dc-9822-ba3baef9d134-retina-large.PNG",
+    logo: "https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/5d4ef64f-4113-4fc9-b088-af4b13925b25.JPG",
     banner:
       "https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/photosV2/9309c64a-ed96-44dc-9822-ba3baef9d134-retina-large.PNG",
+    detailsBanner:
+      "https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=1000,height=300,format=auto,quality=80/https://doordash-static.s3.amazonaws.com/media/store/header/9e34af89-e910-4b02-bcc8-dcf09697942b.JPG",
     rating: 4.6,
     reviews: "20+",
     distance: "0.7 mi",
@@ -400,9 +402,11 @@ export const restaurants: Restaurant[] = [
   {
     id: "mellis-cafe",
     name: "Mellis Cafe",
-    logo: "https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/yelp/30b197a8-c657-4ac5-86e2-623fed6c90e5-5f8e25f2-baf7-40d8-b6a2-3e3316ec37c0.jpg",
+    logo: "",
     banner:
       "https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/yelp/30b197a8-c657-4ac5-86e2-623fed6c90e5-5f8e25f2-baf7-40d8-b6a2-3e3316ec37c0.jpg",
+    detailsBanner:
+      "https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=1000,height=300,format=auto,quality=80/https://doordash-static.s3.amazonaws.com/media/store/header/730f597b-1115-47a9-a990-d2a0469b6c5f.jpg",
     rating: 4.8,
     reviews: "10+",
     distance: "0.5 mi",
@@ -589,9 +593,11 @@ export const restaurants: Restaurant[] = [
   {
     id: "late-nite-appetite",
     name: "Late Nite Appetite",
-    logo: "https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/photosV2/81cbbd05-5ea7-4b2a-8a68-b4fecd81afef-c694ee48-c189-4c36-b2de-6c2fc402d78c-retina-large.jpg",
+    logo: "https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/75705cc0-faa4-4efd-b3d5-464402fb9639.png",
     banner:
       "https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/photosV2/81cbbd05-5ea7-4b2a-8a68-b4fecd81afef-c694ee48-c189-4c36-b2de-6c2fc402d78c-retina-large.jpg",
+    detailsBanner:
+      "https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=1000,height=300,format=auto,quality=80/https://doordash-static.s3.amazonaws.com/media/store/header/ba9c5a2b-0f2e-4760-be62-97b9a51b7630.png",
     rating: 3.6,
     reviews: "100+",
     distance: "1.1 mi",
@@ -613,8 +619,9 @@ export const restaurants: Restaurant[] = [
     logo: "",
     banner:
       "https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/photosV2/d86cf49b-44ce-4b23-8b80-434b9e29df79-retina-large.JPG",
-    detailsBanner: "https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=1000,height=300,format=auto,quality=80/https://doordash-static.s3.amazonaws.com/media/store/header/5cbd569b-0be9-4451-8013-062f3d7805c2.jpg",
-      rating: 4.7,
+    detailsBanner:
+      "https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=1000,height=300,format=auto,quality=80/https://doordash-static.s3.amazonaws.com/media/store/header/5cbd569b-0be9-4451-8013-062f3d7805c2.jpg",
+    rating: 4.7,
     reviews: "500+",
     distance: "1.1 mi",
     time: "18 min",
@@ -779,9 +786,11 @@ export const restaurants: Restaurant[] = [
   {
     id: "noah-s-new-york-bagels",
     name: "Noah's New York Bagels",
-    logo: "https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/photos/e39f5f79-0e81-4b7d-8fcc-07f29feff8f6-retina-large-jpeg",
+    logo: "https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/2003-4088_NOAH_DoorDash_logo.jpg",
     banner:
       "https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/photos/e39f5f79-0e81-4b7d-8fcc-07f29feff8f6-retina-large-jpeg",
+    detailsBanner:
+      "https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=1000,height=300,format=auto,quality=80/https://doordash-static.s3.amazonaws.com/media/store/header/cc70f50c-7b8e-4ffa-ba0f-e062576573f4.48",
     rating: 4.4,
     reviews: "4k+",
     distance: "600 ft",
