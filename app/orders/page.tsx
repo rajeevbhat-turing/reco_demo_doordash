@@ -18,7 +18,7 @@ export default function Orders() {
   const filteredOrders = orders.filter(order => order.orderType === activeTab)
 
   return (
-    <div className="max-w-[1200px] mx-auto px-8 py-16 pt-24">
+    <div className="max-w-[1200px] mx-auto px-8 pt-24">
       <h1 className="text-3xl font-bold mb-6">Orders</h1>
       
       <div className="mb-6">
@@ -71,15 +71,15 @@ export default function Orders() {
                   </div>
                 </div>
                 <div className="flex gap-2">
-                  {order.restaurantName !== 'Target' && (
-                    <button className="flex items-center gap-2 bg-gray-50 hover:bg-gray-100 px-3 py-1.5 rounded-lg">
+                  {order.restaurantName !== 'Best Buy' && (
+                    <button className="flex items-center gap-2 bg-gray-100 hover:bg-gray-100 px-3 py-1.5 rounded-lg">
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="text-gray-600">
                         <path d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                       </svg>
                       <span className="text-sm text-gray-600">Reorder</span>
                     </button>
                   )}
-                  <button className="flex items-center gap-2 bg-gray-50 hover:bg-gray-100 px-3 py-1.5 rounded-lg">
+                  <button className="flex items-center gap-2 bg-gray-100 hover:bg-gray-100 px-3 py-1.5 rounded-lg">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="text-gray-600">
                       <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                     </svg>

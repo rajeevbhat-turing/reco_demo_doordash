@@ -17,6 +17,7 @@ export interface Order {
   rating?: number;
   tags?: string[];
   isDashPass?: boolean;
+  isGroupOrder?: boolean;
 }
 
 export const orderData: Order[] = [
@@ -149,5 +150,177 @@ export const orderData: Order[] = [
     status: 'Delivered',
     orderType: 'Personal',
     isDashPass: true
+  },
+  {
+    id: 'order-11',
+    restaurantId: 'safeway',
+    restaurantName: 'Safeway',
+    orderDate: 'Sun, Mar 10',
+    totalAmount: 28.94,
+    items: [
+      { id: '1', name: 'Gatorade Thirst Quencher Cool Blue', quantity: 2, price: 3.29 },
+      { id: '2', name: 'Bodyarmor Fruit Punch', quantity: 3, price: 2.39 },
+      { id: '3', name: 'Simply Pulp Free Orange Juice', quantity: 3, price: 5.49 }
+    ],
+    status: 'Delivered',
+    orderType: 'Personal',
+    isDashPass: true,
+    tags: ['Group Order']
+  },
+  {
+    id: 'order-12',
+    restaurantId: 'whole-foods',
+    restaurantName: 'Whole Foods Market',
+    orderDate: 'Sat, Mar 9',
+    totalAmount: 45.76,
+    items: [
+      { id: '1', name: 'Vital Farms Organic Pasture Raised Eggs', quantity: 2, price: 13.19 },
+      { id: '2', name: 'Horizon Organic High Vitamin D Milk', quantity: 2, price: 7.39 },
+      { id: '3', name: 'Organic Avocado', quantity: 2, price: 2.99 }
+    ],
+    status: 'Delivered',
+    orderType: 'Personal',
+    isDashPass: true
+  },
+  {
+    id: 'order-13',
+    restaurantId: 'trader-joes',
+    restaurantName: "Trader Joe's",
+    orderDate: 'Fri, Mar 8',
+    totalAmount: 32.85,
+    items: [
+      { id: '1', name: 'Strawberries', quantity: 3, price: 4.49 },
+      { id: '2', name: 'Baby Carrots', quantity: 2, price: 3.39 },
+      { id: '3', name: 'Red Bell Pepper', quantity: 4, price: 1.69 },
+      { id: '4', name: 'Broccoli Crown', quantity: 3, price: 1.99 }
+    ],
+    status: 'Delivered',
+    orderType: 'Business',
+    isDashPass: true,
+    tags: ['Items Substituted']
+  },
+  {
+    id: 'order-14',
+    restaurantId: 'smart-final',
+    restaurantName: 'Smart & Final',
+    orderDate: 'Thu, Mar 7',
+    totalAmount: 52.93,
+    items: [
+      { id: '1', name: "Lay's Baked Original Potato Crisps", quantity: 3, price: 5.99 },
+      { id: '2', name: 'RXBAR Chocolate Sea Salt Protein Bar', quantity: 5, price: 3.49 },
+      { id: '3', name: 'Gatorade Lemon Lime Bottles', quantity: 2, price: 10.79 }
+    ],
+    status: 'Delivered',
+    orderType: 'Personal',
+    isDashPass: true
+  },
+  {
+    id: 'order-15',
+    restaurantId: 'sprouts',
+    restaurantName: 'Sprouts Farmers Market',
+    orderDate: 'Wed, Mar 6',
+    totalAmount: 29.87,
+    items: [
+      { id: '1', name: 'Sargento String Cheese Mozzarella', quantity: 2, price: 7.19 },
+      { id: '2', name: 'Kiwi', quantity: 5, price: 0.89 },
+      { id: '3', name: 'Cucumber', quantity: 3, price: 0.99 },
+      { id: '4', name: 'Ginger', quantity: 2, price: 1.49 }
+    ],
+    status: 'Delivered',
+    orderType: 'Personal',
+    tags: ['Rerouted from another store']
+  },
+  {
+    id: 'order-16',
+    restaurantId: 'philz-coffee',
+    restaurantName: "Philz Coffee",
+    orderDate: 'Tue, Mar 5',
+    totalAmount: 32.45,
+    items: [
+      { id: '1', name: 'Mint Mojito Iced Coffee', quantity: 2, price: 6.95 },
+      { id: '2', name: 'Avocado Toast', quantity: 1, price: 8.95 },
+      { id: '3', name: 'Butter Croissant', quantity: 2, price: 4.80 }
+    ],
+    status: 'Delivered',
+    orderType: 'Personal',
+    isDashPass: true,
+    isGroupOrder: true
+  },
+  {
+    id: 'order-17',
+    restaurantId: 'peet-s-coffee',
+    restaurantName: "Peet's Coffee",
+    orderDate: 'Mon, Mar 4',
+    totalAmount: 45.75,
+    items: [
+      { id: '1', name: 'Dark Roast Coffee', quantity: 3, price: 4.95 },
+      { id: '2', name: 'Breakfast Sandwich', quantity: 2, price: 7.95 },
+      { id: '3', name: 'Chocolate Croissant', quantity: 3, price: 4.50 }
+    ],
+    status: 'Delivered',
+    orderType: 'Business',
+    isDashPass: true
+  },
+  {
+    id: 'order-18',
+    restaurantId: 'il-canto-cafe',
+    restaurantName: "IL Canto Cafe",
+    orderDate: 'Sun, Mar 3',
+    totalAmount: 58.90,
+    items: [
+      { id: '1', name: 'Margherita Pizza', quantity: 1, price: 18.95 },
+      { id: '2', name: 'Pasta Carbonara', quantity: 2, price: 16.95 },
+      { id: '3', name: 'Tiramisu', quantity: 1, price: 6.95 }
+    ],
+    status: 'Delivered',
+    orderType: 'Personal',
+    isDashPass: true,
+    tags: ['Group Order']
+  },
+  {
+    id: 'order-19',
+    restaurantId: 'petco',
+    restaurantName: "Petco",
+    orderDate: 'Sat, Mar 2',
+    totalAmount: 89.97,
+    items: [
+      { id: '1', name: 'Premium Dog Food (30lb)', quantity: 1, price: 54.99 },
+      { id: '2', name: 'Dog Toys Bundle', quantity: 2, price: 12.99 },
+      { id: '3', name: 'Pet Shampoo', quantity: 1, price: 8.99 }
+    ],
+    status: 'Delivered',
+    orderType: 'Personal',
+    isDashPass: true
+  },
+  {
+    id: 'order-20',
+    restaurantId: 'petsmart',
+    restaurantName: "PetSmart",
+    orderDate: 'Fri, Mar 1',
+    totalAmount: 125.45,
+    items: [
+      { id: '1', name: 'Cat Tree Tower', quantity: 1, price: 89.99 },
+      { id: '2', name: 'Cat Food (24 cans)', quantity: 1, price: 25.99 },
+      { id: '3', name: 'Cat Litter', quantity: 1, price: 9.47 }
+    ],
+    status: 'Delivered',
+    orderType: 'Personal',
+    tags: ['Large Item Delivery']
+  },
+  {
+    id: 'order-21',
+    restaurantId: 'pet-food-express',
+    restaurantName: "Pet Food Express",
+    orderDate: 'Thu, Feb 29',
+    totalAmount: 67.85,
+    items: [
+      { id: '1', name: 'Fish Tank Filter', quantity: 1, price: 34.99 },
+      { id: '2', name: 'Aquarium Plants', quantity: 3, price: 7.99 },
+      { id: '3', name: 'Fish Food Variety Pack', quantity: 1, price: 8.89 }
+    ],
+    status: 'Delivered',
+    orderType: 'Personal',
+    isDashPass: true,
+    tags: ['Fragile Items']
   }
 ]; 
