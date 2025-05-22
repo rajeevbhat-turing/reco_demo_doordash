@@ -558,7 +558,7 @@ const FilterOptions = forwardRef<FilterOptionsRef, FilterOptionsProps>(
                   style={{ left: "50%", transform: "translateX(-50%)" }}
                 >
                   <h3 className="text-lg font-bold mb-2">Schedule</h3>
-                  <p className="text-sm text-gray-600 mb-4">Schedule your order up to 5 days later</p>
+                  <p className="text-sm text-gray-600 mb-4">Schedule your order up to 2 days later</p>
 
                   {/* Date selection - more compact */}
                   <div className="grid grid-cols-3 gap-2 mb-4">
@@ -692,7 +692,7 @@ const FilterOptions = forwardRef<FilterOptionsRef, FilterOptionsProps>(
                 </div>
                 <div className="flex justify-between">
                   <button className="text-gray-900 font-medium" onClick={resetRatingFilter}>
-                    Cancel
+                    Reset
                   </button>
                   <button
                     className="bg-red-600 text-white px-4 py-2 rounded-full text-sm font-medium"

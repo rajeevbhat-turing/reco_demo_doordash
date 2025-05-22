@@ -149,9 +149,10 @@ interface Store {
 
 interface AllStoresProps {
   stores?: Store[];
+  title?: string;
 }
 
-export default function AllStores({ stores = defaultStores }: AllStoresProps) {
+export default function AllStores({ title = '', stores = defaultStores }: AllStoresProps) {
   const [favorites, setFavorites] = useState<{[key: string]: boolean}>({});
   
   const toggleFavorite = (storeName: string, index: number) => {
@@ -163,7 +164,7 @@ export default function AllStores({ stores = defaultStores }: AllStoresProps) {
   
   return (
     <div className="py-6">
-      <h2 className="text-2xl font-bold mb-4">All Stores</h2>
+      <h2 className="text-2xl font-bold mb-4">{title}</h2>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {stores.map((store, index) => (

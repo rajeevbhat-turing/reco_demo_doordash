@@ -99,7 +99,7 @@ export default function Pets() {
 
       {/* All Stores Section */}
       {filteredStores.length > 0 ? (
-        <AllStores title={uiConfig.allStoresTitle} stores={filteredStores} variant="all" />
+        <AllStores title={uiConfig.allStoresTitle} stores={filteredStores} />
       ) : (
         <div className="py-10 text-center">
           <p className="text-lg text-gray-500">No stores match your filters</p>
