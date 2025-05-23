@@ -306,7 +306,7 @@ export default function GenericStorePage({
         <main className="pb-20 w-full overflow-x-hidden ml-4 pr-4 lg:pr-8">
           {filteredData.length > 0 ? (
             filteredData.map((section) => (
-              <div className="lg:pr-4" key={section.id}>
+              <div className="lg:pr-4" key={`${section.id}-${section.title}`}>
                 <ProductDisplay
                   title={section.title}
                   products={section.products}

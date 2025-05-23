@@ -152,7 +152,7 @@ export default function ConvenienceCartSidebar({
             </div>
             <div className="flex-1 min-w-0">
               <p className="font-medium text-sm">{item.name}</p>
-              <p className="text-sm">${item.price.toFixed(2)}</p>
+              <p className="text-sm">${item.price}</p>
             </div>
             <div className="flex items-center">
               <button className="p-1 text-gray-500 hover:text-red-600" onClick={() => removeFromCart(item.id)}>
