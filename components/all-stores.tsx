@@ -150,9 +150,16 @@ interface Store {
 interface AllStoresProps {
   stores?: Store[];
   title?: string;
+  showSeeAll?: boolean;
+  seeAllLink?: string;
 }
 
-export default function AllStores({ title = '', stores = defaultStores }: AllStoresProps) {
+export default function AllStores({ 
+  title = '', 
+  stores = defaultStores,
+  showSeeAll = true,
+  seeAllLink = "/all-items"
+}: AllStoresProps) {
   const [favorites, setFavorites] = useState<{[key: string]: boolean}>({});
   
   const toggleFavorite = (storeName: string, index: number) => {
@@ -164,7 +171,24 @@ export default function AllStores({ title = '', stores = defaultStores }: AllSto
   
   return (
     <div className="py-6">
-      <h2 className="text-2xl font-bold mb-4">{title}</h2>
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-2xl font-bold">{title}</h2>
+        {showSeeAll && (
+          <Link 
+            href={{
+              pathname: seeAllLink,
+              query: { 
+                title: encodeURIComponent(title),
+                type: 'grocery',
+                section: encodeURIComponent(title.toLowerCase().replace(/\s+/g, '-'))
+              }
+            }}
+            className="text-sm font-medium"
+          >
+            See All
+          </Link>
+        )}
+      </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {stores.map((store, index) => (

@@ -10,6 +10,8 @@ import PromoBanners from "@/components/promo-banners"
 import RestaurantSection from "@/components/restaurant-section"
 import { restaurants } from "@/constants/restaurants"
 import type { Restaurant } from "@/constants/restaurants"
+import { CartProvider } from "@/context/cart-context"
+import { useCartStore } from "@/store/cart-store"
 
 export default function Home() {
   const [filters, setFilters] = useState<FilterState>({
@@ -25,6 +27,14 @@ export default function Home() {
   const [allFilteredRestaurants, setAllFilteredRestaurants] = useState<Restaurant[]>([])
   const filterOptionsRef = useRef<FilterOptionsRef>(null)
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
+  
+  // Get cart store to set category
+  const cartStore = useCartStore()
+  
+  // Set the category to restaurant when component mounts
+  useEffect(() => {
+    cartStore.setCategory("restaurant")
+  }, [])
 
   const handleCategorySelect = (category: string | null) => {
     setSelectedCategory(category)
@@ -180,144 +190,153 @@ export default function Home() {
   }
 
   return (
-    <div className="w-full max-w-[1200px] mx-auto px-4">
-      <div className="pt-16">
-        <FoodCategories selectedCategory={selectedCategory} onCategorySelect={handleCategorySelect} />
-      </div>
-      {/* Pass the current filters to the FilterOptions component */}
-      <FilterOptions
-        ref={filterOptionsRef}
-        onFilterChange={handleFilterChange}
-        onReset={handleReset}
-        filters={filters}
-      />
-      <div className="mt-4">
-        {!hasActiveFilters() && <PromoBanners />}
+    <CartProvider category="restaurant">
+      <div className="w-full max-w-[1200px] mx-auto px-4">
+        <div className="pt-16">
+          <FoodCategories selectedCategory={selectedCategory} onCategorySelect={handleCategorySelect} />
+        </div>
+        {/* Pass the current filters to the FilterOptions component */}
+        <FilterOptions
+          ref={filterOptionsRef}
+          onFilterChange={handleFilterChange}
+          onReset={handleReset}
+          filters={filters}
+        />
+        <div className="mt-4">
+          {!hasActiveFilters() && <PromoBanners />}
 
-        {/* Show filtered results when filters are active */}
-        {hasActiveFilters() ? (
-          <div className="mt-8">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-bold text-gray-900">{allFilteredRestaurants.length} results</h2>
-              <button
-                onClick={handleReset}
-                className="bg-gray-100 text-gray-900 font-medium text-sm rounded-full px-4 py-2"
-              >
-                Reset
-              </button>
-            </div>
+          {/* Show filtered results when filters are active */}
+          {hasActiveFilters() ? (
+            <div className="mt-8">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl font-bold text-gray-900">{allFilteredRestaurants.length} results</h2>
+                <button
+                  onClick={handleReset}
+                  className="bg-gray-100 text-gray-900 font-medium text-sm rounded-full px-4 py-2"
+                >
+                  Reset
+                </button>
+              </div>
 
-            {allFilteredRestaurants.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {allFilteredRestaurants.map((restaurant) => (
-                  <div key={restaurant.id} className="restaurant-card">
-                    <Link href={`/store/${restaurant.id}`} className="block">
-                      <div className="relative h-[200px] bg-gray-100">
-                        <Image
-                          src={
-                            restaurant.banner ||
-                            `/placeholder.svg?height=200&width=400&query=${restaurant.name || "/placeholder.svg"} restaurant`
-                          }
-                          alt={restaurant.name}
-                          fill
-                          className="object-cover"
-                        />
-                        {restaurant.new && (
-                          <div className="absolute top-3 left-3 bg-black text-white text-xs font-bold px-2 py-1 rounded">
-                            NEW
-                          </div>
-                        )}
-                      </div>
-                    </Link>
-
-                    <div className="py-3">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <h3 className="font-bold text-lg">{restaurant.name}</h3>
-                          {restaurant.dashPass && (
-                            <div className="text-teal-600">
-                              <svg
-                                width="20"
-                                height="12"
-                                viewBox="0 0 20 12"
-                                fill="none"
-                                xmlns="http://www.w3.org/2000/svg"
-                              >
-                                <path
-                                  d="M18.5 1.5L11.5 9.5L7.5 5.5L1.5 10.5"
-                                  stroke="currentColor"
-                                  strokeWidth="2"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                />
-                              </svg>
+              {allFilteredRestaurants.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {allFilteredRestaurants.map((restaurant) => (
+                    <div key={restaurant.id} className="restaurant-card">
+                      <Link href={`/store/${restaurant.id}`} className="block">
+                        <div className="relative h-[200px] bg-gray-100">
+                          <Image
+                            src={
+                              restaurant.banner ||
+                              `/placeholder.svg?height=200&width=400&query=${restaurant.name || "/placeholder.svg"} restaurant`
+                            }
+                            alt={restaurant.name}
+                            fill
+                            className="object-cover"
+                          />
+                          {restaurant.new && (
+                            <div className="absolute top-3 left-3 bg-black text-white text-xs font-bold px-2 py-1 rounded">
+                              NEW
                             </div>
                           )}
                         </div>
-                        <button className="text-gray-400 hover:text-gray-600">
-                          <Heart className="h-6 w-6" />
-                        </button>
-                      </div>
+                      </Link>
 
-                      <div className="flex items-center mt-1 text-sm text-gray-700 flex-wrap">
-                        <div className="flex items-center">
-                          <span className="font-semibold">{restaurant.rating}</span>
-                          <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" className="ml-1">
-                            <path d="M8 0L10.2571 5.08631L16 5.87013L11.8 9.79752L12.9443 15.5L8 12.5863L3.05573 15.5L4.2 9.79752L0 5.87013L5.74286 5.08631L8 0Z" />
-                          </svg>
+                      <div className="py-3">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <h3 className="font-bold text-lg">{restaurant.name}</h3>
+                            {restaurant.dashPass && (
+                              <div className="text-teal-600">
+                                <svg
+                                  width="20"
+                                  height="12"
+                                  viewBox="0 0 20 12"
+                                  fill="none"
+                                  xmlns="http://www.w3.org/2000/svg"
+                                >
+                                  <path
+                                    d="M18.5 1.5L11.5 9.5L7.5 5.5L1.5 10.5"
+                                    stroke="currentColor"
+                                    strokeWidth="2"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                  />
+                                </svg>
+                              </div>
+                            )}
+                          </div>
+                          <button className="text-gray-400 hover:text-gray-600">
+                            <Heart className="h-6 w-6" />
+                          </button>
                         </div>
-                        <span className="mx-1">({restaurant.reviews})</span>
-                        <span className="mx-1">•</span>
-                        <span>{restaurant.distance}</span>
-                        <span className="mx-1">•</span>
-                        <span>{restaurant.time}</span>
+
+                        <div className="flex items-center mt-1 text-sm text-gray-700 flex-wrap">
+                          <div className="flex items-center">
+                            <span className="font-semibold">{restaurant.rating}</span>
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" className="ml-1">
+                              <path d="M8 0L10.2571 5.08631L16 5.87013L11.8 9.79752L12.9443 15.5L8 12.5863L3.05573 15.5L4.2 9.79752L0 5.87013L5.74286 5.08631L8 0Z" />
+                            </svg>
+                          </div>
+                          <span className="mx-1">({restaurant.reviews})</span>
+                          <span className="mx-1">•</span>
+                          <span>{restaurant.distance}</span>
+                          <span className="mx-1">•</span>
+                          <span>{restaurant.time}</span>
+                        </div>
+
+                        <div className="mt-1 text-sm text-gray-500">{restaurant.deliveryFee}</div>
+
+                        {restaurant.discount && (
+                          <div className="mt-1 text-sm text-red-600 font-medium">{restaurant.discount}</div>
+                        )}
                       </div>
-
-                      <div className="mt-1 text-sm text-gray-500">{restaurant.deliveryFee}</div>
-
-                      {restaurant.discount && (
-                        <div className="mt-1 text-sm text-red-600 font-medium">{restaurant.discount}</div>
-                      )}
                     </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="mt-10 py-16 text-center bg-gray-50 rounded-lg">
-                <h3 className="text-lg font-medium text-gray-700">No restaurants match your filters</h3>
-                <p className="text-gray-500 mt-2">Try adjusting your filters to see more options</p>
-                <button
-                  onClick={handleReset}
-                  className="mt-4 bg-red-600 text-white px-6 py-2 rounded-full text-sm font-medium"
-                >
-                  Reset Filters
-                </button>
-              </div>
-            )}
-          </div>
-        ) : (
-          // Show original sections when no filters are active
-          <>
-            <RestaurantSection
-              title="National favourites"
-              restaurants={nationalFavorites}
-              seeAllLink="/category/national-favourites"
-            />
+                  ))}
+                </div>
+              ) : (
+                <div className="mt-10 py-16 text-center bg-gray-50 rounded-lg">
+                  <h3 className="text-lg font-medium text-gray-700">No restaurants match your filters</h3>
+                  <p className="text-gray-500 mt-2">Try adjusting your filters to see more options</p>
+                  <button
+                    onClick={handleReset}
+                    className="mt-4 bg-red-600 text-white px-6 py-2 rounded-full text-sm font-medium"
+                  >
+                    Reset Filters
+                  </button>
+                </div>
+              )}
+            </div>
+          ) : (
+            // Show original sections when no filters are active
+            <>
+              <RestaurantSection
+                title="National favourites"
+                restaurants={nationalFavorites}
+              />
 
-            <RestaurantSection
-              title="Fastest near you"
-              restaurants={fastestNearYou}
-              seeAllLink="/category/fastest-near-you"
-            />
+              <RestaurantSection
+                title="Fastest near you"
+                restaurants={fastestNearYou}
+              />
 
-            <RestaurantSection title="Deals for you" restaurants={dealsForYou} seeAllLink="/category/deals" />
+              <RestaurantSection 
+                title="Deals for you" 
+                restaurants={dealsForYou} 
+              />
 
-            <RestaurantSection title="New on DoorDash" restaurants={newOnDoorDash} seeAllLink="/category/new" />
+              <RestaurantSection 
+                title="New on DoorDash" 
+                restaurants={newOnDoorDash} 
+              />
 
-            <RestaurantSection title="All stores" restaurants={allStores} seeAllLink="/browse" />
-          </>
-        )}
+              <RestaurantSection 
+                title="All stores" 
+                restaurants={allStores} 
+              />
+            </>
+          )}
+        </div>
       </div>
-    </div>
+    </CartProvider>
   )
 }

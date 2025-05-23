@@ -3,7 +3,7 @@ import { Product, ProductSection } from './index';
 // Extend the base Product interface for pet-specific products
 export interface PetProduct extends Omit<Product, 'id'> {
   id: string | number;
-  category: string;
+  category: string[];
 }
 
 // Extend the base ProductSection interface for pet-specific sections

@@ -7,11 +7,14 @@ import type { Product } from "@/types"
 import { useCart } from "@/context/cart-context"
 import Modal from "@/components/ui/modal"
 import { recommendedProducts, getProductNutrition } from "@/data/modal-data"
+import { parseCurrency } from "@/lib/utils"
 
 interface ProductDetailModalProps {
   product: Product | null
   onClose: () => void
 }
+
+const fallbackDescription = "The price shown is an estimate. It will be updated after the order is completed at the store";
 
 export default function ProductDetailModal({ product, onClose }: ProductDetailModalProps) {
   const [quantity, setQuantity] = useState(1)
@@ -52,10 +55,10 @@ export default function ProductDetailModal({ product, onClose }: ProductDetailMo
         {/* Product details */}
         <div className="md:w-1/2">
           <h1 className="text-2xl font-bold mb-2">{product.name}</h1>
-          <p className="text-2xl font-bold mb-2">${product.price.toFixed(2)}/bch</p>
-          <p className="text-gray-600 mb-4">Approx 0.4 lb per bunch • ${(product.price * 2.5).toFixed(2)}/lb</p>
+          <p className="text-2xl font-bold mb-2">${parseCurrency(product.price)}/bch</p>
+          <p className="text-gray-600 mb-4">Approx 0.4 lb per bunch • ${(parseCurrency(product.price) * 2.5).toFixed(2)}/lb</p>
           <p className="text-gray-600 mb-4">
-            The price shown is an estimate. It will be updated after the order is completed at the store
+            {product.description ?? fallbackDescription}
           </p>
           <div className="inline-block bg-gray-100 px-3 py-1 rounded-md mb-6">SNAP</div>
 
@@ -159,7 +162,7 @@ export default function ProductDetailModal({ product, onClose }: ProductDetailMo
           className="bg-red-600 hover:bg-red-700 text-white font-medium py-3 px-6 rounded-full"
           onClick={handleAddToCart}
         >
-          Add to cart - ${(product.price * quantity).toFixed(2)}
+          Add to cart - {"$"+parseCurrency(product.price) * quantity}
         </button>
       </div>
     </Modal>

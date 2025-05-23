@@ -1,13 +1,7 @@
-export interface Category {
-  id: number
-  name: string
-  slug: string
-  image: string
-  type: string
-  isActive: boolean
-}
+import {Category} from "@/types";
 
-export const categories: Category[] = [
+
+export const groceryCategories = [
   {
     "id": 1,
     "name": "Deals",

@@ -6,27 +6,38 @@ import Image from "next/image"
 import { Plus, Trash2 } from "lucide-react"
 import type { Product } from "@/types"
 import { useCart } from "@/context/cart-context"
+import { CartCategory } from "@/store/cart-store"
 
 interface ProductCardProps {
   product: Product
   onProductClick: (product: Product) => void
   storeId?: string
+  category?: CartCategory
 }
 
-export default function ProductCard({ product, onProductClick, storeId }: ProductCardProps) {
-  const { items, addToCart, updateQuantity, removeFromCart } = useCart()
+export default function ProductCard({ 
+  product, 
+  onProductClick, 
+  storeId,
+  category = "grocery"
+}: ProductCardProps) {
+  const { items, addToCart, removeFromCart } = useCart()
 
-  // Check if product is in cart and get quantity
+  // Check if product is in cart
   const cartItem = items.find((item) => item.id === product.id)
   const quantity = cartItem?.quantity || 0
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.stopPropagation() // Prevent opening the modal when clicking the add button
+    
+    // Use only the context cart
     addToCart(product, storeId)
   }
 
   const handleRemoveFromCart = (e: React.MouseEvent) => {
     e.stopPropagation() // Prevent opening the modal when clicking the remove button
+    
+    // Use only the context cart
     removeFromCart(product.id)
   }
 
