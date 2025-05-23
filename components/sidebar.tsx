@@ -80,26 +80,13 @@ export default function Sidebar() {
             <Link
                 href="/pets"
                 className={`flex items-center px-4 py-3 rounded-lg mx-2 ${
-                    pathname.startsWith("/convenience")
+                    pathname.startsWith("/pets")
                         ? "bg-red-50 text-red-600 font-medium"
                         : "text-gray-700 hover:bg-gray-100"
                 }`}
             >
               <PawPrint className="h-5 w-5 mr-3"/>
               <span>Pets</span>
-            </Link>
-          </li>
-          <li>
-            <Link
-                href="/convenience"
-                className={`flex items-center px-4 py-3 rounded-lg mx-2 ${
-                    pathname.startsWith("/convenience")
-                        ? "bg-red-50 text-red-600 font-medium"
-                        : "text-gray-700 hover:bg-gray-100"
-                }`}
-            >
-              <Coffee className="h-5 w-5 mr-3"/>
-              <span>Convenience</span>
             </Link>
           </li>
           <li>

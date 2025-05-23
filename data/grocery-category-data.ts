@@ -1,13 +1,6 @@
-export interface Category {
-  id: number
-  name: string
-  slug: string
-  image: string
-  type: string
-  isActive: boolean
-}
 
-export const categories: Category[] = [
+
+export const groceryCategories: Category[] = [
   {
     "id": 1,
     "name": "Deals",

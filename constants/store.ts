@@ -348,3 +348,174 @@ export const stores: Store[] = [
       tags: ["Flowers", "Retail", "Under 30 min", "Over 4.5"]
     }
   ]
+
+export const retailCategories = [
+    {
+        "id": "deals",
+        "name": "Deals",
+        "slug": "deals",
+        "image": "https://img.cdn4dd.com/s/convenience/images/deals.png",
+        "type": "RETAIL_L1_NAVIGATION_TYPE_COLLECTIONS_REQUEST",
+        "isActive": true
+    },
+    {
+        "id": "2685",
+        "name": "Dog",
+        "slug": "dog-2685",
+        "image": "https://img.cdn4dd.com/s/convenience/images/dog.png",
+        "type": "RETAIL_L1_NAVIGATION_TYPE_CATEGORY",
+        "isActive": true
+    },
+    {
+        "id": "2681",
+        "name": "Cat",
+        "slug": "cat-2681",
+        "image": "https://img.cdn4dd.com/s/convenience/images/cat.png",
+        "type": "RETAIL_L1_NAVIGATION_TYPE_CATEGORY",
+        "isActive": true
+    },
+    {
+        "id": "2683",
+        "name": "Reptile",
+        "slug": "reptile-2683",
+        "image": "https://img.cdn4dd.com/s/convenience/images/reptile.png",
+        "type": "RETAIL_L1_NAVIGATION_TYPE_CATEGORY",
+        "isActive": true
+    },
+    {
+        "id": "2684",
+        "name": "Fish",
+        "slug": "fish-2684",
+        "image": "https://img.cdn4dd.com/s/convenience/images/fish.png",
+        "type": "RETAIL_L1_NAVIGATION_TYPE_CATEGORY",
+        "isActive": true
+    },
+    {
+        "id": "2682",
+        "name": "Small pet",
+        "slug": "small pet-2682",
+        "image": "https://img.cdn4dd.com/s/convenience/images/small-pet.png",
+        "type": "RETAIL_L1_NAVIGATION_TYPE_CATEGORY",
+        "isActive": true
+    },
+    {
+        "id": "2680",
+        "name": "Bird",
+        "slug": "bird-2680",
+        "image": "https://img.cdn4dd.com/s/convenience/images/bird.png",
+        "type": "RETAIL_L1_NAVIGATION_TYPE_CATEGORY",
+        "isActive": true
+    },
+    {
+        "id": "798824451433136156",
+        "name": "Pet Parents",
+        "slug": "pet parents-798824451433136156",
+        "image": "https://img.cdn4dd.com/s/convenience/images/pet-parents.png",
+        "type": "RETAIL_L1_NAVIGATION_TYPE_CATEGORY",
+        "isActive": true
+    },
+    {
+        "id": "802234456357568539",
+        "name": "Other Pets",
+        "slug": "other pets-802234456357568539",
+        "image": "https://img.cdn4dd.com/s/convenience/images/other-pets.png",
+        "type": "RETAIL_L1_NAVIGATION_TYPE_CATEGORY",
+        "isActive": true
+    },
+    {
+        "id": "754",
+        "name": "Household",
+        "slug": "household-754",
+        "image": "https://img.cdn4dd.com/s/convenience/images/household.png",
+        "type": "RETAIL_L1_NAVIGATION_TYPE_CATEGORY",
+        "isActive": true
+    },
+    {
+        "id": "1026",
+        "name": "Pet Care",
+        "slug": "pet care-1026",
+        "image": "https://img.cdn4dd.com/s/convenience/images/pet-care.png",
+        "type": "RETAIL_L1_NAVIGATION_TYPE_CATEGORY",
+        "isActive": true
+    },
+    {
+        "id": "21150",
+        "name": "Makeup",
+        "slug": "makeup-21150",
+        "image": "https://img.cdn4dd.com/s/convenience/images/makeup.png",
+        "type": "RETAIL_L1_NAVIGATION_TYPE_CATEGORY",
+        "isActive": true
+    },
+    {
+        "id": "4732",
+        "name": "Skin Care",
+        "slug": "skin care-4732",
+        "image": "https://img.cdn4dd.com/s/convenience/images/skin-care.png",
+        "type": "RETAIL_L1_NAVIGATION_TYPE_CATEGORY",
+        "isActive": true
+    },
+    {
+        "id": "4724",
+        "name": "Hair",
+        "slug": "hair-4724",
+        "image": "https://img.cdn4dd.com/s/convenience/images/hair.png",
+        "type": "RETAIL_L1_NAVIGATION_TYPE_CATEGORY",
+        "isActive": true
+    },
+    {
+        "id": "4722",
+        "name": "Fragrances",
+        "slug": "fragrances-4722",
+        "image": "https://img.cdn4dd.com/s/convenience/images/fragrances.png",
+        "type": "RETAIL_L1_NAVIGATION_TYPE_CATEGORY",
+        "isActive": true
+    },
+    {
+        "id": "4728",
+        "name": "Tools & Brushes",
+        "slug": "tools & brushes-4728",
+        "image": "https://img.cdn4dd.com/s/convenience/images/tools-brushes.png",
+        "type": "RETAIL_L1_NAVIGATION_TYPE_CATEGORY",
+        "isActive": true
+    },
+    {
+        "id": "4720",
+        "name": "Bath & Body",
+        "slug": "bath & body-4720",
+        "image": "https://img.cdn4dd.com/s/convenience/images/bath-body.png",
+        "type": "RETAIL_L1_NAVIGATION_TYPE_CATEGORY",
+        "isActive": true
+    },
+    {
+        "id": "757",
+        "name": "Personal Care",
+        "slug": "personal care-757",
+        "image": "https://img.cdn4dd.com/s/convenience/images/personal-care.png",
+        "type": "RETAIL_L1_NAVIGATION_TYPE_CATEGORY",
+        "isActive": true
+    },
+    {
+        "id": "21149",
+        "name": "Nails",
+        "slug": "nails-21149",
+        "image": "https://img.cdn4dd.com/s/convenience/images/nails.png",
+        "type": "RETAIL_L1_NAVIGATION_TYPE_CATEGORY",
+        "isActive": true
+    },
+    {
+        "id": "28246",
+        "name": "Accessories",
+        "slug": "accessories-28246",
+        "image": "https://img.cdn4dd.com/s/convenience/images/accessories.png",
+        "type": "RETAIL_L1_NAVIGATION_TYPE_CATEGORY",
+        "isActive": true
+    },
+    {
+        "id": "1125",
+        "name": "Vitamins",
+        "slug": "vitamins-1125",
+        "image": "https://img.cdn4dd.com/s/convenience/images/vitamins.png",
+        "type": "RETAIL_L1_NAVIGATION_TYPE_CATEGORY",
+        "isActive": true
+    }
+]

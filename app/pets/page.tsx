@@ -1,11 +1,13 @@
 "use client"
 
-import { useState, useRef } from "react"
+import { useState, useRef, useEffect } from "react"
 import FilterOptions, { FilterState, FilterOptionsRef } from "@/components/filter-options"
 import StoreGrid from "@/components/store/store-grid"
 import ProductDisplay from "@/components/product/product-display"
 import AllStores from "@/components/all-stores"
 import { CartProvider } from "@/context/cart-context"
+import CartSidebar from "@/components/cart-sidebar"
+import { useCartStore } from "@/store/cart-store"
 import {
   getFilterOptions,
   getAllPetStores,
@@ -13,7 +15,10 @@ import {
   getFeaturedPetStores,
   getFeaturedPetDealsStore,
   getFeaturedPetDeals,
-  getPetProductSections
+  getPetProductSections,
+  getEnrichedPetProducts,
+  getPetCategories,
+  filterProductsByCategory
 } from "@/app/pets/data/pet-response-mapper"
 
 export default function Pets() {
@@ -29,7 +34,33 @@ export default function Pets() {
     dashPass: false,
   });
   
+  // Cart state
+  const [isCartOpen, setIsCartOpen] = useState(false)
+  const [currentStoreData, setCurrentStoreData] = useState<any>(null)
+  
   const filterOptionsRef = useRef<FilterOptionsRef>(null);
+  const cartStore = useCartStore();
+  
+  // Set the category to pets when component mounts
+  useEffect(() => {
+    cartStore.setCategory("pets")
+    
+    // Get the first pet store to use as default store data
+    const allStores = getAllPetStores()
+    if (allStores.length > 0) {
+      setCurrentStoreData(allStores[0])
+    }
+    
+    // Listen for cart updates to open cart when items are added
+    const unsubscribe = useCartStore.subscribe((state) => {
+      const { items } = state
+      if (items.length > 0 && !isCartOpen) {
+        setIsCartOpen(true)
+      }
+    })
+    
+    return () => unsubscribe()
+  }, [])
   
   // Get the data from our pet response mapper
   const filterOptions = getFilterOptions();
@@ -86,58 +117,78 @@ export default function Pets() {
     .slice(0, 5);
 
   return (
-    <CartProvider>
+    <CartProvider category="pets">
       <div className="max-w-[1200px] mx-auto px-4 pt-16">
         {/* Filter Options Bar */}
-      <FilterOptions 
-        ref={filterOptionsRef}
-        isGrocery={false} 
-        onFilterChange={handleFilterChange}
-        filters={activeFilters}
-        filterData={filterOptions}
-      />
-
-      {/* All Stores Section */}
-      {filteredStores.length > 0 ? (
-        <AllStores title={uiConfig.allStoresTitle} stores={filteredStores} />
-      ) : (
-        <div className="py-10 text-center">
-          <p className="text-lg text-gray-500">No stores match your filters</p>
-        </div>
-      )}
-
-      {/* Pricing and Fees Link */}
-      <div className="mt-4 text-sm text-gray-600">
-        <a href="#" className="hover:underline">
-          Pricing and Fees
-        </a>
-      </div>
-
-      {/* Pet Stores Near You Section */}
-      {featuredStores.length > 0 && (
-        <StoreGrid title={uiConfig.nearbyTitle} stores={featuredStores} variant="favorites" />
-      )}
-
-      {/* Fastest Near You Section */}
-      {fastestStores.length > 0 && (
-        <StoreGrid title="Fastest Near You" stores={fastestStores} variant="fastest" />
-      )}
-
-      {/* Product Sections */}
-      {productSections.length > 0 && productSections.map((section, index) => (
-        <ProductDisplay
-          key={`section-${section.id || index}`}
-          title={section.title}
-          storeName={section.storeName}
-          storeImage={section.storeImage}
-          time={section.time}
-          products={section.products}
-          variant="carousel"
-          isSnapEligible={section.isSnapEligible}
-          storeId={(section.id || index).toString()}
+        <FilterOptions 
+          ref={filterOptionsRef}
+          isGrocery={false} 
+          onFilterChange={handleFilterChange}
+          filters={activeFilters}
+          filterData={filterOptions}
         />
-      ))}
-    </div>
+
+        {/* All Stores Section */}
+        {filteredStores.length > 0 ? (
+          <AllStores title={uiConfig.allStoresTitle} stores={filteredStores} variant="all" />
+        ) : (
+          <div className="py-10 text-center">
+            <p className="text-lg text-gray-500">No stores match your filters</p>
+          </div>
+        )}
+
+        {/* Pricing and Fees Link */}
+        <div className="mt-4 text-sm text-gray-600">
+          <a href="#" className="hover:underline">
+            Pricing and Fees
+          </a>
+        </div>
+
+        {/* Pet Stores Near You Section */}
+        {featuredStores.length > 0 && (
+          <StoreGrid title={uiConfig.nearbyTitle} stores={featuredStores} variant="favorites" />
+        )}
+
+        {/* Fastest Near You Section */}
+        {fastestStores.length > 0 && (
+          <StoreGrid title="Fastest Near You" stores={fastestStores} variant="fastest" />
+        )}
+
+        {/* Product Sections */}
+        {productSections.length > 0 && productSections.map((section, index) => (
+          <ProductDisplay
+            key={`section-${section.id || index}`}
+            title={section.title}
+            storeName={section.storeName}
+            storeImage={section.storeImage}
+            time={section.time}
+            products={section.products}
+            variant="carousel"
+            isSnapEligible={section.isSnapEligible}
+            storeId={(section.id || index).toString()}
+            category="pets"
+          />
+        ))}
+      </div>
+      
+      {/* Cart Sidebar */}
+      <CartSidebar 
+        isOpen={isCartOpen} 
+        onClose={() => setIsCartOpen(false)} 
+        category="pets" 
+        storeData={currentStoreData} 
+      />
+      
+      {/* Floating Cart Button */}
+      {cartStore.items.length > 0 && !isCartOpen && (
+        <button 
+          onClick={() => setIsCartOpen(true)}
+          className="fixed bottom-6 right-6 bg-red-600 text-white rounded-full px-6 py-3 flex items-center shadow-lg z-40"
+        >
+          <span className="font-medium mr-2">View Cart • {cartStore.getTotalItems()} items</span>
+          <span>{cartStore.getTotalPrice()}</span>
+        </button>
+      )}
     </CartProvider>
   )
 }

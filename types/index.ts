@@ -1,9 +1,18 @@
-export interface Product {
+export interface Category {
   id: number
+  name: string
+  slug: string
+  image: string
+  type: string
+  isActive: boolean
+}
+export interface Product {
+  id: number | string
   name: string
   price: number
   quantity?: string
   image: string
+  category?: string | string[]
 }
 
 export interface Category {

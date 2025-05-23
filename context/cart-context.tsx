@@ -1,27 +1,16 @@
 "use client"
 
 import type React from "react"
-import { createContext, useContext, useState, useEffect } from "react"
+import { createContext, useContext, useEffect, useState } from "react"
 import type { Product } from "@/types"
+import { CartCategory, useCartStore } from "@/store/cart-store"
 
-// Define default cart config if not available
-const defaultCartConfig = {
-  freeDeliveryThreshold: 35,
-  defaultDeliveryFee: 6.64,
-  serviceFeePercentage: 0.15,
-  minServiceFee: 5.49,
-}
-
-interface CartItem extends Product {
-  quantity: number
-  storeId?: string // Add store ID to track items from different stores
-}
-
+// Define the cart context type
 interface CartContextType {
-  items: CartItem[]
+  items: any[]
   addToCart: (product: Product, storeId?: string) => void
-  removeFromCart: (productId: number) => void
-  updateQuantity: (productId: number, quantity: number) => void
+  removeFromCart: (productId: number | string) => void
+  updateQuantity: (productId: number | string, quantity: number) => void
   clearCart: () => void
   totalItems: number
   subtotal: number
@@ -30,96 +19,82 @@ interface CartContextType {
   total: number
 }
 
+// Create the context
 const CartContext = createContext<CartContextType | undefined>(undefined)
 
-export function CartProvider({ children }: { children: React.ReactNode }) {
-  const [items, setItems] = useState<CartItem[]>([])
-  const [subtotal, setSubtotal] = useState(0)
-  const [serviceFee, setServiceFee] = useState(0)
-  const [deliveryFee, setDeliveryFee] = useState(defaultCartConfig.defaultDeliveryFee)
-  const [total, setTotal] = useState(0)
-
-  // Calculate totals whenever items change
+// CartProvider component that uses the Zustand store internally
+export function CartProvider({ 
+  children, 
+  category = "grocery" 
+}: { 
+  children: React.ReactNode, 
+  category?: CartCategory 
+}) {
+  // Use the cart store
+  const cartStore = useCartStore()
+  
+  // Local state to force re-renders when cart changes
+  const [localVersion, setLocalVersion] = useState(0)
+  
+  // Set the initial category when the provider mounts
   useEffect(() => {
-    const newSubtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0)
-    setSubtotal(newSubtotal)
+    cartStore.setCategory(category)
+  }, [category])
 
-    // Calculate service fee (percentage with minimum)
-    const calculatedServiceFee = Math.max(
-      newSubtotal * defaultCartConfig.serviceFeePercentage,
-      defaultCartConfig.minServiceFee,
-    )
-    setServiceFee(calculatedServiceFee)
-
-    // Delivery fee is $0 if subtotal is over threshold, otherwise default fee
-    const newDeliveryFee =
-      newSubtotal >= defaultCartConfig.freeDeliveryThreshold ? 0 : defaultCartConfig.defaultDeliveryFee
-    setDeliveryFee(newDeliveryFee)
-
-    // Calculate total
-    setTotal(newSubtotal + calculatedServiceFee + newDeliveryFee)
-  }, [items])
-
-  // Add product to cart
-  const addToCart = (product: Product, storeId?: string) => {
-    setItems((prevItems) => {
-      // Check if product already exists in cart
-      const existingItemIndex = prevItems.findIndex((item) => item.id === product.id)
-
-      if (existingItemIndex >= 0) {
-        // Product exists, increment quantity
-        const updatedItems = [...prevItems]
-        updatedItems[existingItemIndex] = {
-          ...updatedItems[existingItemIndex],
-          quantity: updatedItems[existingItemIndex].quantity + 1,
-        }
-        return updatedItems
-      } else {
-        // Product doesn't exist, add new item
-        return [...prevItems, { ...product, quantity: 1, storeId }]
-      }
+  // Subscribe to cart store changes
+  useEffect(() => {
+    // This subscription will trigger a re-render whenever the cart store changes
+    const unsubscribe = useCartStore.subscribe(() => {
+      setLocalVersion(v => v + 1)
     })
-  }
-
-  // Remove product from cart
-  const removeFromCart = (productId: number) => {
-    setItems((prevItems) => prevItems.filter((item) => item.id !== productId))
-  }
-
-  // Update product quantity
-  const updateQuantity = (productId: number, quantity: number) => {
-    if (quantity <= 0) {
-      removeFromCart(productId)
-      return
-    }
-
-    setItems((prevItems) => prevItems.map((item) => (item.id === productId ? { ...item, quantity } : item)))
-  }
-
-  // Clear cart
-  const clearCart = () => {
-    setItems([])
-  }
-
-  // Calculate total items in cart
-  const totalItems = items.reduce((sum, item) => sum + item.quantity, 0)
-
+    
+    return () => unsubscribe()
+  }, [])
+  
+  // Create value object with Zustand state and methods
   const value = {
-    items,
-    addToCart,
-    removeFromCart,
-    updateQuantity,
-    clearCart,
-    totalItems,
-    subtotal,
-    serviceFee,
-    deliveryFee,
-    total,
+    items: cartStore.items,
+    addToCart: (product: Product, storeId?: string) => {
+      if (category === "restaurant" && storeId) {
+        cartStore.addItem({
+          id: product.id,
+          name: product.name,
+          price: product.price,
+          image: product.image,
+          restaurantId: storeId,
+        })
+      } else if (storeId) {
+        cartStore.addItem({
+          id: product.id,
+          name: product.name,
+          price: product.price,
+          image: product.image,
+          storeId: storeId,
+        })
+      } else {
+        // Default case - just add the product without store ID
+        cartStore.addItem({
+          id: product.id,
+          name: product.name,
+          price: product.price,
+          image: product.image,
+        })
+      }
+    },
+    removeFromCart: (productId: number | string) => cartStore.removeItem(productId),
+    updateQuantity: (productId: number | string, quantity: number) => cartStore.updateQuantity(productId, quantity),
+    clearCart: () => cartStore.clearCart(),
+    totalItems: cartStore.getTotalItems(),
+    subtotal: cartStore.getSubtotal(),
+    serviceFee: cartStore.getServiceFee(),
+    deliveryFee: cartStore.getDeliveryFee(),
+    total: cartStore.getTotal(),
   }
-
+  
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>
 }
 
+// Hook to use the cart context
 export function useCart() {
   const context = useContext(CartContext)
   if (context === undefined) {

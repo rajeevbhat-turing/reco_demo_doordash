@@ -6,28 +6,52 @@ import Image from "next/image"
 import { Plus, Trash2 } from "lucide-react"
 import type { Product } from "@/types"
 import { useCart } from "@/context/cart-context"
+import { useCartStore, CartCategory } from "@/store/cart-store"
 
 interface ProductCardProps {
   product: Product
   onProductClick: (product: Product) => void
   storeId?: string
+  category?: CartCategory
 }
 
-export default function ProductCard({ product, onProductClick, storeId }: ProductCardProps) {
+export default function ProductCard({ 
+  product, 
+  onProductClick, 
+  storeId,
+  category = "grocery"
+}: ProductCardProps) {
   const { items, addToCart, updateQuantity, removeFromCart } = useCart()
+  const cartStore = useCartStore()
 
-  // Check if product is in cart and get quantity
-  const cartItem = items.find((item) => item.id === product.id)
-  const quantity = cartItem?.quantity || 0
+  // Check if product is in cart from either implementation
+  const contextCartItem = items.find((item) => item.id === product.id)
+  const storeCartItem = cartStore.items.find((item) => item.id === product.id)
+  const quantity = contextCartItem?.quantity || storeCartItem?.quantity || 0
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.stopPropagation() // Prevent opening the modal when clicking the add button
+    
+    // Add to both cart implementations for compatibility
     addToCart(product, storeId)
+    
+    // Add to cart store directly
+    cartStore.addItem({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      image: product.image,
+      storeId: category !== "restaurant" ? storeId : undefined,
+      restaurantId: category === "restaurant" ? storeId : undefined,
+    })
   }
 
   const handleRemoveFromCart = (e: React.MouseEvent) => {
     e.stopPropagation() // Prevent opening the modal when clicking the remove button
+    
+    // Remove from both cart implementations for compatibility
     removeFromCart(product.id)
+    cartStore.removeItem(product.id)
   }
 
   return (
