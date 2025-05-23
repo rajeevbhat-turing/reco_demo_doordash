@@ -238,11 +238,7 @@ export default function AllStores({
                   </div>
                 )}
 
-                {store.open ? (
-                  <div className="text-sm text-gray-500">{store.time}</div>
-                ) : (
-                  <div className="text-sm text-gray-500">Closed</div>
-                )}
+                <div className="text-sm text-gray-500">{store.time}</div>
 
                 <div className="text-sm text-gray-500">{store.delivery}</div>
 

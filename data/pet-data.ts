@@ -17,7 +17,7 @@ export const allPetStores = [
     "rating": "4.9",
     "ratingCount": "1033",
     "distance": "1.54 mi",
-    "time": "Closed",
+    "time": "Open",
     "image": "https://img.cdn4dd.com/cdn-cgi/image/fit=contain,width=1200,height=672,format=auto/https://doordash-static.s3.amazonaws.com/media/restaurant/cover_square/a444d5eb-10c4-45e1-86a1-65a001a1a81f.png",
     "isDashPass": true
   },
@@ -27,7 +27,7 @@ export const allPetStores = [
     "rating": "4.9",
     "ratingCount": "848",
     "distance": "1.29 mi",
-    "time": "Closed",
+    "time": "Open",
     "image": "https://img.cdn4dd.com/cdn-cgi/image/fit=contain,width=1200,height=672,format=auto/https://doordash-static.s3.amazonaws.com/media/restaurant/cover_square/903222da-3939-4dbc-8c4a-03ee2118090d.png",
     "isDashPass": true
   },
@@ -37,7 +37,7 @@ export const allPetStores = [
     "rating": "4.9",
     "ratingCount": "2600",
     "distance": "2.13 mi",
-    "time": "Closed",
+    "time": "Open",
     "image": "https://img.cdn4dd.com/cdn-cgi/image/fit=contain,width=1200,height=672,format=auto/https://doordash-static.s3.amazonaws.com/media/restaurant/cover_square/5a4ed405-725e-46ec-a9ce-75212a7f5b24.png",
     "isDashPass": true
   },
@@ -57,7 +57,7 @@ export const allPetStores = [
     "rating": "0.0",
     "ratingCount": "0",
     "distance": "2.53 mi",
-    "time": "Closed",
+    "time": "Open",
     "image": "https://img.cdn4dd.com/cdn-cgi/image/fit=contain,width=1200,height=672,format=auto/https://doordash-static.s3.amazonaws.com/media/restaurant/cover_square/7a2ccc67-5ac3-49fa-8d46-72e9d986a70e.png",
     "isDashPass": true
   },
@@ -77,7 +77,7 @@ export const allPetStores = [
     "rating": "4.9",
     "ratingCount": "18",
     "distance": "0.86 mi",
-    "time": "Closed",
+    "time": "Open",
     "image": "https://img.cdn4dd.com/cdn-cgi/image/fit=contain,width=1200,height=672,format=auto/https://doordash-static.s3.amazonaws.com/media/restaurant/cover_square/4a0e7f7a-92d2-432d-a9b0-1601a383a317.jpg",
     "isDashPass": true
   },
@@ -87,7 +87,7 @@ export const allPetStores = [
     "rating": "4.7",
     "ratingCount": "26",
     "distance": "5.10 mi",
-    "time": "Closed",
+    "time": "Open",
     "image": "https://img.cdn4dd.com/cdn-cgi/image/fit=contain,width=1200,height=672,format=auto/https://doordash-static.s3.amazonaws.com/media/restaurant/cover_square/5c7c4d0c-c063-4138-80ce-666f78cf29f3.png",
     "isDashPass": true
   },
@@ -97,7 +97,7 @@ export const allPetStores = [
     "rating": "4.8",
     "ratingCount": "81",
     "distance": "0.73 mi",
-    "time": "Closed",
+    "time": "Open",
     "image": "https://img.cdn4dd.com/cdn-cgi/image/fit=contain,width=1200,height=672,format=auto/https://doordash-static.s3.amazonaws.com/media/restaurant/cover_square/ba813b7b-e0b9-4105-9462-c6756da5d592.png",
     "isDashPass": true
   },

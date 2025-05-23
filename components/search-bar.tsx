@@ -7,6 +7,7 @@ import Image from "next/image"
 import { Search, X, ArrowLeft } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { restaurants } from "@/constants/restaurants"
+import { menuItems } from "@/constants/menu-items"
 
 interface SearchResult {
   id: string
@@ -14,6 +15,9 @@ interface SearchResult {
   logo: string
   description: string
   dashPass?: boolean
+  type: "restaurant" | "menu-item"
+  restaurantId?: string
+  matchedItem?: string
 }
 
 const SearchBar = () => {
@@ -47,33 +51,74 @@ const SearchBar = () => {
     localStorage.setItem("recentSearches", JSON.stringify(updatedSearches))
   }
 
+  // Search for restaurants that serve specific menu items
+  const searchByMenuItem = (searchTerm: string) => {
+    const lowerSearchTerm = searchTerm.toLowerCase()
+    const matchingItems = menuItems.filter(
+      (item) =>
+        item.name.toLowerCase().includes(lowerSearchTerm) ||
+        item.description.toLowerCase().includes(lowerSearchTerm) ||
+        item.category.toLowerCase().includes(lowerSearchTerm),
+    )
+
+    const restaurantMatches = new Map<string, { restaurant: any; items: string[] }>()
+
+    matchingItems.forEach((item) => {
+      const restaurant = restaurants.find((r) => r.id === item.restaurantId)
+      if (restaurant) {
+        if (!restaurantMatches.has(restaurant.id)) {
+          restaurantMatches.set(restaurant.id, { restaurant, items: [] })
+        }
+        restaurantMatches.get(restaurant.id)!.items.push(item.name)
+      }
+    })
+
+    return Array.from(restaurantMatches.values()).map(({ restaurant, items }) => ({
+      id: restaurant.id,
+      name: restaurant.name,
+      logo: restaurant.logo,
+      description: `Known for: ${items.slice(0, 3).join(", ")}${items.length > 3 ? "..." : ""}`,
+      dashPass: restaurant.dashPass,
+      type: "menu-item" as const,
+      restaurantId: restaurant.id,
+      matchedItem: items[0],
+    }))
+  }
+
   // Handle search input change
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value
     setSearchTerm(value)
 
     if (value.trim()) {
-      // Filter restaurants based on search term
-      const filteredRestaurants = restaurants
+      // Search restaurants by name and cuisine
+      const restaurantResults = restaurants
         .filter((restaurant) => {
           return (
             restaurant.name.toLowerCase().includes(value.toLowerCase()) ||
             restaurant.cuisine.toLowerCase().includes(value.toLowerCase())
           )
         })
-        .slice(0, 5)
+        .slice(0, 3)
         .map((restaurant) => ({
           id: restaurant.id,
           name: restaurant.name,
           logo: restaurant.logo,
           description: generateDescription(restaurant),
           dashPass: restaurant.dashPass,
+          type: "restaurant" as const,
         }))
+
+      // Search restaurants by menu items
+      const menuItemResults = searchByMenuItem(value).slice(0, 3)
+
+      // Combine results, prioritizing restaurant matches
+      const combinedResults = [...restaurantResults, ...menuItemResults].slice(0, 5)
 
       // Generate search suggestions based on search term
       const suggestions = generateSearchSuggestions(value)
 
-      setSearchResults(filteredRestaurants)
+      setSearchResults(combinedResults)
       setSearchSuggestions(suggestions)
       setIsSearchActive(true)
     } else {
@@ -86,60 +131,39 @@ const SearchBar = () => {
   // Generate description for restaurant search results
   const generateDescription = (restaurant: any) => {
     // Create a description based on restaurant properties
-    const tags = [
-      restaurant.cuisine,
-      "Chicken",
-      "Burgers",
-      "Sandwiches",
-      "Fried Chicken",
-      "Wraps",
-      "Nuggets",
-      "Rice Bowl",
-      "Noodles",
-      "Seafood",
-      "Lamb",
-      "Dessert",
-      "Fast Food",
-      "Family Friendly",
-    ]
-      .filter((tag) => Math.random() > 0.5) // Randomly select some tags
-      .slice(0, 6) // Limit to 6 tags
+    const tags = [restaurant.cuisine, "Popular items", "Fast delivery", "Highly rated"]
 
-    // Ensure cuisine is always included
-    if (!tags.includes(restaurant.cuisine)) {
-      tags.unshift(restaurant.cuisine)
-    }
-
-    return tags.join(", ")
+    return `${restaurant.cuisine} • ${restaurant.priceRange} • ${restaurant.time}`
   }
 
   // Generate search suggestions based on search term
   const generateSearchSuggestions = (term: string) => {
-    const commonSuggestions = [
-      `${term}`,
-      `${term} delivery`,
-      `${term} near me`,
-      `${term} restaurant`,
-      `${term} takeaway`,
-      `${term} fast food`,
-      `grilled ${term}`,
-      `fried ${term}`,
-      `${term} burger`,
-      `${term} sandwich`,
-      `${term} wrap`,
-      `${term} salad`,
-      `${term} bowl`,
-      `${term} meal`,
-      `${term} combo`,
-      `${term} special`,
-      `${term} royale`,
-      `honey ${term}`,
-      `spicy ${term}`,
-      `${term} breast`,
+    const foodCategories = [
+      "burgers",
+      "pizza",
+      "coffee",
+      "sushi",
+      "chicken",
+      "salad",
+      "desserts",
+      "breakfast",
+      "lunch",
+      "dinner",
+      "healthy",
+      "fast food",
+      "asian",
+      "italian",
     ]
 
-    // Filter suggestions that include the search term
-    return commonSuggestions.filter((suggestion) => suggestion.toLowerCase().includes(term.toLowerCase())).slice(0, 5)
+    const locationSuggestions = [`${term} near me`, `${term} delivery`, `${term} restaurant`, `${term} takeaway`]
+
+    const foodSuggestions = foodCategories
+      .filter((category) => category.includes(term.toLowerCase()) || term.toLowerCase().includes(category))
+      .map((category) => category)
+
+    const allSuggestions = [term, ...locationSuggestions, ...foodSuggestions, `best ${term}`, `${term} deals`]
+
+    return allSuggestions.slice(0, 5)
   }
 
   // Handle search submission
@@ -153,9 +177,9 @@ const SearchBar = () => {
   }
 
   // Handle clicking on a search result
-  const handleResultClick = (id: string) => {
+  const handleResultClick = (result: SearchResult) => {
     saveRecentSearch(searchTerm)
-    router.push(`/store/${id}`)
+    router.push(`/store/${result.id}`)
     setIsSearchActive(false)
   }
 
@@ -251,14 +275,14 @@ const SearchBar = () => {
       {/* Search dropdown */}
       {isSearchActive && (
         <div className="absolute z-50 mt-2 w-full bg-white rounded-lg shadow-lg overflow-hidden border border-gray-200">
-          {/* Restaurant results */}
+          {/* Restaurant and Menu Item results */}
           {searchResults.length > 0 && (
             <div className="divide-y divide-gray-100">
               {searchResults.map((result) => (
                 <div
-                  key={result.id}
+                  key={`${result.type}-${result.id}`}
                   className="p-3 hover:bg-gray-50 cursor-pointer"
-                  onClick={() => handleResultClick(result.id)}
+                  onClick={() => handleResultClick(result)}
                 >
                   <div className="flex items-start">
                     <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-100 mr-3 flex-shrink-0">
@@ -290,6 +314,11 @@ const SearchBar = () => {
                               strokeLinejoin="round"
                             />
                           </svg>
+                        )}
+                        {result.type === "menu-item" && (
+                          <span className="text-xs bg-orange-100 text-orange-800 px-2 py-1 rounded-full ml-2">
+                            Menu Match
+                          </span>
                         )}
                       </div>
                       <p className="text-xs text-gray-500 truncate">{result.description}</p>
