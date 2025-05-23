@@ -24,38 +24,72 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
       // Sample complement items - in a real app, these would come from an API or constants
       setComplementItems([
         {
-          id: "oeo-mcflurry",
+          id: "oreo-mcflurry",
           name: "OREO McFlurry",
-          price: "A$5.30",
-          image: "https://img.cdn4dd.com/p/fit=cover,width=200,height=200,format=auto,quality=72/media/photosV2/6f3f8098-809f-4482-b24f-b0ad14493109-retina-large.png",
+          price: "$5.30",
+          image:
+            "https://img.cdn4dd.com/p/fit=cover,width=200,height=200,format=auto,quality=72/media/photosV2/6f3f8098-809f-4482-b24f-b0ad14493109-retina-large.png",
         },
         {
           id: "fries",
           name: "Fries",
-          price: "A$7.15",
-          image: "https://img.cdn4dd.com/p/fit=cover,width=200,height=200,format=auto,quality=72/media/photosV2/34e81cd3-e3bf-49c5-b1a8-73e842faacba-retina-large.png",
+          price: "$7.15",
+          image:
+            "https://img.cdn4dd.com/p/fit=cover,width=200,height=200,format=auto,quality=72/media/photosV2/34e81cd3-e3bf-49c5-b1a8-73e842faacba-retina-large.png",
         },
         {
           id: "coke",
           name: "Coke",
-          price: "A$5.30",
-          image: "https://img.cdn4dd.com/p/fit=cover,width=200,height=200,format=auto,quality=72/media/photosV2/683ff86e-b09c-4631-bcf3-be8a72b19a98-retina-large.png",
+          price: "$5.30",
+          image:
+            "https://img.cdn4dd.com/p/fit=cover,width=200,height=200,format=auto,quality=72/media/photosV2/683ff86e-b09c-4631-bcf3-be8a72b19a98-retina-large.png",
         },
         {
-          id: "caramel-sunday",
-          name: "Caamel Sunday",
-          price: "A$4.65",
-          image: "https://img.cdn4dd.com/p/fit=cover,width=200,height=200,format=auto,quality=72/media/photosV2/5df2f9ff-cda5-4f81-aeeb-76cc42aec429-retina-large.png",
+          id: "caramel-sundae",
+          name: "Caramel Sundae",
+          price: "$4.65",
+          image:
+            "https://img.cdn4dd.com/p/fit=cover,width=200,height=200,format=auto,quality=72/media/photosV2/5df2f9ff-cda5-4f81-aeeb-76cc42aec429-retina-large.png",
         },
         {
-          id: "HashBrown",
-          name: "hashbrown",
-          price: "A$5.30",
-          image: "https://img.cdn4dd.com/p/fit=cover,width=200,height=200,format=auto,quality=72/media/photosV2/d6932d81-c9b6-449d-895f-004798747012-retina-large.png",
+          id: "hashbrown",
+          name: "Hash Brown",
+          price: "$5.30",
+          image:
+            "https://img.cdn4dd.com/p/fit=cover,width=200,height=200,format=auto,quality=72/media/photosV2/d6932d81-c9b6-449d-895f-004798747012-retina-large.png",
         },
       ])
     }
   }, [restaurantId])
+
+  // Helper function to calculate individual item price
+  const getItemPrice = (item: any) => {
+    const cleanPrice = item.price.replace(/[^0-9.]/g, "")
+    const price = Number.parseFloat(cleanPrice)
+    return isNaN(price) ? 0 : price
+  }
+
+  // Calculate subtotal
+  const getSubtotal = () => {
+    const total = items.reduce((sum, item) => {
+      const price = getItemPrice(item)
+      return sum + price * item.quantity
+    }, 0)
+    return total.toFixed(2)
+  }
+
+  // Calculate delivery fee (you can make this dynamic based on restaurant)
+  const deliveryFee = 0.0
+
+  // Calculate service fee (typically a percentage of subtotal)
+  const serviceFee = (Number.parseFloat(getSubtotal()) * 0.15).toFixed(2)
+
+  // Calculate total
+  const getTotal = () => {
+    const subtotal = Number.parseFloat(getSubtotal())
+    const total = subtotal
+    return total.toFixed(2)
+  }
 
   const cartClasses = isOpen
     ? "fixed inset-y-0 right-0 z-50 w-full md:w-[550px] bg-white shadow-xl flex flex-col transform translate-x-0 transition-transform duration-300 ease-in-out"
@@ -99,6 +133,16 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
         <button className="w-full bg-[#e03a19] text-white py-3 rounded-full font-medium">Continue</button>
       </div>
 
+      {/* Order Summary */}
+      <div className="p-4 border-t bg-gray-50">
+        <div className="space-y-2">
+          <div className="flex justify-between font-bold">
+            <span>Total</span>
+            <span>${getTotal()}</span>
+          </div>
+        </div>
+      </div>
+
       <div className="flex-1 overflow-y-auto">
         {/* Cart Items */}
         <div className="divide-y divide-gray-200">
@@ -121,11 +165,13 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
                   <p className="text-xs text-gray-600 mt-1">LARGE (5939 kJ.), Fries (1320 kJ.), Fanta® (716 kJ.)</p>
                 )}
                 <div className="mt-2 flex items-center justify-between">
-                  <div className="text-sm">
-                    A${(Number.parseFloat(item.price.replace("A$", "")) * item.quantity).toFixed(2)}
-                  </div>
+                  <div className="text-sm">${(getItemPrice(item) * item.quantity).toFixed(2)}</div>
                   <div className="flex items-center bg-gray-100 rounded-full shadow-lg">
-                    <button className="p-1 bg-white rounded-full" onClick={() => removeItem(item.id)} aria-label="Remove item">
+                    <button
+                      className="p-1 bg-white rounded-full"
+                      onClick={() => removeItem(item.id)}
+                      aria-label="Remove item"
+                    >
                       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path
                           d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"

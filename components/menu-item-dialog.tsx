@@ -20,7 +20,7 @@ interface CustomizationOption {
   id: string
   name: string
   calories?: string
-  price?: string
+  price?: number // Changed to number for easier calculation
   selected?: boolean
 }
 
@@ -53,6 +53,7 @@ interface MenuItemDialogProps {
 export default function MenuItemDialog({ isOpen, onClose, item }: MenuItemDialogProps) {
   const [selectedOption, setSelectedOption] = useState<string | null>(null)
   const [selectedCustomizations, setSelectedCustomizations] = useState<Record<string, string[]>>({})
+  const [customizationPrices, setCustomizationPrices] = useState<Record<string, number>>({})
   const dialogRef = useRef<HTMLDivElement>(null)
   const addToCart = useCartStore((state) => state.addItem)
 
@@ -86,18 +87,27 @@ export default function MenuItemDialog({ isOpen, onClose, item }: MenuItemDialog
     // Initialize selected customizations
     if (isOpen && item) {
       const initialCustomizations: Record<string, string[]> = {}
+      const initialPrices: Record<string, number> = {}
+
       customizationSections.forEach((section) => {
         if (section.required && section.type === "radio") {
           // Pre-select the first option for required radio sections
           const defaultOption = section.options[0]?.id
           if (defaultOption) {
             initialCustomizations[section.id] = [defaultOption]
+            // Store the price if it exists
+            const option = section.options.find(opt => opt.id === defaultOption)
+            if (option?.price) {
+              initialPrices[defaultOption] = option.price
+            }
           }
         } else {
           initialCustomizations[section.id] = []
         }
       })
+
       setSelectedCustomizations(initialCustomizations)
+      setCustomizationPrices(initialPrices)
 
       // Count required sections
       const requiredCount = customizationSections.filter((section) => section.required).length
@@ -116,173 +126,109 @@ export default function MenuItemDialog({ isOpen, onClose, item }: MenuItemDialog
 
   if (!isOpen || !item) return null
 
+  // Parse base price (remove currency symbol and convert to number)
+  const basePrice = parseFloat(item.price.replace(/[^0-9.]/g, '')) || 0
+
+  // Calculate total price including customizations
+  const calculateTotalPrice = () => {
+    let total = basePrice
+    Object.values(customizationPrices).forEach(price => {
+      total += price
+    })
+    return total.toFixed(2)
+  }
+
   // Recommended meal options
   const recommendedOptions: MenuItemOption[] = [
     {
       id: "1",
-      title: "#1 · Ordered recently by 10+ others",
-      subtitle: "MEDIUM (5328 kJ.) · Fries (1320 kJ.) · Coke® Zero Sugar (10 kJ.)",
-      details: ["MEDIUM (5328 kJ.)", "Fries (1320 kJ.)", "Coke® Zero Sugar (10 kJ.)"],
-      price: "A$17.80",
+      title: "#1 · Popular Choice",
+      subtitle: "Regular portion with standard selections",
+      details: ["Regular size", "Standard selections"],
+      price: `A$${basePrice.toFixed(2)}`,
       popular: true,
       popularity: "10+",
     },
     {
       id: "2",
-      title: "#2 · Ordered recently by others",
-      subtitle: "LARGE (5939 kJ.) · Fries (1320 kJ.) · (568 kJ.)",
-      details: ["LARGE (5939 kJ.)", "Fries (1320 kJ.)", "(568 kJ.)"],
-      price: "A$18.70",
+      title: "#2 · Value Combo",
+      subtitle: "Large size with beverage",
+      details: ["Large size", "Includes beverage"],
+      price: `A$${(basePrice + 2.5).toFixed(2)}`,
     },
-  ]
+  ];
 
-  // Customization sections
+  // Generic customization sections that work for all food items
   const customizationSections: CustomizationSection[] = [
     {
       id: "size",
-      title: "Select Size",
+      title: "Choose Size",
       type: "radio",
       required: true,
       options: [
-        { id: "medium", name: "MEDIUM (5328 kJ.)", selected: true },
-        { id: "large", name: "LARGE (5939 kJ.)", price: "+A$0.90" },
+        { id: "small", name: "Small", price: 0 },
+        { id: "medium", name: "Medium", price: 1.0 },
+        { id: "large", name: "Large", price: 2.0 },
       ],
       description: "• Select 1",
     },
     {
-      id: "side",
-      title: "Side",
+      id: "add-ons",
+      title: "Optional Add-ons",
+      type: "checkbox",
+      required: false,
+      maxSelections: 3,
+      options: [
+        { id: "extra-portion", name: "Extra Portion", price: 1.5 },
+        { id: "flavor-boost", name: "Flavor Boost", price: 0.5 },
+        { id: "garnish", name: "Garnish", price: 0.5 },
+        { id: "custom-topping", name: "Custom Topping", price: 1.0 },
+      ],
+      description: "(Optional) • Select up to 3",
+    },
+    {
+      id: "sides",
+      title: "Side Items",
+      type: "checkbox",
+      required: false,
+      maxSelections: 2,
+      options: [
+        { id: "snack", name: "Snack Item", price: 2.5 },
+        { id: "light-salad", name: "Light Salad", price: 3.0 },
+        { id: "fruit", name: "Fruit Portion", price: 3.0 },
+        { id: "bread-roll", name: "Bread Roll", price: 2.0 },
+      ],
+      description: "(Optional) • Select up to 2",
+    },
+    {
+      id: "drinks",
+      title: "Add a Beverage",
       type: "radio",
-      required: true,
-      options: [{ id: "fries", name: "Fries (1320 kJ.)", selected: true }],
-      description: "• Select 1",
-    },
-    {
-      id: "drink",
-      title: "Medium Drink",
-      type: "radio",
-      required: true,
-      options: [
-        { id: "shamrock-shake", name: "Shamrock Shake (1860 kJ.)", price: "+A$1.85" },
-        { id: "biscoff-coffee-frappe", name: "Biscoff® Coffee Frappé (2710 kJ.)", price: "+A$2.00" },
-        { id: "biscoff-shake", name: "Biscoff® Shake (2870 kJ.)", price: "+A$2.05" },
-        { id: "coke", name: "Coke® (568 kJ.)" },
-        { id: "coke-zero", name: "Coke® Zero Sugar (10 kJ.)" },
-        { id: "vanilla-coke", name: "Vanilla Coke® (624 kJ.)" },
-        { id: "fanta", name: "Fanta® (716 kJ.)" },
-        { id: "sprite", name: "Sprite® (555 kJ.)" },
-        { id: "fanta-raspberry", name: "Fanta® Raspberry (428 kJ.)" },
-        { id: "sparkling-water", name: "Sparkling Water (0 kJ.)" },
-        { id: "bottled-water", name: "Bottled Water 600 mL (0 kJ.)" },
-        { id: "frozen-sprite-fanta", name: "Frozen Sprite® and Fanta® Flavours (548 kJ.)" },
-        { id: "frozen-coke", name: "Frozen Coke® (548 kJ.)" },
-        { id: "chocolate-shake", name: "Chocolate Shake (1540 kJ.)", price: "+A$1.05" },
-        { id: "strawberry-shake", name: "Strawberry Shake (1530 kJ.)", price: "+A$1.05" },
-        { id: "vanilla-shake", name: "Vanilla Shake (1420 kJ.)", price: "+A$1.05" },
-        { id: "mccafe-cappuccino", name: "McCafé - Cappuccino (909 kJ.)", price: "-A$0.10" },
-        { id: "mccafe-latte", name: "McCafé - Latté (769 kJ.)", price: "-A$0.10" },
-        { id: "mccafe-flat-white", name: "McCafé - Flat White (851 kJ.)", price: "-A$0.10" },
-        { id: "mccafe-mocha", name: "McCafé - Mocha (1290 kJ.)", price: "+A$0.45" },
-        { id: "mccafe-long-black", name: "McCafé - Long Black (2 kJ.)", price: "-A$0.10" },
-        { id: "mccafe-flavoured-iced-latte", name: "McCafé Flavoured Iced Latte (1490 kJ.)", price: "+A$1.50" },
-        { id: "coffee-frappe", name: "Coffee Frappé (2440 kJ.)", price: "+A$1.00" },
-        { id: "chocolate-frappe", name: "Chocolate Frappé (2470 kJ.)", price: "+A$1.00" },
-        { id: "salted-caramel-frappe", name: "Salted Caramel Frappé (2250 kJ.)", price: "+A$1.00" },
-        { id: "orange-juice", name: "Orange Juice (670 kJ.)", price: "+A$1.05" },
-        { id: "mccafe-hot-chocolate", name: "McCafé - Hot Chocolate (1660 kJ.)", price: "+A$0.15" },
-        { id: "zoetic-earl-grey", name: "Zoetic Earl Grey Tea (23 kJ.)", price: "-A$0.70" },
-        { id: "zoetic-green-tea", name: "Zoetic Green Tea (23 kJ.)", price: "-A$0.70" },
-        { id: "zoetic-english-breakfast", name: "Zoetic English Breakfast Tea (23 kJ.)", price: "-A$0.70" },
-        { id: "zoetic-peppermint", name: "Zoetic Peppermint Tea (23 kJ.)", price: "-A$0.70" },
-        { id: "mccafe-deluxe-iced-coffee", name: "McCafé Deluxe Iced Coffee (1520 kJ.)", price: "+A$2.55" },
-        { id: "mccafe-iced-mocha", name: "McCafé - Iced Mocha (1740 kJ.)", price: "+A$1.15" },
-        { id: "mccafe-iced-latte", name: "McCafé - Iced Latte (1100 kJ.)", price: "+A$0.45" },
-        { id: "mccafe-iced-chai-latte", name: "McCafé - Iced Chai Latte (1420 kJ.)", price: "+A$1.40" },
-      ],
-      description: "• Select 1",
-    },
-    {
-      id: "flavour",
-      title: "Flavour",
-      type: "checkbox",
       required: false,
-      maxSelections: 1,
       options: [
-        { id: "sprite-flavour", name: "Sprite® Flavour" },
-        { id: "fanta-orange-flavour", name: "Fanta® Orange Flavour" },
-        { id: "fanta-raspberry-flavour", name: "Fanta® Raspberry Flavour" },
-        { id: "fanta-blueberry-flavour", name: "Fanta® Blueberry Flavour" },
-        { id: "hazelnut-flavour", name: "Hazelnut Flavour (304 kJ.)", price: "+A$1.10" },
-        { id: "vanilla-flavour", name: "Vanilla Flavour (304 kJ.)", price: "+A$1.10" },
-        { id: "caramel-flavour", name: "Caramel Flavour (304 kJ.)", price: "+A$1.10" },
+        { id: "none", name: "No Drink", price: 0 },
+        { id: "soda", name: "Soda", price: 2.0 },
+        { id: "tea", name: "Tea", price: 2.0 },
+        { id: "coffee", name: "Coffee", price: 2.5 },
+        { id: "water", name: "Water", price: 1.5 },
+        { id: "juice", name: "Juice", price: 3.0 },
       ],
-      description: "(Optional) • Select up to 1",
-    },
-    {
-      id: "milk",
-      title: "Milk",
-      type: "checkbox",
-      required: false,
-      maxSelections: 1,
-      options: [
-        { id: "full-cream-milk", name: "Full Cream Milk" },
-        { id: "skim-milk", name: "Skim Milk" },
-        { id: "soy-milk", name: "Soy Milk", price: "+A$0.85" },
-        { id: "milklab-oat-milk", name: "MILKLAB Oat Milk", price: "+A$0.95" },
-        { id: "milklab-almond-milk", name: "MILKLAB Almond Milk", price: "+A$0.95" },
-        { id: "lactose-free-milk", name: "Lactose Free Full Cream Milk", price: "+A$0.95" },
-        { id: "no-milk", name: "No Milk" },
-      ],
-      description: "(Optional) • Select up to 1",
-    },
-    {
-      id: "extra",
-      title: "Extra for Double Quarter Pounder",
-      type: "checkbox",
-      required: false,
-      maxSelections: 11,
-      options: [
-        { id: "extra-mustard", name: "Extra Mustard (327 kJ.)" },
-        { id: "extra-ketchup", name: "Extra Ketchup" },
-        { id: "extra-slivered-onions", name: "Extra Slivered Onions", price: "+A$0.50" },
-        { id: "extra-pickles", name: "Extra Pickles" },
-        { id: "extra-sliced-cheese", name: "Extra Sliced Cheese (202 kJ.)", price: "+A$1.50" },
-        { id: "extra-salt-pepper", name: "Extra Salt & Pepper" },
-        { id: "extra-qtr-lb-beef", name: "Extra Qtr lb Beef Patty", price: "+A$3.80" },
-        { id: "extra-mcchicken-sauce", name: "Extra McChicken Sauce (313 kJ.)", price: "+A$0.95" },
-        { id: "extra-shredded-lettuce", name: "Extra Shredded Lettuce", price: "+A$0.90" },
-        { id: "extra-sliced-tomato", name: "Extra Sliced Tomato", price: "+A$0.95" },
-        { id: "extra-rasher-bacon", name: "Extra Rasher Bacon (130 kJ.)", price: "+A$1.85" },
-      ],
-      description: "(Optional) • Select up to 11",
-    },
-    {
-      id: "remove",
-      title: "Remove from Double Quarter Pounder",
-      type: "checkbox",
-      required: false,
-      maxSelections: 8,
-      options: [
-        { id: "no-quarter-pounder-bun", name: "No Quarter Pounder Bun" },
-        { id: "no-mustard", name: "No Mustard (327 kJ.)" },
-        { id: "no-ketchup", name: "No Ketchup" },
-        { id: "no-slivered-onions", name: "No Slivered Onions" },
-        { id: "no-pickles", name: "No Pickles" },
-        { id: "no-sliced-cheese", name: "No Sliced Cheese (202 kJ.)" },
-        { id: "no-salt-pepper", name: "No Salt & Pepper" },
-        { id: "no-qtr-lb-beef", name: "No Qtr lb Beef Patty" },
-      ],
-      description: "(Optional) • Select up to 8",
+      description: "(Optional) • Select 1",
     },
     {
       id: "preferences",
-      title: "Preferences",
+      title: "Special Preferences",
       type: "checkbox",
       required: false,
-      options: [{ id: "special-instructions", name: "Add Special Instructions" }],
+      options: [
+        { id: "low-sugar", name: "Low Sugar", price: 0 },
+        { id: "gluten-free", name: "Gluten-Free", price: 1.0 },
+        { id: "vegan", name: "Vegan Option", price: 0 },
+        { id: "instructions", name: "Add Special Instructions", price: 0 },
+      ],
       description: "(Optional)",
     },
-  ]
+  ];
 
   const handleOptionSelect = (optionId: string) => {
     setSelectedOption(optionId === selectedOption ? null : optionId)
@@ -295,10 +241,28 @@ export default function MenuItemDialog({ isOpen, onClose, item }: MenuItemDialog
 
     setSelectedCustomizations((prev) => {
       const updatedSelections = { ...prev }
+      const currentSelections = updatedSelections[sectionId] || []
 
       if (section.type === "radio") {
-        // For radio buttons, replace the current selection
+        // Radio button logic remains the same
         updatedSelections[sectionId] = [optionId]
+
+        // Remove all prices from this section first
+        setCustomizationPrices((prevPrices) => {
+          const updatedPrices = { ...prevPrices }
+          section.options.forEach(opt => {
+            if (updatedPrices[opt.id]) {
+              delete updatedPrices[opt.id]
+            }
+          })
+
+          // Add the new price if it exists
+          const selectedOption = section.options.find(opt => opt.id === optionId)
+          if (selectedOption?.price !== undefined) {
+            updatedPrices[optionId] = selectedOption.price
+          }
+          return updatedPrices
+        })
 
         // Mark this required section as met
         if (section.required) {
@@ -308,22 +272,35 @@ export default function MenuItemDialog({ isOpen, onClose, item }: MenuItemDialog
           }))
         }
       } else {
-        // For checkboxes, toggle the selection
-        const currentSelections = updatedSelections[sectionId] || []
-
+        // Checkbox logic - simplified
         if (currentSelections.includes(optionId)) {
-          updatedSelections[sectionId] = currentSelections.filter((id) => id !== optionId)
+          // Deselect
+          updatedSelections[sectionId] = currentSelections.filter(id => id !== optionId)
         } else {
-          // Check if we're at the max selections
+          // Check max selections
           if (section.maxSelections && currentSelections.length >= section.maxSelections) {
-            // Remove the first item if we're at max
-            updatedSelections[sectionId] = [...currentSelections.slice(1), optionId]
-          } else {
-            updatedSelections[sectionId] = [...currentSelections, optionId]
+            return prev // Don't make any changes if max selections reached
           }
+          // Select
+          updatedSelections[sectionId] = [...currentSelections, optionId]
         }
 
-        // For required checkbox sections, check if any option is selected
+        // Update prices
+        setCustomizationPrices((prevPrices) => {
+          const updatedPrices = { ...prevPrices }
+          const selectedOption = section.options.find(opt => opt.id === optionId)
+
+          if (currentSelections.includes(optionId)) {
+            // Remove price if deselected
+            delete updatedPrices[optionId]
+          } else if (selectedOption?.price !== undefined) {
+            // Add price if selected
+            updatedPrices[optionId] = selectedOption.price
+          }
+          return updatedPrices
+        })
+
+        // For required checkbox sections
         if (section.required) {
           setRequiredSectionsMet((prev) => ({
             ...prev,
@@ -347,31 +324,28 @@ export default function MenuItemDialog({ isOpen, onClose, item }: MenuItemDialog
 
     // Get selected customizations for display
     const customizationText: string[] = []
+    let totalPrice = basePrice
 
-    // Add size
-    const sizeOption = customizationSections[0].options.find((option) =>
-      selectedCustomizations.size?.includes(option.id),
-    )
-    if (sizeOption) customizationText.push(sizeOption.name)
-
-    // Add side
-    const sideOption = customizationSections[1].options.find((option) =>
-      selectedCustomizations.side?.includes(option.id),
-    )
-    if (sideOption) customizationText.push(sideOption.name)
-
-    // Add drink
-    const drinkOption = customizationSections[2].options.find((option) =>
-      selectedCustomizations.drink?.includes(option.id),
-    )
-    if (drinkOption) customizationText.push(drinkOption.name)
+    // Add all selected customizations
+    customizationSections.forEach(section => {
+      const selectedIds = selectedCustomizations[section.id] || []
+      selectedIds.forEach(id => {
+        const option = section.options.find(opt => opt.id === id)
+        if (option) {
+          customizationText.push(option.name)
+          if (option.price) {
+            totalPrice += option.price
+          }
+        }
+      })
+    })
 
     // Add the item to cart with customizations
     addToCart({
       id: item.id + Date.now(), // Make unique ID for customized items
       restaurantId: item.restaurantId,
       name: item.name,
-      price: item.price,
+      price: totalPrice.toFixed(2),
       image: item.image,
       customizations: customizationText.join(" · "),
     })
@@ -427,9 +401,8 @@ export default function MenuItemDialog({ isOpen, onClose, item }: MenuItemDialog
               {recommendedOptions.map((option) => (
                 <div
                   key={option.id}
-                  className={`border rounded-lg p-4 cursor-pointer ${
-                    selectedOption === option.id ? "border-red-500" : "border-gray-200"
-                  }`}
+                  className={`border rounded-lg p-4 cursor-pointer ${selectedOption === option.id ? "border-red-500" : "border-gray-200"
+                    }`}
                   onClick={() => handleOptionSelect(option.id)}
                 >
                   <div className="flex items-start justify-between">
@@ -440,9 +413,8 @@ export default function MenuItemDialog({ isOpen, onClose, item }: MenuItemDialog
                     <div className="flex items-center">
                       <span className="font-medium">{option.price}</span>
                       <div
-                        className={`ml-3 w-5 h-5 rounded-full border ${
-                          selectedOption === option.id ? "border-red-500 bg-red-500" : "border-gray-300"
-                        }`}
+                        className={`ml-3 w-5 h-5 rounded-full border ${selectedOption === option.id ? "border-red-500 bg-red-500" : "border-gray-300"
+                          }`}
                       >
                         {selectedOption === option.id && (
                           <div className="flex items-center justify-center h-full">
@@ -474,15 +446,14 @@ export default function MenuItemDialog({ isOpen, onClose, item }: MenuItemDialog
                 {section.options.map((option) => (
                   <div
                     key={`${section.id}-${option.id}`}
-                    className="flex items-center justify-between py-2"
+                    className="flex items-center justify-between py-2 cursor-pointer"
                     onClick={() => handleCustomizationSelect(section.id, option.id)}
                   >
                     <div className="flex items-center">
                       {section.type === "radio" ? (
                         <div
-                          className={`w-5 h-5 rounded-full border flex items-center justify-center ${
-                            isOptionSelected(section.id, option.id) ? "border-red-500" : "border-gray-300"
-                          }`}
+                          className={`w-5 h-5 rounded-full border flex items-center justify-center ${isOptionSelected(section.id, option.id) ? "border-red-500" : "border-gray-300"
+                            }`}
                         >
                           {isOptionSelected(section.id, option.id) && (
                             <div className="w-3 h-3 bg-red-500 rounded-full"></div>
@@ -490,23 +461,26 @@ export default function MenuItemDialog({ isOpen, onClose, item }: MenuItemDialog
                         </div>
                       ) : (
                         <div
-                          className={`w-5 h-5 border flex items-center justify-center ${
-                            isOptionSelected(section.id, option.id) ? "border-red-500 bg-red-500" : "border-gray-300"
-                          }`}
+                          className={`w-5 h-5 border flex items-center justify-center rounded ${isOptionSelected(section.id, option.id) ? "border-red-500 bg-red-500" : "border-gray-300"
+                            }`}
                         >
                           {isOptionSelected(section.id, option.id) && <div className="text-white text-xs">✓</div>}
                         </div>
                       )}
                       <span className="ml-3">{option.name}</span>
                     </div>
-                    {option.price && <span className="text-gray-700">{option.price}</span>}
+                    {option.price ? (
+                      <span className="text-gray-700">
+                        {option.price > 0 ? `+A$${option.price.toFixed(2)}` : 'Included'}
+                      </span>
+                    ) : null}
                   </div>
                 ))}
               </div>
 
               {/* Special Instructions */}
               {section.id === "preferences" && isOptionSelected(section.id, "special-instructions") && (
-                <div className="mt-3 flex items-center">
+                <div className="mt-3 flex items-center cursor-pointer">
                   <div className="flex-1">
                     <div className="flex items-center justify-between">
                       <span>Add Special Instructions</span>
@@ -522,15 +496,14 @@ export default function MenuItemDialog({ isOpen, onClose, item }: MenuItemDialog
         {/* Fixed bottom button */}
         <div className="fixed bottom-0 left-0 right-0 bg-white p-4 border-t border-gray-200 z-10 max-w-xl mx-auto">
           <button
-            className={`w-full py-3 ${
-              allRequiredSectionsMet ? "bg-red-600" : "bg-gray-300"
-            } text-white font-medium rounded-lg`}
+            className={`w-full py-3 ${allRequiredSectionsMet ? "bg-red-600" : "bg-gray-300"
+              } text-white font-medium rounded-lg`}
             disabled={!allRequiredSectionsMet}
             onClick={handleAddToCart}
           >
             {allRequiredSectionsMet
-              ? "Add to cart - A$17.80"
-              : `Make ${requiredSelectionsCount} required selections - A$17.80`}
+              ? `Add to cart - A$${calculateTotalPrice()}`
+              : `Make ${requiredSelectionsCount} required selections - A$${calculateTotalPrice()}`}
           </button>
         </div>
       </div>
