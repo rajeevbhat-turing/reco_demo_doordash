@@ -168,13 +168,13 @@ export default function MenuItemDialog({ isOpen, onClose, item }: MenuItemDialog
       details: ["Large size", "Drink included"],
       price: `A$${(basePrice + 2.5).toFixed(2)}`,
     },
-  ]
+  ];
 
   // Generic customization sections that work for all food items
   const customizationSections: CustomizationSection[] = [
     {
       id: "size",
-      title: "Select Size",
+      title: "Choose Size",
       type: "radio",
       required: true,
       options: [
@@ -229,7 +229,7 @@ export default function MenuItemDialog({ isOpen, onClose, item }: MenuItemDialog
     },
     {
       id: "preferences",
-      title: "Preferences",
+      title: "Special Preferences",
       type: "checkbox",
       required: false,
       options: [
@@ -240,7 +240,7 @@ export default function MenuItemDialog({ isOpen, onClose, item }: MenuItemDialog
       ],
       description: "(Optional)",
     },
-  ]
+  ];
 
   const handleOptionSelect = (optionId: string) => {
     setSelectedOption(optionId === selectedOption ? null : optionId)
@@ -422,9 +422,8 @@ export default function MenuItemDialog({ isOpen, onClose, item }: MenuItemDialog
               {recommendedOptions.map((option) => (
                 <div
                   key={option.id}
-                  className={`border rounded-lg p-4 cursor-pointer ${
-                    selectedOption === option.id ? "border-red-500" : "border-gray-200"
-                  }`}
+                  className={`border rounded-lg p-4 cursor-pointer ${selectedOption === option.id ? "border-red-500" : "border-gray-200"
+                    }`}
                   onClick={() => handleOptionSelect(option.id)}
                 >
                   <div className="flex items-start justify-between">
@@ -435,9 +434,8 @@ export default function MenuItemDialog({ isOpen, onClose, item }: MenuItemDialog
                     <div className="flex items-center">
                       <span className="font-medium">{option.price}</span>
                       <div
-                        className={`ml-3 w-5 h-5 rounded-full border ${
-                          selectedOption === option.id ? "border-red-500 bg-red-500" : "border-gray-300"
-                        }`}
+                        className={`ml-3 w-5 h-5 rounded-full border ${selectedOption === option.id ? "border-red-500 bg-red-500" : "border-gray-300"
+                          }`}
                       >
                         {selectedOption === option.id && (
                           <div className="flex items-center justify-center h-full">
@@ -475,9 +473,8 @@ export default function MenuItemDialog({ isOpen, onClose, item }: MenuItemDialog
                     <div className="flex items-center">
                       {section.type === "radio" ? (
                         <div
-                          className={`w-5 h-5 rounded-full border flex items-center justify-center ${
-                            isOptionSelected(section.id, option.id) ? "border-red-500" : "border-gray-300"
-                          }`}
+                          className={`w-5 h-5 rounded-full border flex items-center justify-center ${isOptionSelected(section.id, option.id) ? "border-red-500" : "border-gray-300"
+                            }`}
                         >
                           {isOptionSelected(section.id, option.id) && (
                             <div className="w-3 h-3 bg-red-500 rounded-full"></div>
@@ -521,9 +518,8 @@ export default function MenuItemDialog({ isOpen, onClose, item }: MenuItemDialog
         {/* Fixed bottom button */}
         <div className="fixed bottom-0 left-0 right-0 bg-white p-4 border-t border-gray-200 z-10 max-w-xl mx-auto">
           <button
-            className={`w-full py-3 ${
-              allRequiredSectionsMet ? "bg-red-600" : "bg-gray-300"
-            } text-white font-medium rounded-lg`}
+            className={`w-full py-3 ${allRequiredSectionsMet ? "bg-red-600" : "bg-gray-300"
+              } text-white font-medium rounded-lg`}
             disabled={!allRequiredSectionsMet}
             onClick={handleAddToCart}
           >
