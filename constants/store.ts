@@ -112,6 +112,7 @@ export const stores: Store[] = [
             originalPrice: "$16.00",
             discount: "50% off",
             rating: null,
+            description: "What it is: A collection of vegan and cruelty-free false lashes made from soft, lightweight fibers that mimic the look and feel of real lashes. Ingredient Callouts: It is vegan, cruelty-free, and comes in recyclable packaging. What Else You Need to Know: These high-quality false eyelashes enhance any look by adding subtle fullness, volume, and length. Each lash is handmade with soft fibers and an ultra-thin, clear nylon band to allow for easy application and comfortable wear. With proper care, you can wear these reusable styles 15 to 20 times. Flutter 'n Stare (Natural): A lengthening lash with wispy, curled fibers for a soft, natural look. Sweet & Subtle (Natural): A medium-length crisscross lash for a subtle yet striking effect. Fluffed and Full (Dramatic): A slightly tapered lash with the longest length in the center for added fullness. Everyday Flare (Full): A wispy, flared lash that gives an elongated effect to the eye. About the brand: As Sephora’s own brand, we flex our extensive industry knowledge to create paycheck-friendly products that perform on par with more spendy ones. So whether you’re looking for a ride-or-die eyeliner or a clean skincare routine that doesn’t require a small investment, rest assured: Sephora Collection will wow you and your wallet."
           },
           {
             id: 25206314194,
@@ -122,6 +123,7 @@ export const stores: Store[] = [
             originalPrice: "$21.00",
             discount: "50% off",
             rating: null,
+            description: "What it is: A serum combining natural forms of vitamins C and E and marine algae-derived peptides to visibly increase radiance while improving and evening out the appearance of skin tone. Skin Type: Normal, Dry, Combination, and Oily Skincare Concerns: Fine Lines/Wrinkles, Dullness, and Uneven Texture Formulation: Liquid Highlighted Ingredients: - Vitamins C and E: Visibly add radiance, even out the complexion, and protect skin from external aggressors. - Peptides: Tighten and firm the look of skin. What Else You Need to Know: Made with 97 percent naturally sourced ingredients, this fast-absorbing serum hydrates and visibly firms your skin while reducing the look of wrinkles for a radiant appearance. The bottle is made with 40 percent recycled glass, and the outer packaging is sourced from sustainably managed forests. Clinical Results: In a scientific test on 21 volunteers, after 28 days of application: - Skin was 59% more radiant - The complexion was 43% more even In a scientific test on 22 volunteers, after 28 days of application: - There was a 12% decrease in the appearance of dark spots Clean at Sephora is our commitment to offering effective products without certain ingredients, such as parabens, sulfates, phthalates, and mineral oils. Learn more here. About the brand: As Sephora’s own brand, we flex our extensive industry knowledge to create paycheck-friendly products that perform on par with more spendy ones. So whether you’re looking for a ride-or-die eyeliner or a clean skincare routine that doesn’t require a small investment, rest assured: Sephora Collection will wow you and your wallet."
           },
           {
             id: 24916225679,
@@ -132,6 +134,7 @@ export const stores: Store[] = [
             originalPrice: "$30.00",
             discount: "30% off",
             rating: 3.8,
+            description: "What it is: The #1 dry shampoo brand*. A dry shampoo that actually cleans hair by absorbing oil, sweat, and odor while also adding body and texture. *Source: Circana/U.S. Prestige Beauty Total Measured Market, Hair Sales, January–December 2022 Hair Type: Straight, Wavy, Curly, and Coily Hair Texture: Fine, Medium, and Thick Hair Concerns: - Oiliness - Color Safe Key Benefits: - Absorbs oil, sweat, and odor - Actually cleans hair - Delivers a fresh, time-release scent Highlighted Ingredients: - Fast-Absorbing Powders: Blend of starch and a microporous mineral blend absorbs excess sweat and oil. - Powder Removal Active: Reduced particle adhesion to remove the powders and any visible residue. - Odor Neutralizers: Create freshness. Ingredient Callouts: Free of parabens, formaldehydes, formaldehyde-releasing agents, phthalates, mineral oil, retinyl palmitate, oxybenzone, coal tar, hydroquinone, sulfates SLS & SLES, triclocarban, triclosan, and contains less than one percent synthetic fragrance. It is also vegan, cruelty-free, and comes in recyclable packaging. What Else You Need to Know: This bestselling dry shampoo is loved for good reason: the brilliantly engineered formula uses fast absorbing powders to soak up and remove dirt and oil, providing targeted delivery where you need it most. Hair is left looking, feeling, and smelling clean but with added texture and body. Clinical Results: In a concept and use test of 200 people: - 9 in 10 users agree PhD Dry Shampoo keeps hair clean between shampoos - 8 in 10 users say PhD Dry Shampoo is better than other dry shampoos - The same majority of non-users agree PhD Dry Shampoo is the next best thing to washing Clean at Sephora is our commitment to offering effective products without certain ingredients, such as parabens, sulfates, phthalates, and mineral oils. Learn more here. About the brand: We solve the toughest beauty challenges with science and patented technology originating from MIT. Our founders are hair stylists and biotech scientists who were fed up with the limitations of conventional products; hence they set out to create results you can see from across the room. Twenty patents, over 50 products and more than 150 awards later, we have countless love letters thanking us for changing lives in both big ways and small. We are the science. You are the Living Proof.®"
           },
           {
             id: 24951418153,
@@ -162,6 +165,7 @@ export const stores: Store[] = [
             originalPrice: "$51.00",
             discount: "55% off",
             rating: 3.5,
+            description: "What it is: A lightweight moisturizer, designed specifically for oily and combination skin, that instantly hydrates and diminishes the look of pores. Skin Type: Combination and Oily Skincare Concerns: Pores, Acne and Blemishes, and Oiliness Highlighted Ingredients: - Salicylic Acid (BHA) and Lipohydroxy Acid (LHA): Lift and loosen pore-clogging dead skin cells. - Alpine Willowherb Extract: Nourishes and conditions skin with rich antioxidant levels. - Green Fusion Complex™: A proprietary blend of potent active botanicals including green tea, eucalyptus, algae (kelp), and Irish moss extracts that absorbs excess oil and refines the look of pores. Ingredient Callouts: This product is vegan and cruelty-free. What Else You Need to Know: This lightly cooling oil-free moisturizer gives skin a refreshing splash of hydration. With BHA (salicylic acid) and LHA, it helps detoxify and minimize the look of pores and control surface oil. Plus, it smoothes uneven skin texture and targets the look of fine lines, wrinkles and dark spots. Clinical Results: In an 8 week clinical study on 36 women, after 4 weeks: - 100% of users agree this product balances skin - 94% of users agree this product detoxifies pores - 94% agreed it refines pores Clean at Sephora is our commitment to offering effective products without certain ingredients, such as parabens, sulfates, phthalates, and mineral oils. Learn more here. About the brand: Fall in love with your skin. Expertly blending the power of nature and science, OLEHENRIKSEN skincare rituals indulge your senses while transforming your skin to reveal the radiant healthy beauty you didn’t know was possible. Here's a toast to your natural beauty! Cheers, Ole"
           },
           {
             id: 24355620986,
@@ -172,6 +176,7 @@ export const stores: Store[] = [
             originalPrice: "$25.00",
             discount: "24% off",
             rating: null,
+            description: "What it is: A bestselling, green-to-beige cica cream that quickly neutralizes the look of redness and evens skin tone for a healthy, natural look with mineral SPF protection. Skin Type: Normal, Dry, Combination, and Oily Skincare Concerns: Dryness and Redness Highlighted Ingredients: - Mineral Sunscreen (Zinc Oxide and Titanium Dioxide): Protective barrier reflects UVA/UVB rays to protect skin from sun damage. What Else You Need to Know: For centuries, tigers in the Asian wetlands have rolled around in Centella asiatica (aka tiger grass or cica) to help heal their wounds. Taking inspiration from the tigers, this Korean Skincare favorite utilizes visibly reparative tiger grass to soothe, calm, and moisturize skin. Clinical Results: In a clinical study with 106 people between 20-50: 95% said skin felt soothed with moisture 92% said skin looked less red 91% said blemishes and discolorations looked concealed 90% said skin had a vibrant, healthy-looking glow 92% said skin tone looked even About the brand: At Dr. Jart{+} science joins art to develop innovative products that deliver results. Founded in Korea in 2004, Dr. Jart{+} pioneered the invention of the BB Cream, setting the standard for multifunctional beauty. Dr. Jart{+} is an ever-evolving blend of form and function, creating skincare that works wonders."
           },
         ],
       },
@@ -188,6 +193,7 @@ export const stores: Store[] = [
             originalPrice: null,
             discount: null,
             rating: 4.3,
+            description: "What it is: A getaway-ready, collagen-supporting body routine featuring the bright Cheirosa ’68 scent. Skin Type: Normal, Dry, and Combination Skincare Concerns: Dryness and Loss of Firmness and Elasticity Highlighted Ingredients: - Vegan Collagen: Supports skin’s natural collagen supply. - Cacay Oil: Is a gentle retinol alternative that supports cell turnover. - Plant Squalane: Immediately plumps the look of skin with intense hydration. Ingredient Callouts: Free of parabens, phthalates, mineral oil, and sulfates SLS & SLES. It is also vegan, gluten-free, and cruelty-free. What Else You Need to Know: Get set with a collagen-supporting routine. Pamper your skin with Beija Flor™ Renewing Body Wash, a creamy cleanser with vegan squalane. Massage on Beija Flor™ Elasti-Cream with Collagen and Squalane, infused with cacay oil and vegan collagen for visibly plump, resilient skin. Finish with the bright, floral scent of Brazilian Crush Cheirosa ’68 Beija Flor™ Hair & Body Fragrance Mist. This Set Contains: - 1.7 oz/ 50 mL Beija Flor™ Elasti-Cream with Collagen and Squalane - 1.01 oz/ 30 mL Beija Flor™ Renewing Body Wash - 1.01 oz/ 30 mL Brazilian Crush Cheirosa ’68 Beija Flor™ Hair & Body Fragrance Mist About the brand:"
           },
           {
             id: 23679052921,
@@ -198,6 +204,7 @@ export const stores: Store[] = [
             originalPrice: null,
             discount: null,
             rating: 4.4,
+            description: "What it is: A skincare-forward hand sanitizer spray enriched with aloe vera and essential oils, leaving hands sanitized, hydrated, and delicately scented. Highlighted Ingredients: - 70% Alcohol: Effective against most common bacteria. - Aloe Vera: Hydrates and leaves a non-greasy finish. - Radish Root Ferment Filtrate: Supports skin’s moisture retention for soft hands. Ingredient Callouts: Free of parabens and triclosan. It is also vegan, gluten-free, and cruelty-free. What Else You Need to Know: The award-winning hand sanitizer transforms hand hygiene into a luxurious skincare ritual. Power Mist is enriched with nourishing ingredients that care for your skin. The lightweight and non-sticky formula is available in a collection of uplifting scents that are designed to move your mood. About the brand:"
           },
           {
             id: 22847876193,
@@ -218,6 +225,7 @@ export const stores: Store[] = [
             originalPrice: null,
             discount: null,
             rating: 4.8,
+            description: "What it is: A multi-tasking cleansing body bar that visibly brightens, fades the look of dark spots and discoloration, and hydrates the skin without leaving tightness or residue. Skin Type: Normal, Dry, Combination, and Oily Skincare Concerns: Dark Spots, Dryness, and Uneven Skin Tone Formulation: Bar Highlighted Ingredients: - Kojic Acid: Visibly reduces hyperpigmentation for skin that looks more even toned. - Vitamin C: A potent antioxidant that visibly brightens and fades dark spots. - Shea Butter: Thoroughly nourishes and softens. Ingredient Callouts: Free of parabens, formaldehydes, formaldehyde-releasing agents, phthalates, mineral oil, retinyl palmitate, oxybenzone, coal tar, hydroquinone, sulfates SLS & SLES, triclocarban, triclosan, and contains less than one percent synthetic fragrance. It is also vegan, gluten-free, and cruelty-free. What Else You Need to Know: Even out the look of skin tone with Topicals’ six active-ingredient blend. This fragrance-free, non-bleaching formula targets hyperpigmentation while ultra-nourishing shea butter and urea provide hydration. It is safe for use all over, including delicate areas such as underarms, inner thighs, and bikini line. About the brand: 24-year-old founder Olamide grew up with chronic skin conditions, like eczema and hyperpigmentation, and set out to launch Topicals, a beauty brand celebrating the fun of flare-ups."
           },
           {
             id: 23679052922,
@@ -228,6 +236,7 @@ export const stores: Store[] = [
             originalPrice: null,
             discount: null,
             rating: 4.5,
+            description: "What it is: An ultra-soothing hand sanitizer enriched with madecassoside and niacinamide, leaving hands sanitized, hydrated, and soothed. Skincare Concerns: Dryness Fragrance Description: Gentle and pure—fresh lily of the valley and watery cucumber intertwines with sea salt, capturing the feeling of a tranquil spring day. Highlighted Ingredients: - 70% Alcohol: Effective against most common bacteria. - Centella Asiatica Leaf Extract: Increases hydration and supports against environmental stressors. - Niacinamide: Soothes. Ingredient Callouts: Free of parabens and triclosan. It is also vegan, gluten-free, cruelty-free, and comes in recyclable packaging. What Else You Need to Know: The ultra-soothing, dye-free hand sanitizer with hypoallergenic lily of the valley scent is safe for sensitive skin. The formula is enriched with centella asiatica, madecassoside, and niacinamide to help increase hydration, soothe skin, and support against environmental stressors. About the brand:"
           },
           {
             id: 11328507772,
@@ -238,6 +247,7 @@ export const stores: Store[] = [
             originalPrice: null,
             discount: null,
             rating: 4.7,
+            description: "What it is: A fresh, non-greasy body lotion that hydrates up to 24 hours with a warm, cozy scent while nourishing and softening for a healthy, renewed glow. Fragrance Family: Earthy and Woody Scent Type: Warm Woods Key Notes: Lemon Zest, Violet, Vetiver Highlighted Ingredients: - Niacinamide: A form of vitamin B3, supports skin’s moisture barrier. - Ashwaganda Extract: A natural “anti-stress” ingredient known to moisturize, protect, and soothe. - Sodium Hyaluronate: Humectant that retains skin’s moisture. What Else You Need to Know: With a warm, cozy scent of soft cashmere and jasmine petals, this lotion hugs skin with hydration, instantly brightening dull skin and renewing vibrancy. With vitamins and antioxidants like niacinamide, peach flower extract, and ashwagandha, it visibly firms and revitalizes skin with a healthy glow. Proudly bottled with 97% post-consumer recycled (PCR) plastic. Clinical Results: In an independent consumer study of 56 people: - 98% said skin feels soft, smooth, supple, and moisturized - 98% said skin looks smooth & hydrated with improved texture - 98% said it absorbs quickly into skin About the brand: Created by Selena Gomez, Rare Beauty is challenging unrealistic standards of perfection. In Selena’s own words, “It’s not about being someone else, but being who you are.” This is makeup made to feel good in, without hiding what makes you unique. Airy and breathable, our skin-loving formulas go on easy for adjustable coverage and a fresh finish that always looks like you."
           },
           {
             id: 19646806136,
@@ -248,6 +258,7 @@ export const stores: Store[] = [
             originalPrice: null,
             discount: null,
             rating: 4.3,
+            description: "What it is: An irresistibly scented gel body cleanser refill infused with ocean botanicals, niacinamide, and probiotics to soften, soothe, and restore the skin. Skincare Concerns: Dryness, Uneven Texture, and Dullness Formulation: Gel Ingredient Callouts: Free of parabens, formaldehydes, formaldehyde-releasing agents, phthalates, mineral oil, retinyl palmitate, oxybenzone, coal tar, hydroquinone, sulfates SLS & SLES, triclocarban, triclosan, and contains less than one percent synthetic fragrance. It is also cruelty-free. Fragrance Family: Earthy & Woody Scent Type: Warm Woods Key Notes: Santal, Vetiver, Amber Highlighted Ingredients: - Seaweed Extracts & Spirulina: Antioxidant-rich ocean botanicals that soothe irritated skin. - Niacinamide: Supports a stronger skin barrier while visibly improving the skin’s texture. - Probiotics: Balance skin’s microbiome to neutralize odor and replenish healthy bacteria. What Else You Need to Know: This body wash is formulated to soften and soothe while cleansing to restore the drying effects of outdoor activity, wind, sun, and sea. Soothe and focus with the bestselling scent, Santal & Vetiver. Niacinamide supports a stronger skin barrier to visibly improve the skin's texture while probiotics neutralize odor and fight bacteria. Antioxidant-rich ocean botanicals and vitamin C from blueberry extract fight free radicals introduced to skin by sun exposure, reinforcing skin’s collagen production and defending against visible signs of aging. Clean at Sephora is our commitment to offering effective products without certain ingredients, such as parabens, sulfates, phthalates, and mineral oils. Learn more here. About the brand: Salt & Stone is high-performance bodycare and self-care for a life lived in motion. Built on and from a connection to the natural world, we combine active vegan ingredients from the sea and mountains with skin science and intoxicating, gender-neutral fragrances for a sensorial experience that soothes and restores. We draw on a deep understanding of the elements and a desire to create beautiful, cruelty-free products in harmony with nature."
           },
         ],
       },
@@ -265,6 +276,7 @@ export const stores: Store[] = [
             discount: null,
             rating: 4.5,
             ratingCount: "1k+",
+            description: "What it is: A weightless styling oil for maximum shine, softness, and color vibrancy. Protects against damage, frizz, and heat for sleek, healthy-looking styles. Hair Type: Fine, Medium, and Thick Hair Texture: Coily, Curly, Straight, and Wavy Hair Concerns: - Shine - Heat Protection - Frizz Key Benefits: - Maximizes shine, softness, and color vibrancy - Reduces breakage, frizz, and flyaways - Heat protection up to 450°F/ 232°C Highlighted Ingredients: - Bis-aminopropyl Diglycol Dimaleate: Patented OLAPLEX Bond Building Technology™ that's proven to repair damage by relinking broken disulfide bonds. Ingredient Callouts: This product is vegan, cruelty-free, and gluten-free. What Else You Need to Know: This highly concentrated, yet lightweight hair styling oil delivers 125% more shine*, reduces breakage by 77%, controls frizz for up to 72 hours, tames flyaways, and adds silky softness while protecting hair from heat up to 450°F. Formulated with Patented OLAPLEX Bond Building Technology™ OLAPLEX products are thoroughly tested in accordance with industry standards in-house and by independent third-party laboratories for safety and efficacy. Clinical Results: - 125% increase in shine* - 77% reduction in breakage - 72-hour frizz control *125% increase in shine compared to bleached hair without application of No.7 Bonding Oil™ About the brand: MEET Olaplex | We're founded on the principle of doing everything others don't and we are changing the world of hair based on this principle. We’re a team of chemists, industry experts and innovators developing beauty products based on science. Our technology and products are patent protected, award winning, and are found in top salons worldwide."
           },
           {
             id: "22784486758",
@@ -276,6 +288,7 @@ export const stores: Store[] = [
             discount: null,
             rating: "3.9",
             ratingCount: "200+",
+            description: "What it is: A set of easy-to-apply, reusable, and mess-free press-on nails—available in an array of styles perfect for creating salon-quality manicures, at home, within minutes. Ingredient Callouts: Free of parabens, formaldehydes, formaldehyde-releasing agents, phthalates, mineral oil, retinyl palmitate, oxybenzone, coal tar, hydroquinone, sulfates SLS & SLES, triclocarban, triclosan, and contains less than one percent synthetic fragrance. It is also gluten-free and cruelty-free. What Else You Need to Know: Skip the salon and get results you love at home, in minutes, with Glamnetic’s Press-On Nail Kit. Offered in a variety of styles and shapes, each easy-to-apply kit includes all the tools you need for a flawless manicure, featuring reusable nails designed for durability with up to two weeks of wear. This Set Contains: - 30 Glamnetic Nails (15 sizes x 2) - 0.07 oz/ 2 mL Nail Glue - Nail File - Cuticle Stick - Alcohol Pad About the brand: Glamnetic is home to the highest quality magnetic lashes and magnetic eyeliner system. We thrive on innovation and aim to develop highly functional yet trendy products that simplify one’s beauty routine, making the process of getting ready more enjoyable. We strive to push the boundaries of innovation by improving our products with every new order based on customer and community feedback. Glamnetic’s mission is to build a community with a common passion for transformation and putting their baddest self out there, so that all may feel their best every day. Because when you feel your best, you live your best life."
           },
           {
             id: "19569812798",
@@ -287,6 +300,7 @@ export const stores: Store[] = [
             discount: null,
             rating: null,
             ratingCount: null,
+            description: "What it is: A set of three award-winning slip scrunchies designed to be anti-crease, anti-breakage to upgrade your hair tie game. Hair Texture: Straight, Wavy, Curly, and Coily Hair Type: Fine, Medium, and Thick Hair Concerns: - Damage, Split Ends, and Breakage Key Benefits: - Anti-crease, anti-breakage - Designed to avoid hair creases - Made with slipsilk to be gentle on your delicate hair What Else You Need to Know: The slipsilk difference: Traditional hair ties can tug on delicate hair which can lead to damage and breakage. Slip scrunchies are made with slipsilk, the same silk used in the award-winning slip pure silk pillowcase. This product is an Allure Best of Beauty award winner. This Set Contains: - 3 x Slipsilk hair ties in lilac rose About the brand: In 2003, then film manager, Fiona Stewart was prescribed acne medication which resulted in extremely sensitive skin and thinning hair. Her dermatologist suggested sleeping on a silk pillowcase. Unable to find one, she sourced the best silk she could find and wrapped it around her pillow. The results were dramatic and immediate. She’s never looked back. She had stumbled upon a long-forgotten beauty secret—and slip® was born. The following year, Stewart, alongside partner Justin Dubois, officially launched slip®—the first silk pillowcase to be branded and marketed as a beauty product. Slip® pure silk products are made using slipsilk™. Specially-commissioned (which means you won’t find it anywhere else!) and made to our exacting standards, developed and refined for over ten years to provide the ultimate combination of shine, thickness, softness and durability. Slipsilk™ has been tested by an independent third-party lab and shown to absorb significantly less face cream and create 43% less friction, on average, versus cotton pillowcases. (Compared to widely available cotton pillowcases with a 220-360 thread count)."
           },
           {
             id: "19994014590",
@@ -298,6 +312,7 @@ export const stores: Store[] = [
             discount: null,
             rating: "4.3",
             ratingCount: null,
+            description: "What it is: A gentle, mini detangling brush that works on wet or dry hair to leave hair smooth, healthy-looking, and easy to run your fingers through. Hair Type: Straight, Wavy, Curly, and Coily Hair Texture: Fine, Medium, and Thick Hair Concerns: - Frizz - Straightening and Smoothing Key Benefits: - Anti-static hairbrush - Durable metal bristles provide a gentle scalp massage - Made from ethically sourced birch wood What Else You Need to Know: This mini hairbrush delivers a scalp massage and touch-ups on the go with its durable metal bristles that stimulate blood flow and distribute natural oils on your scalp all the way down the length of your strands. About the brand: Prioritizing affordability and playfulness, Mane’s lineup of hot tools and hair accessories helps create any style you dream up without breaking the bank. That’s exactly why celebrity hairstylist Jen Atkin founded Mane—to make hair fun again. Through their circular partnership with Pact Collective, you can donate hard-to-recycle used hot tools so they can be refurbished or recycled properly and diverted from landfills."
           },
         ],
       },
@@ -328,6 +343,7 @@ export const stores: Store[] = [
             discount: "20% off",
             rating: null,
             ratingCount: null,
+            description: "CASHMERE OIL FRESH & COZY Benefits Fresh & Cozy scent contains fragrance notes of morning light, dewy cassis, and sheer musk. Entire Bikini Area Approved: Incredibly gentle for a total body shave and formulated to match your skin pH and maintain a healthy skin barrier Hypoallergenic Key Ingredients Cashmere Smooth Complex: Contains a blend of the most naturally moisturizing & protective butters for velvety soft, cashmere smooth skin: shea butter softens & nourishes, cocoa butter deeply hydrates while argan butter soothes & makes skin smooth Benefits Paraben Phthalate Gluten"
           },
           {
             id: "14395632298",
@@ -339,6 +355,7 @@ export const stores: Store[] = [
             discount: "20% off",
             rating: null,
             ratingCount: null,
+            description: "FCBND FAIR WARM 8 Features With Face Bond Foundation, you get a beautiful, natural-looking matte finish that is waterproof, humidity-proof, and sweat-proof. This buildable medium coverage foundation is packed with 3% niacinamide that's been clinically tested to improve skin's texture feel after 4 weeks of use*. Coverage minimizes the appearance of imperfections, redness, acne scars, blemishes and pores. Available in 40 shades from fair to deep Face Bond Foundation is a non-comedogenic foundation in a vegan formula** Based on a 4-week clinical study of people using the product daily. ** not derived from animal ingredients. Benefits Up to 24-hour wear: Long-lasting coverage that lasts all day and all night. Waterproof, humidity-proof, and sweat-proof foundation. Medium-buildable, can't-feel coverage: Lightweight + comfortable wear Self-setting: No powder needed! Formulated with self-setting powder to absorb sweat and sebum. Natural matte finish: Minimizes the appearance of imperfections, redness, acne scars, blemishes and pores. Smudge + transfer-resistant. Patent pending precision dropper: No mess + precise application. Features 95% of users said the product feels lightweight* 97% of users said the product provides a no-mess application* 98% of users agreed the product doesn't look oily on skin* *Based on a study of participants using product daily over 1 week"
           },
           {
             id: "22870732007",
@@ -350,6 +367,7 @@ export const stores: Store[] = [
             discount: "25% off",
             rating: null,
             ratingCount: null,
+            description: "ALPHA ARBUTIN CARE SERUM Benefits Improves the appearance of hyperpigmentation and discoloration Evens skin tone and brightens dark spots Formulated Without Parabens Sulfates Phthalates Benefits Alpha-arbutin: decrease pigmentation in age spots, acne scars, and post-acne redness Tranexamic Acid: Improves brightness and treats discoloration Niacinamide: Smooths skin texture and treats fine lines"
           },
           {
             id: "13663273359",
@@ -361,6 +379,7 @@ export const stores: Store[] = [
             discount: "20% off",
             rating: null,
             ratingCount: null,
+            description: "ALL NIGHTER LONG-LSTG MKUP STG SPRY 4OZ Benefits Waterproof, smudge-proof, and transfer-resistant fixing spray Natural, real skin finish Up to 16-hour wear Keeps makeup fresh all day Temperature control technology keeps skin feeling cooler to prevent makeup meltdowns Boosts makeup vibrancy Super-fine mist for even application Blends makeup into skin for a blurred, soft focus effect Controls shine, prevents flaking or cracking No makeup touch-ups needed all day Keeps makeup out of fine lines Breathable and lightweight Pleasant smell, non-sticky Washes off easily Formulated Without Oil-free: Suitable for all skin types Paraben-free Benefits In a 7-day study of All Nighter Setting Spray:* Over 80% said their makeup not only looked better, it stayed on better (even in the T-zone) without settling into fine lines. Whether they had combination, dry, or oily skin, 88% or more said All Nighter was the best product to help their makeup last. *Based on a 50-person study."
           },
         ],
       },
@@ -373,55 +392,60 @@ export const stores: Store[] = [
             name: "ULTA Beauty Collection Pink Exfoliating Loofah 1ct",
             image:
               "https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=50/media/photosV2/8765de5b-06bc-4759-aea6-fcd5dfe2daf4-retina-large.png",
-            price: "$$350",
+            price: "$3.50",
             originalPrice: "$5.00",
             discount: "30% off",
             rating: null,
             ratingCount: null,
+            description: "WHIM LOOFAH OMBRE Benefits Gentle exfoliation for smooth skin Enhances lather for a luxurious shower or bath"
           },
           {
             id: "25659971856",
             name: "ULTA Beauty Collection Axolotl Bath Bomb Fizzer",
             image:
               "https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=50/media/photosV2/5b6a5762-836e-43b3-8eb1-91a96f678b36-retina-large.png",
-            price: "$$560",
+            price: "$5.60",
             originalPrice: "$8.00",
             discount: "30% off",
             rating: null,
             ratingCount: null,
+            description: "BATH FIZZER AXOLOTL Benefits Leaves skin feeling soft and rejuvenated Perfect for your at-home spa moment Features Proudly cruelty free with clean ingredients Made without parabens, sulfates, and phthalates Benefits Pear, pink berries, cedarwood & vanilla musk"
           },
           {
             id: "15122726859",
             name: "OGX Renewing Argan Oil Of Morocco Weightless Healing Dry Oil 4.0oz",
             image:
               "https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=50/media/photosV2/0e59d099-8a49-464a-ae79-53439b0251ae-retina-large.png",
-            price: "$$748",
+            price: "$7.48",
             originalPrice: "$10.69",
             discount: "30% off",
             rating: null,
             ratingCount: null,
+            description: "ARGAN OIL OF MOROCCO 4.0OZ Benefits Mend split ends and eliminate frizz Lightweight dry oil helps create soft, touchable tresses that shine while helping improve elasticity Soothing sweet citrus-fresh, floral-green and woody scent leaves locks smelling irresistibly good For optimal shine & frizz control, finish your style by misting all over Ideal for all hair types, the anti-frizz oil mist helps penetrate the hair shaft to hydrate & smooth For a full hair care routine, pair with Renewing + Argan Oil of Morocco Shampoo & Conditioner Paraben-free with sulfate-free surfactants, this anti-frizz dry oil is gentle on hair while helping improve strength and elasticity Key Ingredients Formulated with a hydrating blend of rich cold-pressed Moroccan argan oil, it helps leave hair feeling smooth, soft and shiny"
           },
           {
             id: "14961543692",
             name: "Essence Hello, Good Stuff! Pore Minimizing Serum 1.01oz",
             image:
               "https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=50/media/photosV2/87861443-8629-4f61-bf32-194cabfeb3f4-retina-large.png",
-            price: "$$419",
+            price: "$4.19",
             originalPrice: "$5.99",
             discount: "30% off",
             rating: null,
             ratingCount: null,
+            description: "HELLO GOOD STUFF PORE MINIMIZING SERUM Features Pore minimizing serum Visibly reduces the look of pores Leaves skin feeling soft and supple Leaves skin with a refined complexion Formulated with 95% natural ingredients Formulated with pomegranate fruit water and 3% Niacinamide Cruelty free Key Ingredients Pomegranate fruit water tackles and treats acne, combats future breakouts, reduces scarring, and soothes irritations 3% Niacinamide minimize the appearance of enlarged pores and improve 'orange peel' textured skin. Features Animal by-product Fragrance Microplastic particles Parabens"
           },
           {
             id: "17777520462",
             name: "OGX Thick & Full Biotin & Collagen Weightless Oil Mist 4.0oz",
             image:
               "https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=50/media/photosV2/23856e4b-909d-4840-8daa-2719e9550c30-retina-large.png",
-            price: "$$748",
+            price: "$7.48",
             originalPrice: "$10.69",
             discount: "30% off",
             rating: null,
             ratingCount: null,
+            description: "BIOTIN AND COLLAGEN OIL 4.0OZ Benefits Creates the appearance of full, strong, healthy-looking hair Key Ingredients A high performance blend with vitamin B7 biotin, collagen, and hydrolyzed wheat protein, infuses nutrients into every strand and creates the appearance of thicker, fuller, healthier-looking hair."
           },
         ],
       },
@@ -439,6 +463,7 @@ export const stores: Store[] = [
             discount: null,
             rating: null,
             ratingCount: null,
+            description: "MIXED SIZE RUBBER BANDS BLACK Features Easy to remove Black rubber with a strong hold"
           },
           {
             id: "14675725746",
@@ -450,6 +475,7 @@ export const stores: Store[] = [
             discount: null,
             rating: null,
             ratingCount: null,
+            description: "BASIK ED SCLP MASSAGE TRI ACTION BRISTLE Features Different-shaped bristles clean, stimulate, and massage your scalp Shampoos are distributed more evenly and thoroughly Loosens and reduces product buildup"
           },
           {
             id: "25291302416",
@@ -461,6 +487,7 @@ export const stores: Store[] = [
             discount: null,
             rating: null,
             ratingCount: null,
+            description: "DAHLIA SHEAR Benefits Beveled blade is long lasting and doesn't require frequent sharpening. Features Smaller size shear is easy to control especially for facial and body hair trimming. Comfortable handle design. Fixed finger rest."
           },
           {
             id: "24154290256",
@@ -472,6 +499,7 @@ export const stores: Store[] = [
             discount: null,
             rating: "4.4",
             ratingCount: null,
+            description: "SATIN PILLOWCASE IVORY Benefits Elevate your beauty rest with the luxury of satin Gentle on all skin and hair types Helps tame frizz and reduce breakage while sleeping Aids skin in retaining moisture Helps to prevent acne Helps to prevent facial creases from sleeping Gentle on eyelashes & eyebrows"
           },
         ],
       },
@@ -502,6 +530,7 @@ export const stores: Store[] = [
             discount: "16% off",
             rating: null,
             ratingCount: null,
+            description: "Design Loose fit: roomy and relaxed Ribbed neckline and armholes Dri-Fit technology keeps you feeling dry and comfortable Sewn on jock tag Team Details Features all new City Edition design and graphics Official NBA® logo Nike™ design trademark Additional Details If you typically wear men’s styles, please select your usual size. If you typically wear women’s styles, please size down. Officially licensed product"
           },
           {
             id: "23554130758",
@@ -513,6 +542,7 @@ export const stores: Store[] = [
             discount: "20% off",
             rating: null,
             ratingCount: null,
+            description: "Design Structured baseball hat Six panel construction Flat brim Mesh backing Style and Spirits Embroidered team logo on front New Era® flag on left side Technology 39Thirty® technology Interior branded taping with moisture-absorbing band Additional Details Officially licensed product"
           },
           {
             id: "17530134339",
@@ -524,6 +554,7 @@ export const stores: Store[] = [
             discount: "25% off",
             rating: "4.0",
             ratingCount: "20+",
+            description: "SPECS: Weight capacity: 661 lbs. Bed Weight: 7.77 lbs. Dimensions: 59.84 x 8.66 x 79.92 in. DETAILS & DESIGN: Comfortable queen airbed Flocked sleeping surface increases comfort for a restful night's sleep Sturdy coil beam construction provides contoured support Quick release valve compatible with most pumps Vinyl sides and bottom provide versatile indoor or outdoor capabilities Internal looped support imitated traditional mattress feel INCLUDES: 1 Airbed 1 repair patch"
           },
         ],
       },
@@ -541,6 +572,7 @@ export const stores: Store[] = [
             discount: null,
             rating: "4.8",
             ratingCount: "100+",
+            description: "Youll be on your way to a grand slam with the official Wiffle Ball, Inc. ® thirty-two inch bat and regulation nine inch baseball. This set contains everything you need for hours of summertime fun. Featuring a classic design, the Wiffle Ball, Inc. ® bat and ball set never goes out of style. Features: 32 bat in classic yellow Regulation 9 circumference baseball Durable plastic Classic design Model: 1001U"
           },
           {
             id: "24098892942",
@@ -552,6 +584,7 @@ export const stores: Store[] = [
             discount: "20% off",
             rating: null,
             ratingCount: null,
+            description: "Grab the DSG Logo Armchair when heading down to the field or out by the camp fire. Its high back and relaxing arm rests are designed to increase comfort while relaxing outdoors. It folds down to a compact size and can be stored away into the included carry bag, making it easy to transport to and from your destination. This chair also features a mesh cup holder to conveniently store your drink. FEATURES: High back and arm rests for comfort Folds to a compact size for easy portability Strong 600D Polyester fabric High Strength steel frame with powder coating Standard size mesh cup holder located on arm rest Includes carry bag with shoulder strap for easy carrying"
           },
           {
             id: "13915238043",
@@ -563,6 +596,7 @@ export const stores: Store[] = [
             discount: "16% off",
             rating: "4.6",
             ratingCount: null,
+            description: "With easy installation and pro-grade quality, the Goaliath 18 Mini Basketball Hoop is perfect for your home, office, or dorm room. The miniature size and foam-padded brackets allows it to be mounted on any door you choose, while the game-quality mini basketball will have you feeling like a pro. Includes one 5 mini basketball. FEATURES: Mini basketball hoop and ball set Suitable for home, office, or dorm Clear polycarbonate shatter proof backboard 9 breakaway steel rim with spring action 3-ply, 8 loop net Foam-padded bracket for quick installation Includes 5 game-ready mini basketball Style: G02500W"
           },
         ],
       },
@@ -580,6 +614,7 @@ export const stores: Store[] = [
             discount: null,
             rating: 4.8,
             ratingCount: "100+",
+            description: "Keep hydration handy for your next practice or big game with the Gatorade® Contour Bottle 32 oz. This Gatorade® bottle is designed with a Fast-Cap that simplifies your refueling process so you can quickly fill your bottle up and get back out there to make your moves. The contour bottle design offers up durability and a comfortable, versatile grip, while a clear Hydro-View™ strip allows you to see the liquid levels. DESIGN Contour Gatorade® bottle ideal for team sports Bottle design offers up an easy, versatile grip Fast-Cap makes it easy to remove and refill quickly Bottle and cap are BPA free TECHNOLOGY SureShot valve provides a steady stream and reduces leakage Clear Hydro-View™ strip lets you see the fill level Additional Details Style: 134261Z"
           },
           {
             id: 21981827176,
@@ -591,6 +626,7 @@ export const stores: Store[] = [
             discount: null,
             rating: 4.9,
             ratingCount: "100+",
+            dewscription: "Features:Double-Wall Vacuum Insulation Keeps Your Beverages Cold For Up To 24 Hoursstainless Steel Construction Offers Long-Lasting Durabilityfreesip&Reg; Lid Includes A Built-In Straw For Easy Drinkingthe Wide Mouth Opening Lets You Take Bigger Swigs And Easily Fits Ice Cubesthe Lid Flips Open With A Button And Locks Shut For Easy Transportationleak-Proof Design Helps Avoid Any Unwanted Messes And Spillshinged Loop Flips Up For Easy Carrying And Tucks Away When Not In Usebase Fits Most Cup Holdersbpa And Phthalate Freehand Wash Cup, Dishwasher-Safe Lid; Not For Use With Hot Liquidscapacity: 32 Oz."
           },
         ],
       },
@@ -622,6 +658,7 @@ export const stores: Store[] = [
             discount: null,
             rating: null,
             ratingCount: null,
+            description: "Buy the Paper Shred by Celebrate It, 4oz. at Michaels. Perfect for filling in those extra spaces you have in your packages, gift baskets and more! Available in multiple colors. 4 oz. (113.3 g). Paper Shred by Celebrate It, 4oz."
           },
           {
             id: "21855230636",
@@ -666,23 +703,25 @@ export const stores: Store[] = [
             id: "15246177928",
             name: 'Make Market Coasters Slate 4" x 4"',
             image:
-              "https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=50/media/photosV2/d918a4df-7846-44a8-9e77-d715bea8fc8a-retina-large.jpg",
+              "https://img.cdn4dd.com/p/fit=cover,width=600,height=600,format=auto,quality=50/media/photosV2/24d851cc-2fc4-4161-a331-dad89d0564ce-retina-large.jpg",
             price: "$6.49",
             originalPrice: null,
             discount: null,
             rating: null,
             ratingCount: null,
+            description: "Add a natural accent to your table decor with this set of Slate Coasters by Make Market. They are a great decorative option to keep your table free of water-ring marks and beverage stains.. 4' x 4' . 4 coasters . Stone."
           },
           {
             id: "18002655693",
             name: "Gildan Cotton Short Sleeve Adult T-Shirt White (Medium)",
             image:
-              "https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=50/media/photosV2/7ff4499b-819c-4d85-b7ab-1e6d8519ba3b-retina-large.jpg",
+              "https://img.cdn4dd.com/p/fit=cover,width=600,height=600,format=auto,quality=50/media/photosV2/d918a4df-7846-44a8-9e77-d715bea8fc8a-retina-large.jpg",
             price: "$2.99",
             originalPrice: null,
             discount: null,
             rating: null,
             ratingCount: null,
+            description: "Buy the Gildan Short Sleeve Adult T-Shirt at Michaels. This t-shirt is soft, comfortable, and 100% cotton which makes this the perfect shirt to personalize or to simply wear as is. Available in multiple colors and sizes . 100% cotton - most colors . 90/10 blend - sport gray and antique heathers . 50/50 blend - safety colors and heathers . Gildan Short Sleeve Adult T-Shirt"
           },
           {
             id: "21855230154",
@@ -755,6 +794,7 @@ export const stores: Store[] = [
             discount: null,
             rating: null,
             ratingCount: null,
+            description: "Purchase the valley forge united states stick flag, 4 x 6 at michaels.com. Whether it is the 4th of july or not, you can use this stick flag from valley forge to add patriotic charm to your home decor. Multicolor (red, white and blue). 4 x 6. 1 flag. Polycotton. Valley forge united states stick flag, 4 x 6"
           },
           {
             id: "25323605384",
@@ -766,6 +806,7 @@ export const stores: Store[] = [
             discount: null,
             rating: null,
             ratingCount: null,
+            description: "Get the 16 inches red, white & blue hydrangea mix bush by celebrate it at michaels. Use this red, white and blue hydrangea mix bush to make a potted arrangement. Perfect for patriotic holidays like memorial day and the fourth of july, you can pair this festive hydrangea bush with a metal container or decorative pot, mix and match with other picks, bushes and floral foam to create a realistic and celebratory decorative piece for your home.. 10 x 10 x 16 (25.4cm x 25.4cm x 40.6cm). Glitter accents on petals. Polyester, polyethylene and iron wire. For indoor use only."
           },
           {
             id: "25276372022",
@@ -777,6 +818,7 @@ export const stores: Store[] = [
             discount: null,
             rating: null,
             ratingCount: null,
+            description: "Find thes red, white & blue cakesicle swirlpop silicone treat mold by celebrate it at michaels. Create fun patriotic treats with this special mold. Featuring a fun swirl design, this mold is perfect for making frozen treats or delicious cakesicles for your 4th of july barbeque or party. Red swirl pop design. 4 inches x 9 inches (10.16cm x 22.86cm) overall dimensions. 4 cavities. Popsicle sticks sold separately. Food safe. Freezer, oven, microwave and dishwasher (top rack only) safe"
           },
           {
             id: "25276372025",
@@ -788,6 +830,7 @@ export const stores: Store[] = [
             discount: null,
             rating: null,
             ratingCount: null,
+            description: "Find this red, white & blue star cookie cutters set by celebrate it at michaels. Create fun patriotic treats with this cookie cutter set. Featuring a classic star shape in three sizes, this set is perfect for making delicious cookies for your 4th of july barbeque or party. Star shapes. 3 inches to 5 inches (7.62cm to 12..7cm) sizes. 3 cookie cutters. Food safe. Stainless steel"
           },
           {
             id: "25276372015",
@@ -799,6 +842,7 @@ export const stores: Store[] = [
             discount: null,
             rating: null,
             ratingCount: null,
+            description: "Shop for these red, white & blue usa flag toppers, 12ct. By celebrate it at michaels. Add some star spangled fun to treats with these topper picks. The metallic american flag design is great for decorating cupcakes, sundaes and other 4th of july goodies. Usa flag design. 4 inches (10.16 cm) tall. 12 toppers. Food safe. Paper and plastic. Toppers are for decorative use only"
           },
         ],
       },
