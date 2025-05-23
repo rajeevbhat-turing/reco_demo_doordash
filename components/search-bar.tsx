@@ -315,11 +315,6 @@ const SearchBar = () => {
                             />
                           </svg>
                         )}
-                        {result.type === "menu-item" && (
-                          <span className="text-xs bg-orange-100 text-orange-800 px-2 py-1 rounded-full ml-2">
-                            Menu Match
-                          </span>
-                        )}
                       </div>
                       <p className="text-xs text-gray-500 truncate">{result.description}</p>
                     </div>
