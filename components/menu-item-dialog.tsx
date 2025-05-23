@@ -132,9 +132,21 @@ export default function MenuItemDialog({ isOpen, onClose, item }: MenuItemDialog
   // Calculate total price including customizations
   const calculateTotalPrice = () => {
     let total = basePrice
+    
+    // Add selected recommended option price if applicable
+    if (selectedOption) {
+      const option = recommendedOptions.find(opt => opt.id === selectedOption)
+      if (option) {
+        const optionPrice = parseFloat(option.price.replace(/[^0-9.]/g, '')) || 0
+        total = optionPrice // Use the option price as the new base
+      }
+    }
+  
+    // Add customization prices
     Object.values(customizationPrices).forEach(price => {
       total += price
     })
+    
     return total.toFixed(2)
   }
 
@@ -236,81 +248,79 @@ export default function MenuItemDialog({ isOpen, onClose, item }: MenuItemDialog
 
   const handleCustomizationSelect = (sectionId: string, optionId: string) => {
     const section = customizationSections.find((s) => s.id === sectionId)
-
+  
     if (!section) return
-
+  
     setSelectedCustomizations((prev) => {
       const updatedSelections = { ...prev }
-      setCustomizationPrices((prevPrices) => {
-        const updatedPrices = { ...prevPrices }
-
-        if (section.type === "radio") {
-          // For radio buttons, replace the current selection
-          updatedSelections[sectionId] = [optionId]
-
-          // Remove all prices from this section first
+      const currentSelections = updatedSelections[sectionId] || []
+  
+      if (section.type === "radio") {
+        // Radio button logic remains the same
+        updatedSelections[sectionId] = [optionId]
+        
+        // Remove all prices from this section first
+        setCustomizationPrices((prevPrices) => {
+          const updatedPrices = { ...prevPrices }
           section.options.forEach(opt => {
             if (updatedPrices[opt.id]) {
               delete updatedPrices[opt.id]
             }
           })
-
+  
           // Add the new price if it exists
           const selectedOption = section.options.find(opt => opt.id === optionId)
           if (selectedOption?.price !== undefined) {
             updatedPrices[optionId] = selectedOption.price
           }
-
-          // Mark this required section as met
-          if (section.required) {
-            setRequiredSectionsMet((prev) => ({
-              ...prev,
-              [sectionId]: true,
-            }))
-          }
-        } else {
-          // For checkboxes, toggle the selection
-          const currentSelections = updatedSelections[sectionId] || []
-
-          if (currentSelections.includes(optionId)) {
-            updatedSelections[sectionId] = currentSelections.filter((id) => id !== optionId)
-            // Remove the price when deselected
-            if (updatedPrices[optionId]) {
-              delete updatedPrices[optionId]
-            }
-          } else {
-            // Check if we're at the max selections
-            if (section.maxSelections && currentSelections.length >= section.maxSelections) {
-              // Remove the first item if we're at max
-              const removedId = currentSelections[0]
-              updatedSelections[sectionId] = [...currentSelections.slice(1), optionId]
-              // Remove the price of the deselected item
-              if (updatedPrices[removedId]) {
-                delete updatedPrices[removedId]
-              }
-            } else {
-              updatedSelections[sectionId] = [...currentSelections, optionId]
-            }
-
-            // Add the price when selected
-            const selectedOption = section.options.find(opt => opt.id === optionId)
-            if (selectedOption?.price !== undefined) {
-              updatedPrices[optionId] = selectedOption.price
-            }
-          }
-
-          // For required checkbox sections, check if any option is selected
-          if (section.required) {
-            setRequiredSectionsMet((prev) => ({
-              ...prev,
-              [sectionId]: updatedSelections[sectionId].length > 0,
-            }))
-          }
+          return updatedPrices
+        })
+  
+        // Mark this required section as met
+        if (section.required) {
+          setRequiredSectionsMet((prev) => ({
+            ...prev,
+            [sectionId]: true,
+          }))
         }
-
-        return updatedPrices
-      })
-
+      } else {
+        // Checkbox logic - simplified
+        if (currentSelections.includes(optionId)) {
+          // Deselect
+          updatedSelections[sectionId] = currentSelections.filter(id => id !== optionId)
+        } else {
+          // Check max selections
+          if (section.maxSelections && currentSelections.length >= section.maxSelections) {
+            return prev // Don't make any changes if max selections reached
+          }
+          // Select
+          updatedSelections[sectionId] = [...currentSelections, optionId]
+        }
+  
+        // Update prices
+        setCustomizationPrices((prevPrices) => {
+          const updatedPrices = { ...prevPrices }
+          const selectedOption = section.options.find(opt => opt.id === optionId)
+          
+          if (currentSelections.includes(optionId)) {
+            // Remove price if deselected
+            delete updatedPrices[optionId]
+          } else if (selectedOption?.price !== undefined) {
+            // Add price if selected
+            updatedPrices[optionId] = selectedOption.price
+          }
+          return updatedPrices
+        })
+  
+        // For required checkbox sections
+        if (section.required) {
+          setRequiredSectionsMet((prev) => ({
+            ...prev,
+            [sectionId]: updatedSelections[sectionId].length > 0,
+          }))
+        }
+      }
+  
       return updatedSelections
     })
   }
@@ -323,11 +333,20 @@ export default function MenuItemDialog({ isOpen, onClose, item }: MenuItemDialog
 
   const handleAddToCart = () => {
     if (!item || !allRequiredSectionsMet) return
-
+  
     // Get selected customizations for display
     const customizationText: string[] = []
     let totalPrice = basePrice
-
+  
+    // Include selected recommended option if any
+    if (selectedOption) {
+      const option = recommendedOptions.find(opt => opt.id === selectedOption)
+      if (option) {
+        customizationText.push(option.title)
+        totalPrice = parseFloat(option.price.replace(/[^0-9.]/g, '')) || basePrice
+      }
+    }
+  
     // Add all selected customizations
     customizationSections.forEach(section => {
       const selectedIds = selectedCustomizations[section.id] || []
@@ -341,7 +360,7 @@ export default function MenuItemDialog({ isOpen, onClose, item }: MenuItemDialog
         }
       })
     })
-
+  
     // Add the item to cart with customizations
     addToCart({
       id: item.id + Date.now(), // Make unique ID for customized items
@@ -351,7 +370,7 @@ export default function MenuItemDialog({ isOpen, onClose, item }: MenuItemDialog
       image: item.image,
       customizations: customizationText.join(" · "),
     })
-
+  
     onClose()
   }
 
