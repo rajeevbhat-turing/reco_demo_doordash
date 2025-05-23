@@ -3,11 +3,11 @@
 import type React from "react"
 import { createContext, useContext, useEffect, useState } from "react"
 import type { Product } from "@/types"
-import { CartCategory, useCartStore } from "@/store/cart-store"
+import { CartCategory, CartItem, useCartStore } from "@/store/cart-store"
 
 // Define the cart context type
 interface CartContextType {
-  items: any[]
+  items: CartItem[]
   addToCart: (product: Product, storeId?: string) => void
   removeFromCart: (productId: number | string) => void
   updateQuantity: (productId: number | string, quantity: number) => void
@@ -62,7 +62,7 @@ export function CartProvider({
           price: product.price,
           image: product.image,
           restaurantId: storeId,
-        })
+        }, category)
       } else if (storeId) {
         cartStore.addItem({
           id: product.id,
@@ -70,7 +70,7 @@ export function CartProvider({
           price: product.price,
           image: product.image,
           storeId: storeId,
-        })
+        }, category)
       } else {
         // Default case - just add the product without store ID
         cartStore.addItem({
@@ -78,7 +78,7 @@ export function CartProvider({
           name: product.name,
           price: product.price,
           image: product.image,
-        })
+        }, category)
       }
     },
     removeFromCart: (productId: number | string) => cartStore.removeItem(productId),

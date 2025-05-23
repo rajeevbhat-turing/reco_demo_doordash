@@ -15,6 +15,7 @@ export interface CartItem {
   storeId?: string
   restaurantId?: string
   customizations?: string
+  category: CartCategory // Add category to each cart item
 }
 
 // Category-specific configurations
@@ -66,7 +67,7 @@ interface CartStore {
   getConfig: () => CategoryConfig
   
   // Cart operations
-  addItem: (item: Omit<CartItem, "quantity">) => void
+  addItem: (item: Omit<CartItem, "quantity" | "category">, category?: CartCategory) => void
   removeItem: (id: string | number) => void
   updateQuantity: (id: string | number, quantity: number) => void
   clearCart: () => void
@@ -97,8 +98,9 @@ export const useCartStore = create<CartStore>()(
       setCategory: (category: CartCategory) => {
         const { currentCategory } = get()
         
-        // If changing categories, clear the cart
+        // Always reset the cart when changing categories
         if (currentCategory !== category) {
+          console.log(`Changing category from ${currentCategory} to ${category} - resetting cart`)
           set({
             items: [],
             currentCategory: category,
@@ -117,7 +119,7 @@ export const useCartStore = create<CartStore>()(
       },
       
       // Add item to cart
-      addItem: (item) => {
+      addItem: (item, category) => {
         const { 
           items, 
           currentCategory, 
@@ -126,6 +128,9 @@ export const useCartStore = create<CartStore>()(
           hasDifferentStore, 
           hasDifferentRestaurant 
         } = get()
+        
+        // Use provided category or default to current category
+        const itemCategory = category || currentCategory
         
         // Handle restaurant items
         if (item.restaurantId) {
@@ -143,7 +148,7 @@ export const useCartStore = create<CartStore>()(
           if (currentRestaurantId && hasDifferentRestaurant(item.restaurantId)) {
             // Clear cart and add new item
             set({
-              items: [{ ...item, quantity: 1 }],
+              items: [{ ...item, quantity: 1, category: "restaurant" }],
               currentRestaurantId: item.restaurantId,
             })
             return
@@ -156,7 +161,7 @@ export const useCartStore = create<CartStore>()(
           if (currentStoreId && hasDifferentStore(item.storeId)) {
             // Clear cart and add new item
             set({
-              items: [{ ...item, quantity: 1 }],
+              items: [{ ...item, quantity: 1, category: itemCategory }],
               currentStoreId: item.storeId,
             })
             return
@@ -174,7 +179,7 @@ export const useCartStore = create<CartStore>()(
         } else {
           // Add new item with quantity 1
           set({
-            items: [...items, { ...item, quantity: 1 }],
+            items: [...items, { ...item, quantity: 1, category: itemCategory }],
             currentStoreId: item.storeId || currentStoreId,
             currentRestaurantId: item.restaurantId || currentRestaurantId,
           })
@@ -206,6 +211,15 @@ export const useCartStore = create<CartStore>()(
           // Update quantity
           set({
             items: items.map((item) => (item.id === id ? { ...item, quantity } : item)),
+          })
+        }
+        
+        // Update store and restaurant IDs if cart is empty
+        const updatedItems = get().items
+        if (updatedItems.length === 0) {
+          set({
+            currentStoreId: null,
+            currentRestaurantId: null,
           })
         }
       },
@@ -300,7 +314,7 @@ export function addProductToCart(
       price: product.price,
       image: product.image,
       restaurantId: storeOrRestaurantId,
-    })
+    }, category)
   } else {
     cartStore.addItem({
       id: product.id,
@@ -308,6 +322,6 @@ export function addProductToCart(
       price: product.price,
       image: product.image,
       storeId: storeOrRestaurantId,
-    })
+    }, category)
   }
 }
