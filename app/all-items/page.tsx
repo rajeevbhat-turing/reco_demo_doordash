@@ -8,8 +8,10 @@ import {
   getGroceryFavorites, 
   getFastestNearYou 
 } from "@/app/grocery/data/retail-response-mapper"
+import { Suspense } from "react"
 
-export default function AllItemsPage() {
+// Inner component that uses searchParams
+function AllItemsContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   
@@ -101,5 +103,19 @@ export default function AllItemsPage() {
       categoryType={type}
       urlPrefix={getUrlPrefix()}
     />
+  )
+}
+
+// Loading fallback component
+function LoadingContent() {
+  return <div className="w-full h-screen flex items-center justify-center">Loading...</div>
+}
+
+// Main component with Suspense boundary
+export default function AllItemsPage() {
+  return (
+    <Suspense fallback={<LoadingContent />}>
+      <AllItemsContent />
+    </Suspense>
   )
 }
