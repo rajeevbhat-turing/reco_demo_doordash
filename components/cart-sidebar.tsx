@@ -13,10 +13,10 @@ interface CartSidebarProps {
 }
 
 export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
-  const { items, restaurantId, updateQuantity, removeItem, clearCart, getTotalPrice, addItem } = useCartStore()
+  const { items, currentRestaurantId, updateQuantity, removeItem, clearCart, getTotalPrice, addItem } = useCartStore()
   const [restaurant, setRestaurant] = useState<any>(null)
   const [complementItems, setComplementItems] = useState<any[]>([])
-  const [currentRestaurantId, setCurrentRestaurantId] = useState<string | null>(null)
+  const [lastRestaurantId, setLastRestaurantId] = useState<string | null>(null)
 
   // Function to fetch complement items - moved outside useEffect for clarity
   const fetchComplementItems = useCallback(
@@ -85,27 +85,25 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
     [items],
   )
 
-  // Track restaurant changes
   useEffect(() => {
     // Clear complement items when restaurant changes
-    if (restaurantId !== currentRestaurantId) {
+    if (currentRestaurantId !== lastRestaurantId) {
       setComplementItems([])
-      setCurrentRestaurantId(restaurantId)
+      setLastRestaurantId(currentRestaurantId)
 
-      if (restaurantId) {
-        fetchComplementItems(restaurantId)
+      if (currentRestaurantId) {
+        fetchComplementItems(currentRestaurantId)
       } else {
         setRestaurant(null)
       }
     }
-  }, [restaurantId, currentRestaurantId, fetchComplementItems])
+  }, [currentRestaurantId, lastRestaurantId, fetchComplementItems])
 
-  // Update complement items when cart items change (but restaurant stays the same)
   useEffect(() => {
-    if (restaurantId && restaurantId === currentRestaurantId) {
-      fetchComplementItems(restaurantId)
+    if (currentRestaurantId && currentRestaurantId === lastRestaurantId) {
+      fetchComplementItems(currentRestaurantId)
     }
-  }, [items, restaurantId, currentRestaurantId, fetchComplementItems])
+  }, [items, currentRestaurantId, lastRestaurantId, fetchComplementItems])
 
   // Helper function to calculate individual item price
   const getItemPrice = (item: any) => {
@@ -132,7 +130,7 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
 
   const handleAddComplementItem = (item: any) => {
     // Verify the item belongs to the current restaurant
-    if (item.restaurantId === restaurantId && restaurantId) {
+    if (item.restaurantId === currentRestaurantId && currentRestaurantId) {
       addItem({
         id: item.id,
         restaurantId: item.restaurantId,
@@ -182,8 +180,7 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
       </div>
 
       <div className="p-4">
-        {/* <button className="w-full bg-[#e03a19] text-white py-3 rounded-full font-medium">Continue</button> */}
-        <button className="w-full bg-[#e03a19] text-white py-3 rounded-full font-medium">{"$ "+getTotal()}</button>
+        <button className="w-full bg-[#e03a19] text-white py-3 rounded-full font-medium">{getTotalPrice()}</button>
       </div>
 
       <div className="flex-1 overflow-y-auto">
@@ -193,7 +190,7 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
             <div key={item.id} className="p-4 flex">
               <div className="relative h-14 w-14 mr-4 flex-shrink-0">
                 <Image
-                  src={item.image || "/placeholder.svg?height=96&width=96&query=burger"}
+                  src={item.image.trim() || "/placeholder.svg?height=96&width=96&query=burger"}
                   alt={item.name}
                   width={96}
                   height={96}
@@ -238,7 +235,7 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
         </div>
 
         {/* Complement your cart section - only show if we have items from the CURRENT restaurant */}
-        {complementItems.length > 0 && currentRestaurantId === restaurantId && (
+        {complementItems.length > 0 && lastRestaurantId === currentRestaurantId && (
           <div className="p-4 border-t">
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-bold text-lg">Complement your cart</h3>

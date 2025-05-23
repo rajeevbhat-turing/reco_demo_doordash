@@ -68,8 +68,10 @@ const FilterOptions = forwardRef<FilterOptionsRef, FilterOptionsProps>(
     const [ratingDropdownOpen, setRatingDropdownOpen] = useState(false)
     const [priceDropdownOpen, setPriceDropdownOpen] = useState(false)
     const [scheduleDropdownOpen, setScheduleDropdownOpen] = useState(false)
+    const [isTimeOptionsExpanded, setIsTimeOptionsExpanded] = useState(false)
     const [selectedRating, setSelectedRating] = useState<number | null>(null)
     const [selectedPrices, setSelectedPrices] = useState<string[]>([])
+    const [visibleTimeOptions, setVisibleTimeOptions] = useState<TimeOption[]>([])
 
     // Schedule state
     const [selectedDay, setSelectedDay] = useState<string>("Today")
@@ -168,6 +170,7 @@ const FilterOptions = forwardRef<FilterOptionsRef, FilterOptionsProps>(
       }
 
       setTimeOptions(times)
+      setVisibleTimeOptions(times.slice(0,6))
     }, [selectedDay])
 
     // Close dropdowns when clicking outside
@@ -229,6 +232,11 @@ const FilterOptions = forwardRef<FilterOptionsRef, FilterOptionsProps>(
 
     const handleRatingSelect = (rating: number) => {
       setSelectedRating(rating)
+    }
+
+    const expandTimeOptions = () => {
+      setIsTimeOptionsExpanded(true);
+      setVisibleTimeOptions(timeOptions)
     }
 
     const handlePriceToggle = (price: string) => {
@@ -581,7 +589,7 @@ const FilterOptions = forwardRef<FilterOptionsRef, FilterOptionsProps>(
 
                   {/* Time selection - more compact */}
                   <div className="space-y-1 max-h-[150px] overflow-y-auto mb-4 border rounded-lg p-2">
-                    {timeOptions.slice(0, 6).map((option, index) => (
+                    {visibleTimeOptions.map((option, index) => (
                       <div key={index} className="py-1">
                         <button className="flex items-center w-full" onClick={() => handleTimeSelect(option.time)}>
                           <div
@@ -596,8 +604,8 @@ const FilterOptions = forwardRef<FilterOptionsRef, FilterOptionsProps>(
                       </div>
                     ))}
                     {timeOptions.length > 6 && (
-                      <button className="text-xs text-gray-500 mt-1 w-full text-center">
-                        + {timeOptions.length - 6} more times
+                      <button onClick={expandTimeOptions} className="text-xs text-gray-500 mt-1 w-full text-center">
+                        {!isTimeOptionsExpanded && `${timeOptions.length - 6} more times`}
                       </button>
                     )}
                   </div>
