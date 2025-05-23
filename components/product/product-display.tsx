@@ -7,7 +7,7 @@ import type { Product } from "@/types"
 import Link from "next/link"
 import Image from "next/image"
 import { useCart } from "@/context/cart-context"
-import { useCartStore, CartCategory, addProductToCart } from "@/store/cart-store"
+import { CartCategory, useCartStore } from "@/store/cart-store"
 
 interface ProductDisplayProps {
   title: string
@@ -36,15 +36,9 @@ export default function ProductDisplay({
 }: ProductDisplayProps) {
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   
-  // Use both cart implementations for compatibility
+  // Use only the cart context for all cart operations
   const { items, addToCart, updateQuantity, removeFromCart } = useCart()
-  const cartStore = useCartStore()
   
-  // Set category in cart store when component mounts
-  useEffect(() => {
-    cartStore.setCategory(category)
-  }, [category])
-
   // Scroll left
   const scrollLeft = () => {
     if (!scrollContainerRef.current) return
@@ -73,40 +67,21 @@ export default function ProductDisplay({
   
   // Handle adding product to cart
   const handleAddToCart = (product: Product) => {
-    // Add to both cart implementations for compatibility
     addToCart(product, storeId)
-    
-    // Also add to cart store directly
-    cartStore.addItem({
-      id: product.id,
-      name: product.name,
-      price: product.price,
-      image: product.image,
-      storeId: category !== "restaurant" ? storeId : undefined,
-      restaurantId: category === "restaurant" ? storeId : undefined,
-    })
   }
   
   // Handle removing product from cart
   const handleRemoveFromCart = (productId: number) => {
     removeFromCart(productId)
-    cartStore.removeItem(productId)
-  }
-  
-  // Handle updating product quantity
-  const handleUpdateQuantity = (productId: number, quantity: number) => {
-    updateQuantity(productId, quantity)
-    cartStore.updateQuantity(productId, quantity)
   }
 
   // Create a URL-friendly version of the category title
   const categorySlug = title.toLowerCase().replace(/\s+/g, "-")
   
-  // Find items in cart from either implementation
+  // Find items in cart
   const getItemQuantity = (productId: number): number => {
-    const contextItem = items.find(item => item.id === productId)
-    const storeItem = cartStore.items.find(item => item.id === productId)
-    return contextItem?.quantity || storeItem?.quantity || 0
+    const item = items.find(item => item.id === productId)
+    return item?.quantity || 0
   }
 
   return (

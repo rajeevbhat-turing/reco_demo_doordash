@@ -1,12 +1,13 @@
 "use client"
 
-import { useState, useRef } from "react"
+import { useState, useRef, useEffect } from "react"
 import FilterOptions, { FilterState, FilterOptionsRef } from "@/components/filter-options"
 import GrocerySchedule from "@/components/grocery-schedule"
 import StoreGrid from "@/components/store/store-grid"
 import LocalGrocers from "@/components/local-grocers"
 import ProductDisplay from "@/components/product/product-display"
 import { CartProvider } from "@/context/cart-context"
+import { useCartStore } from "@/store/cart-store"
 import {
   getFilterOptions,
   getAllStores,
@@ -108,8 +109,14 @@ export default function Grocery() {
     return carousel;
   }).filter(carousel => carousel.products.length > 0); // Only keep carousels with products
 
+  // Set category explicitly
+  useEffect(() => {
+    const cartStore = useCartStore.getState();
+    cartStore.setCategory("grocery");
+  }, []);
+  
   return (
-    <CartProvider>
+    <CartProvider category="grocery">
       <div className="max-w-[1200px] mx-auto px-4 pt-16">
         {/* Filter Options Bar */}
       <FilterOptions 

@@ -5,10 +5,18 @@ import StoreCard from "@/components/storeCard"
 import { stores } from "@/constants/store"
 import { ChevronRight } from "lucide-react"
 import Image from "next/image"
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { useCartStore } from "@/store/cart-store"
+import { CartProvider } from "@/context/cart-context"
 
 export default function Retail() {
   const [activeFilters, setActiveFilters] = useState<string[]>([])
+  
+  // Set category explicitly
+  useEffect(() => {
+    const cartStore = useCartStore.getState();
+    cartStore.setCategory("retail");
+  }, []);
 
   const handleFilterChange = (filter: string) => {
     setActiveFilters(prev => {
@@ -40,7 +48,8 @@ export default function Retail() {
   const resultCount = filteredStores.length
 
   return (
-    <main className="max-w-[1200px] mx-auto px-4 pt-24">
+    <CartProvider category="retail">
+      <main className="max-w-[1200px] mx-auto px-4 pt-24">
       <h1 className="text-[32px] font-bold mb-4">Stores Near You</h1>
 
       <CategoryFilters
@@ -186,6 +195,7 @@ export default function Retail() {
         ))}
       </div>
     </main>
+    </CartProvider>
   )
 }
 
