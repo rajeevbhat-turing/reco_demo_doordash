@@ -29,6 +29,7 @@ interface StoreGridProps {
   variant?: "all" | "favorites" | "fastest" | "compact"
   showSeeAll?: boolean
   showNavigation?: boolean
+  seeAllLink?: string
 }
 
 export default function StoreGrid({
@@ -37,6 +38,7 @@ export default function StoreGrid({
   variant = "all",
   showSeeAll = true,
   showNavigation = true,
+  seeAllLink = "/all-items"
 }: StoreGridProps) {
   // Determine if we should use card or image layout
   const useCardLayout = variant === "all" || variant === "compact"
@@ -85,9 +87,19 @@ export default function StoreGrid({
         {(showSeeAll || showNavigation) && (
           <div className="flex items-center gap-2">
             {showSeeAll && (
-              <a href="#" className="text-sm font-medium">
+              <Link 
+                href={{
+                  pathname: seeAllLink,
+                  query: { 
+                    title: encodeURIComponent(title),
+                    type: 'grocery',
+                    section: encodeURIComponent(title.toLowerCase().replace(/\s+/g, '-'))
+                  }
+                }}
+                className="text-sm font-medium"
+              >
                 See All
-              </a>
+              </Link>
             )}
             {showNavigation && (
               <div className="flex gap-1">

@@ -12,7 +12,7 @@ interface RestaurantSectionProps {
   seeAllLink?: string
 }
 
-export default function RestaurantSection({ title, restaurants, seeAllLink = "#" }: RestaurantSectionProps) {
+export default function RestaurantSection({ title, restaurants, seeAllLink = "/all-items" }: RestaurantSectionProps) {
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   const [showLeftArrow, setShowLeftArrow] = useState(false)
   const [showRightArrow, setShowRightArrow] = useState(true)
@@ -87,7 +87,17 @@ export default function RestaurantSection({ title, restaurants, seeAllLink = "#"
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-xl font-bold text-gray-900">{title}</h2>
         <div className="flex items-center gap-4">
-          <Link href={seeAllLink} className="text-gray-900 font-medium text-sm">
+          <Link 
+            href={{
+              pathname: '/all-items',
+              query: { 
+                title: encodeURIComponent(title),
+                type: 'restaurant',
+                section: encodeURIComponent(title.toLowerCase().replace(/\s+/g, '-'))
+              }
+            }}
+            className="text-gray-900 font-medium text-sm"
+          >
             See All
           </Link>
           <div className="flex gap-2">

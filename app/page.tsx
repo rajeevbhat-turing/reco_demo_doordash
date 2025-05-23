@@ -301,20 +301,27 @@ export default function Home() {
             <RestaurantSection
               title="National favourites"
               restaurants={nationalFavorites}
-              seeAllLink="/category/national-favourites"
             />
 
             <RestaurantSection
               title="Fastest near you"
               restaurants={fastestNearYou}
-              seeAllLink="/category/fastest-near-you"
             />
 
-            <RestaurantSection title="Deals for you" restaurants={dealsForYou} seeAllLink="/category/deals" />
+            <RestaurantSection 
+              title="Deals for you" 
+              restaurants={dealsForYou} 
+            />
 
-            <RestaurantSection title="New on DoorDash" restaurants={newOnDoorDash} seeAllLink="/category/new" />
+            <RestaurantSection 
+              title="New on DoorDash" 
+              restaurants={newOnDoorDash} 
+            />
 
-            <RestaurantSection title="All stores" restaurants={allStores} seeAllLink="/browse" />
+            <RestaurantSection 
+              title="All stores" 
+              restaurants={allStores} 
+            />
           </>
         )}
       </div>
