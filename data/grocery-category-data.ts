@@ -1,6 +1,7 @@
+import {Category} from "@/types";
 
 
-export const groceryCategories: Category[] = [
+export const groceryCategories = [
   {
     "id": 1,
     "name": "Deals",
