@@ -17,7 +17,7 @@ import { groceryData } from "@/data/grocery-data"
 const sampleRetailProducts: ProductSection[] = [
   {
     id: 1,
-    title: "Popular Items",
+    title: "Popular Deals",
     products: [
       {
         id: 1,
@@ -123,7 +123,7 @@ export default function ConvenienceStorePage() {
       } else {
         foundStore = retailStores.find(store => store.id === storeId)
         sourceType = 'retail'
-        setProductData(sampleRetailProducts)
+        setProductData(foundStore?.items ?? sampleRetailProducts)
       }
       
       if (foundStore) {

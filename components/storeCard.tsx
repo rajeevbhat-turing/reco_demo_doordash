@@ -18,14 +18,14 @@ export default function StoreCard({ id, name, image, openTime, deliveryTime, dis
       >
         <div className="flex items-start gap-4">
           <div className="relative w-16 h-16 rounded-full overflow-hidden bg-gray-100">
-            <Image
+            {image && <Image
               src={imageError ? DEFAULT_STORE_LOGO : image}
               alt={name}
               width={64}
               height={64}
               className="object-cover"
               onError={() => setImageError(true)}
-            />
+            />}
           </div>
           <div className="flex-1 min-w-0">
             {openTime && (
