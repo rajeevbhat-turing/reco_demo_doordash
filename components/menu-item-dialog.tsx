@@ -150,27 +150,25 @@ export default function MenuItemDialog({ isOpen, onClose, item }: MenuItemDialog
     return total.toFixed(2)
   }
 
-  // Recommended meal options
   const recommendedOptions: MenuItemOption[] = [
     {
       id: "1",
       title: "#1 · Popular Choice",
-      subtitle: "Standard size with recommended sides",
-      details: ["Standard size", "Recommended sides"],
+      subtitle: "Regular portion with standard selections",
+      details: ["Regular size", "Standard selections"],
       price: `A$${basePrice.toFixed(2)}`,
       popular: true,
       popularity: "10+",
     },
     {
       id: "2",
-      title: "#2 · Combo Deal",
-      subtitle: "Large size with drink",
-      details: ["Large size", "Drink included"],
+      title: "#2 · Value Combo",
+      subtitle: "Large size with beverage",
+      details: ["Large size", "Includes beverage"],
       price: `A$${(basePrice + 2.5).toFixed(2)}`,
     },
   ];
 
-  // Generic customization sections that work for all food items
   const customizationSections: CustomizationSection[] = [
     {
       id: "size",
@@ -178,51 +176,51 @@ export default function MenuItemDialog({ isOpen, onClose, item }: MenuItemDialog
       type: "radio",
       required: true,
       options: [
-        { id: "standard", name: "Standard", price: 0 },
-        { id: "large", name: "Large", price: 1.5 },
-        { id: "extra-large", name: "Extra Large", price: 2.5 },
+        { id: "small", name: "Small", price: 0 },
+        { id: "medium", name: "Medium", price: 1.0 },
+        { id: "large", name: "Large", price: 2.0 },
       ],
       description: "• Select 1",
     },
     {
-      id: "addons",
-      title: "Add-ons",
+      id: "add-ons",
+      title: "Optional Add-ons",
       type: "checkbox",
       required: false,
       maxSelections: 3,
       options: [
-        { id: "extra-cheese", name: "Extra Cheese", price: 1.0 },
-        { id: "extra-sauce", name: "Extra Sauce", price: 0.5 },
-        { id: "guacamole", name: "Guacamole", price: 1.5 },
-        { id: "sour-cream", name: "Sour Cream", price: 0.8 },
-        { id: "bacon", name: "Bacon", price: 1.8 },
+        { id: "extra-portion", name: "Extra Portion", price: 1.5 },
+        { id: "flavor-boost", name: "Flavor Boost", price: 0.5 },
+        { id: "garnish", name: "Garnish", price: 0.5 },
+        { id: "custom-topping", name: "Custom Topping", price: 1.0 },
       ],
       description: "(Optional) • Select up to 3",
     },
     {
       id: "sides",
-      title: "Sides",
+      title: "Side Items",
       type: "checkbox",
       required: false,
       maxSelections: 2,
       options: [
-        { id: "fries", name: "Fries", price: 2.5 },
-        { id: "salad", name: "Side Salad", price: 3.0 },
-        { id: "soup", name: "Soup of the Day", price: 3.5 },
-        { id: "bread", name: "Garlic Bread", price: 2.0 },
+        { id: "snack", name: "Snack Item", price: 2.5 },
+        { id: "light-salad", name: "Light Salad", price: 3.0 },
+        { id: "fruit", name: "Fruit Portion", price: 3.0 },
+        { id: "bread-roll", name: "Bread Roll", price: 2.0 },
       ],
       description: "(Optional) • Select up to 2",
     },
     {
       id: "drinks",
-      title: "Drinks",
+      title: "Add a Beverage",
       type: "radio",
       required: false,
       options: [
-        { id: "no-drink", name: "No Drink", price: 0 },
-        { id: "soft-drink", name: "Soft Drink", price: 2.0 },
-        { id: "iced-tea", name: "Iced Tea", price: 2.5 },
-        { id: "bottled-water", name: "Bottled Water", price: 1.5 },
+        { id: "none", name: "No Drink", price: 0 },
+        { id: "soda", name: "Soda", price: 2.0 },
+        { id: "tea", name: "Tea", price: 2.0 },
+        { id: "coffee", name: "Coffee", price: 2.5 },
+        { id: "water", name: "Water", price: 1.5 },
         { id: "juice", name: "Juice", price: 3.0 },
       ],
       description: "(Optional) • Select 1",
@@ -233,14 +231,15 @@ export default function MenuItemDialog({ isOpen, onClose, item }: MenuItemDialog
       type: "checkbox",
       required: false,
       options: [
-        { id: "spicy", name: "Make it Spicy", price: 0 },
-        { id: "gluten-free", name: "Gluten Free", price: 1.0 },
+        { id: "low-sugar", name: "Low Sugar", price: 0 },
+        { id: "gluten-free", name: "Gluten-Free", price: 1.0 },
         { id: "vegan", name: "Vegan Option", price: 0 },
-        { id: "special-instructions", name: "Add Special Instructions", price: 0 },
+        { id: "instructions", name: "Add Special Instructions", price: 0 },
       ],
       description: "(Optional)",
     },
   ];
+  
 
   const handleOptionSelect = (optionId: string) => {
     setSelectedOption(optionId === selectedOption ? null : optionId)

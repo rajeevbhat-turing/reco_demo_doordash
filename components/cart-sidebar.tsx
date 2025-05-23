@@ -1,10 +1,11 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import Image from "next/image"
 import { X, ChevronRight, ChevronLeft, Plus } from "lucide-react"
 import { useCartStore } from "@/store/cart-store"
 import { getRestaurantById } from "@/constants/restaurants"
+import { getMenuItemsByRestaurantId } from "@/constants/menu-items"
 
 interface CartSidebarProps {
   isOpen: boolean
@@ -12,55 +13,99 @@ interface CartSidebarProps {
 }
 
 export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
-  const { items, restaurantId, updateQuantity, removeItem, clearCart, getTotalPrice } = useCartStore()
+  const { items, restaurantId, updateQuantity, removeItem, clearCart, getTotalPrice, addItem } = useCartStore()
   const [restaurant, setRestaurant] = useState<any>(null)
   const [complementItems, setComplementItems] = useState<any[]>([])
+  const [currentRestaurantId, setCurrentRestaurantId] = useState<string | null>(null)
 
-  useEffect(() => {
-    if (restaurantId) {
-      const restaurantData = getRestaurantById(restaurantId)
+  // Function to fetch complement items - moved outside useEffect for clarity
+  const fetchComplementItems = useCallback(
+    (currentId: string) => {
+      if (!currentId) {
+        setComplementItems([])
+        return
+      }
+
+      // Get restaurant data
+      const restaurantData = getRestaurantById(currentId)
       setRestaurant(restaurantData)
 
-      // Sample complement items - in a real app, these would come from an API or constants
-      setComplementItems([
-        {
-          id: "oreo-mcflurry",
-          name: "OREO McFlurry",
-          price: "$5.30",
-          image:
-            "https://img.cdn4dd.com/p/fit=cover,width=200,height=200,format=auto,quality=72/media/photosV2/6f3f8098-809f-4482-b24f-b0ad14493109-retina-large.png",
-        },
-        {
-          id: "fries",
-          name: "Fries",
-          price: "$7.15",
-          image:
-            "https://img.cdn4dd.com/p/fit=cover,width=200,height=200,format=auto,quality=72/media/photosV2/34e81cd3-e3bf-49c5-b1a8-73e842faacba-retina-large.png",
-        },
-        {
-          id: "coke",
-          name: "Coke",
-          price: "$5.30",
-          image:
-            "https://img.cdn4dd.com/p/fit=cover,width=200,height=200,format=auto,quality=72/media/photosV2/683ff86e-b09c-4631-bcf3-be8a72b19a98-retina-large.png",
-        },
-        {
-          id: "caramel-sundae",
-          name: "Caramel Sundae",
-          price: "$4.65",
-          image:
-            "https://img.cdn4dd.com/p/fit=cover,width=200,height=200,format=auto,quality=72/media/photosV2/5df2f9ff-cda5-4f81-aeeb-76cc42aec429-retina-large.png",
-        },
-        {
-          id: "hashbrown",
-          name: "Hash Brown",
-          price: "$5.30",
-          image:
-            "https://img.cdn4dd.com/p/fit=cover,width=200,height=200,format=auto,quality=72/media/photosV2/d6932d81-c9b6-449d-895f-004798747012-retina-large.png",
-        },
-      ])
+      // Get menu items strictly from this restaurant
+      const menuItems = getMenuItemsByRestaurantId(currentId)
+
+      // Verify each item has the correct restaurantId
+      const verifiedMenuItems = menuItems.filter((item) => {
+        return item.restaurantId === currentId
+      })
+
+      // Get items already in cart
+      const cartItemIds = items.map((item) => item.id)
+
+      // Filter out items already in cart
+      const availableItems = verifiedMenuItems.filter((item) => !cartItemIds.includes(item.id))
+
+      if (availableItems.length === 0) {
+        setComplementItems([])
+        return
+      }
+
+      // Prioritize certain types of items
+      const prioritizedItems = availableItems.filter(
+        (item) =>
+          item.popular ||
+          item.category?.toLowerCase().includes("dessert") ||
+          item.category?.toLowerCase().includes("drink") ||
+          item.category?.toLowerCase().includes("side") ||
+          item.category?.toLowerCase().includes("beverage") ||
+          item.name.toLowerCase().includes("shake") ||
+          item.name.toLowerCase().includes("fries") ||
+          item.name.toLowerCase().includes("cookie") ||
+          item.name.toLowerCase().includes("pie") ||
+          item.name.toLowerCase().includes("ice cream") ||
+          item.name.toLowerCase().includes("sundae"),
+      )
+
+      // Use prioritized items if available, otherwise use any available items
+      const itemsToShow = prioritizedItems.length > 0 ? prioritizedItems : availableItems
+
+      // Shuffle and take first 5 items
+      const shuffledItems = itemsToShow
+        .sort(() => Math.random() - 0.5)
+        .slice(0, 5)
+        .map((item) => ({
+          id: item.id,
+          restaurantId: item.restaurantId,
+          name: item.name,
+          price: item.price,
+          image: item.image || "/diverse-food-spread.png",
+        }))
+
+      setComplementItems(shuffledItems)
+    },
+    [items],
+  )
+
+  // Track restaurant changes
+  useEffect(() => {
+    // Clear complement items when restaurant changes
+    if (restaurantId !== currentRestaurantId) {
+      setComplementItems([])
+      setCurrentRestaurantId(restaurantId)
+
+      if (restaurantId) {
+        fetchComplementItems(restaurantId)
+      } else {
+        setRestaurant(null)
+      }
     }
-  }, [restaurantId])
+  }, [restaurantId, currentRestaurantId, fetchComplementItems])
+
+  // Update complement items when cart items change (but restaurant stays the same)
+  useEffect(() => {
+    if (restaurantId && restaurantId === currentRestaurantId) {
+      fetchComplementItems(restaurantId)
+    }
+  }, [items, restaurantId, currentRestaurantId, fetchComplementItems])
 
   // Helper function to calculate individual item price
   const getItemPrice = (item: any) => {
@@ -78,17 +123,24 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
     return total.toFixed(2)
   }
 
-  // Calculate delivery fee (you can make this dynamic based on restaurant)
-  const deliveryFee = 0.0
-
-  // Calculate service fee (typically a percentage of subtotal)
-  const serviceFee = (Number.parseFloat(getSubtotal()) * 0.15).toFixed(2)
-
   // Calculate total
   const getTotal = () => {
     const subtotal = Number.parseFloat(getSubtotal())
     const total = subtotal
     return total.toFixed(2)
+  }
+
+  const handleAddComplementItem = (item: any) => {
+    // Verify the item belongs to the current restaurant
+    if (item.restaurantId === restaurantId && restaurantId) {
+      addItem({
+        id: item.id,
+        restaurantId: item.restaurantId,
+        name: item.name,
+        price: item.price,
+        image: item.image,
+      })
+    }
   }
 
   const cartClasses = isOpen
@@ -130,17 +182,8 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
       </div>
 
       <div className="p-4">
-        <button className="w-full bg-[#e03a19] text-white py-3 rounded-full font-medium">Continue</button>
-      </div>
-
-      {/* Order Summary */}
-      <div className="p-4 border-t bg-gray-50">
-        <div className="space-y-2">
-          <div className="flex justify-between font-bold">
-            <span>Total</span>
-            <span>${getTotal()}</span>
-          </div>
-        </div>
+        {/* <button className="w-full bg-[#e03a19] text-white py-3 rounded-full font-medium">Continue</button> */}
+        <button className="w-full bg-[#e03a19] text-white py-3 rounded-full font-medium">{"$ "+getTotal()}</button>
       </div>
 
       <div className="flex-1 overflow-y-auto">
@@ -194,40 +237,45 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
           ))}
         </div>
 
-        {/* Complement your cart section */}
-        <div className="p-4 border-t">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="font-bold text-lg">Complement your cart</h3>
-            <div className="flex space-x-2">
-              <button className="p-1 rounded-full border border-gray-200">
-                <ChevronLeft className="h-4 w-4" />
-              </button>
-              <button className="p-1 rounded-full border border-gray-200">
-                <ChevronRight className="h-4 w-4" />
-              </button>
+        {/* Complement your cart section - only show if we have items from the CURRENT restaurant */}
+        {complementItems.length > 0 && currentRestaurantId === restaurantId && (
+          <div className="p-4 border-t">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="font-bold text-lg">Complement your cart</h3>
+              <div className="flex space-x-2">
+                <button className="p-1 rounded-full border border-gray-200">
+                  <ChevronLeft className="h-4 w-4" />
+                </button>
+                <button className="p-1 rounded-full border border-gray-200">
+                  <ChevronRight className="h-4 w-4" />
+                </button>
+              </div>
+            </div>
+
+            <div className="flex overflow-x-auto space-x-4 pb-4 hide-scrollbar">
+              {complementItems.map((item) => (
+                <div key={item.id} className="flex flex-col items-center min-w-[100px]">
+                  <div className="relative w-20 h-20 mb-2">
+                    <Image
+                      src={item.image || "/placeholder.svg"}
+                      alt={item.name}
+                      fill
+                      className="object-cover rounded-lg"
+                    />
+                    <button
+                      className="absolute bottom-1 right-1 bg-white rounded-full p-1 shadow-md hover:bg-gray-50 transition-colors"
+                      onClick={() => handleAddComplementItem(item)}
+                    >
+                      <Plus className="h-3 w-3" />
+                    </button>
+                  </div>
+                  <h4 className="text-xs text-center line-clamp-2 mb-1">{item.name}</h4>
+                  <p className="text-xs font-medium">{item.price}</p>
+                </div>
+              ))}
             </div>
           </div>
-
-          <div className="flex overflow-x-auto space-x-4 pb-4 hide-scrollbar">
-            {complementItems.map((item) => (
-              <div key={item.id} className="flex flex-col items-center min-w-[100px]">
-                <div className="relative w-20 h-20 mb-2">
-                  <Image
-                    src={item.image || "/placeholder.svg"}
-                    alt={item.name}
-                    fill
-                    className="object-cover rounded-lg"
-                  />
-                  <button className="absolute bottom-1 right-1 bg-white rounded-full p-1 shadow-md">
-                    <Plus className="h-3 w-3" />
-                  </button>
-                </div>
-                <h4 className="text-xs text-center line-clamp-2">{item.name}</h4>
-                <p className="text-xs font-medium">{item.price}</p>
-              </div>
-            ))}
-          </div>
-        </div>
+        )}
       </div>
     </div>
   )
