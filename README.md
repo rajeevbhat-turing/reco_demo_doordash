@@ -139,7 +139,7 @@ docker-compose build --no-cache
 - The container uses `yarn start`, which calls the Next.js CLI through the `scripts` section of `package.json`. Make sure that script exists and the project has been built with `yarn build`.
 - This configuration is optimized for production usage (`next start`). For development mode (`next dev`), a separate development-specific configuration is recommended.
 
-## Zustand Cart Store Documentation
+## Global Store for validators Documentation
 
 ### Store Structure
 
