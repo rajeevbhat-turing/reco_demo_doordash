@@ -138,3 +138,86 @@ docker-compose build --no-cache
 - Ensure `next` is listed under the `dependencies` section of your `package.json`. If it is only under `devDependencies`, it may not be available in the production container.
 - The container uses `yarn start`, which calls the Next.js CLI through the `scripts` section of `package.json`. Make sure that script exists and the project has been built with `yarn build`.
 - This configuration is optimized for production usage (`next start`). For development mode (`next dev`), a separate development-specific configuration is recommended.
+
+## Zustand Cart Store Documentation
+
+### Store Structure
+
+#### Core State Properties
+- `items`: CartItem[] - Array of items in the cart
+- `currentCategory`: CartCategory - Active category ("restaurant", "grocery", "retail", or "pets")
+- `currentStoreId`: string | null - ID of the current store (for grocery/retail/pets)
+- `currentRestaurantId`: string | null - ID of the current restaurant
+
+### Cart Item Structure
+
+Each cart item (`CartItem`) contains:
+
+```typescript
+{
+  id: string | number,       // Unique item identifier
+  name: string,              // Product name
+  price: number | string,    // Price (can be number or formatted string)
+  image: string,             // Product image URL
+  quantity: number,          // Item quantity
+  storeId?: string,          // For grocery/retail/pets items
+  restaurantId?: string,     // For restaurant items
+  customizations?: string,   // Any customizations
+  category: CartCategory     // Item category
+}
+```
+
+### Example Cart State
+
+```json
+{
+  "items": [
+    {
+      "id": "mint-mojito-iced-coffee1748271054684",
+      "restaurantId": "philz-coffee",
+      "name": "Mint Mojito Iced Coffee",
+      "price": "7.40",
+      "image": "https://img.cdn4dd.com/...",
+      "customizations": "#1 · Popular Choice · Small",
+      "quantity": 1,
+      "category": "restaurant"
+    },
+    {
+      "id": "turkey-sausage-sandwich",
+      "restaurantId": "philz-coffee",
+      "name": "Turkey Sausage Sandwich",
+      "price": "$8.70",
+      "image": "https://img.cdn4dd.com/...",
+      "quantity": 3,
+      "category": "restaurant"
+    }
+  ],
+  "currentCategory": "restaurant",
+  "currentStoreId": null,
+  "currentRestaurantId": "philz-coffee"
+}
+```
+
+### Viewing in Redux DevTools
+
+The store is configured to work with Redux DevTools:
+
+1. Install the Redux Devtools extension
+2. Open DevTools (Ctrl+Shift+I or Cmd+Opt+I)
+3. Select the "Redux" tab
+4. Look for "CartStore" in the state tree
+5. Actions will appear in the log as they occur
+
+### Naming Convention Inconsistency
+
+#### Current Situation
+The codebase uses different naming conventions because the user flows and design specifications were provided after the core cart functionality was already implemented.
+
+#### Mapping Reference
+
+| User Flow Term | Implementation Field |
+|----------------|---------------------|
+| cart.store     | item.restaurantId   |
+| cart.vendor    | item.storeId        |
+
+This mapping should be referenced when working with cart-related functionality to ensure correct field usage.
