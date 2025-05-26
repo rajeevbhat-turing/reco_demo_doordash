@@ -71,3 +71,70 @@ yarn lint
 # or
 pnpm lint
 ```
+
+## Using Docker Compose
+
+This project includes a Docker Compose configuration to build and run the Next.js frontend application in a containerized environment.
+
+### Prerequisites
+
+Before using Docker Compose, ensure the following are installed on your system:
+
+- Docker: https://www.docker.com/
+- Docker Compose: https://docs.docker.com/compose/install/
+
+### Project Structure
+
+Ensure your project directory has the following structure:
+
+```
+your-project/
+├── Dockerfile
+├── docker-compose.yml
+├── package.json
+├── yarn.lock
+├── public/
+├── pages/
+├── components/
+└── ...
+```
+
+### Build the Docker Image
+
+To build the container image with all required dependencies:
+
+```bash
+docker-compose build --no-cache
+```
+
+### Start the Application
+
+```bash
+docker-compose up
+```
+
+Once the container is running, the application will be available at:
+
+```
+http://localhost:3000
+```
+
+### Stop the Application
+
+```bash
+docker-compose down
+```
+
+### Rebuild the Container
+
+If you make changes to dependencies (`package.json`, `yarn.lock`) or update the `Dockerfile`, rebuild the container using:
+
+```bash
+docker-compose build --no-cache
+```
+
+### Additional Notes
+
+- Ensure `next` is listed under the `dependencies` section of your `package.json`. If it is only under `devDependencies`, it may not be available in the production container.
+- The container uses `yarn start`, which calls the Next.js CLI through the `scripts` section of `package.json`. Make sure that script exists and the project has been built with `yarn build`.
+- This configuration is optimized for production usage (`next start`). For development mode (`next dev`), a separate development-specific configuration is recommended.
