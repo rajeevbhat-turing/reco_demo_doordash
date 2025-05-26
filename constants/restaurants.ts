@@ -19,6 +19,7 @@ export interface Restaurant {
   discount?: string;
   featured?: boolean;
   new?: boolean;
+  categories?: string[]; // Array of category IDs for filtering
 }
 
 export const restaurants: Restaurant[] = [
@@ -44,6 +45,7 @@ export const restaurants: Restaurant[] = [
     phone: "+61 2 1234 5678",
     featured: true,
     discount: "$3 off orders $14+",
+    categories: ["coffee", "breakfast", "healthy"]
   },
   {
     id: "peet-s-coffee",
@@ -67,6 +69,7 @@ export const restaurants: Restaurant[] = [
     phone: "+61 2 1234 5678",
     featured: true,
     discount: "$5 off orders $25+",
+    categories: ["coffee", "breakfast", "desserts"]
   },
   {
     id: "gateway-croissant",
@@ -90,6 +93,7 @@ export const restaurants: Restaurant[] = [
     phone: "+61 2 1234 5678",
     featured: true,
     discount: "",
+    categories: ["bakery", "breakfast", "desserts"]
   },
   {
     id: "pressed-acai-bowls",
@@ -113,6 +117,7 @@ export const restaurants: Restaurant[] = [
     phone: "+61 2 1234 5678",
     featured: true,
     discount: "",
+    categories: ["healthy", "smoothie", "breakfast"]
   },
   {
     id: "il-canto-cafe",
@@ -134,6 +139,7 @@ export const restaurants: Restaurant[] = [
     phone: "+61 2 1234 5678",
     featured: true,
     discount: "",
+    categories: ["coffee", "breakfast", "comfort-food"]
   },
   {
     id: "starbucks",
@@ -157,6 +163,7 @@ export const restaurants: Restaurant[] = [
     phone: "+61 2 1234 5678",
     featured: true,
     discount: "",
+    categories: ["coffee", "breakfast", "desserts"]
   },
   {
     id: "latte-express",
@@ -178,6 +185,7 @@ export const restaurants: Restaurant[] = [
     phone: "+61 2 1234 5678",
     featured: true,
     discount: "",
+    categories: ["coffee", "breakfast", "desserts"]
   },
   {
     id: "lava-wings",
@@ -199,6 +207,7 @@ export const restaurants: Restaurant[] = [
     phone: "+61 2 1234 5678",
     featured: true,
     discount: "",
+    categories: ["chicken", "fast-food", "comfort-food"]
   },
   {
     id: "big-save-market",
@@ -221,6 +230,7 @@ export const restaurants: Restaurant[] = [
     featured: false,
     discount: "",
     new: true,
+    categories: ["healthy", "comfort-food", "fast-food"]
   },
   {
     id: "my-happy-donut",
@@ -243,6 +253,7 @@ export const restaurants: Restaurant[] = [
     featured: false,
     discount: "",
     new: true,
+    categories: ["desserts", "bakery", "breakfast"]
   },
   {
     id: "midtown-market",
@@ -265,6 +276,7 @@ export const restaurants: Restaurant[] = [
     featured: false,
     discount: "",
     new: true,
+    categories: ["healthy", "fast-food", "comfort-food"]
   },
   {
     id: "icu-deli-inc",
@@ -287,6 +299,7 @@ export const restaurants: Restaurant[] = [
     featured: false,
     discount: "",
     new: true,
+    categories: ["breakfast", "fast-food", "comfort-food"]
   },
   {
     id: "modena-pizza-ice-cream",
@@ -309,6 +322,7 @@ export const restaurants: Restaurant[] = [
     featured: false,
     discount: "",
     new: true,
+    categories: ["pizza", "desserts", "fast-food"]
   },
   {
     id: "5-star-food-liquor",
@@ -331,6 +345,7 @@ export const restaurants: Restaurant[] = [
     featured: false,
     discount: "",
     new: true,
+    categories: ["fast-food", "comfort-food"]
   },
   {
     id: "deena-s-market-and-smoke-shop",
@@ -353,6 +368,7 @@ export const restaurants: Restaurant[] = [
     featured: false,
     discount: "",
     new: true,
+    categories: ["fast-food", "comfort-food"]
   },
   {
     id: "allstar-donuts",
@@ -377,6 +393,7 @@ export const restaurants: Restaurant[] = [
     featured: false,
     discount: "",
     new: true,
+    categories: ["desserts", "bakery", "breakfast"]
   },
   {
     id: "24-bart-liquor-store",
@@ -398,6 +415,7 @@ export const restaurants: Restaurant[] = [
     phone: "+61 2 1234 5678",
     featured: false,
     discount: "",
+    categories: ["fast-food", "comfort-food"]
   },
   {
     id: "mellis-cafe",
@@ -421,6 +439,7 @@ export const restaurants: Restaurant[] = [
     phone: "+61 2 1234 5678",
     featured: false,
     discount: "",
+    categories: ["coffee", "breakfast", "comfort-food"]
   },
   {
     id: "polk-sutter-cafe-deli",
@@ -442,6 +461,7 @@ export const restaurants: Restaurant[] = [
     phone: "+61 2 1234 5678",
     featured: false,
     discount: "",
+    categories: ["fast-food", "comfort-food", "burgers"]
   },
   {
     id: "wild-philly-steak",
@@ -463,6 +483,7 @@ export const restaurants: Restaurant[] = [
     phone: "+61 2 1234 5678",
     featured: false,
     discount: "",
+    categories: ["fast-food", "comfort-food"]
   },
   {
     id: "yesdrink-com",
@@ -484,6 +505,7 @@ export const restaurants: Restaurant[] = [
     phone: "+61 2 1234 5678",
     featured: false,
     discount: "",
+    categories: ["comfort-food", "healthy"]
   },
   {
     id: "papa-pasta",
@@ -505,6 +527,7 @@ export const restaurants: Restaurant[] = [
     phone: "+61 2 1234 5678",
     featured: false,
     discount: "",
+    categories: ["desserts", "bakery", "healthy"]
   },
   {
     id: "sweet-flex",
@@ -526,6 +549,7 @@ export const restaurants: Restaurant[] = [
     phone: "+61 2 1234 5678",
     featured: false,
     discount: "",
+    categories: ["breakfast", "fast-food", "comfort-food"]
   },
   {
     id: "mucho-breakfast-burrito",
@@ -547,6 +571,7 @@ export const restaurants: Restaurant[] = [
     phone: "+61 2 1234 5678",
     featured: false,
     discount: "",
+    categories: ["fast-food", "comfort-food"]
   },
   {
     id: "subs-bro",
@@ -591,6 +616,7 @@ export const restaurants: Restaurant[] = [
     phone: "+61 2 1234 5678",
     featured: false,
     discount: "20% off, up to $4",
+    categories: ["fast-food", "comfort-food"]
   },
   {
     id: "sam-s-bakery",
@@ -614,6 +640,7 @@ export const restaurants: Restaurant[] = [
     phone: "+61 2 1234 5678",
     featured: false,
     discount: "",
+    categories: ["pizza", "comfort-food", "fast-food"]
   },
   {
     id: "thursday-calzones",
@@ -635,6 +662,7 @@ export const restaurants: Restaurant[] = [
     phone: "+61 2 1234 5678",
     featured: false,
     discount: "",
+    categories: ["fast-food", "comfort-food"]
   },
   {
     id: "og-philly-steak",
@@ -656,6 +684,7 @@ export const restaurants: Restaurant[] = [
     phone: "+61 2 1234 5678",
     featured: false,
     discount: "",
+    categories: ["comfort-food", "healthy"]
   },
   {
     id: "kabob-nation",
@@ -677,6 +706,7 @@ export const restaurants: Restaurant[] = [
     phone: "+61 2 1234 5678",
     featured: false,
     discount: "",
+    categories: ["fast-food", "comfort-food"]
   },
   {
     id: "shawarma-junction",
@@ -698,6 +728,7 @@ export const restaurants: Restaurant[] = [
     phone: "+61 2 1234 5678",
     featured: false,
     discount: "",
+    categories: ["coffee", "breakfast", "comfort-food"]
   },
   {
     id: "allstars-cafe-inc",
@@ -719,6 +750,7 @@ export const restaurants: Restaurant[] = [
     phone: "+61 2 1234 5678",
     featured: false,
     discount: "",
+    categories: ["bakery", "breakfast"]
   },
   {
     id: "good-bagels",
@@ -740,6 +772,7 @@ export const restaurants: Restaurant[] = [
     phone: "+61 2 1234 5678",
     featured: false,
     discount: "",
+    categories: ["breakfast", "comfort-food"]
   },
   {
     id: "ihop",
@@ -761,6 +794,7 @@ export const restaurants: Restaurant[] = [
     phone: "+61 2 1234 5678",
     featured: false,
     discount: "",
+    categories: ["bakery", "breakfast", "coffee"]
   },
   {
     id: "noah-s-new-york-bagels",
@@ -784,6 +818,7 @@ export const restaurants: Restaurant[] = [
     phone: "+61 2 1234 5678",
     featured: false,
     discount: "",
+    categories: ["bakery", "desserts", "breakfast"]
   },
   {
     id: "bob-s-donuts",
@@ -805,6 +840,7 @@ export const restaurants: Restaurant[] = [
     phone: "+61 2 1234 5678",
     featured: false,
     discount: "",
+    categories: ["burgers", "fast-food", "comfort-food"]
   },
   {
     id: "halal-burgers-more",
@@ -826,6 +862,7 @@ export const restaurants: Restaurant[] = [
     phone: "+61 2 1234 5678",
     featured: false,
     discount: "",
+    categories: ["burgers", "fast-food", "comfort-food"]
   },
 ];
 

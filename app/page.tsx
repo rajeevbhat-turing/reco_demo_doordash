@@ -27,10 +27,10 @@ export default function Home() {
   const [allFilteredRestaurants, setAllFilteredRestaurants] = useState<Restaurant[]>([])
   const filterOptionsRef = useRef<FilterOptionsRef>(null)
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
-  
+
   // Get cart store to set category
   const cartStore = useCartStore()
-  
+
   // Set the category to restaurant when component mounts
   useEffect(() => {
     cartStore.setCategory("restaurant")
@@ -78,10 +78,19 @@ export default function Home() {
   useEffect(() => {
     const applyFilters = (restaurantList: Restaurant[]): Restaurant[] => {
       let filtered = [...restaurantList]
+      console.log("filtered", filtered)
 
       // Apply category filter
       if (selectedCategory) {
         filtered = filtered.filter((restaurant) => {
+          // Check if restaurant has categories array and if it includes the selected category
+          if (restaurant.categories && restaurant.categories.length > 0) {
+            // Convert category names to IDs for comparison (e.g., "Fast Food" -> "fast-food")
+            const categoryId = selectedCategory.toLowerCase().replace(/\s+/g, '-');
+            return restaurant.categories.includes(categoryId);
+          }
+
+          // Fallback to the old logic for backward compatibility
           // Match category to cuisine
           if (restaurant.cuisine.toLowerCase() === selectedCategory.toLowerCase()) {
             return true
@@ -319,19 +328,19 @@ export default function Home() {
                 restaurants={fastestNearYou}
               />
 
-              <RestaurantSection 
-                title="Deals for you" 
-                restaurants={dealsForYou} 
+              <RestaurantSection
+                title="Deals for you"
+                restaurants={dealsForYou}
               />
 
-              <RestaurantSection 
-                title="New on DoorDash" 
-                restaurants={newOnDoorDash} 
+              <RestaurantSection
+                title="New on DoorDash"
+                restaurants={newOnDoorDash}
               />
 
-              <RestaurantSection 
-                title="All stores" 
-                restaurants={allStores} 
+              <RestaurantSection
+                title="All stores"
+                restaurants={allStores}
               />
             </>
           )}
