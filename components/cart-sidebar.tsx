@@ -114,9 +114,20 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
 
   // Helper function to calculate individual item price
   const getItemPrice = (item: any) => {
-    const cleanPrice = item.price.replace(/[^0-9.]/g, "")
-    const price = Number.parseFloat(cleanPrice)
-    return isNaN(price) ? 0 : price
+    // Check if price is already a number
+    if (typeof item.price === 'number') {
+      return item.price;
+    }
+    
+    // Handle string price (with currency symbol)
+    if (typeof item.price === 'string') {
+      const cleanPrice = item.price.replace(/[^0-9.]/g, "")
+      const price = Number.parseFloat(cleanPrice)
+      return isNaN(price) ? 0 : price
+    }
+    
+    // Fallback for undefined or other types
+    return 0
   }
 
   // Calculate subtotal
