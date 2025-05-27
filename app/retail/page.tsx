@@ -82,33 +82,11 @@ export default function Retail() {
             {nearbyStores.map((store) => (
               <StoreCard key={store.id} {...store} />
             ))}
-            <div className="border border-gray-200 rounded-lg p-4 cursor-pointer hover:bg-gray-50">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h2 className="text-lg font-bold">See All Stores Nearby</h2>
-                  <p className="text-sm text-gray-600 mt-1">
-                    Walgreens, The Bouqs Co. Flower Shop, Bloom Cart ®, Designer Blooms, Target,...
-                  </p>
-                </div>
-                <ChevronRight className="h-5 w-5 text-gray-400" />
-              </div>
-            </div>
           </div>
 
           <div className="mt-8">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xl font-bold">Popular Deals</h2>
-              <div className="flex items-center gap-4">
-                <span className="text-gray-900">See All</span>
-                <div className="flex gap-2">
-                  <button className="p-2 hover:bg-gray-100 rounded-full">
-                    <ChevronRight className="h-5 w-5 rotate-180" />
-                  </button>
-                  <button className="p-2 hover:bg-gray-100 rounded-full">
-                    <ChevronRight className="h-5 w-5" />
-                  </button>
-                </div>
-              </div>
             </div>
             <div
               className="border border-gray-200 rounded-lg p-4 max-w-[368px] cursor-pointer hover:bg-gray-50"
