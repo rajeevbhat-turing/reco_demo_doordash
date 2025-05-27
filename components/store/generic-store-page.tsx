@@ -247,13 +247,6 @@ export default function GenericStorePage({
             )}
             <div className="flex gap-2">
               <button
-                className="border rounded-full px-4 py-2 flex items-center bg-gray-100"
-                onClick={() => setIsShopListModalOpen(true)}
-              >
-                <List className="w-4 h-4 mr-2" />
-                Shop your list
-              </button>
-              <button
                 className={`border rounded-full px-4 py-2 flex items-center ${isSaved ? "text-red-600" : ""}`}
                 onClick={() => setIsSaved(!isSaved)}
               >
@@ -351,9 +344,6 @@ export default function GenericStorePage({
           />
         </div>
       )}
-
-      {/* Shop List Modal */}
-      <ShopListModal isOpen={isShopListModalOpen} onClose={() => setIsShopListModalOpen(false)} />
 
       {/* Product Detail Modal */}
       <ProductDetailModal product={selectedProduct} onClose={closeProductModal} />

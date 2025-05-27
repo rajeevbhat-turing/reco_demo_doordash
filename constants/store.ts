@@ -343,7 +343,7 @@ export const stores: Store[] = [
     image:
       'https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=112,height=112,format=auto,quality=50/https://doordash-static.s3.amazonaws.com/media/restaurant/cover_square/545c07ad-245f-4398-9f04-271f97282063.jpg',
     openTime: 'Opens Tue at 10:00 AM',
-    deliveryTime: 'null min',
+    deliveryTime: '45 min',
     isDashPass: true,
     isNearYou: true,
     tags: ['Beauty', 'Retail'],
@@ -543,7 +543,7 @@ export const stores: Store[] = [
     image:
       'https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=112,height=112,format=auto,quality=50/https://doordash-static.s3.amazonaws.com/media/restaurant/cover_square/c6f05340-0e3b-4f33-aa22-b7edd1936216.png',
     openTime: 'Opens Tue at 9:00 AM',
-    deliveryTime: 'null min',
+    deliveryTime: '20 min',
     isDashPass: true,
     isNearYou: true,
     tags: ['Retail'],
@@ -678,7 +678,7 @@ export const stores: Store[] = [
     image:
       'https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=112,height=112,format=auto,quality=50/https://doordash-static.s3.amazonaws.com/media/restaurant/cover_square/3e4206fc-0103-4a03-a711-9c966c7041c4.png',
     openTime: 'Opens Tue at 9:00 AM',
-    deliveryTime: 'null min',
+    deliveryTime: '10 min',
     discount: '30% off $20',
     isDashPass: true,
     isNearYou: true,
@@ -902,7 +902,7 @@ export const stores: Store[] = [
     image:
       'https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=112,height=112,format=auto,quality=50/https://doordash-static.s3.amazonaws.com/media/restaurant/cover_square/d81e1e3f-3852-4e58-861d-a72e1cc96d1b.png',
     openTime: 'Opens Tue at 10:00 AM',
-    deliveryTime: 'null min',
+    deliveryTime: '20 min',
     isDashPass: true,
     isNearYou: true,
     tags: ['Retail'],
@@ -5125,7 +5125,7 @@ export const stores: Store[] = [
     image:
       'https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=112,height=112,format=auto,quality=50/https://doordash-static.s3.amazonaws.com/media/restaurant/cover_square/d3d258aa-9038-4e2d-96b7-ca02319318eb.jpg',
     openTime: 'Opens Tue at 10:30 AM',
-    deliveryTime: 'null min',
+    deliveryTime: '10 min',
     isDashPass: true,
     isNearYou: true,
     tags: ['Beauty', 'Retail'],
@@ -16510,7 +16510,7 @@ export const stores: Store[] = [
     image:
       'https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=112,height=112,format=auto,quality=50/https://doordash-static.s3.amazonaws.com/media/restaurant/cover_square/cfb23e1c-9274-47e1-8f7b-4da29736f43b.png',
     openTime: 'Opens Tue at 9:50 AM',
-    deliveryTime: 'null min',
+    deliveryTime: '25 min',
     isDashPass: true,
     isNearYou: true,
     tags: ['Retail'],
@@ -16522,7 +16522,7 @@ export const stores: Store[] = [
     image:
       'https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/e9ebbf99-cf77-4159-aeb2-e080c2933abc.jpg',
     openTime: 'Opens Wed at 10:20 AM',
-    deliveryTime: 'null min',
+    deliveryTime: '50 min',
     isDashPass: true,
     isNearYou: false,
     tags: ['Flowers', 'Retail'],
@@ -16760,7 +16760,7 @@ export const stores: Store[] = [
     image:
       'https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/012f51fe-d41a-4186-97e6-6c8c33b97f76.jpg',
     openTime: 'Opens Tue at 8:00 AM',
-    deliveryTime: 'null min',
+    deliveryTime: '43 min',
     isDashPass: true,
     isNearYou: false,
     tags: ['Flowers', 'Retail'],
@@ -16771,7 +16771,7 @@ export const stores: Store[] = [
     image:
       'https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/dacbbc16-db2a-45c9-80c8-9079e9dbf4c8.jpg',
     openTime: 'Opens Tue at 8:30 AM',
-    deliveryTime: 'null min',
+    deliveryTime: '18 min',
     discount: '15% off, up to $9',
     isDashPass: true,
     isNearYou: false,
@@ -22061,7 +22061,7 @@ export const stores: Store[] = [
     image:
       'https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/fdf29fd1-c1b3-4d36-8ec3-fa39de982da6.png',
     openTime: 'Opens Tue at 10:20 AM',
-    deliveryTime: 'null min',
+    deliveryTime: '34 min',
     discount: '$5 off on $35+',
     isDashPass: true,
     isNearYou: false,
@@ -22073,7 +22073,7 @@ export const stores: Store[] = [
     image:
       'https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/43493379-7ccc-4a65-9d59-5c8640ac6d61.jpg',
     openTime: 'Opens Tue at 9:20 AM',
-    deliveryTime: 'null min',
+    deliveryTime: '45 min',
     isDashPass: true,
     isNearYou: false,
     tags: ['Flowers', 'Retail'],

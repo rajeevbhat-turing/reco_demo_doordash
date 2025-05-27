@@ -39,7 +39,7 @@ export default function StoreCard({ id, name, image, openTime, deliveryTime, dis
                   )}
                   <h3 className="font-medium text-gray-900 truncate">{name}</h3>
                 </div>
-                <p className="text-sm text-gray-500">{deliveryTime}</p>
+                <p className="text-sm text-gray-500">{deliveryTime && deliveryTime}</p>
               </div>
               <button 
                 className="p-1 hover:bg-gray-100 rounded-full"

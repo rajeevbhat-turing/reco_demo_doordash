@@ -172,12 +172,22 @@ export default function SearchPage() {
                 </div>
 
                 <div className="flex items-center mt-1 text-sm text-gray-700 flex-wrap">
-                  <div className="flex items-center">
-                    <span className="font-semibold">{restaurant.rating}</span>
-                    <Star className="h-4 w-4 ml-1 text-gray-700 fill-current" />
-                  </div>
-                  <span className="mx-1">({restaurant.reviews})</span>
-                  <span className="mx-1">•</span>
+                  {restaurant.rating && (
+                    <div className="flex items-center text-sm text-gray-700">
+                      <span className="font-semibold">{restaurant.rating}</span>
+                      <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" className="ml-1">
+                        <path d="M8 0L10.2571 5.08631L16 5.87013L11.8 9.79752L12.9443 15.5L8 12.5863L3.05573 15.5L4.2 9.79752L0 5.87013L5.74286 5.08631L8 0Z" />
+                      </svg>
+                      {restaurant.reviews && (
+                        <>
+                        <span className="mx-1">
+                          {restaurant.reviews.startsWith("(") ? restaurant.reviews : `(${restaurant.reviews})`}
+                        </span>
+                        <span className="mx-1">•</span>
+                        </>
+                      )}
+                    </div>
+                  )}
                   <span>{restaurant.distance}</span>
                   <span className="mx-1">•</span>
                   <span>{restaurant.time}</span>
