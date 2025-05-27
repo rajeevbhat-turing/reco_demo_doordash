@@ -20,7 +20,7 @@ import {
   getFeaturedMenuItemsByRestaurantId,
   getMenuItemsByCategory,
 } from "@/constants/menu-items";
-import { getMenuCategoriesByRestaurantId } from "@/constants/menu-categories";
+import { getMenuCategoriesByRestaurantId } from "@/lib/utils";
 import { getDealsByRestaurantId } from "@/constants/deals";
 import { useCartStore } from "@/store/cart-store";
 import MenuItemDialog from "@/components/menu-item-dialog";
@@ -791,126 +791,6 @@ export default function RestaurantPage() {
                     </div>
                   </div>
     
-                  {/* Featured Creations */}
-                  <div
-                    ref={(el) => (sectionRefs.current["Featured Items"] = el)}
-                    className="mt-8 pt-4"
-                    id="featured-items"
-                  >
-                    <h2 className="text-xl font-bold mb-4">Featured Creations</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {featuredItems.map((item) => (
-                        <div
-                          key={item.id}
-                          className="border border-gray-200 rounded-lg overflow-hidden flex cursor-pointer"
-                          onClick={() => openItemDialog(item)}
-                        >
-                          <div className="p-3 flex-1">
-                            <h3 className="font-medium">{item.name}</h3>
-                            <p className="text-sm text-gray-600 mt-1 line-clamp-2">
-                              {item.description}
-                            </p>
-                            <p className="text-gray-900 mt-2">{item.price}</p>
-                          </div>
-                          <div className="relative w-24 h-24 m-3">
-                            <Image
-                              src={item.image || "/placeholder.svg"}
-                              alt={item.name}
-                              fill
-                              className="object-cover rounded-lg"
-                            />
-                            <button
-                              className="absolute bottom-1 right-1 bg-white rounded-full p-1 shadow-md"
-                              onClick={() => handleAddToCart(item)}
-                            >
-                              <span className="text-lg font-bold">+</span>
-                            </button>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-    
-                  {/* <div
-                    ref={(el) => (sectionRefs.current["Family & Sharing"] = el)}
-                    className="mt-8 pt-4"
-                    id="family-sharing"
-                  >
-                    <h2 className="text-xl font-bold mb-4">Family & Sharing</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {familySharingItems.map((item) => (
-                        <div
-                          key={item.id}
-                          className="border border-gray-200 rounded-lg overflow-hidden cursor-pointer"
-                          onClick={() => openItemDialog(item)}
-                        >
-                          <div className="p-3 flex justify-between">
-                            <div>
-                              <h3 className="font-medium">{item.name}</h3>
-                              {item.calories && <p className="text-sm text-gray-500">({item.calories})</p>}
-                              <p className="text-gray-900 mt-1">{item.price}</p>
-                            </div>
-                            <div className="relative w-24 h-24">
-                              <Image
-                                src={item.image || "/placeholder.svg"}
-                                alt={item.name}
-                                fill
-                                className="object-cover rounded-lg"
-                              />
-                              <button
-                                className="absolute bottom-1 right-1 bg-white rounded-full p-1 shadow-md"
-                                onClick={(e) => {
-                                  e.stopPropagation() // Prevent opening the dialog
-                                  handleAddToCart(item)
-                                }}
-                              >
-                                <span className="text-lg font-bold">+</span>
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-    
-                  <div ref={(el) => (sectionRefs.current["Beef"] = el)} className="mt-8 pt-4" id="beef">
-                    <h2 className="text-xl font-bold mb-4">Beef</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {beefItems.map((item) => (
-                        <div
-                          key={item.id}
-                          className="border border-gray-200 rounded-lg overflow-hidden cursor-pointer"
-                          onClick={() => openItemDialog(item)}
-                        >
-                          <div className="p-3 flex justify-between">
-                            <div>
-                              <h3 className="font-medium">{item.name}</h3>
-                              {item.calories && <p className="text-sm text-gray-500">({item.calories})</p>}
-                              <p className="text-gray-900 mt-1">{item.price}</p>
-                            </div>
-                            <div className="relative w-24 h-24">
-                              <Image
-                                src={item.image || "/placeholder.svg"}
-                                alt={item.name}
-                                fill
-                                className="object-cover rounded-lg"
-                              />
-                              <button
-                                className="absolute bottom-1 right-1 bg-white rounded-full p-1 shadow-md"
-                                onClick={(e) => {
-                                  e.stopPropagation() // Prevent opening the dialog
-                                  handleAddToCart(item)
-                                }}
-                              >
-                                <span className="text-lg font-bold">+</span>
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>  */}
-    
                   {/* Add refs for other menu categories */}
                   {menuCategories
                     .filter(
@@ -918,8 +798,6 @@ export default function RestaurantPage() {
                         ![
                           "Featured Items",
                           "Most Ordered",
-                          "Family & Sharing",
-                          "Beef",
                         ].includes(category.name)
                     )
                     .map((category) => (
