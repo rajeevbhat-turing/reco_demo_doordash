@@ -183,11 +183,13 @@ export default function RestaurantPage() {
 
   const scrollToSection = (category: string) => {
     setActiveCategory(category);
-    sectionRefs.current[category]?.scrollIntoView({
-      behavior: "smooth",
-      block: "start",
-    });
-  };
+    const section = sectionRefs.current[category];
+    if (section) {
+      const offset = 80;
+      const top = section.getBoundingClientRect().top + window.scrollY - offset;
+      window.scrollTo({ top, behavior: "smooth" });
+    }
+  };  
 
   if (!restaurant) {
     return <div className="p-8 text-center">Loading...</div>;
