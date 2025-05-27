@@ -3,7 +3,7 @@
 import type React from "react"
 
 import Image from "next/image"
-import { Plus, Trash2 } from "lucide-react"
+import { Plus, Trash2, Minus } from "lucide-react"
 import type { Product } from "@/types"
 import { useCart } from "@/context/cart-context"
 import { CartCategory } from "@/store/cart-store"
@@ -21,11 +21,26 @@ export default function ProductCard({
   storeId,
   category = "grocery"
 }: ProductCardProps) {
-  const { items, addToCart, removeFromCart } = useCart()
+  const { items, addToCart, removeFromCart, updateQuantity } = useCart()
 
   // Check if product is in cart
   const cartItem = items.find((item) => item.id === product.id)
   const quantity = cartItem?.quantity || 0
+
+  // Helper function to format price
+  const formatPrice = (price: number | string): string => {
+    if (typeof price === 'string') {
+      // If it's already a string like "$37.80", return as is
+      if (price.startsWith('$')) {
+        return price
+      }
+      // If it's a string number like "37.80", format it
+      const numPrice = parseFloat(price)
+      return isNaN(numPrice) ? price : `$${numPrice.toFixed(2)}`
+    }
+    // If it's a number, format it normally
+    return `$${price.toFixed(2)}`
+  }
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.stopPropagation() // Prevent opening the modal when clicking the add button
@@ -39,6 +54,18 @@ export default function ProductCard({
     
     // Use only the context cart
     removeFromCart(product.id)
+  }
+
+  const handleDecreaseQuantity = (e: React.MouseEvent) => {
+    e.stopPropagation() // Prevent opening the modal when clicking the decrease button
+    
+    if (quantity > 1) {
+      // If quantity is more than 1, just decrease it
+      updateQuantity(product.id, quantity - 1)
+    } else {
+      // If quantity is 1, remove the item completely
+      removeFromCart(product.id)
+    }
   }
 
   return (
@@ -59,6 +86,9 @@ export default function ProductCard({
                 <Trash2 className="w-4 h-4" />
               </button>
               <span className="mx-2 text-sm font-medium">{quantity} ×</span>
+              <button className="p-1 text-gray-700" onClick={handleDecreaseQuantity} aria-label="Decrease quantity">
+                <Minus className="w-4 h-4" />
+              </button>
               <button className="p-1 text-gray-700" onClick={handleAddToCart} aria-label="Add one more">
                 <Plus className="w-4 h-4" />
               </button>
@@ -76,9 +106,7 @@ export default function ProductCard({
       </div>
       <div>
         <p className="font-medium text-red-600">
-          ${typeof product.price === 'number' 
-            ? product.price.toFixed(2) 
-            : parseFloat(product.price.toString().replace('$', '')).toFixed(2)}
+          {formatPrice(product.price)}
         </p>
         <h3 className="text-sm line-clamp-2 h-10">{product.name}</h3>
         <p className="text-xs text-gray-500">{product.quantity}</p>

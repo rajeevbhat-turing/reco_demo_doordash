@@ -32,9 +32,17 @@ const SearchBar = () => {
 
   // Load recent searches from localStorage on component mount
   useEffect(() => {
-    const savedSearches = localStorage.getItem("recentSearches")
-    if (savedSearches) {
-      setRecentSearches(JSON.parse(savedSearches))
+    try {
+      if (typeof window !== 'undefined') {
+        const savedSearches = localStorage.getItem("recentSearches")
+        if (savedSearches) {
+          setRecentSearches(JSON.parse(savedSearches))
+        }
+      }
+    } catch (error) {
+      console.error('Error loading recent searches:', error)
+      // Fallback to empty array if localStorage fails
+      setRecentSearches([])
     }
   }, [])
 
@@ -42,13 +50,20 @@ const SearchBar = () => {
   const saveRecentSearch = (term: string) => {
     if (!term.trim()) return
 
-    const updatedSearches = [
-      term,
-      ...recentSearches.filter((search) => search.toLowerCase() !== term.toLowerCase()),
-    ].slice(0, 5)
+    try {
+      if (typeof window !== 'undefined') {
+        const updatedSearches = [
+          term,
+          ...recentSearches.filter((search) => search.toLowerCase() !== term.toLowerCase()),
+        ].slice(0, 5)
 
-    setRecentSearches(updatedSearches)
-    localStorage.setItem("recentSearches", JSON.stringify(updatedSearches))
+        setRecentSearches(updatedSearches)
+        localStorage.setItem("recentSearches", JSON.stringify(updatedSearches))
+      }
+    } catch (error) {
+      console.error('Error saving recent search:', error)
+      // Continue without saving if localStorage fails
+    }
   }
 
   // Search for restaurants that serve specific menu items
@@ -57,7 +72,7 @@ const SearchBar = () => {
     const matchingItems = menuItems.filter(
       (item) =>
         item.name.toLowerCase().includes(lowerSearchTerm) ||
-        item.description.toLowerCase().includes(lowerSearchTerm) ||
+        (item.description && item.description.toLowerCase().includes(lowerSearchTerm)) ||
         item.category.toLowerCase().includes(lowerSearchTerm),
     )
 

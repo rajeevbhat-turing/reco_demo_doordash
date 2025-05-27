@@ -306,6 +306,7 @@ export default function GenericStorePage({
                   onProductClick={handleProductClick}
                   variant="section"
                   category={'storeType' in storeData ? storeData.storeType : 'grocery'}
+                  storeId={storeData.id}
                 />
               </div>
             ))

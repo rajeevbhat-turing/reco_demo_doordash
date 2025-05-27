@@ -19,6 +19,21 @@ export default function GroceryCartSidebar({ storeData }: CartSidebarProps) {
   const recommendationsRef = useRef<HTMLDivElement>(null)
   const { emptyCartMessage } = uiConfig
   
+  // Helper function to format price
+  const formatPrice = (price: number | string): string => {
+    if (typeof price === 'string') {
+      // If it's already a string like "$37.80", return as is
+      if (price.startsWith('$')) {
+        return price
+      }
+      // If it's a string number like "37.80", format it
+      const numPrice = parseFloat(price)
+      return isNaN(numPrice) ? price : `$${numPrice.toFixed(2)}`
+    }
+    // If it's a number, format it normally
+    return `$${price.toFixed(2)}`
+  }
+  
   // Use state for calculated total to avoid hydration issues
   const [totalPrice, setTotalPrice] = useState<string>("Checkout")
   
@@ -118,10 +133,10 @@ export default function GroceryCartSidebar({ storeData }: CartSidebarProps) {
 
         {/* Checkout button - Moved from bottom to here */}
         <button className="w-full bg-red-600 hover:bg-red-700 text-white font-medium py-3 rounded-full mb-3 text-lg">
-          {totalPrice}
+          Continue
         </button>
         <p className="text-center text-sm mb-1">
-          total before taxes
+          {totalPrice} without tax
         </p>
       </div>
 
@@ -140,7 +155,7 @@ export default function GroceryCartSidebar({ storeData }: CartSidebarProps) {
             </div>
             <div className="flex-1 min-w-0">
               <p className="font-medium text-sm">{item.name}</p>
-              <p className="text-sm">${item.price.toFixed(2)}</p>
+              <p className="text-sm">{formatPrice(item.price)}</p>
             </div>
             <div className="flex items-center">
               <button className="p-1 text-gray-500 hover:text-red-600" onClick={() => removeFromCart(item.id)}>
@@ -202,7 +217,7 @@ export default function GroceryCartSidebar({ storeData }: CartSidebarProps) {
                     <Plus className="w-4 h-4 text-green-600" />
                   </button>
                 </div>
-                <p className="font-medium text-sm">${product.price.toFixed(2)}</p>
+                <p className="font-medium text-sm">{formatPrice(product.price)}</p>
                 <p className="text-xs text-gray-700 truncate">{product.name}</p>
               </div>
             ))}

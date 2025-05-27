@@ -26,7 +26,7 @@ export default function SearchPage() {
     const matchingItems = menuItems.filter(
       (item) =>
         item.name.toLowerCase().includes(lowerSearchTerm) ||
-        item.description.toLowerCase().includes(lowerSearchTerm) ||
+        (item.description && item.description.toLowerCase().includes(lowerSearchTerm)) ||
         item.category.toLowerCase().includes(lowerSearchTerm),
     )
 
@@ -101,13 +101,20 @@ export default function SearchPage() {
   // Save search to recent searches
   useEffect(() => {
     if (query) {
-      const savedSearches = localStorage.getItem("recentSearches")
-      let recentSearches = savedSearches ? JSON.parse(savedSearches) : []
+      try {
+        if (typeof window !== 'undefined') {
+          const savedSearches = localStorage.getItem("recentSearches")
+          let recentSearches = savedSearches ? JSON.parse(savedSearches) : []
 
-      // Add current search to recent searches if not already present
-      if (!recentSearches.includes(query)) {
-        recentSearches = [query, ...recentSearches].slice(0, 5)
-        localStorage.setItem("recentSearches", JSON.stringify(recentSearches))
+          // Add current search to recent searches if not already present
+          if (!recentSearches.includes(query)) {
+            recentSearches = [query, ...recentSearches].slice(0, 5)
+            localStorage.setItem("recentSearches", JSON.stringify(recentSearches))
+          }
+        }
+      } catch (error) {
+        console.error('Error saving search to recent searches:', error)
+        // Continue without saving if localStorage fails
       }
     }
   }, [query])

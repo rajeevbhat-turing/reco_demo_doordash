@@ -130,7 +130,12 @@ export default function Pets() {
 
         {/* All Stores Section */}
         {filteredStores.length > 0 ? (
-          <AllStores title={uiConfig.allStoresTitle} stores={filteredStores} variant="all" />
+          <AllStores 
+            title={uiConfig.allStoresTitle} 
+            stores={filteredStores} 
+            variant="all" 
+            storeType="pets"
+          />
         ) : (
           <div className="py-10 text-center">
             <p className="text-lg text-gray-500">No stores match your filters</p>
@@ -146,12 +151,22 @@ export default function Pets() {
 
         {/* Pet Stores Near You Section */}
         {featuredStores.length > 0 && (
-          <StoreGrid title={uiConfig.nearbyTitle} stores={featuredStores} variant="favorites" />
+          <StoreGrid 
+            title={uiConfig.nearbyTitle} 
+            stores={featuredStores} 
+            variant="favorites" 
+            storeType="pets"
+          />
         )}
 
         {/* Fastest Near You Section */}
         {fastestStores.length > 0 && (
-          <StoreGrid title="Fastest Near You" stores={fastestStores} variant="fastest" />
+          <StoreGrid 
+            title="Fastest Near You" 
+            stores={fastestStores} 
+            variant="fastest" 
+            storeType="pets"
+          />
         )}
 
         {/* Product Sections */}
@@ -175,8 +190,6 @@ export default function Pets() {
       <CartSidebar 
         isOpen={isCartOpen} 
         onClose={() => setIsCartOpen(false)} 
-        category="pets" 
-        storeData={currentStoreData} 
       />
       
       {/* Floating Cart Button */}

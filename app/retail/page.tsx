@@ -80,7 +80,7 @@ export default function Retail() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {nearbyStores.map((store) => (
-              <StoreCard key={store.id} {...store} />
+              <StoreCard key={store.id} {...store} storeType="retail" />
             ))}
           </div>
 
@@ -169,7 +169,7 @@ export default function Retail() {
       )}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {filteredStores.map((store) => (
-          <StoreCard key={store.id} {...store} />
+          <StoreCard key={store.id} {...store} storeType="retail" />
         ))}
       </div>
     </main>

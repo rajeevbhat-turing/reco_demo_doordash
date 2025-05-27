@@ -132,7 +132,7 @@ export default function Grocery() {
 
       {/* All Stores Section */}
       {stores.length > 0 ? (
-        <AllStores title="All Stores" stores={stores} />
+        <AllStores title="All Stores" stores={stores} storeType="grocery" />
       ) : (
         <div className="py-10 text-center">
           <p className="text-lg text-gray-500">No stores match your filters</p>
@@ -148,12 +148,12 @@ export default function Grocery() {
 
       {/* Grocery Favorites Section */}
       {favoriteStores.length > 0 && (
-        <StoreGrid title="Grocery Favorites" stores={favoriteStores} variant="favorites" />
+        <StoreGrid title="Grocery Favorites" stores={favoriteStores} variant="favorites" storeType="grocery" />
       )}
 
       {/* Fastest Near You Section */}
       {fastestStores.length > 0 && (
-        <StoreGrid title="Fastest Near You" stores={fastestStores} variant="fastest" />
+        <StoreGrid title="Fastest Near You" stores={fastestStores} variant="fastest" storeType="grocery" />
       )}
 
       {/* Product Carousels */}

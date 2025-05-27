@@ -3,27 +3,27 @@
 import { useParams, useRouter } from "next/navigation"
 import { CartProvider } from "@/context/cart-context"
 import { useState, useEffect } from "react"
-import GroceryStorePage from "@/components/grocery-store-page"
-import { stores, StoreInfo } from "@/data/store-data"
+import PetStorePage from "@/components/store/pet-store-page"
+import { allPetStores } from "@/data/pet-data"
 
-export default function GroceryStorePageRoute() {
+export default function PetStorePageRoute() {
   const params = useParams()
   const router = useRouter()
   const storeId = params.storeId as string
   
-  const [storeData, setStoreData] = useState<StoreInfo | null>(null)
+  const [storeData, setStoreData] = useState<any>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     if (storeId) {
-      // Find the grocery store by ID
-      const foundStore = stores[storeId]
+      // Find the pet store by ID
+      const foundStore = allPetStores.find(store => store.id === storeId)
       
       if (foundStore) {
         setStoreData(foundStore)
       } else {
-        // If store not found, redirect back to grocery page
-        router.push("/grocery")
+        // If store not found, redirect back to pets page
+        router.push("/pets")
       }
       setLoading(false)
     }
@@ -46,11 +46,11 @@ export default function GroceryStorePageRoute() {
   }
 
   return (
-    <CartProvider category="grocery">
-      <GroceryStorePage 
-        onBackClick={() => router.push("/grocery")} 
+    <CartProvider category="pets">
+      <PetStorePage 
+        onBackClick={() => router.push("/pets")} 
         storeData={storeData}
       />
     </CartProvider>
   )
-}
+} 

@@ -4,7 +4,7 @@ import type React from "react"
 import { useState } from "react"
 import GenericStorePage from "@/components/store/generic-store-page"
 import type { Store } from "@/constants/store"
-import type { RetailStore, StoreConfig, ProductSection } from "@/types/store"
+import type { StoreConfig, ProductSection } from "@/types/store"
 import {cartConfig} from "@/data/cart-config";
 
 interface RetailStorePageProps {
@@ -14,8 +14,8 @@ interface RetailStorePageProps {
 }
 
 export default function RetailStorePage({ onBackClick, storeData, productData }: RetailStorePageProps) {
-  // Convert Store to RetailStore
-  const retailStore: RetailStore = {
+  // Convert Store to the format expected by GenericStorePage
+  const retailStore = {
     id: storeData.id,
     name: storeData.name,
     image: storeData.image,
@@ -25,7 +25,7 @@ export default function RetailStorePage({ onBackClick, storeData, productData }:
     isDashPass: storeData.isDashPass,
     isNearYou: storeData.isNearYou,
     tags: storeData.tags,
-    storeType: "retail"
+    storeType: "retail" as const
   }
 
   // Define retail-specific configuration
@@ -33,7 +33,7 @@ export default function RetailStorePage({ onBackClick, storeData, productData }:
     showRating: false,
     showPricing: false,
     showDeliveryInfo: false,
-    categoryFilters: storeData.tags,
+    categoryFilters: storeData.tags || [],
     cartConfig: {
       freeDeliveryThreshold: cartConfig.freeDeliveryThreshold,
       serviceFeePercentage: cartConfig.serviceFeePercentage,

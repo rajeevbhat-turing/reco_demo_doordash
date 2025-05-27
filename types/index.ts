@@ -9,7 +9,7 @@ export interface Category {
 export interface Product {
   id: number | string
   name: string
-  price: number
+  price: number | string
   quantity?: string
   image: string
   category?: string | string[]
