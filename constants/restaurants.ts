@@ -142,8 +142,8 @@ export const restaurants: Restaurant[] = [
     categories: ["coffee", "breakfast", "comfort-food"]
   },
   {
-    id: 'starbucks',
-    name: 'Starbucks',
+    id: 'starbucks-(299-fremont-street)',
+    name: 'Starbucks (299 Fremont Street)',
     logo: 'https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/2c09d946-5237-4271-9f64-a23a83b3e8a1.05',
     banner:
       'https://img.cdn4dd.com/cdn-cgi/image/fit=contain,format=auto,width=800,quality=50/https://doordash-static.s3.amazonaws.com/media/photosV2/79f1c263-68f2-4d8c-ba18-8ea65537e7ec-retina-large.jpg',
@@ -889,8 +889,8 @@ export const restaurants: Restaurant[] = [
     section: 'Your past orders',
   },
   {
-    id: 'jamba-juice',
-    name: 'Jamba Juice',
+    id: 'jamba-juice-(152-kearny-street)',
+    name: 'Jamba Juice (152 Kearny Street)',
     logo: 'https://img.cdn4dd.com/cdn-cgi/image/fit=contain,format=auto,width=800,quality=50/https://cdn.doordash.com/media/photos/7970d55f-9b3d-43c0-807b-2bb3ec610d6e-retina-large-jpeg',
     banner:
       'https://img.cdn4dd.com/cdn-cgi/image/fit=contain,format=auto,width=800,quality=50/https://cdn.doordash.com/media/photos/7970d55f-9b3d-43c0-807b-2bb3ec610d6e-retina-large-jpeg',

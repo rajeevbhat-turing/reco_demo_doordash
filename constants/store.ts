@@ -16514,7 +16514,651 @@ export const stores: Store[] = [
     isDashPass: true,
     isNearYou: true,
     tags: ['Retail'],
-    items: [],
+    items: [
+      {
+        id: 1,
+        title: 'Featured Items',
+        products: [
+          {
+            id: 'featured-003',
+            name: 'Simply Edible™ Bouquet',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/059b2a16-367e-42e5-966d-494d46425f5c-retina-large.jpg',
+            price: '$36.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'featured-005',
+            name: 'Chocolate Dipped Strawberries Box',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/982cb19c-a293-49b3-a8b5-e359dbe5a85b-retina-large.jpg',
+            price: '$56.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'featured-007',
+            name: 'Chocolate Dipped Apple Bites Cone',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/dac9abe5-7ec3-410c-a31e-aaded247a248-retina-large.jpg',
+            price: '$9.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'featured-009',
+            name: 'Chocolate Dipped Strawberry Cone',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/15d9fcf9-207d-4085-aa33-2066a5f7d6fb-retina-large.jpg',
+            price: '$9.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'featured-011',
+            name: 'Riveting Roses & A Cozy Indulgence',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/a8242b86-9464-4e62-a65c-cb4fce85235f-retina-large.jpg',
+            price: '$34.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'featured-013',
+            name: 'Bobbi the Bear',
+            image: null,
+            price: '$16.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+        ],
+      },
+      {
+        id: 2,
+        title: 'Most Ordered',
+        products: [
+          {
+            id: 'simply-edible-bouquet',
+            name: 'Simply Edible™ Bouquet',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=600,format=auto,quality=80/media/photosV2/059b2a16-367e-42e5-966d-494d46425f5c-retina-large.jpg',
+            price: '$36.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Sometimes simple treats are the sweetest ones of all. Send our Simply Edible fruit bouquet to celebrate a birthday, commemorate a graduation, or just because. Crafted with all your fresh fruit favorites, this fruit gift basket specializes in making otherwise ordinary days feel like sweet, spectacular moments worth celebrating and remembering. No occasion is too big or too small.',
+          },
+          {
+            id: 'chocolate-dipped-apple-bites-cone',
+            name: 'Chocolate Dipped Apple Bites Cone',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=600,format=auto,quality=80/media/photosV2/dac9abe5-7ec3-410c-a31e-aaded247a248-retina-large.jpg',
+            price: '$9.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'If you ask us, the only thing better than our chocolate dipped apples is getting to enjoy them on the go! Our Chocolate Dipped Apple Cone is made with fresh, juicy apple hand-dipped in real, gourmet chocolate, then perfectly packaged in a cup holder-friendly cup.',
+          },
+          {
+            id: 'bobbi-the-bear',
+            name: 'Bobbi the Bear',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=600,format=auto,quality=80/media/photosV2/dd60dcda-a036-4ef1-9fae-8bf347a9e38b-retina-large.jpg',
+            price: '$16.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: 'This stuffed bear is somehow even cuter (and softer!) IRL.',
+          },
+          {
+            id: 'chocolate-dipped-strawberry-cone',
+            name: 'Chocolate Dipped Strawberry Cone',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=600,format=auto,quality=80/media/photosV2/15d9fcf9-207d-4085-aa33-2066a5f7d6fb-retina-large.jpg',
+            price: '$9.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'If you ask us, the only thing better than our iconic chocolate dipped strawberries is getting to enjoy them on the go! Our Chocolate Dipped Strawberries Cone is made with fresh, juicy strawberries hand-dipped in real, gourmet chocolate, then perfectly packaged in a cup holder-friendly cup.',
+          },
+          {
+            id: 'chocolate-dipped-strawberries-box',
+            name: 'Chocolate Dipped Strawberries Box',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=600,format=auto,quality=80/media/photosV2/982cb19c-a293-49b3-a8b5-e359dbe5a85b-retina-large.jpg',
+            price: '$56.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Our legendary chocolate-covered strawberries. A dozen of them. Need we say more? Delightfully indulgent and ready to satisfy any sweet tooth, this chocolate-covered strawberry box is a tried-and-true classic that you can also send as a sweet gift or surprise.',
+          },
+          {
+            id: 'fresh-fruit-salad-with-tajn',
+            name: 'Fresh Fruit Salad with Tajín®',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=600,format=auto,quality=80/media/photosV2/2dd660e0-cd37-491e-9829-c1ec0f4d6e47-retina-large.jpg',
+            price: '$8.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              "Our fruit salad packed with pineapple, cantaloupe and orange is the perfect mix to top with a dash of limey, zesty Tajín®. Even sweeter, it's topped with a white chocolate-dipped pineapple daisy.",
+          },
+        ],
+      },
+      {
+        id: 3,
+        title: 'Limited Time Only',
+        products: [
+          {
+            id: 'dipped-berries--pineapple-with-tajn',
+            name: 'Dipped Berries & Pineapple with Tajín®',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/73f0c36a-e575-431a-8094-7aab1a2a6a6a-retina-large.jpg',
+            price: '$28.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Dig into our Tajín®-sprinkled, chocolate-dipped berries and pineapples for your new favorite summery dessert.',
+          },
+          {
+            id: 'pineapple-topped-cheesecake--brownie-box-with-tajn',
+            name: 'Pineapple-Topped Cheesecake & Brownie Box with Tajín®',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/b1790b17-4d12-4cf8-998c-8c45a3538734-retina-large.jpg',
+            price: '$56.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Our sweet pineapple-topped cheesecake bites just got a citrusy zip of limey Tajín®. This zesty blend of lime with a kick balances out our creamy and decadent bakeshop favorites.',
+          },
+          {
+            id: 'fresh-fruit-salad-with-tajn',
+            name: 'Fresh Fruit Salad with Tajín®',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/2dd660e0-cd37-491e-9829-c1ec0f4d6e47-retina-large.jpg',
+            price: '$8.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              "Our fruit salad packed with pineapple, cantaloupe and orange is the perfect mix to top with a dash of limey, zesty Tajín®. Even sweeter, it's topped with a white chocolate-dipped pineapple daisy.",
+          },
+          {
+            id: 'strawberry-pineapple-smoothie-with-tajn',
+            name: 'Strawberry Pineapple Smoothie with Tajín®',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/74851c2c-1ef9-4073-b7ee-491d4c51ac8d-retina-large.jpg',
+            price: '$8.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Wake up your tastebuds with our strawberry pineapple smoothie and a new zing of flavor. Tajín®, get in here! A zip of lime and zesty warmth pair perfectly with our classic smoothie.',
+          },
+        ],
+      },
+      {
+        id: 4,
+        title: 'Treat Yourself!',
+        products: [
+          {
+            id: 'chocolate-dipped-apple-bites-cone',
+            name: 'Chocolate Dipped Apple Bites Cone',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/dac9abe5-7ec3-410c-a31e-aaded247a248-retina-large.jpg',
+            price: '$9.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'If you ask us, the only thing better than our chocolate dipped apples is getting to enjoy them on the go! Our Chocolate Dipped Apple Cone is made with fresh, juicy apple hand-dipped in real, gourmet chocolate, then perfectly packaged in a cup holder-friendly cup.',
+          },
+          {
+            id: 'brownie-and-cheesecake-dessert-stack',
+            name: 'Brownie and Cheesecake Dessert Stack',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/20fcb42d-deea-4bbe-981c-dc6d4d984d9c-retina-large.jpg',
+            price: '$12.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Rich brownie layered with creamy cheesecake, topped with fresh strawberries and a dollop of whipped cream.',
+          },
+          {
+            id: 'single-bakeshop-item',
+            name: 'Single Bakeshop™ Item',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/70993493-a826-4f23-b24a-dec5f5bcb95e-retina-large.jpg',
+            price: '$8.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Indulge in our delightful selection of handcrafted bakeshop items and choose from a variety of single treats tailored to satisfy any sweet cravings.',
+          },
+          {
+            id: 'brownie-and-strawberry-indulgent-cup',
+            name: 'Brownie and Strawberry Indulgent Cup',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/45841e2b-0ac9-44c0-a20b-e834a370a71b-retina-large.jpg',
+            price: '$10.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Brownies? Check. Strawberries? Check. Whipped Cream? Check. A chocolate dipped strawberry? Of course!',
+          },
+          {
+            id: 'chocolate-cheesecake-delight-indulgent-cup',
+            name: 'Chocolate Cheesecake Delight Indulgent Cup',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/2a8150fd-38c1-4949-8ca9-1b9473c26612-retina-large.jpg',
+            price: '$10.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              "It's cheesecake in a cup, plus a chocolate dipped strawberry. Enough said",
+          },
+          {
+            id: 'chocolate-chip-cookie-sandwich',
+            name: 'Chocolate Chip Cookie Sandwich',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/997a156f-8641-4b44-8190-90ff7f06a485-retina-large.jpg',
+            price: '$9.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Indulge in our irresistible Cookie Sandwich: two freshly baked chocolate chip cookies embracing a rich, creamy filling. Pure delight in every bite!',
+          },
+        ],
+      },
+      {
+        id: 5,
+        title: 'Top Selling Gifts',
+        products: [
+          {
+            id: 'chocolate-dipped-strawberries-box',
+            name: 'Chocolate Dipped Strawberries Box',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/982cb19c-a293-49b3-a8b5-e359dbe5a85b-retina-large.jpg',
+            price: '$56.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Our legendary chocolate-covered strawberries. A dozen of them. Need we say more? Delightfully indulgent and ready to satisfy any sweet tooth, this chocolate-covered strawberry box is a tried-and-true classic that you can also send as a sweet gift or surprise.',
+          },
+          {
+            id: 'sweet-delights-dessert-trio-box',
+            name: 'Sweet Delights Dessert Trio Box',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/8e17dfd7-758a-47f6-865b-354c70294b39-retina-large.jpg',
+            price: '$24.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Make their day with this sweet dessert trio! This delicious mix includes one cheesecake with a scrumptious graham-cracker bottom, topped with a chocolate-dipped strawberry, three chocolate-covered strawberries, and one Premium Chocolate-Chip cookies.',
+          },
+          {
+            id: 'bobbi-the-bear',
+            name: 'Bobbi the Bear',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/dd60dcda-a036-4ef1-9fae-8bf347a9e38b-retina-large.jpg',
+            price: '$16.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: 'This stuffed bear is somehow even cuter (and softer!) IRL.',
+          },
+          {
+            id: 'confetti-berry-and-chocolate-bouquet',
+            name: 'Confetti Berry and Chocolate Bouquet',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/5583c9a1-a76c-42cd-af17-cb42f1b442d6-retina-large.jpg',
+            price: '$62.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'This simple, beautiful fruit arrangement pairs our signature semisweet chocolate covered strawberries with our Confetti berries to create a deliciously different treat for so many occasions. With each Confetti berry dipped in white chocolate and rolled in mini sequin sprinkles, it’s hard to get more delicious than this!',
+          },
+          {
+            id: 'berry-sweet-arrangement-with-a-treat',
+            name: 'Berry Sweet Arrangement with a Treat',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/7217c2cd-c70c-44a1-ae64-ef52e7dc0e0f-retina-large.jpg',
+            price: '$42.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Indulge in the perfect blend of sweetness and charm with our Berry Sweet Arrangement with a Treat bundle! This delightful combination brings together the freshness of berries and the deliciousness of baked goods for a truly delightful experience.',
+          },
+          {
+            id: 'cheesecake-with-chocolate-dipped-fruit-box',
+            name: 'Cheesecake with Chocolate Dipped Fruit Box',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/c9c9769b-aa8b-4bd2-8e11-32a437c645eb-retina-large.jpg',
+            price: '$45.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'These airy, yet rich classic cheesecakes feature a scrumptious graham cracker bottom and are topped with a selection of fresh fruit, chocolate-dipped fruit, lightly sweetened whipped frosting, or signature chocolate. Paired with a trio of chocolate covered fruit favorites, including crisp apples, perfectly ripe bananas, and succulent strawberries, this collection is the perfect blend of fresh and flavorful treats.',
+          },
+        ],
+      },
+      {
+        id: 6,
+        title: 'Balloons',
+        products: [
+          {
+            id: 'balloon-garland-kit',
+            name: 'Balloon Garland Kit',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/eab05828-ff3e-4765-8b9c-2d3074d87dc0-retina-large.jpg',
+            price: '$28.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              "This DIY kit contains the essentials you need to create a show-stopping 8' balloon arch. Featuring high quality latex balloons, this kit offers convenience delivered to your door. Assembly required.",
+          },
+          {
+            id: 'golden-number-balloon-bouquet',
+            name: 'Golden Number Balloon Bouquet',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/3ef3f32d-648d-4f9c-8157-16144a9e67a0-retina-large.jpg',
+            price: '$56.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Say goodbye to ordinary and hello to extraordinary with our Golden Number Balloons! Create your own Golden Number Balloon Bouquet- customize the numbers and occasion! Includes 6 foil balloons and your choice of 34" numbers. Helium included.',
+          },
+          {
+            id: 'graduation-year-balloon-bouquet',
+            name: 'Graduation Year Balloon Bouquet',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/9c699bf7-dc45-4978-9059-4e9257aad845-retina-large.jpg',
+            price: '$72.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Float your achievement to new heights with a balloon bouquet for your grad! Featuring our 34" Golden Number Balloons and four graduation foil balloons, we make celebration easy. Helium included.',
+          },
+          {
+            id: 'bobbis-balloon-bouquet',
+            name: 'Bobbi’s Balloon Bouquet',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/ef139dda-e97e-4e85-bdb9-822425a6028d-retina-large.jpg',
+            price: '$59.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Pump up the jam a little more – get your Bobbi moving on the dance floor! Send a sweet surprise sure to get any party started. Bobbi comes with twelve helium latex balloons with up to eight hours of float time in your selected color combo to delight anyone deserving of a little fun.',
+          },
+          {
+            id: 'congrats-balloon-bouquet',
+            name: 'Congrats Balloon Bouquet',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/f3f7d54b-9a25-44ee-af8e-c2a364b4d9ae-retina-large.jpg',
+            price: '$39.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'For they’re a jolly good fellow! Want to make sure everyone knows how great your recipient is? Gift them this undeniable bundle of celebratory balloons. Floating for up to eight hours, this gift or add-on lifts up anyone worthy of a hurrah. Balloon design may vary.',
+          },
+          {
+            id: 'fruit--flight-delight',
+            name: 'Fruit & Flight Delight',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/fee21500-9fcc-47dc-b2f1-9d42a46a8e04-retina-large.jpg',
+            price: '$41.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Lift spirits and brighten days with our Fruit & Flight Delight bundle! Whether you’re celebrating a special event or just looking to spread a little joy, this delightful duo brings together the lightness of a balloon and the freshness of fruit for a truly refreshing gift.',
+          },
+        ],
+      },
+      {
+        id: 7,
+        title: 'Cakes, Cookies, Brownies & More',
+        products: [
+          {
+            id: 'create-your-own-cookie-box',
+            name: 'Create Your Own Cookie Box',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/5122b185-da57-4cba-b5d7-7c5b889fc0d6-retina-large.jpg',
+            price: '$16.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Pick your favorite flavors from our unique selection or one of each - Chocolate Chip, Confetti Celebration, and our Signature Strawberry Cheesecake.',
+          },
+          {
+            id: 'cupcake-4ct-treat-box',
+            name: 'Cupcake 4ct Treat Box',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/f1dfb84f-bbfc-4350-aa46-9ce821a22b33-retina-large.jpg',
+            price: '$18.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'This delicious new treat is sure to be a sweet success. Choose your favorite flavor (or flavors) of four Edible Bakeshop™ cupcakes with creamy decadent centers and topped with whipped frosting.',
+          },
+          {
+            id: 'chocolate-cake-with-dipped-strawberries',
+            name: 'Chocolate Cake with Dipped Strawberries',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/eb94c210-38b9-45e4-b479-4e4b61045bec-retina-large.jpg',
+            price: '$39.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              "If there's anything this cake is ready to do at all times, it's getting the party started. Celebrating a birthday? A promotion? Your kid finally sleeping through the night? Whatever it is, there's no celebratory occasion this cake isn't suited for. This cake is 5\" and serves three to five people.",
+          },
+          {
+            id: 'chocolate-celebration-cake--bouquet-gift-set',
+            name: 'Chocolate Celebration Cake & Bouquet Gift Set',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/efc9d6ee-8e6d-4de0-8761-602139618d3c-retina-large.jpg',
+            price: '$82.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Give your chocolate-lover the perfect duo to celebrate any moment: our chocolate cake with dipped berries or fresh-cut berries and a beautiful floral bouquet. Make your delivery extra special with a glass vase for their flowers.',
+          },
+        ],
+      },
+      {
+        id: 8,
+        title: 'Birthday Gifts',
+        products: [
+          {
+            id: 'vanilla-birthday-cake--happy-birthday-balloon-gift-set',
+            name: 'Vanilla Birthday Cake & Happy Birthday Balloon Gift Set',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/e002ea13-37d7-4f7b-943e-a034ebcfe38f-retina-large.jpg',
+            price: '$62.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Yell "happy birthday!" to the honorary guest with this burst of celebration. Our vanilla birthday cake topped with your choice of confetti berries or candles is a nothing short of a classic, and paired with our colorful foil balloons, this gift set is sure to bring the party.',
+          },
+          {
+            id: 'birthday-flowers--berries-box',
+            name: 'Birthday Flowers & Berries Box',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/cc349b0a-6385-4481-ab88-4c3cbddfcdc4-retina-large.jpg',
+            price: '$76.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Brighten a birthday, celebrate an anniversary, or make any day extra special with our hand-picked flowers. Choose between a single or double bouquet to ensure your gift is the perfect size. Flowers may vary from image shown.',
+          },
+          {
+            id: 'chocolate-birthday-cake--happy-birthday-balloons-gift-set',
+            name: 'Chocolate Birthday Cake & Happy Birthday Balloons Gift Set',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/c2460ba4-f154-4f3f-99af-9bfaf1004a50-retina-large.jpg',
+            price: '$62.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              "What better way to celebrate the next chapter than with a rich, decadent chocolate cake topped with dipped berries or fresh-cut berries and cream. As if that wasn't enough celebration, we've added in our colorful foil birthday balloons for a real party.",
+          },
+          {
+            id: 'chocolate-birthday-cake--number-balloon-gift-set',
+            name: 'Chocolate Birthday Cake & Number Balloon Gift Set',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/c714eeb1-a720-44fd-b428-5d15634c4d98-retina-large.jpg',
+            price: '$52.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Celebrate another journey around the sun with our chocolate cake topped with dipped berries or fresh-cut berries and cream for the birthday boy or girl. Be there to celebrate and share this special moment no matter the occasion.',
+          },
+        ],
+      },
+      {
+        id: 9,
+        title: 'Flowers',
+        products: [
+          {
+            id: 'riveting-roses--a-cozy-indulgence',
+            name: 'Riveting Roses & A Cozy Indulgence',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/a8242b86-9464-4e62-a65c-cb4fce85235f-retina-large.jpg',
+            price: '$34.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Enjoy a beautiful bouquet with a special treat or our cute Bobbi the Bear plush. Flowers may vary.',
+          },
+          {
+            id: 'fruit--floret-fizz-bundle',
+            name: 'Fruit & Floret Fizz Bundle',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/5b9781d1-430d-43dc-a370-0692d301de4b-retina-large.jpg',
+            price: '$35.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Celebrate life’s special moments with the Fruit & Floret Fizz! Whether you’re toasting to a milestone or just sharing a little joy, this charming duo is the perfect way to enjoy a sweet moment with someone special. Grab a mini bouquet or mini Swizzle Berry arrangement to pair with your non-alcoholic wine.',
+          },
+          {
+            id: 'single-stem-preserved-rose',
+            name: 'Single Stem Preserved Rose',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/dcd80957-ddbc-4fca-b3e9-28f0184fe856-retina-large.jpg',
+            price: '$27.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Our Single Red Preserved Rose maintains its beauty for months without water or sunlight. This rose is perfect for celebrating romance, anniversaries, or special occasions.',
+          },
+          {
+            id: 'mini-flower-bouquets--vases',
+            name: 'Mini Flower Bouquets & Vases',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/efa946f6-664f-4d6a-93d9-a29103f42e6c-retina-large.jpg',
+            price: '$14.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Add a touch of elegance to every gift and room with our floral minis. Each mini features a three-stem bouquet with glass vase.',
+          },
+        ],
+      },
+    ],
   },
   {
     id: 'bloomcart',
@@ -16764,6 +17408,292 @@ export const stores: Store[] = [
     isDashPass: true,
     isNearYou: false,
     tags: ['Flowers', 'Retail'],
+    items: [
+      {
+        id: 1,
+        title: 'Featured Items',
+        products: [
+          {
+            id: 'featured-003',
+            name: 'Vanilla Cake Bouquet',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=70/media/photosV2/72cc442e-e959-4617-b51b-4001383321de-retina-large.jpg',
+            price: '$38.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'featured-005',
+            name: 'Florist Favorite Bouquet',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=70/media/photosV2/66beb985-74fb-467f-b0a2-c34b372afc79-retina-large.png',
+            price: '$38.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'featured-007',
+            name: 'Always There Bouquet',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=70/media/photosV2/7a1c013e-52a9-4a89-83ad-a3dcd4d43a84-retina-large.jpg',
+            price: '$38.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'featured-009',
+            name: 'Darling Bouquet',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=70/media/photosV2/e13db0e5-fa62-44f2-ac3a-fc565fe503af-retina-large.jpg',
+            price: '$38.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'featured-011',
+            name: 'The Vanilla Cake Arrangement',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=70/media/photosV2/65d9ab52-0d1a-419b-9080-247c398c9d05-retina-large.jpg',
+            price: '$88.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'featured-013',
+            name: 'The Darling Arrangement',
+            image: null,
+            price: '$88.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+        ],
+      },
+      {
+        id: 2,
+        title: 'Most Ordered',
+        products: [
+          {
+            id: 'vanilla-cake-bouquet',
+            name: 'Vanilla Cake Bouquet',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=600,format=auto,quality=70/media/photosV2/72cc442e-e959-4617-b51b-4001383321de-retina-large.jpg',
+            price: '$38.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: 'Photo is of an Original-sized Bouquet.',
+          },
+          {
+            id: 'florist-favorite-bouquet',
+            name: 'Florist Favorite Bouquet',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=600,format=auto,quality=70/media/photosV2/66beb985-74fb-467f-b0a2-c34b372afc79-retina-large.png',
+            price: '$38.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Just like when you’re deciding on dinner, sometimes there are too many options. Let our local florist design something special!',
+          },
+          {
+            id: 'always-there-bouquet',
+            name: 'Always There Bouquet',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=600,format=auto,quality=70/media/photosV2/7a1c013e-52a9-4a89-83ad-a3dcd4d43a84-retina-large.jpg',
+            price: '$38.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: 'Photo is of a Deluxe-sized Bouquet.',
+          },
+          {
+            id: 'darling-bouquet',
+            name: 'Darling Bouquet',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=600,format=auto,quality=70/media/photosV2/e13db0e5-fa62-44f2-ac3a-fc565fe503af-retina-large.jpg',
+            price: '$38.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: 'Photo is of a Original-sized Bouquet.',
+          },
+          {
+            id: 'champagne-toast-bouquet',
+            name: 'Champagne Toast Bouquet',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=600,format=auto,quality=70/media/photosV2/ebf03463-6a3a-4099-9e37-bb032083c19e-retina-large.jpg',
+            price: '$38.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: 'Photo is of a Original-sized Bouquet.',
+          },
+          {
+            id: 'dreamscapes-bouquet',
+            name: 'Dreamscapes Bouquet',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=600,format=auto,quality=70/media/photosV2/eba88562-2659-42da-8ce6-77953044f677-retina-large.jpg',
+            price: '$38.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: 'Photo is of a Deluxe-sized Bouquet.',
+          },
+        ],
+      },
+      {
+        id: 3,
+        title: 'Fresh Florals',
+        products: [
+          {
+            id: 'florist-favorite-bouquet',
+            name: 'Florist Favorite Bouquet',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=70/media/photosV2/66beb985-74fb-467f-b0a2-c34b372afc79-retina-large.png',
+            price: '$38.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Just like when you’re deciding on dinner, sometimes there are too many options. Let our local florist design something special!',
+          },
+          {
+            id: 'vanilla-cake-bouquet',
+            name: 'Vanilla Cake Bouquet',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=70/media/photosV2/72cc442e-e959-4617-b51b-4001383321de-retina-large.jpg',
+            price: '$38.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: 'Photo is of an Original-sized Bouquet.',
+          },
+          {
+            id: 'the-vanilla-cake-arrangement',
+            name: 'The Vanilla Cake Arrangement',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=70/media/photosV2/65d9ab52-0d1a-419b-9080-247c398c9d05-retina-large.jpg',
+            price: '$88.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: 'Photo is of an Original-sized Arrangement.',
+          },
+          {
+            id: 'the-strawberry-sorbet-arrangement',
+            name: 'The Strawberry Sorbet Arrangement',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=70/media/photosV2/244b7bf1-aadb-4423-983e-d7bca7590bbe-retina-large.jpg',
+            price: '$88.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: 'Photo is of a Deluxe-sized Arrangement.',
+          },
+          {
+            id: 'the-adore-arrangement',
+            name: 'The Adore Arrangement',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=70/media/photosV2/d1b3eacd-d52a-48f1-bdd9-e596f1f2a1cb-retina-large.jpg',
+            price: '$88.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: 'Photo is of a Deluxe-sized Arrangement.',
+          },
+          {
+            id: 'the-florist-favorite-arrangement',
+            name: 'The Florist Favorite Arrangement',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=70/media/photosV2/2fd2c1fd-72f3-4b7c-be0c-069570aa2dd2-retina-large.png',
+            price: '$88.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Just like when you’re deciding on dinner, sometimes there are too many options. Let our local florist design something special!',
+          },
+          {
+            id: 'the-darling-arrangement',
+            name: 'The Darling Arrangement',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=70/media/photosV2/cb3d9627-2d33-45d4-9147-8b5788123e3b-retina-large.jpg',
+            price: '$88.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: 'Photo is of an Original-sized Arrangement.',
+          },
+          {
+            id: 'the-pretty-in-pink-arrangement',
+            name: 'The Pretty in Pink Arrangement',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=70/media/photosV2/9992d67e-23d0-49e8-b50f-b8387b776704-retina-large.jpg',
+            price: '$138.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: 'Grand Gesture',
+          },
+          {
+            id: 'always-there-bouquet',
+            name: 'Always There Bouquet',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=70/media/photosV2/7a1c013e-52a9-4a89-83ad-a3dcd4d43a84-retina-large.jpg',
+            price: '$38.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: 'Photo is of a Deluxe-sized Bouquet.',
+          },
+          {
+            id: 'darling-bouquet',
+            name: 'Darling Bouquet',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=70/media/photosV2/e13db0e5-fa62-44f2-ac3a-fc565fe503af-retina-large.jpg',
+            price: '$38.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: 'Photo is of a Original-sized Bouquet.',
+          },
+        ],
+      },
+    ],
   },
   {
     id: 'designerblooms',
@@ -16776,6 +17706,445 @@ export const stores: Store[] = [
     isDashPass: true,
     isNearYou: false,
     tags: ['Flowers', 'Retail'],
+    items: [
+      {
+        id: 1,
+        title: 'Featured Items',
+        products: [
+          {
+            id: 'featured-003',
+            name: "Designer's Choice Vase - Sweet & Loving (Grande)",
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/79dacb4e-4061-433e-9d71-8e00fc8f0bb8-retina-large.jpg',
+            price: '$90.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'featured-005',
+            name: "Designer's Choice Bouquet - Sweet & Loving (Grande)",
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/703732fd-f418-4409-b3b1-f6bdbcc49266-original-retina-large.jpg',
+            price: '$100.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'featured-007',
+            name: "Designer's Choice Bouquet - Bright & Cheerful (Grande)",
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/4296d74a-35b0-43e6-990d-fa122c7df6d1-retina-large.jpg',
+            price: '$100.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'featured-009',
+            name: "Designer's Choice Vase - Bright & Cheerful (Grande)",
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/b6cdbd00-446b-4c91-a1ed-37938aa5f6c1-retina-large.jpg',
+            price: '$90.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'featured-011',
+            name: 'Garnet Bouquet (Standard)',
+            image: null,
+            price: '$55.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+        ],
+      },
+      {
+        id: 2,
+        title: 'Most Ordered',
+        products: [
+          {
+            id: 'designers-choice-vase---sweet--loving-grande',
+            name: "Designer's Choice Vase - Sweet & Loving (Grande)",
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=600,format=auto,quality=90/media/photosV2/79dacb4e-4061-433e-9d71-8e00fc8f0bb8-retina-large.jpg',
+            price: '$90.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Send your loved one a sweet and loving vase arrangement designed by our floral artists! Please note that the image shown is a sample image; no two arrangements are the same! \n\nWhen you order a Designer Blooms Choice, you will receive a uniquely designed bouquet.If you have a specific requests, please do not hesitate to reach out to us, or include it in your instructions on the cart page. Please let us know if there are any cultural sensitivities to colour or floral types.',
+          },
+          {
+            id: 'designers-choice-bouquet---sweet--loving-grande',
+            name: "Designer's Choice Bouquet - Sweet & Loving (Grande)",
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=600,format=auto,quality=90/media/photosV2/703732fd-f418-4409-b3b1-f6bdbcc49266-original-retina-large.jpg',
+            price: '$100.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Send your loved one a sweet and loving bouquet designed by our floral artists! Please note that the image shown is a sample image; no two arrangements are the same! \n\nWhen you order a Designer Blooms Choice, you will receive a uniquely designed bouquet.If you have a specific requests, please do not hesitate to reach out to us, or include it in your instructions on the cart page. Please let us know if there are any cultural sensitivities to colour or floral types.',
+          },
+          {
+            id: 'designers-choice-vase---bright--cheerful-grande',
+            name: "Designer's Choice Vase - Bright & Cheerful (Grande)",
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=600,format=auto,quality=90/media/photosV2/b6cdbd00-446b-4c91-a1ed-37938aa5f6c1-retina-large.jpg',
+            price: '$90.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Send your loved one a bright and cheerful vase arrangement designed by our floral artists! Please note that the image shown is a sample images; no two arrangements are the same!\n\nWhen you order a Designer Blooms Choice, you will receive a uniquely designed bouquet.If you have a specific requests, please do not hesitate to reach out to us, or include it in your instructions on the cart page. Please let us know if there are any cultural sensitivities to colour or floral types.',
+          },
+          {
+            id: 'garnet-bouquet-standard',
+            name: 'Garnet Bouquet (Standard)',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=600,format=auto,quality=90/media/photosV2/37aa876f-4e91-427b-811d-ca61b032174a-retina-large.jpg',
+            price: '$55.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'The Garnet arrangement glows with coral sunset tones, accented by bold pops of hot pink and orange. A vibrant statement for warm, celebratory moments.\n\nColor Story: Fuchsia, Pinks, Orange\nFocal Flowers: Roses, Spray Roses, Carnations, Snapdragons\nFiller Flowers: Hypericum Berries, Alstromeria, Chrysanthemums, Wax Flower',
+          },
+          {
+            id: 'mini-bouquet',
+            name: 'Mini Bouquet',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=600,format=auto,quality=90/media/photosV2/e866b08c-b4c2-46b0-b865-d23450a9715f-retina-large.jpg',
+            price: '$30.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'designers-choice-bouquet---bright--cheerful-grande',
+            name: "Designer's Choice Bouquet - Bright & Cheerful (Grande)",
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=600,format=auto,quality=90/media/photosV2/4296d74a-35b0-43e6-990d-fa122c7df6d1-retina-large.jpg',
+            price: '$100.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Send your loved one a bright and cheerful bouquet designed by our floral artists! Please note that the image shown is a sample images; no two arrangements are the same!\n\nWhen you order a Designer Blooms Choice, you will receive a uniquely designed bouquet.If you have a specific requests, please do not hesitate to reach out to us, or include it in your instructions on the cart page. Please let us know if there are any cultural sensitivities to colour or floral types.',
+          },
+        ],
+      },
+      {
+        id: 3,
+        title: "Designer's Choice",
+        products: [
+          {
+            id: 'designers-choice-vase---sweet--loving-grande',
+            name: "Designer's Choice Vase - Sweet & Loving (Grande)",
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/79dacb4e-4061-433e-9d71-8e00fc8f0bb8-retina-large.jpg',
+            price: '$90.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Send your loved one a sweet and loving vase arrangement designed by our floral artists! Please note that the image shown is a sample image; no two arrangements are the same! \n\nWhen you order a Designer Blooms Choice, you will receive a uniquely designed bouquet.If you have a specific requests, please do not hesitate to reach out to us, or include it in your instructions on the cart page. Please let us know if there are any cultural sensitivities to colour or floral types.',
+          },
+          {
+            id: 'designers-choice-vase---bright--cheerful-grande',
+            name: "Designer's Choice Vase - Bright & Cheerful (Grande)",
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/b6cdbd00-446b-4c91-a1ed-37938aa5f6c1-retina-large.jpg',
+            price: '$90.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Send your loved one a bright and cheerful vase arrangement designed by our floral artists! Please note that the image shown is a sample images; no two arrangements are the same!\n\nWhen you order a Designer Blooms Choice, you will receive a uniquely designed bouquet.If you have a specific requests, please do not hesitate to reach out to us, or include it in your instructions on the cart page. Please let us know if there are any cultural sensitivities to colour or floral types.',
+          },
+          {
+            id: 'designers-choice-bouquet---bright--cheerful-grande',
+            name: "Designer's Choice Bouquet - Bright & Cheerful (Grande)",
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/4296d74a-35b0-43e6-990d-fa122c7df6d1-retina-large.jpg',
+            price: '$100.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Send your loved one a bright and cheerful bouquet designed by our floral artists! Please note that the image shown is a sample images; no two arrangements are the same!\n\nWhen you order a Designer Blooms Choice, you will receive a uniquely designed bouquet.If you have a specific requests, please do not hesitate to reach out to us, or include it in your instructions on the cart page. Please let us know if there are any cultural sensitivities to colour or floral types.',
+          },
+          {
+            id: 'designers-choice-bouquet---sweet--loving-grande',
+            name: "Designer's Choice Bouquet - Sweet & Loving (Grande)",
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/703732fd-f418-4409-b3b1-f6bdbcc49266-original-retina-large.jpg',
+            price: '$100.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Send your loved one a sweet and loving bouquet designed by our floral artists! Please note that the image shown is a sample image; no two arrangements are the same! \n\nWhen you order a Designer Blooms Choice, you will receive a uniquely designed bouquet.If you have a specific requests, please do not hesitate to reach out to us, or include it in your instructions on the cart page. Please let us know if there are any cultural sensitivities to colour or floral types.',
+          },
+        ],
+      },
+      {
+        id: 4,
+        title: 'Bouquets',
+        products: [
+          {
+            id: 'garnet-bouquet-standard',
+            name: 'Garnet Bouquet (Standard)',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/37aa876f-4e91-427b-811d-ca61b032174a-retina-large.jpg',
+            price: '$55.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'The Garnet arrangement glows with coral sunset tones, accented by bold pops of hot pink and orange. A vibrant statement for warm, celebratory moments.\n\nColor Story: Fuchsia, Pinks, Orange\nFocal Flowers: Roses, Spray Roses, Carnations, Snapdragons\nFiller Flowers: Hypericum Berries, Alstromeria, Chrysanthemums, Wax Flower',
+          },
+          {
+            id: 'mini-bouquet',
+            name: 'Mini Bouquet',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/e866b08c-b4c2-46b0-b865-d23450a9715f-retina-large.jpg',
+            price: '$30.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'topaz-bouquet-standard',
+            name: 'Topaz Bouquet (Standard)',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/9a0ccb05-9aa6-4e0c-9dde-300a2040d9d3-retina-large.jpg',
+            price: '$55.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'The Topaz arrangement features cool, neutral tones that evoke the calm and quiet shift between seasons. A timeless piece that brings elegance and serenity to any space.\n\nColor Story: Soft Pinks, Lilacs, Blues\nFocal Flowers: Roses, Hydrangea, Delphinium\nFiller Flowers: Chrysanthemums, Stock, Lisianthus, Wax Flower',
+          },
+          {
+            id: 'opal-bouquet-standard',
+            name: 'Opal Bouquet (Standard)',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/0aa7d9a0-e483-463d-ae6a-a2c452a16985-retina-large.jpg',
+            price: '$55.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'The Opal arrangement is a playful blend of candy-colored pastels with pops of lime green. Fresh, fun, and full of charm for life’s sweetest moments.\n\nColor Story:Salmon, Lilacs, Greens\nFocal Flowers: Roses, Spray Roses\nFiller Flowers: Chrysanthemums, Stock, Green Viburnum, Scabiosa, Lisianthus, Statice',
+          },
+        ],
+      },
+      {
+        id: 5,
+        title: 'Vase Arrangements',
+        products: [
+          {
+            id: 'garnet-vase-standard',
+            name: 'Garnet Vase (Standard)',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/cc7fb9a2-123f-431f-8e8c-a29205ece05a-retina-large.jpg',
+            price: '$60.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'The Garnet arrangement glows with coral sunset tones, accented by bold pops of hot pink and orange. A vibrant statement for warm, celebratory moments.\n\nColor Story: Fuchsia, Pinks, Orange\nFocal Flowers: Roses, Spray Roses, Carnations, Snapdragons\nFiller Flowers: Hypericum Berries, Alstromeria, Chrysanthemums, Wax Flower',
+          },
+          {
+            id: 'opal-vase-standard',
+            name: 'Opal Vase (Standard)',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/06acafa0-177e-4988-b3ee-5dab8fea5484-retina-large.jpg',
+            price: '$60.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'The Opal arrangement is a playful blend of candy-colored pastels with pops of lime green. Fresh, fun, and full of charm for life’s sweetest moments.\n\nColor Story:&nbsp;Salmon, Lilacs, Greens\nFocal Flowers: Roses, Spray Roses\nFiller Flowers: Chrysanthemums, Stock, Green Viburnum, Scabiosa, Lisianthus, Statice',
+          },
+          {
+            id: 'topaz-vase-standard',
+            name: 'Topaz Vase (Standard)',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/c7a36449-4215-4b1e-88d9-9544bddeda2e-retina-large.jpg',
+            price: '$60.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'The Topaz arrangement features cool, neutral tones that evoke the calm and quiet shift between seasons. A timeless piece that brings elegance and serenity to any space.\n\nColor Story: Soft Pinks, Lilacs, Blues\nFocal Flowers: Roses, Hydrangea, Delphinium\nFiller Flowers: Chrysanthemums, Stock, Lisianthus, Wax Flower',
+          },
+          {
+            id: 'talia-vase',
+            name: 'Talia Vase',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/c66cb1c0-cdf7-4b4f-96c2-ec04589f0f67-retina-large.jpg',
+            price: '$53.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'This is a seasonal arrangement.&nbsp;This&nbsp;will be delivered in a box and will include a message card.\n\nIngredients:\n\nFOCALS - Hydrangea\n&nbsp;\n\nSUBSTITUTION POLICY\n\nDue to the season and availability, substitution may occur. Don’t worry. Every effort will be made to maintain size, shape and overall color schemes of an arrangement, but there may be some variance due to designer interpretation.',
+          },
+        ],
+      },
+      {
+        id: 6,
+        title: 'Corner Boxes',
+        products: [
+          {
+            id: 'palawan-corner-box',
+            name: 'Palawan Corner Box',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/7ca16057-541d-4bd0-8a14-a2663ef3fc4a-retina-large.png',
+            price: '$51.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'The Palawan is a luxurious bouquet that blends soft blush roses, elegant orchids, and delicate greenery, creating a serene and romantic color story. Perfect for special occasions, it’s crafted with care to create a lasting and memorable experience.\n\nColour Story: Neutrals, Soft Pinks\nFocal flowers: Roses, Rose Spray, Orchids\nFiller flowers: Eucalyptus, Pampas',
+          },
+          {
+            id: 'nurture-corner-box',
+            name: 'Nurture Corner Box',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/816024c5-c3fa-4d07-a220-498e54040977-retina-large.jpg',
+            price: '$45.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'FOCALS - Roses, Lisianthus. FILLERS - Eucalyptus Mini, Wax Flower and Carnation',
+          },
+        ],
+      },
+      {
+        id: 7,
+        title: 'Gifts',
+        products: [
+          {
+            id: 'mini-jigsaw-puzzle-take-me-to-the-forest',
+            name: 'Mini Jigsaw Puzzle: Take Me to the Forest',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/60b47a1d-7630-4c0f-b0a4-4b5720671d4d-retina-large.jpg',
+            price: '$25.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'With uniquely-shaped borders, inspiring artwork and a satisfying high-quality feel, our mini puzzles make an engaging downtime activity—and a delightful gift. They’re fast and fun to put together.&nbsp;\n\nAbout this Product:\n 140 Piece Mini Jigsaw Puzzle&nbsp;\nFoil accents&nbsp;\nShaped border&nbsp;\nRandom cut&nbsp;\nPrinted with eco-friendly inks on FSC certified paper  &nbsp;\nEco-friendly packaging&nbsp;\nPart of our Firelight Collection &nbsp;\nBox size: 3 ½" x 3 ½" x 3 ½"&nbsp;\nPuzzle size: approx. 9" x 9"  &nbsp;\nDesigned in the USA\n\n\n\nProduct details:\n• Made in China\n• Product Language: English\n• Weight: 4.8 oz (136.08 g)\n• Dimensions: 9 x 9 x 2 in (22.9 x 22.9 x 5.1 cm)',
+          },
+          {
+            id: 'moonstruck-chocolate-dark-chocolate-sesame-caramel',
+            name: 'Moonstruck Chocolate: Dark Chocolate Sesame Caramel',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/8ab6daf2-ee96-43fa-95ab-186b8cee4b30-retina-large.png',
+            price: '$10.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Creamy salted caramel meets the nuttiness of toasted sesame in a cosmic dark chocolate embrace. One bite of this richly subtle bar will have you thinking of heaven on earth.\n\nProduct Details\n\nMade in United States\n\nContains: Milk, Sesame, and Soy\n\nIngredients: Semi-sweet Chocolate (unsweetened chocolate, sugar, soy lecithin [emulsifier], cocoa butter, natural vanilla flavor), Caramel Bits (sugar, glucose syrup, cream [milk], butter [cream (milk), salt], skimmed milk powder, sea salt), Sesame Seeds, Roasted Black Sesame Compound (roasted black sesame seeds, natural flavor, soy lecithin), Sea Salt. Manufactured on shared equipment. May contain traces of milk, wheat, soy, sesame, peanuts and tree nuts.\n\nShelf life: 12–24 months\n\nStorage: Shelf-stable\n\nWeight: 85 g (3 oz)\n\nDimensions: 18.5 x 10.9 x 7.9 cm (7.3 x 4.3 x 3.1 in)',
+          },
+          {
+            id: 'moonstruck-chocolate-salty-dark-sea-salt-almond',
+            name: 'Moonstruck Chocolate: Salty Dark Sea Salt Almond',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/c3e05a77-cda0-4427-8d96-00528d44c85f-retina-large.png',
+            price: '$10.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'The moon rules the tides in our seas – and salts from those same seas add a delightful contrast to the roasted almond and vanilla sweetness inside this dark chocolate.\n\nProduct details\n\n\n\n\nMade in United States\n\nContains: Soy and Tree nuts\n\nIngredients: Dark Chocolate (unsweetened chocolate, sugar, cocoa butter, soy lecithin [emulsifier], vanilla), Almonds (dry roasted), Sea Salt. Manufactured on shared equipment.\n\nMay contain traces of milk, egg, wheat, soy, sesame, peanuts and tree nuts. Servings: 3, Serv. Size: 1/3 bar (28g), Amount per serving: Calories 140, Total Fat 12g (15% DV), Sat. Fat 7g (33% DV), Trans Fat 0g, Cholest. 0mg (0% DV), Sodium 25mg (1% DV), Total Carb. 13g (5% DV), Fiber 3g (12% DV), Total Sugars 8g (Incl. 8g Added Sugars, 16% DV), Protein 2g, Vit. D (2% DV), Calcium (0% DV), Iron (25% DV), Potas. (4% DV). Store your chocolate bar at room temperature in a cool dry place for up to 12 months. Do not refrigerate.\n\nShelf life: 12–24 months\n\nStorage: Shelf-stable\n\nWeight: 3 oz (85 g)\n\nDimensions: 7.3 x 4.3 x 3.1 in (18.5 x 10.9 x 7.9 cm)&nbsp;',
+          },
+          {
+            id: 'happy-birthday-star-ballooon',
+            name: 'Happy Birthday Star Ballooon',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/b631e6b1-e0e0-43ba-b8f0-e894bbe781a9-retina-large.png',
+            price: '$12.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Send a Mylar balloon on a stick (no helium) perfect as an addition to any of our bouquets or arrangements.\n\n*balloon design varies\n\nSize: 18 inches',
+          },
+          {
+            id: 'gold-heart-balloon',
+            name: 'Gold Heart Balloon',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/334447cb-6475-46cf-bef4-24d850afad1c-retina-large.jpg',
+            price: '$12.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Send a Mylar balloon on a stick (no helium) perfect as an addition to any of our bouquets or arrangements.\n\nSize: 18 inches',
+          },
+          {
+            id: 'moonstruck-chocolate-spring-enchantment-collection-truffles',
+            name: 'Moonstruck Chocolate: Spring Enchantment Collection Truffles',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/1f9cf05f-30aa-4781-8b08-de956413b6f0-retina-large.png',
+            price: '$10.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              "As the earth awakens from its winter slumber, there's a palpable sense of excitement in the air -- a promise of blooming flowers, warmer breezes, and the sweet smells of fresh fruits! At this enchanting time of year, we invite you to indulge in a sensory journey of fresh spring &amp; summer fruit flavored truffles in our limited release 4pc Spring Enchantment collection featuring: Strawberries &amp; Cream, Meyer Lemon, Blackberry and Summer Peach Truffles\n\nProduct details\n\nMade in United States\n\n\nContains: Milk, Soy, and Tree nuts&nbsp;\n\n\nIngredients: Ingredients: White Chocolate (sugar, cocoa butter, whole milk powder, nonfat dry milk, butterfat, soy lecithin, natural vanilla flavor), Heavy Cream (milk), Milk Chocolate (sugar, cocoa butter, unsweetened chocolate, dry whole milk powder, nonfat dry milk, soy lecithin, natural vanilla flavor), Sorbitol, Semisweet Chocolate (unsweetened chocolate, sugar, cocoa butter, butteroil [milk], soy lecithin, natural vanilla flavor), Corn Syrup, Water, Coffee Beans, Glycerin, Invert Syrup, Nougat Hazelnut Paste (hazelnut, cane sugar, cocoa butter, natural flavor), Clarified Butter (milk fat), Vanilla Bean Compound (cane sugar, dextrose, fructose, vanilla, natural flavor, caramel color), Lemon Compound (lemon, cane sugar, natural flavor, sodium citrate, ascorbic acid), Espresso Compound (coffee, canola oil, cane sugar, soy lecithin), Buttermilk Solids, Enzymes, Soy Lecithin, Potassium Sorbate (preservative), White Chocolate (sugar, cocoa butter, whole milk powder, soy lecithin [emulsifier], natural vanilla flavor), Hazelnuts, Color Added.\n\n\nShelf life: 1–3 months\nStorage: Shelf-stable",
+          },
+        ],
+      },
+    ],
   },
   {
     id: 'target',
@@ -22066,6 +23435,268 @@ export const stores: Store[] = [
     isDashPass: true,
     isNearYou: false,
     tags: ['Flowers', 'Retail'],
+    items: [
+      {
+        id: 1,
+        title: 'Featured Items',
+        products: [
+          {
+            id: 'featured-003',
+            name: 'Eco Charm',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photos/02b11cf2-730f-41d0-a51e-48ec24e85b94-retina-large-jpeg',
+            price: '$49.00',
+            originalPrice: null,
+            discount: null,
+            rating: '95%',
+            ratingCount: 24,
+            description: null,
+          },
+          {
+            id: 'featured-005',
+            name: "Cali Garden Vase Designer's Choice",
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photos/0e1c346f-a491-4b2d-b1d8-0d434109167d-retina-large-jpeg',
+            price: '$78.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'featured-007',
+            name: 'Cali Wrap Bouquet',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photos/caf6dbf7-90de-4b7b-9b33-8ecfa072ecc8-retina-large-jpeg',
+            price: '$76.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'featured-009',
+            name: 'Peach Garden',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/04b2e573-8d12-4905-a8d9-7f2f8d0c0bd8-retina-large.JPG',
+            price: '$145.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'featured-011',
+            name: 'Soft Cloud',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photos/eed7715d-8747-46f1-af30-20dd52a181fe-retina-large-jpeg',
+            price: '$95.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+        ],
+      },
+      {
+        id: 2,
+        title: 'Most Ordered',
+        products: [
+          {
+            id: 'eco-charm',
+            name: 'Eco Charm',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=600,format=auto,quality=80/media/photos/02b11cf2-730f-41d0-a51e-48ec24e85b94-retina-large-jpeg',
+            price: '$49.00',
+            originalPrice: null,
+            discount: null,
+            rating: '95%',
+            ratingCount: 24,
+            description:
+              "Introducing the Sustainable Flowers Eco-Charm, a petite bouquet bursting with eco-friendly charm. Crafted with care from vibrant flowers sourced from local California farms, this delightful arrangement is perfect for eco-conscious consumers.\nCrafted with Care\nOur Sustainable Flowers Eco-Charm features vibrant, locally sourced blooms arranged in our 16 ounce mason jar vessel, wrapped in handcrafted, natural fiber fabric for an elegant touch.\nEco-Friendly and Easy to Maintain\nWith minimal packaging and a pint-size, it's easy to carry and maintain. Colors vary based on daily availability, offering a delightful surprise with each order. Our cotton cloth gift wrapping is designed for reuse, supporting our ZERO WASTE goals.\nPerfect for Every Occasion\nIdeal for birthdays, anniversaries, or expressing friendship, its sustainable design makes it a thoughtful gift for any occasion.\nExperience the Beauty of Sustainable Flowers\nDiscover why we're known for providing the best flowers in San Francisco. Order now and make a sustainable statement with a floral arrangement that's as beautiful as it is environmentally friendly.\nBenefits of Choosing Roseandthorn Design's Flowers:\nCalifornia Grown: Supporting our community and the environment.\nEco-friendly: Enjoy guilt-free beauty with our sustainable practices.\nGiving Back: Every purchase supports free programs and workshops for all.\nArtisan Crafted: Expertly crafted for elegance and artistry.\nImportant Notice: Allergies, Pet Safety, and Substitutions\nInform us of allergies and keep arrangements away from pets. Substitutions may occur due to seasonal availability, ensuring equal or greater value. Contact us for any questions or concerns.",
+          },
+          {
+            id: 'cali-garden-vase-designers-choice',
+            name: "Cali Garden Vase Designer's Choice",
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=600,format=auto,quality=80/media/photos/0e1c346f-a491-4b2d-b1d8-0d434109167d-retina-large-jpeg',
+            price: '$78.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              "It's called Cali-Garden for its California Grown flowers and its garden-style shape.\n\nThis beautiful vase arrangement is a Designer's Choice Arrangement. Seasonal farm-fresh California flowers on hand are selected each day to be arranged in a ceramic vase.\n\n \n\nOur local flower shop carries flowers from our local farmers daily, which allows us to provide fresher and long-lasting arrangements. \n\n \n\n** The pictures of floral vase arrangements displayed here are some of our examples of this floral design**\n\n \n\nIf you are looking for a special vase arrangement, such as a birthday flower arrangement, a sympathy flower arrangement, an anniversary flower arrangement, or any other flower arrangement, message us for availability and flower selection.",
+          },
+          {
+            id: 'handwritten-message-card',
+            name: 'Handwritten Message Card',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=600,format=auto,quality=80/media/photos/17a054c1-65e9-4a7c-abc7-19cd06b30e24-retina-large-jpeg',
+            price: '$5.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Make your floral extra especial with this limited edition greeting card.\n100% Biodegradable, recycled paper, and soy based inks.',
+          },
+          {
+            id: 'cali-wrap-bouquet',
+            name: 'Cali Wrap Bouquet',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=600,format=auto,quality=80/media/photos/caf6dbf7-90de-4b7b-9b33-8ecfa072ecc8-retina-large-jpeg',
+            price: '$76.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              "Cali Wrap Bouquet, a Designer's Choices bouquet, is arranged using farm-fresh California flowers, a colorful floral selection, a wide variety of textures, and shapes into a hand-tied, paper-wrapped bouquet. \n\nThese wrapped Bouquets does not include a vase. Add one of our Hand blown Recycled Glassware or Eco-Wrap vase (Farmhouse style).\n\n \n\nOur local flower shop gathers daily flowers from our local farmers, allowing us to provide fresher and long-lasting arrangements. \n\n\n** The pictures of these floral wrap bouquets displayed here are some of our examples of this floral design**",
+          },
+          {
+            id: 'peach-garden',
+            name: 'Peach Garden',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=600,format=auto,quality=80/media/photosV2/04b2e573-8d12-4905-a8d9-7f2f8d0c0bd8-retina-large.JPG',
+            price: '$145.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              "Introducing our exquisite Sustainable Floral Centerpiece, meticulously crafted with an asymmetric, organic design by our talented florists. Each flower, including roses, spray roses, stock, snapdragon, and more, is sourced locally to guarantee freshness and quality.\n\nHarmonious Blend of Textures and Colors\nDelight in the harmonious blend of textures, colors, and shapes sourced from California's landscapes, reflecting the essence of our local flora.\n\nExperience Eco-Conscious Allure\nCaptivate any occasion with our eco-conscious centerpiece, diverging from conventional arrangements to showcase sustainability and beauty.\n\nPerfect for Every Occasion\nWhether it's a birthday, anniversary, bridal celebration, or heartfelt gesture like Saint Valentine's Day or Mother's Day, our centerpiece adds a touch of sophistication to any event.\n\nStep into Our Peach Garden Masterpiece\nEmbrace the intentional asymmetry of our Peach Garden masterpiece, ideal for weddings, sympathy expressions, or life's special moments.\n\nDiscover Sustainable Beauty\nElevate every occasion with our sustainable floral creations, reflecting our commitment to eco-friendly practices and reverence for the natural world.\n\nEmbrace the Beauty of Sustainability\nChoose sustainability with our enchanting floral centerpieces, each blossom telling a story of love, resilience, and the beauty of our shared environment.\n\nBenefits of Choosing Roseandthorn Design's Flowers:\n\nCalifornia Grown: Prioritizing seasonal and locally grown flowers supports our community and the environment.\nEco-friendly: Enjoy guilt-free beauty with our sustainable practices.\nGiving Back: Your purchase contributes to free programs and workshops, aiding our community.\nArtisan Crafted: Expertly crafted by our floral designers, ensuring each bouquet is a masterpiece of elegance.\nImportant Notice: Allergies, Pet Safety, and Substitutions\n\nPlease inform us of any known allergies to accommodate your needs.\nEnsure pet safety by keeping floral arrangements out of reach of pets.\nVariations may occur due to seasonal availability, but substitutions will maintain quality and freshness.\nThank you for your understanding and cooperation. Contact us with any questions or concerns.",
+          },
+          {
+            id: 'soft-cloud',
+            name: 'Soft Cloud',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=600,format=auto,quality=80/media/photos/eed7715d-8747-46f1-af30-20dd52a181fe-retina-large-jpeg',
+            price: '$95.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              "Experience the ethereal beauty of our Soft Cloud flower arrangement, a stunning showcase of eco-friendly, sustainable floral artistry. Delight in its graceful features, including a symphony of soft-colored flowers meticulously arranged in an intentionally unbalanced design, exuding delicate charm and natural asymmetry.\n\nGraceful Features:\n\nSymphony of Soft-Colored Flowers: Intentionally unbalanced design for delicate beauty.\nGentle Muted Tones: Seamless blend of pastel colors for a captivating display.\nFresh and Locally Sourced Flowers: Collection of locally sourced and seasonal blooms.\nHarmonious Composition: Each bloom adds to a harmonious and ethereal ambiance.\nIdeal for Elegant Events:\nPerfect for events seeking gentle beauty, our Soft Cloud centerpiece elevates ambiance and captivates senses with its artistic asymmetry. Its ethereal allure is ideal for weddings, receptions, dinners, and more.\n\nEco-Conscious Choice:\nMore than a centerpiece, it's a testament to eco-conscious choices, supporting sustainable and local floral practices while making a statement of elegance and environmental responsibility.\n\nBenefits of Choosing Roseandthorn Design's Flowers:\n\nCalifornia Grown: Prioritizing seasonal and locally grown flowers.\nEco-friendly: Sustainable practices ensure guilt-free beauty.\nGiving Back: Every purchase contributes to community programs.\nArtisan Crafted: Expertly crafted for masterpiece bouquets.\nImportant Notice:\n\nAllergies: Some flowers may trigger sensitivities; please be mindful.\nPet Safety: Keep arrangements away from pets to prevent ingestion.\nSubstitutions: Seasonal availability may require substitutions of equal or greater value.",
+          },
+        ],
+      },
+      {
+        id: 3,
+        title: 'Menu',
+        products: [
+          {
+            id: 'eco-charm',
+            name: 'Eco Charm',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photos/02b11cf2-730f-41d0-a51e-48ec24e85b94-retina-large-jpeg',
+            price: '$49.00',
+            originalPrice: null,
+            discount: null,
+            rating: '95%',
+            ratingCount: 24,
+            description:
+              "Introducing the Sustainable Flowers Eco-Charm, a petite bouquet bursting with eco-friendly charm. Crafted with care from vibrant flowers sourced from local California farms, this delightful arrangement is perfect for eco-conscious consumers.\nCrafted with Care\nOur Sustainable Flowers Eco-Charm features vibrant, locally sourced blooms arranged in our 16 ounce mason jar vessel, wrapped in handcrafted, natural fiber fabric for an elegant touch.\nEco-Friendly and Easy to Maintain\nWith minimal packaging and a pint-size, it's easy to carry and maintain. Colors vary based on daily availability, offering a delightful surprise with each order. Our cotton cloth gift wrapping is designed for reuse, supporting our ZERO WASTE goals.\nPerfect for Every Occasion\nIdeal for birthdays, anniversaries, or expressing friendship, its sustainable design makes it a thoughtful gift for any occasion.\nExperience the Beauty of Sustainable Flowers\nDiscover why we're known for providing the best flowers in San Francisco. Order now and make a sustainable statement with a floral arrangement that's as beautiful as it is environmentally friendly.\nBenefits of Choosing Roseandthorn Design's Flowers:\nCalifornia Grown: Supporting our community and the environment.\nEco-friendly: Enjoy guilt-free beauty with our sustainable practices.\nGiving Back: Every purchase supports free programs and workshops for all.\nArtisan Crafted: Expertly crafted for elegance and artistry.\nImportant Notice: Allergies, Pet Safety, and Substitutions\nInform us of allergies and keep arrangements away from pets. Substitutions may occur due to seasonal availability, ensuring equal or greater value. Contact us for any questions or concerns.",
+          },
+          {
+            id: 'cali-garden-vase-designers-choice',
+            name: "Cali Garden Vase Designer's Choice",
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photos/0e1c346f-a491-4b2d-b1d8-0d434109167d-retina-large-jpeg',
+            price: '$78.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              "It's called Cali-Garden for its California Grown flowers and its garden-style shape.\n\nThis beautiful vase arrangement is a Designer's Choice Arrangement. Seasonal farm-fresh California flowers on hand are selected each day to be arranged in a ceramic vase.\n\n \n\nOur local flower shop carries flowers from our local farmers daily, which allows us to provide fresher and long-lasting arrangements. \n\n \n\n** The pictures of floral vase arrangements displayed here are some of our examples of this floral design**\n\n \n\nIf you are looking for a special vase arrangement, such as a birthday flower arrangement, a sympathy flower arrangement, an anniversary flower arrangement, or any other flower arrangement, message us for availability and flower selection.",
+          },
+          {
+            id: 'peach-garden',
+            name: 'Peach Garden',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/04b2e573-8d12-4905-a8d9-7f2f8d0c0bd8-retina-large.JPG',
+            price: '$145.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              "Introducing our exquisite Sustainable Floral Centerpiece, meticulously crafted with an asymmetric, organic design by our talented florists. Each flower, including roses, spray roses, stock, snapdragon, and more, is sourced locally to guarantee freshness and quality.\n\nHarmonious Blend of Textures and Colors\nDelight in the harmonious blend of textures, colors, and shapes sourced from California's landscapes, reflecting the essence of our local flora.\n\nExperience Eco-Conscious Allure\nCaptivate any occasion with our eco-conscious centerpiece, diverging from conventional arrangements to showcase sustainability and beauty.\n\nPerfect for Every Occasion\nWhether it's a birthday, anniversary, bridal celebration, or heartfelt gesture like Saint Valentine's Day or Mother's Day, our centerpiece adds a touch of sophistication to any event.\n\nStep into Our Peach Garden Masterpiece\nEmbrace the intentional asymmetry of our Peach Garden masterpiece, ideal for weddings, sympathy expressions, or life's special moments.\n\nDiscover Sustainable Beauty\nElevate every occasion with our sustainable floral creations, reflecting our commitment to eco-friendly practices and reverence for the natural world.\n\nEmbrace the Beauty of Sustainability\nChoose sustainability with our enchanting floral centerpieces, each blossom telling a story of love, resilience, and the beauty of our shared environment.\n\nBenefits of Choosing Roseandthorn Design's Flowers:\n\nCalifornia Grown: Prioritizing seasonal and locally grown flowers supports our community and the environment.\nEco-friendly: Enjoy guilt-free beauty with our sustainable practices.\nGiving Back: Your purchase contributes to free programs and workshops, aiding our community.\nArtisan Crafted: Expertly crafted by our floral designers, ensuring each bouquet is a masterpiece of elegance.\nImportant Notice: Allergies, Pet Safety, and Substitutions\n\nPlease inform us of any known allergies to accommodate your needs.\nEnsure pet safety by keeping floral arrangements out of reach of pets.\nVariations may occur due to seasonal availability, but substitutions will maintain quality and freshness.\nThank you for your understanding and cooperation. Contact us with any questions or concerns.",
+          },
+          {
+            id: 'soft-cloud',
+            name: 'Soft Cloud',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photos/eed7715d-8747-46f1-af30-20dd52a181fe-retina-large-jpeg',
+            price: '$95.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              "Experience the ethereal beauty of our Soft Cloud flower arrangement, a stunning showcase of eco-friendly, sustainable floral artistry. Delight in its graceful features, including a symphony of soft-colored flowers meticulously arranged in an intentionally unbalanced design, exuding delicate charm and natural asymmetry.\n\nGraceful Features:\n\nSymphony of Soft-Colored Flowers: Intentionally unbalanced design for delicate beauty.\nGentle Muted Tones: Seamless blend of pastel colors for a captivating display.\nFresh and Locally Sourced Flowers: Collection of locally sourced and seasonal blooms.\nHarmonious Composition: Each bloom adds to a harmonious and ethereal ambiance.\nIdeal for Elegant Events:\nPerfect for events seeking gentle beauty, our Soft Cloud centerpiece elevates ambiance and captivates senses with its artistic asymmetry. Its ethereal allure is ideal for weddings, receptions, dinners, and more.\n\nEco-Conscious Choice:\nMore than a centerpiece, it's a testament to eco-conscious choices, supporting sustainable and local floral practices while making a statement of elegance and environmental responsibility.\n\nBenefits of Choosing Roseandthorn Design's Flowers:\n\nCalifornia Grown: Prioritizing seasonal and locally grown flowers.\nEco-friendly: Sustainable practices ensure guilt-free beauty.\nGiving Back: Every purchase contributes to community programs.\nArtisan Crafted: Expertly crafted for masterpiece bouquets.\nImportant Notice:\n\nAllergies: Some flowers may trigger sensitivities; please be mindful.\nPet Safety: Keep arrangements away from pets to prevent ingestion.\nSubstitutions: Seasonal availability may require substitutions of equal or greater value.",
+          },
+          {
+            id: 'eco-friendly-bouquet-designers-choice',
+            name: "Eco-Friendly Bouquet Designer's Choice",
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photos/ddd3bc68-a9ee-460a-9344-bc738324c2c2-retina-large-jpeg',
+            price: '$86.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              "This sustainable flower bouquet is arranged with seasonal farm-fresh California flowers. All of our Eco-Friendly flower arrangements are delivered in quality hand blown recycled glassware.\n\n \n\nThis is a Designer's Choice bouquet, which means we select the best California flowers we have on hand each day and combine rich textures, colors, shapes, and elements into a beautiful floral design.\n\nAll our flowers are sourced from our local farmers daily, which allows us to provide fresher and long-lasting arrangements.\n\n \n\n** The pictures of floral bouquets displayed here are some of our examples of this floral design**\n\n \n\nIf you are looking for a special floral bouquet, such as a birthday flower bouquet, a sympathy flower bouquet, an anniversary flower bouquet, or any other flower bouquet, message us for availability and flower selection.",
+          },
+          {
+            id: 'absolute-white',
+            name: 'Absolute White',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/d063d792-7fa7-41a5-8a7e-feb1956f3a2f-retina-large.jpg',
+            price: '$162.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'This florasl arrangement is a beautiful gathering of all-white flowers, arranged in a premium, textured ceramica vase. This style is an elegan symmetrical round design. Its dimentions  are 8 - 10 in ches wide by 12 to 15 inches tall.\n\nWe use only sustainable, seasonal and locally grow  flowers available.\nFlowers shown in the image is only a sample of the style\nWe guarantee our flowers will be delivered fresh and beautifully arranged.',
+          },
+          {
+            id: 'clouds-in-my-coffee',
+            name: 'Clouds in My Coffee',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/40b27569-7cb4-4129-b4d7-4203be3aee77-retina-large.JPG',
+            price: '$99.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              "Experience the Cozy Charm of Clouds in My Coffee Flower Arrangement at ROSEANDTHORN DESIGN, your beloved local flower shop. Discover the delightful features and comforting elegance of this charming creation, perfect for brightening up your mornings or gifting to your loved ones.\n\nIrresistible Features:\n\nStunning Phalaenopsis Orchid: Nestled within a ceramic coffee cup, our Clouds in my Coffee arrangement features a stunning white double stem of locally sourced phalaenopsis orchid, adding elegance and sophistication.\n\nFluffy White Moss: Sweetened with clusters of fluffy white moss, simulating foam atop a freshly brewed cup of coffee, this arrangement exudes cozy charm and warmth.\n\nPerfect Size: Available in a size 7 inches wide by 4 inches tall, this enchanting orchid arrangement is a perfect addition to any home or office space, ideal for kitchen counters, bedside tables, or desks.\n\nElevate Your Space:\n\nIndulge your senses and elevate your space with our Clouds in my Coffee flower arrangement from ROSEANDTHORN DESIGN. Let its cozy charm and elegant simplicity be a cheerful start to your day, bringing serenity and sophistication to any setting.\n\nOrder Now:\n\nBrighten up your mornings or surprise your loved ones with the comforting elegance of Clouds in my Coffee flower arrangement. Order now and let ROSEANDTHORN DESIGN add a touch of warmth and indulgence to your life.\n\nThe Benefits of Choosing Roseandthorn Design's Flowers:\n\nCalifornia Grown: We prioritize using seasonal and locally grown flowers, supporting our community and the environment.\nEco-friendly: Our sustainable practices ensure beauty with minimal environmental impact, allowing you to enjoy stunning floral arrangements guilt-free.\nGiving Back: With every purchase, you contribute to free programs and workshops for all, helping us give back to the community.\nArtisan Crafted: Each arrangement is expertly crafted by our in-house floral designers, ensuring every bouquet is a masterpiece of artistry and elegance.\nImportant Notice:\n\nAllergies: Please be aware that some flowers may trigger allergies in sensitive individuals.\n\nPet Safety: To prevent ingestion, keep floral arrangements out of reach of pets, as certain flowers can be harmful to them.\n\nSubstitutions: While we strive to replicate arrangements accurately, seasonal availability may necessitate substitutions. Rest assured, any substitutions will be of equal or greater value.",
+          },
+          {
+            id: 'the-classique-bouquet',
+            name: 'The Classique Bouquet',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/025cb05c-f196-46c0-82e1-062a70a9bf68-retina-large.jpg',
+            price: '$155.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Elevate any occasion with our signature round flower bouquet, crafted with seasonal and eco-friendly floral arrangements by our talented in-house florists. Each bouquet showcases beautiful California-grown flowers, carefully selected for quality and long-lasting freshness.\n\nExperience the artistry of our sustainable floral arrangements, featuring a captivating blend of seasonal flowers including roses, peonies, ranunculus, daisies, orchids, tulips, sunflowers, Dahlia, and more.\n\nOur exceptional bouquets are crafted with the best flowers to provide the freshest and most long-lasting arrangements. From birthdays to anniversaries, our collection offers something exquisite for every occasion.\n\nPresented in a recycled, signature glass vase, our flower bouquet measures approximately 12 to 15 inches wide and tall.\n\nChoose Roseandthorn Design for:\n\nCalifornia Grown: Prioritizing seasonal and locally grown flowers, supporting our community and the environment.\nEco-friendly: Our sustainable practices ensure beauty with minimal environmental impact, allowing you to enjoy guilt-free floral arrangements.\nGiving Back: With every purchase, you contribute to free programs and workshops for all, helping us give back to the community.\nArtisan Crafted: Each arrangement is expertly crafted by our in-house floral designers, ensuring every bouquet is a masterpiece of elegance.\nImportant Notice:\n\nAllergies: Some flowers may trigger allergies. Please inform us of any specific allergies when placing your order.\nPet Safety: Certain flowers can be harmful to pets if ingested. Please keep floral arrangements out of reach of pets.\nSubstitutions: Variations may occur due to seasonal availability. Any substitutions made will be of equal or greater value. Contact us with any questions or concerns.',
+          },
+        ],
+      },
+    ],
   },
   {
     id: 'coley',
@@ -22077,6 +23708,347 @@ export const stores: Store[] = [
     isDashPass: true,
     isNearYou: false,
     tags: ['Flowers', 'Retail'],
+    items: [
+      {
+        id: 1,
+        title: 'Featured Items',
+        products: [
+          {
+            id: 'featured-003',
+            name: 'Pink Jam Jar',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/0af01db5-09ac-4ee0-b949-d0b909e656fc-retina-large.PNG',
+            price: '$70.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'featured-005',
+            name: 'Someone Like You',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/7015bba2-9422-4400-ad5b-99bace0f75fc-retina-large.PNG',
+            price: '$75.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'featured-007',
+            name: 'Like A Lady',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/27b77b43-4724-4448-8b17-20815a1bd4f9-retina-large.PNG',
+            price: '$90.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'featured-009',
+            name: 'Lovely Lady',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/e7aa1d09-1e5a-4253-8b05-608f8b81c424-retina-large.PNG',
+            price: '$105.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'featured-011',
+            name: 'Designer’s Choice Premium Bouquet',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/d7cf413f-690a-49ac-be50-2464a7ab0119-retina-large.PNG',
+            price: '$100.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'featured-013',
+            name: 'Peaches and Cream',
+            image: null,
+            price: '$150.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+        ],
+      },
+      {
+        id: 2,
+        title: 'Most Ordered',
+        products: [
+          {
+            id: 'pink-jam-jar',
+            name: 'Pink Jam Jar',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=600,format=auto,quality=80/media/photosV2/0af01db5-09ac-4ee0-b949-d0b909e656fc-retina-large.PNG',
+            price: '$70.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Pink white and green flowers including roses and lilies in a small jar, vase.',
+          },
+          {
+            id: 'someone-like-you',
+            name: 'Someone Like You',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=600,format=auto,quality=80/media/photosV2/7015bba2-9422-4400-ad5b-99bace0f75fc-retina-large.PNG',
+            price: '$75.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: 'Lilies, succulents and roses are gathered in a wooden box.',
+          },
+          {
+            id: 'like-a-lady',
+            name: 'Like A Lady',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=600,format=auto,quality=80/media/photosV2/27b77b43-4724-4448-8b17-20815a1bd4f9-retina-large.PNG',
+            price: '$90.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Pink roses, ranunculus and more are gathered in a geometric ceramic vase.',
+          },
+          {
+            id: 'sunny-delight',
+            name: 'Sunny Delight',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=600,format=auto,quality=80/media/photosV2/9b69c8d5-6b25-4f5d-9638-641656424c00-retina-large.jpg',
+            price: '$40.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'This bouquet showcases a selection of premium sunflowers and other yellow blooms, elegantly wrapped in brown butcher paper, ready to be placed directly into a vase.',
+          },
+          {
+            id: 'berry-dream',
+            name: 'Berry Dream',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=600,format=auto,quality=80/media/photosV2/b63a4c32-bdef-41c7-b9df-04a3e323a03f-retina-large.jpg',
+            price: '$40.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'This bouquet showcases a selection of premium pink and purple flowers, elegantly wrapped in brown butcher paper, ready to be placed directly into a vase.',
+          },
+          {
+            id: 'lovely-lady',
+            name: 'Lovely Lady',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=600,format=auto,quality=80/media/photosV2/e7aa1d09-1e5a-4253-8b05-608f8b81c424-retina-large.PNG',
+            price: '$105.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'This arrangement features luxe blooms in shades of plum, lavender, and green. This design is styled in a galvanized tin vase. Roses, dianthus, hydrangeas and more create a show-stopping display.',
+          },
+        ],
+      },
+      {
+        id: 3,
+        title: 'Every Day Flowers',
+        products: [
+          {
+            id: 'orange-crush',
+            name: 'Orange Crush',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/1b1a65a2-6ea1-458f-a4e4-05432c44a503-retina-large.PNG',
+            price: '$90.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Medium height arrangement with orange and green flowers in a gold bottom cylinder vase.',
+          },
+          {
+            id: 'precious-pink',
+            name: 'Precious Pink',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/ccb1f0d3-57a6-48b6-a95d-79453d56d509-retina-large.PNG',
+            price: '$90.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Pink and white arrangement in a glass vase with a pink ribbon coffee cup used for size aspect and is not included.',
+          },
+          {
+            id: 'lover-boy',
+            name: 'Lover Boy',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/345b9185-b636-4604-861b-ec60c621b287-retina-large.PNG',
+            price: '$125.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Red roses, stock, ranunculus, lisianthus and more are gathered in a gold scalloped cylinder.',
+          },
+          {
+            id: 'loves-bounty',
+            name: "Love's Bounty",
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/bb9cb9a0-50fb-4514-9306-81a2fef4fb10-retina-large.PNG',
+            price: '$105.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: 'Red and pink mix in a white ceramic with lush and flowy design.',
+          },
+          {
+            id: 'xoxo',
+            name: 'XOXO',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/80cafea3-ba6b-40c3-ad22-bd7e01852cfa-retina-large.PNG',
+            price: '$90.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Red roses, gerbera daises, carnations, lucadendron, stock and wax flower are arranged in a galvanized tin vase. The perfect gift for your loved 1!',
+          },
+          {
+            id: 'all-you-need-is-love',
+            name: 'All You Need Is LOVE',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/4864825b-fa6d-438b-a14a-b706ca6d3f63-retina-large.PNG',
+            price: '$120.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: '1 dozen red roses are paired with lush greens in a gold scalloped vase.',
+          },
+          {
+            id: 'like-a-lady',
+            name: 'Like A Lady',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/27b77b43-4724-4448-8b17-20815a1bd4f9-retina-large.PNG',
+            price: '$90.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Pink roses, ranunculus and more are gathered in a geometric ceramic vase.',
+          },
+          {
+            id: 'peaches-and-cream',
+            name: 'Peaches and Cream',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/4e3506a5-8653-4e5e-9938-185024fa4443-retina-large.PNG',
+            price: '$150.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Send your love with a beautiful florist arranged peach rose mixed bouquet. Peaches and cream combines premium peach roses and peach bombastic spray roses with peach tulips, white dendro orchids, pink stargazers, pink stock, green apple hydrangea and dusty miller with greens all nestled in a sturdy white ceramic vase. Flowers may vary slightly due to seasonal availability.',
+          },
+          {
+            id: 'rustic-beauty',
+            name: 'Rustic Beauty',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/38952cc0-a8a0-465d-8403-e6ffc258c32c-retina-large.PNG',
+            price: '$110.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'In a rectangular wooden box we arranged light pink roses, orange spray roses, green and white hydrangea with greens and filler.',
+          },
+          {
+            id: 'palm-springs',
+            name: 'Palm Springs',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/914b193f-875a-4d7f-bcc6-d80259d5b0fe-retina-large.PNG',
+            price: '$95.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              "This arrangement features luxe blooms in vibrant shades of chartreuse, fuchsia, and coral. This design is styled in a white washed wooden box. Calla lilies, roses and hydrangea are fashioned into a custom gift that is sure to put a smile on the recipient's face.",
+          },
+        ],
+      },
+      {
+        id: 4,
+        title: 'Assorted Bouquets',
+        products: [
+          {
+            id: 'radiant-sunset',
+            name: 'Radiant Sunset',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=70/media/photosV2/69efbb1c-859b-44b2-a82d-f6888ba32beb-retina-large.jpg',
+            price: '$40.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'This bouquet showcases a selection of premium red, yellow, and orange  flowers, elegantly wrapped in brown butcher paper, ready to be placed directly into a vase.',
+          },
+          {
+            id: 'sunny-delight',
+            name: 'Sunny Delight',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=70/media/photosV2/9b69c8d5-6b25-4f5d-9638-641656424c00-retina-large.jpg',
+            price: '$40.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'This bouquet showcases a selection of premium sunflowers and other yellow blooms, elegantly wrapped in brown butcher paper, ready to be placed directly into a vase.',
+          },
+          {
+            id: 'berry-dream',
+            name: 'Berry Dream',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=70/media/photosV2/b63a4c32-bdef-41c7-b9df-04a3e323a03f-retina-large.jpg',
+            price: '$40.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'This bouquet showcases a selection of premium pink and purple flowers, elegantly wrapped in brown butcher paper, ready to be placed directly into a vase.',
+          },
+        ],
+      },
+    ],
   },
   {
     id: 'walgreens',
@@ -33772,6 +35744,754 @@ export const stores: Store[] = [
     isDashPass: true,
     isNearYou: false,
     tags: ['Retail', 'Over 4.5'],
+    items: [
+      {
+        id: 1,
+        title: 'Featured Items',
+        products: [
+          {
+            id: 'featured-003',
+            name: 'Bouquet of 12 roses pastel colors',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/832bba6a-7279-423d-8504-478d683d09f9-retina-large.png',
+            price: '$39.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'featured-005',
+            name: 'Buchon Pastel colors roses',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/018d38b6-9081-46db-85c7-9fc0daf957a1-retina-large.jpg',
+            price: '$69.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'featured-007',
+            name: 'Bouquet of Red Roses',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/a1411ab3-b991-4bb9-959b-64ae1412e3b3-retina-large.png',
+            price: '$39.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'featured-009',
+            name: 'Bouquet Amore Mio',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/b548d749-cb0c-48da-a7b5-41018646c15a-retina-large.jpg',
+            price: '$89.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'featured-011',
+            name: 'One dozen of pink roses',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/aa50a995-7109-415b-b42a-cdaa07020e43-retina-large.jpg',
+            price: '$39.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+        ],
+      },
+      {
+        id: 2,
+        title: 'Most Ordered',
+        products: [
+          {
+            id: 'bouquet-of-12-roses-pastel-colors',
+            name: 'Bouquet of 12 roses pastel colors',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=600,format=auto,quality=80/media/photosV2/832bba6a-7279-423d-8504-478d683d09f9-retina-large.png',
+            price: '$39.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              "Vibrant bouquet of 12 pastel roses wrapped elegantly in Korean paper.Dosen't come with a Vase.",
+          },
+          {
+            id: 'bouquet-of-sunflowers',
+            name: 'Bouquet of Sunflowers',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=600,format=auto,quality=80/media/photosV2/3975e932-71a5-41c4-8bf0-37509bf10173-retina-large.jpg',
+            price: '$20.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: '5 stems of sunflowers nicely wrapped with Korean paper and a ribbon',
+          },
+          {
+            id: 'one-dozen-of-pink-roses',
+            name: 'One dozen of pink roses',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=600,format=auto,quality=80/media/photosV2/aa50a995-7109-415b-b42a-cdaa07020e43-retina-large.jpg',
+            price: '$39.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Delicate pink roses with baby breath, and green leather leaves wrapped in Korean paper tied with a pink ribbon. Elegant floral arrangement.Does not come with a vase.',
+          },
+          {
+            id: 'bouquet-of-red-roses',
+            name: 'Bouquet of Red Roses',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=600,format=auto,quality=80/media/photosV2/a1411ab3-b991-4bb9-959b-64ae1412e3b3-retina-large.png',
+            price: '$39.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              "Vibrant red roses with delicate baby's breath, elegantly wrapped in red. Perfect gift for a special occasion or milestone celebration. Bouquet available with 12 red roses.Dosen't come with a vase.",
+          },
+          {
+            id: '12-red-roses-black-wraping',
+            name: '12 red roses black wraping',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=600,format=auto,quality=80/media/photosV2/e3cfbb9f-743b-4114-a71f-b61c1dab0254-retina-large.jpg',
+            price: '$39.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              "Indulge in a dozen vibrant red roses elegantly wrapped in black paper.Dosen't come with a vase.",
+          },
+          {
+            id: 'happy-birthday-balloon',
+            name: 'Happy Birthday Balloon',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=600,format=auto,quality=80/media/photosV2/820b14ee-f25b-4f00-9f04-adffed18ac7e-retina-large.jpg',
+            price: '$5.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: '12 inches balloon yes inflated with helium',
+          },
+        ],
+      },
+      {
+        id: 3,
+        title: 'Fresh Real flowers lei',
+        products: [
+          {
+            id: 'royal-blue-and-white-lei',
+            name: 'Royal blue and white lei',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=70/media/photosV2/2bab6d43-b9e6-4602-a679-ba43fb5f0db2-retina-large.png',
+            price: '$49.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Stunning display of royal blue and white fresh flowers intertwined into a beautiful lei.',
+          },
+          {
+            id: 'white-and-deep-purple-lei',
+            name: 'White and deep purple lei',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=70/media/photosV2/dba4a813-e421-4af7-a6f8-e0725fc9f2c5-retina-large.png',
+            price: '$49.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: 'White and deep purple orchids intricately arranged into a handmade lei.',
+          },
+          {
+            id: 'royal-blue-lei',
+            name: 'Royal blue lei',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=70/media/photosV2/bfa0b13a-9a44-42ae-be81-98d1dbd21cce-retina-large.png',
+            price: '$45.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Bursting with vibrant royal blue, this fresh flower lei is a handmade delight for any occasion.',
+          },
+        ],
+      },
+      {
+        id: 4,
+        title: 'Graduation balloons',
+        products: [
+          {
+            id: 'you-did-it',
+            name: 'You did it!!',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=70/media/photosV2/5623b0af-7131-45a1-a855-5fc734e5cddd-retina-large.jpg',
+            price: '$4.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: 'Balloons 16 inches inflated with helium',
+          },
+          {
+            id: 'troffe-grad-balloons',
+            name: 'Troffe grad balloons',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=70/media/photosV2/236d0321-b50a-4d25-a4b0-21d74d5013e0-retina-large.jpg',
+            price: '$5.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: '18 inches balloons inflated with helium',
+          },
+          {
+            id: 'gold-and-black-big-balloons',
+            name: 'Gold and black big balloons',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=70/media/photosV2/2bf0aeb9-e5ff-4d84-a27f-9e61b4e27438-retina-large.jpg',
+            price: '$19.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: '26 inches balloon inflated with helium',
+          },
+          {
+            id: 'graduation-balloon-you-did-it',
+            name: 'Graduation balloon you did it',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=70/media/photosV2/49bb5041-1883-4eb7-83e6-590eb0f4ab6e-retina-large.jpg',
+            price: '$4.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Celebrate achievements with a festive 16-inch helium balloon. Perfect for graduation parties.',
+          },
+          {
+            id: 'gold-star-balloon',
+            name: 'Gold star balloon',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=70/media/photosV2/afdcf25c-c71a-461e-8397-11ed66a90106-retina-large.jpg',
+            price: '$4.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: 'Shiny gold star balloons filled with helium to celebrate graduations.',
+          },
+          {
+            id: 'bouquet-of-graduation-balloons',
+            name: 'Bouquet of graduation balloons',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=70/media/photosV2/d247a8b8-0813-40c8-b0fd-abc77447047b-retina-large.jpg',
+            price: '$49.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Float into celebration with a bouquet of graduation balloons - a big 30-inch star balloon and 4 assorted smaller balloons, all inflated with helium.',
+          },
+        ],
+      },
+      {
+        id: 5,
+        title: 'Birthday balloons',
+        products: [
+          {
+            id: 'black-happy-birthday-balloon',
+            name: 'Black Happy birthday balloon',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=70/media/photosV2/86bac742-df1a-49db-9c42-8a239db76381-retina-large.jpg',
+            price: '$4.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'A round 13-inch balloon in black and gold with "Happy Birthday" is an elegant choice for celebrations. The color combination of black and gold exudes sophistication and festivity, making it suitable for both formal and informal gatherings. The "Happy Birthday" message adds a personalized touch, making the balloon a focal point of joy and celebration. Its compact size ensures it stands out without overwhelming the space, perfect for tabletop displays or grouped arrangements at parties.',
+          },
+          {
+            id: 'happy-birthday-balloon-make-up',
+            name: 'Happy Birthday balloon make up',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=70/media/photosV2/21e8f040-a2a7-48f9-854d-f0a584906e28-retina-large.png',
+            price: '$4.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Happy birthday balloons style make up it comes inflated with helium size 13 inches.',
+          },
+          {
+            id: 'light-blue-birthday-balloon',
+            name: 'Light Blue Birthday Balloon',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=70/media/photosV2/d20e44c9-e659-4bc2-a524-cb48c182fd08-retina-large.jpg',
+            price: '$4.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Outstanding round light blue birthday balloon it comes inflated with helium ,size 13 inches.',
+          },
+          {
+            id: 'blue-star-shape-birthday-balloon',
+            name: 'Blue Star Shape Birthday Balloon',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=70/media/photosV2/fb344428-524c-47ac-8d47-5fef4789c88a-retina-large.jpg',
+            price: '$4.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: 'A fantastic blue star balloon for birthday',
+          },
+        ],
+      },
+      {
+        id: 6,
+        title: 'Balloons',
+        products: [
+          {
+            id: 'happy-birthday-balloon',
+            name: 'Happy Birthday Balloon',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=70/media/photosV2/820b14ee-f25b-4f00-9f04-adffed18ac7e-retina-large.jpg',
+            price: '$5.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: '12 inches balloon yes inflated with helium',
+          },
+          {
+            id: '6-pink-latex-balloons',
+            name: '6 pink latex balloons',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=70/media/photosV2/2213850a-1838-4cbb-ba73-5a455cab9c0b-retina-large.jpg',
+            price: '$19.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Vibrant pink latex balloons, 12 inches each, inflated with helium. Includes six balloons for a lively touch to any celebration!',
+          },
+          {
+            id: '6-asorted-colors-balloons',
+            name: '6 Asorted colors balloons',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=70/media/photosV2/c37f6b81-624c-45f0-9419-cff900ef44ba-retina-large.png',
+            price: '$19.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: '6-black-star-balloons',
+            name: '6 black star balloons',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=70/media/photosV2/92974185-523c-4f4b-b856-4e56a682d452-retina-large.jpg',
+            price: '$25.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: '6 black star  balloons inflated with helium',
+          },
+          {
+            id: '1-red-heart-balloon',
+            name: '1 red heart balloon',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=70/media/photosV2/776b99ba-2c22-4d7b-b804-7cbf1cca0a76-retina-large.jpg',
+            price: '$4.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'One  balloon 16 inches inflated with helium its your choice of color gold,silver ,fuxia,rose gold,red',
+          },
+          {
+            id: 'gold-number-balloon',
+            name: 'Gold Number balloon',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=70/media/photosV2/94d02085-b6e4-43e2-a7b1-c93f47e6e73f-retina-large.jpg',
+            price: '$15.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Shiny gold 26-inch helium balloon available in numbers 0-9. Perfect for special celebrations or milestone birthdays. Add a touch of elegance to your event decor.',
+          },
+          {
+            id: '1-gold-star-balloons',
+            name: '1 gold star balloons',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=70/media/photosV2/4a4ade1f-5891-4049-9300-8eea3537ff12-retina-large.jpg',
+            price: '$4.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: '1 balloon 16 inches inflated with helium',
+          },
+          {
+            id: 'square-back-to-school-balloon',
+            name: 'Square Back to School Balloon',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=70/media/photosV2/530ccc78-163e-401a-8213-da329ada8d42-retina-large.jpg',
+            price: '$4.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: 'Square shape back to school balloon',
+          },
+        ],
+      },
+      {
+        id: 7,
+        title: 'Vase',
+        products: [
+          {
+            id: 'crystal-vase',
+            name: 'Crystal vase',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=70/media/photosV2/bed89331-55f3-4e33-afe3-672064b1dded-retina-large.jpg',
+            price: '$12.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: 'Vase size 9"3/4',
+          },
+          {
+            id: 'glass-vase',
+            name: 'Glass vase',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=70/media/photosV2/8dcfb3bd-be0f-4976-a41b-a5ccce82e9ff-retina-large.jpg',
+            price: '$14.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: 'Delicate transparent glass vase, elegantly shaped.',
+          },
+          {
+            id: 'glass-vase-8-inches',
+            name: 'Glass vase 8 inches',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=70/media/photosV2/2ca38206-ac5f-4099-9351-bf15988fd4a0-retina-large.jpg',
+            price: '$9.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+        ],
+      },
+      {
+        id: 8,
+        title: "Balloons for Father's Day",
+        products: [
+          {
+            id: 'fathers-day-balloon-bouquete',
+            name: 'Father’s Day Balloon bouquete',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=70/media/photosV2/811d7e43-7bf5-4c58-8fd1-27befc7a2ef7-retina-large.jpg',
+            price: '$35.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'This delightful bouquet consists of five helium balloons, perfect for celebrating Father’s Day. Each balloon is thoughtfully arranged to create a festive and heartwarming display that will make Dad feel extra special.',
+          },
+          {
+            id: 'happy-fathers-day-orange-color',
+            name: 'Happy fathers day orange color',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=70/media/photosV2/21071d96-886b-4e28-b243-4993e2a52724-retina-large.jpg',
+            price: '$5.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+        ],
+      },
+      {
+        id: 9,
+        title: 'Candles',
+        products: [
+          {
+            id: 'princess-candle',
+            name: 'Princess candle',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=70/media/photosV2/17f2cddf-b9c3-4f22-93de-31527a70b84e-retina-large.jpg',
+            price: '$4.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: 'Princess pink shiny candle',
+          },
+          {
+            id: 'magic-relight-candles',
+            name: 'Magic relight candles',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=70/media/photosV2/bfd2332e-e4a4-429c-8389-0433c607be87-retina-large.jpg',
+            price: '$4.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: '24 magic candles multi colors',
+          },
+          {
+            id: 'numbers-candles',
+            name: 'Numbers candles',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=70/media/photosV2/8d05fa1a-4891-4115-ace5-aa2b14f4acfc-retina-large.jpg',
+            price: '$3.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: 'Number candles  please let us know what number would you need .thanks',
+          },
+          {
+            id: 'multi-color-happy-birthday-candle',
+            name: 'Multi color happy birthday candle',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=70/media/photosV2/62a69cbe-f81d-43db-b6a7-4b9b812b9c3d-retina-large.jpg',
+            price: '$4.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: 'Happy birthday candles multi color',
+          },
+        ],
+      },
+      {
+        id: 10,
+        title: 'Valentines balloons',
+        products: [
+          {
+            id: 'i-love-you-balloon-2',
+            name: 'I love you balloon #2',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=70/media/photosV2/65b0b7db-c69b-4841-8bce-bdf4af37a66e-retina-large.png',
+            price: '$4.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: 'Heart-shaped balloon, 16 inches, inflated with helium.',
+          },
+          {
+            id: 'balloon-be-mine',
+            name: 'Balloon Be Mine',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=70/media/photosV2/cb41e1f1-17eb-4c25-b1df-4c38ba771006-retina-large.png',
+            price: '$4.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: 'Heart-shaped 16-inch balloon filled with helium.',
+          },
+          {
+            id: 'happy-valentines-day-2',
+            name: 'Happy valentines day #2',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=70/media/photosV2/0e5b65a1-1573-4522-8700-15c2badd43e5-retina-large.png',
+            price: '$4.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: '16-inch heart-shaped balloon inflated with helium.',
+          },
+          {
+            id: 'happy-valentines-3',
+            name: 'Happy valentines #3',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=70/media/photosV2/9a5f7d86-9dad-409a-b57e-15d067aa397b-retina-large.png',
+            price: '$4.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: 'Heart-shaped balloon, 16 inches, helium-inflated.',
+          },
+          {
+            id: 'buquet-of-balloons-all-happy-valentines-day',
+            name: 'Buquet of balloons all happy valentines day',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=70/media/photosV2/35687551-07f0-4f18-a42c-8c6eb042e74b-retina-large.png',
+            price: '$29.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: 'Six helium-inflated "Happy Valentine\'s Day" balloons asorted.',
+          },
+          {
+            id: 'love-you-always-and-forever',
+            name: 'Love you always and forever',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=70/media/photosV2/7a64b445-c1ee-4b72-ad04-349b0e967f58-retina-large.png',
+            price: '$4.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: 'Heart-shaped 16-inch balloons inflated with helium.',
+          },
+          {
+            id: 'i-love-you-5',
+            name: 'I love you #5',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=70/media/photosV2/cd4c2fcb-1628-4744-a3dd-88afdee4fcad-retina-large.png',
+            price: '$4.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: 'Heart-shaped balloon, 16 inches, helium filled.',
+          },
+          {
+            id: 'asorted-6-balloons-pink',
+            name: 'Asorted 6 balloons pink',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=70/media/photosV2/360907ad-ae81-4c28-92fa-adf2273cf2fa-retina-large.png',
+            price: '$29.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Six assorted pink balloons, each heart-shaped and featuring romantic messages such as "Happy Valentine\'s Day," "Love You," and "Be Mine."',
+          },
+        ],
+      },
+      {
+        id: 11,
+        title: 'Valentines flowers',
+        products: [
+          {
+            id: 'royal-blue-roses-i-love-you',
+            name: 'Royal blue roses I love you',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=70/media/photosV2/5adcfa40-a396-48de-9a10-f1b3e6627063-retina-large.png',
+            price: '$59.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'One dozen royal blue roses with a banner that says "I love you," adorned with green ferns and white baby\'s breath.Dosen\'t come with a vase.',
+          },
+          {
+            id: 'flower-arrangment-in-a-black-box-2',
+            name: 'Flower arrangment in a black box #2',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=70/media/photosV2/26a39ab8-902e-46c6-aa48-c4b64538c4e0-retina-large.png',
+            price: '$59.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: 'A vibrant arrangement of red roses accompanied by a festive balloon.',
+          },
+          {
+            id: 'bouquet-of-12-roses-atouch-with-balloon-i-love-you',
+            name: 'Bouquet of 12 roses /atouch with balloon I love you',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=70/media/photosV2/e20f9dce-4144-4add-b24f-b13f6b69d480-retina-large.png',
+            price: '$59.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Red roses arranged with an "I love you" balloon.Doesn\'t come with a vase.',
+          },
+          {
+            id: 'flower-arrangment-in-a-black-box-1',
+            name: 'Flower arrangment in a black box #1',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=70/media/photosV2/457b6108-9b2b-42f8-896a-9e9cd2d9d506-retina-large.png',
+            price: '$59.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: 'Radiant red roses with an "I Love You" balloon.',
+          },
+          {
+            id: 'gorgeous-pink',
+            name: 'Gorgeous pink',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=70/media/photosV2/8d3398ad-0a30-4290-9d84-9a946669240a-retina-large.png',
+            price: '$59.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Pink roses with baby\'s breath, accompanied by a pink teddy bear and a heart-shaped "Happy Valentine\'s Day" balloon.it comes in a pink box cc',
+          },
+          {
+            id: 'acrilic-heart-with-fresh-roses-and-chocolates',
+            name: 'Acrilic heart with fresh roses and chocolates',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=70/media/photosV2/42eb8338-0aa5-45d4-ab17-74d900135226-retina-large.png',
+            price: '$120.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Bursting with 24 vibrant red roses and complemented by Ferrero Rocher chocolates nestled in an acrylic heart.',
+          },
+        ],
+      },
+    ],
   },
   {
     id: 'cvs',
@@ -36044,6 +38764,544 @@ export const stores: Store[] = [
     isDashPass: true,
     isNearYou: false,
     tags: ['Flowers', 'Retail', 'Under 30 min', 'Over 4.5'],
+    item: [
+      {
+        id: 1,
+        title: 'Featured Items',
+        products: [
+          {
+            id: 'featured-003',
+            name: 'Overjoyed Boutique Fragrant Rose Bouquet',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/48bc992f-107b-4b3b-ad7c-2fd9f8f59e18-retina-large.jpg',
+            price: '$26.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'featured-005',
+            name: 'Overjoyed Boutique Orchid Phalaenopsis',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/7a22e890-3544-4e03-8bbc-60da7b6a84db-retina-large.JPG',
+            price: '$38.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'featured-007',
+            name: 'Rose Rainbow Bunch',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/fdd8cda6-93d3-4cc1-8df7-967bc94b5c3e-retina-large.jpg',
+            price: '$21.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'featured-009',
+            name: 'Overjoyed Boutique White Orchid Phalaenopsis',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/3a5a4b90-4fef-48fd-8d25-85e2d0926648-retina-large.JPG',
+            price: '$38.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'featured-011',
+            name: 'White Oriental Lilies',
+            image: null,
+            price: '$13.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+        ],
+      },
+      {
+        id: 2,
+        title: 'Most Ordered',
+        products: [
+          {
+            id: 'overjoyed-boutique-fragrant-rose-bouquet',
+            name: 'Overjoyed Boutique Fragrant Rose Bouquet',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=600,format=auto,quality=90/media/photosV2/48bc992f-107b-4b3b-ad7c-2fd9f8f59e18-retina-large.jpg',
+            price: '$26.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: 'Roses and Lilies with greens, color may vary',
+          },
+          {
+            id: 'mini-carnations-bunch',
+            name: 'Mini Carnations Bunch',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=600,format=auto,quality=90/media/photosV2/396b573c-1d4b-49b2-9fc4-094611aca7f9-retina-large.jpg',
+            price: '$8.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: 'Fresh Cut, colors may vary',
+          },
+          {
+            id: 'white-oriental-lilies',
+            name: 'White Oriental Lilies',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=600,format=auto,quality=90/media/photosV2/2e8a14be-f585-46b2-8279-ca761d21d4a3-retina-large.png',
+            price: '$13.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: 'Fresh Cut, variety can be Stargazer, Oriental, or Sonata',
+          },
+          {
+            id: 'birthday-18-mylar-balloon',
+            name: 'Birthday 18" Mylar Balloon',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=600,format=auto,quality=90/media/photosV2/535b4226-9546-43da-a8e1-50991ff02f3f-retina-large.jpg',
+            price: '$8.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: 'Style may vary',
+          },
+          {
+            id: 'overjoyed-boutique-orchid-phalaenopsis',
+            name: 'Overjoyed Boutique Orchid Phalaenopsis',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=600,format=auto,quality=90/media/photosV2/7a22e890-3544-4e03-8bbc-60da7b6a84db-retina-large.JPG',
+            price: '$38.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: 'Colors and number of spikes may vary. Usually in claypot but may vary.',
+          },
+          {
+            id: 'overjoyed-boutique-rose-mini-modern-arrangement',
+            name: 'Overjoyed Boutique Rose Mini Modern Arrangement',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=600,format=auto,quality=90/media/photosV2/ca006ea0-3533-448b-ac89-08f97725209b-retina-large.JPG',
+            price: '$26.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Roses with greens in a clear mini modern vase. Roses can be red, pink, or yellow.',
+          },
+        ],
+      },
+      {
+        id: 3,
+        title: 'Floral Leis',
+        products: [
+          {
+            id: 'lei-orchid-dendrobium-single',
+            name: 'Lei Orchid Dendrobium Single',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/ee3cb326-35d9-4ce1-a187-353ff79226de-retina-large.jpg',
+            price: '$35.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Single Orchid Lei. A beautiful purple orchid lei, perfect for graduation!',
+          },
+          {
+            id: 'lei-orchid-dendrobium-double',
+            name: 'Lei Orchid Dendrobium Double',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/245b3ad4-9609-42dc-8594-93f2d5acf357-retina-large.jpg',
+            price: '$41.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Double Orchid Lei. A beautiful purple orchid lei, perfect for graduation!',
+          },
+        ],
+      },
+      {
+        id: 4,
+        title: 'Candy Leis',
+        products: [
+          {
+            id: 'enjoy-xd-gummy-pineapple-lei',
+            name: 'Enjoy XD Gummy Pineapple Lei',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/ddc931e2-399b-4796-a3cd-5db3f2e7681f-retina-large.jpg',
+            price: '$13.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Filled with 3D Gummy PIneapple candies that are soft, translucent, and bursting with pineapple flavor.',
+          },
+          {
+            id: 'enjoy-lucky-candy-lei',
+            name: 'Enjoy Lucky Candy Lei',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/b5d40721-2431-49e5-922c-ed39e202dae4-retina-large.jpg',
+            price: '$10.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Filled with Good Luck hard candies that are colorful and bursting with flavor. Wishing someone good fortune!',
+          },
+          {
+            id: 'enjoy-guava-chewy-candy-lei',
+            name: 'Enjoy Guava Chewy Candy Lei',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/fccf5471-673b-42f2-a0d2-9bb41aa8174e-retina-large.jpg',
+            price: '$10.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Filled with our popular Guava Chewy candies that are sweet and bursting with guava flavor.',
+          },
+          {
+            id: 'enjoy-good-luck-candy-lei-pineapple',
+            name: 'Enjoy Good Luck Candy Lei Pineapple',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/d04e33f0-23ec-43fe-9a70-0878fd1ff28a-retina-large.jpg',
+            price: '$10.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Gold colored wrapper with white pompoms. Inside each wrapper is a Pineapple flavored Good Luck hard candy.',
+          },
+        ],
+      },
+      {
+        id: 5,
+        title: 'Seasonal Items',
+        products: [
+          {
+            id: 'overjoyed-boutique-purple-pitcher-vase-small',
+            name: 'Overjoyed Boutique Purple Pitcher Vase Small',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/eaccb7b9-96a3-4695-8691-caa159955c76-retina-large.png',
+            price: '$15.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'overjoyed-boutique-pearl-candle---crisp-white',
+            name: 'Overjoyed Boutique Pearl Candle - Crisp White',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/1eb94f43-90f7-4c63-931f-3eab52106070-retina-large.jpg',
+            price: '$17.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'overjoyed-boutique-pearl-candle---cactus-flower',
+            name: 'Overjoyed Boutique Pearl Candle - Cactus Flower',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/a0fe0ee7-afcf-45b9-97e5-533672a1ee5a-retina-large.jpg',
+            price: '$17.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'overjoyed-boutique-green-pitcher-vase-small',
+            name: 'Overjoyed Boutique Green Pitcher Vase Small',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/17dd593e-d23f-4cf6-a761-35f6438497d5-retina-large.png',
+            price: '$15.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'overjoyed-boutique-white-pitcher-vase-small',
+            name: 'Overjoyed Boutique White Pitcher Vase Small',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/591f98d7-ed02-4f50-a359-7e65c9601ade-retina-large.png',
+            price: '$15.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'graduation-bright-bears-with-variety-mix-candy--9in-balloon',
+            name: 'Graduation Bright Bears with Variety Mix Candy & 9In Balloon',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/f6425bae-389c-417b-ba12-1dc6ec223ce4-retina-large.png',
+            price: '$23.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'includes assorted color 6.5” Bright Bears Plush with a 9” Balloon and a Circular Candy Dish filled with Variety Mix that includes Jolly Rancher, Tootsie Fruit Chews, Now & Later, LifeSavers Hard Candy, Tootsie Roll Midgees, Bit-O-Honey, Candyman’s and Starlight Mints. Sold by each.',
+          },
+        ],
+      },
+      {
+        id: 6,
+        title: 'Roses',
+        products: [
+          {
+            id: 'rose-rainbow-bunch',
+            name: 'Rose Rainbow Bunch',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/fdd8cda6-93d3-4cc1-8df7-967bc94b5c3e-retina-large.jpg',
+            price: '$21.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: '12 Stem roses in assorted colors',
+          },
+          {
+            id: 'overjoyed-boutique-fragrant-rose-bouquet',
+            name: 'Overjoyed Boutique Fragrant Rose Bouquet',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/48bc992f-107b-4b3b-ad7c-2fd9f8f59e18-retina-large.jpg',
+            price: '$26.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: 'Roses and Lilies with greens, color may vary',
+          },
+        ],
+      },
+      {
+        id: 7,
+        title: 'Fresh Cut',
+        products: [
+          {
+            id: 'carnations-12-stem',
+            name: 'Carnations 12 Stem',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/97b137bc-451e-43fc-9d6f-04a932771a03-retina-large.jpg',
+            price: '$11.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'blue-hydrangea-3-stem',
+            name: 'Blue Hydrangea 3 Stem',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/1370c5f7-fc4e-4276-9e6e-a80f99d070ff-retina-large.jpg',
+            price: '$12.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'mini-carnations-bunch',
+            name: 'Mini Carnations Bunch',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/396b573c-1d4b-49b2-9fc4-094611aca7f9-retina-large.jpg',
+            price: '$8.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: 'Fresh Cut, colors may vary',
+          },
+          {
+            id: 'white-oriental-lilies',
+            name: 'White Oriental Lilies',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/2e8a14be-f585-46b2-8279-ca761d21d4a3-retina-large.png',
+            price: '$13.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: 'Fresh Cut, variety can be Stargazer, Oriental, or Sonata',
+          },
+        ],
+      },
+      {
+        id: 8,
+        title: 'Vase Arrangements',
+        products: [
+          {
+            id: 'overjoyed-boutique-unforgettable-arrangement---red',
+            name: 'Overjoyed Boutique Unforgettable Arrangement - RED',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/fe768e83-ae7c-46a8-a60b-3179c3574083-retina-large.png',
+            price: '$77.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'overjoyed-boutique-unforgettable-deluxe-arrangement',
+            name: 'Overjoyed Boutique Unforgettable Deluxe Arrangement',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/edff8ca0-1938-463a-ab10-14569a76c5aa-retina-large.png',
+            price: '$83.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'overjoyed-boutique-rose-mini-modern-arrangement',
+            name: 'Overjoyed Boutique Rose Mini Modern Arrangement',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/ca006ea0-3533-448b-ac89-08f97725209b-retina-large.JPG',
+            price: '$26.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Roses with greens in a clear mini modern vase. Roses can be red, pink, or yellow.',
+          },
+          {
+            id: 'overjoyed-boutique-unforgettable-arrangement---pink',
+            name: 'Overjoyed Boutique Unforgettable Arrangement - PINK',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/4ae52dc8-88c2-470e-b0bb-d01958d1733e-retina-large.png',
+            price: '$77.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+        ],
+      },
+      {
+        id: 9,
+        title: 'Orchids',
+        products: [
+          {
+            id: 'overjoyed-boutique-white-orchid-phalaenopsis',
+            name: 'Overjoyed Boutique White Orchid Phalaenopsis',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/3a5a4b90-4fef-48fd-8d25-85e2d0926648-retina-large.JPG',
+            price: '$38.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: 'Number of spikes may vary. Usually in claypot but may vary.',
+          },
+          {
+            id: 'overjoyed-boutique-orchid-phalaenopsis',
+            name: 'Overjoyed Boutique Orchid Phalaenopsis',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/7a22e890-3544-4e03-8bbc-60da7b6a84db-retina-large.JPG',
+            price: '$38.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: 'Colors and number of spikes may vary. Usually in claypot but may vary.',
+          },
+        ],
+      },
+      {
+        id: 10,
+        title: 'Balloons',
+        products: [
+          {
+            id: 'birthday-bubble-balloon',
+            name: 'Birthday Bubble Balloon',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/857c154a-e984-4489-81f8-4ed5d982049a-retina-large.jpg',
+            price: '$15.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: 'Style may vary',
+          },
+          {
+            id: 'congratulations-18-mylar-balloon',
+            name: 'Congratulations 18" Mylar Balloon',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/49634a73-f217-4fec-b4cd-0431bec11133-retina-large.jpg',
+            price: '$8.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: 'Style may vary',
+          },
+          {
+            id: 'congratulations-bubble-balloon',
+            name: 'Congratulations Bubble Balloon',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/496e011e-94d7-4077-bd6b-6fd1c454de51-retina-large.jpg',
+            price: '$15.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: 'Style may vary',
+          },
+          {
+            id: 'baby-boy-18-mylar-balloon',
+            name: 'Baby Boy 18" Mylar Balloon',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/30462c92-843f-4a93-8d65-d46d51c14bb7-retina-large.jpg',
+            price: '$8.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: 'Style may vary',
+          },
+        ],
+      },
+    ],
   },
   {
     id: 'blooming-moment',
@@ -36056,6 +39314,156 @@ export const stores: Store[] = [
     isDashPass: true,
     isNearYou: false,
     tags: ['Flowers', 'Retail', 'Over 4.5'],
+    items: [
+      {
+        id: 1,
+        title: 'Featured Items',
+        products: [
+          {
+            id: 'featured-003',
+            name: 'Best Value Custom Bouquet Fresh Flower',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/a9345094-a6ae-4b16-805f-030ea2bdf3f2-retina-large.JPG',
+            price: '$55.00',
+            originalPrice: null,
+            discount: null,
+            rating: '100%',
+            ratingCount: 8,
+            description: null,
+          },
+          {
+            id: 'featured-005',
+            name: 'Pure white arrangement',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/02258bba-c11d-42e8-8fbd-90017de6e105-retina-large.JPG',
+            price: '$59.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'featured-007',
+            name: 'For My Girl Red Rose Bouquet',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photos/846ac215-7363-4001-86cd-3c4a4e99db99-retina-large-jpeg',
+            price: '$87.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'featured-009',
+            name: 'Autumn Harvest Delight',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/5939673e-c772-4574-b4c7-09baca81dcf1-retina-large.jpg',
+            price: '$65.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'featured-011',
+            name: '[FRESH FLOWER] Warm Peach Bouquet',
+            image: null,
+            price: '$98.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+        ],
+      },
+      {
+        id: 2,
+        title: 'Most Ordered',
+        products: [
+          {
+            id: 'best-value-custom-bouquet-fresh-flower',
+            name: 'Best Value Custom Bouquet Fresh Flower',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=600,format=auto,quality=80/media/photosV2/a9345094-a6ae-4b16-805f-030ea2bdf3f2-retina-large.JPG',
+            price: '$55.00',
+            originalPrice: null,
+            discount: null,
+            rating: '100%',
+            ratingCount: 8,
+            description:
+              'Your choice of color theme, the flower bouquet arrange by our experience florist designer using the flowers in the season. \nBest value that usually over the price you pay for.',
+          },
+          {
+            id: 'for-my-girl-red-rose-bouquet',
+            name: 'For My Girl Red Rose Bouquet',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=600,format=auto,quality=80/media/photos/846ac215-7363-4001-86cd-3c4a4e99db99-retina-large-jpeg',
+            price: '$87.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'This Bouquet contain 12 stem red rose and gyp. Wrapped with Rose Pink waterproof floral paper.\n\nIdeal for Anniversary, birthday, Valentines Day \n\nDespite the classic rose with GYP style wrap with black or white paper, we designed to match with the trendy color Rose Pink to add a touch of cuteness.',
+          },
+          {
+            id: 'pure-white-arrangement',
+            name: 'Pure white arrangement',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=600,format=auto,quality=80/media/photosV2/02258bba-c11d-42e8-8fbd-90017de6e105-retina-large.JPG',
+            price: '$59.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Small: 3"x3"x3"white ceramic cube vase\nMix of 4-5 kind  flowers in cream, white and green color palette. \n\nDeluxe: 4.5" x4.5" white ceramic cube vase\nMix of 8-10 kind flowers in cream, white and green color palette.',
+          },
+          {
+            id: 'red-and-white-roses-bouquet',
+            name: 'Red and White Roses Bouquet',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=600,format=auto,quality=80/media/photos/6dd4340b-69c4-4f8d-af0b-13656bbbb50a-retina-large-jpeg',
+            price: '$55.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              "For special occasions and just because, this elegant bouquet of fresh red and white roses will delight your loved one's day. Bouquet comprises of fresh red roses, white roses, baby's breath, and leaves to accent the flowers. Bouquet is wrapped in layers of gift paper and tied with a red ribbon.",
+          },
+          {
+            id: 'autumn-harvest-delight',
+            name: 'Autumn Harvest Delight',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=600,format=auto,quality=80/media/photosV2/5939673e-c772-4574-b4c7-09baca81dcf1-retina-large.jpg',
+            price: '$65.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: 'Fall color theme seasonal flower arrangement',
+          },
+          {
+            id: 'dusty-pink-warm-sunset-soap-flower-long-bouquet-in-long-gift-box',
+            name: 'Dusty pink warm sunset soap flower long bouquet in long gift box',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=600,format=auto,quality=80/media/photos/6ea25200-8f2d-4846-8038-9cac5903096e-retina-large-jpeg',
+            price: '$115.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'This hand made bouquet comes with Ivory, Dusty pink, Light pink, White  roses with 2 stem of cherry Blossom and misty dry flower. \nWrap with gray color flower paper. \n\nPlease note that the warping paper might not exactly the same depends on the availability. But we will make it pretty for sure.',
+          },
+        ],
+      },
+    ],
   },
   {
     id: 'revel-plants',
@@ -36067,6 +39475,46 @@ export const stores: Store[] = [
     isDashPass: true,
     isNearYou: false,
     tags: ['Flowers', 'Retail', 'Under 30 min'],
+    items: [
+      {
+        id: 1,
+        title: 'Hand-tied Bouquet',
+        products: [
+          {
+            id: 'fresh-hand-tied-floral-bouquet',
+            name: 'Fresh Hand-tied Floral Bouquet',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/7c7e05c1-86fc-416c-860a-fd5347bdf6eb-retina-large.jpeg',
+            price: '$35.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'A beautiful lush hand-tied bouquet using the best of the season! Photos are just examples.\n\nPlease include any special requests (specific flower or color combination) on "Add Special Instructions" and we will do our best to make them happen. Unless otherwise requested, we will choose the colors and flower types to create a beautiful bouquet for you or your recipient. Thank you!\n\n*** If you\'re sending the bouquet to another person, please include the recipient\'s name, address and phone number on "Add Special Instructions" as well.',
+          },
+        ],
+      },
+      {
+        id: 2,
+        title: 'Dried',
+        products: [
+          {
+            id: 'dried-bouquet',
+            name: 'Dried Bouquet',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/4a9d65d7-8200-42f6-857a-71e2d9570de2-retina-large.jpeg',
+            price: '$25.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Pre-made dried bouquets with a few options:\n\nStandard bleached bouquet, is our smaller mixed dried bouquet with mostly bleached foliage and the option for a pop of mustard yellow. *\nPremium bleached bouquet, is the slightly larger version of the standard bleached bouquet with premium stems like banksia, lunaria, bleached peacock feathers, etc.\nSmall, Medium and Large mixed bouquets, neutral base of dried eucalyptus and grasses with pops of color (yellow, blush pink, pink, purple, burnt orange) using dried flowers.\n\n*Please include your color preference in the area provided-i.e. all white, white with a touch of yellow, neutral with beige accents, etc. See photos for options.',
+          },
+        ],
+      },
+    ],
   },
   {
     id: 'footlocker',
@@ -37216,6 +40664,131 @@ export const stores: Store[] = [
     isDashPass: true,
     isNearYou: false,
     tags: ['Flowers', 'Retail', 'Under 30 min', 'Over 4.5'],
+    items: [
+      {
+        id: 1,
+        title: 'Featured Items',
+        products: [
+          {
+            id: 'featured-003',
+            name: 'Goodness & Light Bouquet',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/a22ed0b5-efd3-4523-b9d9-c76c928998c8-retina-large.JPG',
+            price: '$59.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'featured-005',
+            name: 'Sunny Sunflowers',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/469d54de-471e-484e-ae5a-6e8bd562cb1a-retina-large.JPG',
+            price: '$49.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'featured-007',
+            name: 'Make a Wish',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/815bf948-257a-455b-95c4-d4ab53da6111-retina-large.JPG',
+            price: '$49.99',
+            originalPrice: null,
+            discount: null,
+            rating: '100%',
+            ratingCount: 6,
+            description: null,
+          },
+          {
+            id: 'featured-009',
+            name: 'Enduring Passion - 12 Red Roses',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/bc77a7cf-ca98-4a97-a8ea-2ca288eebe3d-retina-large.JPG',
+            price: '$64.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'featured-011',
+            name: 'Deal of the Day',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/4b17ddec-c810-4ea2-8815-9ade5e6ec038-retina-large.jpg',
+            price: '$45.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+        ],
+      },
+      {
+        id: 2,
+        title: 'Items',
+        products: [
+          {
+            id: 'goodness--light-bouquet',
+            name: 'Goodness & Light Bouquet',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/a22ed0b5-efd3-4523-b9d9-c76c928998c8-retina-large.JPG',
+            price: '$59.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              "Add a healthy dose of goodness and light to someone's day with this colorful bouquet! Its bountiful blend of alstroemeria, stock and asters in cheerful shades of pink, yellow and lavender is sure to make them smile. This beautiful bouquet includes red alstroemeria, light yellow carnations, pink stock, hot pink Matsumoto asters, large lavender monte cassino asters, yellow button spray chrysanthemums, bupleurum, huckleberry, and parvifolia eucalyptus. Delivered in a clear cylinder vase.",
+          },
+          {
+            id: 'make-a-wish',
+            name: 'Make a Wish',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/815bf948-257a-455b-95c4-d4ab53da6111-retina-large.JPG',
+            price: '$49.99',
+            originalPrice: null,
+            discount: null,
+            rating: '100%',
+            ratingCount: 6,
+            description:
+              'A summery mix of yellow daisy chrysanthemums, purple asters and red and orange carnations - arranged in a clear ginger vase and adorned with a cheerful green plaid bow - will make their wishes come true! Yellow daisy spray chrysanthemums, purple Matsumoto asters, red miniature carnations, orange carnations and alstroemeria - accented with bupleurum - are delivered in a miniature ginger vase adorned with a plaid green ribbon.',
+          },
+          {
+            id: 'deal-of-the-day',
+            name: 'Deal of the Day',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/4b17ddec-c810-4ea2-8815-9ade5e6ec038-retina-large.jpg',
+            price: '$45.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'sunny-sunflowers',
+            name: 'Sunny Sunflowers',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/469d54de-471e-484e-ae5a-6e8bd562cb1a-retina-large.JPG',
+            price: '$49.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              "Whoever receives this stunning bouquet is sure to be bowled over by its bold beauty! It's big on fun and big on flowers. Sunflowers steal the show in this simple arrangement. Also featured: green bupleurum, salal leaves and a curly willow inside the glass bubble bowl.",
+          },
+        ],
+      },
+    ],
   },
   {
     id: 'sol-ambiance',
@@ -37226,6 +40799,74 @@ export const stores: Store[] = [
     isDashPass: true,
     isNearYou: false,
     tags: ['Flowers', 'Retail'],
+    items: [
+      {
+        id: 1,
+        title: 'Featured Items',
+        products: [
+          {
+            id: 'featured-003',
+            name: 'Super Mom Gift Set',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/22ca68a9-2351-4cfd-a066-a08bf2c9cfed-retina-large.jpg',
+            price: '$95.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'featured-005',
+            name: 'Essence',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/fd687a9f-3102-4bb9-b318-361772c5a1f0-retina-large.jpg',
+            price: '$145.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'featured-007',
+            name: 'Bursting with Beauty',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/acf6d073-634a-45a5-a5d5-5c174993f592-retina-large.jpg',
+            price: '$145.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'featured-009',
+            name: 'Fresh Start',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/a6a94eaf-ced0-492b-ae94-a61e0e639ebc-retina-large.jpg',
+            price: '$125.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'featured-011',
+            name: 'Rosy Cheeks',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=300,height=300,format=auto,quality=80/media/photosV2/b5ce0bf6-6882-43c8-95c8-e6341d04a77d-5e905335-26b5-4be7-9bff-b5b7676ec8ea-retina-large.jpg',
+            price: '$165.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+        ],
+      },
+    ],
   },
   {
     id: 'bloom-gallery',
@@ -37237,6 +40878,467 @@ export const stores: Store[] = [
     isDashPass: true,
     isNearYou: false,
     tags: ['Flowers', 'Retail', 'Under 30 min', 'Over 4.5'],
+    item: [
+      {
+        id: 1,
+        title: 'Featured Items',
+        products: [
+          {
+            id: 'featured-003',
+            name: "Designer's Choice | Bouquet",
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/09a75fed-946b-4607-9cd0-6972f9a52d64-retina-large.jpg',
+            price: '$47.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'featured-005',
+            name: 'Little California | Bouquet',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/ef672b6e-f160-4732-8b9c-fb935c71a7e2-retina-large.jpg',
+            price: '$65.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'featured-007',
+            name: 'Garden Fantasy | Bloom Box',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/91b12768-3b7b-46f9-b0a9-6590b9a401d1-retina-large.jpg',
+            price: '$115.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'featured-009',
+            name: 'Spring Mood | Bloom Box',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/b256955e-57e2-42c6-814b-f7eb1f04e944-retina-large.JPG',
+            price: '$155.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'featured-011',
+            name: 'French Kiss | Bloom Box',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/86af9a9e-3ed4-44e0-997d-08ffcf5b6a88-retina-large.jpg',
+            price: '$120.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'featured-013',
+            name: 'First Love | Bloom Box',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/d32f0303-ca87-480e-b2b6-4e94db7ecaa9-retina-large.JPG',
+            price: '$140.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+        ],
+      },
+      {
+        id: 2,
+        title: 'Most Ordered',
+        products: [
+          {
+            id: 'designers-choice--bouquet',
+            name: "Designer's Choice | Bouquet",
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=600,format=auto,quality=80/media/photosV2/09a75fed-946b-4607-9cd0-6972f9a52d64-retina-large.jpg',
+            price: '$47.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              "Trust the taste of our florist and order a Designer's Choice bouquets for delivery. We make these bouquets with seasonal flowers such as roses, tulips, hyacinth, carnations and greens. \n\nPlease note,  flowers on the photo are shown as an example. We cannot guarantee specific flowers or colors.",
+          },
+          {
+            id: 'little-california--bouquet',
+            name: 'Little California | Bouquet',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=600,format=auto,quality=80/media/photosV2/ef672b6e-f160-4732-8b9c-fb935c71a7e2-retina-large.jpg',
+            price: '$65.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Fresh, Bright, Intriguing! These little hand-tie of flowers is too cute and will definitely become your favorite for the flower delivery in San Francisco and Bay Area.\n\nWhat is inside: 18 stems of seasonal bright colored blooms',
+          },
+          {
+            id: 'garden-fantasy--bloom-box',
+            name: 'Garden Fantasy | Bloom Box',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=600,format=auto,quality=80/media/photosV2/91b12768-3b7b-46f9-b0a9-6590b9a401d1-retina-large.jpg',
+            price: '$115.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Sensual and tender, fresh and summery, it will teleport you to the garden overflowing with wonderful flowers. Garden fantasy bloom box is full of gentle hues and enticing scents. What inside: Seasonal garden flowers, greens.',
+          },
+          {
+            id: 'spring-mood--bloom-box',
+            name: 'Spring Mood | Bloom Box',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=600,format=auto,quality=80/media/photosV2/b256955e-57e2-42c6-814b-f7eb1f04e944-retina-large.JPG',
+            price: '$155.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'A delicate and perky, bright, and pleasing combination of lovely flowers. It’s versatile for any occasion and will perfectly match every personality. What inside: spring seasonal flowers such as peony, roses, tulips, hyacinth, cloves, greens.',
+          },
+          {
+            id: 'the-perfect-one--bouquet',
+            name: 'The Perfect One | Bouquet',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=600,format=auto,quality=80/media/photosV2/9ee2a678-531b-498f-bc77-9a25a3629a12-retina-large.JPG',
+            price: '$110.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'A delicate and perky, bright, and pleasing combination of lovely flowers. It’s versatile for any occasion and will perfectly match every personality. What inside: seasonal flowers such as peony, roses, tulips, hyacinth, cloves, greens.',
+          },
+          {
+            id: 'french-kiss--bloom-box',
+            name: 'French Kiss | Bloom Box',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=600,format=auto,quality=80/media/photosV2/86af9a9e-3ed4-44e0-997d-08ffcf5b6a88-retina-large.jpg',
+            price: '$120.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Always in your mind, forever in your heart. Rich and saturated red roses are gently combined but not stirred with soft cream flowers and create a powerful French Kiss Bloom Box. It is a perfect St. Valentine’s gift to express your true feelings and love.',
+          },
+        ],
+      },
+      {
+        id: 3,
+        title: 'Plants',
+        products: [
+          {
+            id: 'white-phalaenopsis-orchid-single-spike--plant',
+            name: 'White Phalaenopsis Orchid Single Spike | Plant',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/31e997f0-d560-4b20-8443-88cc62fa478f-retina-large.jpg',
+            price: '$66.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Immerse your surroundings in timeless elegance and sophistication with our white Phalaenopsis orchid in a planter. This botanical masterpiece goes beyond being just a plant – it is a statement piece that infuses refined luxury into any home or office.',
+          },
+        ],
+      },
+      {
+        id: 4,
+        title: 'Bouquet',
+        products: [
+          {
+            id: 'summer-meadow--bouquet',
+            name: 'Summer Meadow | Bouquet',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/92b7c244-5137-4d18-ae0c-83ac255f9a52-retina-large.jpg',
+            price: '$90.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'This summer flower bouquet is inspired by the charming meadows of the Northern California and Silicon Valley. This bouquet features a delightful mix of bright yellow and flowers of pastel colors that capture the essence of summer perfectly.\n\nWhat inside: Herberas, Daisies, Carnations',
+          },
+          {
+            id: 'little-california--bouquet',
+            name: 'Little California | Bouquet',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/ef672b6e-f160-4732-8b9c-fb935c71a7e2-retina-large.jpg',
+            price: '$65.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Fresh, Bright, Intriguing! These little hand-tie of flowers is too cute and will definitely become your favorite for the flower delivery in San Francisco and Bay Area.\n\nWhat is inside: 18 stems of seasonal bright colored blooms',
+          },
+          {
+            id: 'the-perfect-one--bouquet',
+            name: 'The Perfect One | Bouquet',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/9ee2a678-531b-498f-bc77-9a25a3629a12-retina-large.JPG',
+            price: '$110.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'A delicate and perky, bright, and pleasing combination of lovely flowers. It’s versatile for any occasion and will perfectly match every personality. What inside: seasonal flowers such as peony, roses, tulips, hyacinth, cloves, greens.',
+          },
+          {
+            id: 'garden-fantasy--bouquet',
+            name: 'Garden Fantasy | Bouquet',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/6864cc82-f665-4314-a467-7e0452024725-retina-large.jpg',
+            price: '$100.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Sensual and tender, colorful and summery, it will teleport you to the garden overflowing with wonderful flowers. Garden fantasy bouquet is full of gentle hues and enticing scents. What inside: seasonal garden flowers, greens.',
+          },
+          {
+            id: 'astonishing-carnations--bouquet',
+            name: 'Astonishing Carnations | Bouquet',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/585ff1d3-c106-4f82-a43b-a0c55323e62d-retina-large.jpg',
+            price: '$70.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'A bunch of carnations anyone? For many years this Californian flower stayed unappreciated. But our San Francisco shop is ready to change this tradition and present Astonishing Carnations mono-bouquet today’s flower delivery.',
+          },
+          {
+            id: 'forever-young--bouquet',
+            name: 'Forever Young | Bouquet',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/d580c9e8-173f-46b9-bc0e-629cd8957ef8-retina-large.jpg',
+            price: '$60.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Are you searching for something long lasting? Check out the evergreen bunch of flowers. Created with several types of eucalyptus and gorgeous seasonal blooms, this bouquet will make you happy for long time. Order “Forever young” today to refresh you house with fresh flowers.',
+          },
+        ],
+      },
+      {
+        id: 5,
+        title: 'Bloom Box',
+        products: [
+          {
+            id: 'first-love--bloom-box',
+            name: 'First Love | Bloom Box',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/d32f0303-ca87-480e-b2b6-4e94db7ecaa9-retina-large.JPG',
+            price: '$140.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Our Bloom Box special! Gorgeous and intriguing, sentimental and powerful, this astonishing Bloom Box is made of the soft color roses and light green stems of eucalyptus. Make the right choice and it will be never forgotten as a true First Love.',
+          },
+          {
+            id: 'pink-blush--bloom-box',
+            name: 'Pink Blush | Bloom Box',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/24d3676a-d5c8-4f43-beff-bc127cad6f54-retina-large.jpg',
+            price: '$115.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Sensual and tender, colorful and summery, it will teleport you to the garden overflowing with wonderful flowers. Pink blush bloom box is full of gentle hues and enticing scents. What inside: blush roses, white prairie gentian, greens.',
+          },
+          {
+            id: 'vanilla-ice-cream--bloom-box',
+            name: 'Vanilla Ice Cream | Bloom Box',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/c703b405-72ed-408a-9a1b-a978c0c2e90c-retina-large.jpg',
+            price: '$145.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Ranunculus are the best way to celebrate fall after a hot summer. Treat yourself today.\n\nWhat inside: seasonal flowers, ranunculus, roses, foliage.',
+          },
+          {
+            id: 'spring-mood--bloom-box',
+            name: 'Spring Mood | Bloom Box',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/b256955e-57e2-42c6-814b-f7eb1f04e944-retina-large.JPG',
+            price: '$155.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'A delicate and perky, bright, and pleasing combination of lovely flowers. It’s versatile for any occasion and will perfectly match every personality. What inside: spring seasonal flowers such as peony, roses, tulips, hyacinth, cloves, greens.',
+          },
+          {
+            id: 'garden-fantasy--bloom-box',
+            name: 'Garden Fantasy | Bloom Box',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/91b12768-3b7b-46f9-b0a9-6590b9a401d1-retina-large.jpg',
+            price: '$115.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Sensual and tender, fresh and summery, it will teleport you to the garden overflowing with wonderful flowers. Garden fantasy bloom box is full of gentle hues and enticing scents. What inside: Seasonal garden flowers, greens.',
+          },
+          {
+            id: 'french-kiss--bloom-box',
+            name: 'French Kiss | Bloom Box',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/86af9a9e-3ed4-44e0-997d-08ffcf5b6a88-retina-large.jpg',
+            price: '$120.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Always in your mind, forever in your heart. Rich and saturated red roses are gently combined but not stirred with soft cream flowers and create a powerful French Kiss Bloom Box. It is a perfect St. Valentine’s gift to express your true feelings and love.',
+          },
+        ],
+      },
+      {
+        id: 6,
+        title: 'Candles & Gifts',
+        products: [
+          {
+            id: 'strawberry--mimosa-candle',
+            name: 'Strawberry & Mimosa  Candle',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/6753cfec-7e2a-4cf8-9d2c-e5fbe71f938a-retina-large.jpg',
+            price: '$45.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Fragrance: Strawberry & Mimosa\nInspired by the serene harmony of nature, this candle brings you scents that evoke the tranquility of open fields, lush forests, and calming coastal breezes.  Made with natural essential oils. Available in a 12 oz glass containers.',
+          },
+          {
+            id: 'stoneware-white--vase',
+            name: 'Stoneware White | Vase',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/ca6ba1c1-f831-4862-8160-9d1ae3fd8559-retina-large.jpg',
+            price: '$30.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Create an elegant statement for your dining table or anywhere you’re looking to add a bit of decor. Designed to showcase your favorite flowers or greenery, this cylinder vase has an opening at the top that allows flowers to be staged beautifully. Height is 9 inches and is a perfect fit for a small size bouquets.',
+          },
+          {
+            id: 'cloud-forest--reed-diffuser',
+            name: 'Cloud Forest | Reed Diffuser',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/0c85e654-7e36-4ae8-bfd5-7c84521b4001-retina-large.jpg',
+            price: '$55.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'High above the clouds is the most magical forest where fragrant mists of hinoki, juniper and cedarwood mingle with hints of tropical fruits. This gift includes 4.5 oz. diffuser oil, modern square glass bottle and natural reeds.\nBrand: Makana',
+          },
+          {
+            id: 'creator--candle',
+            name: 'Creator | Candle',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/b2ae5df0-b7de-4b20-a9b1-aaa8ece6ba85-retina-large.jpg',
+            price: '$36.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Experience the essence of inspiration with “Creator,” an aromatherapy candle infused with jasmine, petitgrain, and rose essential oils, alongside delicate jasmine flowers, creating a fresh and floral ambiance to fuel your creativity.',
+          },
+          {
+            id: 'road-opener--candle',
+            name: 'Road Opener | Candle',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/e853ecd2-d5bf-4820-947c-441eda2a9f17-retina-large.jpg',
+            price: '$36.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Illuminate your path to success with our “Road Opener” Soy Wax Candle, enriched with a blend of lemon and neroli essential oils, alongside invigorating herbs like lemongrass and orange peel, evoking a floral and zesty aroma.',
+          },
+          {
+            id: 'neroli-blossom--petite-candle',
+            name: 'Neroli Blossom | Petite Candle',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/63eae789-3b05-4f92-a4c1-8bbc680fb654-retina-large.jpg',
+            price: '$17.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'A beautiful citrus floral fragrance of orange blossom, clementine and neroli reminiscent of a bright spring day among the orange groves. Hand-poured in-house in small batches using simple, clean ingredients. Available in 3 oz glass containers.\nBrand: Makana',
+          },
+          {
+            id: 'lavender-tangerine--petite-candle',
+            name: 'Lavender Tangerine | Petite Candle',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/28ea4931-84ca-48b0-9d39-1ccc40ef90db-retina-large.jpg',
+            price: '$17.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'A composition of lavender, eucalyptus and tangerine, this scent promotes balance, peace and mindfulness. Hand-poured in-house in small batches using simple, clean ingredients. Available in 3 oz glass containers.\nBrand: Makana',
+          },
+          {
+            id: 'white-pearl-tuberose--reed-diffuser',
+            name: 'White Pearl Tuberose | Reed Diffuser',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/a642a6a4-eeeb-4ba3-8650-2c7c6d10c92f-retina-large.jpg',
+            price: '$55.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Tuberose stems produce clusters of delicate buds that bloom into fragrant, pure white blossoms. Notes of orange flower, tiare, jasmine, violet and amber make up its beautiful, complex aroma. This gift includes 4.5 oz. diffuser oil, modern square glass bottle and natural reeds.\nBrand: Makana',
+          },
+        ],
+      },
+    ],
   },
   {
     id: 'office-depot',
@@ -37248,7 +41350,7 @@ export const stores: Store[] = [
     isDashPass: true,
     isNearYou: false,
     tags: ['Retail'],
-    itme: [
+    items: [
       {
         id: 0,
         title: 'Popular deals',
@@ -41030,6 +45132,616 @@ export const stores: Store[] = [
     isDashPass: true,
     isNearYou: false,
     tags: ['Flowers', 'Retail', 'Under 30 min'],
+    items: [
+      {
+        id: 1,
+        title: 'Featured Items',
+        products: [
+          {
+            id: 'featured-003',
+            name: '12 Roses Pink Clouds',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/acbed2e5-040a-4d31-a2e6-e510244f7412-retina-large.JPG',
+            price: '$39.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'featured-005',
+            name: '12 Red Roses',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/ab194c48-6a2f-4145-97a3-2d5bfc9e7e0a-retina-large.jpg',
+            price: '$63.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'featured-007',
+            name: "12 Roses Gold N' Love",
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/b9e3d341-7766-44c1-a3bb-c3ed9a4ec6e7-retina-large.JPG',
+            price: '$66.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'featured-009',
+            name: 'Tranquility',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/c1c28e2a-5644-4783-b890-938f3962e3be-retina-large.JPG',
+            price: '$104.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'featured-011',
+            name: '12 Roses Deep Purple',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/0023a839-e025-480f-8c71-c42b9592b9a8-retina-large.jpg',
+            price: '$63.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'featured-013',
+            name: 'DESIGNERS CHOICE',
+            image: null,
+            price: '$79.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+        ],
+      },
+      {
+        id: 2,
+        title: 'Most Ordered',
+        products: [
+          {
+            id: '12-roses-pink-clouds',
+            name: '12 Roses Pink Clouds',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=600,format=auto,quality=80/media/photosV2/acbed2e5-040a-4d31-a2e6-e510244f7412-retina-large.JPG',
+            price: '$39.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: '12-red-roses',
+            name: '12 Red Roses',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=600,format=auto,quality=80/media/photosV2/ab194c48-6a2f-4145-97a3-2d5bfc9e7e0a-retina-large.jpg',
+            price: '$63.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              "A dozen exquisite Red Roses elegantly, wrapped in a Korean paper complemented by delicate baby's breath, finished with a soft bow and a charming butterfly accent, making it the perfect gift to celebrate Mother's Day.",
+          },
+          {
+            id: '12-roses-gold-n-love',
+            name: "12 Roses Gold N' Love",
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=600,format=auto,quality=80/media/photosV2/b9e3d341-7766-44c1-a3bb-c3ed9a4ec6e7-retina-large.JPG',
+            price: '$66.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: '12 Premium Red Roses, Assented With Gold Painting Greenery.',
+          },
+          {
+            id: '12-roses-deep-purple',
+            name: '12 Roses Deep Purple',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=600,format=auto,quality=80/media/photosV2/0023a839-e025-480f-8c71-c42b9592b9a8-retina-large.jpg',
+            price: '$63.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              "A dozen exquisite Purple Roses elegantly, wrapped in a Korean paper complemented by delicate baby's breath, finished with a soft bow and a charming butterfly accent, making it the perfect gift to celebrate Mother's Day.",
+          },
+          {
+            id: 'pink-coral',
+            name: 'Pink Coral',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=600,format=auto,quality=80/media/photosV2/4846daa8-2733-4b49-b09b-d1fc82e87520-retina-large.JPG',
+            price: '$99.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Peach Roses, Pink and White Spray Carnations, White Spider Mums and assorted Greenery assented with a Pink Ribbon',
+          },
+          {
+            id: 'sunflowers',
+            name: 'Sunflowers',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=600,format=auto,quality=80/media/photosV2/91a9e547-4a41-4680-879d-dfb786422357-retina-large.JPG',
+            price: '$56.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'A charming hand bouquet featuring 10 vibrant Sun Flowers, elegantly wrapped with a delicate bow and adorned with a whimsical butterfly accent.',
+          },
+        ],
+      },
+      {
+        id: 3,
+        title: 'GRADUATION',
+        products: [
+          {
+            id: 'the-scholars-bouquet',
+            name: "The Scholar's  Bouquet",
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/8c4eef7c-274c-41f4-b46a-68d8ca368fb4-retina-large.png',
+            price: '$230.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'congratulations-balloon',
+            name: 'Congratulations Balloon',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/e4912ea3-8a26-4a80-8aa5-15e7ad0c581e-retina-large.jpg',
+            price: '$6.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'achievement-in-bloom',
+            name: 'Achievement In Bloom',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/40cbee35-e355-4a51-81ab-3315460f0696-retina-large.jpg',
+            price: '$240.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+        ],
+      },
+      {
+        id: 4,
+        title: 'Love & Romance',
+        products: [
+          {
+            id: '12-roses-love-in-red',
+            name: '12 Roses Love In Red',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/58f9c8b6-2aee-457c-9b8a-f93a45fc794f-retina-large.png',
+            price: '$90.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              "A stunning arrangement of 12 tall Red Roses gracefully placed in a clear vase complemented by delicate baby's breath for an extra touch of elegance finished with a beautiful bow.",
+          },
+          {
+            id: 'pretty-bouquet',
+            name: 'Pretty Bouquet',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/86028015-e612-4c2e-9319-9b4efa7a3d69-retina-large.jpg',
+            price: '$69.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: 'Roses and Carnations  in a red vase.',
+          },
+          {
+            id: '18-roses-sweets-and-love',
+            name: '18 Roses Sweets And Love',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/93bc430d-68c1-4006-a920-36a88dfad116-retina-large.JPG',
+            price: '$149.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: '18 Premium Long Stem Red Roses And 14 Delicious Ferrero Chocolates.',
+          },
+          {
+            id: '24-beautiful-red-roses',
+            name: '24 Beautiful Red Roses',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/6a87ddd0-d6bf-47f5-a78e-be472a1428f9-retina-large.JPG',
+            price: '$129.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: '24 RED ROSES WITH 3 BUTTERFLIES HAND WRAPPED BOUQUET.',
+          },
+          {
+            id: '25-roses-red-heart',
+            name: '25 Roses Red Heart',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/e56f5c71-d164-47f8-b96b-5de4a193d988-retina-large.png',
+            price: '$139.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              '25 Premium red roses\nThe floral arrangement is designed in a heart shape box with floral foam and water (Please continue adding water for the flowers to last longer)\nPerfect for Love & Romance and Anniversary.',
+          },
+          {
+            id: 'big-stunning-roses-heart',
+            name: 'Big Stunning Roses Heart',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/7d025f8a-464b-43e3-8a04-d3812d12db81-retina-large.JPG',
+            price: '$189.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              '36 Premium Red Roses In A Beautiful Heart Shape Vase.\nThe floral arrangement is designed in a heart shape box with floral foam and water (Please continue adding water for the flowers to last longer).\nPerfect for Love & Romance and Anniversary.',
+          },
+          {
+            id: '12-roses-stylish-romance-in-a-ginger-red-vase',
+            name: '12 Roses Stylish Romance in a ginger red vase.',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/9b73ef8b-aeaf-47b3-aad4-e4722f319232-retina-large.JPG',
+            price: '$80.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              "12 Long Stem Premium Red Roses, Baby's Breath, Assorted Greenery In A  Glass Vase Accented With A Red Bow.",
+          },
+          {
+            id: '18-burning-love-roses',
+            name: '18 Burning Love Roses',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/a1ac9968-0cd4-4aae-9c3d-bb83e9a0050b-retina-large.JPG',
+            price: '$109.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: '18 Premium Red Roses in A Red  Cube.',
+          },
+        ],
+      },
+      {
+        id: 5,
+        title: 'Get Well',
+        products: [
+          {
+            id: 'colorful-tulips',
+            name: 'Colorful Tulips',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/730e41e4-1f3e-4160-9d81-1c19cd4ce4c8-retina-large.png',
+            price: '$96.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Beautiful Mixed Colors Tulips, In A Glass Vase Accented With A Pink Ribbon.',
+          },
+          {
+            id: 'smile',
+            name: 'smile',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/4c45579d-bdfc-4c90-ade0-97c2b17f970f-retina-large.jpg',
+            price: '$73.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'marvelous-max',
+            name: 'Marvelous Max',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/b2324c52-a384-480a-b7d0-3c7361ccd7ea-retina-large.png',
+            price: '$114.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              '3D Puppy arrangement with white carnations, purple roses, purple or yellow daisy poms, and purple statice; accented with assorted greeneryArranged in the shape of a dog, complete with eyes and nose in a wooden square box.',
+          },
+          {
+            id: 'get-well-soon',
+            name: 'Get Well Soon',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/abbbca4a-ecd9-4327-a2b5-5ff5cc5db9c3-retina-large.jpg',
+            price: '$74.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Yellow Roses, Orange Lilies, Red Spray Roses, White Spray Carnations, Purple Statice, Assorted Greenery in a Wooden Vase',
+          },
+          {
+            id: 'roses-and-daisies',
+            name: 'Roses And Daisies',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/b9593659-1de6-45fe-888b-8d00d043afde-retina-large.JPG',
+            price: '$79.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: 'Roses and Daisies match perfectly',
+          },
+          {
+            id: 'felicity',
+            name: 'Felicity',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/ccefe102-6bce-483a-8c85-6b6762d6e61d-retina-large.JPG',
+            price: '$79.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              "Pink Roses, White Spider Mums, 3 White Lilies, White Alstroemeria, Baby's Breath and Dusty Miller",
+          },
+        ],
+      },
+      {
+        id: 6,
+        title: 'New Baby',
+        products: [
+          {
+            id: 'little-jeep',
+            name: 'Little Jeep',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/65018152-0200-4d93-8e81-b30e54b830c3-retina-large.jpg',
+            price: '$62.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'speed-camaro',
+            name: 'Speed Camaro',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/a798989c-d39e-4ab2-9574-c923513ec4f0-retina-large.jpg',
+            price: '$66.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'moses',
+            name: 'Moses',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/2037919e-16d2-472d-8b3a-58fcbbe8e90c-retina-large.jpg',
+            price: '$109.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Celebrate her with this beautiful Moses. Filled with soft pink roses and white spray Roses, and assorted greenery.',
+          },
+          {
+            id: 'bunny',
+            name: 'Bunny',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/ba884fea-4085-4b8f-bbb5-c727ab95c605-retina-large.jpg',
+            price: '$96.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+        ],
+      },
+      {
+        id: 7,
+        title: 'Arrangement Additions',
+        products: [
+          {
+            id: 'rose-gold-color-crown',
+            name: 'Rose Gold Color Crown',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/b6b7920b-3003-4b0f-995e-b80eddcd085c-retina-large.jpg',
+            price: '$7.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'silver-color-crown',
+            name: 'Silver Color Crown',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/44d518bb-8062-46a2-894a-2443a82c18e9-retina-large.jpg',
+            price: '$7.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'gold-color-metallic-butterflies',
+            name: 'Gold Color Metallic Butterflies',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/50001643-24b0-4e20-8231-00cb759c00ca-retina-large.jpg',
+            price: '$7.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: '3 Metallic Butterflies, Small, Medium, And Large Size.',
+          },
+          {
+            id: 'gold-color-crown',
+            name: 'Gold Color Crown',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/5f83fa2b-6427-429d-80b4-b5d0c9fa167c-retina-large.jpg',
+            price: '$7.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+        ],
+      },
+      {
+        id: 8,
+        title: 'Gifts and Teddy Bears',
+        products: [
+          {
+            id: '10-musical-white-bear-sequin-heart',
+            name: '10" Musical White Bear Sequin Heart',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/d191dfb1-2f88-478d-bf38-e251b3fbadc6-retina-large.jpg',
+            price: '$21.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'palo-santo--cedar-candle',
+            name: 'Palo Santo & Cedar Candle',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/30560b1b-28b4-4c1e-bc4a-bfc05dc60dfa-retina-large.jpg',
+            price: '$25.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'With a cool and refreshing sent, our Palo Santo & Cedar candle, poured in a reusable teakwood candle cup, is a fresh and harmonious addition to any space.',
+          },
+          {
+            id: 'mini-pink-larkspur--baby-eucalyptus-bouquet-bundle',
+            name: 'Mini Pink Larkspur & Baby Eucalyptus Bouquet Bundle',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/984a0fb0-378c-47e6-9351-7a65569354de-retina-large.jpg',
+            price: '$19.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Our Mini Pink Larkspur & Baby Eucalyptus Bouquet Bundle of dry flowers is an adorable accent or gift for any occasion.  Each mini bouquet is wrapped in a Kraft paper wrap and tied with a jute rope. This petite bundle is a perfect and lovely accent to your tablescape, decorative shelf, or mantle.\n\n- 9" length',
+          },
+          {
+            id: 'happy-birthday-white-teddy-bear',
+            name: 'Happy Birthday White Teddy Bear',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/392a59f6-7832-448f-a20a-467e286f8cda-retina-large.JPG',
+            price: '$18.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: '8 Inches, Sings  H. B. With Lights in the Cheeks',
+          },
+        ],
+      },
+      {
+        id: 9,
+        title: 'Mylar Balloons',
+        products: [
+          {
+            id: 'happy-anniversary',
+            name: 'Happy Anniversary',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/a84d92c2-875b-4094-97d1-287c61a88d5e-retina-large.JPG',
+            price: '$6.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'congratulations-balloon',
+            name: 'Congratulations Balloon',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/b23671ef-7536-4887-b083-c2866cdbacc3-retina-large.JPG',
+            price: '$6.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'heart-balloon',
+            name: 'Heart Balloon',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/85aa6d6b-e85d-44e8-ad2d-5e0cf075c3de-retina-large.JPG',
+            price: '$6.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'its-a-girl-balloon',
+            name: "It's a Girl Balloon",
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/9388b63c-8e81-452c-a0f2-3dd4c8ae66b7-retina-large.JPG',
+            price: '$6.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+        ],
+      },
+    ],
   },
   {
     id: 'little-garden',
@@ -41042,6 +45754,402 @@ export const stores: Store[] = [
     isDashPass: true,
     isNearYou: false,
     tags: ['Flowers', 'Retail', 'Under 30 min', 'Over 4.5'],
+    items: [
+      {
+        id: 1,
+        title: 'Featured Items',
+        products: [
+          {
+            id: 'featured-007',
+            name: 'Cute Live Succulent Gift Box',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/31106f68-5d49-4ddb-b4af-b052763e4b4c-retina-large.jpg',
+            price: '$34.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'featured-009',
+            name: "Colorful Graptoveria 'Blue Pearl' Succulent",
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/60b64f56-8b0d-4952-9370-f876464b54c9-retina-large.jpg',
+            price: '$9.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'featured-011',
+            name: 'Ghost Plant Gift Box',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/d45fb651-cd64-4211-829a-a24a78b722db-retina-large.png',
+            price: '$29.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'featured-013',
+            name: 'Mini Succulent Arrangement in a 4" Terracotta Pot',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/b8de27fb-60c3-4f71-b0e8-60b2a4f27be4-retina-large.png',
+            price: '$29.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+        ],
+      },
+      {
+        id: 2,
+        title: 'Most Ordered',
+        products: [
+          {
+            id: 'ghost-plant-graptopetalum-paraguayense',
+            name: 'Ghost Plant-Graptopetalum paraguayense',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=600,format=auto,quality=80/media/photosV2/a4fc8831-3375-4d36-8cff-17dc5a0c70e7-retina-large.jpg',
+            price: '2 for $11.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Depends on the choice you will be receiving;\n-2", 4", or 6" pot fully rooted haze blue plant\n\nGhost plants are popular live succulents. They grow fast from one cutting to a plant with lots of branches. They are beautiful and easy to form shape especially great for cascading container gardening. The beautiful cuttings are the best material to make a gift!\n\nGraptopetalum paraguayense can be grown in containers indoors or outdoors. Ghost plants can be incorporated into rock gardens, which can be made by filling in gaps between large rocks with smaller stones, gravel, and soil.\n\nThey are easy to propagate. Besides growing from the cuttings it’s easy to grow from the leaves.\n\nSunlight: Provide full sun during spring, autumn, and winter. During the summer, place the plant in half sun or provide some afternoon shade to protect it from intense heat.\nHowever, with enough sunlight, the plant’s leaves may take on a slightly reddish hue at the tips.\n\nWater Requirements: Like most succulents, Ghost Plants prefer well-drained soil. Water thoroughly but allow the soil to dry out completely between waterings. Overwatering can lead to root rot.\n\nSoil: It’s best to use a well-draining mix, use a 50% potting soil and 50% rock mix (such as pumice, perlite, or any type of rock with breathable holes).\n\nTemperature: Ghost Plant (Graptopetalum paraguayense) thrives in moderate temperatures, ideally between 60°F to 85°F (15°C to 29°C). It is not frost-tolerant, so avoid temperatures below 50°F (10°C). While it can handle heat, it’s best to shield it from extreme temperatures over 90°F (32°C) to prevent stress. Keep it in a warm, temperate environment for optimal growth.\n\nToxicity: non-toxic, making it safe for pets and children.\n\nMany plants change color with the seasons, making them even more special and charming.\n\nPlease note that succulents can display different colors depending on sunlight, temperature, and the season. To restore their vibrant colors, please follow the care instructions provided in the item description.\n\nPlease message us if you have any questions or issues, and we will do our best to provide high-quality products and customer service!',
+          },
+          {
+            id: 'vibrant-echeveria-lipstick-plant-6-pot',
+            name: 'Vibrant Echeveria Lipstick Plant 6" Pot',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=600,format=auto,quality=80/media/photosV2/0eb652a2-eaec-4cb0-91a7-bfe1b77bce08-retina-large.jpg',
+            price: '2 for $39.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              '6" pot fully rooted  vibrant plant\n\nThe Echeveria Lipstick Plant is a stunning and unique variety of Echeveria, known for its vibrant and striking appearance. This succulent is particularly admired for the bold, reddish-orange tips of its leaves, which resemble the color of lipstick, hence the name "Lipstick Plant." Here\'s a bit more about this beautiful plant:\n\nLight: The Echeveria Lipstick Plant thrives in bright, indirect sunlight. It can tolerate some direct sunlight, which is what helps to bring out the vibrant red or orange tips on the leaves. However, too much direct sun for prolonged periods can scorch the leaves, so be mindful of that.\n\nWatering: Like most succulents, the Echeveria Lipstick Plant is drought-tolerant and should be watered only when the soil is completely dry. Overwatering can lead to root rot, so it\'s important to let the soil dry out between waterings.\n\nSoil: Use soil a 50% potting mix soil and 50% rock mix (such as pumice, perlite, or any type of rock with breathable holes). Avoid using solid, smooth rocks, as they do not allow proper airflow to the roots.  Good drainage is key to keeping the plant healthy.\n\nTemperature: It prefers warm temperatures and thrives in a range between 60°F and 85°F (15°C to 29°C). Protect it from frost, as it is not cold-hardy.\n\nToxicity: The Echeveria Lipstick Plant is non-toxic, making it safe for pets and children.\n\nEcheveria Lipstick is a relatively low-maintenance plant and does well in both indoor and outdoor settings, provided it has sufficient sunlight.\n\nIt\'s perfect for adding a pop of color to your succulent collection or as a standalone decorative plant.\n\nMany plants change color with the seasons, making them even more special and charming.\n\nPlease note that succulents can display different colors depending on sunlight, temperature, and the season. To keep their vibrant colors, please follow the care instructions provided in the item description.\n\nPlease message us if you have any questions or issues, and we will do our best to provide high-quality products and customer service! Thanks for supporting our business:)!',
+          },
+          {
+            id: 'cute-live-succulent-gift-box',
+            name: 'Cute Live Succulent Gift Box',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=600,format=auto,quality=80/media/photosV2/31106f68-5d49-4ddb-b4af-b052763e4b4c-retina-large.jpg',
+            price: '$34.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: '3 colorful succulents in 2" terracotta clay pots placed in a gift box.',
+          },
+          {
+            id: 'colorful-graptoveria-blue-pearl-succulent',
+            name: "Colorful Graptoveria 'Blue Pearl' Succulent",
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=600,format=auto,quality=80/media/photosV2/60b64f56-8b0d-4952-9370-f876464b54c9-retina-large.jpg',
+            price: '$9.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Depends on the choice you will be receiving;\n-2" or 4" pot fully rooted plant\n\nGraptoveria “Blue Pearl” has leaves of this beautiful color, to be exact, around the warm ruddy blue hue. It has thinner leaves than other varieties and for this reason, it may give the effect of blue starfish, especially when many plants grow together. If the color is not what you had expected or it changes, it may be due to lighting; try and change its position and see if it recovers its rare coloring in case.\n\nSoil: The Blue Pearl thrives in well-draining soil use a 50% potting mix soil and 50% rock mix (such as pumice, perlite, or any type of rock with breathable holes). Avoid using solid, smooth rocks, as they do not allow proper airflow to the roots. \n\nWatering: Water the plant when the soil is completely dry or when the leaves start to wrinkle. Water the plant thoroughly, ensuring the soil dries out completely before watering again. Overwatering or leaving the soil too moist can lead to root rot. Please decrease watering during the winter months.\n\nSunlight: Provide full sun during spring, autumn, and winter. During the summer, place the plant in half sun or provide some afternoon shade to protect it from intense heat.\n\nToxicity: Graptoveria \'Blue Pearl\' is non-toxic, making it safe for pets and children.\n\nTemperature: The Blue Pearl Graptoveria thrives in temperatures between 60°F and 85°F (15°C to 29°C). It is not frost-tolerant, so it should be protected from temperatures below 50°F (10°C). During colder months, bring the plant indoors or ensure it is shielded from cold conditions.\n\nMany plants change color with the seasons, making them even more special and charming.\n\nPlease note that succulents can display different colors depending on sunlight, temperature, and the season.  To keep their vibrant colors, please follow the care instructions provided in the item description.\n\nPlease message us if you have any questions or issues, and we will do our best to provide high-quality products and customer service! Thanks for supporting our business:)!',
+          },
+          {
+            id: 'echeveria-perle-von-nurnberg-25-pot-succulent',
+            name: "Echeveria 'Perle von Nurnberg' 2.5\" Pot Succulent",
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=600,format=auto,quality=80/media/photosV2/3dfde76a-8467-4298-80b4-0e454b79a928-retina-large.png',
+            price: '$11.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              "You will receive the plant in 2.5-inch pot with soil.\n\nEcheveria 'Perle von Nurnberg' is a popular and beautiful variety of Echeveria, known for its stunning rosette shape and soft, pastel-colored leaves. This succulent is prized for its attractive appearance and ease of care, making it a favorite among succulent enthusiasts and collectors.\n\nLight: Echeveria 'Perle von Nurnberg' thrives in bright, indirect sunlight. It can tolerate some direct sunlight, which helps enhance the color of the leaves, but too much direct sun, especially in very hot climates, can cause the leaves to scorch. A few hours of morning sun is ideal.\n\nWatering: Like most succulents, this plant is drought-tolerant and needs to be watered only when the soil is completely dry. Overwatering can lead to root rot, so it’s important to let the soil dry out between waterings. During the winter months, reduce watering frequency.\n\nSoil: Use well-draining soil, such as cactus or succulent mix, [use a 50% potting mix soil and 50% rock mix (such as pumice, perlite, or any type of rock with breathable holes)] to prevent water from sitting around the roots. The soil should dry out quickly to avoid moisture buildup, which can cause rot.\n\nTemperature: Echeveria 'Perle von Nurnberg' prefers warmer temperatures, typically between 60°F and 85°F (15°C - 29°C). It is not frost-tolerant, so it should be kept indoors or in a protected location during colder months.\n\nToxicity: Echeveria 'Perle von Nurnberg' is non-toxic to pets, making it a safer choice for households with cats or dogs.\n\nWith its elegant rosette shape and subtle pastel hues, Echeveria 'Perle von Nurnberg' is a stunning succulent that can brighten up any space with minimal care. It’s perfect for succulent collections or as a lovely gift for plant lovers!\n\nMany plants change color with the seasons, making them even more special and charming.\n\nPlease note that succulents can display different colors depending on sunlight, temperature, and the season. To keep their vibrant colors, please follow the care instructions provided in the item description.\n\nPlease message us if you have any questions or issues, and we will do our best to provide high-quality products and customer service! Thanks for supporting our business:)!",
+          },
+          {
+            id: 'ghost-plant-gift-box',
+            name: 'Ghost Plant Gift Box',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=600,format=auto,quality=80/media/photosV2/d45fb651-cd64-4211-829a-a24a78b722db-retina-large.png',
+            price: '$29.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'The item comes with 4" terracotta pot, succulents, soil, moss and choice of your gift box color.',
+          },
+        ],
+      },
+      {
+        id: 3,
+        title: 'Succulents',
+        products: [
+          {
+            id: 'colorful-graptoveria-blue-pearl-succulent',
+            name: "Colorful Graptoveria 'Blue Pearl' Succulent",
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/60b64f56-8b0d-4952-9370-f876464b54c9-retina-large.jpg',
+            price: '$9.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Depends on the choice you will be receiving;\n-2" or 4" pot fully rooted plant\n\nGraptoveria “Blue Pearl” has leaves of this beautiful color, to be exact, around the warm ruddy blue hue. It has thinner leaves than other varieties and for this reason, it may give the effect of blue starfish, especially when many plants grow together. If the color is not what you had expected or it changes, it may be due to lighting; try and change its position and see if it recovers its rare coloring in case.\n\nSoil: The Blue Pearl thrives in well-draining soil use a 50% potting mix soil and 50% rock mix (such as pumice, perlite, or any type of rock with breathable holes). Avoid using solid, smooth rocks, as they do not allow proper airflow to the roots. \n\nWatering: Water the plant when the soil is completely dry or when the leaves start to wrinkle. Water the plant thoroughly, ensuring the soil dries out completely before watering again. Overwatering or leaving the soil too moist can lead to root rot. Please decrease watering during the winter months.\n\nSunlight: Provide full sun during spring, autumn, and winter. During the summer, place the plant in half sun or provide some afternoon shade to protect it from intense heat.\n\nToxicity: Graptoveria \'Blue Pearl\' is non-toxic, making it safe for pets and children.\n\nTemperature: The Blue Pearl Graptoveria thrives in temperatures between 60°F and 85°F (15°C to 29°C). It is not frost-tolerant, so it should be protected from temperatures below 50°F (10°C). During colder months, bring the plant indoors or ensure it is shielded from cold conditions.\n\nMany plants change color with the seasons, making them even more special and charming.\n\nPlease note that succulents can display different colors depending on sunlight, temperature, and the season.  To keep their vibrant colors, please follow the care instructions provided in the item description.\n\nPlease message us if you have any questions or issues, and we will do our best to provide high-quality products and customer service! Thanks for supporting our business:)!',
+          },
+          {
+            id: 'echeveria-perle-von-nurnberg-25-pot-succulent',
+            name: "Echeveria 'Perle von Nurnberg' 2.5\" Pot Succulent",
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/3dfde76a-8467-4298-80b4-0e454b79a928-retina-large.png',
+            price: '$11.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              "You will receive the plant in 2.5-inch pot with soil.\n\nEcheveria 'Perle von Nurnberg' is a popular and beautiful variety of Echeveria, known for its stunning rosette shape and soft, pastel-colored leaves. This succulent is prized for its attractive appearance and ease of care, making it a favorite among succulent enthusiasts and collectors.\n\nLight: Echeveria 'Perle von Nurnberg' thrives in bright, indirect sunlight. It can tolerate some direct sunlight, which helps enhance the color of the leaves, but too much direct sun, especially in very hot climates, can cause the leaves to scorch. A few hours of morning sun is ideal.\n\nWatering: Like most succulents, this plant is drought-tolerant and needs to be watered only when the soil is completely dry. Overwatering can lead to root rot, so it’s important to let the soil dry out between waterings. During the winter months, reduce watering frequency.\n\nSoil: Use well-draining soil, such as cactus or succulent mix, [use a 50% potting mix soil and 50% rock mix (such as pumice, perlite, or any type of rock with breathable holes)] to prevent water from sitting around the roots. The soil should dry out quickly to avoid moisture buildup, which can cause rot.\n\nTemperature: Echeveria 'Perle von Nurnberg' prefers warmer temperatures, typically between 60°F and 85°F (15°C - 29°C). It is not frost-tolerant, so it should be kept indoors or in a protected location during colder months.\n\nToxicity: Echeveria 'Perle von Nurnberg' is non-toxic to pets, making it a safer choice for households with cats or dogs.\n\nWith its elegant rosette shape and subtle pastel hues, Echeveria 'Perle von Nurnberg' is a stunning succulent that can brighten up any space with minimal care. It’s perfect for succulent collections or as a lovely gift for plant lovers!\n\nMany plants change color with the seasons, making them even more special and charming.\n\nPlease note that succulents can display different colors depending on sunlight, temperature, and the season. To keep their vibrant colors, please follow the care instructions provided in the item description.\n\nPlease message us if you have any questions or issues, and we will do our best to provide high-quality products and customer service! Thanks for supporting our business:)!",
+          },
+          {
+            id: 'aloe-vera-plant-6-pot',
+            name: 'Aloe Vera Plant 6" pot',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/5b933cc1-3c90-411c-bda0-3a2cbb907cf6-retina-large.jpg',
+            price: '$29.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              "The beautiful plant comes with a fully rooted 8”-12” plant.\n\nAloe vera is a popular and well-known succulent, prized not only for its aesthetic beauty but also for its medicinal properties. This versatile plant is easy to care for, making it a favorite among beginners and seasoned gardeners alike. Its gel-filled leaves have been used for centuries for skin care, burns, and even digestive health.\n\nGrowing Conditions and Care:\nLight: Aloe vera thrives in bright, direct sunlight. A south or west-facing window is ideal if growing indoors.\n\nIt needs at least 6 hours of sunlight per day to grow well. If the plant doesn’t get enough light, it may become stretched out and leggy.\n\nOutdoors, it can tolerate partial shade but will do best in full sun.\n\nWatering: Aloe vera is a drought-tolerant plant, which means it doesn't need frequent watering.\n\nWater the plant when the top 1-2 inches of the soil is dry. During the growing season (spring and summer), water more often, but be sure to let the soil dry out between waterings. In winter, reduce watering as the plant enters dormancy.\n\nOverwatering is a common issue, leading to root rot, so always ensure the soil is well-draining.\n\nSoil: Aloe vera requires well-draining soil. A cactus or succulent mix works best, but you can also mix regular potting soil with sand or perlite to improve drainage.\n\nAvoid heavy, moisture-retaining soils, as aloe vera is susceptible to root rot when the soil retains too much moisture.\n\nTemperature: Aloe vera prefers warm temperatures ranging from 59–77°F (15–25°C).\n\nIt can tolerate slightly higher temperatures but should be protected from frost. Aloe vera is not frost-tolerant and should be brought indoors or kept in a frost-free environment if grown outside in cold climates.\n\nContainer and Pot: Aloe vera grows well in pots that are slightly larger than its root system, allowing space for growth but not too large to hold excessive moisture.\n\nEnsure that the pot has drainage holes to prevent water from accumulating at the bottom, which can lead to root rot.",
+          },
+          {
+            id: 'vibrant-echeveria-lipstick-plant-6-pot',
+            name: 'Vibrant Echeveria Lipstick Plant 6" Pot',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/0eb652a2-eaec-4cb0-91a7-bfe1b77bce08-retina-large.jpg',
+            price: '2 for $39.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              '6" pot fully rooted  vibrant plant\n\nThe Echeveria Lipstick Plant is a stunning and unique variety of Echeveria, known for its vibrant and striking appearance. This succulent is particularly admired for the bold, reddish-orange tips of its leaves, which resemble the color of lipstick, hence the name "Lipstick Plant." Here\'s a bit more about this beautiful plant:\n\nLight: The Echeveria Lipstick Plant thrives in bright, indirect sunlight. It can tolerate some direct sunlight, which is what helps to bring out the vibrant red or orange tips on the leaves. However, too much direct sun for prolonged periods can scorch the leaves, so be mindful of that.\n\nWatering: Like most succulents, the Echeveria Lipstick Plant is drought-tolerant and should be watered only when the soil is completely dry. Overwatering can lead to root rot, so it\'s important to let the soil dry out between waterings.\n\nSoil: Use soil a 50% potting mix soil and 50% rock mix (such as pumice, perlite, or any type of rock with breathable holes). Avoid using solid, smooth rocks, as they do not allow proper airflow to the roots.  Good drainage is key to keeping the plant healthy.\n\nTemperature: It prefers warm temperatures and thrives in a range between 60°F and 85°F (15°C to 29°C). Protect it from frost, as it is not cold-hardy.\n\nToxicity: The Echeveria Lipstick Plant is non-toxic, making it safe for pets and children.\n\nEcheveria Lipstick is a relatively low-maintenance plant and does well in both indoor and outdoor settings, provided it has sufficient sunlight.\n\nIt\'s perfect for adding a pop of color to your succulent collection or as a standalone decorative plant.\n\nMany plants change color with the seasons, making them even more special and charming.\n\nPlease note that succulents can display different colors depending on sunlight, temperature, and the season. To keep their vibrant colors, please follow the care instructions provided in the item description.\n\nPlease message us if you have any questions or issues, and we will do our best to provide high-quality products and customer service! Thanks for supporting our business:)!',
+          },
+          {
+            id: 'graptosedum-alpenglow-succulent-2-pot',
+            name: 'Graptosedum Alpenglow Succulent 2" Pot',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/9452289f-48b1-4698-8444-6f1cc4433e28-retina-large.png',
+            price: '$9.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              "You will receive the plants in 2-inch pots with soil.\n\nGraptosedum 'Alpenglow' is indeed a hybrid succulent, a cross between Graptopetalum paraguayense (often called \"Ghost Plant\") and Sedum species. It is known for its unique, striking appearance and is highly valued by succulent collectors and gardeners alike.\n\nGrowing Conditions and Care:\nLight: Full sun is the ideal growing condition for Graptosedum 'Alpenglow'. It thrives with at least 6 hours of direct sunlight per day. If grown indoors, a south or west-facing window is recommended.\n\nWhen exposed to full sunlight, the plant develops more vibrant colors and a more compact growth habit. If the plant is grown in lower light conditions, the colors may be less intense, and it may become leggy.\n\nWatering: Like most succulents, Graptosedum 'Alpenglow' is very sensitive to overwatering. It follows the typical succulent watering rule of letting the soil dry out completely before watering again.\n\nDuring the growing season (spring and summer), water when the soil feels dry to the touch, but during the dormant season (fall and winter), reduce watering to prevent rot.\n\nOverwatering is a common mistake with succulents, and it can lead to root rot. Always ensure the plant has well-draining soil, and use pots with drainage holes.\n\nSoil: Graptosedum 'Alpenglow' needs well-draining soil to thrive. A cactus or succulent mix works well, or you can amend regular potting soil with sand, perlite, or pumice to improve drainage. The key is to ensure that the soil doesn't retain too much moisture.\n\nIf planting in a container, always use a pot with drainage holes to allow excess water to escape.\n\nTemperature: Graptosedum 'Alpenglow' prefers warm temperatures, typically between 65–85°F (18–29°C).\n\nWhile it tolerates brief periods of cooler temperatures, it is not frost-tolerant, so keep it protected from freezing temperatures. Frost can damage or kill the plant, so it's best to bring it indoors or protect it during the winter months.\n\nToxicity: Graptosedum 'Alpenglow' is generally considered non-toxic to pets and humans. However, it’s always a good idea to keep plants out of reach of pets that may chew on them.\n\nGraptosedum 'Alpenglow' is perfect for rock gardens, succulent gardens, containers, hanging baskets, and as ground cover in xeriscape gardens. It also works well indoors on windowsills or in terrariums. Its vibrant colors and low-maintenance nature make it a versatile addition to both outdoor and indoor spaces.\n\nMany plants change color with the seasons, making them even more special and charming.\n\nPlease note that succulents can display different colors depending on sunlight, temperature, and the season. \n\nPlease message us if you have any questions or issues, and we will do our best to provide high-quality products and customer service! Thanks for supporting our business:)!",
+          },
+          {
+            id: 'rare-pink-graptopetalum-ghost-plant-single-rosette',
+            name: "Rare Pink Graptopetalum 'Ghost Plant' Single Rosette",
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/018c37b5-00a4-4381-84ee-35dc89b87182-5045d544-adc3-465c-b21b-d2f2cb7d59a9-retina-large.jpg',
+            price: '$13.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'It comes with a 4-inch plastic pot, soil, and a large single rosette succulent.\n\nGraptopetalum paraguayense is a species of succulent plant in the jade plant family, Crassulaceae, that is native to Tamaulipas, Mexico. Common names include mother-of-pearl-plant and ghost plant. This is not to be confused with Monotropa uniflora which is also referred to as the “Ghost plant”.\n\nSunlight: Provide full sun during spring, autumn, and winter. During the summer, place the plant in half sun or provide some afternoon shade to protect it from intense heat.\nHowever, with enough sunlight, the plant’s leaves may take on a slightly reddish hue at the tips.\n\nWater Requirements: Like most succulents, Ghost Plants prefer well-drained soil. Water thoroughly but allow the soil to dry out completely between waterings. Overwatering can lead to root rot.\n\nSoil: It’s best to use a well-draining mix, use a 50% potting soil and 50% rock mix (such as pumice, perlite, or any type of rock with breathable holes).\n\nTemperature: Ghost Plant (Graptopetalum paraguayense) thrives in moderate temperatures, ideally between 60°F to 85°F (15°C to 29°C). It is not frost-tolerant, so avoid temperatures below 50°F (10°C). While it can handle heat, it’s best to shield it from extreme temperatures over 90°F (32°C) to prevent stress. Keep it in a warm, temperate environment for optimal growth.',
+          },
+          {
+            id: 'pigs-ear-succulent-6-pot',
+            name: 'Pig\'s Ear Succulent  6" pot',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/ee8b72a2-4508-402b-b8ed-cfbed23e0a15-retina-large.jpg',
+            price: '$34.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              "Cotyledon orbiculata  Pig's Ear Succulent  6\" pot\n\nCotyledon orbiculata, commonly known as Pig's Ear or Round-leafed Cotyledon, is a striking succulent plant native to South Africa. It is part of the Crassulaceae family, which includes other popular succulents like jade plants. This plant is known for its thick, fleshy leaves and attractive, vibrant blooms, making it a popular choice for succulent gardens and indoor plant collections.\n\nGrowing Conditions and Care:\nLight: Full sun is ideal for Pig's Ear. The plant thrives in bright, direct light, which helps to encourage its best color and compact growth. If grown indoors, a south-facing window is a good choice.\n\nIt can tolerate some light shade, but the plant may become leggy and less colorful if it doesn't get enough sunlight.\n\nWatering: Cotyledon orbiculata has typical succulent water needs. Water the plant thoroughly, but only when the soil has dried out completely. It is more tolerant of drought than overwatering, so it's better to underwater than overwater.\n\nDuring the growing season (spring and summer), the plant will require more frequent watering, but in the winter months (its dormant period), water sparingly to prevent root rot.\n\nSoil: Use well-draining soil. A cactus or succulent mix is ideal. If you're planting in a container, ensure it has drainage holes to prevent water from collecting at the bottom.\n\nYou can amend regular potting soil with sand, perlite, or pumice to increase drainage if you're planting in the ground or a pot.\n\nTemperature: Pig's Ear prefers warm temperatures and can tolerate temperatures between 60–85°F (16–29°C). It can handle a little heat, but prolonged exposure to very high temperatures can stress the plant.\n\nThis plant is not frost-tolerant, and it should be brought indoors or protected from freezing temperatures in colder climates.\n\nPlease note that succulents can display different colors depending on sunlight, temperature, and the season. To keep their vibrant colors, please follow the care instructions provided in the item description.\n\nPlease message us if you have any questions or issues, and we will do our best to provide high-quality products and customer service! Thanks for supporting our business:)!",
+          },
+          {
+            id: 'crassula-ovata-gollum-jade-shrek-ears',
+            name: "Crassula Ovata Gollum Jade 'Shrek Ears'",
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/f5c38b47-16e0-41a6-bbc4-79d9ac608cab-retina-large.jpg',
+            price: '$9.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              "Depends on the choice you will be receiving;\n-2\" or 4\" pot fully rooted plant\n\nCrassula Ovata 'Gollum Jade', commonly known as Shrek Ears, is a unique variety of the popular jade plant (Crassula ovata). It gets its nickname due to the shape of its leaves, which resemble the ears of the character Shrek.\n\nLight: It prefers bright, indirect sunlight but can tolerate some direct sunlight, especially in cooler climates.\n\nWatering: Like most succulents, it is drought-tolerant. Water it thoroughly but allow the soil to dry out completely before watering again. Overwatering can lead to root rot.\n\nSoil: Use well-draining soil use a 50% potting soil and 50% rock mix (such as pumice, perlite, or any type of rock with breathable holes). Avoid using solid, smooth rocks, as they do not allow proper airflow to the roots. \n\nTemperature: It thrives in temperatures between 60°F and 85°F (15°C - 29°C). Protect it from frost.\n\nThe botanical names for these two very similar jade plants are Crassula ovata ‘Gollum’ and C. ovata ‘Hobbit’. Both make perfect tabletop houseplants and are very easy to grow.\n\nThe 'Gollum' cultivar typically grows to a height of 1 to 2 feet, with a spread of 1 to 2 feet. It produces elongated, tube-like leaves that are bright green in color and have a unique, spoon-shaped tip that gives the plant its distinctive appearance. The leaves are arranged in a rosette shape at the top of a single, sturdy stem, and they may also develop reddish edges in response to bright light or stress.\nMany plants change color with the seasons, making them even more special and charming.\n\nPlease note that succulents can display different colors depending on sunlight, temperature, and the season.  To keep their vibrant colors, please follow the care instructions provided in the item description.\n\nPlease message us if you have any questions or issues, and we will do our best to provide high-quality products and customer service! Thanks for supporting our business:)!",
+          },
+        ],
+      },
+      {
+        id: 4,
+        title: 'Things & Gifts',
+        products: [
+          {
+            id: 'belgium-chocolate-2-pack-blue',
+            name: 'Belgium Chocolate 2 Pack (Blue)',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/14fc9f87-a58c-4bc3-a845-7fae192fdd55-retina-large.png',
+            price: '$19.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'baby-shower-newborn-plant-gift-pink',
+            name: 'Baby Shower (Newborn) Plant Gift (Pink)',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/3deca63b-66f2-4be8-a254-e598b85f7dd9-117963ff-67aa-4fed-8b28-54eef4c9a5eb-retina-large.jpg',
+            price: '$14.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'This box includes a randomly selected succulent in a 2" terracotta pot.\nPlease let us know if you have any color preferences for the plant, and we\'ll do our best to accommodate them.',
+          },
+          {
+            id: 'baby-shower-newborn-plant-gift-blue',
+            name: 'Baby Shower (Newborn) Plant Gift (Blue)',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/6283f809-defa-48af-a253-1291373909f0-c8fc5429-815f-40a1-ab8d-2f74846011c2-retina-large.jpg',
+            price: '$14.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'This box includes a randomly selected succulent in a 2" terracotta pot.\nPlease let us know if you have any color preferences for the plant, and we\'ll do our best to accommodate them.',
+          },
+        ],
+      },
+      {
+        id: 5,
+        title: 'Greeting Cards',
+        products: [
+          {
+            id: 'make-a-wish',
+            name: 'Make a wish!',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/cb775510-2906-4943-a08b-328a45e508a2-retina-large.png',
+            price: '$5.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: 'Inside message: Have an amazing day all about you! Happy Birthday!',
+          },
+          {
+            id: 'happy-birthday-may-your-wish-come-true',
+            name: 'Happy Birthday! May Your Wish Come True',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/c983d9a6-c700-40e7-9adb-b463514afa07-retina-large.png',
+            price: '$5.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: 'Inside message: Hope you enjoy every minutes of your day!',
+          },
+          {
+            id: 'happy-birthday',
+            name: 'Happy Birthday!',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/cb02f335-e81c-4578-916f-bf945031976b-retina-large.png',
+            price: '$5.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: 'Inside message: Have a wonderful Birthaday!',
+          },
+          {
+            id: 'get-well-soon',
+            name: 'Get Well Soon',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/c6912a93-4d4d-4222-be38-8eea30c0a2a0-retina-large.png',
+            price: '$5.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: 'Inside message: Thinking of you and wishing you a speedy recovery.',
+          },
+          {
+            id: 'good-luck',
+            name: 'Good Luck',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/48c1ae6d-83f3-4931-9c02-5a3b8e46293b-retina-large.png',
+            price: '$5.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: 'Inside message: You an do it! Good Luck!',
+          },
+          {
+            id: 'happy-mothers-day',
+            name: "Happy Mother's Day",
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/49d27953-8e1b-4acd-b59a-1ff0b39f80bd-retina-large.png',
+            price: '$5.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: 'Inside message: Hope today is all kinds of beautiful.',
+          },
+          {
+            id: 'thank-you',
+            name: 'Thank You',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/ca89a334-0136-4c7d-aa4b-ba7a4dc5ae50-retina-large.png',
+            price: '$5.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Inside message: Words can not express my feelings, nor my thanks for all your help. Thank you!',
+          },
+          {
+            id: 'i-love-you',
+            name: 'I Love You!',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/df39596f-1d55-4cf5-8714-dc45d9451608-retina-large.png',
+            price: '$5.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: 'Inside message: I met you. I liked you. I love you.',
+          },
+        ],
+      },
+    ],
   },
   {
     id: 'love-and-stem',
@@ -41052,6 +46160,306 @@ export const stores: Store[] = [
     isDashPass: true,
     isNearYou: false,
     tags: ['Flowers', 'Retail', 'Over 4.5'],
+    items: [
+      {
+        id: 1,
+        title: 'Featured Items',
+        products: [
+          {
+            id: 'featured-003',
+            name: 'Light of My Life Bouquet',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/33c5f6e8-2870-4e83-952c-bcfbfe136db1-dcc225d4-9429-470f-9ac9-ab904ba62b6b-retina-large.jpg',
+            price: '$50.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'featured-005',
+            name: "You're Precious Bouquet",
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/0079489a-926b-4d14-8dad-bc465747c03c-8accb1e6-cf69-4c7a-8ea1-dadd5624c9e4-retina-large.jpg',
+            price: '$60.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'featured-007',
+            name: '24 Mixed Rose Bouquet',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/0b096369-e20f-4c6d-8394-a0e7af7acad9-8c2c8200-faf4-4f96-a958-fdcf28f6be27-retina-large.jpg',
+            price: '$150.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'featured-009',
+            name: 'Bold & Bright Florist Original',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/cf3926cb-4c94-41a8-ac62-7d019b9d0621-04561890-5683-47f4-95c9-e8f9460eddff-retina-large.jpg',
+            price: '$60.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'featured-011',
+            name: 'At the Ballet Bouquet',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/4b6028d3-7f64-46ff-894b-693bc26b96b6-be7310a9-3327-4993-9aef-57824ee3eef3-retina-large.jpg',
+            price: '$51.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'featured-013',
+            name: 'Best Day Bouquet',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/b4482be7-5275-48a0-9f8a-e879e11e037c-815bd701-a2ae-485c-8366-427e251fc3ba-retina-large.jpg',
+            price: '$69.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+        ],
+      },
+      {
+        id: 2,
+        title: 'Most Ordered',
+        products: [
+          {
+            id: 'light-of-my-life-bouquet',
+            name: 'Light of My Life Bouquet',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=600,format=auto,quality=80/media/photosV2/33c5f6e8-2870-4e83-952c-bcfbfe136db1-dcc225d4-9429-470f-9ac9-ab904ba62b6b-retina-large.jpg',
+            price: '$50.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'The Light of My Life Bouquet blossoms with brilliant color and a sweet sophistication to create the perfect impression! Pink Lilies make the eyes dance across the unique design of this flower bouquet, surrounded by the blushing colors of orange roses, lavender cushion poms, hot pink carnations, and lush greens. Presented in a clear glass vase, this fresh flower arrangement has been created just for you to help you send your sweetest thank you, happy anniversary, or thinking of you wishes.  Item # C5375S',
+          },
+          {
+            id: 'youre-precious-bouquet',
+            name: "You're Precious Bouquet",
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=600,format=auto,quality=80/media/photosV2/0079489a-926b-4d14-8dad-bc465747c03c-8accb1e6-cf69-4c7a-8ea1-dadd5624c9e4-retina-large.jpg',
+            price: '$60.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              "Blushing shades of pink blooms are nestled in lush greens to charm anyone's day. This bouquet is abundant with a classic assortment of pretty florals – roses, alstroemeria and carnations to name a few.  Item # YPBS",
+          },
+          {
+            id: 'bold--bright-florist-original',
+            name: 'Bold & Bright Florist Original',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=600,format=auto,quality=80/media/photosV2/cf3926cb-4c94-41a8-ac62-7d019b9d0621-04561890-5683-47f4-95c9-e8f9460eddff-retina-large.jpg',
+            price: '$60.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Give someone special a beautiful bouquet that pops with color. The Bold & Bright Florist Original Bouquet is expertly crafted by a florist near you with beaming blooms to express everything from "good luck" to "you’re the best."  Item # B-6022',
+          },
+          {
+            id: 'at-the-ballet-bouquet',
+            name: 'At the Ballet Bouquet',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=600,format=auto,quality=80/media/photosV2/4b6028d3-7f64-46ff-894b-693bc26b96b6-be7310a9-3327-4993-9aef-57824ee3eef3-retina-large.jpg',
+            price: '$51.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Lace your point shoes for the natural beauty of the At the Ballet Bouquet, designed with blushing pink flowers and classic white stems.',
+          },
+          {
+            id: 'best-day-bouquet',
+            name: 'Best Day Bouquet',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=600,format=auto,quality=80/media/photosV2/b4482be7-5275-48a0-9f8a-e879e11e037c-815bd701-a2ae-485c-8366-427e251fc3ba-retina-large.jpg',
+            price: '$69.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Make this day their best day. Our local florist handcraft a colorful array of flowers in a clear glass vase to create a celebration in bloom. Perfect to give for a special reason or to simply share a smile.  Item # BDBS',
+          },
+          {
+            id: 'amethyist-dreams-bouquet-deluxe',
+            name: 'AMETHYIST DREAMS BOUQUET DELUXE',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=600,format=auto,quality=80/media/photosV2/c582f22f-32d3-4813-91da-3594c51afed6-retina-large.jpg',
+            price: '$65.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'With its soothing color palette and graceful design, the Amethyst Dreams Bouquet is sure to leave a lasting impression and evoke a sense of serenity and beauty.',
+          },
+        ],
+      },
+      {
+        id: 3,
+        title: 'Flowers/Mixed Bouquets',
+        products: [
+          {
+            id: 'amethyist-dreams-bouquet-exqusite',
+            name: 'AMETHYIST DREAMS BOUQUET EXQUSITE',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/0acaa86a-ce62-4b12-92e3-6d70981b54e2-retina-large.jpg',
+            price: '$85.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'With its soothing color palette and graceful design, the Amethyst Dreams Bouquet is sure to leave a lasting impression and evoke a sense of serenity and beauty.',
+          },
+          {
+            id: 'florist-designed-mixed-bouquet-exquisite',
+            name: 'Florist Designed Mixed Bouquet EXQUISITE',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/b9bd63b5-633e-4c91-b8e4-046dd7b4e99a-retina-large.jpg',
+            price: '$85.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Not sure what will delight them? Let your local florist express their creativity and personal flair with a stunning, handcrafted bouquet using the freshest blooms available. Each arrangement is designed with a gorgeous collection of florals and lush greens in a glass vase to reflect the best possible value in the sizes offered. Your bouquet is designed by a local artisan, making it memorable and truly one of a kind.',
+          },
+          {
+            id: 'light-of-my-life-bouquet',
+            name: 'Light of My Life Bouquet',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/33c5f6e8-2870-4e83-952c-bcfbfe136db1-dcc225d4-9429-470f-9ac9-ab904ba62b6b-retina-large.jpg',
+            price: '$50.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'The Light of My Life Bouquet blossoms with brilliant color and a sweet sophistication to create the perfect impression! Pink Lilies make the eyes dance across the unique design of this flower bouquet, surrounded by the blushing colors of orange roses, lavender cushion poms, hot pink carnations, and lush greens. Presented in a clear glass vase, this fresh flower arrangement has been created just for you to help you send your sweetest thank you, happy anniversary, or thinking of you wishes.  Item # C5375S',
+          },
+          {
+            id: 'best-day-bouquet',
+            name: 'Best Day Bouquet',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/b4482be7-5275-48a0-9f8a-e879e11e037c-815bd701-a2ae-485c-8366-427e251fc3ba-retina-large.jpg',
+            price: '$69.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Make this day their best day. Our local florist handcraft a colorful array of flowers in a clear glass vase to create a celebration in bloom. Perfect to give for a special reason or to simply share a smile.  Item # BDBS',
+          },
+          {
+            id: 'bold--bright-florist-original',
+            name: 'Bold & Bright Florist Original',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/cf3926cb-4c94-41a8-ac62-7d019b9d0621-04561890-5683-47f4-95c9-e8f9460eddff-retina-large.jpg',
+            price: '$60.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Give someone special a beautiful bouquet that pops with color. The Bold & Bright Florist Original Bouquet is expertly crafted by a florist near you with beaming blooms to express everything from "good luck" to "you’re the best."  Item # B-6022',
+          },
+          {
+            id: 'dreamy-pastels-florist-original',
+            name: 'Dreamy Pastels Florist Original',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/5e6018a2-8f6a-4962-9464-178b696a73a6-99764625-cb5a-43d1-b606-ee4c8a48f2a4-retina-large.jpg',
+            price: '$60.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'For a softer, elegant combination, look no further than the Dreamy Pastels Florist Original Bouquet. Designed by a local florist, these colorful pastel shades know just how to make someone feel special from near or far.  Item # P-6022',
+          },
+          {
+            id: 'regal-jewel-florist-original',
+            name: 'Regal Jewel Florist Original',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/db6f2ae4-6ea8-4e06-9efd-3e1316c0ddd8-a456e7fc-2083-4c13-bba9-456acde4f52c-retina-large.jpg',
+            price: '$60.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'For someone fit for the throne, give them elegance with the Regal Jewel Florist Original Bouquet. Designed by a local florist, this bouquet has rich tones and textures that are sure to make your recipient feel fit for a crown.  Item # J-6022',
+          },
+          {
+            id: 'rustic-wildflower-florist-original',
+            name: 'Rustic Wildflower Florist Original',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/506ef090-bee4-493d-82dc-aed7fc5578cf-b44ced59-3684-477d-a54c-9e0efe9f458a-retina-large.jpg',
+            price: '$60.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'When you give someone the Rustic Wildflower Florist Original Bouquet, you’re giving the gift of joy. This bright and colorful arrangement, handcrafted by a local florist near you, is a crisp and sunny surprise for the best of friends.  Item # W-6022',
+          },
+          {
+            id: 'youre-precious-bouquet',
+            name: "You're Precious Bouquet",
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/0079489a-926b-4d14-8dad-bc465747c03c-8accb1e6-cf69-4c7a-8ea1-dadd5624c9e4-retina-large.jpg',
+            price: '$60.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              "Blushing shades of pink blooms are nestled in lush greens to charm anyone's day. This bouquet is abundant with a classic assortment of pretty florals – roses, alstroemeria and carnations to name a few.  Item # YPBS",
+          },
+          {
+            id: 'amethyist-dreams-bouquet-deluxe',
+            name: 'AMETHYIST DREAMS BOUQUET DELUXE',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=80/media/photosV2/c582f22f-32d3-4813-91da-3594c51afed6-retina-large.jpg',
+            price: '$65.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'With its soothing color palette and graceful design, the Amethyst Dreams Bouquet is sure to leave a lasting impression and evoke a sense of serenity and beauty.',
+          },
+        ],
+      },
+    ],
   },
   {
     id: 'victorias-secret',
@@ -41063,7 +46471,7 @@ export const stores: Store[] = [
     isDashPass: true,
     isNearYou: false,
     tags: ['Retail', 'Under 30 min'],
-    itme: [
+    items: [
       {
         id: 0,
         title: 'Gifts',
@@ -42934,6 +48342,547 @@ export const stores: Store[] = [
     isDashPass: true,
     isNearYou: false,
     tags: ['Flowers', 'Retail', 'Over 4.5'],
+    items: [
+      {
+        id: 1,
+        title: 'Featured Items',
+        products: [
+          {
+            id: 'featured-003',
+            name: 'Premium Red Rose Bouquet (12ct)',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/37a4202b-4abe-40af-9add-8f2193b13caf-retina-large.jpg',
+            price: '$44.99',
+            originalPrice: null,
+            discount: null,
+            rating: '90%',
+            ratingCount: 52,
+            description: null,
+          },
+          {
+            id: 'featured-005',
+            name: 'Designer Seasonal Bouquet',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/637b8a82-63c1-4c6a-b044-f000451300d8-retina-large.jpg',
+            price: '$34.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'featured-007',
+            name: 'Darling Daises Bouquet (15 ct)',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/d107ce7c-405c-47db-ab48-362da5da02d5-retina-large.png',
+            price: '$14.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'featured-009',
+            name: 'Rainbow Alstromeria Bouquet (10 ct)',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/55b38799-b810-409d-a00c-4a270d3bed79-retina-large.png',
+            price: '$14.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'featured-011',
+            name: 'Glass Bella Vase – Clear 8.75”',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/42c8cb63-909f-41bc-9e0b-437d15faad7f-retina-large.JPG',
+            price: '$9.99',
+            originalPrice: null,
+            discount: null,
+            rating: '100%',
+            ratingCount: 21,
+            description: null,
+          },
+          {
+            id: 'featured-013',
+            name: 'Preserved Roses Pink Champagne Gift Box',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/0e9239c3-3311-46cd-bf42-aef9c118bafc-retina-large.png',
+            price: '$69.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+        ],
+      },
+      {
+        id: 2,
+        title: 'Fresh Flowers and More',
+        products: [
+          {
+            id: 'designer-seasonal-bouquet',
+            name: 'Designer Seasonal Bouquet',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/637b8a82-63c1-4c6a-b044-f000451300d8-retina-large.jpg',
+            price: '$34.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              "This spectacular vase ready bouquet is sure to illuminate any room. Curated to highlight the season's freshest flowers and color palette, this hand-made bouquet is delivered straight from the flower farm to your local Flower & Gift Boutique.",
+          },
+          {
+            id: 'darling-daises-bouquet-15-ct',
+            name: 'Darling Daises Bouquet (15 ct)',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/d107ce7c-405c-47db-ab48-362da5da02d5-retina-large.png',
+            price: '$14.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: '15 stems of daisies in assorted colors.',
+          },
+          {
+            id: 'rainbow-alstromeria-bouquet-10-ct',
+            name: 'Rainbow Alstromeria Bouquet (10 ct)',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/55b38799-b810-409d-a00c-4a270d3bed79-retina-large.png',
+            price: '$14.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: '10 stems of alstromeria in assorted colors.',
+          },
+          {
+            id: 'preserved-roses-pink-champagne-gift-box',
+            name: 'Preserved Roses Pink Champagne Gift Box',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/0e9239c3-3311-46cd-bf42-aef9c118bafc-retina-large.png',
+            price: '$69.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Our Preserved Roses Gift Box is a uniquely beautiful and long-lasting gift. Each box is hand-crafted to perfectly preserve each rose’s beauty. The roses are carefully arranged in our signature & luxurious gift box presentation. Preserved roses will maintain their original beauty for up to one year with proper care. Avoid watering your roses. For maximum beauty, keep away from extreme sunlight and humidity.',
+          },
+        ],
+      },
+      {
+        id: 3,
+        title: 'Chocolates & Sweets',
+        products: [
+          {
+            id: 'lindt-mini-pralines-62oz',
+            name: 'Lindt Mini Pralines (6.2oz)',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/964ba2a9-7d42-4ef2-9319-185c0e727765-retina-large.JPG',
+            price: '$16.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Our Mini Pralines Box contains a delightful assortment of different flavours and textures of chocolates, that are perfect for a beautiful gift to those that you love, or a special occasion',
+          },
+          {
+            id: 'lindor-delicious-chocolate-truffles-tower-1ct',
+            name: 'Lindor Delicious Chocolate Truffles Tower (1ct)',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/b3f4b4a3-4777-4602-b008-5447328db7b9-retina-large.JPG',
+            price: '$18.35',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Lindor® truffles and completed with an elegant satin bow. A chocolate a day keeps the stress away! Lindor® chocolates are always a crowd pleaser! When you break its shell, Lindor® starts to melt and so will you. Lindt® chocolate embodies the passion and expert craftsmanship of its Lindt® Master Swiss Chocolatiers. Lindt® delivers a unique chocolate experience offering a distinctly smooth and rich, gourmet taste.',
+          },
+          {
+            id: 'lindt-lindor-milk-chocolate-truffles-cube',
+            name: 'Lindt Lindor Milk Chocolate Truffles Cube',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/86577606-5393-466b-8214-94c1a6fa9bd4-retina-large.JPG',
+            price: '$20.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Give the gift of luxurious chocolate with our Lindt Lindor gift box.nMakes the perfect holiday gift for a special friend, coworker, or employee. As they say - a chocolate a day keeps the stress away!',
+          },
+          {
+            id: 'lindor-assorted-gourmet-truffles-gift-box-68-oz',
+            name: 'Lindor Assorted Gourmet Truffles Gift Box (6.8 oz)',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/798c094c-21c4-4fe0-8d68-45ca681a67b1-retina-large.jpg',
+            price: '$15.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Lindor chocolates are always a crowd pleaser! When you break its shell, Lindor starts to melt and so will you. Lindt chocolate embodies the passion and expert craftsmanship of its Lindt Master Swiss Chocolatiers. Lindt delivers a unique chocolate experience offering a distinctly smooth and rich, gourmet taste.',
+          },
+        ],
+      },
+      {
+        id: 4,
+        title: 'Greeting Cards',
+        products: [
+          {
+            id: 'minted-love-is-around-you-blank-card',
+            name: 'Minted Love Is Around You Blank Card',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/d92a0a12-c789-4689-aff6-305cfb384ec1-retina-large.jpg',
+            price: '$5.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Inside Message: blank, Send a unique blanks card from Minted, designed by Claudia Orengo Guardiola. Each card comes with a white envelope. Minted is a design marketplace that uses a unique crowdsourcing platform to connect you to the world’s best emerging artists. Artists submit their work, everyone votes, and Minted turns the winning designs into beautiful products.',
+          },
+          {
+            id: 'minted-do-hard-things-thinking-of-you-card',
+            name: 'Minted Do Hard Things Thinking of You Card',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/9d57bb76-96f0-4903-8fa6-9049a738b224-retina-large.jpg',
+            price: '$5.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              "Inside Message: Don't forget how amazing you are! Send a unique thinking of you card from Minted, designed by Ashlee Townsend. Each card comes with a kraft envelope. Minted is a design marketplace that uses a unique crowdsourcing platform to connect you to the world’s best emerging artists. Artists submit their work, everyone votes, and Minted turns the winning designs into beautiful products.",
+          },
+          {
+            id: 'minted-floral-birthday-card',
+            name: 'Minted Floral Birthday Card',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/8aec5cfd-380f-49d9-ad3b-72221e8bb348-retina-large.jpg',
+            price: '$7.49',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Inside Message: wishing you all the best on your special day! Send a unique birthday card from Minted, designed by Yaling Hou. Each card comes with a kraft envelope. Minted is a design marketplace that uses a unique crowdsourcing platform to connect you to the world’s best emerging artists. Artists submit their work, everyone votes, and Minted turns the winning designs into beautiful products.',
+          },
+          {
+            id: 'minted-derp-blank-card',
+            name: 'Minted Derp Blank Card',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/d11914cb-3b4b-41f4-98d6-e92c4c4759dc-retina-large.jpg',
+            price: '$5.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Inside Message: blank, Send a unique blanks card from Minted, designed by Deborah Chou. Each card comes with a kraft envelope. Minted is a design marketplace that uses a unique crowdsourcing platform to connect you to the world’s best emerging artists. Artists submit their work, everyone votes, and Minted turns the winning designs into beautiful products.',
+          },
+          {
+            id: 'minted-sun-flowers-get-well-card',
+            name: 'Minted Sun Flowers Get Well Card',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/60d01147-43ad-4e0d-8bb7-c710a77a4826-retina-large.jpg',
+            price: '$5.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Inside Message: Hope you’re feeling better. Send a unique get well card from Minted, designed by Marina Onoprienko. Each card comes with a white envelope. Minted is a design marketplace that uses a unique crowdsourcing platform to connect you to the world’s best emerging artists. Artists submit their work, everyone votes, and Minted turns the winning designs into beautiful products.',
+          },
+          {
+            id: 'minted-derp-blank-card',
+            name: 'Minted Derp Blank Card',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/d11914cb-3b4b-41f4-98d6-e92c4c4759dc-retina-large.jpg',
+            price: '$5.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Inside Message: blank, Send a unique blanks card from Minted, designed by Deborah Chou. Each card comes with a kraft envelope. Minted is a design marketplace that uses a unique crowdsourcing platform to connect you to the world’s best emerging artists. Artists submit their work, everyone votes, and Minted turns the winning designs into beautiful products.',
+          },
+          {
+            id: 'minted-frosted-tree-holiday-card',
+            name: 'Minted Frosted Tree Holiday Card',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/b36954c4-ab4b-4a64-aae7-07bd96221f03-retina-large.jpg',
+            price: '$6.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Inside Message: And a Happy New Year! Send a unique holiday card from Minted, designed by Leah Bisch. Each card comes with a white envelope. Minted is a design marketplace that uses a unique crowdsourcing platform to connect you to the world’s best emerging artists. Artists submit their work, everyone votes, and Minted turns the winning designs into beautiful products.',
+          },
+          {
+            id: 'minted-florals-thank-you-card',
+            name: 'Minted Florals Thank You Card',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/87742524-5e10-449d-95b3-e0d384e79abf-retina-large.jpg',
+            price: '$6.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Inside Message: blank, Send a unique thank you card from Minted, designed by Rachel Nanfelt. Each card comes with a white envelope. Minted is a design marketplace that uses a unique crowdsourcing platform to connect you to the world’s best emerging artists. Artists submit their work, everyone votes, and Minted turns the winning designs into beautiful products.',
+          },
+          {
+            id: 'minted-santa-peace-holiday-card',
+            name: 'Minted Santa Peace Holiday Card',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/c9524b59-b6ff-4818-9904-301bba25ef9b-retina-large.jpg',
+            price: '$5.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Inside Message: Peace, love and happiness to you this Holiday Season. Send a unique holiday card from Minted, designed by Sarah Baumgardner and Carolyn Doogan. Each card comes with a white envelope. Minted is a design marketplace that uses a unique crowdsourcing platform to connect you to the world’s best emerging artists. Artists submit their work, everyone votes, and Minted turns the winning designs into beautiful products.',
+          },
+          {
+            id: 'minted-daisy-thank-you-card',
+            name: 'Minted Daisy Thank You Card',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/f6d996ac-30e2-401f-8de5-704f3f656c83-retina-large.jpg',
+            price: '$6.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Inside Message: blank, Send a unique thank you card from Minted, designed by Jenna Holcomb. Each card comes with a white envelope. Minted is a design marketplace that uses a unique crowdsourcing platform to connect you to the world’s best emerging artists. Artists submit their work, everyone votes, and Minted turns the winning designs into beautiful products.',
+          },
+          {
+            id: 'minted-gettin-gingey-with-it-holiday-card',
+            name: "Minted Gettin' Gingey With It Holiday Card",
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/a5d7b718-0d55-458c-86db-05bc232e827f-retina-large.jpg',
+            price: '$7.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Inside Message: May all kinds of fun spice up your holidays. Send a unique holiday card from Minted, designed by Christy Bergerson. Each card comes with a white envelope. Minted is a design marketplace that uses a unique crowdsourcing platform to connect you to the world’s best emerging artists. Artists submit their work, everyone votes, and Minted turns the winning designs into beautiful products.',
+          },
+          {
+            id: 'minted-gilded-border-thank-you-card',
+            name: 'Minted Gilded Border Thank You Card',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/5b657938-8f43-4b92-949e-143c2d8cfd2c-retina-large.jpg',
+            price: '$6.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Inside Message: blank, Send a unique thank you card from Minted, designed by Jenna Holcomb. Each card comes with a white envelope. Minted is a design marketplace that uses a unique crowdsourcing platform to connect you to the world’s best emerging artists. Artists submit their work, everyone votes, and Minted turns the winning designs into beautiful products.',
+          },
+        ],
+      },
+      {
+        id: 5,
+        title: 'Balloons for Every Occasion',
+        products: [
+          {
+            id: 'inflated-18-red-heart-balloon-1ct',
+            name: 'Inflated 18" Red Heart Balloon (1ct)',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/e1f4ba3d-2fc6-41ba-98d7-95ff4dcfc9dd-retina-large.png',
+            price: '$7.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: '18 Red Heart Shaped Foil balloon. Pre-Filled with attached string.',
+          },
+          {
+            id: 'inflated-18-happy-birthday-blue-gold--silver-dot-balloon',
+            name: 'Inflated 18" Happy Birthday Blue Gold & Silver Dot Balloon',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/04220544-9243-4ffe-919f-cf55cd0e0a6b-retina-large.png',
+            price: '$7.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              "Beautiful, self sealing, foil balloon with 2 sided graphics are sure to brighten anyone's day!",
+          },
+          {
+            id: 'inflated-18-love-ya-daisy-array-foil-balloon',
+            name: 'Inflated 18" Love Ya Daisy Array Foil Balloon',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/30baf7ca-b624-4ff5-be6e-5c3bd8d3705d-retina-large.png',
+            price: '$7.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              "Beautiful, self sealing, foil balloon with 2 sided graphics are sure to brighten anyone's day!",
+          },
+          {
+            id: 'inflated-happy-birthday-party-hat--horn-18-balloon',
+            name: 'Inflated Happy Birthday Party Hat & Horn 18" Balloon',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photos/f9455213-d3d4-4b64-91ab-54b91e6fc8fa-retina-large-jpeg',
+            price: '$7.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              '18 Happy Brithday Foil balloon. Double Sided Graphics. Message reads Happy Birthday! with images of a present, party hat, horn and confetti. Pre-Filled with attached string.',
+          },
+          {
+            id: 'inflated-feel-better-soon-sun-18-balloon',
+            name: 'Inflated Feel Better Soon Sun 18" Balloon',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photos/1d66cc17-001b-49c5-b145-08ddad94e74f-retina-large-jpeg',
+            price: '$7.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              '18 Foil Balloon with Feel Better Soon Mesage. Double Sided Graphics. Pre-Filled with attached string.',
+          },
+          {
+            id: 'inflated-18-youre-so-special-dots--daisies-balloon',
+            name: 'Inflated 18" You\'re So Special Dots & Daisies Balloon',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/19ce5e6a-9eaf-4467-b84b-d495f361c831-retina-large.png',
+            price: '$7.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              "Beautiful, self sealing, foil balloon with 2 sided graphics are sure to brighten anyone's day!",
+          },
+          {
+            id: 'inflated-happy-birthday-party-hat--horn-18-balloon',
+            name: 'Inflated Happy Birthday Party Hat & Horn 18" Balloon',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photos/f9455213-d3d4-4b64-91ab-54b91e6fc8fa-retina-large-jpeg',
+            price: '$7.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              '18 Happy Brithday Foil balloon. Double Sided Graphics. Message reads Happy Birthday! with images of a present, party hat, horn and confetti. Pre-Filled with attached string.',
+          },
+          {
+            id: 'inflated-feel-better-soon-sun-18-balloon',
+            name: 'Inflated Feel Better Soon Sun 18" Balloon',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photos/1d66cc17-001b-49c5-b145-08ddad94e74f-retina-large-jpeg',
+            price: '$7.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              '18 Foil Balloon with Feel Better Soon Mesage. Double Sided Graphics. Pre-Filled with attached string.',
+          },
+        ],
+      },
+      {
+        id: 6,
+        title: 'Local Favorites',
+        products: [
+          {
+            id: 'van-leeuwen-french-ice-cream-earl-grey-tea-14-oz',
+            name: 'Van Leeuwen French Ice Cream Earl Grey Tea (14 oz)',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/4d858540-e118-4d11-a841-857df2eaed8b-retina-large.jpg',
+            price: '$8.19',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Hand harvested organic Rishi tea that is cured and then infused with oil from bergamot citrus from old tea tree forests of Yunnan. We steep the tea in fresh whole milk to perfectection before adding cream, eggs and sugar.',
+          },
+          {
+            id: 'van-leeuwen-french-ice-cream-vanilla-bean-14-oz',
+            name: 'Van Leeuwen French Ice Cream Vanilla Bean (14 oz)',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/67c53749-ab64-44ba-9de7-59023cde92fc-retina-large.jpg',
+            price: '$8.19',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'You know who is not happy though? Vanilla. Seen as ‚Äúboring.‚Äù ‚ÄúSafe.‚Äù Or ‚Äúif beige could yawn it would be vanilla.‚Äù Well, no more. We‚Äôre bringing out vanilla‚Äôs more non-vanilla-ey traits by using Tahitian vanilla beans, cold-ground whole. Don‚Äôt screw it up from here, vanilla.',
+          },
+          {
+            id: 'the-cravory-ultimate-chocolate-chip-cookie-1ct',
+            name: 'The Cravory Ultimate Chocolate Chip Cookie (1ct)',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/6e8d2cf5-25d4-491f-a4f3-414a7a9df6bf-retina-large.jpg',
+            price: '$1.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Though still a classic beauty, Ultimate seduces us in every batch with ludicrously large always-hand-chopped chunks of Guittard Gourmet Bittersweet Chocolate. To bring it one step further, milk and semi-sweet chocolates are added to seal the deal. A sprinkling of sea salt crystals further accessorizes the collaboration of these three brilliant chocolates. Oh, and before SHE leaves the oven, she makes sure to leave her scent‚Ä¶for hours. Thus, the Ultimate experience is unleashed. We don‚Äôt call it by its first name for nothin‚Äô.',
+          },
+          {
+            id: 'the-cravory-cookie-monster-cookie-1ct',
+            name: 'The Cravory Cookie Monster Cookie (1ct)',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/4404d208-b0c8-4e69-84dc-326a379f445f-retina-large.jpg',
+            price: '$1.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Caramel bites, Oreos, mini marshmallows, white chocolate chips, and semisweet chocolate chips all mixed into our vanilla dough will have you craving for more. Say hello to our newest Signature Flavor and have a Cookie Monster or two!',
+          },
+        ],
+      },
+      {
+        id: 7,
+        title: 'Party Supplies',
+        products: [
+          {
+            id: 'solid-gift-bag-xl-1-ct',
+            name: 'Solid Gift Bag XL (1 ct)',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/96473da8-2157-4610-8d84-95d7f4a4c63d-retina-large.jpg',
+            price: '$1.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: 'Party gift bag, extra large. Color will vary.',
+          },
+        ],
+      },
+    ],
   },
   {
     id: 'ace-hardware',
@@ -47614,6 +53563,972 @@ export const stores: Store[] = [
     isDashPass: true,
     isNearYou: false,
     tags: ['Flowers', 'Retail'],
+    items: [
+      {
+        id: 1,
+        title: 'Featured Items',
+        products: [
+          {
+            id: 'featured-003',
+            name: "12 Roses Gold N' Love",
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/b9e3d341-7766-44c1-a3bb-c3ed9a4ec6e7-retina-large.JPG',
+            price: '$66.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'featured-005',
+            name: 'DESIGNERS CHOICE',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/c6ad67e1-a35f-446d-9440-cf95994cec31-retina-large.JPG',
+            price: '$79.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'featured-007',
+            name: '12 Roses Pink Clouds',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/acbed2e5-040a-4d31-a2e6-e510244f7412-retina-large.JPG',
+            price: '$39.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'featured-009',
+            name: '12 Roses Deep Purple',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/0023a839-e025-480f-8c71-c42b9592b9a8-retina-large.jpg',
+            price: '$63.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'featured-011',
+            name: 'Pink Baby',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/006c0c14-b5f9-4dcf-aeb5-edac4109a163-retina-large.JPG',
+            price: '$59.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'featured-013',
+            name: 'Sunny Box',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/0d582f99-41ab-4db0-a194-5bfa7c60ec37-retina-large.JPG',
+            price: '$83.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+        ],
+      },
+      {
+        id: 2,
+        title: 'Most Ordered',
+        products: [
+          {
+            id: '12-roses-pink-clouds',
+            name: '12 Roses Pink Clouds',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=600,format=auto,quality=90/media/photosV2/acbed2e5-040a-4d31-a2e6-e510244f7412-retina-large.JPG',
+            price: '$39.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: '12-roses-gold-n-love',
+            name: "12 Roses Gold N' Love",
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=600,format=auto,quality=90/media/photosV2/b9e3d341-7766-44c1-a3bb-c3ed9a4ec6e7-retina-large.JPG',
+            price: '$66.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: '12 Premium Red Roses, Assented With Gold Painting Greenery.',
+          },
+          {
+            id: 'heart-balloon',
+            name: 'Heart Balloon',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=600,format=auto,quality=90/media/photosV2/85aa6d6b-e85d-44e8-ad2d-5e0cf075c3de-retina-large.JPG',
+            price: '$6.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'designers-choice',
+            name: 'DESIGNERS CHOICE',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=600,format=auto,quality=90/media/photosV2/c6ad67e1-a35f-446d-9440-cf95994cec31-retina-large.JPG',
+            price: '$79.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: 'SEASONAL FLOWERS',
+          },
+          {
+            id: 'pink-baby',
+            name: 'Pink Baby',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=600,format=auto,quality=90/media/photosV2/006c0c14-b5f9-4dcf-aeb5-edac4109a163-retina-large.JPG',
+            price: '$59.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: 'Levander Roses, White Lisianthus, Pink Spray Roses and Assorted Greenery',
+          },
+          {
+            id: '12-roses-deep-purple',
+            name: '12 Roses Deep Purple',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=600,format=auto,quality=90/media/photosV2/0023a839-e025-480f-8c71-c42b9592b9a8-retina-large.jpg',
+            price: '$63.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              "A dozen exquisite Purple Roses elegantly, wrapped in a Korean paper complemented by delicate baby's breath, finished with a soft bow and a charming butterfly accent, making it the perfect gift to celebrate Mother's Day.",
+          },
+        ],
+      },
+      {
+        id: 3,
+        title: 'GRADUATION',
+        products: [
+          {
+            id: 'achievement-in-bloom',
+            name: 'Achievement In Bloom',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/40cbee35-e355-4a51-81ab-3315460f0696-retina-large.jpg',
+            price: '$240.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'the-scholars-bouquet',
+            name: "The Scholar's  Bouquet",
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/8c4eef7c-274c-41f4-b46a-68d8ca368fb4-retina-large.png',
+            price: '$230.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'congratulations-balloon',
+            name: 'Congratulations Balloon',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/e4912ea3-8a26-4a80-8aa5-15e7ad0c581e-retina-large.jpg',
+            price: '$6.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'cap--gown-blossom',
+            name: 'Cap & Gown Blossom',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/c2f2fb56-1c6d-4005-968c-be06a55ff5b7-retina-large.jpg',
+            price: '$89.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+        ],
+      },
+      {
+        id: 4,
+        title: 'Love & Romance',
+        products: [
+          {
+            id: '12-pink-roses-i-n-a-vase',
+            name: '12 Pink Roses I N A Vase',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/b1c7dbe2-3a5a-4b82-9cd3-b4318488cc47-retina-large.png',
+            price: '$90.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'sunny-gold',
+            name: 'Sunny Gold',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/09cdb9a8-cf21-4aff-b5b7-d7d3f75671c0-retina-large.jpg',
+            price: '$83.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: '101-red-roses',
+            name: '101 Red Roses',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/aa20f297-b88f-4a2f-bbf5-ce0636a9474c-retina-large.JPG',
+            price: '$430.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Roses are a classic way to express your feelings: love, happiness, gratitude and it is always a perfect surprise! Please order  2 days in advance.',
+          },
+          {
+            id: '18-roses-sweets-and-love',
+            name: '18 Roses Sweets And Love',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/93bc430d-68c1-4006-a920-36a88dfad116-retina-large.JPG',
+            price: '$149.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: '18 Premium Long Stem Red Roses And 14 Delicious Ferrero Chocolates.',
+          },
+          {
+            id: '24-beautiful-red-roses',
+            name: '24 Beautiful Red Roses',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/6a87ddd0-d6bf-47f5-a78e-be472a1428f9-retina-large.JPG',
+            price: '$129.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: '24 RED ROSES WITH 3 BUTTERFLIES HAND WRAPPED BOUQUET.',
+          },
+          {
+            id: '25-roses-red-heart',
+            name: '25 Roses Red Heart',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/e56f5c71-d164-47f8-b96b-5de4a193d988-retina-large.png',
+            price: '$139.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              '25 Premium red roses\nThe floral arrangement is designed in a heart shape box with floral foam and water (Please continue adding water for the flowers to last longer)\nPerfect for Love & Romance and Anniversary.',
+          },
+          {
+            id: '12-roses-stylish-romance-in-a-ginger-red-vase',
+            name: '12 Roses Stylish Romance in a ginger red vase.',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/9b73ef8b-aeaf-47b3-aad4-e4722f319232-retina-large.JPG',
+            price: '$80.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              "12 Long Stem Premium Red Roses, Baby's Breath, Assorted Greenery In A  Glass Vase Accented With A Red Bow.",
+          },
+          {
+            id: '12-roses-love-in-red',
+            name: '12 Roses Love In Red',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/58f9c8b6-2aee-457c-9b8a-f93a45fc794f-retina-large.png',
+            price: '$90.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              "A stunning arrangement of 12 tall Red Roses gracefully placed in a clear vase complemented by delicate baby's breath for an extra touch of elegance finished with a beautiful bow.",
+          },
+        ],
+      },
+      {
+        id: 5,
+        title: 'Birthday',
+        products: [
+          {
+            id: 'sweet-petals',
+            name: 'Sweet Petals',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/45a29e8e-2e55-4050-99aa-6a7bb422439b-retina-large.png',
+            price: '$83.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Hot Pink Roses, Gerberas, Pink Spray Carnations, White Spider Mums In A Glass Vase Assented With A Ribbon.',
+          },
+          {
+            id: 'sunny-box',
+            name: 'Sunny Box',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/0d582f99-41ab-4db0-a194-5bfa7c60ec37-retina-large.JPG',
+            price: '$83.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: 'Sunflowers, Hot Pink Roses, Lilies, Spray Roses, and Assorted Greenery',
+          },
+          {
+            id: 'marvelous-max',
+            name: 'Marvelous Max',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/97a03fa2-dffe-4a9e-be23-7c80bc7994c3-retina-large.JPG',
+            price: '$114.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'sofias-heart',
+            name: "Sofia's Heart",
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/5e51569b-e5d1-4f5e-be0a-781df95569a6-retina-large.jpg',
+            price: '$143.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              '26 to29 Roses With A Metallic Butterfly In A Heart Shape,\nWE CUSTOMIZE ANY COLOR OF ROSES!!!!!!!',
+          },
+          {
+            id: 'candy-candy',
+            name: 'Candy Candy',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/9acea249-3410-4ca7-96f5-ccc6341a6d8b-retina-large.JPG',
+            price: '$164.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Yellow Roses, White Lilies, Pink Spray Carnations, White Alstroemeria, Pink Spray Roses, White Hypericum Berries, Assorted Greenery in a Ceramic Vase.',
+          },
+          {
+            id: 'smiling-in-blue',
+            name: 'Smiling In Blue',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/a1d9c73f-661d-418b-a2a3-4d090273b989-retina-large.JPG',
+            price: '$93.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Hot Pink Roses, White Lilies, Orange Spray Roses, Yellow Daisies, Purple Statice in a Wooden Box.',
+          },
+          {
+            id: 'yellow-tote',
+            name: 'Yellow Tote',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/ea00c82b-e9df-4d4a-b01a-cc4b44273904-retina-large.JPG',
+            price: '$69.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: 'Yellow Roses, Green Carnations and assorted Greenery',
+          },
+          {
+            id: 'remembrance-rainbow',
+            name: 'Remembrance Rainbow',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/74da6a62-ba92-4b15-8972-a09c36de0166-retina-large.JPG',
+            price: '$124.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Orange Lilies, Pink and Yellow Roses, Lavender Stock, Blue Larkspur Flowers, Pink Snap Dragon Flowers, Eucalyptus',
+          },
+          {
+            id: 'box-of-spring',
+            name: 'Box of Spring',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/f4787ac6-c526-4259-9063-379cdd67d553-retina-large.jpg',
+            price: '$86.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Red Roses, Sunflowers, Pink Spray Carnations, White Pom Pom Daisies in a Wooden Cubic Container',
+          },
+          {
+            id: 'cymbidium',
+            name: 'Cymbidium',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/bc7c4c94-bd45-46c7-a4ca-9989366a52c1-retina-large.jpg',
+            price: '$75.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Cymbidium Orchid, Pink Roses,Green Dianthus, White Hydrangea, Pink Larkspur In A Glass Cylinder Vase.',
+          },
+        ],
+      },
+      {
+        id: 6,
+        title: 'Get Well',
+        products: [
+          {
+            id: 'marvelous-max',
+            name: 'Marvelous Max',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/b2324c52-a384-480a-b7d0-3c7361ccd7ea-retina-large.png',
+            price: '$114.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              '3D Puppy arrangement with white carnations, purple roses, purple or yellow daisy poms, and purple statice; accented with assorted greeneryArranged in the shape of a dog, complete with eyes and nose in a wooden square box.',
+          },
+          {
+            id: 'colorful-tulips',
+            name: 'Colorful Tulips',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/730e41e4-1f3e-4160-9d81-1c19cd4ce4c8-retina-large.png',
+            price: '$96.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Beautiful Mixed Colors Tulips, In A Glass Vase Accented With A Pink Ribbon.',
+          },
+          {
+            id: 'get-well-soon',
+            name: 'Get Well Soon',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/abbbca4a-ecd9-4327-a2b5-5ff5cc5db9c3-retina-large.jpg',
+            price: '$74.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Yellow Roses, Orange Lilies, Red Spray Roses, White Spray Carnations, Purple Statice, Assorted Greenery in a Wooden Vase',
+          },
+          {
+            id: 'smile',
+            name: 'smile',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/4c45579d-bdfc-4c90-ade0-97c2b17f970f-retina-large.jpg',
+            price: '$73.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'yellow-tote',
+            name: 'Yellow Tote',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/0f0b5b42-4b2b-47e8-a8d5-ccedb10c3cc9-retina-large.JPG',
+            price: '$73.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Yellow Roses, Green Carnations and Assorted Greenery in our Signature Trapezoid Bag',
+          },
+          {
+            id: 'roses-and-daisies',
+            name: 'Roses And Daisies',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/b9593659-1de6-45fe-888b-8d00d043afde-retina-large.JPG',
+            price: '$79.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: 'Roses and Daisies match perfectly',
+          },
+        ],
+      },
+      {
+        id: 7,
+        title: 'New Baby',
+        products: [
+          {
+            id: 'speed-camaro',
+            name: 'Speed Camaro',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/a798989c-d39e-4ab2-9574-c923513ec4f0-retina-large.jpg',
+            price: '$66.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'its-a-girl',
+            name: "It's A Girl",
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/93bcaa32-f5ec-419b-b360-fccf23f8b0c9-retina-large.JPG',
+            price: '$54.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Pink Roses, White Daisies, Pink Lisianthus, White Spray Carnations, Assorted Greenery in a Red Wagon.',
+          },
+          {
+            id: 'little-jeep',
+            name: 'Little Jeep',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/65018152-0200-4d93-8e81-b30e54b830c3-retina-large.jpg',
+            price: '$62.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'moses',
+            name: 'Moses',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/2037919e-16d2-472d-8b3a-58fcbbe8e90c-retina-large.jpg',
+            price: '$109.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Celebrate her with this beautiful Moses. Filled with soft pink roses and white spray Roses, and assorted greenery.',
+          },
+          {
+            id: 'baby-sheep',
+            name: 'Baby Sheep',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/2a083eff-0695-4e6a-8175-2e2aefab4b14-retina-large.jpg',
+            price: '$53.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'bunny',
+            name: 'Bunny',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/ba884fea-4085-4b8f-bbb5-c727ab95c605-retina-large.jpg',
+            price: '$96.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+        ],
+      },
+      {
+        id: 8,
+        title: 'Arrangement Additions',
+        products: [
+          {
+            id: 'rose-gold-color-crown',
+            name: 'Rose Gold Color Crown',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/b6b7920b-3003-4b0f-995e-b80eddcd085c-retina-large.jpg',
+            price: '$7.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'silver-color-crown',
+            name: 'Silver Color Crown',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/44d518bb-8062-46a2-894a-2443a82c18e9-retina-large.jpg',
+            price: '$7.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'gold-color-crown',
+            name: 'Gold Color Crown',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/5f83fa2b-6427-429d-80b4-b5d0c9fa167c-retina-large.jpg',
+            price: '$7.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'gold-color-metallic-butterflies',
+            name: 'Gold Color Metallic Butterflies',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/50001643-24b0-4e20-8231-00cb759c00ca-retina-large.jpg',
+            price: '$7.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: '3 Metallic Butterflies, Small, Medium, And Large Size.',
+          },
+        ],
+      },
+      {
+        id: 9,
+        title: 'Gifts and Teddy Bears',
+        products: [
+          {
+            id: 'mini-pink-larkspur--baby-eucalyptus-bouquet-bundle',
+            name: 'Mini Pink Larkspur & Baby Eucalyptus Bouquet Bundle',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/984a0fb0-378c-47e6-9351-7a65569354de-retina-large.jpg',
+            price: '$19.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Our Mini Pink Larkspur & Baby Eucalyptus Bouquet Bundle of dry flowers is an adorable accent or gift for any occasion.  Each mini bouquet is wrapped in a Kraft paper wrap and tied with a jute rope. This petite bundle is a perfect and lovely accent to your tablescape, decorative shelf, or mantle.\n\n- 9" length',
+          },
+          {
+            id: 'palo-santo--cedar-candle',
+            name: 'Palo Santo & Cedar Candle',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/30560b1b-28b4-4c1e-bc4a-bfc05dc60dfa-retina-large.jpg',
+            price: '$25.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'With a cool and refreshing sent, our Palo Santo & Cedar candle, poured in a reusable teakwood candle cup, is a fresh and harmonious addition to any space.',
+          },
+          {
+            id: '10-musical-white-teddy-bear-red-heart',
+            name: '10" Musical White Teddy Bear Red Heart',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/2552de8d-9dc2-4ba8-89bf-ed871361173c-retina-large.JPG',
+            price: '$21.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: '10" Musical, Sings I love You, Lights in Cheeks',
+          },
+          {
+            id: '7-light-brown-pink-tie',
+            name: '7" Light Brown (Pink Tie)',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/518ce535-0a1f-43d2-b2b2-f5ca05bb5c10-retina-large.jpg',
+            price: '$9.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: '7-light-brown-blue-tie',
+            name: '7" Light Brown (Blue Tie)',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/a7a0df5f-1633-4ed2-a0ed-8d134d07ee60-retina-large.jpg',
+            price: '$9.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'happy-birthday-white-teddy-bear',
+            name: 'Happy Birthday White Teddy Bear',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/392a59f6-7832-448f-a20a-467e286f8cda-retina-large.JPG',
+            price: '$18.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: '8 Inches, Sings  H. B. With Lights in the Cheeks',
+          },
+        ],
+      },
+      {
+        id: 10,
+        title: 'Sympathy Bouquets',
+        products: [
+          {
+            id: 'madonna-red',
+            name: 'Madonna (red)',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/3c1cf87d-5a29-421c-870a-3829d03aab44-retina-large.JPG',
+            price: '$160.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Serene Madonna with Red Roses, White Carnations, Red Gerberas, White Snap Dragons, Red Spray Carnations, Assorted Greenery.',
+          },
+          {
+            id: 'marinas-basket',
+            name: "Marina's Basket",
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/051c6e64-4fcf-423b-8181-fb9609ebd494-retina-large.JPG',
+            price: '$109.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Lilies, Roses, Sunflowers, Carnations, Marigolds, Daisies, Assorted Greenery in a Basket',
+          },
+          {
+            id: 'white-sympathy-arrangement',
+            name: 'White Sympathy Arrangement',
+            image: null,
+            price: '$83.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'tranquility',
+            name: 'Tranquility',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/c1c28e2a-5644-4783-b890-938f3962e3be-retina-large.JPG',
+            price: '$104.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'White Lilies, Pink Lisianthus, White Roses, White Snap Dragons, Pink Spray Carnations, White Spray Roses, Dusty Miller in a Wooden Cube.',
+          },
+          {
+            id: 'angel',
+            name: 'Angel',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/77bb73e2-500e-4d33-a249-3401865e3259-retina-large.JPG',
+            price: '$160.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'White Roses, Green Cymbidium Orchids, White Spiders, White Spray Carnations, White Snap Dragons, Assorted Greenery, Beautiful Ceramic Angel Figurine',
+          },
+          {
+            id: 'moonlight',
+            name: 'Moonlight',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/6928c74a-572a-480c-a910-4be3d4eafed6-retina-large.JPG',
+            price: '$78.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'White Roses, White Hydrangeas, White Carnations, White Stock, In a Beautiful Decorated Metallic Vase.',
+          },
+        ],
+      },
+      {
+        id: 11,
+        title: 'EASTER',
+        products: [
+          {
+            id: 'easter-basket',
+            name: 'Easter Basket',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/939c9664-6cb7-47c4-abf1-dbb66587857f-retina-large.jpg',
+            price: '$65.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'lara',
+            name: 'Lara',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/09f114e9-f6ef-4a8c-8637-450def2ec570-retina-large.jpg',
+            price: '$75.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'rabbit-buchon',
+            name: 'Rabbit Buchon',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/0480df6b-6c50-4b99-b225-6cab56f22a65-retina-large.jpg',
+            price: '$156.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'hop-hop',
+            name: 'Hop Hop',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/3d1adc86-1ea9-447c-83b5-078678df17d8-retina-large.jpg',
+            price: '$156.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+        ],
+      },
+      {
+        id: 12,
+        title: "MOTHER'S DAY",
+        products: [
+          {
+            id: '12-purple-roses',
+            name: '12 Purple Roses',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/8a079af2-996e-46e7-ad04-a4e0bda448dd-retina-large.jpg',
+            price: '$59.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              "A dozen exquisite Purple Roses elegantly, wrapped in a Korean paper complemented by delicate baby's breath, finished with a soft bow and a charming butterfly accent, making it the perfect gift to celebrate Mother's Day.",
+          },
+          {
+            id: 'colorful-tulips-in-a-vase',
+            name: 'Colorful Tulips In a Vase',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/730e41e4-1f3e-4160-9d81-1c19cd4ce4c8-retina-large.png',
+            price: '$96.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              "Blooms this beautiful don't need decoration! 30 tantalizing Tulips in soft spring colors. Gathered in a clear glass vase, it’s an everyday gift of instant happiness.",
+          },
+          {
+            id: '12-pink-roses-in-a-vase',
+            name: '12 Pink Roses in a Vase',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/1f31b5b7-7706-4a51-9b59-7fabdaaca18e-e567e104-2261-4e63-90f6-1a7d8095735c-retina-large.jpg',
+            price: '$50.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              "Celebrate Mother's Day with the soft, beauty of Blush Elegance. This Clear vase holds 12 Stunning Pink Roses, artfully arranged and finished with a delicate bow for an extra touch of charm, symbolizing grace, admiration, and heartfelt love. A timeless gift to show Mom just how much she means to you.",
+          },
+          {
+            id: 'basket-designers-choice',
+            name: 'Basket Designers Choice',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/2af203bc-ad8e-445e-b761-f66e7f142018-retina-large.jpg',
+            price: '$50.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'sunflowers',
+            name: 'Sunflowers',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/91a9e547-4a41-4680-879d-dfb786422357-retina-large.JPG',
+            price: '$56.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'A charming hand bouquet featuring 10 vibrant Sun Flowers, elegantly wrapped with a delicate bow and adorned with a whimsical butterfly accent.',
+          },
+          {
+            id: 'deep-love',
+            name: 'Deep Love',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=90/media/photosV2/0a56e03f-ec23-4a31-ae55-2f64f19f0e48-retina-large.jpg',
+            price: '$99.99',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+        ],
+      },
+    ],
   },
   {
     id: 'colma-floral',
@@ -47625,6 +54540,251 @@ export const stores: Store[] = [
     isDashPass: true,
     isNearYou: false,
     tags: ['Flowers', 'Retail', 'Under 30 min', 'Over 4.5'],
+    items: [
+      {
+        id: 1,
+        title: 'Featured Items',
+        products: [
+          {
+            id: 'featured-003',
+            name: "Designer's choice vase arrangement",
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=60/media/photosV2/f20b7261-9a2a-4824-8fae-7d3d8c603ea1-retina-large.jpg',
+            price: '$65.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'featured-005',
+            name: 'Earthy floral bouquet',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=60/media/photosV2/941ff623-c268-494f-9283-ab900375158d-retina-large.jpg',
+            price: '$130.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'featured-007',
+            name: 'Pretty in Pink',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=60/media/photosV2/096020f6-51e1-497c-abe9-a250d0c6f744-retina-large.jpg',
+            price: '$95.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'featured-009',
+            name: 'Vibrant Love Bouquet',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=60/media/photosV2/e8fed1d4-1e5a-4cd9-b924-043f33e390a3-retina-large.jpg',
+            price: '$85.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'featured-011',
+            name: 'Vibrant blooms bouquet',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=60/media/photosV2/f65f0cd3-5493-4047-9bc8-756e40d14629-retina-large.png',
+            price: '$85.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+          {
+            id: 'featured-013',
+            name: 'pink assortment vase',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=60/media/photosV2/66773a94-4e8a-49ba-8c7a-9abda558a9e3-retina-large.jpg',
+            price: '$85.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: null,
+          },
+        ],
+      },
+      {
+        id: 2,
+        title: 'Most Ordered',
+        products: [
+          {
+            id: 'designers-choice-vase-arrangement',
+            name: "Designer's choice vase arrangement",
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=600,format=auto,quality=60/media/photosV2/f20b7261-9a2a-4824-8fae-7d3d8c603ea1-retina-large.jpg',
+            price: '$65.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'CHOICE OF COLOR SCHEME ONLY.\nSeasonal blooms delivered in a glass vase .\nOur designers will be choosing beautiful flowers for this vase .',
+          },
+          {
+            id: 'earthy-floral-bouquet',
+            name: 'Earthy floral bouquet',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=600,format=auto,quality=60/media/photosV2/941ff623-c268-494f-9283-ab900375158d-retina-large.jpg',
+            price: '$130.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Delicate and elegant, this earthy floral bouquet features a neutral palette of flowers, perfect for any occasion.\nAS PICTURED-NO MODIFICATIONS AVAILABLE',
+          },
+          {
+            id: 'vibrant-blooms-bouquet',
+            name: 'Vibrant blooms bouquet',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=600,format=auto,quality=60/media/photosV2/f65f0cd3-5493-4047-9bc8-756e40d14629-retina-large.png',
+            price: '$85.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Cheery hot pink roses with vibrant green blooms and other colorful flowers to celebrate a special occasion with a vibrant bouquet.',
+          },
+          {
+            id: 'pink-assortment-vase',
+            name: 'pink assortment vase',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=600,format=auto,quality=60/media/photosV2/66773a94-4e8a-49ba-8c7a-9abda558a9e3-retina-large.jpg',
+            price: '$85.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: 'Vibrant assortment of pink blooms in a glass vase.',
+          },
+          {
+            id: 'pretty-in-pink',
+            name: 'Pretty in Pink',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=600,format=auto,quality=60/media/photosV2/096020f6-51e1-497c-abe9-a250d0c6f744-retina-large.jpg',
+            price: '$95.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Brighten someone’s day with this delightful mix of pink roses, fresh lilies, cheerful green blooms, and dainty wax flowers. Wrapped in elegant pink and white, this arrangement is finished with a cute teddy bear, making it a perfect gift to bring joy and warmth to any occasion!**NO VASE*** THIS IS A BOUQUET\nAS PICTURED  NO MODIFICATIONS AVAILABLE',
+          },
+          {
+            id: 'vibrant-love-bouquet',
+            name: 'Vibrant Love Bouquet',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=600,format=auto,quality=60/media/photosV2/e8fed1d4-1e5a-4cd9-b924-043f33e390a3-retina-large.jpg',
+            price: '$85.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'NO MODIFICATIONS AVAILABLE\n\nA cheerful arrangement of fresh roses in vibrant shades of seasonal color roses, paired with delicate white filler flowers. This bouquet is wrapped in charming heart and strawberry-themed paper, topped with an adorable teddy bear holding a heart—perfect for expressing love and affection on any occasion.**NO VASE*** THIS IS A BOUQUET',
+          },
+        ],
+      },
+      {
+        id: 3,
+        title: 'Blooming Menu',
+        products: [
+          {
+            id: 'earthy-floral-bouquet',
+            name: 'Earthy floral bouquet',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=60/media/photosV2/941ff623-c268-494f-9283-ab900375158d-retina-large.jpg',
+            price: '$130.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Delicate and elegant, this earthy floral bouquet features a neutral palette of flowers, perfect for any occasion.\nAS PICTURED-NO MODIFICATIONS AVAILABLE',
+          },
+          {
+            id: 'pretty-in-pink',
+            name: 'Pretty in Pink',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=60/media/photosV2/096020f6-51e1-497c-abe9-a250d0c6f744-retina-large.jpg',
+            price: '$95.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'Brighten someone’s day with this delightful mix of pink roses, fresh lilies, cheerful green blooms, and dainty wax flowers. Wrapped in elegant pink and white, this arrangement is finished with a cute teddy bear, making it a perfect gift to bring joy and warmth to any occasion!**NO VASE*** THIS IS A BOUQUET\nAS PICTURED  NO MODIFICATIONS AVAILABLE',
+          },
+          {
+            id: 'vibrant-love-bouquet',
+            name: 'Vibrant Love Bouquet',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=60/media/photosV2/e8fed1d4-1e5a-4cd9-b924-043f33e390a3-retina-large.jpg',
+            price: '$85.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              'NO MODIFICATIONS AVAILABLE\n\nA cheerful arrangement of fresh roses in vibrant shades of seasonal color roses, paired with delicate white filler flowers. This bouquet is wrapped in charming heart and strawberry-themed paper, topped with an adorable teddy bear holding a heart—perfect for expressing love and affection on any occasion.**NO VASE*** THIS IS A BOUQUET',
+          },
+          {
+            id: 'pretty-in-bloom',
+            name: 'Pretty in Bloom',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=60/media/photosV2/0ea0d5f6-7712-4371-8c99-72be83442768-retina-large.jpg',
+            price: '$75.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: 'NO MODIFICATIONS AVAILABLE',
+          },
+          {
+            id: 'cotton-blush',
+            name: 'Cotton blush',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=60/media/photosV2/11942c0f-08c5-4cdb-aaa4-36098dcb8c92-0d07e6b9-14d2-4282-a6ea-4643bbf1a79d-retina-large.jpg',
+            price: '$85.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description: 'NO MODIFICATIONS AVAILABLE',
+          },
+          {
+            id: 'dozen-red-rose-bouquet',
+            name: 'Dozen Red Rose Bouquet',
+            image:
+              'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=60/media/photosV2/70e1c807-0257-497e-a3b7-ee56f8bd8185-retina-large.jpg',
+            price: '$85.00',
+            originalPrice: null,
+            discount: null,
+            rating: null,
+            ratingCount: null,
+            description:
+              "NO MODIFICATIONS AVAILABLE\nSay 'I love you' with this enchanting arrangement of vibrant red roses, delicate baby's breath, and lush greenery, all wrapped in romantic tones of red and black. Topped off with an adorable little teddy bear holding a heart, this bouquet is the perfect mix of sweetness and sophistication for any special occasion!  **NO VASE*** THIS IS A BOUQUET\nAS PICTURED NO MODIFICATIONS AVAILABLE",
+          },
+        ],
+      },
+    ],
   },
 ];
 
