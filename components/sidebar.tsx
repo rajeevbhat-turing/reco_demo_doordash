@@ -100,30 +100,6 @@ export default function Sidebar() {
           </li>
           <li>
             <Link
-              href="/health"
-              className={`flex items-center px-4 py-3 rounded-lg mx-2 ${
-                pathname.startsWith("/health")
-                  ? "bg-red-50 text-red-600 font-medium"
-                  : "text-gray-700 hover:bg-gray-100"
-              }`}
-            >
-              <Activity className="h-5 w-5 mr-3" />
-              <span>Health</span>
-            </Link>
-          </li>
-          <li>
-            <Link
-              href="/gifts"
-              className={`flex items-center px-4 py-3 rounded-lg mx-2 ${
-                pathname.startsWith("/gifts") ? "bg-red-50 text-red-600 font-medium" : "text-gray-700 hover:bg-gray-100"
-              }`}
-            >
-              <Gift className="h-5 w-5 mr-3" />
-              <span>Gifts</span>
-            </Link>
-          </li>
-          <li>
-            <Link
               href="/browse"
               className={`flex items-center px-4 py-3 rounded-lg mx-2 ${
                 pathname.startsWith("/browse")

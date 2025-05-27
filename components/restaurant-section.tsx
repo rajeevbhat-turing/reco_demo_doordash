@@ -87,10 +87,10 @@ export default function RestaurantSection({ title, restaurants, seeAllLink = "/a
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-xl font-bold text-gray-900">{title}</h2>
         <div className="flex items-center gap-4">
-          <Link 
+          <Link
             href={{
               pathname: '/all-items',
-              query: { 
+              query: {
                 title: encodeURIComponent(title),
                 type: 'restaurant',
                 section: encodeURIComponent(title.toLowerCase().replace(/\s+/g, '-'))
@@ -126,7 +126,7 @@ export default function RestaurantSection({ title, restaurants, seeAllLink = "/a
       >
         {restaurants.map((restaurant, index) => (
           <div
-            key={restaurant.id+index}
+            key={restaurant.id + index}
             className="restaurant-card flex-shrink-0 snap-start"
             style={{ width: `${cardWidth}px` }}
           >
@@ -159,18 +159,18 @@ export default function RestaurantSection({ title, restaurants, seeAllLink = "/a
                     </div>
                   )}
                 </div>
-                <button 
+                <button
                   className="p-1 hover:bg-gray-100 rounded-full"
                   onClick={toggleFavorite(restaurant.id)}
                 >
-                  <svg 
-                    width="24" 
-                    height="24" 
-                    viewBox="0 0 24 24" 
-                    fill={favorites[restaurant.id] ? "currentColor" : "none"} 
-                    stroke="currentColor" 
-                    strokeWidth="2" 
-                    strokeLinecap="round" 
+                  <svg
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill={favorites[restaurant.id] ? "currentColor" : "none"}
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
                     strokeLinejoin="round"
                     className={favorites[restaurant.id] ? "text-red-500" : "text-gray-500"}
                   >
@@ -180,14 +180,23 @@ export default function RestaurantSection({ title, restaurants, seeAllLink = "/a
               </div>
 
               <div className="flex items-center mt-1 text-sm text-gray-700 flex-wrap">
-                <div className="flex items-center">
-                  <span className="font-semibold">{restaurant.rating}</span>
-                  <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" className="ml-1">
-                    <path d="M8 0L10.2571 5.08631L16 5.87013L11.8 9.79752L12.9443 15.5L8 12.5863L3.05573 15.5L4.2 9.79752L0 5.87013L5.74286 5.08631L8 0Z" />
-                  </svg>
-                </div>
-                <span className="mx-1">({restaurant.reviews})</span>
-                <span className="mx-1">•</span>
+                {restaurant.rating && (
+                  <div className="flex items-center text-sm text-gray-700">
+                    <span className="font-semibold">{restaurant.rating}</span>
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" className="ml-1">
+                      <path d="M8 0L10.2571 5.08631L16 5.87013L11.8 9.79752L12.9443 15.5L8 12.5863L3.05573 15.5L4.2 9.79752L0 5.87013L5.74286 5.08631L8 0Z" />
+                    </svg>
+
+                    {restaurant.reviews && (
+                      <>
+                        <span className="mx-1">
+                          {restaurant.reviews.startsWith("(") ? restaurant.reviews : `(${restaurant.reviews})`}
+                        </span>
+                        <span className="mx-1">•</span>
+                      </>
+                    )}
+                  </div>
+                )}
                 <span>{restaurant.distance}</span>
                 <span className="mx-1">•</span>
                 <span>{restaurant.time}</span>
