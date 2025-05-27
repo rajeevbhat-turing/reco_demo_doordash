@@ -20,7 +20,7 @@ interface CartItem {
   id: string;              // Unique identifier for the item
   restaurantId: string;    // ID of the restaurant this item belongs to
   name: string;            // Name of the item
-  price: string;           // Price as a string (e.g., "A$10.99")
+  price: string;           // Price as a string (e.g., "$10.99")
   image: string;           // URL or path to the item image
   quantity: number;        // Quantity of this item in the cart
   customizations?: string; // Optional string describing customizations
@@ -60,7 +60,7 @@ addItem({
   id: "item-123",
   restaurantId: "restaurant-456",
   name: "Double Quarter Pounder",
-  price: "A$18.70",
+  price: "$18.70",
   image: "/mcdonalds-double-quarter-pounder.png",
 });
 
@@ -69,7 +69,7 @@ addItem({
   id: "item-123",
   restaurantId: "restaurant-456",
   name: "Double Quarter Pounder",
-  price: "A$18.70",
+  price: "$18.70",
   image: "/mcdonalds-double-quarter-pounder.png",
   customizations: "No pickles, Extra cheese",
 });
@@ -259,6 +259,6 @@ If items aren't being added to the cart:
 
 If the total price calculation seems off:
 
-1. Verify the price strings are in the correct format (e.g., "A$10.99")
+1. Verify the price strings are in the correct format (e.g., "$10.99")
 2. Check that quantity values are correct
 3. Ensure the price parsing logic handles your currency format

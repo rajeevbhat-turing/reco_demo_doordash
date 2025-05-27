@@ -61,6 +61,8 @@ interface CartStore {
   currentCategory: CartCategory
   currentStoreId: string | null
   currentRestaurantId: string | null
+  isGroupOrder: boolean
+  groupOrderId: string | null
 
   // Category methods
   setCategory: (category: CartCategory) => void
@@ -71,6 +73,11 @@ interface CartStore {
   removeItem: (id: string | number) => void
   updateQuantity: (id: string | number, quantity: number) => void
   clearCart: () => void
+  
+  // Group order methods
+  startGroupOrder: () => string
+  joinGroupOrder: (groupOrderId: string) => void
+  leaveGroupOrder: () => void
 
   // Cart calculations
   getTotalItems: () => number
@@ -94,6 +101,8 @@ export const useCartStore = create<CartStore>()(
         currentCategory: "grocery" as CartCategory, // Default to grocery
         currentStoreId: null,
         currentRestaurantId: null,
+        isGroupOrder: false,
+        groupOrderId: null,
 
         // Set active category and clear cart if changing categories
         setCategory: (category: CartCategory) => {
@@ -232,6 +241,37 @@ export const useCartStore = create<CartStore>()(
             currentStoreId: null,
             currentRestaurantId: null,
           })
+        },
+        
+        // Start a group order and return the group order ID
+        startGroupOrder: () => {
+          // Generate a random ID for the group order
+          const groupOrderId = Math.random().toString(36).substring(2, 10);
+          
+          set({
+            isGroupOrder: true,
+            groupOrderId
+          });
+          
+          return groupOrderId;
+        },
+        
+        // Join an existing group order
+        joinGroupOrder: (groupOrderId: string) => {
+          set({
+            isGroupOrder: true,
+            groupOrderId,
+            // Keep the items and other cart state since we're joining an existing order
+          });
+        },
+        
+        // Leave a group order
+        leaveGroupOrder: () => {
+          set({
+            isGroupOrder: false,
+            groupOrderId: null,
+            // Keep the items since the user might want to order for themselves
+          });
         },
 
         // Get total items count

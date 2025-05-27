@@ -29,7 +29,7 @@ export interface Deal {
     {
       id: "hungry-jacks-discount",
       restaurantId: "hungry-jacks",
-      title: "20% off, up to A$20",
+      title: "20% off, up to $20",
       description: "Limited time offer on your first order",
       buttonText: "Apply",
       buttonLink: "#",

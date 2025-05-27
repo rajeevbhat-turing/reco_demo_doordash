@@ -156,7 +156,7 @@ export default function MenuItemDialog({ isOpen, onClose, item }: MenuItemDialog
       title: "#1 · Popular Choice",
       subtitle: "Regular portion with standard selections",
       details: ["Regular size", "Standard selections"],
-      price: `A$${basePrice.toFixed(2)}`,
+      price: `$${basePrice.toFixed(2)}`,
       popular: true,
       popularity: "10+",
     },
@@ -165,7 +165,7 @@ export default function MenuItemDialog({ isOpen, onClose, item }: MenuItemDialog
       title: "#2 · Value Combo",
       subtitle: "Large size with beverage",
       details: ["Large size", "Includes beverage"],
-      price: `A$${(basePrice + 2.5).toFixed(2)}`,
+      price: `$${(basePrice + 2.5).toFixed(2)}`,
     },
   ];
 
@@ -492,7 +492,7 @@ export default function MenuItemDialog({ isOpen, onClose, item }: MenuItemDialog
                     </div>
                     {option.price ? (
                       <span className="text-gray-700">
-                        {option.price > 0 ? `+A$${option.price.toFixed(2)}` : 'Included'}
+                        {option.price > 0 ? `+$${option.price.toFixed(2)}` : 'Included'}
                       </span>
                     ) : null}
                   </div>
@@ -523,8 +523,8 @@ export default function MenuItemDialog({ isOpen, onClose, item }: MenuItemDialog
             onClick={handleAddToCart}
           >
             {allRequiredSectionsMet
-              ? `Add to cart - A$${calculateTotalPrice()}`
-              : `Make ${requiredSelectionsCount} required selections - A$${calculateTotalPrice()}`}
+              ? `Add to cart - $${calculateTotalPrice()}`
+              : `Make ${requiredSelectionsCount} required selections - $${calculateTotalPrice()}`}
           </button>
         </div>
       </div>

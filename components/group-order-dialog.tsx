@@ -1,8 +1,9 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
-import { X, ChevronRight, ArrowLeft } from "lucide-react"
+import { X, ChevronRight, ArrowLeft, Copy, Check } from "lucide-react"
 import Image from "next/image"
+import { useCartStore } from "@/store/cart-store"
 
 interface GroupOrderDialogProps {
   isOpen: boolean
@@ -11,7 +12,9 @@ interface GroupOrderDialogProps {
 
 export default function GroupOrderDialog({ isOpen, onClose }: GroupOrderDialogProps) {
   const dialogRef = useRef<HTMLDivElement>(null)
-  const [currentView, setCurrentView] = useState<"main" | "paying" | "delivery" | "deadline">("main")
+  const startGroupOrder = useCartStore(state => state.startGroupOrder)
+  
+  const [currentView, setCurrentView] = useState<"main" | "paying" | "delivery" | "deadline" | "success">("main")
   const [selectedLimit, setSelectedLimit] = useState<string>("No Limit")
   const [selectedDeliveryOption, setSelectedDeliveryOption] = useState<string>("Standard delivery")
   const [selectedDeliveryTime, setSelectedDeliveryTime] = useState<string>("ASAP")
@@ -19,6 +22,8 @@ export default function GroupOrderDialog({ isOpen, onClose }: GroupOrderDialogPr
   const [selectedDeadlineTime, setSelectedDeadlineTime] = useState<string>("1:15 AM")
   const [selectedCheckoutOption, setSelectedCheckoutOption] = useState<string>("Manually")
   const [hasDeadline, setHasDeadline] = useState<boolean>(false)
+  const [groupOrderLink, setGroupOrderLink] = useState<string>("") 
+  const [copied, setCopied] = useState<boolean>(false)
 
   useEffect(() => {
     const handleEscapeKey = (event: KeyboardEvent) => {
@@ -95,6 +100,30 @@ export default function GroupOrderDialog({ isOpen, onClose }: GroupOrderDialogPr
   const handleSaveDeadline = () => {
     setHasDeadline(true)
     setCurrentView("main")
+  }
+
+  const generateGroupOrderLink = () => {
+    // Use the startGroupOrder method from the cart store to generate a group order ID
+    const groupOrderId = startGroupOrder()
+    // Use the current host with the group order ID
+    const baseUrl = window.location.origin
+    return `${baseUrl}/cart/group/${groupOrderId}`
+  }
+
+  const handleStartGroupOrder = () => {
+    const link = generateGroupOrderLink()
+    setGroupOrderLink(link)
+    setCurrentView("success")
+  }
+
+  const copyToClipboard = async () => {
+    try {
+      await navigator.clipboard.writeText(groupOrderLink)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    } catch (err) {
+      console.error("Failed to copy: ", err)
+    }
   }
 
   return (
@@ -235,7 +264,15 @@ export default function GroupOrderDialog({ isOpen, onClose }: GroupOrderDialogPr
                 <button onClick={onClose} className="px-6 py-3 bg-gray-100 rounded-full font-medium text-gray-800">
                   Cancel
                 </button>
-                <button className="px-6 py-3 bg-red-600 text-white rounded-full font-medium">Start Group Order</button>
+                <button 
+                  onClick={handleStartGroupOrder} 
+                  className="px-6 py-3 bg-red-600 text-white rounded-full font-medium flex items-center justify-center"
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="mr-2">
+                    <path d="M17 20H22V18C22 16.3431 20.6569 15 19 15C18.0444 15 17.1931 15.4468 16.6438 16.1429M17 20H7M17 20V18C17 17.3438 16.8736 16.717 16.6438 16.1429M16.6438 16.1429C15.6563 14.4452 13.7906 13.5 11.5 13.5C9.20943 13.5 7.34366 14.4452 6.35625 16.1429M7 20H2V18C2 16.3431 3.34315 15 5 15C5.95561 15 6.80686 15.4468 7.35625 16.1429M7 20V18C7 17.3438 7.12642 16.717 7.35625 16.1429M3.5 8.5C3.5 5.73858 5.73858 3.5 8.5 3.5C11.2614 3.5 13.5 5.73858 13.5 8.5C13.5 11.2614 11.2614 13.5 8.5 13.5C5.73858 13.5 3.5 11.2614 3.5 8.5ZM18.5 8.5C18.5 5.73858 16.2614 3.5 13.5 3.5C10.7386 3.5 8.5 5.73858 8.5 8.5C8.5 11.2614 10.7386 13.5 13.5 13.5C16.2614 13.5 18.5 11.2614 18.5 8.5Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                  Start Group Order
+                </button>
               </div>
             </div>
           </>
@@ -261,27 +298,27 @@ export default function GroupOrderDialog({ isOpen, onClose }: GroupOrderDialogPr
                 </button>
                 <button
                   className={`px-4 py-2 rounded-full ${
-                    selectedLimit === "A$10" ? "bg-black text-white" : "bg-gray-100 text-gray-800"
+                    selectedLimit === "$10" ? "bg-black text-white" : "bg-gray-100 text-gray-800"
                   }`}
-                  onClick={() => handleLimitSelect("A$10")}
+                  onClick={() => handleLimitSelect("$10")}
                 >
-                  A$10
+                  $10
                 </button>
                 <button
                   className={`px-4 py-2 rounded-full ${
-                    selectedLimit === "A$15" ? "bg-black text-white" : "bg-gray-100 text-gray-800"
+                    selectedLimit === "$15" ? "bg-black text-white" : "bg-gray-100 text-gray-800"
                   }`}
-                  onClick={() => handleLimitSelect("A$15")}
+                  onClick={() => handleLimitSelect("$15")}
                 >
-                  A$15
+                  $15
                 </button>
                 <button
                   className={`px-4 py-2 rounded-full ${
-                    selectedLimit === "A$20" ? "bg-black text-white" : "bg-gray-100 text-gray-800"
+                    selectedLimit === "$20" ? "bg-black text-white" : "bg-gray-100 text-gray-800"
                   }`}
-                  onClick={() => handleLimitSelect("A$20")}
+                  onClick={() => handleLimitSelect("$20")}
                 >
-                  A$20
+                  $20
                 </button>
                 <button
                   className={`px-4 py-2 rounded-full ${
@@ -465,6 +502,71 @@ export default function GroupOrderDialog({ isOpen, onClose }: GroupOrderDialogPr
                   className="px-6 py-3 bg-red-600 text-white rounded-full font-medium"
                 >
                   Save
+                </button>
+              </div>
+            </div>
+          </>
+        ) : currentView === "success" ? (
+          <>
+            <div className="p-6">
+              <button onClick={onClose} className="absolute top-4 left-4 z-10" aria-label="Close dialog">
+                <X className="h-6 w-6 text-gray-500" />
+              </button>
+
+              <div className="flex flex-col items-center justify-center pt-8 pb-4">
+                <div className="bg-green-100 rounded-full p-4 mb-4">
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path 
+                      d="M20 6L9 17L4 12" 
+                      stroke="#22c55e" 
+                      strokeWidth="2" 
+                      strokeLinecap="round" 
+                      strokeLinejoin="round" 
+                    />
+                  </svg>
+                </div>
+                <h2 className="text-[28px] font-bold mb-2">Group order started!</h2>
+                <p className="text-gray-600 text-center mb-8">
+                  Share this link with others. They can add their items to your cart.
+                </p>
+              </div>
+
+              <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-8">
+                <p className="text-sm text-gray-700 mb-3">Share this link with friends:</p>
+                <div className="bg-white border border-gray-200 rounded-lg p-3 flex justify-between items-center">
+                  <div className="text-sm text-gray-800 truncate mr-2">{groupOrderLink}</div>
+                  <button 
+                    onClick={copyToClipboard} 
+                    className={`flex items-center justify-center p-2 ${copied ? 'bg-green-50 text-green-600' : 'bg-gray-100 text-gray-600'} rounded-full transition-colors`}
+                    aria-label="Copy link"
+                  >
+                    {copied ? <Check className="h-5 w-5" /> : <Copy className="h-5 w-5" />}
+                  </button>
+                </div>
+                {copied && <p className="text-xs text-green-600 mt-2">Link copied to clipboard!</p>}
+                
+              </div>
+
+              <div className="bg-gray-50 p-4 rounded-lg mb-6">
+                <h3 className="font-medium mb-2">About group orders</h3>
+                <ul className="text-sm text-gray-600 space-y-2">
+                  <li>• People can add items until the order deadline</li>
+                  <li>• All items will be delivered together</li>
+                  <li>• You'll be able to review the order before checking out</li>
+                  {selectedLimit !== "No Limit" && (
+                    <li>• You've set a {selectedLimit} limit per person</li>
+                  )}
+                  {hasDeadline && (
+                    <li>
+                      • Order deadline: {selectedDate}, {selectedDeadlineTime} ({selectedCheckoutOption} checkout)
+                    </li>
+                  )}
+                </ul>
+              </div>
+
+              <div className="flex justify-center">
+                <button onClick={onClose} className="px-6 py-3 bg-red-600 text-white rounded-full font-medium">
+                  Done
                 </button>
               </div>
             </div>
@@ -657,7 +759,7 @@ export default function GroupOrderDialog({ isOpen, onClose }: GroupOrderDialogPr
               {/* Estimated delivery time */}
               <div className="my-6 text-center text-gray-600">
                 <p>Estimated delivery time: {selectedDeadlineTime === "1:15 AM" ? "1:35 AM" : "1:35 AM"}</p>
-                <p>+10 mins for A$150+ orders</p>
+                <p>+10 mins for $150+ orders</p>
               </div>
 
               {/* Checkout options */}
