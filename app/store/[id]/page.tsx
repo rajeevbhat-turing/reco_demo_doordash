@@ -13,6 +13,7 @@ import {
   Heart,
   Star,
   Search,
+  X,
 } from "lucide-react";
 import { getRestaurantById } from "@/constants/restaurants";
 import {
@@ -25,6 +26,8 @@ import { useCartStore } from "@/store/cart-store";
 import MenuItemDialog from "@/components/menu-item-dialog";
 import GroupOrderDialog from "@/components/group-order-dialog";
 import ReviewDialog from "@/components/review-dialog";
+import StoreDetailsDialog from "@/components/store-details-dialog";
+import ServiceFeesInfo from "@/components/service-fees-info";
 import { CartProvider } from "@/context/cart-context";
 
 const menuTypes = [
@@ -45,7 +48,7 @@ const menuTypes = [
   },
 ];
 
-function SearchBar({ restaurantName }) {
+function SearchBar({ restaurantName, searchQuery, onSearchChange }) {
   return (
     <div className="relative flex-1 max-w-md">
       <div className="relative">
@@ -53,8 +56,19 @@ function SearchBar({ restaurantName }) {
         <input
           type="text"
           placeholder={`Search ${restaurantName}`}
+          value={searchQuery}
+          onChange={(e) => onSearchChange(e.target.value)}
           className="w-full bg-gray-100 rounded-full py-3 pl-10 pr-4 text-gray-700 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-200"
         />
+        {searchQuery && (
+          <button 
+            onClick={() => onSearchChange('')}
+            className="absolute right-3 top-1/2 transform -translate-y-1/2"
+            aria-label="Clear search"
+          >
+            <X className="h-4 w-4 text-gray-500" />
+          </button>
+        )}
       </div>
     </div>
   );
@@ -88,7 +102,11 @@ export default function RestaurantPage() {
   const [selectedItem, setSelectedItem] = useState<any>(null);
   const [groupOrderDialogOpen, setGroupOrderDialogOpen] = useState(false);
   const [reviewDialogOpen, setReviewDialogOpen] = useState(false);
+  const [storeDetailsDialogOpen, setStoreDetailsDialogOpen] = useState(false);
+  const [serviceFeesInfoOpen, setServiceFeesInfoOpen] = useState(false);
   const [menuDropdownOpen, setMenuDropdownOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isSearching, setIsSearching] = useState(false);
 
   const [isSaved, setIsSaved] = useState(false);
   const [hoverRating, setHoverRating] = useState(0);
@@ -303,7 +321,14 @@ export default function RestaurantPage() {
             >
               {restaurant.name}
             </h1>
-            <SearchBar restaurantName={restaurant.name} />
+            <SearchBar 
+              restaurantName={restaurant.name} 
+              searchQuery={searchQuery}
+              onSearchChange={(query) => {
+                setSearchQuery(query);
+                setIsSearching(query.trim().length > 0);
+              }}
+            />
           </div>
 
           <div className="flex flex-wrap mb-6">
@@ -345,8 +370,8 @@ export default function RestaurantPage() {
                 )}
                 <div className="flex items-center mb-1">
                   <span className="text-sm">
-                    {restaurant.rating} ★ ({restaurant.reviews} ratings) •{" "}
-                    {restaurant.distance}
+                    {restaurant.rating ? `${restaurant.rating} ★` : '-- ★'} {restaurant.reviews ? `(${restaurant.reviews} ratings)` : '(0 ratings)'} •{" "}
+                    {restaurant.distance || 'Distance unavailable'}
                   </span>
                 </div>
                 <div className="flex items-center mb-1">
@@ -356,10 +381,18 @@ export default function RestaurantPage() {
                 </div>
                 <div className="flex items-center text-sm text-gray-500 mt-2">
                   <span>Service fees apply</span>
-                  <Info className="h-4 w-4 ml-1" />
+                  <button 
+                    onClick={() => setServiceFeesInfoOpen(true)} 
+                    className="ml-1"
+                  >
+                    <Info className="h-4 w-4 text-gray-500" />
+                  </button>
                 </div>
                 <div className="flex justify-center mt-6">
-                  <button className="text-gray-600 font-medium text-sm border border-gray-300 rounded-full px-6 py-1">
+                  <button 
+                    className="text-gray-600 font-medium text-sm border border-gray-300 rounded-full px-6 py-1"
+                    onClick={() => setStoreDetailsDialogOpen(true)}
+                  >
                     See More
                   </button>
                 </div>
@@ -441,392 +474,371 @@ export default function RestaurantPage() {
             </div>
 
             <div className="w-full md:w-3/4 md:pl-4">
-              <div className="flex items-center justify-between mb-4 border border-gray-200 rounded-lg p-4">
-                <div>
-                  <button
-                    className="border border-gray-200 px-4 py-2 flex items-center rounded-full"
-                    style={{ background: "#f1f1f1" }}
-                    onClick={openGroupOrderDialog}
-                  >
-                    <span className="mr-1">Group Order</span>
-                  </button>
-                </div>
-                <div className="flex items-center space-x-4">
-                  <div className="bg-[#e8f7f7] rounded-lg p-4">
-                    <div className="flex flex-col">
-                      <span className="font-medium text-[#3d8f8f]">
-                        A$0 delivery fee
-                      </span>
-                      <div className="flex items-center text-gray-800 text-sm">
-                        <span>pricing & fees</span>
-                        <Info className="h-4 w-4 ml-1 text-gray-500" />
-                      </div>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <div className="font-medium">21 min</div>
-                    <div className="text-sm text-gray-600">delivery time</div>
-                  </div>
-                </div>
-              </div>
-
-              {/* DashPass Promo Banner */}
-              <div className="my-6 rounded-lg overflow-hidden">
-                <div
-                  ref={dealsRef}
-                  className="flex overflow-x-auto hide-scrollbar"
-                >
-                  <div className="min-w-full flex-shrink-0 relative bg-gradient-to-r from-green-50 to-blue-50 p-4 rounded-lg">
-                    <div className="flex items-center justify-between">
-                      <div className="flex-1">
-                        <h3 className="font-medium text-lg">
-                          Enjoy $0 delivery fees and lower service fees
-                        </h3>
-                        <p className="text-gray-700">
-                          on eligible orders with DashPass.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                  {/* Additional promo items */}
-                  <div className="min-w-full flex-shrink-0 relative bg-gradient-to-r from-yellow-50 to-orange-50 p-4 rounded-lg">
-                    <div className="flex items-center justify-between">
-                      <div className="flex-1">
-                        <h3 className="font-medium text-lg">
-                          Save 20% on orders over $25
-                        </h3>
-                        <p className="text-gray-700">
-                          Limited time offer for new customers.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="min-w-full flex-shrink-0 relative bg-gradient-to-r from-blue-50 to-purple-50 p-4 rounded-lg">
-                    <div className="flex items-center justify-between">
-                      <div className="flex-1">
-                        <h3 className="font-medium text-lg">
-                          Free McFlurry with orders over $20
-                        </h3>
-                        <p className="text-gray-700">
-                          Use code MCFLURRY at checkout.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="absolute top-4 right-4 z-10">
-                    <div className="flex space-x-2">
-                      <button
-                        className="p-2 rounded-full border border-gray-200 bg-white"
-                        onClick={() => scrollContainer(dealsRef, "left")}
-                      >
-                        <ChevronLeft className="h-5 w-5" />
-                      </button>
-                      <button
-                        className="p-2 rounded-full border border-gray-200 bg-white"
-                        onClick={() => scrollContainer(dealsRef, "right")}
-                      >
-                        <ChevronRight className="h-5 w-5" />
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Menu Indicator Dots */}
-              <div className="flex justify-center space-x-1 my-4">
-                <div className="h-2 w-2 rounded-full bg-gray-200"></div>
-                <div className="h-2 w-2 rounded-full bg-gray-200"></div>
-                <div className="h-2 w-6 rounded-full bg-red-500"></div>
-              </div>
-
-              {/* Featured Items */}
-              <div className="mt-4">
-                <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-xl font-bold">Featured Items</h2>
-                  <div className="flex">
-                    <button
-                      className="p-2 rounded-full border border-gray-200 mr-2"
-                      onClick={() => scrollContainer(featuredItemsRef, "left")}
-                    >
-                      <ChevronLeft className="h-5 w-5" />
-                    </button>
-                    <button
-                      className="p-2 rounded-full border border-gray-200"
-                      onClick={() => scrollContainer(featuredItemsRef, "right")}
-                    >
-                      <ChevronRight className="h-5 w-5" />
-                    </button>
-                  </div>
-                </div>
-                <div
-                  ref={featuredItemsRef}
-                  className="flex overflow-x-auto space-x-4 pb-4 hide-scrollbar"
-                >
-                  {featuredItems.map((item) => (
-                    <div
-                      key={item.id}
-                      className="min-w-[200px] border border-gray-200 rounded-lg overflow-hidden flex-shrink-0 cursor-pointer"
-                      onClick={() => openItemDialog(item)}
-                    >
-                      <div className="relative h-40">
-                        <Image
-                          src={
-                            item.image ||
-                            "/placeholder.svg?height=160&width=200&query=burger"
-                          }
-                          alt={item.name}
-                          fill
-                          className="object-cover"
-                        />
-                        <button
-                          className="absolute bottom-3 right-3 bg-white rounded-full p-1 shadow-md"
-                          onClick={(e) => {
-                            e.stopPropagation(); // Prevent opening the dialog
-                            openItemDialog(item);
-                          }}
+              {isSearching ? (
+                <div className="mb-4">
+                  <h2 className="text-xl font-bold mb-4">Search Results</h2>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* Filter all menu items across categories */}
+                    {menuCategories.flatMap(category => 
+                      getMenuItemsByCategory(id, category.name)
+                        .filter(item => 
+                          item.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                          (item.description && item.description.toLowerCase().includes(searchQuery.toLowerCase()))
+                        )
+                        .map(item => (
+                          <div
+                            key={item.id}
+                            className="border border-gray-200 rounded-lg overflow-hidden cursor-pointer"
+                            onClick={() => openItemDialog(item)}
+                          >
+                            <div className="p-3 flex justify-between">
+                              <div>
+                                <h3 className="font-medium">{item.name}</h3>
+                                {item.calories && <p className="text-sm text-gray-500">({item.calories})</p>}
+                                <p className="text-gray-900 mt-1">{item.price}</p>
+                              </div>
+                              <div className="relative w-24 h-24">
+                                <Image
+                                  src={item.image || "/placeholder.svg"}
+                                  alt={item.name}
+                                  fill
+                                  className="object-cover rounded-lg"
+                                />
+                                <button
+                                  className="absolute bottom-1 right-1 bg-white rounded-full p-1 shadow-md"
+                                  onClick={(e) => {
+                                    e.stopPropagation(); // Prevent opening the dialog
+                                    handleAddToCart(item);
+                                  }}
+                                >
+                                  <span className="text-lg font-bold">+</span>
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        ))
+                    )}
+                    {menuCategories.flatMap(category => 
+                      getMenuItemsByCategory(id, category.name)
+                    ).filter(item => 
+                      item.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                      (item.description && item.description.toLowerCase().includes(searchQuery.toLowerCase()))
+                    ).length === 0 && (
+                      <div className="col-span-2 py-8 text-center">
+                        <p className="text-gray-500">No items found matching "{searchQuery}"</p>
+                        <button 
+                          className="mt-2 text-red-600" 
+                          onClick={() => setSearchQuery("")}
                         >
-                          <span className="text-xl font-bold">+</span>
+                          Clear search
                         </button>
                       </div>
-                      <div className="p-3">
-                        <h3 className="font-medium">{item.name}</h3>
-                        <p className="text-gray-900 mt-1">{item.price}</p>
+                    )}
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <div className="flex items-center justify-between mb-4 border border-gray-200 rounded-lg p-4">
+                    <div>
+                      <button
+                        className="border border-gray-200 px-4 py-2 flex items-center rounded-full"
+                        style={{ background: "#f1f1f1" }}
+                        onClick={openGroupOrderDialog}
+                      >
+                        <span className="mr-1">Group Order</span>
+                      </button>
+                    </div>
+                    <div className="flex items-center space-x-4">
+                      <div className="bg-[#e8f7f7] rounded-lg p-4">
+                        <div className="flex flex-col">
+                          <span className="font-medium text-[#3d8f8f]">
+                            $0 delivery fee
+                          </span>
+                          <div className="flex items-center text-gray-800 text-sm">
+                            <span>pricing & fees</span>
+                            <Info className="h-4 w-4 ml-1 text-gray-500" />
+                          </div>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <div className="font-medium">21 min</div>
+                        <div className="text-sm text-gray-600">delivery time</div>
                       </div>
                     </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Reviews Section */}
-              <div className="mt-8">
-                <h2 className="text-xl font-bold mb-4">Reviews</h2>
-                <div className="bg-gray-50 rounded-lg p-6">
-                  <h3 className="text-lg font-medium mb-4">
-                    Be the first to review
-                  </h3>
-                  <div className="flex mb-4">
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <Star
-                        key={star}
-                        className={`h-8 w-8 cursor-pointer ${
-                          star <= (hoverRating || selectedRating)
-                            ? "fill-gray-700 text-gray-700"
-                            : "text-gray-300"
-                        }`}
-                        onMouseEnter={() => handleStarHover(star)}
-                        onMouseLeave={handleStarLeave}
-                        onClick={() => handleStarClick(star)}
-                      />
-                    ))}
                   </div>
-                  <button
-                    className="text-gray-600 font-medium hover:text-gray-800"
-                    onClick={handleStartReview}
-                  >
-                    Start your review
-                  </button>
-                </div>
-              </div>
 
-              {/* Most Ordered */}
-
-              <div
-                ref={(el) => (sectionRefs.current["Most Ordered"] = el)}
-                className="mt-8 pt-4"
-                id="most-ordered"
-              >
-                <h2 className="text-xl font-bold mb-4">Most Ordered</h2>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  {mostOrderedItems.map((item) => (
+                  {/* DashPass Promo Banner */}
+                </>
+              )}
+              
+              {!isSearching && (
+                <>
+                  <div className="my-6 rounded-lg overflow-hidden">
                     <div
-                      key={item.id}
-                      className="border border-gray-200 rounded-lg overflow-hidden cursor-pointer"
-                      onClick={() => openItemDialog(item)}
+                      ref={dealsRef}
+                      className="flex overflow-x-auto hide-scrollbar"
                     >
-                      <div className="relative h-40">
-                        <Image
-                          src={item.image || "/placeholder.svg"}
-                          alt={item.name}
-                          fill
-                          className="object-cover"
-                        />
+                      <div className="min-w-full flex-shrink-0 relative bg-gradient-to-r from-green-50 to-blue-50 p-4 rounded-lg">
+                        <div className="flex items-center justify-between">
+                          <div className="flex-1">
+                            <h3 className="font-medium text-lg">
+                              Enjoy $0 delivery fees and lower service fees
+                            </h3>
+                            <p className="text-gray-700">
+                              on eligible orders with DashPass.
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                      {/* Additional promo items */}
+                      <div className="min-w-full flex-shrink-0 relative bg-gradient-to-r from-yellow-50 to-orange-50 p-4 rounded-lg">
+                        <div className="flex items-center justify-between">
+                          <div className="flex-1">
+                            <h3 className="font-medium text-lg">
+                              Save 20% on orders over $25
+                            </h3>
+                            <p className="text-gray-700">
+                              Limited time offer for new customers.
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="min-w-full flex-shrink-0 relative bg-gradient-to-r from-blue-50 to-purple-50 p-4 rounded-lg">
+                        <div className="flex items-center justify-between">
+                          <div className="flex-1">
+                            <h3 className="font-medium text-lg">
+                              Free McFlurry with orders over $20
+                            </h3>
+                            <p className="text-gray-700">
+                              Use code MCFLURRY at checkout.
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="absolute top-4 right-4 z-10">
+                        <div className="flex space-x-2">
+                          <button
+                            className="p-2 rounded-full border border-gray-200 bg-white"
+                            onClick={() => scrollContainer(dealsRef, "left")}
+                          >
+                            <ChevronLeft className="h-5 w-5" />
+                          </button>
+                          <button
+                            className="p-2 rounded-full border border-gray-200 bg-white"
+                            onClick={() => scrollContainer(dealsRef, "right")}
+                          >
+                            <ChevronRight className="h-5 w-5" />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+    
+                  {/* Menu Indicator Dots */}
+                  <div className="flex justify-center space-x-1 my-4">
+                    <div className="h-2 w-2 rounded-full bg-gray-200"></div>
+                    <div className="h-2 w-2 rounded-full bg-gray-200"></div>
+                    <div className="h-2 w-6 rounded-full bg-red-500"></div>
+                  </div>
+    
+                  {/* Featured Items */}
+                  <div className="mt-4">
+                    <div className="flex items-center justify-between mb-4">
+                      <h2 className="text-xl font-bold">Featured Items</h2>
+                      <div className="flex">
                         <button
-                          className="absolute bottom-3 right-3 bg-white rounded-full p-1 shadow-md"
-                          onClick={(e) => {
-                            e.stopPropagation(); // Prevent opening the dialog
-                            handleAddToCart(item);
-                          }}
+                          className="p-2 rounded-full border border-gray-200 mr-2"
+                          onClick={() => scrollContainer(featuredItemsRef, "left")}
                         >
-                          <span className="text-xl font-bold">+</span>
+                          <ChevronLeft className="h-5 w-5" />
+                        </button>
+                        <button
+                          className="p-2 rounded-full border border-gray-200"
+                          onClick={() => scrollContainer(featuredItemsRef, "right")}
+                        >
+                          <ChevronRight className="h-5 w-5" />
                         </button>
                       </div>
-                      <div className="p-3">
-                        <h3 className="font-medium">{item.name}</h3>
-                        {item.calories && (
-                          <p className="text-sm text-gray-500">
-                            ({item.calories})
-                          </p>
-                        )}
-                        <p className="text-gray-900 mt-1">{item.price}</p>
-                        {item.rating && (
-                          <div className="flex items-center mt-1">
-                            <span className="text-sm">
-                              {Math.round(item.rating * 100)}%
-                            </span>
-                            {item.ratingCount && (
-                              <span className="text-sm text-gray-500 ml-1">
-                                ({item.ratingCount})
-                              </span>
+                    </div>
+                    <div
+                      ref={featuredItemsRef}
+                      className="flex overflow-x-auto space-x-4 pb-4 hide-scrollbar"
+                    >
+                      {featuredItems.map((item) => (
+                        <div
+                          key={item.id}
+                          className="min-w-[200px] border border-gray-200 rounded-lg overflow-hidden flex-shrink-0 cursor-pointer"
+                          onClick={() => openItemDialog(item)}
+                        >
+                          <div className="relative h-40">
+                            <Image
+                              src={
+                                item.image ||
+                                "/placeholder.svg?height=160&width=200&query=burger"
+                              }
+                              alt={item.name}
+                              fill
+                              className="object-cover"
+                            />
+                            <button
+                              className="absolute bottom-3 right-3 bg-white rounded-full p-1 shadow-md"
+                              onClick={(e) => {
+                                e.stopPropagation(); // Prevent opening the dialog
+                                openItemDialog(item);
+                              }}
+                            >
+                              <span className="text-xl font-bold">+</span>
+                            </button>
+                          </div>
+                          <div className="p-3">
+                            <h3 className="font-medium">{item.name}</h3>
+                            <p className="text-gray-900 mt-1">{item.price}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+    
+                  {/* Reviews Section */}
+                  <div className="mt-8">
+                    <h2 className="text-xl font-bold mb-4">Reviews</h2>
+                    <div className="bg-gray-50 rounded-lg p-6">
+                      <h3 className="text-lg font-medium mb-4">
+                        Be the first to review
+                      </h3>
+                      <div className="flex mb-4">
+                        {[1, 2, 3, 4, 5].map((star) => (
+                          <Star
+                            key={star}
+                            className={`h-8 w-8 cursor-pointer ${
+                              star <= (hoverRating || selectedRating)
+                                ? "fill-gray-700 text-gray-700"
+                                : "text-gray-300"
+                            }`}
+                            onMouseEnter={() => handleStarHover(star)}
+                            onMouseLeave={handleStarLeave}
+                            onClick={() => handleStarClick(star)}
+                          />
+                        ))}
+                      </div>
+                      <button
+                        className="text-gray-600 font-medium hover:text-gray-800"
+                        onClick={handleStartReview}
+                      >
+                        Start your review
+                      </button>
+                    </div>
+                  </div>
+                </>
+              )}
+
+              {!isSearching && (
+                <>
+                  {/* Most Ordered */}
+                  <div
+                    ref={(el) => (sectionRefs.current["Most Ordered"] = el)}
+                    className="mt-8 pt-4"
+                    id="most-ordered"
+                  >
+                    <h2 className="text-xl font-bold mb-4">Most Ordered</h2>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      {mostOrderedItems.map((item) => (
+                        <div
+                          key={item.id}
+                          className="border border-gray-200 rounded-lg overflow-hidden cursor-pointer"
+                          onClick={() => openItemDialog(item)}
+                        >
+                          <div className="relative h-40">
+                            <Image
+                              src={item.image || "/placeholder.svg"}
+                              alt={item.name}
+                              fill
+                              className="object-cover"
+                            />
+                            <button
+                              className="absolute bottom-3 right-3 bg-white rounded-full p-1 shadow-md"
+                              onClick={(e) => {
+                                e.stopPropagation(); // Prevent opening the dialog
+                                handleAddToCart(item);
+                              }}
+                            >
+                              <span className="text-xl font-bold">+</span>
+                            </button>
+                          </div>
+                          <div className="p-3">
+                            <h3 className="font-medium">{item.name}</h3>
+                            {item.calories && (
+                              <p className="text-sm text-gray-500">
+                                ({item.calories})
+                              </p>
+                            )}
+                            <p className="text-gray-900 mt-1">{item.price}</p>
+                            {item.rating && (
+                              <div className="flex items-center mt-1">
+                                <span className="text-sm">
+                                  {Math.round(item.rating * 100)}%
+                                </span>
+                                {item.ratingCount && (
+                                  <span className="text-sm text-gray-500 ml-1">
+                                    ({item.ratingCount})
+                                  </span>
+                                )}
+                              </div>
                             )}
                           </div>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Featured Creations */}
-              <div
-                ref={(el) => (sectionRefs.current["Featured Items"] = el)}
-                className="mt-8 pt-4"
-                id="featured-items"
-              >
-                <h2 className="text-xl font-bold mb-4">Featured Creations</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {featuredItems.map((item) => (
-                    <div
-                      key={item.id}
-                      className="border border-gray-200 rounded-lg overflow-hidden flex cursor-pointer"
-                      onClick={() => openItemDialog(item)}
-                    >
-                      <div className="p-3 flex-1">
-                        <h3 className="font-medium">{item.name}</h3>
-                        <p className="text-sm text-gray-600 mt-1 line-clamp-2">
-                          {item.description}
-                        </p>
-                        <p className="text-gray-900 mt-2">{item.price}</p>
-                      </div>
-                      <div className="relative w-24 h-24 m-3">
-                        <Image
-                          src={item.image || "/placeholder.svg"}
-                          alt={item.name}
-                          fill
-                          className="object-cover rounded-lg"
-                        />
-                        <button
-                          className="absolute bottom-1 right-1 bg-white rounded-full p-1 shadow-md"
-                          onClick={() => handleAddToCart(item)}
-                        >
-                          <span className="text-lg font-bold">+</span>
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* <div
-                ref={(el) => (sectionRefs.current["Family & Sharing"] = el)}
-                className="mt-8 pt-4"
-                id="family-sharing"
-              >
-                <h2 className="text-xl font-bold mb-4">Family & Sharing</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {familySharingItems.map((item) => (
-                    <div
-                      key={item.id}
-                      className="border border-gray-200 rounded-lg overflow-hidden cursor-pointer"
-                      onClick={() => openItemDialog(item)}
-                    >
-                      <div className="p-3 flex justify-between">
-                        <div>
-                          <h3 className="font-medium">{item.name}</h3>
-                          {item.calories && <p className="text-sm text-gray-500">({item.calories})</p>}
-                          <p className="text-gray-900 mt-1">{item.price}</p>
                         </div>
-                        <div className="relative w-24 h-24">
-                          <Image
-                            src={item.image || "/placeholder.svg"}
-                            alt={item.name}
-                            fill
-                            className="object-cover rounded-lg"
-                          />
-                          <button
-                            className="absolute bottom-1 right-1 bg-white rounded-full p-1 shadow-md"
-                            onClick={(e) => {
-                              e.stopPropagation() // Prevent opening the dialog
-                              handleAddToCart(item)
-                            }}
-                          >
-                            <span className="text-lg font-bold">+</span>
-                          </button>
-                        </div>
-                      </div>
+                      ))}
                     </div>
-                  ))}
-                </div>
-              </div>
-
-              <div ref={(el) => (sectionRefs.current["Beef"] = el)} className="mt-8 pt-4" id="beef">
-                <h2 className="text-xl font-bold mb-4">Beef</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {beefItems.map((item) => (
-                    <div
-                      key={item.id}
-                      className="border border-gray-200 rounded-lg overflow-hidden cursor-pointer"
-                      onClick={() => openItemDialog(item)}
-                    >
-                      <div className="p-3 flex justify-between">
-                        <div>
-                          <h3 className="font-medium">{item.name}</h3>
-                          {item.calories && <p className="text-sm text-gray-500">({item.calories})</p>}
-                          <p className="text-gray-900 mt-1">{item.price}</p>
-                        </div>
-                        <div className="relative w-24 h-24">
-                          <Image
-                            src={item.image || "/placeholder.svg"}
-                            alt={item.name}
-                            fill
-                            className="object-cover rounded-lg"
-                          />
-                          <button
-                            className="absolute bottom-1 right-1 bg-white rounded-full p-1 shadow-md"
-                            onClick={(e) => {
-                              e.stopPropagation() // Prevent opening the dialog
-                              handleAddToCart(item)
-                            }}
-                          >
-                            <span className="text-lg font-bold">+</span>
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>  */}
-
-              {/* Add refs for other menu categories */}
-              {menuCategories
-                .filter(
-                  (category) =>
-                    ![
-                      "Featured Items",
-                      "Most Ordered",
-                      "Family & Sharing",
-                      "Beef",
-                    ].includes(category.name)
-                )
-                .map((category) => (
+                  </div>
+    
+                  {/* Featured Creations */}
                   <div
-                    key={category.id}
-                    ref={(el) => (sectionRefs.current[category.name] = el)}
+                    ref={(el) => (sectionRefs.current["Featured Items"] = el)}
                     className="mt-8 pt-4"
-                    id={category.name.toLowerCase().replace(/\s+/g, "-")}
+                    id="featured-items"
                   >
-                    <h2 className="text-xl font-bold mb-4">{category.name}</h2>
+                    <h2 className="text-xl font-bold mb-4">Featured Creations</h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {getMenuItemsByCategory(id, category.name).map((item) => (
+                      {featuredItems.map((item) => (
+                        <div
+                          key={item.id}
+                          className="border border-gray-200 rounded-lg overflow-hidden flex cursor-pointer"
+                          onClick={() => openItemDialog(item)}
+                        >
+                          <div className="p-3 flex-1">
+                            <h3 className="font-medium">{item.name}</h3>
+                            <p className="text-sm text-gray-600 mt-1 line-clamp-2">
+                              {item.description}
+                            </p>
+                            <p className="text-gray-900 mt-2">{item.price}</p>
+                          </div>
+                          <div className="relative w-24 h-24 m-3">
+                            <Image
+                              src={item.image || "/placeholder.svg"}
+                              alt={item.name}
+                              fill
+                              className="object-cover rounded-lg"
+                            />
+                            <button
+                              className="absolute bottom-1 right-1 bg-white rounded-full p-1 shadow-md"
+                              onClick={() => handleAddToCart(item)}
+                            >
+                              <span className="text-lg font-bold">+</span>
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+    
+                  {/* <div
+                    ref={(el) => (sectionRefs.current["Family & Sharing"] = el)}
+                    className="mt-8 pt-4"
+                    id="family-sharing"
+                  >
+                    <h2 className="text-xl font-bold mb-4">Family & Sharing</h2>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {familySharingItems.map((item) => (
                         <div
                           key={item.id}
                           className="border border-gray-200 rounded-lg overflow-hidden cursor-pointer"
@@ -835,11 +847,7 @@ export default function RestaurantPage() {
                           <div className="p-3 flex justify-between">
                             <div>
                               <h3 className="font-medium">{item.name}</h3>
-                              {item.calories && (
-                                <p className="text-sm text-gray-500">
-                                  ({item.calories})
-                                </p>
-                              )}
+                              {item.calories && <p className="text-sm text-gray-500">({item.calories})</p>}
                               <p className="text-gray-900 mt-1">{item.price}</p>
                             </div>
                             <div className="relative w-24 h-24">
@@ -852,8 +860,8 @@ export default function RestaurantPage() {
                               <button
                                 className="absolute bottom-1 right-1 bg-white rounded-full p-1 shadow-md"
                                 onClick={(e) => {
-                                  e.stopPropagation(); // Prevent opening the dialog
-                                  handleAddToCart(item);
+                                  e.stopPropagation() // Prevent opening the dialog
+                                  handleAddToCart(item)
                                 }}
                               >
                                 <span className="text-lg font-bold">+</span>
@@ -864,7 +872,106 @@ export default function RestaurantPage() {
                       ))}
                     </div>
                   </div>
-                ))}
+    
+                  <div ref={(el) => (sectionRefs.current["Beef"] = el)} className="mt-8 pt-4" id="beef">
+                    <h2 className="text-xl font-bold mb-4">Beef</h2>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {beefItems.map((item) => (
+                        <div
+                          key={item.id}
+                          className="border border-gray-200 rounded-lg overflow-hidden cursor-pointer"
+                          onClick={() => openItemDialog(item)}
+                        >
+                          <div className="p-3 flex justify-between">
+                            <div>
+                              <h3 className="font-medium">{item.name}</h3>
+                              {item.calories && <p className="text-sm text-gray-500">({item.calories})</p>}
+                              <p className="text-gray-900 mt-1">{item.price}</p>
+                            </div>
+                            <div className="relative w-24 h-24">
+                              <Image
+                                src={item.image || "/placeholder.svg"}
+                                alt={item.name}
+                                fill
+                                className="object-cover rounded-lg"
+                              />
+                              <button
+                                className="absolute bottom-1 right-1 bg-white rounded-full p-1 shadow-md"
+                                onClick={(e) => {
+                                  e.stopPropagation() // Prevent opening the dialog
+                                  handleAddToCart(item)
+                                }}
+                              >
+                                <span className="text-lg font-bold">+</span>
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>  */}
+    
+                  {/* Add refs for other menu categories */}
+                  {menuCategories
+                    .filter(
+                      (category) =>
+                        ![
+                          "Featured Items",
+                          "Most Ordered",
+                          "Family & Sharing",
+                          "Beef",
+                        ].includes(category.name)
+                    )
+                    .map((category) => (
+                      <div
+                        key={category.id}
+                        ref={(el) => (sectionRefs.current[category.name] = el)}
+                        className="mt-8 pt-4"
+                        id={category.name.toLowerCase().replace(/\s+/g, "-")}
+                      >
+                        <h2 className="text-xl font-bold mb-4">{category.name}</h2>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          {getMenuItemsByCategory(id, category.name).map((item) => (
+                            <div
+                              key={item.id}
+                              className="border border-gray-200 rounded-lg overflow-hidden cursor-pointer"
+                              onClick={() => openItemDialog(item)}
+                            >
+                              <div className="p-3 flex justify-between">
+                                <div>
+                                  <h3 className="font-medium">{item.name}</h3>
+                                  {item.calories && (
+                                    <p className="text-sm text-gray-500">
+                                      ({item.calories})
+                                    </p>
+                                  )}
+                                  <p className="text-gray-900 mt-1">{item.price}</p>
+                                </div>
+                                <div className="relative w-24 h-24">
+                                  <Image
+                                    src={item.image || "/placeholder.svg"}
+                                    alt={item.name}
+                                    fill
+                                    className="object-cover rounded-lg"
+                                  />
+                                  <button
+                                    className="absolute bottom-1 right-1 bg-white rounded-full p-1 shadow-md"
+                                    onClick={(e) => {
+                                      e.stopPropagation(); // Prevent opening the dialog
+                                      handleAddToCart(item);
+                                    }}
+                                  >
+                                    <span className="text-lg font-bold">+</span>
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -884,6 +991,17 @@ export default function RestaurantPage() {
           isOpen={reviewDialogOpen}
           onClose={() => setReviewDialogOpen(false)}
           restaurantName={restaurant.name}
+        />
+        {/* Store Details Dialog */}
+        <StoreDetailsDialog 
+          isOpen={storeDetailsDialogOpen}
+          onClose={() => setStoreDetailsDialogOpen(false)}
+          store={restaurant}
+        />
+        {/* Service Fees Info Dialog */}
+        <ServiceFeesInfo
+          isOpen={serviceFeesInfoOpen}
+          onClose={() => setServiceFeesInfoOpen(false)}
         />
       </div>
     </CartProvider>

@@ -1,9 +1,10 @@
 "use client"
 
-import { Trash2, Plus, Minus, ChevronRight, ChevronLeft } from "lucide-react"
+import { Trash2, Plus, Minus, ChevronRight, ChevronLeft, Users } from "lucide-react"
 import Image from "next/image"
 import { useCart } from "@/context/cart-context"
-import { useRef } from "react"
+import { useCartStore } from "@/store/cart-store"
+import { useRef, useState, useEffect } from "react"
 import { cartConfig } from "@/data/cart-config"
 import { uiConfig } from "@/data/ui-config"
 import { recommendedProducts } from "@/data/modal-data"
@@ -14,8 +15,17 @@ interface CartSidebarProps {
 
 export default function GroceryCartSidebar({ storeData }: CartSidebarProps) {
   const { items, removeFromCart, updateQuantity, totalItems, subtotal, deliveryFee } = useCart()
+  const { isGroupOrder } = useCartStore()
   const recommendationsRef = useRef<HTMLDivElement>(null)
   const { emptyCartMessage } = uiConfig
+  
+  // Use state for calculated total to avoid hydration issues
+  const [totalPrice, setTotalPrice] = useState<string>("Checkout")
+  
+  // Calculate total on client-side only
+  useEffect(() => {
+    setTotalPrice(`$${(subtotal + (subtotal >= cartConfig.freeDeliveryThreshold ? 0 : deliveryFee)).toFixed(2)}`)
+  }, [subtotal, deliveryFee])
 
   // Use a subset of recommended products for the cart sidebar
   const cartRecommendations = recommendedProducts.slice(0, 3)
@@ -57,6 +67,13 @@ export default function GroceryCartSidebar({ storeData }: CartSidebarProps) {
         <h2 className="font-medium">Your cart from</h2>
         <h3 className="font-bold text-lg mb-1">{storeData.name}</h3>
         <p className="text-sm text-gray-500">Maximum order limit: ${storeData.maxOrderLimit.toLocaleString()}</p>
+        
+        {isGroupOrder && (
+          <div className="mt-2 py-2 px-3 bg-blue-50 rounded-md flex items-center">
+            <Users className="h-4 w-4 text-blue-600 mr-2" />
+            <p className="text-sm font-medium text-blue-800">Group order active</p>
+          </div>
+        )}
 
         {/* Progress bar */}
         <div className="h-1 bg-gray-200 rounded-full mt-2 mb-4">
@@ -101,10 +118,10 @@ export default function GroceryCartSidebar({ storeData }: CartSidebarProps) {
 
         {/* Checkout button - Moved from bottom to here */}
         <button className="w-full bg-red-600 hover:bg-red-700 text-white font-medium py-3 rounded-full mb-3 text-lg">
-          Checkout
+          {totalPrice}
         </button>
         <p className="text-center text-sm mb-1">
-          ${(subtotal + (subtotal >= cartConfig.freeDeliveryThreshold ? 0 : deliveryFee)).toFixed(2)} total before taxes
+          total before taxes
         </p>
       </div>
 

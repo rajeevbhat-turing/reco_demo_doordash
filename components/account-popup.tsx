@@ -69,7 +69,7 @@ export default function AccountPopup({ isOpen, onClose, anchorElement }: Account
 
           <Link href="/" className="flex items-center gap-3 hover:bg-gray-50 p-2 rounded-md text-sm font-medium">
             <DollarSign className="h-5 w-5 text-gray-700" />
-            <span>Get A$1 in Credits</span>
+            <span>Get $1 in Credits</span>
           </Link>
         </div>
 

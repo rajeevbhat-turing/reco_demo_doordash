@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react"
 import Image from "next/image"
 import { X, ChevronRight, ChevronLeft, Plus } from "lucide-react"
 import { useCartStore } from "@/store/cart-store"
+import { Users } from "lucide-react"
 import { getRestaurantById } from "@/constants/restaurants"
 import { getMenuItemsByRestaurantId } from "@/constants/menu-items"
 
@@ -13,7 +14,13 @@ interface CartSidebarProps {
 }
 
 export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
-  const { items, currentRestaurantId, updateQuantity, removeItem, clearCart, getTotalPrice, addItem } = useCartStore()
+  const { items, currentRestaurantId, updateQuantity, removeItem, clearCart, getTotalPrice, addItem, isGroupOrder, groupOrderId } = useCartStore()
+  const [price, setPrice] = useState("Checkout")
+  
+  // Update price client-side only to avoid hydration errors
+  useEffect(() => {
+    setPrice(getTotalPrice())
+  }, [getTotalPrice, items])
   const [restaurant, setRestaurant] = useState<any>(null)
   const [complementItems, setComplementItems] = useState<any[]>([])
   const [lastRestaurantId, setLastRestaurantId] = useState<string | null>(null)
@@ -178,9 +185,21 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
           <X className="h-6 w-6" />
         </button>
       </div>
+      
+      {isGroupOrder && (
+        <div className="px-4 py-2 bg-blue-50 flex items-center">
+          <Users className="h-4 w-4 text-blue-600 mr-2" />
+          <div>
+            <p className="text-sm font-medium text-blue-800">Group Order Active</p>
+            <p className="text-xs text-blue-600">Others can add items to this order</p>
+          </div>
+        </div>
+      )}
 
       <div className="p-4">
-        <button className="w-full bg-[#e03a19] text-white py-3 rounded-full font-medium">{getTotalPrice()}</button>
+        <button className="w-full bg-[#e03a19] text-white py-3 rounded-full font-medium">
+          {price}
+        </button>
       </div>
 
       <div className="flex-1 overflow-y-auto">
