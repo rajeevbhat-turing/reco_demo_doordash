@@ -44,8 +44,8 @@ export const restaurants: Restaurant[] = [
     address: '123 Main St, Sydney NSW 2000',
     phone: '+61 2 1234 5678',
     featured: true,
-    discount: "$3 off orders $14+",
-    categories: ["coffee", "breakfast", "healthy"]
+    discount: '$3 off orders $14+',
+    categories: ['coffee', 'breakfast', 'healthy'],
   },
   {
     id: 'peet-s-coffee',
@@ -68,8 +68,8 @@ export const restaurants: Restaurant[] = [
     address: '123 Main St, Sydney NSW 2000',
     phone: '+61 2 1234 5678',
     featured: true,
-    discount: "$5 off orders $25+",
-    categories: ["coffee", "breakfast", "desserts"]
+    discount: '$5 off orders $25+',
+    categories: ['coffee', 'breakfast', 'desserts'],
   },
   {
     id: 'gateway-croissant',
@@ -92,8 +92,8 @@ export const restaurants: Restaurant[] = [
     address: '123 Main St, Sydney NSW 2000',
     phone: '+61 2 1234 5678',
     featured: true,
-    discount: "",
-    categories: ["bakery", "breakfast", "desserts"]
+    discount: '',
+    categories: ['bakery', 'breakfast', 'desserts'],
   },
   {
     id: 'pressed-acai-bowls',
@@ -116,15 +116,17 @@ export const restaurants: Restaurant[] = [
     address: '123 Main St, Sydney NSW 2000',
     phone: '+61 2 1234 5678',
     featured: true,
-    discount: "",
-    categories: ["healthy", "smoothie", "breakfast"]
+    discount: '',
+    categories: ['healthy', 'smoothie', 'breakfast'],
   },
   {
     id: 'il-canto-cafe',
     name: 'IL Canto Cafe',
-    logo: 'https://img.cdn4dd.com/cdn-cgi/image/fit=contain,format=auto,width=800,quality=50/https://doordash-static.s3.amazonaws.com/media/photos/1ec80bad-7385-4de0-b4d9-634894f1f845-retina-large.jpg',
+    logo: 'https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/c8ef232b-d947-4e43-b2f1-d293ef0990d5.png',
     banner:
       'https://img.cdn4dd.com/cdn-cgi/image/fit=contain,format=auto,width=800,quality=50/https://doordash-static.s3.amazonaws.com/media/photos/1ec80bad-7385-4de0-b4d9-634894f1f845-retina-large.jpg',
+    detailsBanner:
+      'https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=1000,height=300,format=auto,quality=80/https://doordash-static.s3.amazonaws.com/media/store/header/014331d0-3d66-4488-a018-fec47709a0a7.jpg',
     rating: 4.9,
     reviews: '8k+',
     distance: '0.3 mi',
@@ -138,8 +140,8 @@ export const restaurants: Restaurant[] = [
     address: '123 Main St, Sydney NSW 2000',
     phone: '+61 2 1234 5678',
     featured: true,
-    discount: "",
-    categories: ["coffee", "breakfast", "comfort-food"]
+    discount: '',
+    categories: ['coffee', 'breakfast', 'comfort-food'],
   },
   {
     id: 'starbucks-(299-fremont-street)',
@@ -162,15 +164,17 @@ export const restaurants: Restaurant[] = [
     address: '123 Main St, Sydney NSW 2000',
     phone: '+61 2 1234 5678',
     featured: true,
-    discount: "",
-    categories: ["coffee", "breakfast", "desserts"]
+    discount: '',
+    categories: ['coffee', 'breakfast', 'desserts'],
   },
   {
     id: 'latte-express',
     name: 'Latte Express',
-    logo: 'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/yelp/e27968a1-e149-4cad-b3b0-d8b15e936027.jpg',
+    logo: '',
     banner:
       'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/yelp/e27968a1-e149-4cad-b3b0-d8b15e936027.jpg',
+    detailsBanner:
+      'https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=1000,height=300,format=auto,quality=80/https://doordash-static.s3.amazonaws.com/media/store/header/48b86435-59fc-4391-a46b-494c11327038.jpg',
     rating: 4.6,
     reviews: '200+',
     distance: '1.5 mi',
@@ -184,15 +188,17 @@ export const restaurants: Restaurant[] = [
     address: '123 Main St, Sydney NSW 2000',
     phone: '+61 2 1234 5678',
     featured: true,
-    discount: "",
-    categories: ["coffee", "breakfast", "desserts"]
+    discount: '',
+    categories: ['coffee', 'breakfast', 'desserts'],
   },
   {
     id: 'lava-wings',
     name: 'Lava Wings',
-    logo: 'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/photosV2/116979ea-ecec-4226-a02d-10dd08b494cb-59be4bea-081e-4f17-ac10-12ef4e9532f0-retina-large.jpg',
+    logo: 'https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/430680c9-d041-47f3-afaf-0dadd3f46e52.png',
     banner:
       'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/photosV2/116979ea-ecec-4226-a02d-10dd08b494cb-59be4bea-081e-4f17-ac10-12ef4e9532f0-retina-large.jpg',
+    detailsBanner:
+      'https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=1000,height=300,format=auto,quality=80/https://doordash-static.s3.amazonaws.com/media/store/header/364fec68-7258-45c6-9b72-420ecbbbfe77.jpg',
     rating: 4.6,
     reviews: '200+',
     distance: '1.1 mi',
@@ -206,13 +212,13 @@ export const restaurants: Restaurant[] = [
     address: '123 Main St, Sydney NSW 2000',
     phone: '+61 2 1234 5678',
     featured: true,
-    discount: "",
-    categories: ["chicken", "fast-food", "comfort-food"]
+    discount: '',
+    categories: ['chicken', 'fast-food', 'comfort-food'],
   },
   {
     id: 'big-save-market',
     name: 'Big Save Market',
-    logo: 'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/restaurant/cover_square/94dc4a0a-064f-4f3a-9af3-d9dff677af15.jpg',
+    logo: '',
     banner:
       'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/restaurant/cover_square/94dc4a0a-064f-4f3a-9af3-d9dff677af15.jpg',
     rating: 4.5,
@@ -230,14 +236,16 @@ export const restaurants: Restaurant[] = [
     featured: false,
     discount: '',
     new: true,
-    categories: ["healthy", "comfort-food", "fast-food"]
+    categories: ['healthy', 'comfort-food', 'fast-food'],
   },
   {
     id: 'my-happy-donut',
     name: 'My happy donut',
-    logo: 'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/photosV2/8d74e5c4-7cdf-471b-bb5d-d55c2969c038-retina-large.jpg',
+    logo: 'https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/68dabe4b-0cd0-48d0-bed6-4921568616f8.jpg',
     banner:
       'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/photosV2/8d74e5c4-7cdf-471b-bb5d-d55c2969c038-retina-large.jpg',
+    detailsBanner:
+      'https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=1000,height=300,format=auto,quality=80/https://doordash-static.s3.amazonaws.com/media/store/header/5dfcadf2-244c-4a98-9653-175912c20acc.jpg',
     rating: 4.4,
     reviews: '20+',
     distance: '0.5 mi',
@@ -253,12 +261,12 @@ export const restaurants: Restaurant[] = [
     featured: false,
     discount: '',
     new: true,
-    categories: ["desserts", "bakery", "breakfast"]
+    categories: ['desserts', 'bakery', 'breakfast'],
   },
   {
     id: 'midtown-market',
     name: 'Midtown market',
-    logo: 'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/store/header/b14c6210-26c3-4b34-b3d2-d9eb95e56ad5.12',
+    logo: 'https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/021b0afd-4826-469c-be8a-13786622054c.png',
     banner:
       'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/store/header/b14c6210-26c3-4b34-b3d2-d9eb95e56ad5.12',
     rating: 4.4,
@@ -276,14 +284,16 @@ export const restaurants: Restaurant[] = [
     featured: false,
     discount: '',
     new: true,
-    categories: ["healthy", "fast-food", "comfort-food"]
+    categories: ['healthy', 'fast-food', 'comfort-food'],
   },
   {
     id: 'icu-deli-inc',
     name: 'icu deli inc',
-    logo: 'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/photosV2/5a76ba9b-1831-4c8e-9e73-891f70bdaf3b-retina-large.jpg',
+    logo: 'https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/ca1979a8-4739-4df0-b535-3e18c92c08fd.png',
     banner:
       'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/photosV2/5a76ba9b-1831-4c8e-9e73-891f70bdaf3b-retina-large.jpg',
+    detailsBanner:
+      'https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=1000,height=300,format=auto,quality=80/https://doordash-static.s3.amazonaws.com/media/store/header/81d8a25d-1048-4c31-a9d9-d430cd5dbdea.jpeg',
     rating: 4.4,
     reviews: '50+',
     distance: '0.9 mi',
@@ -299,14 +309,16 @@ export const restaurants: Restaurant[] = [
     featured: false,
     discount: '',
     new: true,
-    categories: ["breakfast", "fast-food", "comfort-food"]
+    categories: ['breakfast', 'fast-food', 'comfort-food'],
   },
   {
     id: 'modena-pizza-ice-cream',
     name: 'Modena Pizza & Ice Cream',
-    logo: 'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/photos/7311e245-d754-4da1-b182-364bdd42a21f-retina-large.jpg',
+    logo: 'https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/5cadce84-bbab-40b4-b911-fd780fcb785a.png',
     banner:
       'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/photos/7311e245-d754-4da1-b182-364bdd42a21f-retina-large.jpg',
+    detailsBanner:
+      'https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=1000,height=300,format=auto,quality=80/https://doordash-static.s3.amazonaws.com/media/store/header/69dd9ca5-adb6-4d18-9379-4fd58651f073.jpg',
     rating: 4.2,
     reviews: '100+',
     distance: '0.8 mi',
@@ -322,12 +334,12 @@ export const restaurants: Restaurant[] = [
     featured: false,
     discount: '',
     new: true,
-    categories: ["pizza", "desserts", "fast-food"]
+    categories: ['pizza', 'desserts', 'fast-food'],
   },
   {
     id: '5-star-food-liquor',
     name: '5 Star Food & Liquor',
-    logo: 'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/store/header/fd801efb-e668-411f-8c2f-5bdcc65f92dd.13',
+    logo: 'https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/a00b6632-bf16-4086-84d8-92d6eca6e467.png',
     banner:
       'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/store/header/fd801efb-e668-411f-8c2f-5bdcc65f92dd.13',
     rating: 4.8,
@@ -345,14 +357,16 @@ export const restaurants: Restaurant[] = [
     featured: false,
     discount: '',
     new: true,
-    categories: ["fast-food", "comfort-food"]
+    categories: ['fast-food', 'comfort-food'],
   },
   {
     id: 'deena-s-market-and-smoke-shop',
     name: 'Deena\u2019s Market and Smoke Shop',
-    logo: 'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/photosV2/e31239b1-40d8-438b-9194-f951a891ff3b-retina-large.jpg',
+    logo: 'https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/30e7a81e-faae-4ab0-98f4-9b229cd9b08e.png',
     banner:
       'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/photosV2/e31239b1-40d8-438b-9194-f951a891ff3b-retina-large.jpg',
+    detailsBanner:
+      'https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=1000,height=300,format=auto,quality=80/https://doordash-static.s3.amazonaws.com/media/store/header/eca40f0e-8ecb-4731-946a-6e3fe029e0b3.jpg',
     rating: 4.2,
     reviews: '200+',
     distance: '10.8 mi',
@@ -368,7 +382,7 @@ export const restaurants: Restaurant[] = [
     featured: false,
     discount: '',
     new: true,
-    categories: ["fast-food", "comfort-food"]
+    categories: ['fast-food', 'comfort-food'],
   },
   {
     id: 'allstar-donuts',
@@ -393,12 +407,12 @@ export const restaurants: Restaurant[] = [
     featured: false,
     discount: '',
     new: true,
-    categories: ["desserts", "bakery", "breakfast"]
+    categories: ['desserts', 'bakery', 'breakfast'],
   },
   {
     id: '24-bart-liquor-store',
     name: '24 Bart Liquor Store',
-    logo: 'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/photos/c05ab5f9-75fd-42a4-b011-776f7fee3629-retina-large-jpeg',
+    logo: 'https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/7df04e76-f1e6-465b-911c-2b799024691b.png',
     banner:
       'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/photos/c05ab5f9-75fd-42a4-b011-776f7fee3629-retina-large-jpeg',
     rating: 4.4,
@@ -414,8 +428,8 @@ export const restaurants: Restaurant[] = [
     address: '123 Main St, Sydney NSW 2000',
     phone: '+61 2 1234 5678',
     featured: false,
-    discount: "",
-    categories: ["fast-food", "comfort-food"]
+    discount: '',
+    categories: ['fast-food', 'comfort-food'],
   },
   {
     id: 'mellis-cafe',
@@ -438,15 +452,17 @@ export const restaurants: Restaurant[] = [
     address: '123 Main St, Sydney NSW 2000',
     phone: '+61 2 1234 5678',
     featured: false,
-    discount: "",
-    categories: ["coffee", "breakfast", "comfort-food"]
+    discount: '',
+    categories: ['coffee', 'breakfast', 'comfort-food'],
   },
   {
     id: 'polk-sutter-cafe-deli',
     name: 'Polk & Sutter Cafe Deli',
-    logo: 'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/photosV2/b58c807a-e86f-4b24-bce0-e788a27c1a93-b168d355-2f2e-4c3c-adf0-34dc9cc11237-retina-large.jpg',
+    logo: 'https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/60ef35cf-7d0b-4a06-8f71-f6ed350c2662.55',
     banner:
       'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/photosV2/b58c807a-e86f-4b24-bce0-e788a27c1a93-b168d355-2f2e-4c3c-adf0-34dc9cc11237-retina-large.jpg',
+    detailsBanner:
+      'https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=1000,height=300,format=auto,quality=80/https://doordash-static.s3.amazonaws.com/media/store/header/43bc5a64-1e4c-469f-8a0f-c72239578068.jpg',
     rating: 4.1,
     reviews: '110+',
     distance: '1.1 mi',
@@ -460,15 +476,17 @@ export const restaurants: Restaurant[] = [
     address: '123 Main St, Sydney NSW 2000',
     phone: '+61 2 1234 5678',
     featured: false,
-    discount: "",
-    categories: ["fast-food", "comfort-food", "burgers"]
+    discount: '',
+    categories: ['fast-food', 'comfort-food', 'burgers'],
   },
   {
     id: 'wild-philly-steak',
     name: 'Wild Philly Steak',
-    logo: 'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/photosV2/48724f6b-cd93-4275-95b7-3469510f10d4-cb2e65a3-811b-4adf-9442-ec893732bd8d-retina-large.jpg',
+    logo: 'https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/eccf5d0d-f2f0-4ac6-9af1-2c001f69926d.png',
     banner:
       'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/photosV2/48724f6b-cd93-4275-95b7-3469510f10d4-cb2e65a3-811b-4adf-9442-ec893732bd8d-retina-large.jpg',
+    detailsBanner:
+      'https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=1000,height=300,format=auto,quality=80/https://doordash-static.s3.amazonaws.com/media/store/header/e907dc60-4ea4-41f1-9875-b083c14e9f1b.jpeg',
     rating: 3.8,
     reviews: '100+',
     distance: '1.1 mi',
@@ -482,13 +500,13 @@ export const restaurants: Restaurant[] = [
     address: '123 Main St, Sydney NSW 2000',
     phone: '+61 2 1234 5678',
     featured: false,
-    discount: "",
-    categories: ["fast-food", "comfort-food"]
+    discount: '',
+    categories: ['fast-food', 'comfort-food'],
   },
   {
     id: 'yesdrink-com',
     name: 'yesdrink.com',
-    logo: 'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/store/header/2eca35f1-cc7d-4504-a13f-54d59dd5a78e.9',
+    logo: 'https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/172af861-2ae2-4e35-80b9-b5f32b42e1a2.com_Square',
     banner:
       'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/store/header/2eca35f1-cc7d-4504-a13f-54d59dd5a78e.9',
     rating: 4.8,
@@ -504,15 +522,17 @@ export const restaurants: Restaurant[] = [
     address: '123 Main St, Sydney NSW 2000',
     phone: '+61 2 1234 5678',
     featured: false,
-    discount: "",
-    categories: ["comfort-food", "healthy"]
+    discount: '',
+    categories: ['comfort-food', 'healthy'],
   },
   {
     id: 'papa-pasta',
     name: 'Papa Pasta',
-    logo: 'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/photosV2/57264234-3e6a-4680-954d-0e0a123b11ba-8d3ed11d-1de9-4399-a7fb-793d6255bf92-retina-large.jpg',
+    logo: 'https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/b712c45d-5271-4022-aa43-a3aa3088049c.png',
     banner:
       'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/photosV2/57264234-3e6a-4680-954d-0e0a123b11ba-8d3ed11d-1de9-4399-a7fb-793d6255bf92-retina-large.jpg',
+    detailsBanner:
+      'https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=1000,height=300,format=auto,quality=80/https://doordash-static.s3.amazonaws.com/media/store/header/b2c02a5f-541d-49ca-aa8b-037923a2a84e.jpeg',
     rating: 3.6,
     reviews: '10+',
     distance: '1.1 mi',
@@ -526,15 +546,17 @@ export const restaurants: Restaurant[] = [
     address: '123 Main St, Sydney NSW 2000',
     phone: '+61 2 1234 5678',
     featured: false,
-    discount: "",
-    categories: ["desserts", "bakery", "healthy"]
+    discount: '',
+    categories: ['desserts', 'bakery', 'healthy'],
   },
   {
     id: 'sweet-flex',
     name: 'Sweet Flex',
-    logo: 'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/photosV2/fab26258-7fa7-4e23-99dc-a61bfcb54058-28de2f74-39c3-4ce1-a7bd-0dbaac54de08-retina-large.jpg',
+    logo: 'https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/20e70869-d61c-496a-97f4-9004114bb1c6.png',
     banner:
       'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/photosV2/fab26258-7fa7-4e23-99dc-a61bfcb54058-28de2f74-39c3-4ce1-a7bd-0dbaac54de08-retina-large.jpg',
+    detailsBanner:
+      'https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=1000,height=300,format=auto,quality=80/https://doordash-static.s3.amazonaws.com/media/store/header/6ca0fd40-0965-4a6e-b4d5-6e651e9fc04e.jpg',
     rating: 3.5,
     reviews: '10+',
     distance: '1.1 mi',
@@ -548,15 +570,17 @@ export const restaurants: Restaurant[] = [
     address: '123 Main St, Sydney NSW 2000',
     phone: '+61 2 1234 5678',
     featured: false,
-    discount: "",
-    categories: ["breakfast", "fast-food", "comfort-food"]
+    discount: '',
+    categories: ['breakfast', 'fast-food', 'comfort-food'],
   },
   {
     id: 'mucho-breakfast-burrito',
     name: 'Mucho Breakfast Burrito',
-    logo: 'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/photosV2/483b625a-cf0d-4ac6-b842-53f8c5032ad0-6b26997c-2b05-457a-8545-14f246c4358d-retina-large.jpg',
+    logo: 'https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/7f22745f-68f3-4da3-9b8d-cbe1491e8618.png',
     banner:
       'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/photosV2/483b625a-cf0d-4ac6-b842-53f8c5032ad0-6b26997c-2b05-457a-8545-14f246c4358d-retina-large.jpg',
+    detailsBanner:
+      'https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=1000,height=300,format=auto,quality=80/https://doordash-static.s3.amazonaws.com/media/store/header/aa76d9c5-2b00-4fd4-92cb-fb2f2ba03c9c.jpeg',
     rating: 3.3,
     reviews: '20+',
     distance: '1.1 mi',
@@ -570,15 +594,17 @@ export const restaurants: Restaurant[] = [
     address: '123 Main St, Sydney NSW 2000',
     phone: '+61 2 1234 5678',
     featured: false,
-    discount: "",
-    categories: ["fast-food", "comfort-food"]
+    discount: '',
+    categories: ['fast-food', 'comfort-food'],
   },
   {
     id: 'subs-bro',
     name: 'Subs Bro',
-    logo: 'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/photosV2/a16b41dd-1b27-4a46-9ba6-7026358e45e6-801cc74a-08ba-40d8-93c4-2596ab1304ad-retina-large.jpg',
+    logo: 'https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/bb63f017-7c11-4df0-94f6-bc17002c6621.jpg',
     banner:
       'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/photosV2/a16b41dd-1b27-4a46-9ba6-7026358e45e6-801cc74a-08ba-40d8-93c4-2596ab1304ad-retina-large.jpg',
+    detailsBanner:
+      'https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=1000,height=300,format=auto,quality=80/https://doordash-static.s3.amazonaws.com/media/store/header/0134c4c6-5e51-45a0-8e7f-b2e5af8c5538.jpg',
     rating: null,
     reviews: null,
     distance: '1.1 mi',
@@ -615,8 +641,8 @@ export const restaurants: Restaurant[] = [
     address: '123 Main St, Sydney NSW 2000',
     phone: '+61 2 1234 5678',
     featured: false,
-    discount: "20% off, up to $4",
-    categories: ["fast-food", "comfort-food"]
+    discount: '20% off, up to $4',
+    categories: ['fast-food', 'comfort-food'],
   },
   {
     id: 'sam-s-bakery',
@@ -639,15 +665,17 @@ export const restaurants: Restaurant[] = [
     address: '123 Main St, Sydney NSW 2000',
     phone: '+61 2 1234 5678',
     featured: false,
-    discount: "",
-    categories: ["pizza", "comfort-food", "fast-food"]
+    discount: '',
+    categories: ['pizza', 'comfort-food', 'fast-food'],
   },
   {
     id: 'thursday-calzones',
     name: 'Thursday Calzones',
-    logo: 'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/photosV2/6036ba82-d308-44ab-b840-b1b40afa5a85-653fbfd4-baa0-454b-bcc5-d2f967776f8c-retina-large.jpg',
+    logo: 'https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/9c2f81b6-d6f6-49a1-a47c-1118bea00d19.png',
     banner:
       'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/photosV2/6036ba82-d308-44ab-b840-b1b40afa5a85-653fbfd4-baa0-454b-bcc5-d2f967776f8c-retina-large.jpg',
+    detailsBanner:
+      'https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=1000,height=300,format=auto,quality=80/https://doordash-static.s3.amazonaws.com/media/store/header/e7a90bbe-57b1-48a9-a51e-0599d38f4ac2.png',
     rating: 4.1,
     reviews: '100+',
     distance: '1.1 mi',
@@ -661,15 +689,17 @@ export const restaurants: Restaurant[] = [
     address: '123 Main St, Sydney NSW 2000',
     phone: '+61 2 1234 5678',
     featured: false,
-    discount: "",
-    categories: ["fast-food", "comfort-food"]
+    discount: '',
+    categories: ['fast-food', 'comfort-food'],
   },
   {
     id: 'og-philly-steak',
     name: 'OG Philly Steak',
-    logo: 'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/photosV2/324ae271-afb4-477c-8d72-4b3517fecef8-retina-large.png',
+    logo: 'https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/a723432b-7a1a-4aa5-bf8b-d4a278da4b10.png',
     banner:
       'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/photosV2/324ae271-afb4-477c-8d72-4b3517fecef8-retina-large.png',
+    detailsBanner:
+      'https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=1000,height=300,format=auto,quality=80/https://doordash-static.s3.amazonaws.com/media/store/header/427ed09c-93f6-4e24-8009-1df123f2d42c.jpeg',
     rating: 3.1,
     reviews: '20+',
     distance: '1.1 mi',
@@ -683,15 +713,17 @@ export const restaurants: Restaurant[] = [
     address: '123 Main St, Sydney NSW 2000',
     phone: '+61 2 1234 5678',
     featured: false,
-    discount: "",
-    categories: ["comfort-food", "healthy"]
+    discount: '',
+    categories: ['comfort-food', 'healthy'],
   },
   {
     id: 'kabob-nation',
     name: 'Kabob Nation',
-    logo: 'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/photosV2/4985b255-64f3-4191-804a-10cde53595ba-retina-large.png',
+    logo: 'https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/f6faeb0d-1611-414f-9167-d39aee1600aa.png',
     banner:
       'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/photosV2/4985b255-64f3-4191-804a-10cde53595ba-retina-large.png',
+    detailsBanner:
+      'https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=1000,height=300,format=auto,quality=80/https://doordash-static.s3.amazonaws.com/media/store/header/e7cd90b8-749c-4f32-8193-eea2aabfda1e.jpeg',
     rating: null,
     reviews: null,
     distance: '1.1 mi',
@@ -705,15 +737,17 @@ export const restaurants: Restaurant[] = [
     address: '123 Main St, Sydney NSW 2000',
     phone: '+61 2 1234 5678',
     featured: false,
-    discount: "",
-    categories: ["fast-food", "comfort-food"]
+    discount: '',
+    categories: ['fast-food', 'comfort-food'],
   },
   {
     id: 'shawarma-junction',
     name: 'Shawarma Junction',
-    logo: 'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/photosV2/b95f3ae8-02ba-4e7a-9aed-946e64600a54-8831e876-ba1b-4092-a160-5e5124c8346d-retina-large.jpg',
+    logo: 'https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/79168512-0c11-48ba-8d4b-2ac464192114.png',
     banner:
       'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/photosV2/b95f3ae8-02ba-4e7a-9aed-946e64600a54-8831e876-ba1b-4092-a160-5e5124c8346d-retina-large.jpg',
+    detailsBanner:
+      'https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=1000,height=300,format=auto,quality=80/https://doordash-static.s3.amazonaws.com/media/store/header/4c540fe9-8ffe-44e2-81be-caffd8965605.jpg',
     rating: 3.5,
     reviews: '20+',
     distance: '1.1 mi',
@@ -727,15 +761,17 @@ export const restaurants: Restaurant[] = [
     address: '123 Main St, Sydney NSW 2000',
     phone: '+61 2 1234 5678',
     featured: false,
-    discount: "",
-    categories: ["coffee", "breakfast", "comfort-food"]
+    discount: '',
+    categories: ['coffee', 'breakfast', 'comfort-food'],
   },
   {
     id: 'allstars-cafe-inc',
     name: 'allstars cafe inc',
-    logo: 'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/photos/bbf20aeb-d1a1-472a-801e-f06e337c2af8-retina-large-jpeg',
+    logo: 'https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/79f5a15a-2365-4d30-8ba9-656c41a99081.png',
     banner:
       'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/photos/bbf20aeb-d1a1-472a-801e-f06e337c2af8-retina-large-jpeg',
+    detailsBanner:
+      'https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=1000,height=300,format=auto,quality=80/https://doordash-static.s3.amazonaws.com/media/store/header/b7c8c41e-9de5-4767-a01b-b66a1a7dec4d.jpeg',
     rating: 4.3,
     reviews: '500+',
     distance: '1.4 mi',
@@ -749,15 +785,17 @@ export const restaurants: Restaurant[] = [
     address: '123 Main St, Sydney NSW 2000',
     phone: '+61 2 1234 5678',
     featured: false,
-    discount: "",
-    categories: ["bakery", "breakfast"]
+    discount: '',
+    categories: ['bakery', 'breakfast'],
   },
   {
     id: 'good-bagels',
     name: 'Good Bagels',
-    logo: 'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/photosV2/06b2a213-3370-4ee6-8b9a-bdc943f30cca-78902493-9082-44df-99b5-6d9591f95bc5-retina-large.jpg',
+    logo: 'https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/40a4e79c-c0f2-4cc6-baea-ae1c7028979f.png',
     banner:
       'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/photosV2/06b2a213-3370-4ee6-8b9a-bdc943f30cca-78902493-9082-44df-99b5-6d9591f95bc5-retina-large.jpg',
+    detailsBanner:
+      'https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=1000,height=300,format=auto,quality=80/https://doordash-static.s3.amazonaws.com/media/store/header/ebd7c59c-1d7d-40cf-97f3-f42e13a7f03d.jpeg',
     rating: null,
     reviews: null,
     distance: '1.1 mi',
@@ -771,15 +809,17 @@ export const restaurants: Restaurant[] = [
     address: '123 Main St, Sydney NSW 2000',
     phone: '+61 2 1234 5678',
     featured: false,
-    discount: "",
-    categories: ["breakfast", "comfort-food"]
+    discount: '',
+    categories: ['breakfast', 'comfort-food'],
   },
   {
     id: 'ihop',
     name: 'IHOP',
-    logo: 'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/photosV2/b692e51b-064d-4b2b-bf0c-b06aca6f5611-retina-large.png',
+    logo: 'https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/IHOP_logo.jpg',
     banner:
       'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/photosV2/b692e51b-064d-4b2b-bf0c-b06aca6f5611-retina-large.png',
+    detailsBanner:
+      'https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=1000,height=300,format=auto,quality=80/https://doordash-static.s3.amazonaws.com/media/store/header/99c60def-12fc-4846-92a6-70b9a919813c.37',
     rating: 4.3,
     reviews: '3k+',
     distance: '1.4 mi',
@@ -793,8 +833,8 @@ export const restaurants: Restaurant[] = [
     address: '123 Main St, Sydney NSW 2000',
     phone: '+61 2 1234 5678',
     featured: false,
-    discount: "",
-    categories: ["bakery", "breakfast", "coffee"]
+    discount: '',
+    categories: ['bakery', 'breakfast', 'coffee'],
   },
   {
     id: 'noah-s-new-york-bagels',
@@ -817,15 +857,17 @@ export const restaurants: Restaurant[] = [
     address: '123 Main St, Sydney NSW 2000',
     phone: '+61 2 1234 5678',
     featured: false,
-    discount: "",
-    categories: ["bakery", "desserts", "breakfast"]
+    discount: '',
+    categories: ['bakery', 'desserts', 'breakfast'],
   },
   {
     id: 'bob-s-donuts',
     name: "Bob's Donuts",
-    logo: 'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/photosV2/5ce999f2-cd59-49af-99dd-5166d0b451b2-retina-large.jpg',
+    logo: 'https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/51ff8705-6dea-4404-8181-5380a7346d49.jpg',
     banner:
       'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/photosV2/5ce999f2-cd59-49af-99dd-5166d0b451b2-retina-large.jpg',
+    detailsBanner:
+      'https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=1000,height=300,format=auto,quality=80/https://doordash-static.s3.amazonaws.com/media/store/header/91463b14-44e1-47e2-bd48-fbd60e2be8c3.jpg',
     rating: 4.5,
     reviews: '50+',
     distance: '1.1 mi',
@@ -839,15 +881,17 @@ export const restaurants: Restaurant[] = [
     address: '123 Main St, Sydney NSW 2000',
     phone: '+61 2 1234 5678',
     featured: false,
-    discount: "",
-    categories: ["burgers", "fast-food", "comfort-food"]
+    discount: '',
+    categories: ['burgers', 'fast-food', 'comfort-food'],
   },
   {
     id: 'halal-burgers-more',
     name: 'Halal Burgers & More',
-    logo: 'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/photosV2/612377b9-aa0b-44f1-b861-bbcc21a6ee25-retina-large.jpg',
+    logo: 'https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/5b8c38ba-0c5c-4d38-9cd3-a1e4a6853c05.png',
     banner:
       'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/photosV2/612377b9-aa0b-44f1-b861-bbcc21a6ee25-retina-large.jpg',
+    detailsBanner:
+      'https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=1000,height=300,format=auto,quality=80/https://doordash-static.s3.amazonaws.com/media/store/header/b9f1bdf7-c829-4313-bc2f-91c8c8af0647.jpg',
     rating: 4.3,
     reviews: '200+',
     distance: '0.8 mi',
@@ -862,14 +906,13 @@ export const restaurants: Restaurant[] = [
     phone: '+61 2 1234 5678',
     featured: false,
     discount: '',
-    categories: ["burgers", "fast-food", "comfort-food"]
+    categories: ['burgers', 'fast-food', 'comfort-food'],
   },
   {
     id: 'java-haven',
     name: 'Java Haven',
-    logo: 'https://img.cdn4dd.com/cdn-cgi/image/fit=contain,format=auto,width=800,quality=50/https://doordash-static.s3.amazonaws.com/media/store/header/79c9ad17-d9ee-4e63-b641-e0c1f99b7f72.jpg',
-    banner:
-      'https://img.cdn4dd.com/cdn-cgi/image/fit=contain,format=auto,width=800,quality=50/https://doordash-static.s3.amazonaws.com/media/store/header/79c9ad17-d9ee-4e63-b641-e0c1f99b7f72.jpg',
+    logo: '',
+    banner: '',
     detailsBanner: '',
     rating: null,
     reviews: null,
@@ -891,10 +934,11 @@ export const restaurants: Restaurant[] = [
   {
     id: 'jamba-juice-(152-kearny-street)',
     name: 'Jamba Juice (152 Kearny Street)',
-    logo: 'https://img.cdn4dd.com/cdn-cgi/image/fit=contain,format=auto,width=800,quality=50/https://cdn.doordash.com/media/photos/7970d55f-9b3d-43c0-807b-2bb3ec610d6e-retina-large-jpeg',
+    logo: 'https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/Jamba_Logo_full_color_app.jpg',
     banner:
       'https://img.cdn4dd.com/cdn-cgi/image/fit=contain,format=auto,width=800,quality=50/https://cdn.doordash.com/media/photos/7970d55f-9b3d-43c0-807b-2bb3ec610d6e-retina-large-jpeg',
-    detailsBanner: '',
+    detailsBanner:
+      'https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=1000,height=300,format=auto,quality=80/https://doordash-static.s3.amazonaws.com/media/store/header/8c2febac-6c6c-47b3-96fd-16e5e950a1ae.jpg',
     rating: 4.6,
     reviews: '(1k+)',
     distance: '900 ft',
@@ -915,10 +959,11 @@ export const restaurants: Restaurant[] = [
   {
     id: 'enter-the-cafe',
     name: 'Enter the Cafe',
-    logo: 'https://img.cdn4dd.com/cdn-cgi/image/fit=contain,format=auto,width=800,quality=50/https://doordash-static.s3.amazonaws.com/media/photos/f686b583-c4e5-4ca1-9950-5def2d2be016-retina-large.jpg',
+    logo: 'https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/efd468fe-caf4-4dfc-98e7-5478549304f5.cover_Enter%20The%20Cafe',
     banner:
       'https://img.cdn4dd.com/cdn-cgi/image/fit=contain,format=auto,width=800,quality=50/https://doordash-static.s3.amazonaws.com/media/photos/f686b583-c4e5-4ca1-9950-5def2d2be016-retina-large.jpg',
-    detailsBanner: '',
+    detailsBanner:
+      'https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=1000,height=300,format=auto,quality=80/https://doordash-static.s3.amazonaws.com/media/store/header/f853deb8-a914-4f09-a842-dbc20280d3de.jpg',
     rating: 4.8,
     reviews: '(200+)',
     distance: '0.7 mi',
@@ -939,10 +984,11 @@ export const restaurants: Restaurant[] = [
   {
     id: 'locali-mediterranean',
     name: 'Locali Mediterranean',
-    logo: 'https://img.cdn4dd.com/cdn-cgi/image/fit=contain,format=auto,width=800,quality=50/https://doordash-static.s3.amazonaws.com/media/photosV2/57a2be6a-c7b2-4e79-8574-61bfd18bbf85-retina-large.JPG',
+    logo: 'https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/060d8585-9430-4181-875c-755a91da4081.png',
     banner:
       'https://img.cdn4dd.com/cdn-cgi/image/fit=contain,format=auto,width=800,quality=50/https://doordash-static.s3.amazonaws.com/media/photosV2/57a2be6a-c7b2-4e79-8574-61bfd18bbf85-retina-large.JPG',
-    detailsBanner: '',
+    detailsBanner:
+      'https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=1000,height=300,format=auto,quality=80/https://doordash-static.s3.amazonaws.com/media/store/header/890d4815-00f8-40ac-b275-64b7bfeda52a.539',
     rating: 4.8,
     reviews: '(100+)',
     distance: '800 ft',
@@ -963,10 +1009,11 @@ export const restaurants: Restaurant[] = [
   {
     id: 'blue-bottle-coffee',
     name: 'Blue Bottle Coffee',
-    logo: 'https://img.cdn4dd.com/cdn-cgi/image/fit=contain,format=auto,width=800,quality=50/https://doordash-static.s3.amazonaws.com/media/photosV2/10f34946-e714-4540-95e6-09c4bdcdc834-retina-large.jpeg',
+    logo: 'https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/40571e09-118a-4dc8-8d4b-8203f3ec71ee.jpeg',
     banner:
       'https://img.cdn4dd.com/cdn-cgi/image/fit=contain,format=auto,width=800,quality=50/https://doordash-static.s3.amazonaws.com/media/photosV2/10f34946-e714-4540-95e6-09c4bdcdc834-retina-large.jpeg',
-    detailsBanner: '',
+    detailsBanner:
+      'https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=1000,height=300,format=auto,quality=80/https://doordash-static.s3.amazonaws.com/media/store/header/c7079c45-4080-4bd0-bce8-48722875563a.jpg',
     rating: 4.8,
     reviews: '(20+)',
     distance: '400 ft',
@@ -987,10 +1034,11 @@ export const restaurants: Restaurant[] = [
   {
     id: 'deep-purpl',
     name: 'Deep Purpl',
-    logo: 'https://img.cdn4dd.com/cdn-cgi/image/fit=contain,format=auto,width=800,quality=50/https://doordash-static.s3.amazonaws.com/media/photosV2/c39e8166-7c91-4724-9bf8-9e768e3ee5a7-retina-large.png',
+    logo: 'https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/b1c21251-7b78-4868-9d02-f66d5cc6545c.png',
     banner:
       'https://img.cdn4dd.com/cdn-cgi/image/fit=contain,format=auto,width=800,quality=50/https://doordash-static.s3.amazonaws.com/media/photosV2/c39e8166-7c91-4724-9bf8-9e768e3ee5a7-retina-large.png',
-    detailsBanner: '',
+    detailsBanner:
+      'https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=1000,height=300,format=auto,quality=80/https://doordash-static.s3.amazonaws.com/media/store/header/139e97d4-efb4-42e1-81d6-e7203faed37a.jpg',
     rating: 4.7,
     reviews: '(500+)',
     distance: '700 ft',
@@ -1011,7 +1059,7 @@ export const restaurants: Restaurant[] = [
   {
     id: 'walgreens',
     name: 'Walgreens',
-    logo: 'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/photosV2/80c824d1-9429-40fe-9399-44e918a23b1f-retina-large.png',
+    logo: 'https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/Screen_Shot_2020-12-08_at_9.16.57_AM.png',
     banner:
       'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/photosV2/80c824d1-9429-40fe-9399-44e918a23b1f-retina-large.png',
     detailsBanner: '',
@@ -1035,7 +1083,7 @@ export const restaurants: Restaurant[] = [
   {
     id: 'cvs',
     name: 'CVS',
-    logo: null,
+    logo: 'https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/cvs_logo.png',
     banner: null,
     detailsBanner: '',
     rating: 4.8,
@@ -1058,7 +1106,7 @@ export const restaurants: Restaurant[] = [
   {
     id: 'mollie-stone-s-markets',
     name: "Mollie Stone's Markets",
-    logo: 'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/store/header/f5b22640-191d-46ed-a12c-7b20b3310e25.jpg',
+    logo: 'https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/35cd6437-4142-46af-be81-4a10e6b3f312.png',
     banner:
       'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/store/header/f5b22640-191d-46ed-a12c-7b20b3310e25.jpg',
     detailsBanner: '',
@@ -1082,7 +1130,7 @@ export const restaurants: Restaurant[] = [
   {
     id: 'sprouts-farmers-market',
     name: 'Sprouts Farmers Market',
-    logo: 'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/photosV2/ff48b60b-72f2-476e-b970-385db0edee21-retina-large.png',
+    logo: 'https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/71af112e-089d-4f65-ad70-d8675ae55265.jpg',
     banner:
       'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/photosV2/ff48b60b-72f2-476e-b970-385db0edee21-retina-large.png',
     detailsBanner: '',
@@ -1106,7 +1154,7 @@ export const restaurants: Restaurant[] = [
   {
     id: 'dashmart',
     name: 'DashMart',
-    logo: 'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/photosV2/d8cc6b4a-abab-4270-a745-666c3eb5eb11-retina-large.png',
+    logo: 'https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/9ebc5499-da9e-43bb-ae50-df979da10a50.png',
     banner:
       'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/photosV2/d8cc6b4a-abab-4270-a745-666c3eb5eb11-retina-large.png',
     detailsBanner: '',
@@ -1130,7 +1178,7 @@ export const restaurants: Restaurant[] = [
   {
     id: 'safeway',
     name: 'Safeway',
-    logo: null,
+    logo: 'https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/Screen_Shot_2021-01-22_at_1.31.06_PM_230x230.png',
     banner: null,
     detailsBanner: '',
     rating: 4.7,
@@ -1153,10 +1201,11 @@ export const restaurants: Restaurant[] = [
   {
     id: 'gambinos-new-york-subs',
     name: 'Gambinos new york subs',
-    logo: 'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/store/header/b78ca11d-ef8a-4341-ba8c-24b3d86a7e68.jpg',
+    logo: 'https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/147dabb1-6ee5-4b9e-8381-4a22227f6bcf.png',
     banner:
       'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/store/header/b78ca11d-ef8a-4341-ba8c-24b3d86a7e68.jpg',
-    detailsBanner: '',
+    detailsBanner:
+      'https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=1000,height=300,format=auto,quality=80/https://doordash-static.s3.amazonaws.com/media/store/header/b78ca11d-ef8a-4341-ba8c-24b3d86a7e68.jpg',
     rating: 4.8,
     reviews: '(50+)',
     distance: '0.3 mi',
@@ -1177,10 +1226,11 @@ export const restaurants: Restaurant[] = [
   {
     id: 'cafe-encore',
     name: 'Cafe Encore',
-    logo: 'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/store/header/089aed8c-5cce-4566-a480-76b682cb740d.jpg',
+    logo: 'https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/d2d10800-4638-48e3-8a40-0e088afdb53e.png',
     banner:
       'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/store/header/089aed8c-5cce-4566-a480-76b682cb740d.jpg',
-    detailsBanner: '',
+    detailsBanner:
+      'https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=1000,height=300,format=auto,quality=80/https://doordash-static.s3.amazonaws.com/media/store/header/089aed8c-5cce-4566-a480-76b682cb740d.jpg',
     rating: 4.6,
     reviews: '(50+)',
     distance: '0.5 mi',
@@ -1201,9 +1251,11 @@ export const restaurants: Restaurant[] = [
   {
     id: 'boudin-bakery',
     name: 'Boudin Bakery',
-    logo: null,
-    banner: null,
-    detailsBanner: '',
+    logo: 'https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/5a973e6a-73e7-4a6e-9d08-f4972cf09c91.png',
+    banner:
+      'https://img.cdn4dd.com/p/fit=cover,width=300,height=300,format=auto,quality=80/media/photosV2/16b9bf97-0ba3-4384-a34e-829a76fe581c-retina-large.jpg',
+    detailsBanner:
+      'https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=1000,height=300,format=auto,quality=80/https://doordash-static.s3.amazonaws.com/media/store/header/2732.jpg',
     rating: 4.5,
     reviews: '(500+)',
     distance: '0.4 mi',
@@ -1224,7 +1276,7 @@ export const restaurants: Restaurant[] = [
   {
     id: 'gopuff',
     name: 'Gopuff',
-    logo: 'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/store/header/a5771f13-30a8-48e4-9e0b-ee98b7cacf3d.png',
+    logo: 'https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/d3e330d6-c93b-4f3c-8c92-b29703b61d3f.png',
     banner:
       'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/store/header/a5771f13-30a8-48e4-9e0b-ee98b7cacf3d.png',
     detailsBanner: '',
@@ -1248,10 +1300,11 @@ export const restaurants: Restaurant[] = [
   {
     id: 'afters-ice-cream-shop',
     name: 'Afters Ice Cream Shop',
-    logo: 'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/store/header/476486ae-b011-4be6-832b-43400368072f.png',
+    logo: 'https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/b2478fab-886c-4943-8efc-26f874b25968.png',
     banner:
       'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/store/header/476486ae-b011-4be6-832b-43400368072f.png',
-    detailsBanner: '',
+    detailsBanner:
+      'https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=1000,height=300,format=auto,quality=80/https://doordash-static.s3.amazonaws.com/media/store/header/476486ae-b011-4be6-832b-43400368072f.png',
     rating: 4.8,
     reviews: '(20+)',
     distance: '3.2 mi',
@@ -1272,7 +1325,7 @@ export const restaurants: Restaurant[] = [
   {
     id: 'speedway',
     name: 'Speedway',
-    logo: 'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/photosV2/cc006cf2-fe43-4857-9f38-50ba48ae01b5-retina-large.png',
+    logo: 'https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/d1461c34-d6f2-43de-baaa-7be395a004fb.png',
     banner:
       'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/photosV2/cc006cf2-fe43-4857-9f38-50ba48ae01b5-retina-large.png',
     detailsBanner: '',
@@ -1296,9 +1349,11 @@ export const restaurants: Restaurant[] = [
   {
     id: 'extramile',
     name: 'ExtraMile',
-    logo: null,
-    banner: null,
-    detailsBanner: '',
+    logo: 'https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/7f1f3660-d5fb-4719-832f-32397cc848c0.jpg',
+    banner:
+      'https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=1000,height=300,format=auto,quality=80/https://doordash-static.s3.amazonaws.com/media/store/header/80dddec6-43ad-4a0c-b49b-a5ba0c117541.jpg',
+    detailsBanner:
+      'https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=1000,height=300,format=auto,quality=80/https://doordash-static.s3.amazonaws.com/media/store/header/80dddec6-43ad-4a0c-b49b-a5ba0c117541.jpg',
     rating: 4.4,
     reviews: '(200+)',
     distance: '0.9 mi',
@@ -1319,10 +1374,11 @@ export const restaurants: Restaurant[] = [
   {
     id: 'joe-&-the-juice',
     name: 'Joe & The Juice',
-    logo: 'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/photosV2/4ef6b87d-4c86-49f3-a6fd-3fed13e3cfac-retina-large.jpg',
+    logo: 'https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/3df8c3e2-d869-43fb-9550-0206a48af214.png',
     banner:
       'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/photosV2/4ef6b87d-4c86-49f3-a6fd-3fed13e3cfac-retina-large.jpg',
-    detailsBanner: '',
+    detailsBanner:
+      'https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=1000,height=300,format=auto,quality=80/https://doordash-static.s3.amazonaws.com/media/store/header/824c189c-761c-442c-9cac-711a7c32c556.jpg',
     rating: 4.6,
     reviews: '(200+)',
     distance: '400 ft',
@@ -1343,10 +1399,11 @@ export const restaurants: Restaurant[] = [
   {
     id: 'allstar-cafe',
     name: 'Allstar Cafe',
-    logo: 'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/photosV2/930e8ba6-53f5-44d8-9cc4-f97906e0bcfb-retina-large.jpg',
+    logo: 'https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/c8ea8e1c-ee38-45ed-8053-fe6023e3fb87.png',
     banner:
       'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/photosV2/930e8ba6-53f5-44d8-9cc4-f97906e0bcfb-retina-large.jpg',
-    detailsBanner: '',
+    detailsBanner:
+      'https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=1000,height=300,format=auto,quality=80/https://doordash-static.s3.amazonaws.com/media/store/header/f18cd898-6d3d-47db-8354-7d8fccf54f85.jpg',
     rating: 4.6,
     reviews: '(2k+)',
     distance: '1.2 mi',
@@ -1367,10 +1424,11 @@ export const restaurants: Restaurant[] = [
   {
     id: 'new-golden-daisy',
     name: 'New Golden Daisy',
-    logo: 'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/photosV2/6c60bd75-f31d-4d6d-98de-e3d15a107cca-retina-large.jpeg',
+    logo: 'https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/373385ad-02f1-47af-b4f0-76ba79a2bdee.png',
     banner:
       'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/photosV2/6c60bd75-f31d-4d6d-98de-e3d15a107cca-retina-large.jpeg',
-    detailsBanner: '',
+    detailsBanner:
+      'https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=1000,height=300,format=auto,quality=80/https://doordash-static.s3.amazonaws.com/media/store/header/56fc0fa7-9539-415e-ba7d-ed07f0d3573c.jpg',
     rating: 4.6,
     reviews: '(20+)',
     distance: '0.6 mi',
@@ -1391,9 +1449,11 @@ export const restaurants: Restaurant[] = [
   {
     id: 'sf-organica',
     name: 'SF OrganiCA',
-    logo: null,
-    banner: null,
-    detailsBanner: '',
+    logo: 'https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/60178977-69b3-4ce4-8384-a9ec9f3efaa4.png',
+    banner:
+      'https://img.cdn4dd.com/p/fit=cover,width=300,height=300,format=auto,quality=90/media/photosV2/61323951-ad06-404b-a82f-62f893810632-6fd89ba4-7249-4270-87b8-d2e175df7821-retina-large.jpg',
+    detailsBanner:
+      'https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=1000,height=300,format=auto,quality=80/https://doordash-static.s3.amazonaws.com/media/store/header/79ff25dc-8b1e-421e-bb09-f2f0e772562d.jpg',
     rating: 4.9,
     reviews: '(200+)',
     distance: '1.0 mi',
@@ -1414,10 +1474,11 @@ export const restaurants: Restaurant[] = [
   {
     id: 'skazka-caviar',
     name: 'Skazka caviar',
-    logo: 'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/store/header/5a8a3ad2-555d-4f8d-bb00-783d85678753.jpeg',
+    logo: 'https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/2ec1c37e-f7ca-4210-ba8e-63dc2f479ac6.jpeg',
     banner:
       'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/store/header/5a8a3ad2-555d-4f8d-bb00-783d85678753.jpeg',
-    detailsBanner: '',
+    detailsBanner:
+      'https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=1000,height=300,format=auto,quality=80/https://doordash-static.s3.amazonaws.com/media/store/header/5a8a3ad2-555d-4f8d-bb00-783d85678753.jpeg',
     rating: null,
     reviews: null,
     distance: '0.6 mi',
@@ -1438,10 +1499,11 @@ export const restaurants: Restaurant[] = [
   {
     id: 'cafe-gourmand',
     name: 'Cafe Gourmand',
-    logo: 'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/store/header/ad8ffe8b-3b72-4c6c-86ab-7775b174091e.jpg',
+    logo: '',
     banner:
       'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/store/header/ad8ffe8b-3b72-4c6c-86ab-7775b174091e.jpg',
-    detailsBanner: '',
+    detailsBanner:
+      'https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=1000,height=300,format=auto,quality=80/https://doordash-static.s3.amazonaws.com/media/store/header/ad8ffe8b-3b72-4c6c-86ab-7775b174091e.jpg',
     rating: 5,
     reviews: '(20+)',
     distance: '0.9 mi',
@@ -1462,10 +1524,11 @@ export const restaurants: Restaurant[] = [
   {
     id: 'peacock-pansy-restaurant',
     name: 'Peacock Pansy Restaurant',
-    logo: 'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/store/header/f34d25dc-481d-4c2b-b0c9-de4ade0fd067.jpg',
+    logo: 'https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/c005ee88-e4f4-4863-99c6-a01b8e7e3133.pdf',
     banner:
       'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/store/header/f34d25dc-481d-4c2b-b0c9-de4ade0fd067.jpg',
-    detailsBanner: '',
+    detailsBanner:
+      'https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=1000,height=300,format=auto,quality=80/https://doordash-static.s3.amazonaws.com/media/store/header/f34d25dc-481d-4c2b-b0c9-de4ade0fd067.jpg',
     rating: 4.5,
     reviews: '(20+)',
     distance: '1.5 mi',
@@ -1486,9 +1549,11 @@ export const restaurants: Restaurant[] = [
   {
     id: 'little-italy-pasta',
     name: 'Little Italy Pasta',
-    logo: null,
-    banner: null,
-    detailsBanner: '',
+    logo: 'https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/fc28c3ee-dd8c-45ad-af87-cf29e1f7e251.png',
+    banner:
+      'https://img.cdn4dd.com/cdn-cgi/image/fit=contain,width=1920,format=auto,quality=50/https://doordash-static.s3.amazonaws.com/media/photosV2/93dc072a-7acc-4d58-bf87-8753a92feb55-retina-large.png',
+    detailsBanner:
+      'https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=1000,height=300,format=auto,quality=80/https://doordash-static.s3.amazonaws.com/media/store/header/4b58096f-00d1-4327-b410-e57ab71028bd.jpg',
     rating: 3.9,
     reviews: '(200+)',
     distance: '1.1 mi',
@@ -1509,7 +1574,7 @@ export const restaurants: Restaurant[] = [
   {
     id: 'target',
     name: 'Target',
-    logo: 'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/photosV2/162622a3-f6bf-4f4e-b50e-7ad4b074c4f7-retina-large.png',
+    logo: 'https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/1d0b3b97-92f9-4b92-a3ad-a4f65506d4a4.png',
     banner:
       'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/photosV2/162622a3-f6bf-4f4e-b50e-7ad4b074c4f7-retina-large.png',
     detailsBanner: '',
@@ -1533,10 +1598,11 @@ export const restaurants: Restaurant[] = [
   {
     id: 'ben-s-fast-food',
     name: "Ben's Fast Food",
-    logo: 'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/photosV2/e1b46176-ac80-44ab-9293-bffb84fe92a8-retina-large.jpeg',
+    logo: 'https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/5f940818-f969-4e01-be91-7f5fdd6d1a2e.jpg',
     banner:
       'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/photosV2/e1b46176-ac80-44ab-9293-bffb84fe92a8-retina-large.jpeg',
-    detailsBanner: '',
+    detailsBanner:
+      'https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=1000,height=300,format=auto,quality=80/https://doordash-static.s3.amazonaws.com/media/store/header/421746.jpg',
     rating: 4.8,
     reviews: '(10k+)',
     distance: '0.9 mi',
@@ -1557,10 +1623,11 @@ export const restaurants: Restaurant[] = [
   {
     id: 'mr.-charlie-s',
     name: "Mr. Charlie's",
-    logo: 'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/photosV2/a3f73c36-151b-4023-8114-70e6eccf6be0-retina-large.jpg',
+    logo: "https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/63ea753b-a626-4b57-ad7b-71f1c5588c8c.%20Charlie's",
     banner:
       'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/photosV2/a3f73c36-151b-4023-8114-70e6eccf6be0-retina-large.jpg',
-    detailsBanner: '',
+    detailsBanner:
+      'https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=1000,height=300,format=auto,quality=80/https://doordash-static.s3.amazonaws.com/media/store/header/64ca3ed3-5e49-4a8a-a3b5-01d21821e12d.jpg',
     rating: 4.8,
     reviews: '(200+)',
     distance: '0.4 mi',
@@ -1581,10 +1648,11 @@ export const restaurants: Restaurant[] = [
   {
     id: 'boichik-bagels',
     name: 'Boichik Bagels',
-    logo: 'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/photosV2/5e3dc6b7-707e-4dbc-a0cf-16978eff42b5-2bdbc283-33e7-4278-8265-b5516a3c48e1-retina-large.jpg',
+    logo: 'https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/9c59d7dd-c566-4c78-ad36-c9ccae9d3517.jpg',
     banner:
       'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/photosV2/5e3dc6b7-707e-4dbc-a0cf-16978eff42b5-2bdbc283-33e7-4278-8265-b5516a3c48e1-retina-large.jpg',
-    detailsBanner: '',
+    detailsBanner:
+      'https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=1000,height=300,format=auto,quality=80/https://doordash-static.s3.amazonaws.com/media/store/header/fcb350f4-3484-4376-b923-8f399aa0fda9.3',
     rating: 4.8,
     reviews: '(200+)',
     distance: '700 ft',
@@ -1605,10 +1673,11 @@ export const restaurants: Restaurant[] = [
   {
     id: 'crust---fresh-sourdough-deli',
     name: 'Crust - Fresh Sourdough Deli',
-    logo: 'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/photosV2/0a3b84b4-f16c-45fe-a39f-9d6648b83ac8-retina-large.jpeg',
+    logo: 'https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/67d69ad1-6f52-486f-a06c-799ef1e2acfa.png',
     banner:
       'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/photosV2/0a3b84b4-f16c-45fe-a39f-9d6648b83ac8-retina-large.jpeg',
-    detailsBanner: '',
+    detailsBanner:
+      'https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=1000,height=300,format=auto,quality=80/https://doordash-static.s3.amazonaws.com/media/store/header/5c9c5e25-a382-44ed-8048-093aa8a4038e.jpg',
     rating: 4.8,
     reviews: '(50+)',
     distance: '0.9 mi',
@@ -1629,9 +1698,11 @@ export const restaurants: Restaurant[] = [
   {
     id: 'salmon-bliss',
     name: 'SALMON BLISS',
-    logo: null,
-    banner: null,
-    detailsBanner: '',
+    logo: 'https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/ac3b75ef-3289-4a6a-95ac-ac3f5a9299b6.jpg',
+    banner:
+      'https://img.cdn4dd.com/cdn-cgi/image/fit=contain,width=1920,format=auto,quality=50/https://doordash-static.s3.amazonaws.com/media/photosV2/8b3b4deb-7ed3-421b-91cf-3db15d9883cd-retina-large.png',
+    detailsBanner:
+      'https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=1000,height=300,format=auto,quality=80/https://doordash-static.s3.amazonaws.com/media/store/header/5c8c1ac0-6f3f-4737-8692-8a6e94fd1a21.jpg',
     rating: 4.8,
     reviews: '(20+)',
     distance: '0.8 mi',
@@ -1652,7 +1723,7 @@ export const restaurants: Restaurant[] = [
   {
     id: 'michaels',
     name: 'Michaels',
-    logo: 'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/photosV2/6240b2db-25e3-4b8f-b62f-547184e6e311-retina-large.png',
+    logo: 'https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/3e4206fc-0103-4a03-a711-9c966c7041c4.png',
     banner:
       'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/photosV2/6240b2db-25e3-4b8f-b62f-547184e6e311-retina-large.png',
     detailsBanner: '',
@@ -1676,10 +1747,11 @@ export const restaurants: Restaurant[] = [
   {
     id: 'designer-blooms',
     name: 'Designer Blooms',
-    logo: 'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/store/header/f6a18ee3-60b3-474f-b7f3-b1fd96a697f5.png',
+    logo: 'https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/dacbbc16-db2a-45c9-80c8-9079e9dbf4c8.jpg',
     banner:
       'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/store/header/f6a18ee3-60b3-474f-b7f3-b1fd96a697f5.png',
-    detailsBanner: '',
+    detailsBanner:
+      'https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=1000,height=300,format=auto,quality=80/https://doordash-static.s3.amazonaws.com/media/store/header/f6a18ee3-60b3-474f-b7f3-b1fd96a697f5.png',
     rating: 3.9,
     reviews: '(10+)',
     distance: '0.6 mi',
@@ -1700,10 +1772,11 @@ export const restaurants: Restaurant[] = [
   {
     id: 'safeway-flower-shop',
     name: 'Safeway Flower Shop',
-    logo: 'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/photosV2/8e79ff36-4fde-457c-8a19-70acbb7874ea-retina-large.JPG',
+    logo: 'https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/c5fdd4df-f8e3-44ee-937d-90d5cfd92df4.jpeg',
     banner:
       'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/photosV2/8e79ff36-4fde-457c-8a19-70acbb7874ea-retina-large.JPG',
-    detailsBanner: '',
+    detailsBanner:
+      'https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=1000,height=300,format=auto,quality=80/https://doordash-static.s3.amazonaws.com/media/store/header/4240dbc0-2bb7-4e46-a2aa-a2f8efed716e.jpeg',
     rating: 4.3,
     reviews: '(20+)',
     distance: '3.7 mi',
@@ -1724,9 +1797,11 @@ export const restaurants: Restaurant[] = [
   {
     id: 'the-bouqs-co.-flower-shop',
     name: 'The Bouqs Co. Flower Shop',
-    logo: null,
-    banner: null,
-    detailsBanner: '',
+    logo: 'https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/012f51fe-d41a-4186-97e6-6c8c33b97f76.jpg',
+    banner:
+      'https://img.cdn4dd.com/p/fit=cover,width=300,height=300,format=auto,quality=70/media/photosV2/72cc442e-e959-4617-b51b-4001383321de-retina-large.jpg',
+    detailsBanner:
+      'https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=1000,height=300,format=auto,quality=80/https://doordash-static.s3.amazonaws.com/media/store/header/710d0c2e-308e-4d56-961b-7314a425a0b6.jpeg',
     rating: 4.6,
     reviews: '(100+)',
     distance: '1.2 mi',
@@ -1747,10 +1822,11 @@ export const restaurants: Restaurant[] = [
   {
     id: 'the-original-mels-diner',
     name: 'The Original Mels Diner',
-    logo: 'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/store/header/f0cc32be-55a2-46c6-8d21-08c26788e138.jpg',
+    logo: 'https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/4bb99676-fc0c-4aa2-85fa-db2e17d69065.png',
     banner:
       'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/store/header/f0cc32be-55a2-46c6-8d21-08c26788e138.jpg',
-    detailsBanner: '',
+    detailsBanner:
+      'https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=1000,height=300,format=auto,quality=80/https://doordash-static.s3.amazonaws.com/media/store/header/f0cc32be-55a2-46c6-8d21-08c26788e138.jpg',
     rating: 4.5,
     reviews: '(10+)',
     distance: '1.0 mi',
@@ -1771,10 +1847,11 @@ export const restaurants: Restaurant[] = [
   {
     id: 'detroit-cookie-company',
     name: 'Detroit Cookie Company',
-    logo: 'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/photosV2/5ff01623-e488-496f-a1ee-8fa5c2ab3e7b-retina-large.png',
+    logo: 'https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/bf7cd33b-ea29-4180-984b-3ca7157146c0.png',
     banner:
       'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/photosV2/5ff01623-e488-496f-a1ee-8fa5c2ab3e7b-retina-large.png',
-    detailsBanner: '',
+    detailsBanner:
+      'https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=1000,height=300,format=auto,quality=80/https://doordash-static.s3.amazonaws.com/media/store/header/17f218b8-c50d-4665-b825-d92775c49fab.png',
     rating: 4,
     reviews: '(20+)',
     distance: '3.2 mi',
@@ -1795,10 +1872,11 @@ export const restaurants: Restaurant[] = [
   {
     id: 'hello-chonky-cookie-co',
     name: 'Hello Chonky Cookie Co',
-    logo: 'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/photosV2/f8bc910a-55ef-4988-8880-330dec128e1d-retina-large.png',
+    logo: 'https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/27d0c47f-8a92-40ef-b13f-23ffa997132a.png',
     banner:
       'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/photosV2/f8bc910a-55ef-4988-8880-330dec128e1d-retina-large.png',
-    detailsBanner: '',
+    detailsBanner:
+      'https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=1000,height=300,format=auto,quality=80/https://doordash-static.s3.amazonaws.com/media/store/header/53ba1325-a0b3-43d5-a1e4-a9d10b5cccb4.png',
     rating: null,
     reviews: null,
     distance: '3.2 mi',
@@ -1819,9 +1897,11 @@ export const restaurants: Restaurant[] = [
   {
     id: 'venchi-chocolates',
     name: 'Venchi Chocolates',
-    logo: null,
-    banner: null,
-    detailsBanner: '',
+    logo: 'https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/cbac2bc7-028c-46c9-b435-f9ce3804b57a.png',
+    banner:
+      'https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=1000,height=300,format=auto,quality=80/https://doordash-static.s3.amazonaws.com/media/store/header/104fae9a-cbd2-4d12-bf3b-9f4e5b5ff935.png',
+    detailsBanner:
+      'https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=1000,height=300,format=auto,quality=80/https://doordash-static.s3.amazonaws.com/media/store/header/104fae9a-cbd2-4d12-bf3b-9f4e5b5ff935.png',
     rating: null,
     reviews: null,
     distance: '3.2 mi',
