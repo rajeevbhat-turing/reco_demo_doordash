@@ -20,6 +20,7 @@ import {
   getPetCategories,
   filterProductsByCategory
 } from "@/app/pets/data/pet-response-mapper"
+import { allPetStores } from "@/data/pet-data"
 
 export default function Pets() {
   // Filter state
@@ -180,7 +181,7 @@ export default function Pets() {
             products={section.products}
             variant="carousel"
             isSnapEligible={section.isSnapEligible}
-            storeId={(section.id || index).toString()}
+            storeId={allPetStores.length > 0 ? allPetStores[0].id : (section.id || index).toString()}
             category="pets"
           />
         ))}

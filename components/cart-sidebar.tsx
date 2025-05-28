@@ -28,7 +28,8 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
     getTotalPrice, 
     addItem, 
     isGroupOrder, 
-    groupOrderId 
+    groupOrderId,
+    getConfig
   } = useCartStore()
   const [price, setPrice] = useState("Checkout")
   
@@ -42,6 +43,9 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
   const [complementItems, setComplementItems] = useState<any[]>([])
   const [lastRestaurantId, setLastRestaurantId] = useState<string | null>(null)
   const [lastStoreId, setLastStoreId] = useState<string | null>(null)
+
+  // Get category-specific configuration
+  const categoryConfig = getConfig()
 
   // Function to get store information based on category and store ID
   const getStoreInfo = useCallback((storeId: string, category: string) => {
@@ -174,9 +178,13 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
       return store.name;
     }
     
-    // Debug fallback
+    // Fallback - try to get store info if we don't have it yet
     if (currentCategory !== 'restaurant' && currentStoreId) {
-      return `Store ${currentStoreId} (${currentCategory})`;
+      const storeInfo = getStoreInfo(currentStoreId, currentCategory);
+      if (storeInfo) {
+        return storeInfo.name;
+      }
+      return `Store ${currentStoreId}`;
     }
     
     return 'Unknown Store';
@@ -206,15 +214,36 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
       const price = getItemPrice(item)
       return sum + price * item.quantity
     }, 0)
-    return total.toFixed(2)
+    return total
   }
 
   // Calculate total
   const getTotal = () => {
-    const subtotal = Number.parseFloat(getSubtotal())
-    const total = subtotal
+    const subtotal = getSubtotal()
+    const deliveryFee = (currentCategory !== 'restaurant' && subtotal < categoryConfig.freeDeliveryThreshold) ? categoryConfig.defaultDeliveryFee : 0
+    const total = subtotal + deliveryFee
     return total.toFixed(2)
   }
+
+  // Get maximum order limit based on store type
+  const getMaxOrderLimit = () => {
+    if (currentCategory === 'restaurant' && restaurant) {
+      return restaurant.maxOrderLimit || 500;
+    } else if (currentCategory !== 'restaurant' && store) {
+      return store.maxOrderLimit || 500;
+    }
+    return 500;
+  };
+
+  // Check if delivery fee applies (only for non-restaurant categories)
+  const shouldShowDeliveryFeeNotice = () => {
+    return currentCategory !== 'restaurant' && ['grocery', 'retail', 'pets'].includes(currentCategory);
+  };
+
+  // Get the delivery fee threshold to display (always $35 for non-restaurant as per requirement)
+  const getDisplayDeliveryThreshold = () => {
+    return 35; // Always show $35 as per requirement
+  };
 
   const handleAddComplementItem = (item: any) => {
     // Verify the item belongs to the current restaurant
@@ -243,24 +272,26 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
           </button>
         </div>
         <div className="flex-1 flex flex-col items-center justify-center p-6 text-center">
-          <div className="text-gray-500 mb-4">Your cart is empty</div>
-          <button onClick={onClose} className="bg-red-600 text-white px-6 py-2 rounded-full text-sm font-medium">
-            Browse Restaurants
-          </button>
+          <div className="text-gray-500">Your cart is empty</div>
         </div>
       </div>
     )
   }
 
+  const subtotal = getSubtotal()
+  const displayThreshold = getDisplayDeliveryThreshold()
+
   return (
     <div className={cartClasses}>
+      {/* Header */}
       <div className="p-4 border-b flex items-center justify-between">
         <div>
           <h2 className="text-sm text-gray-600">Your cart from</h2>
           <div className="flex items-center">
-            <h3 className="font-bold text-base">{getDisplayName()}</h3>
+            <h3 className="font-bold text-lg">{getDisplayName()}</h3>
             <ChevronRight className="h-5 w-5 ml-1" />
           </div>
+          <p className="text-sm text-gray-500 mt-1">Maximum order limit: ${getMaxOrderLimit().toLocaleString()}</p>
         </div>
         <button onClick={onClose} className="p-2">
           <X className="h-6 w-6" />
@@ -277,17 +308,97 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
         </div>
       )}
 
-      <div className="p-4">
-        <button className="w-full bg-[#e03a19] text-white py-3 rounded-full font-medium">
-          Continue
-        </button>
-        <p className="text-center text-sm text-gray-600 mt-2">
-          ${getTotal()} without tax
-        </p>
-      </div>
+      {/* Delivery Fee Notice and Progress Bar - Only for non-restaurant categories */}
+      {shouldShowDeliveryFeeNotice() && (
+        <div className="p-4 border-b">
+          {/* Progress bar */}
+          <div className="h-1 bg-gray-200 rounded-full mb-4">
+            <div
+              className="h-1 bg-red-600 rounded-full transition-all duration-300"
+              style={{ width: `${Math.min((subtotal / displayThreshold) * 100, 100)}%` }}
+              suppressHydrationWarning
+            ></div>
+          </div>
 
+          {/* Delivery fee notice */}
+          {subtotal < displayThreshold ? (
+            <div className="flex items-start text-sm mb-4">
+              <div className="text-red-600 mr-2 mt-1 flex-shrink-0">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path
+                    d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <path d="M12 8V12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                  <path
+                    d="M12 16H12.01"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </div>
+              <div>
+                <p className="font-medium text-red-600" suppressHydrationWarning>
+                  Add ${(displayThreshold - subtotal).toFixed(2)} for $0 delivery fee
+                </p>
+                <span className="text-gray-500" suppressHydrationWarning>
+                  + service fees ({Math.round(categoryConfig.serviceFeePercentage * 100)}%, min ${categoryConfig.minServiceFee.toFixed(2)})
+                </span>
+              </div>
+            </div>
+          ) : (
+            <div className="flex items-start text-sm mb-4">
+              <div className="text-green-600 mr-2 mt-1 flex-shrink-0">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path
+                    d="M9 12L11 14L15 10M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </div>
+              <div>
+                <p className="font-medium text-green-600">
+                  $0 delivery fee on orders over $35
+                </p>
+                <span className="text-gray-500" suppressHydrationWarning>
+                  + service fees ({Math.round(categoryConfig.serviceFeePercentage * 100)}%, min ${categoryConfig.minServiceFee.toFixed(2)})
+                </span>
+              </div>
+            </div>
+          )}
+
+          {/* Continue button */}
+          <button className="w-full bg-red-600 hover:bg-red-700 text-white font-medium py-3 rounded-full mb-3 text-lg">
+            Continue
+          </button>
+          <p className="text-center text-sm text-gray-600" suppressHydrationWarning>
+            ${getTotal()} without tax
+          </p>
+        </div>
+      )}
+
+      {/* For restaurants, show the continue button in the original position */}
+      {!shouldShowDeliveryFeeNotice() && (
+        <div className="p-4 border-b">
+          <button className="w-full bg-[#e03a19] text-white py-3 rounded-full font-medium">
+            Continue
+          </button>
+          <p className="text-center text-sm text-gray-600 mt-2" suppressHydrationWarning>
+            ${getTotal()} without tax
+          </p>
+        </div>
+      )}
+
+      {/* Cart Items */}
       <div className="flex-1 overflow-y-auto">
-        {/* Cart Items */}
         <div className="divide-y divide-gray-200">
           {items.map((item) => (
             <div key={item.id} className="p-4 flex">
@@ -297,16 +408,16 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
                   alt={item.name}
                   width={96}
                   height={96}
-                  className="object-cover"
+                  className="object-cover rounded-md"
                 />
               </div>
               <div className="flex-1">
-                <h4 className="text-base">{item.name}</h4>
+                <h4 className="text-base font-medium">{item.name}</h4>
                 {item.customizations ? (
                   <p className="text-xs text-gray-600 mt-1">{item.customizations}</p>
-                ) : (
+                ) : currentCategory === 'restaurant' ? (
                   <p className="text-xs text-gray-600 mt-1">LARGE (5939 kJ.), Fries (1320 kJ.), Fanta® (716 kJ.)</p>
-                )}
+                ) : null}
                 <div className="mt-2 flex items-center justify-between">
                   <div className="text-sm">${(getItemPrice(item) * item.quantity).toFixed(2)}</div>
                   <div className="flex items-center bg-gray-100 rounded-full shadow-lg">

@@ -5,6 +5,7 @@ import "./globals.css"
 import Header from "@/components/header"
 import Sidebar from "@/components/sidebar"
 import Footer from "@/components/footer"
+import { ReplaceCartProvider } from "@/context/replace-cart-context"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -21,16 +22,18 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <div className="flex flex-col min-h-screen">
-          <Header />
-          <div className="flex flex-1 relative">
-            <Sidebar />
-            <div className="flex-1 w-0 min-w-0 md:ml-[220px]">
-              <main className="flex-1">{children}</main>
-              <Footer />
+        <ReplaceCartProvider>
+          <div className="flex flex-col min-h-screen">
+            <Header />
+            <div className="flex flex-1 relative">
+              <Sidebar />
+              <div className="flex-1 w-0 min-w-0 md:ml-[220px]">
+                <main className="flex-1">{children}</main>
+                <Footer />
+              </div>
             </div>
           </div>
-        </div>
+        </ReplaceCartProvider>
       </body>
     </html>
   )

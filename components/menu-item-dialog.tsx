@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react"
 import Image from "next/image"
 import { X, ThumbsUp, ChevronLeft, ChevronRight, ChevronRightIcon } from "lucide-react"
 import { useCartStore } from "@/store/cart-store"
+import { useReplaceCart } from "@/context/replace-cart-context"
 
 // Types for the menu item options
 interface MenuItemOption {
@@ -55,7 +56,7 @@ export default function MenuItemDialog({ isOpen, onClose, item }: MenuItemDialog
   const [selectedCustomizations, setSelectedCustomizations] = useState<Record<string, string[]>>({})
   const [customizationPrices, setCustomizationPrices] = useState<Record<string, number>>({})
   const dialogRef = useRef<HTMLDivElement>(null)
-  const addToCart = useCartStore((state) => state.addItem)
+  const { addItemWithConflictCheck } = useReplaceCart()
 
   // Track required selections
   const [requiredSelectionsCount, setRequiredSelectionsCount] = useState(0)
@@ -360,15 +361,17 @@ export default function MenuItemDialog({ isOpen, onClose, item }: MenuItemDialog
       })
     })
   
-    // Add the item to cart with customizations
-    addToCart({
-      id: item.id + Date.now(), // Make unique ID for customized items
+    // Add the item to cart with customizations using conflict detection
+    const cartItem = {
+      id: `${item.id}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`, // Generate unique ID
       restaurantId: item.restaurantId,
       name: item.name,
       price: totalPrice.toFixed(2),
       image: item.image,
       customizations: customizationText.join(" · "),
-    })
+    }
+    
+    addItemWithConflictCheck(cartItem, "restaurant")
   
     onClose()
   }

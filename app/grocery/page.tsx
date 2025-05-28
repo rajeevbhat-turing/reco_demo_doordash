@@ -91,8 +91,8 @@ export default function Grocery() {
       
       // Only keep products in the selected price ranges
       const filteredProducts = carousel.products.filter(product => {
-        const price = parseFloat(typeof product.price === 'string' ? 
-          product.price.replace('$', '') : product.price.toString());
+        const priceString = typeof product.price === 'string' ? product.price : String(product.price);
+        const price = parseFloat(priceString.replace('$', ''));
         
         return activeFilters.price!.some(range => {
           const [min, max] = priceRanges[range as keyof typeof priceRanges];
@@ -157,25 +157,46 @@ export default function Grocery() {
       )}
 
       {/* Product Carousels */}
-      {productCarousels.length > 0 ? (
-        productCarousels.map((carousel, index) => (
-          <ProductDisplay
-            key={`carousel-${index}`}
-            title={carousel.title}
-            storeName={carousel.storeName}
-            storeImage={carousel.storeImage}
-            time={carousel.time}
-            products={carousel.products}
-            variant="carousel"
-            storeId={(carousel.id || index).toString()}
-          />
-        ))
-      ) : (
-        activeFilters.price && activeFilters.price.length > 0 && (
-          <div className="py-10 text-center">
-            <p className="text-lg text-gray-500">No products match your price filter</p>
-          </div>
-        )
+      {productCarousels.length > 0 && (
+        productCarousels.map((carousel, index: number) => {
+          // Map carousel titles to correct store IDs
+          let storeId = `${index}`; // fallback
+          if (carousel.title === "Snacks & Drinks from Target") {
+            storeId = "7"; // Target store ID
+          } else if (carousel.title === "Market Favorites") {
+            storeId = "4"; // DoorDash Market store ID
+          } else if (carousel.storeName === "Target") {
+            storeId = "7";
+          } else if (carousel.storeName === "DoorDash Market") {
+            storeId = "4";
+          } else if (carousel.storeName === "Safeway") {
+            storeId = "2";
+          } else if (carousel.storeName === "DashMart") {
+            storeId = "3";
+          } else if (carousel.storeName === "Sprouts Farmers Market") {
+            storeId = "1";
+          }
+          
+          return (
+            <ProductDisplay
+              key={`carousel-${index}`}
+              title={carousel.title}
+              storeName={carousel.storeName}
+              storeImage={carousel.storeImage}
+              time={carousel.time}
+              products={carousel.products}
+              variant="carousel"
+              storeId={storeId}
+              category="grocery"
+            />
+          );
+        })
+      )}
+
+      {activeFilters.price && activeFilters.price.length > 0 && productCarousels.length === 0 && (
+        <div className="py-10 text-center">
+          <p className="text-lg text-gray-500">No products match your price filter</p>
+        </div>
       )}
 
       {/* Local Grocers Section */}

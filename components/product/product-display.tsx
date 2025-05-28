@@ -6,8 +6,8 @@ import ProductCard from "@/components/product-card"
 import type { Product } from "@/types"
 import Link from "next/link"
 import Image from "next/image"
-import { useCart } from "@/context/cart-context"
 import { CartCategory, useCartStore } from "@/store/cart-store"
+import { useReplaceCart } from "@/context/replace-cart-context"
 
 interface ProductDisplayProps {
   title: string
@@ -36,8 +36,14 @@ export default function ProductDisplay({
 }: ProductDisplayProps) {
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   
-  // Use only the cart context for all cart operations
-  const { items, addToCart, updateQuantity, removeFromCart } = useCart()
+  // Use the cart store and replace cart context
+  const { items, updateQuantity, removeItem, setCategory } = useCartStore()
+  const { addItemWithConflictCheck } = useReplaceCart()
+  
+  // Set the category when component mounts
+  useEffect(() => {
+    setCategory(category)
+  }, [category, setCategory])
   
   // Scroll left
   const scrollLeft = () => {
@@ -65,14 +71,23 @@ export default function ProductDisplay({
     })
   }
   
-  // Handle adding product to cart
+  // Handle adding product to cart with conflict detection
   const handleAddToCart = (product: Product) => {
-    addToCart(product, storeId)
+    const cartItem = {
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      image: product.image,
+      storeId: category === 'restaurant' ? undefined : storeId,
+      restaurantId: category === 'restaurant' ? storeId : undefined,
+    }
+    
+    addItemWithConflictCheck(cartItem, category)
   }
   
   // Handle removing product from cart
   const handleRemoveFromCart = (productId: number | string) => {
-    removeFromCart(productId)
+    removeItem(productId)
   }
 
   // Handle decreasing quantity
@@ -80,7 +95,7 @@ export default function ProductDisplay({
     if (quantity > 1) {
       updateQuantity(product.id, quantity - 1)
     } else {
-      removeFromCart(product.id)
+      removeItem(product.id)
     }
   }
 

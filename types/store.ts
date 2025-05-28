@@ -46,8 +46,19 @@ export interface RestaurantStore extends BaseStore {
   dashPass?: boolean;
 }
 
+// Pet-specific store interface
+export interface PetStore extends BaseStore {
+  storeType: "pets";
+  rating?: number;
+  reviewCount?: number;
+  distance?: string;
+  priceLevel?: string;
+  expressTime?: string;
+  maxOrderLimit?: number;
+}
+
 // Union type for all store types
-export type Store = GroceryStore | RetailStore | RestaurantStore;
+export type Store = GroceryStore | RetailStore | RestaurantStore | PetStore;
 
 // Helper type for store configuration
 export interface StoreConfig {
