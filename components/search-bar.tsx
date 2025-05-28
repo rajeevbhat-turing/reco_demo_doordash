@@ -8,6 +8,7 @@ import { Search, X, ArrowLeft } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { restaurants } from "@/constants/restaurants"
 import { menuItems } from "@/constants/menu-items"
+import { useCartStore } from "@/store/cart-store"
 
 interface SearchResult {
   id: string
@@ -29,18 +30,19 @@ const SearchBar = () => {
   const searchInputRef = useRef<HTMLInputElement>(null)
   const searchContainerRef = useRef<HTMLDivElement>(null)
   const router = useRouter()
+  const { updateSearchResults, clearSearchResults } = useCartStore()
 
   // Load recent searches from localStorage on component mount
   useEffect(() => {
     try {
-      if (typeof window !== 'undefined') {
+      if (typeof window !== "undefined") {
         const savedSearches = localStorage.getItem("recentSearches")
         if (savedSearches) {
           setRecentSearches(JSON.parse(savedSearches))
         }
       }
     } catch (error) {
-      console.error('Error loading recent searches:', error)
+      console.error("Error loading recent searches:", error)
       // Fallback to empty array if localStorage fails
       setRecentSearches([])
     }
@@ -51,7 +53,7 @@ const SearchBar = () => {
     if (!term.trim()) return
 
     try {
-      if (typeof window !== 'undefined') {
+      if (typeof window !== "undefined") {
         const updatedSearches = [
           term,
           ...recentSearches.filter((search) => search.toLowerCase() !== term.toLowerCase()),
@@ -61,7 +63,7 @@ const SearchBar = () => {
         localStorage.setItem("recentSearches", JSON.stringify(updatedSearches))
       }
     } catch (error) {
-      console.error('Error saving recent search:', error)
+      console.error("Error saving recent search:", error)
       // Continue without saving if localStorage fails
     }
   }
@@ -136,10 +138,16 @@ const SearchBar = () => {
       setSearchResults(combinedResults)
       setSearchSuggestions(suggestions)
       setIsSearchActive(true)
+
+      // Update cart store with search results
+      updateSearchResults(combinedResults)
     } else {
       setSearchResults([])
       setSearchSuggestions([])
       setIsSearchActive(!!recentSearches.length)
+
+      // Clear cart store search results
+      clearSearchResults()
     }
   }
 
@@ -241,6 +249,7 @@ const SearchBar = () => {
   const goBack = () => {
     setIsSearchActive(false)
     setSearchTerm("")
+    clearSearchResults()
   }
 
   return (

@@ -1,6 +1,7 @@
 import { create } from "zustand"
 import { persist, devtools } from "zustand/middleware"
-import { Product } from "@/types"
+import type { Product } from "@/types"
+import { restaurants } from "@/constants/restaurants"
 
 // Define supported cart categories
 export type CartCategory = "restaurant" | "grocery" | "retail" | "pets"
@@ -8,14 +9,27 @@ export type CartCategory = "restaurant" | "grocery" | "retail" | "pets"
 // Base cart item interface
 export interface CartItem {
   id: number | string
-  name: string
+  itemName: string // Renamed from 'name' to 'itemName'
   price: number | string
   image: string
   quantity: number
   storeId?: string
   restaurantId?: string
+  storeName?: string // Added storeName property
   customizations?: string
   category: CartCategory // Add category to each cart item
+}
+
+// Search result interface for storing search results
+export interface SearchResult {
+  id: string
+  name: string
+  logo: string
+  description: string
+  dashPass?: boolean
+  type: "restaurant" | "menu-item"
+  restaurantId?: string
+  matchedItem?: string
 }
 
 // Category-specific configurations
@@ -54,6 +68,22 @@ const categoryConfigs: Record<CartCategory, CategoryConfig> = {
   },
 }
 
+// Helper function to get store name from restaurant ID
+const getStoreNameFromRestaurantId = (restaurantId: string): string => {
+  const restaurant = restaurants.find((r) => r.id === restaurantId)
+  return restaurant ? restaurant.name : "Unknown Store"
+}
+
+// Helper function to get store name from store ID (for grocery/retail stores)
+const getStoreNameFromStoreId = (storeId: string): string => {
+  // You can add your store data here similar to restaurants
+  // For now, we'll format the storeId to be more readable
+  return storeId
+    .split("-")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ")
+}
+
 // Cart store interface
 interface CartStore {
   // State
@@ -63,24 +93,33 @@ interface CartStore {
   currentRestaurantId: string | null
   isGroupOrder: boolean
   groupOrderId: string | null
+  searchResults: SearchResult[]
+  totalCartValue: number
 
   // Category methods
   setCategory: (category: CartCategory) => void
   getConfig: () => CategoryConfig
 
   // Cart operations
-  addItem: (item: Omit<CartItem, "quantity" | "category">, category?: CartCategory) => void
+  addItem: (item: Omit<CartItem, "quantity" | "category">, category?: CartCategory, storeName?: string) => void
   removeItem: (id: string | number) => void
   updateQuantity: (id: string | number, quantity: number) => void
   clearCart: () => void
-  
+
   // Conflict detection methods
-  checkConflict: (item: Omit<CartItem, "quantity" | "category">, category?: CartCategory) => {
+  checkConflict: (
+    item: Omit<CartItem, "quantity" | "category">,
+    category?: CartCategory,
+  ) => {
     hasConflict: boolean
     conflictType: "restaurant" | "store" | null
   }
-  replaceCartWithItem: (item: Omit<CartItem, "quantity" | "category">, category?: CartCategory) => void
-  
+  replaceCartWithItem: (
+    item: Omit<CartItem, "quantity" | "category">,
+    category?: CartCategory,
+    storeName?: string,
+  ) => void
+
   // Group order methods
   startGroupOrder: () => string
   joinGroupOrder: (groupOrderId: string) => void
@@ -97,6 +136,13 @@ interface CartStore {
   // Item source checks
   hasDifferentStore: (storeId: string) => boolean
   hasDifferentRestaurant: (restaurantId: string) => boolean
+
+  // Search results methods
+  updateSearchResults: (results: SearchResult[]) => void
+  clearSearchResults: () => void
+
+  // Update total cart value
+  updateTotalCartValue: () => void
 }
 
 export const useCartStore = create<CartStore>()(
@@ -110,11 +156,13 @@ export const useCartStore = create<CartStore>()(
         currentRestaurantId: null,
         isGroupOrder: false,
         groupOrderId: null,
+        searchResults: [],
+        totalCartValue: 0,
 
         // Set active category without clearing cart
         setCategory: (category: CartCategory) => {
           const { currentCategory } = get()
-          
+
           // Just update the category, don't clear the cart
           if (currentCategory !== category) {
             console.log(`Changing category from ${currentCategory} to ${category} - keeping cart`)
@@ -129,16 +177,27 @@ export const useCartStore = create<CartStore>()(
         },
 
         // Add item to cart (without automatic conflict resolution)
-        addItem: (item, category) => {
-          const {
-            items,
-            currentCategory,
-            currentStoreId,
-            currentRestaurantId
-          } = get()
+        addItem: (item, category, storeName) => {
+          const { items, currentCategory, currentStoreId, currentRestaurantId } = get()
 
           // Use provided category or default to current category
           const itemCategory = category || currentCategory
+
+          // Handle backward compatibility with 'name' property
+          const itemName = item.itemName || "Unknown Item"
+
+          // Determine store name based on available information
+          let resolvedStoreName = storeName
+
+          if (!resolvedStoreName) {
+            if (item.restaurantId) {
+              resolvedStoreName = getStoreNameFromRestaurantId(item.restaurantId)
+            } else if (item.storeId) {
+              resolvedStoreName = getStoreNameFromStoreId(item.storeId)
+            } else {
+              resolvedStoreName = "Unknown Store"
+            }
+          }
 
           // Standard add to cart logic (for all items)
           const existingItem = items.find((i) => i.id === item.id)
@@ -151,12 +210,23 @@ export const useCartStore = create<CartStore>()(
           } else {
             // Add new item with quantity 1
             set({
-              items: [...items, { ...item, quantity: 1, category: itemCategory }],
+              items: [
+                ...items,
+                {
+                  ...item,
+                  itemName, // Use the determined itemName
+                  storeName: resolvedStoreName, // Use resolved storeName
+                  quantity: 1,
+                  category: itemCategory,
+                },
+              ],
               currentCategory: itemCategory,
               currentStoreId: item.storeId || currentStoreId,
               currentRestaurantId: item.restaurantId || currentRestaurantId,
             })
           }
+          // After adding the item, update the total cart value
+          setTimeout(() => get().updateTotalCartValue(), 0)
         },
 
         // Remove item from cart
@@ -169,6 +239,8 @@ export const useCartStore = create<CartStore>()(
             currentStoreId: newItems.length > 0 ? get().currentStoreId : null,
             currentRestaurantId: newItems.length > 0 ? get().currentRestaurantId : null,
           })
+          // After removing the item, update the total cart value
+          setTimeout(() => get().updateTotalCartValue(), 0)
         },
 
         // Update item quantity
@@ -195,6 +267,8 @@ export const useCartStore = create<CartStore>()(
               currentRestaurantId: null,
             })
           }
+          // After updating quantity, update the total cart value
+          setTimeout(() => get().updateTotalCartValue(), 0)
         },
 
         // Clear cart
@@ -203,38 +277,39 @@ export const useCartStore = create<CartStore>()(
             items: [],
             currentStoreId: null,
             currentRestaurantId: null,
+            totalCartValue: 0,
           })
         },
-        
+
         // Start a group order and return the group order ID
         startGroupOrder: () => {
           // Generate a random ID for the group order
-          const groupOrderId = Math.random().toString(36).substring(2, 10);
-          
+          const groupOrderId = Math.random().toString(36).substring(2, 10)
+
           set({
             isGroupOrder: true,
-            groupOrderId
-          });
-          
-          return groupOrderId;
+            groupOrderId,
+          })
+
+          return groupOrderId
         },
-        
+
         // Join an existing group order
         joinGroupOrder: (groupOrderId: string) => {
           set({
             isGroupOrder: true,
             groupOrderId,
             // Keep the items and other cart state since we're joining an existing order
-          });
+          })
         },
-        
+
         // Leave a group order
         leaveGroupOrder: () => {
           set({
             isGroupOrder: false,
             groupOrderId: null,
             // Keep the items since the user might want to order for themselves
-          });
+          })
         },
 
         // Get total items count
@@ -245,9 +320,10 @@ export const useCartStore = create<CartStore>()(
         // Calculate subtotal
         getSubtotal: () => {
           return get().items.reduce((sum, item) => {
-            const price = typeof item.price === 'number'
-              ? item.price
-              : parseFloat(item.price.toString().replace(/[^0-9.]/g, ""))
+            const price =
+              typeof item.price === "number"
+                ? item.price
+                : Number.parseFloat(item.price.toString().replace(/[^0-9.]/g, ""))
             return sum + price * item.quantity
           }, 0)
         },
@@ -256,19 +332,14 @@ export const useCartStore = create<CartStore>()(
         getServiceFee: () => {
           const { getSubtotal, getConfig } = get()
           const config = getConfig()
-          return Math.max(
-            getSubtotal() * config.serviceFeePercentage,
-            config.minServiceFee
-          )
+          return Math.max(getSubtotal() * config.serviceFeePercentage, config.minServiceFee)
         },
 
         // Calculate delivery fee
         getDeliveryFee: () => {
           const { getSubtotal, getConfig } = get()
           const config = getConfig()
-          return getSubtotal() >= config.freeDeliveryThreshold
-            ? 0
-            : config.defaultDeliveryFee
+          return getSubtotal() >= config.freeDeliveryThreshold ? 0 : config.defaultDeliveryFee
         },
 
         // Calculate total
@@ -295,21 +366,21 @@ export const useCartStore = create<CartStore>()(
         },
 
         // Conflict detection methods
-        checkConflict: (item: Omit<CartItem, "quantity" | "category">, category?: CartCategory) => {
+        checkConflict: (item, category) => {
           const { currentCategory, currentStoreId, currentRestaurantId, items } = get()
-          
+
           // If cart is empty, no conflict
           if (items.length === 0) {
             return { hasConflict: false, conflictType: null }
           }
-          
+
           const itemCategory = category || currentCategory
           let hasConflict = false
           let conflictType: "restaurant" | "store" | null = null
-          
+
           // Check for category conflicts first
-          const existingCategories = [...new Set(items.map(cartItem => cartItem.category))]
-          
+          const existingCategories = [...new Set(items.map((cartItem) => cartItem.category))]
+
           // If we have items from different categories, that's a conflict
           if (existingCategories.length > 0 && !existingCategories.includes(itemCategory)) {
             hasConflict = true
@@ -320,48 +391,137 @@ export const useCartStore = create<CartStore>()(
               conflictType = "store"
             }
           }
-          
+
           // Check for restaurant conflict (within restaurant category)
-          if (itemCategory === "restaurant" && item.restaurantId && currentRestaurantId && item.restaurantId !== currentRestaurantId) {
+          if (
+            itemCategory === "restaurant" &&
+            item.restaurantId &&
+            currentRestaurantId &&
+            item.restaurantId !== currentRestaurantId
+          ) {
             hasConflict = true
             conflictType = "restaurant"
           }
-          
+
           // Check for store conflict (within non-restaurant categories)
           if (itemCategory !== "restaurant" && item.storeId && currentStoreId && item.storeId !== currentStoreId) {
             hasConflict = true
             conflictType = "store"
           }
-          
+
           return { hasConflict, conflictType }
         },
-        replaceCartWithItem: (item: Omit<CartItem, "quantity" | "category">, category?: CartCategory) => {
-          const { currentCategory, currentStoreId, currentRestaurantId } = get()
-          const itemCategory = category || currentCategory
+
+        replaceCartWithItem: (item, category, storeName) => {
+          const itemCategory = category || get().currentCategory
+
+          // Handle backward compatibility with 'name' property
+          const itemName = item.itemName || "Unknown Item"
+
+          // Determine store name based on available information
+          let resolvedStoreName = storeName
+
+          if (!resolvedStoreName) {
+            if (item.restaurantId) {
+              resolvedStoreName = getStoreNameFromRestaurantId(item.restaurantId)
+            } else if (item.storeId) {
+              resolvedStoreName = getStoreNameFromStoreId(item.storeId)
+            } else {
+              resolvedStoreName = "Unknown Store"
+            }
+          }
+
           set({
-            items: [{ ...item, quantity: 1, category: itemCategory }],
+            items: [
+              {
+                ...item,
+                itemName, // Use the determined itemName
+                storeName: resolvedStoreName, // Use resolved storeName
+                quantity: 1,
+                category: itemCategory,
+              },
+            ],
             currentCategory: itemCategory,
             currentStoreId: item.storeId || null,
             currentRestaurantId: item.restaurantId || null,
           })
+
+          // Update total cart value
+          setTimeout(() => get().updateTotalCartValue(), 0)
+        },
+
+        // Update search results
+        updateSearchResults: (results: SearchResult[]) => {
+          set({ searchResults: results })
+        },
+
+        // Clear search results
+        clearSearchResults: () => {
+          set({ searchResults: [] })
+        },
+
+        // Update total cart value
+        updateTotalCartValue: () => {
+          const total = get().getTotal()
+          set({ totalCartValue: total })
         },
       }),
       {
         name: "multicategory-cart",
+        partialize: (state) => ({
+          // Persist all state fields
+          items: state.items,
+          currentCategory: state.currentCategory,
+          currentStoreId: state.currentStoreId,
+          currentRestaurantId: state.currentRestaurantId,
+          isGroupOrder: state.isGroupOrder,
+          groupOrderId: state.groupOrderId,
+          searchResults: state.searchResults,
+          totalCartValue: state.totalCartValue,
+        }),
+        merge: (persistedState: any, currentState) => {
+          // Handle migration of old cart items
+          const migratedItems =
+            persistedState.items?.map((item: any) => {
+              const migratedItem = { ...item }
+
+              // Fix storeName if it's "Unknown Store" and we have restaurantId or storeId
+              if ((!item.storeName || item.storeName === "Unknown Store") && (item.restaurantId || item.storeId)) {
+                if (item.restaurantId) {
+                  migratedItem.storeName = getStoreNameFromRestaurantId(item.restaurantId)
+                } else if (item.storeId) {
+                  migratedItem.storeName = getStoreNameFromStoreId(item.storeId)
+                }
+              }
+
+              // Remove the name property if it exists
+              if (migratedItem.name) {
+                delete migratedItem.name
+              }
+
+              return migratedItem
+            }) || []
+
+          return {
+            ...currentState,
+            ...persistedState,
+            items: migratedItems,
+          }
+        },
       },
     ),
     {
       name: "CartStore",
       enabled: true,
-    }
-  )
+    },
+  ),
 )
 
 // Helper function to add a product to cart
 export function addProductToCart(
-  product: Product,
+  product: Product & { storeName?: string },
   category: CartCategory,
-  storeOrRestaurantId: string
+  storeOrRestaurantId: string,
 ) {
   const cartStore = useCartStore.getState()
 
@@ -369,20 +529,28 @@ export function addProductToCart(
   cartStore.setCategory(category)
 
   if (category === "restaurant") {
-    cartStore.addItem({
-      id: product.id,
-      name: product.name,
-      price: product.price,
-      image: product.image,
-      restaurantId: storeOrRestaurantId,
-    }, category)
+    cartStore.addItem(
+      {
+        id: product.id,
+        itemName: product.name, // This maps product.name to itemName, which is fine
+        price: product.price,
+        image: product.image,
+        restaurantId: storeOrRestaurantId,
+      },
+      category,
+      product.storeName, // Pass storeName to addItem (will be resolved if not provided)
+    )
   } else {
-    cartStore.addItem({
-      id: product.id,
-      name: product.name,
-      price: product.price,
-      image: product.image,
-      storeId: storeOrRestaurantId,
-    }, category)
+    cartStore.addItem(
+      {
+        id: product.id,
+        itemName: product.name, // This maps product.name to itemName, which is fine
+        price: product.price,
+        image: product.image,
+        storeId: storeOrRestaurantId,
+      },
+      category,
+      product.storeName, // Pass storeName to addItem (will be resolved if not provided)
+    )
   }
 }
