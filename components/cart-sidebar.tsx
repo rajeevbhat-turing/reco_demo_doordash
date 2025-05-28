@@ -2,11 +2,14 @@
 
 import { useState, useEffect, useCallback } from "react"
 import Image from "next/image"
-import { X, ChevronRight, ChevronLeft, Plus } from "lucide-react"
+import { X, ChevronRight, ChevronLeft, Plus, Minus } from "lucide-react"
 import { useCartStore } from "@/store/cart-store"
 import { Users } from "lucide-react"
 import { getRestaurantById } from "@/constants/restaurants"
 import { getMenuItemsByRestaurantId } from "@/constants/menu-items"
+import { stores } from "@/data/store-data"
+import { stores as retailStores } from "@/constants/store"
+import { allPetStores } from "@/data/pet-data"
 
 interface CartSidebarProps {
   isOpen: boolean
@@ -14,16 +17,53 @@ interface CartSidebarProps {
 }
 
 export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
-  const { items, currentRestaurantId, updateQuantity, removeItem, clearCart, getTotalPrice, addItem, isGroupOrder, groupOrderId } = useCartStore()
+  const { 
+    items, 
+    currentRestaurantId, 
+    currentStoreId, 
+    currentCategory, 
+    updateQuantity, 
+    removeItem, 
+    clearCart, 
+    getTotalPrice, 
+    addItem, 
+    isGroupOrder, 
+    groupOrderId 
+  } = useCartStore()
   const [price, setPrice] = useState("Checkout")
   
   // Update price client-side only to avoid hydration errors
   useEffect(() => {
     setPrice(getTotalPrice())
   }, [getTotalPrice, items])
+  
   const [restaurant, setRestaurant] = useState<any>(null)
+  const [store, setStore] = useState<any>(null)
   const [complementItems, setComplementItems] = useState<any[]>([])
   const [lastRestaurantId, setLastRestaurantId] = useState<string | null>(null)
+  const [lastStoreId, setLastStoreId] = useState<string | null>(null)
+
+  // Function to get store information based on category and store ID
+  const getStoreInfo = useCallback((storeId: string, category: string) => {
+    if (!storeId) return null;
+    
+    let result = null;
+    switch (category) {
+      case 'grocery':
+        result = stores[storeId] || null;
+        break;
+      case 'retail':
+        result = retailStores.find(store => store.id === storeId) || null;
+        break;
+      case 'pets':
+        result = allPetStores.find(store => store.id === storeId) || null;
+        break;
+      default:
+        break;
+    }
+    
+    return result;
+  }, []);
 
   // Function to fetch complement items - moved outside useEffect for clarity
   const fetchComplementItems = useCallback(
@@ -92,9 +132,9 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
     [items],
   )
 
+  // Handle restaurant changes
   useEffect(() => {
-    // Clear complement items when restaurant changes
-    if (currentRestaurantId !== lastRestaurantId) {
+    if (currentCategory === 'restaurant' && currentRestaurantId !== lastRestaurantId) {
       setComplementItems([])
       setLastRestaurantId(currentRestaurantId)
 
@@ -104,13 +144,43 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
         setRestaurant(null)
       }
     }
-  }, [currentRestaurantId, lastRestaurantId, fetchComplementItems])
+  }, [currentRestaurantId, lastRestaurantId, fetchComplementItems, currentCategory])
+
+  // Handle store changes
+  useEffect(() => {
+    if (currentCategory !== 'restaurant' && currentStoreId !== lastStoreId) {
+      setLastStoreId(currentStoreId)
+      
+      if (currentStoreId) {
+        const storeInfo = getStoreInfo(currentStoreId, currentCategory)
+        setStore(storeInfo)
+      } else {
+        setStore(null)
+      }
+    }
+  }, [currentStoreId, lastStoreId, currentCategory, getStoreInfo])
 
   useEffect(() => {
-    if (currentRestaurantId && currentRestaurantId === lastRestaurantId) {
+    if (currentRestaurantId && currentRestaurantId === lastRestaurantId && currentCategory === 'restaurant') {
       fetchComplementItems(currentRestaurantId)
     }
-  }, [items, currentRestaurantId, lastRestaurantId, fetchComplementItems])
+  }, [items, currentRestaurantId, lastRestaurantId, fetchComplementItems, currentCategory])
+
+  // Get the display name based on current category
+  const getDisplayName = () => {
+    if (currentCategory === 'restaurant' && restaurant) {
+      return restaurant.name;
+    } else if (currentCategory !== 'restaurant' && store) {
+      return store.name;
+    }
+    
+    // Debug fallback
+    if (currentCategory !== 'restaurant' && currentStoreId) {
+      return `Store ${currentStoreId} (${currentCategory})`;
+    }
+    
+    return 'Unknown Store';
+  };
 
   // Helper function to calculate individual item price
   const getItemPrice = (item: any) => {
@@ -188,7 +258,7 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
         <div>
           <h2 className="text-sm text-gray-600">Your cart from</h2>
           <div className="flex items-center">
-            <h3 className="font-bold text-base">{restaurant?.name}</h3>
+            <h3 className="font-bold text-base">{getDisplayName()}</h3>
             <ChevronRight className="h-5 w-5 ml-1" />
           </div>
         </div>
@@ -209,8 +279,11 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
 
       <div className="p-4">
         <button className="w-full bg-[#e03a19] text-white py-3 rounded-full font-medium">
-          {price}
+          Continue
         </button>
+        <p className="text-center text-sm text-gray-600 mt-2">
+          ${getTotal()} without tax
+        </p>
       </div>
 
       <div className="flex-1 overflow-y-auto">
@@ -248,6 +321,14 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
                           fill="currentColor"
                         />
                       </svg>
+                    </button>
+                    <button
+                      className="p-1 bg-white rounded-full ml-1"
+                      onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                      disabled={item.quantity <= 1}
+                      aria-label="Decrease quantity"
+                    >
+                      <Minus className="h-4 w-4" />
                     </button>
                     <span className="mx-3 text-sm">{item.quantity}×</span>
                     <button

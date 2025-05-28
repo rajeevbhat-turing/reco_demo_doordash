@@ -30,6 +30,7 @@ interface StoreGridProps {
   showSeeAll?: boolean
   showNavigation?: boolean
   seeAllLink?: string
+  storeType?: "grocery" | "retail" | "pets"
 }
 
 export default function StoreGrid({
@@ -38,7 +39,8 @@ export default function StoreGrid({
   variant = "all",
   showSeeAll = true,
   showNavigation = true,
-  seeAllLink = "/all-items"
+  seeAllLink = "/all-items",
+  storeType = "grocery"
 }: StoreGridProps) {
   // Determine if we should use card or image layout
   const useCardLayout = variant === "all" || variant === "compact"
@@ -129,137 +131,158 @@ export default function StoreGrid({
 
       <div ref={scrollContainerRef} className="overflow-x-auto no-scrollbar scroll-smooth w-full snap-x">
         <div className={`flex space-x-4 pb-2 ${useCardLayout ? "" : ""}`}>
-          {stores.map((store, index) => (
-            <Link
-              href={`/convenience/store/${store.id}?storeType=grocery`}
-              key={store.id || `store-${index}`}
-              className={useCardLayout ? `min-w-[320px] md:min-w-[360px] snap-start` : "relative group min-w-[280px] md:min-w-[320px] snap-start"}
-            >
-              {useCardLayout ? (
-                // Card layout (for "all" variant)
-                <div className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
-                  <div className="flex gap-4">
-                    <div className="relative w-16 h-16 rounded-full overflow-hidden bg-gray-100 flex-shrink-0">
-                      <Image
-                        src={store.image || "/placeholder.svg"}
-                        alt={store.name}
-                        width={64}
-                        height={64}
-                        className="object-cover"
-                      />
-                    </div>
+          {stores.map((store, index) => {
+            const baseClassName = useCardLayout ? `min-w-[320px] md:min-w-[360px] snap-start` : "relative group min-w-[280px] md:min-w-[320px] snap-start";
+            
+            // Determine the correct navigation URL based on store type
+            let href = `/convenience/store/${store.id}?storeType=${storeType}`;
+            if (storeType === "pets") {
+              href = `/pets/store/${store.id}`;
+            } else if (storeType === "retail") {
+              href = `/retail/store/${store.id}`;
+            } else if (storeType === "grocery") {
+              href = `/grocery/store/${store.id}`;
+            }
 
-                    <div className="flex-1">
-                      <div className="flex justify-between">
-                        <h3 className="font-medium">{store.name}</h3>
-                        <Button 
-                          variant="ghost" 
-                          size="icon" 
-                          className="rounded-full -mr-2 -mt-2"
-                          onClick={(e) => toggleFavorite(e, store.id)}
-                        >
-                          <Heart className={`h-5 w-5 ${favorites[store.id] ? 'fill-red-500 text-red-500' : ''}`} />
-                        </Button>
+            // Use Link for all store types now
+            return (
+              <Link
+                href={href}
+                key={store.id || `store-${index}`}
+                className={baseClassName}
+              >
+                {useCardLayout ? (
+                  // Card layout (for "all" variant)
+                  <div className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+                    <div className="flex gap-4">
+                      <div className="relative w-16 h-16 rounded-full overflow-hidden bg-gray-100 flex-shrink-0">
+                        <Image
+                          src={store.image || "/placeholder.svg"}
+                          alt={store.name}
+                          width={64}
+                          height={64}
+                          className="object-cover"
+                        />
                       </div>
 
-                      <div className="flex flex-wrap gap-x-1 gap-y-1 mt-1">
-                        {store.isSnap && (
-                          <span className="text-xs font-medium text-gray-600 bg-gray-100 px-2 py-0.5 rounded inline-flex items-center">
-                            SNAP
-                          </span>
+                      <div className="flex-1">
+                        <div className="flex justify-between">
+                          <h3 className="font-medium">{store.name}</h3>
+                          <Button 
+                            variant="ghost" 
+                            size="icon" 
+                            className="rounded-full -mr-2 -mt-2"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              toggleFavorite(e, store.id);
+                            }}
+                          >
+                            <Heart className={`h-5 w-5 ${favorites[store.id] ? 'fill-red-500 text-red-500' : ''}`} />
+                          </Button>
+                        </div>
+
+                        <div className="flex flex-wrap gap-x-1 gap-y-1 mt-1">
+                          {store.isSnap && (
+                            <span className="text-xs font-medium text-gray-600 bg-gray-100 px-2 py-0.5 rounded inline-flex items-center">
+                              SNAP
+                            </span>
+                          )}
+                          {store.isDashPass && (
+                            <span className="text-xs font-medium text-blue-700 bg-blue-50 px-2 py-0.5 rounded inline-flex items-center">
+                              DashPass
+                            </span>
+                          )}
+                        </div>
+
+                        {store.rating && (
+                          <div className="text-sm text-gray-500">
+                            ★ {store.rating} ({store.numRatings || "0"})
+                          </div>
                         )}
+
+                        {store.open !== undefined ? (
+                          <div className="text-sm text-gray-500">{store.open ? store.time : "Closed"}</div>
+                        ) : (
+                          store.time && <div className="text-sm text-gray-500">{store.time}</div>
+                        )}
+
+                        {store.delivery && <div className="text-sm text-gray-500">{store.delivery}</div>}
+
+                        {store.inStorePrice && (
+                          <div className="flex items-center gap-1 text-xs text-gray-500 mt-1">
+                            <Info className="h-3 w-3" />
+                            In-store prices
+                          </div>
+                        )}
+
+                        {store.discount && <div className="text-sm text-[#ff3008] mt-1">{store.discount}</div>}
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  // Image layout (for "favorites" and "fastest" variants)
+                  <>
+                    <div className="w-full rounded-lg overflow-hidden bg-gray-100">
+                      <div style={{ width: "100%", paddingBottom: "75%", position: "relative" }}>
+                        <div className="absolute inset-0">
+                          <img
+                            src={store.image || "/placeholder.svg"}
+                            alt={store.name}
+                            className="w-full h-full object-cover"
+                          />
+                          {/* Subtle overlay gradient for better visibility */}
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+                        </div>
+                      </div>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="absolute top-2 right-2 rounded-full bg-white opacity-80 hover:opacity-100"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleFavorite(e, store.id);
+                      }}
+                    >
+                      <Heart className={`h-5 w-5 ${favorites[store.id] ? 'fill-red-500 text-red-500' : ''}`} />
+                    </Button>
+                    <div className="mt-2">
+                      <div className="font-medium flex items-center">
+                        {store.name}
                         {store.isDashPass && (
-                          <span className="text-xs font-medium text-blue-700 bg-blue-50 px-2 py-0.5 rounded inline-flex items-center">
+                          <span className="ml-1 text-xs bg-blue-50 text-blue-700 px-1.5 py-0.5 rounded font-semibold">
                             DashPass
                           </span>
                         )}
                       </div>
-
-                      {store.rating && (
-                        <div className="text-sm text-gray-500">
-                          ★ {store.rating} ({store.numRatings || "0"})
-                        </div>
-                      )}
-
-                      {store.open !== undefined ? (
-                        <div className="text-sm text-gray-500">{store.open ? store.time : "Closed"}</div>
-                      ) : (
-                        store.time && <div className="text-sm text-gray-500">{store.time}</div>
-                      )}
-
-                      {store.delivery && <div className="text-sm text-gray-500">{store.delivery}</div>}
-
-                      {store.inStorePrice && (
-                        <div className="flex items-center gap-1 text-xs text-gray-500 mt-1">
-                          <Info className="h-3 w-3" />
-                          In-store prices
-                        </div>
-                      )}
-
+                      <div className="flex items-center text-sm text-gray-500 flex-wrap">
+                        {store.rating && <span>★ {store.rating}</span>}
+                        {store.numRatings && (
+                          <>
+                            <span className="mx-1">•</span>
+                            <span>{store.numRatings}</span>
+                          </>
+                        )}
+                        {store.distance && (
+                          <>
+                            <span className="mx-1">•</span>
+                            <span>{store.distance}</span>
+                          </>
+                        )}
+                        {store.time && (
+                          <>
+                            <span className="mx-1">•</span>
+                            <span>{store.time}</span>
+                          </>
+                        )}
+                      </div>
                       {store.discount && <div className="text-sm text-[#ff3008] mt-1">{store.discount}</div>}
                     </div>
-                  </div>
-                </div>
-              ) : (
-                // Image layout (for "favorites" and "fastest" variants)
-                <>
-                  <div className="w-full rounded-lg overflow-hidden bg-gray-100">
-                    <div style={{ width: "100%", paddingBottom: "75%", position: "relative" }}>
-                      <div className="absolute inset-0">
-                        <img
-                          src={store.image || "/placeholder.svg"}
-                          alt={store.name}
-                          className="w-full h-full object-cover"
-                        />
-                        {/* Subtle overlay gradient for better visibility */}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
-                      </div>
-                    </div>
-                  </div>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="absolute top-2 right-2 rounded-full bg-white opacity-80 hover:opacity-100"
-                    onClick={(e) => toggleFavorite(e, store.id)}
-                  >
-                    <Heart className={`h-5 w-5 ${favorites[store.id] ? 'fill-red-500 text-red-500' : ''}`} />
-                  </Button>
-                  <div className="mt-2">
-                    <div className="font-medium flex items-center">
-                      {store.name}
-                      {store.isDashPass && (
-                        <span className="ml-1 text-xs bg-blue-50 text-blue-700 px-1.5 py-0.5 rounded font-semibold">
-                          DashPass
-                        </span>
-                      )}
-                    </div>
-                    <div className="flex items-center text-sm text-gray-500 flex-wrap">
-                      {store.rating && <span>★ {store.rating}</span>}
-                      {store.numRatings && (
-                        <>
-                          <span className="mx-1">•</span>
-                          <span>{store.numRatings}</span>
-                        </>
-                      )}
-                      {store.distance && (
-                        <>
-                          <span className="mx-1">•</span>
-                          <span>{store.distance}</span>
-                        </>
-                      )}
-                      {store.time && (
-                        <>
-                          <span className="mx-1">•</span>
-                          <span>{store.time}</span>
-                        </>
-                      )}
-                    </div>
-                    {store.discount && <div className="text-sm text-[#ff3008] mt-1">{store.discount}</div>}
-                  </div>
-                </>
-              )}
-            </Link>
-          ))}
+                  </>
+                )}
+              </Link>
+            )
+          })}
         </div>
       </div>
     </div>

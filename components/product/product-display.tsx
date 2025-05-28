@@ -1,7 +1,7 @@
 "use client"
 
 import { useRef, useEffect } from "react"
-import { ChevronLeft, ChevronRight, Plus, Trash2 } from "lucide-react"
+import { ChevronLeft, ChevronRight, Plus, Trash2, Minus } from "lucide-react"
 import ProductCard from "@/components/product-card"
 import type { Product } from "@/types"
 import Link from "next/link"
@@ -71,17 +71,41 @@ export default function ProductDisplay({
   }
   
   // Handle removing product from cart
-  const handleRemoveFromCart = (productId: number) => {
+  const handleRemoveFromCart = (productId: number | string) => {
     removeFromCart(productId)
+  }
+
+  // Handle decreasing quantity
+  const handleDecreaseQuantity = (product: Product, quantity: number) => {
+    if (quantity > 1) {
+      updateQuantity(product.id, quantity - 1)
+    } else {
+      removeFromCart(product.id)
+    }
   }
 
   // Create a URL-friendly version of the category title
   const categorySlug = title.toLowerCase().replace(/\s+/g, "-")
   
   // Find items in cart
-  const getItemQuantity = (productId: number): number => {
+  const getItemQuantity = (productId: number | string): number => {
     const item = items.find(item => item.id === productId)
     return item?.quantity || 0
+  }
+
+  // Helper function to format price
+  const formatPrice = (price: number | string): string => {
+    if (typeof price === 'string') {
+      // If it's already a string like "$37.80", return as is
+      if (price.startsWith('$')) {
+        return price
+      }
+      // If it's a string number like "37.80", format it
+      const numPrice = parseFloat(price)
+      return isNaN(numPrice) ? price : `$${numPrice.toFixed(2)}`
+    }
+    // If it's a number, format it normally
+    return `$${price.toFixed(2)}`
   }
 
   return (
@@ -193,6 +217,17 @@ export default function ProductDisplay({
                             >
                               <Trash2 className="w-4 h-4" />
                             </button>
+                            <button 
+                              className="p-1 text-gray-700" 
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                handleDecreaseQuantity(product, quantity);
+                              }}
+                              aria-label="Decrease quantity"
+                            >
+                              <Minus className="w-4 h-4" />
+                            </button>
                             <span className="mx-2 text-sm font-medium">{quantity} ×</span>
                             <button 
                               className="p-1 text-gray-700" 
@@ -223,7 +258,7 @@ export default function ProductDisplay({
                     </div>
                     <div className="p-3">
                       <div className="font-bold text-sm">
-                        ${typeof product.price === "number" ? product.price.toFixed(2) : product.price}
+                        {formatPrice(product.price)}
                       </div>
                       <div className="text-sm text-gray-700 line-clamp-2">{product.name}</div>
                     </div>

@@ -9,7 +9,15 @@ export default function StoreCard({ id, name, image, openTime, deliveryTime, dis
     const [imageError, setImageError] = useState(false)
     const [isFavorite, setIsFavorite] = useState(false)
     
-    const storeUrl = `/convenience/store/${id}?storeType=${storeType}`
+    // Determine the correct navigation URL based on store type
+    let storeUrl = `/convenience/store/${id}?storeType=${storeType}`;
+    if (storeType === "pets") {
+      storeUrl = `/pets/store/${id}`;
+    } else if (storeType === "retail") {
+      storeUrl = `/retail/store/${id}`;
+    } else if (storeType === "grocery") {
+      storeUrl = `/grocery/store/${id}`;
+    }
   
     return (
       <div 

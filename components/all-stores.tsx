@@ -152,13 +152,17 @@ interface AllStoresProps {
   title?: string;
   showSeeAll?: boolean;
   seeAllLink?: string;
+  storeType?: "grocery" | "retail" | "pets";
+  variant?: "all" | "favorites" | "fastest" | "compact";
 }
 
 export default function AllStores({ 
   title = '', 
   stores = defaultStores,
   showSeeAll = true,
-  seeAllLink = "/all-items"
+  seeAllLink = "/all-items",
+  storeType = "grocery",
+  variant = "all"
 }: AllStoresProps) {
   const [favorites, setFavorites] = useState<{[key: string]: boolean}>({});
   
@@ -191,69 +195,82 @@ export default function AllStores({
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {stores.map((store, index) => (
-          <Link 
-            href={`/convenience/store/${store.id || index}?storeType=grocery`}
-            key={`${store.name}-${index}`}
-            className="block border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
-          >
-            <div className="flex gap-4">
-              <div className="relative w-16 h-16 rounded-full overflow-hidden bg-gray-100">
-                <Image
-                  src={store.image}
-                  alt={store.name}
-                  width={64}
-                  height={64}
-                  className="object-cover"
-                />
-              </div>
+        {stores.map((store, index) => {
+          // Determine the correct navigation URL based on store type
+          let href = `/convenience/store/${store.id || index}?storeType=${storeType}`;
+          if (storeType === "pets") {
+            href = `/pets/store/${store.id || index}`;
+          } else if (storeType === "retail") {
+            href = `/retail/store/${store.id || index}`;
+          } else if (storeType === "grocery") {
+            href = `/grocery/store/${store.id || index}`;
+          }
 
-              <div className="flex-1">
-                <div className="flex justify-between">
-                  <h3 className="font-medium">{store.name}</h3>
-                  <Button 
-                    variant="ghost" 
-                    size="icon" 
-                    className="rounded-full -mr-2 -mt-2"
-                    onClick={(e) => {
-                      e.preventDefault(); // Prevent navigation
-                      toggleFavorite(store.name, index);
-                    }}
-                  >
-                    <Heart className={`h-5 w-5 ${favorites[`${store.name}-${index}`] ? 'fill-red-500 text-red-500' : ''}`} />
-                  </Button>
+          // Use Link for all store types now
+          return (
+            <Link 
+              href={href}
+              key={`${store.name}-${index}`}
+              className="block border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
+            >
+              <div className="flex gap-4">
+                <div className="relative w-16 h-16 rounded-full overflow-hidden bg-gray-100">
+                  <Image
+                    src={store.image}
+                    alt={store.name}
+                    width={64}
+                    height={64}
+                    className="object-cover"
+                  />
                 </div>
 
-                <div className="flex flex-wrap gap-x-1 gap-y-1 mt-1">
-                  {store.isSnap && (
-                    <span className="text-xs font-medium text-gray-600 bg-gray-100 px-2 py-0.5 rounded inline-flex items-center">
-                      SNAP
-                    </span>
+                <div className="flex-1">
+                  <div className="flex justify-between">
+                    <h3 className="font-medium">{store.name}</h3>
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      className="rounded-full -mr-2 -mt-2"
+                      onClick={(e) => {
+                        e.preventDefault(); // Prevent navigation
+                        toggleFavorite(store.name, index);
+                      }}
+                    >
+                      <Heart className={`h-5 w-5 ${favorites[`${store.name}-${index}`] ? 'fill-red-500 text-red-500' : ''}`} />
+                    </Button>
+                  </div>
+
+                  <div className="flex flex-wrap gap-x-1 gap-y-1 mt-1">
+                    {store.isSnap && (
+                      <span className="text-xs font-medium text-gray-600 bg-gray-100 px-2 py-0.5 rounded inline-flex items-center">
+                        SNAP
+                      </span>
+                    )}
+                  </div>
+
+                  {store.rating && (
+                    <div className="text-sm text-gray-500">
+                      ★ {store.rating} ({store.numRatings || "0"})
+                    </div>
                   )}
+
+                  <div className="text-sm text-gray-500">{store.time}</div>
+
+                  <div className="text-sm text-gray-500">{store.delivery}</div>
+
+                  {store.inStorePrice && (
+                    <div className="flex items-center gap-1 text-xs text-gray-500 mt-1">
+                      <Info className="h-3 w-3" />
+                      In-store prices
+                    </div>
+                  )}
+
+                  {store.discount && <div className="text-sm text-[#ff3008] mt-1">{store.discount}</div>}
                 </div>
-
-                {store.rating && (
-                  <div className="text-sm text-gray-500">
-                    ★ {store.rating} ({store.numRatings || "0"})
-                  </div>
-                )}
-
-                <div className="text-sm text-gray-500">{store.time}</div>
-
-                <div className="text-sm text-gray-500">{store.delivery}</div>
-
-                {store.inStorePrice && (
-                  <div className="flex items-center gap-1 text-xs text-gray-500 mt-1">
-                    <Info className="h-3 w-3" />
-                    In-store prices
-                  </div>
-                )}
-
-                {store.discount && <div className="text-sm text-[#ff3008] mt-1">{store.discount}</div>}
               </div>
-            </div>
-          </Link>
-        ))}
+            </Link>
+          );
+        })}
       </div>
 
       {/*<div className="mt-6 border border-gray-200 rounded-lg p-4">*/}
