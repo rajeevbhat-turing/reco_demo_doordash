@@ -74,6 +74,13 @@ interface CartStore {
   updateQuantity: (id: string | number, quantity: number) => void
   clearCart: () => void
   
+  // Conflict detection methods
+  checkConflict: (item: Omit<CartItem, "quantity" | "category">, category?: CartCategory) => {
+    hasConflict: boolean
+    conflictType: "restaurant" | "store" | null
+  }
+  replaceCartWithItem: (item: Omit<CartItem, "quantity" | "category">, category?: CartCategory) => void
+  
   // Group order methods
   startGroupOrder: () => string
   joinGroupOrder: (groupOrderId: string) => void
@@ -104,20 +111,13 @@ export const useCartStore = create<CartStore>()(
         isGroupOrder: false,
         groupOrderId: null,
 
-        // Set active category and clear cart if changing categories
+        // Set active category without clearing cart
         setCategory: (category: CartCategory) => {
           const { currentCategory } = get()
-
-          // Always reset the cart when changing categories
+          
+          // Just update the category, don't clear the cart
           if (currentCategory !== category) {
-            console.log(`Changing category from ${currentCategory} to ${category} - resetting cart`)
-            set({
-              items: [],
-              currentCategory: category,
-              currentStoreId: null,
-              currentRestaurantId: null,
-            })
-          } else {
+            console.log(`Changing category from ${currentCategory} to ${category} - keeping cart`)
             set({ currentCategory: category })
           }
         },
@@ -128,55 +128,17 @@ export const useCartStore = create<CartStore>()(
           return categoryConfigs[currentCategory]
         },
 
-        // Add item to cart
+        // Add item to cart (without automatic conflict resolution)
         addItem: (item, category) => {
           const {
             items,
             currentCategory,
             currentStoreId,
-            currentRestaurantId,
-            hasDifferentStore,
-            hasDifferentRestaurant
+            currentRestaurantId
           } = get()
 
           // Use provided category or default to current category
           const itemCategory = category || currentCategory
-
-          // Handle restaurant items
-          if (item.restaurantId) {
-            // Set category to restaurant if different
-            if (currentCategory !== "restaurant") {
-              set({
-                currentCategory: "restaurant",
-                items: [],
-                currentStoreId: null,
-                currentRestaurantId: null
-              })
-            }
-
-            // Check if from different restaurant
-            if (currentRestaurantId && hasDifferentRestaurant(item.restaurantId)) {
-              // Clear cart and add new item
-              set({
-                items: [{ ...item, quantity: 1, category: "restaurant" }],
-                currentRestaurantId: item.restaurantId,
-              })
-              return
-            }
-          }
-
-          // Handle store items (grocery, retail, pets)
-          if (item.storeId) {
-            // Check if from different store
-            if (currentStoreId && hasDifferentStore(item.storeId)) {
-              // Clear cart and add new item
-              set({
-                items: [{ ...item, quantity: 1, category: itemCategory }],
-                currentStoreId: item.storeId,
-              })
-              return
-            }
-          }
 
           // Standard add to cart logic (for all items)
           const existingItem = items.find((i) => i.id === item.id)
@@ -190,6 +152,7 @@ export const useCartStore = create<CartStore>()(
             // Add new item with quantity 1
             set({
               items: [...items, { ...item, quantity: 1, category: itemCategory }],
+              currentCategory: itemCategory,
               currentStoreId: item.storeId || currentStoreId,
               currentRestaurantId: item.restaurantId || currentRestaurantId,
             })
@@ -329,6 +292,58 @@ export const useCartStore = create<CartStore>()(
         hasDifferentRestaurant: (restaurantId: string) => {
           const { currentRestaurantId } = get()
           return currentRestaurantId !== null && currentRestaurantId !== restaurantId
+        },
+
+        // Conflict detection methods
+        checkConflict: (item: Omit<CartItem, "quantity" | "category">, category?: CartCategory) => {
+          const { currentCategory, currentStoreId, currentRestaurantId, items } = get()
+          
+          // If cart is empty, no conflict
+          if (items.length === 0) {
+            return { hasConflict: false, conflictType: null }
+          }
+          
+          const itemCategory = category || currentCategory
+          let hasConflict = false
+          let conflictType: "restaurant" | "store" | null = null
+          
+          // Check for category conflicts first
+          const existingCategories = [...new Set(items.map(cartItem => cartItem.category))]
+          
+          // If we have items from different categories, that's a conflict
+          if (existingCategories.length > 0 && !existingCategories.includes(itemCategory)) {
+            hasConflict = true
+            // Determine conflict type based on what's in the cart vs what we're adding
+            if (existingCategories.includes("restaurant") || itemCategory === "restaurant") {
+              conflictType = "restaurant"
+            } else {
+              conflictType = "store"
+            }
+          }
+          
+          // Check for restaurant conflict (within restaurant category)
+          if (itemCategory === "restaurant" && item.restaurantId && currentRestaurantId && item.restaurantId !== currentRestaurantId) {
+            hasConflict = true
+            conflictType = "restaurant"
+          }
+          
+          // Check for store conflict (within non-restaurant categories)
+          if (itemCategory !== "restaurant" && item.storeId && currentStoreId && item.storeId !== currentStoreId) {
+            hasConflict = true
+            conflictType = "store"
+          }
+          
+          return { hasConflict, conflictType }
+        },
+        replaceCartWithItem: (item: Omit<CartItem, "quantity" | "category">, category?: CartCategory) => {
+          const { currentCategory, currentStoreId, currentRestaurantId } = get()
+          const itemCategory = category || currentCategory
+          set({
+            items: [{ ...item, quantity: 1, category: itemCategory }],
+            currentCategory: itemCategory,
+            currentStoreId: item.storeId || null,
+            currentRestaurantId: item.restaurantId || null,
+          })
         },
       }),
       {

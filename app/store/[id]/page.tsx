@@ -23,6 +23,7 @@ import {
 import { getMenuCategoriesByRestaurantId } from "@/lib/utils";
 import { getDealsByRestaurantId } from "@/constants/deals";
 import { useCartStore } from "@/store/cart-store";
+import { useReplaceCart } from "@/context/replace-cart-context";
 import MenuItemDialog from "@/components/menu-item-dialog";
 import GroupOrderDialog from "@/components/group-order-dialog";
 import ReviewDialog from "@/components/review-dialog";
@@ -91,7 +92,7 @@ export default function RestaurantPage() {
   const sectionRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
   // Get both setCategory and addItem from the cart store
   const cartStore = useCartStore();
-  const addToCart = useCartStore((state) => state.addItem);
+  const { addItemWithConflictCheck } = useReplaceCart();
   const ticking = useRef(false);
   const featuredItemsRef = useRef<HTMLDivElement>(null);
   const dealsRef = useRef<HTMLDivElement>(null);
@@ -196,14 +197,16 @@ export default function RestaurantPage() {
   }
 
   const handleAddToCart = (item: any) => {
-    // Ensure the category is set to restaurant when adding items
-    addToCart({
-      id: item.id,
+    // Use conflict detection system for restaurant items
+    const cartItem = {
+      id: `${item.id}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`, // Generate unique ID
       restaurantId: item.restaurantId || id,
       name: item.name,
       price: item.price,
       image: item.image,
-    }, "restaurant");
+    };
+    
+    addItemWithConflictCheck(cartItem, "restaurant");
   };
 
   const scrollContainer = (

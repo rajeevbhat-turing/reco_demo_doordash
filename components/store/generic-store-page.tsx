@@ -335,17 +335,6 @@ export default function GenericStorePage({
         </main>
       </div>
 
-      {/* Cart Sidebar - Only shown for stores with cart functionality */}
-      {storeConfig.cartConfig && (
-        <div className="hidden lg:block w-80 border-l p-4 flex-shrink-0 z-10">
-          <ConvenienceCartSidebar
-            storeData={storeData}
-            cartConfig={storeConfig.cartConfig}
-            uiConfig={storeConfig.uiConfig}
-          />
-        </div>
-      )}
-
       {/* Product Detail Modal */}
       <ProductDetailModal product={selectedProduct} onClose={closeProductModal} />
     </div>

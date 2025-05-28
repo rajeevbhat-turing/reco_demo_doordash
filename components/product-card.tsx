@@ -1,12 +1,12 @@
 "use client"
 
 import type React from "react"
-
+import { useEffect } from "react"
 import Image from "next/image"
 import { Plus, Trash2, Minus } from "lucide-react"
 import type { Product } from "@/types"
-import { useCart } from "@/context/cart-context"
-import { CartCategory } from "@/store/cart-store"
+import { CartCategory, useCartStore } from "@/store/cart-store"
+import { useReplaceCart } from "@/context/replace-cart-context"
 
 interface ProductCardProps {
   product: Product
@@ -21,7 +21,13 @@ export default function ProductCard({
   storeId,
   category = "grocery"
 }: ProductCardProps) {
-  const { items, addToCart, removeFromCart, updateQuantity } = useCart()
+  const { items, updateQuantity, removeItem, setCategory } = useCartStore()
+  const { addItemWithConflictCheck } = useReplaceCart()
+
+  // Set the category when component mounts
+  useEffect(() => {
+    setCategory(category)
+  }, [category, setCategory])
 
   // Check if product is in cart
   const cartItem = items.find((item) => item.id === product.id)
@@ -45,15 +51,21 @@ export default function ProductCard({
   const handleAddToCart = (e: React.MouseEvent) => {
     e.stopPropagation() // Prevent opening the modal when clicking the add button
     
-    // Use only the context cart
-    addToCart(product, storeId)
+    const cartItem = {
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      image: product.image,
+      storeId: category === 'restaurant' ? undefined : storeId,
+      restaurantId: category === 'restaurant' ? storeId : undefined,
+    }
+    
+    addItemWithConflictCheck(cartItem, category)
   }
 
   const handleRemoveFromCart = (e: React.MouseEvent) => {
     e.stopPropagation() // Prevent opening the modal when clicking the remove button
-    
-    // Use only the context cart
-    removeFromCart(product.id)
+    removeItem(product.id)
   }
 
   const handleDecreaseQuantity = (e: React.MouseEvent) => {
@@ -64,7 +76,7 @@ export default function ProductCard({
       updateQuantity(product.id, quantity - 1)
     } else {
       // If quantity is 1, remove the item completely
-      removeFromCart(product.id)
+      removeItem(product.id)
     }
   }
 
