@@ -5,10 +5,7 @@ import { ChevronDown, Tag, DollarSign, Check } from "lucide-react"
 
 export interface FilterState {
   underThirtyMins: boolean
-  schedule: boolean
-  scheduledTime: string | null
   deals: boolean
-  pickup: boolean
   overRating: number | null
   price: string[] | null
   dashPass: boolean
@@ -47,10 +44,7 @@ const FilterOptions = forwardRef<FilterOptionsRef, FilterOptionsProps>(
   ({ isGrocery = false, onFilterChange, onReset, filters: externalFilters, filterData = [] }, ref) => {
     const [filters, setFilters] = useState<FilterState>({
       underThirtyMins: false,
-      schedule: false,
-      scheduledTime: null,
       deals: false,
-      pickup: false,
       overRating: null,
       price: null,
       dashPass: false,
@@ -67,13 +61,12 @@ const FilterOptions = forwardRef<FilterOptionsRef, FilterOptionsProps>(
 
     const [ratingDropdownOpen, setRatingDropdownOpen] = useState(false)
     const [priceDropdownOpen, setPriceDropdownOpen] = useState(false)
-    const [scheduleDropdownOpen, setScheduleDropdownOpen] = useState(false)
     const [isTimeOptionsExpanded, setIsTimeOptionsExpanded] = useState(false)
     const [selectedRating, setSelectedRating] = useState<number | null>(null)
     const [selectedPrices, setSelectedPrices] = useState<string[]>([])
     const [visibleTimeOptions, setVisibleTimeOptions] = useState<TimeOption[]>([])
 
-    // Schedule state
+    // Schedule state - REMOVED
     const [selectedDay, setSelectedDay] = useState<string>("Today")
     const [selectedTime, setSelectedTime] = useState<string>("")
     const [dateOptions, setDateOptions] = useState<ScheduleOption[]>([])
@@ -81,10 +74,8 @@ const FilterOptions = forwardRef<FilterOptionsRef, FilterOptionsProps>(
 
     const ratingButtonRef = useRef<HTMLButtonElement>(null)
     const priceButtonRef = useRef<HTMLButtonElement>(null)
-    const scheduleButtonRef = useRef<HTMLButtonElement>(null)
     const ratingDropdownRef = useRef<HTMLDivElement>(null)
     const priceDropdownRef = useRef<HTMLDivElement>(null)
-    const scheduleDropdownRef = useRef<HTMLDivElement>(null)
 
     // Generate date options (Today, Tomorrow, and next 3 days)
     useEffect(() => {
@@ -197,24 +188,13 @@ const FilterOptions = forwardRef<FilterOptionsRef, FilterOptionsProps>(
         ) {
           setPriceDropdownOpen(false)
         }
-
-        // For schedule dropdown
-        if (
-          scheduleDropdownOpen &&
-          scheduleDropdownRef.current &&
-          !scheduleDropdownRef.current.contains(event.target as Node) &&
-          scheduleButtonRef.current &&
-          !scheduleButtonRef.current.contains(event.target as Node)
-        ) {
-          setScheduleDropdownOpen(false)
-        }
       }
 
       document.addEventListener("mousedown", handleClickOutside)
       return () => {
         document.removeEventListener("mousedown", handleClickOutside)
       }
-    }, [ratingDropdownOpen, priceDropdownOpen, scheduleDropdownOpen])
+    }, [ratingDropdownOpen, priceDropdownOpen])
 
     const toggleFilter = (filterName: keyof FilterState, value?: any) => {
       const newFilters = {
@@ -264,32 +244,6 @@ const FilterOptions = forwardRef<FilterOptionsRef, FilterOptionsProps>(
       setTimeOptions(updatedTimes)
     }
 
-    // Update the applyScheduleFilter function to match the behavior of other filters
-    const applyScheduleFilter = () => {
-      const scheduledTime = `${selectedDay}, ${selectedTime}`
-      toggleFilter("schedule", true)
-      toggleFilter("scheduledTime", scheduledTime)
-      setScheduleDropdownOpen(false)
-      // Scroll to top when a filter is selected
-      window.scrollTo({ top: 0, behavior: "smooth" })
-    }
-
-    // Update the resetScheduleFilter function to match the behavior of other filters
-    const resetScheduleFilter = () => {
-      setSelectedDay("Today")
-      if (timeOptions.length > 0) {
-        setSelectedTime(timeOptions[0].time)
-        const updatedTimes = timeOptions.map((option, index) => ({
-          ...option,
-          selected: index === 0,
-        }))
-        setTimeOptions(updatedTimes)
-      }
-      toggleFilter("schedule", false)
-      toggleFilter("scheduledTime", null)
-      setScheduleDropdownOpen(false)
-    }
-
     const resetRatingFilter = () => {
       setSelectedRating(null)
       toggleFilter("overRating", null)
@@ -318,21 +272,11 @@ const FilterOptions = forwardRef<FilterOptionsRef, FilterOptionsProps>(
       return "Over 4.5★"
     }
 
-    const getScheduleLabel = () => {
-      if (filters.scheduledTime) {
-        return "Scheduled"
-      }
-      return "Schedule"
-    }
-
     // Complete reset function that resets all internal state
     const resetAllFilters = () => {
       const resetState = {
         underThirtyMins: false,
-        schedule: false,
-        scheduledTime: null,
         deals: false,
-        pickup: false,
         overRating: null,
         price: null,
         dashPass: false,
@@ -343,7 +287,6 @@ const FilterOptions = forwardRef<FilterOptionsRef, FilterOptionsProps>(
       setSelectedPrices([])
       setRatingDropdownOpen(false)
       setPriceDropdownOpen(false)
-      setScheduleDropdownOpen(false)
 
       // Don't call onFilterChange here - this was causing the infinite loop
       // Instead, let the parent component handle its own state
@@ -390,24 +333,9 @@ const FilterOptions = forwardRef<FilterOptionsRef, FilterOptionsProps>(
             priceDropdownRef.current.style.marginBottom = "8px"
           }
         }
-
-        if (scheduleDropdownOpen && scheduleDropdownRef.current && scheduleButtonRef.current) {
-          const buttonRect = scheduleButtonRef.current.getBoundingClientRect()
-          const dropdownRect = scheduleDropdownRef.current.getBoundingClientRect()
-          const viewportHeight = window.innerHeight
-
-          // Check if dropdown would go off the bottom of the viewport
-          if (buttonRect.bottom + dropdownRect.height > viewportHeight) {
-            // Position above the button if it would go off screen
-            scheduleDropdownRef.current.style.top = "auto"
-            scheduleDropdownRef.current.style.bottom = "100%"
-            scheduleDropdownRef.current.style.marginTop = "0"
-            scheduleDropdownRef.current.style.marginBottom = "8px"
-          }
-        }
       }
 
-      if (ratingDropdownOpen || priceDropdownOpen || scheduleDropdownOpen) {
+      if (ratingDropdownOpen || priceDropdownOpen) {
         adjustDropdownPosition()
         window.addEventListener("resize", adjustDropdownPosition)
       }
@@ -415,7 +343,7 @@ const FilterOptions = forwardRef<FilterOptionsRef, FilterOptionsProps>(
       return () => {
         window.removeEventListener("resize", adjustDropdownPosition)
       }
-    }, [ratingDropdownOpen, priceDropdownOpen, scheduleDropdownOpen])
+    }, [ratingDropdownOpen, priceDropdownOpen])
 
     const applyRatingFilter = () => {
       toggleFilter("overRating", selectedRating)
@@ -441,9 +369,8 @@ const FilterOptions = forwardRef<FilterOptionsRef, FilterOptionsProps>(
               switch (filter.id) {
                 case "1": // Delivery
                   return null; // Skip - default filter
-                case "2": // Pickup
-                  filterKey = "pickup";
-                  break;
+                case "2": // Pickup - REMOVED
+                  return null; // Skip - removed filter
                 case "3": // DashPass
                   filterKey = "dashPass";
                   break;
@@ -464,7 +391,6 @@ const FilterOptions = forwardRef<FilterOptionsRef, FilterOptionsProps>(
                           e.stopPropagation()
                           setPriceDropdownOpen(!priceDropdownOpen)
                           setRatingDropdownOpen(false)
-                          setScheduleDropdownOpen(false)
                         }}
                       >
                         {filter.icon} {getPriceLabel()}
@@ -540,93 +466,6 @@ const FilterOptions = forwardRef<FilterOptionsRef, FilterOptionsProps>(
             </>
           )}
 
-          {/* Schedule dropdown - only shown for non-grocery pages */}
-          {!isGrocery && (
-            <div className="relative">
-              <button
-                ref={scheduleButtonRef}
-                className={`rounded-full h-9 px-4 text-xs font-semibold ${
-                  filters.schedule ? "bg-gray-900 text-white" : "bg-gray-100 hover:bg-gray-200 text-gray-900"
-                } flex items-center gap-1`}
-                onClick={(e) => {
-                  e.stopPropagation()
-                  setScheduleDropdownOpen(!scheduleDropdownOpen)
-                  setRatingDropdownOpen(false)
-                  setPriceDropdownOpen(false)
-                }}
-              >
-                {getScheduleLabel()}
-                <ChevronDown className="h-4 w-4 ml-1" />
-              </button>
-
-              {scheduleDropdownOpen && (
-                <div
-                  ref={scheduleDropdownRef}
-                  className="fixed z-50 mt-2 w-[400px] bg-white rounded-lg shadow-lg p-6"
-                  style={{ left: "50%", transform: "translateX(-50%)" }}
-                >
-                  <h3 className="text-lg font-bold mb-2">Schedule</h3>
-                  <p className="text-sm text-gray-600 mb-4">Schedule your order up to 2 days later</p>
-
-                  {/* Date selection - more compact */}
-                  <div className="grid grid-cols-3 gap-2 mb-4">
-                    {dateOptions.slice(0, 3).map((option) => (
-                      <button
-                        key={option.day}
-                        className={`border rounded-lg p-2 flex flex-col items-start ${
-                          selectedDay === option.day ? "border-black" : "border-gray-200"
-                        }`}
-                        onClick={() => handleDaySelect(option.day)}
-                      >
-                        <div className="flex justify-between w-full">
-                          <span className="text-sm font-medium">{option.day}</span>
-                          {selectedDay === option.day && <Check className="h-4 w-4" />}
-                        </div>
-                        <div className="text-xs text-gray-500 mt-1">{option.date}</div>
-                      </button>
-                    ))}
-                  </div>
-
-                  {/* Time selection - more compact */}
-                  <div className="space-y-1 max-h-[150px] overflow-y-auto mb-4 border rounded-lg p-2">
-                    {visibleTimeOptions.map((option, index) => (
-                      <div key={index} className="py-1">
-                        <button className="flex items-center w-full" onClick={() => handleTimeSelect(option.time)}>
-                          <div
-                            className={`w-4 h-4 rounded-full border ${
-                              option.selected ? "border-black bg-black" : "border-gray-300"
-                            } flex items-center justify-center mr-2`}
-                          >
-                            {option.selected && <div className="w-1 h-1 rounded-full bg-white"></div>}
-                          </div>
-                          <span className="text-sm">{option.time}</span>
-                        </button>
-                      </div>
-                    ))}
-                    {timeOptions.length > 6 && (
-                      <button onClick={expandTimeOptions} className="text-xs text-gray-500 mt-1 w-full text-center">
-                        {!isTimeOptionsExpanded && `${timeOptions.length - 6} more times`}
-                      </button>
-                    )}
-                  </div>
-
-                  {/* Action buttons */}
-                  <div className="flex justify-between">
-                    <button className="text-gray-900 text-sm font-medium" onClick={resetScheduleFilter}>
-                      Reset
-                    </button>
-                    <button
-                      className="bg-red-600 text-white px-4 py-2 rounded-full text-xs font-medium"
-                      onClick={applyScheduleFilter}
-                    >
-                      View Results
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-
           {!isGrocery && (
             <button
               className={`rounded-full h-9 px-4 text-xs font-semibold ${
@@ -639,17 +478,6 @@ const FilterOptions = forwardRef<FilterOptionsRef, FilterOptionsProps>(
             </button>
           )}
 
-          {!isGrocery && (
-            <button
-              className={`rounded-full h-9 px-4 text-xs font-semibold ${
-                filters.pickup ? "bg-gray-900 text-white" : "bg-gray-100 hover:bg-gray-200 text-gray-900"
-              }`}
-              onClick={() => toggleFilter("pickup")}
-            >
-              Pickup
-            </button>
-          )}
-
           <div className="relative">
             <button
               ref={ratingButtonRef}
@@ -659,8 +487,6 @@ const FilterOptions = forwardRef<FilterOptionsRef, FilterOptionsProps>(
               onClick={(e) => {
                 e.stopPropagation()
                 setRatingDropdownOpen(!ratingDropdownOpen)
-                setPriceDropdownOpen(false)
-                setScheduleDropdownOpen(false)
               }}
             >
               {getRatingLabel()}
@@ -724,8 +550,6 @@ const FilterOptions = forwardRef<FilterOptionsRef, FilterOptionsProps>(
               onClick={(e) => {
                 e.stopPropagation()
                 setPriceDropdownOpen(!priceDropdownOpen)
-                setRatingDropdownOpen(false)
-                setScheduleDropdownOpen(false)
               }}
             >
               {getPriceLabel()}

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react"
 import Image from "next/image"
+import { useRouter } from "next/navigation"
 import { X, ChevronRight, ChevronLeft, Plus, Minus } from "lucide-react"
 import { useCartStore } from "@/store/cart-store"
 import { Users } from "lucide-react"
@@ -17,6 +18,7 @@ interface CartSidebarProps {
 }
 
 export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
+  const router = useRouter()
   const { 
     items, 
     currentRestaurantId, 
@@ -258,6 +260,12 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
     }
   }
 
+  // Handle navigation to checkout
+  const handleContinueToCheckout = () => {
+    router.push('/checkout')
+    onClose() // Close the cart sidebar
+  }
+
   const cartClasses = isOpen
     ? "fixed inset-y-0 right-0 z-50 w-full md:w-[550px] bg-white shadow-xl flex flex-col transform translate-x-0 transition-transform duration-300 ease-in-out"
     : "fixed inset-y-0 right-0 z-50 w-full md:w-[550px] bg-white shadow-xl flex flex-col transform translate-x-full transition-transform duration-300 ease-in-out"
@@ -376,7 +384,7 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
           )}
 
           {/* Continue button */}
-          <button className="w-full bg-red-600 hover:bg-red-700 text-white font-medium py-3 rounded-full mb-3 text-lg">
+          <button className="w-full bg-red-600 hover:bg-red-700 text-white font-medium py-3 rounded-full mb-3 text-lg" onClick={handleContinueToCheckout}>
             Continue
           </button>
           <p className="text-center text-sm text-gray-600" suppressHydrationWarning>
@@ -388,7 +396,7 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
       {/* For restaurants, show the continue button in the original position */}
       {!shouldShowDeliveryFeeNotice() && (
         <div className="p-4 border-b">
-          <button className="w-full bg-[#e03a19] text-white py-3 rounded-full font-medium">
+          <button className="w-full bg-[#e03a19] text-white py-3 rounded-full font-medium" onClick={handleContinueToCheckout}>
             Continue
           </button>
           <p className="text-center text-sm text-gray-600 mt-2" suppressHydrationWarning>

@@ -235,7 +235,6 @@ export default function MenuItemDialog({ isOpen, onClose, item }: MenuItemDialog
         { id: "low-sugar", name: "Low Sugar", price: 0 },
         { id: "gluten-free", name: "Gluten-Free", price: 1.0 },
         { id: "vegan", name: "Vegan Option", price: 0 },
-        { id: "instructions", name: "Add Special Instructions", price: 0 },
       ],
       description: "(Optional)",
     },
@@ -501,18 +500,6 @@ export default function MenuItemDialog({ isOpen, onClose, item }: MenuItemDialog
                   </div>
                 ))}
               </div>
-
-              {/* Special Instructions */}
-              {section.id === "preferences" && isOptionSelected(section.id, "special-instructions") && (
-                <div className="mt-3 flex items-center cursor-pointer">
-                  <div className="flex-1">
-                    <div className="flex items-center justify-between">
-                      <span>Add Special Instructions</span>
-                      <ChevronRightIcon className="h-5 w-5" />
-                    </div>
-                  </div>
-                </div>
-              )}
             </div>
           ))}
         </div>

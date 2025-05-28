@@ -16,50 +16,43 @@ export default function NationalFavorites({ activeFilters }: NationalFavoritesPr
   const [resultsCount, setResultsCount] = useState(restaurants.length)
 
   useEffect(() => {
-    let filtered = [...restaurants]
+    let filteredRestaurants = [...restaurants]
 
     // Apply filters
     if (activeFilters.underThirtyMins) {
-      filtered = filtered.filter((restaurant) => {
-        const timeStr = restaurant.time
-        const minutes = Number.parseInt(timeStr.match(/\d+/)?.[0] || "100")
-        return minutes < 30
+      filteredRestaurants = filteredRestaurants.filter((restaurant) => {
+        const timeMatch = restaurant.time.match(/(\d+)/)
+        const deliveryTime = timeMatch ? parseInt(timeMatch[1]) : 60
+        return deliveryTime <= 30
       })
     }
 
-    if (activeFilters.overRating) {
-      filtered = filtered.filter((restaurant) => restaurant.rating >= activeFilters.overRating!)
+    if (activeFilters.deals) {
+      filteredRestaurants = filteredRestaurants.filter((restaurant) => restaurant.discount && restaurant.discount.length > 0)
     }
 
-    if (activeFilters.dashPass) {
-      filtered = filtered.filter((restaurant) => restaurant.dashPass)
+    if (activeFilters.overRating) {
+      filteredRestaurants = filteredRestaurants.filter((restaurant) => restaurant.rating >= activeFilters.overRating!)
     }
 
     if (activeFilters.price && activeFilters.price.length > 0) {
-      filtered = filtered.filter((restaurant) => activeFilters.price!.includes(restaurant.priceRange))
+      filteredRestaurants = filteredRestaurants.filter((restaurant) =>
+        activeFilters.price!.includes(restaurant.priceRange)
+      )
     }
 
-    // For demo purposes, we'll just simulate these filters
-    if (activeFilters.deals) {
-      // Filter restaurants that have deals (for demo, we'll just take a subset)
-      filtered = filtered.filter((_, index) => index % 2 === 0)
+    if (activeFilters.dashPass) {
+      filteredRestaurants = filteredRestaurants.filter((restaurant) => restaurant.dashPass)
     }
 
-    if (activeFilters.pickup) {
-      // For demo, we'll just take a different subset
-      filtered = filtered.filter((_, index) => index % 3 === 0)
-    }
-
-    setFilteredRestaurants(filtered)
-    setResultsCount(filtered.length)
+    setFilteredRestaurants(filteredRestaurants)
+    setResultsCount(filteredRestaurants.length)
   }, [activeFilters])
 
   const hasActiveFilters = () => {
     return (
       activeFilters.underThirtyMins ||
-      activeFilters.schedule ||
       activeFilters.deals ||
-      activeFilters.pickup ||
       activeFilters.overRating !== null ||
       (activeFilters.price !== null && activeFilters.price.length > 0) ||
       activeFilters.dashPass
