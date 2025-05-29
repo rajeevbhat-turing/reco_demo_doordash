@@ -5,6 +5,7 @@ import { CartProvider } from "@/context/cart-context"
 import { useState, useEffect } from "react"
 import RetailStorePage from "@/components/store/retail-store-page"
 import { stores, Store } from "@/constants/store"
+import { useCartStore } from "@/store/cart-store"
 
 export default function RetailStorePageRoute() {
   const params = useParams()
@@ -14,6 +15,8 @@ export default function RetailStorePageRoute() {
   const [storeData, setStoreData] = useState<Store | null>(null)
   const [loading, setLoading] = useState(true)
 
+  const { setCurrentStore, clearCurrentStore } = useCartStore()
+
   useEffect(() => {
     if (storeId) {
       // Find the retail store by ID
@@ -21,12 +24,16 @@ export default function RetailStorePageRoute() {
       
       if (foundStore) {
         setStoreData(foundStore)
+        setCurrentStore(foundStore)
       } else {
         // If store not found, redirect back to retail page
         router.push("/retail")
       }
       setLoading(false)
     }
+    return () => {
+      clearCurrentStore();
+    };
   }, [storeId, router])
 
   if (loading) {

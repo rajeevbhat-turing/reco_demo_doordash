@@ -41,6 +41,7 @@ export default function Pets() {
   
   const filterOptionsRef = useRef<FilterOptionsRef>(null);
   const cartStore = useCartStore();
+  const { setCurrentStore, clearCurrentStore } = useCartStore()
   
   // Set the category to pets when component mounts
   useEffect(() => {
@@ -59,6 +60,8 @@ export default function Pets() {
         setIsCartOpen(true)
       }
     })
+
+    clearCurrentStore();
     
     return () => unsubscribe()
   }, [])

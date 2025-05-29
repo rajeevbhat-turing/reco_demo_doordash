@@ -5,6 +5,7 @@ import { CartProvider } from "@/context/cart-context"
 import { useState, useEffect } from "react"
 import GroceryStorePage from "@/components/grocery-store-page"
 import { stores, StoreInfo } from "@/data/store-data"
+import { useCartStore } from "@/store/cart-store"
 
 export default function GroceryStorePageRoute() {
   const params = useParams()
@@ -14,12 +15,15 @@ export default function GroceryStorePageRoute() {
   const [storeData, setStoreData] = useState<StoreInfo | null>(null)
   const [loading, setLoading] = useState(true)
 
+  const { setCurrentStore, clearCurrentStore } = useCartStore()
+
   useEffect(() => {
     if (storeId) {
       // Find the grocery store by ID
       const foundStore = stores[storeId]
       
       if (foundStore) {
+        setCurrentStore(foundStore)
         setStoreData(foundStore)
       } else {
         // If store not found, redirect back to grocery page
@@ -27,6 +31,10 @@ export default function GroceryStorePageRoute() {
       }
       setLoading(false)
     }
+
+    return () => {
+      clearCurrentStore();
+    };
   }, [storeId, router])
 
   if (loading) {
