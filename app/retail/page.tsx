@@ -11,11 +11,13 @@ import { CartProvider } from "@/context/cart-context"
 
 export default function Retail() {
   const [activeFilters, setActiveFilters] = useState<string[]>([])
+  const { setCurrentStore, clearCurrentStore } = useCartStore()
   
   // Set category explicitly
   useEffect(() => {
     const cartStore = useCartStore.getState();
     cartStore.setCategory("retail");
+    clearCurrentStore();
   }, []);
 
   const handleFilterChange = (filter: string) => {

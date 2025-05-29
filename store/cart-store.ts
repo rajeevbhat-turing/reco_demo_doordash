@@ -106,6 +106,8 @@ interface CartStore {
   groupOrderId: string | null
   searchResults: SearchResult[]
   totalCartValue: number
+  // Current store object
+  currentStore: Record<string, any>
 
   // Category methods
   setCategory: (category: CartCategory) => void
@@ -154,6 +156,10 @@ interface CartStore {
 
   // Update total cart value
   updateTotalCartValue: () => void
+
+  // Current store methods
+  setCurrentStore: (store: Record<string, any>) => void
+  clearCurrentStore: () => void
 }
 
 export const useCartStore = create<CartStore>()(
@@ -169,6 +175,7 @@ export const useCartStore = create<CartStore>()(
         groupOrderId: null,
         searchResults: [],
         totalCartValue: 0,
+        currentStore: {},
 
         // Set active category without clearing cart
         setCategory: (category: CartCategory) => {
@@ -476,6 +483,15 @@ export const useCartStore = create<CartStore>()(
           const total = get().getTotal()
           set({ totalCartValue: total })
         },
+        // Set current store object
+        setCurrentStore: (store: Record<string, any>) => {
+          set({ currentStore: store })
+        },
+
+        // Clear current store object
+        clearCurrentStore: () => {
+          set({ currentStore: {} })
+        },
       }),
       {
         name: "multicategory-cart",
@@ -489,6 +505,7 @@ export const useCartStore = create<CartStore>()(
           groupOrderId: state.groupOrderId,
           searchResults: state.searchResults,
           totalCartValue: state.totalCartValue,
+          currentStore: state.currentStore,
         }),
         merge: (persistedState: any, currentState) => {
           // Handle migration of old cart items
@@ -517,6 +534,7 @@ export const useCartStore = create<CartStore>()(
             ...currentState,
             ...persistedState,
             items: migratedItems,
+            currentStore: persistedState.currentStore || {},
           }
         },
       },

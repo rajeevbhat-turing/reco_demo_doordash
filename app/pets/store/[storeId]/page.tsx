@@ -5,6 +5,7 @@ import { CartProvider } from "@/context/cart-context"
 import { useState, useEffect } from "react"
 import PetStorePage from "@/components/store/pet-store-page"
 import { allPetStores } from "@/data/pet-data"
+import { useCartStore } from "@/store/cart-store"
 
 export default function PetStorePageRoute() {
   const params = useParams()
@@ -13,6 +14,7 @@ export default function PetStorePageRoute() {
   
   const [storeData, setStoreData] = useState<any>(null)
   const [loading, setLoading] = useState(true)
+  const { setCurrentStore } = useCartStore()
 
   useEffect(() => {
     if (storeId) {
@@ -21,6 +23,7 @@ export default function PetStorePageRoute() {
       
       if (foundStore) {
         setStoreData(foundStore)
+        setCurrentStore(foundStore)
       } else {
         // If store not found, redirect back to pets page
         router.push("/pets")
