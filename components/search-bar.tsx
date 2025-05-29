@@ -140,7 +140,7 @@ const SearchBar = () => {
       setIsSearchActive(true)
 
       // Update cart store with search results
-      updateSearchResults(combinedResults)
+      updateSearchResults(restaurantResults)
     } else {
       setSearchResults([])
       setSearchSuggestions([])
