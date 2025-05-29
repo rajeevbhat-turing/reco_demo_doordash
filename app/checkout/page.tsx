@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import Image from "next/image"
 import { ChevronLeft, ChevronRight, X } from "lucide-react"
@@ -10,6 +10,7 @@ import { getRestaurantById } from "@/constants/restaurants"
 import { stores } from "@/data/store-data"
 import { stores as retailStores } from "@/constants/store"
 import { allPetStores } from "@/data/pet-data"
+import { convenienceStores } from "@/data/convenience-store-data"
 
 export default function CheckoutPage() {
   const router = useRouter()
@@ -18,6 +19,7 @@ export default function CheckoutPage() {
   const [orderId, setOrderId] = useState("")
   const [showScheduleModal, setShowScheduleModal] = useState(false)
   const [selectedScheduleTime, setSelectedScheduleTime] = useState("")
+  const [isClient, setIsClient] = useState(false)
   
   // Delivery options
   const [selectedDeliveryOption, setSelectedDeliveryOption] = useState("standard")
@@ -26,6 +28,11 @@ export default function CheckoutPage() {
   
   // Dasher tip
   const [selectedTip, setSelectedTip] = useState(3.00)
+
+  // Fix hydration by ensuring client-side only rendering
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
   
   // Generate order ID
   const generateOrderId = () => {
@@ -60,6 +67,9 @@ export default function CheckoutPage() {
           break
         case 'pets':
           store = allPetStores.find(s => s.id === currentStoreId)
+          break
+        case 'convenience':
+          store = convenienceStores[currentStoreId]
           break
       }
       return store?.name || 'Store'
@@ -287,7 +297,7 @@ export default function CheckoutPage() {
               onClick={handlePlaceOrder}
               className="w-full bg-red-600 hover:bg-red-700 text-white font-medium py-4 rounded-lg text-lg"
             >
-              Place Order • ${getTotalWithExtras().toFixed(2)}
+              {isClient ? `Place Order • $${getTotalWithExtras().toFixed(2)}` : 'Place Order'}
             </button>
           </div>
 
@@ -360,13 +370,13 @@ export default function CheckoutPage() {
                     <div className="relative w-12 h-12 mr-3 flex-shrink-0">
                       <Image
                         src={item.image || "/placeholder.svg"}
-                        alt={item.name}
+                        alt={item.itemName}
                         fill
                         className="object-cover rounded"
                       />
                     </div>
                     <div className="flex-1">
-                      <h4 className="font-medium text-sm">{item.name}</h4>
+                      <h4 className="font-medium text-sm">{item.itemName}</h4>
                       {item.customizations && (
                         <p className="text-xs text-gray-600">{item.customizations}</p>
                       )}

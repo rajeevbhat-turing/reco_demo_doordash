@@ -8,6 +8,7 @@ import Link from "next/link"
 import Image from "next/image"
 import { CartCategory, useCartStore } from "@/store/cart-store"
 import { useReplaceCart } from "@/context/replace-cart-context"
+import { convenienceStores } from "@/data/convenience-store-data"
 
 interface ProductDisplayProps {
   title: string
@@ -73,13 +74,20 @@ export default function ProductDisplay({
   
   // Handle adding product to cart with conflict detection
   const handleAddToCart = (product: Product) => {
+    // Get store name based on category and storeId
+    let resolvedStoreName = storeName
+    if (!resolvedStoreName && category === 'convenience' && storeId) {
+      resolvedStoreName = convenienceStores[storeId]?.name || `Store ${storeId}`
+    }
+    
     const cartItem = {
       id: product.id,
-      name: product.name,
+      itemName: product.name, // Use itemName instead of name
       price: product.price,
       image: product.image,
       storeId: category === 'restaurant' ? undefined : storeId,
       restaurantId: category === 'restaurant' ? storeId : undefined,
+      storeName: resolvedStoreName, // Include store name
     }
     
     addItemWithConflictCheck(cartItem, category)

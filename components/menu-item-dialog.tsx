@@ -364,7 +364,7 @@ export default function MenuItemDialog({ isOpen, onClose, item }: MenuItemDialog
     const cartItem = {
       id: `${item.id}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`, // Generate unique ID
       restaurantId: item.restaurantId,
-      name: item.name,
+      itemName: item.name, // Use itemName instead of name
       price: totalPrice.toFixed(2),
       image: item.image,
       customizations: customizationText.join(" · "),

@@ -10,7 +10,8 @@ import GroceryStorePage from "@/components/grocery-store-page"
 import { stores as retailStores } from "@/constants/store"
 import { allPetStores } from "@/data/pet-data"
 import { stores as groceryStores } from "@/data/store-data"
-import { groceryData } from "@/data/grocery-data"
+import { convenienceStores } from "@/data/convenience-store-data"
+import { convenienceData } from "@/data/convenience-data"
 
 // This is a sample product data for retail stores
 // In a real application, this would come from an API
@@ -97,7 +98,7 @@ export default function ConvenienceStorePage() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const storeId = params.storeId as string
-  const storeType = searchParams.get('storeType') || "retail"
+  const storeType = searchParams.get('storeType') || "convenience"
   
   const [storeData, setStoreData] = useState<any>(null)
   const [productData, setProductData] = useState<ProductSection[]>([])
@@ -108,7 +109,11 @@ export default function ConvenienceStorePage() {
       let foundStore = null
       let sourceType = storeType
       
-      if (storeType === 'grocery' || storeId in groceryStores) {
+      if (storeType === 'convenience' || storeId in convenienceStores) {
+        foundStore = convenienceStores[storeId]
+        sourceType = 'convenience'
+        setProductData(convenienceData[storeId] || [])
+      } else if (storeType === 'grocery' || storeId in groceryStores) {
         foundStore = groceryStores[storeId]
         sourceType = 'grocery'
         setProductData([]) // Simplified for now to avoid type conflicts
@@ -120,7 +125,7 @@ export default function ConvenienceStorePage() {
       } else {
         foundStore = retailStores.find(store => store.id === storeId)
         sourceType = 'retail'
-        setProductData(foundStore?.items ?? sampleRetailProducts)
+        setProductData(foundStore?.items ?? [])
       }
       
       if (foundStore) {
@@ -129,7 +134,7 @@ export default function ConvenienceStorePage() {
           type: sourceType
         })
       } else {
-        // If store not found, redirect to main convenience page (would be created later)
+        // If store not found, redirect to main convenience page
         router.push("/convenience")
       }
     }
@@ -140,8 +145,15 @@ export default function ConvenienceStorePage() {
   }
 
   return (
-    <CartProvider category={storeData.type as "grocery" | "retail" | "pets"}>
-      {storeData.type === 'grocery' ? (
+    <CartProvider category={storeData.type as "grocery" | "retail" | "pets" | "convenience"}>
+      {storeData.type === 'convenience' ? (
+        <RetailStorePage 
+          onBackClick={() => router.push("/convenience")} 
+          storeData={storeData.data}
+          productData={productData}
+          storeType="convenience"
+        />
+      ) : storeData.type === 'grocery' ? (
         <GroceryStorePage 
           onBackClick={() => router.push("/grocery")} 
           storeData={storeData.data}
