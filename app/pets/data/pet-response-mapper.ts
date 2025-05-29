@@ -5,11 +5,10 @@ import {allPetStores, petCategories, petProductData} from "@/data/pet-data";
 // Filter options for the pets page
 export function getFilterOptions() {
   return [
-    { id: "1", name: "Delivery", icon: "🚚" },
-    { id: "2", name: "Pickup", icon: "🛒" },
-    { id: "3", name: "DashPass", icon: "🔵" },
-    { id: "4", name: "Under 30 min", icon: "⏱️" },
-    { id: "5", name: "Over 4.5", icon: "⭐" },
+    { id: "1", name: "Delivery", icon: "" },
+    { id: "2", name: "Pickup", icon: "" },
+    { id: "3", name: "DashPass", icon: "" },
+    { id: "4", name: "Under 30 min", icon: "" },
   ]
 }
 
@@ -158,13 +157,23 @@ export function getFilteredPetStores(filters: string[]) {
 
   return allPetStores.filter(store => {
     return filters.every(filter => {
-      if (filter === "Over 4.5") {
-        return store.tags?.includes("Over 4.5");
+      // Since we removed the rating and timing filters that used tags,
+      // we can simplify this to just handle basic filters
+      if (filter === "DashPass") {
+        return store.isDashPass;
+      }
+      if (filter === "Delivery" || filter === "Pickup") {
+        return true; // All stores support these for now
       }
       if (filter === "Under 30 min") {
-        return store.tags?.includes("Under 30 min");
+        // Parse the time from the store's time field (e.g., "15-30 min")
+        const timeMatch = store.time.match(/(\d+)(-\d+)?\s*min/);
+        if (timeMatch) {
+          const maxTime = parseInt(timeMatch[1]);
+          return maxTime <= 30;
+        }
       }
-      return store.tags?.includes(filter);
+      return false;
     });
   });
 }

@@ -4,11 +4,10 @@ import {StoreInfo} from "@/data/store-data";
 
 export function getFilterOptions() {
   return [
-    { id: "1", name: "Delivery", icon: "🚚" },
-    { id: "2", name: "Pickup", icon: "🛒" },
-    { id: "3", name: "DashPass", icon: "🔵" },
-    { id: "4", name: "Under 30 min", icon: "⏱️" },
-    { id: "5", name: "Price: $", icon: "💰" },
+    { id: "1", name: "Delivery", icon: "" },
+    { id: "2", name: "Pickup", icon: "" },
+    { id: "3", name: "DashPass", icon: "" },
+    { id: "4", name: "Under 30 min", icon: "" },
   ]
 }
 

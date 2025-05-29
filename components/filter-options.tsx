@@ -445,7 +445,7 @@ const FilterOptions = forwardRef<FilterOptionsRef, FilterOptionsProps>(
                     } flex items-center gap-1`}
                     onClick={() => toggleFilter(filterKey as keyof FilterState)}
                   >
-                    <span className="mr-1">{filter.icon}</span> {filter.name}
+                    {filter.icon && <span className="mr-1">{filter.icon}</span>} {filter.name}
                   </button>
                 );
               }
@@ -592,18 +592,6 @@ const FilterOptions = forwardRef<FilterOptionsRef, FilterOptionsProps>(
               </div>
             )}
           </div>
-
-          {!isGrocery && (
-            <button
-              className={`rounded-full h-9 px-4 text-xs font-semibold ${
-                filters.dashPass ? "bg-gray-900 text-white" : "bg-gray-100 hover:bg-gray-200 text-gray-900"
-              } flex items-center gap-1`}
-              onClick={() => toggleFilter("dashPass")}
-            >
-              <DollarSign className="h-4 w-4 mr-1" />
-              DashPass
-            </button>
-          )}
         </div>
       </div>
     )

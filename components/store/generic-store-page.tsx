@@ -336,7 +336,13 @@ export default function GenericStorePage({
       </div>
 
       {/* Product Detail Modal */}
-      <ProductDetailModal product={selectedProduct} onClose={closeProductModal} />
+      <ProductDetailModal 
+        product={selectedProduct} 
+        onClose={closeProductModal}
+        storeId={storeData.id}
+        category={'storeType' in storeData ? storeData.storeType : 'grocery'}
+        storeName={storeData.name}
+      />
     </div>
   )
 }

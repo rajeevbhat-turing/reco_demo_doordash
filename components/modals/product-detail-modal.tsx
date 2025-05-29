@@ -1,31 +1,45 @@
 "use client"
 
 import { useState } from "react"
-import { ChevronDown, ChevronUp, ChevronLeft, ChevronRight, Minus, Plus } from "lucide-react"
+import { ChevronDown, ChevronUp, Minus, Plus } from "lucide-react"
 import Image from "next/image"
 import type { Product } from "@/types"
-import { useCart } from "@/context/cart-context"
+import { useCartStore } from "@/store/cart-store"
+import { useReplaceCart } from "@/context/replace-cart-context"
 import Modal from "@/components/ui/modal"
-import { recommendedProducts, getProductNutrition } from "@/data/modal-data"
+import { getProductNutrition } from "@/data/modal-data"
 import { parseCurrency } from "@/lib/utils"
 
 interface ProductDetailModalProps {
   product: Product | null
   onClose: () => void
+  storeId?: string
+  category?: "grocery" | "retail" | "convenience" | "pets" | "restaurant"
+  storeName?: string
 }
 
 const fallbackDescription = "The price shown is an estimate. It will be updated after the order is completed at the store";
 
-export default function ProductDetailModal({ product, onClose }: ProductDetailModalProps) {
+export default function ProductDetailModal({ product, onClose, storeId, category = "grocery", storeName }: ProductDetailModalProps) {
   const [quantity, setQuantity] = useState(1)
   const [isNutritionOpen, setIsNutritionOpen] = useState(false)
-  const { addToCart } = useCart()
+  const { addItemWithConflictCheck } = useReplaceCart()
 
   if (!product) return null
 
   const handleAddToCart = () => {
     for (let i = 0; i < quantity; i++) {
-      addToCart(product)
+      const cartItem = {
+        id: product.id,
+        itemName: product.name,
+        price: product.price,
+        image: product.image,
+        storeId: category === 'restaurant' ? undefined : storeId,
+        restaurantId: category === 'restaurant' ? storeId : undefined,
+        storeName: storeName,
+      }
+      
+      addItemWithConflictCheck(cartItem, category)
     }
     onClose()
   }
@@ -34,7 +48,7 @@ export default function ProductDetailModal({ product, onClose }: ProductDetailMo
   const decrementQuantity = () => setQuantity((prev) => (prev > 1 ? prev - 1 : 1))
 
   // Get nutrition info for this product
-  const nutritionInfo = getProductNutrition(product.id)
+  const nutritionInfo = getProductNutrition(typeof product.id === 'string' ? parseInt(product.id) : product.id)
 
   return (
     <Modal isOpen={true} onClose={onClose} maxWidth="max-w-4xl">
@@ -58,7 +72,7 @@ export default function ProductDetailModal({ product, onClose }: ProductDetailMo
           <p className="text-2xl font-bold mb-2">${parseCurrency(product.price)}/bch</p>
           <p className="text-gray-600 mb-4">Approx 0.4 lb per bunch • ${(parseCurrency(product.price) * 2.5).toFixed(2)}/lb</p>
           <p className="text-gray-600 mb-4">
-            {product.description ?? fallbackDescription}
+            {(product as any).description ?? fallbackDescription}
           </p>
           <div className="inline-block bg-gray-100 px-3 py-1 rounded-md mb-6">SNAP</div>
 
@@ -91,53 +105,6 @@ export default function ProductDetailModal({ product, onClose }: ProductDetailMo
               </div>
             )}
           </div>
-        </div>
-      </div>
-
-      {/* You May Also Like section */}
-      <div className="mb-8">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-bold">You May Also Like</h2>
-          <div className="flex space-x-2">
-            <button className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
-              <ChevronLeft className="w-5 h-5" />
-            </button>
-            <button className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
-              <ChevronRight className="w-5 h-5" />
-            </button>
-          </div>
-        </div>
-
-        <div className="flex space-x-4 overflow-x-auto pb-4 no-scrollbar">
-          {recommendedProducts.map((recProduct) => (
-            <div key={recProduct.id} className="min-w-[150px] max-w-[150px]">
-              <div className="relative mb-2">
-                <Image
-                  src={recProduct.image || "/placeholder.svg"}
-                  alt={recProduct.name}
-                  width={150}
-                  height={150}
-                  className="rounded-lg object-cover aspect-square"
-                />
-                <button
-                  className="absolute bottom-2 right-2 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-md"
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    addToCart({
-                      id: recProduct.id,
-                      name: recProduct.name,
-                      price: recProduct.price,
-                      image: recProduct.image,
-                    })
-                  }}
-                >
-                  <Plus className="w-5 h-5 text-green-600" />
-                </button>
-              </div>
-              <p className="font-medium">${recProduct.price.toFixed(2)}</p>
-              <p className="text-sm text-gray-700 truncate">{recProduct.name}</p>
-            </div>
-          ))}
         </div>
       </div>
 
