@@ -11,6 +11,7 @@ import { getMenuItemsByRestaurantId } from "@/constants/menu-items"
 import { stores } from "@/data/store-data"
 import { stores as retailStores } from "@/constants/store"
 import { allPetStores } from "@/data/pet-data"
+import { convenienceStores } from "@/data/convenience-store-data"
 
 interface CartSidebarProps {
   isOpen: boolean
@@ -63,6 +64,9 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
         break;
       case 'pets':
         result = allPetStores.find(store => store.id === storeId) || null;
+        break;
+      case 'convenience':
+        result = convenienceStores[storeId] || null;
         break;
       default:
         break;
@@ -239,7 +243,7 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
 
   // Check if delivery fee applies (only for non-restaurant categories)
   const shouldShowDeliveryFeeNotice = () => {
-    return currentCategory !== 'restaurant' && ['grocery', 'retail', 'pets'].includes(currentCategory);
+    return currentCategory !== 'restaurant' && ['grocery', 'retail', 'pets', 'convenience'].includes(currentCategory);
   };
 
   // Get the delivery fee threshold to display (always $35 for non-restaurant as per requirement)
@@ -253,7 +257,7 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
       addItem({
         id: item.id,
         restaurantId: item.restaurantId,
-        name: item.name,
+        itemName: item.name,
         price: item.price,
         image: item.image,
       })
@@ -413,14 +417,14 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
               <div className="relative h-14 w-14 mr-4 flex-shrink-0">
                 <Image
                   src={item.image.trim() || "/placeholder.svg?height=96&width=96&query=burger"}
-                  alt={item.name}
+                  alt={item.itemName}
                   width={96}
                   height={96}
                   className="object-cover rounded-md"
                 />
               </div>
               <div className="flex-1">
-                <h4 className="text-base font-medium">{item.name}</h4>
+                <h4 className="text-base font-medium">{item.itemName}</h4>
                 {item.customizations ? (
                   <p className="text-xs text-gray-600 mt-1">{item.customizations}</p>
                 ) : currentCategory === 'restaurant' ? (
@@ -485,7 +489,7 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
                   <div className="relative w-20 h-20 mb-2">
                     <Image
                       src={item.image || "/placeholder.svg"}
-                      alt={item.name}
+                      alt={item.itemName}
                       fill
                       className="object-cover rounded-lg"
                     />
@@ -496,7 +500,7 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
                       <Plus className="h-3 w-3" />
                     </button>
                   </div>
-                  <h4 className="text-xs text-center line-clamp-2 mb-1">{item.name}</h4>
+                  <h4 className="text-xs text-center line-clamp-2 mb-1">{item.itemName}</h4>
                   <p className="text-xs font-medium">{item.price}</p>
                 </div>
               ))}

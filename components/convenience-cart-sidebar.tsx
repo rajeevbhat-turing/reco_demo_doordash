@@ -159,14 +159,14 @@ export default function ConvenienceCartSidebar({
             <div className="w-12 h-12 mr-3 flex-shrink-0">
               <Image
                 src={item.image || "/placeholder.svg"}
-                alt={item.name}
+                alt={item.itemName}
                 width={48}
                 height={48}
                 className="rounded-md object-cover"
               />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="font-medium text-sm">{item.name}</p>
+              <p className="font-medium text-sm">{item.itemName}</p>
               <p className="text-sm">{formatPrice(item.price)}</p>
             </div>
             <div className="flex items-center">

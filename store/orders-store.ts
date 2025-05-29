@@ -36,7 +36,7 @@ export const useOrdersStore = create<OrdersStore>()(
           totalAmount: orderInfo.total,
           items: orderInfo.items.map(item => ({
             id: item.id.toString(),
-            name: item.name,
+            name: item.itemName,
             quantity: item.quantity,
             price: typeof item.price === 'number' 
               ? item.price 

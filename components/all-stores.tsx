@@ -152,7 +152,7 @@ interface AllStoresProps {
   title?: string;
   showSeeAll?: boolean;
   seeAllLink?: string;
-  storeType?: "grocery" | "retail" | "pets";
+  storeType?: "grocery" | "retail" | "pets" | "convenience";
   variant?: "all" | "favorites" | "fastest" | "compact";
 }
 

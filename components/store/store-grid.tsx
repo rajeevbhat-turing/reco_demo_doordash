@@ -30,7 +30,7 @@ interface StoreGridProps {
   showSeeAll?: boolean
   showNavigation?: boolean
   seeAllLink?: string
-  storeType?: "grocery" | "retail" | "pets"
+  storeType?: "grocery" | "retail" | "pets" | "convenience"
 }
 
 export default function StoreGrid({
