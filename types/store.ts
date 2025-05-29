@@ -11,7 +11,7 @@ export interface BaseStore {
 }
 
 // Store category type
-export type StoreCategory = "grocery" | "retail" | "restaurant" | "pets" | "flowers";
+export type StoreCategory = "grocery" | "retail" | "restaurant" | "pets" | "flowers" | "convenience";
 
 // Grocery-specific store interface
 export interface GroceryStore extends BaseStore {
@@ -32,6 +32,21 @@ export interface RetailStore extends BaseStore {
   isNearYou?: boolean;
   tags?: string[];
   distance?: string;
+}
+
+// Convenience-specific store interface
+export interface ConvenienceStore extends BaseStore {
+  storeType: "convenience";
+  rating?: number;
+  reviewCount?: number;
+  distance?: string;
+  priceLevel?: string;
+  expressTime?: string;
+  maxOrderLimit?: number;
+  openTime?: string;
+  discount?: string;
+  isNearYou?: boolean;
+  tags?: string[];
 }
 
 // Restaurant-specific store interface (keeping the existing interface untouched)
@@ -58,7 +73,7 @@ export interface PetStore extends BaseStore {
 }
 
 // Union type for all store types
-export type Store = GroceryStore | RetailStore | RestaurantStore | PetStore;
+export type Store = GroceryStore | RetailStore | ConvenienceStore | RestaurantStore | PetStore;
 
 // Helper type for store configuration
 export interface StoreConfig {

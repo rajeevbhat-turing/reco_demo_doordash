@@ -2,9 +2,10 @@ import { create } from "zustand"
 import { persist, devtools } from "zustand/middleware"
 import type { Product } from "@/types"
 import { restaurants } from "@/constants/restaurants"
+import { convenienceStores } from "@/data/convenience-store-data"
 
 // Define supported cart categories
-export type CartCategory = "restaurant" | "grocery" | "retail" | "pets"
+export type CartCategory = "restaurant" | "grocery" | "retail" | "pets" | "convenience"
 
 // Base cart item interface
 export interface CartItem {
@@ -66,6 +67,12 @@ const categoryConfigs: Record<CartCategory, CategoryConfig> = {
     serviceFeePercentage: 0.14,
     minServiceFee: 5.29,
   },
+  convenience: {
+    freeDeliveryThreshold: 25,
+    defaultDeliveryFee: 4.99,
+    serviceFeePercentage: 0.12,
+    minServiceFee: 3.99,
+  },
 }
 
 // Helper function to get store name from restaurant ID
@@ -74,10 +81,14 @@ const getStoreNameFromRestaurantId = (restaurantId: string): string => {
   return restaurant ? restaurant.name : "Unknown Store"
 }
 
-// Helper function to get store name from store ID (for grocery/retail stores)
+// Helper function to get store name from store ID (for grocery/retail/convenience stores)
 const getStoreNameFromStoreId = (storeId: string): string => {
-  // You can add your store data here similar to restaurants
-  // For now, we'll format the storeId to be more readable
+  // Check convenience stores first
+  if (convenienceStores[storeId]) {
+    return convenienceStores[storeId].name
+  }
+  
+  // For other stores, use the existing formatting logic
   return storeId
     .split("-")
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))

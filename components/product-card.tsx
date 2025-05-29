@@ -7,6 +7,7 @@ import { Plus, Trash2, Minus } from "lucide-react"
 import type { Product } from "@/types"
 import { CartCategory, useCartStore } from "@/store/cart-store"
 import { useReplaceCart } from "@/context/replace-cart-context"
+import { convenienceStores } from "@/data/convenience-store-data"
 
 interface ProductCardProps {
   product: Product
@@ -51,13 +52,20 @@ export default function ProductCard({
   const handleAddToCart = (e: React.MouseEvent) => {
     e.stopPropagation() // Prevent opening the modal when clicking the add button
     
+    // Get store name for convenience stores
+    let storeName: string | undefined
+    if (category === 'convenience' && storeId) {
+      storeName = convenienceStores[storeId]?.name || `Store ${storeId}`
+    }
+    
     const cartItem = {
       id: product.id,
-      name: product.name,
+      itemName: product.name, // Use itemName instead of name
       price: product.price,
       image: product.image,
       storeId: category === 'restaurant' ? undefined : storeId,
       restaurantId: category === 'restaurant' ? storeId : undefined,
+      storeName: storeName, // Include store name
     }
     
     addItemWithConflictCheck(cartItem, category)

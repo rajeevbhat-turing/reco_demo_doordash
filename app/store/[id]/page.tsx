@@ -201,7 +201,7 @@ export default function RestaurantPage() {
     const cartItem = {
       id: `${item.id}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`, // Generate unique ID
       restaurantId: item.restaurantId || id,
-      name: item.name,
+      itemName: item.name, // Use itemName instead of name
       price: item.price,
       image: item.image,
     };

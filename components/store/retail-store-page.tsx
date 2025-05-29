@@ -3,19 +3,20 @@
 import type React from "react"
 import { useState } from "react"
 import GenericStorePage from "@/components/store/generic-store-page"
-import type { Store } from "@/constants/store"
-import type { StoreConfig, ProductSection } from "@/types/store"
+import type { Store as ConstantsStore } from "@/constants/store"
+import type { StoreConfig, ProductSection, Store } from "@/types/store"
 import {cartConfig} from "@/data/cart-config";
 
 interface RetailStorePageProps {
   onBackClick: () => void
-  storeData: Store
+  storeData: ConstantsStore
   productData: ProductSection[]
+  storeType?: "retail" | "convenience"
 }
 
-export default function RetailStorePage({ onBackClick, storeData, productData }: RetailStorePageProps) {
+export default function RetailStorePage({ onBackClick, storeData, productData, storeType = "retail" }: RetailStorePageProps) {
   // Convert Store to the format expected by GenericStorePage
-  const retailStore = {
+  const retailStore: Store = {
     id: storeData.id,
     name: storeData.name,
     image: storeData.image,
@@ -25,8 +26,8 @@ export default function RetailStorePage({ onBackClick, storeData, productData }:
     isDashPass: storeData.isDashPass,
     isNearYou: storeData.isNearYou,
     tags: storeData.tags,
-    storeType: "retail" as const
-  }
+    storeType: storeType
+  } as Store
 
   // Define retail-specific configuration
   const retailConfig: StoreConfig = {
