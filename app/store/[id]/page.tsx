@@ -114,6 +114,8 @@ export default function RestaurantPage() {
   const [selectedRating, setSelectedRating] = useState(0);
   const [selectedMenuType, setSelectedMenuType] = useState("Regular Menu");
 
+  const { setCurrentStore, clearCurrentStore } = useCartStore()
+
   // Set the cart category to restaurant when the component mounts
   useEffect(() => {
     // Set the category to restaurant
@@ -133,6 +135,7 @@ export default function RestaurantPage() {
       );
       const beefItemsData = getMenuItemsByCategory(id, "Beef");
 
+      setCurrentStore(restaurantData)
       setRestaurant(restaurantData);
       setFeaturedItems(featuredItemsData);
       setMenuCategories(menuCategoriesData);
@@ -141,6 +144,10 @@ export default function RestaurantPage() {
       setFamilySharingItems(familySharingItemsData);
       setBeefItems(beefItemsData);
     }
+
+    return () => {
+      clearCurrentStore();
+    };
   }, [id]);
 
   // Save the initial position of the menu after the component mounts
