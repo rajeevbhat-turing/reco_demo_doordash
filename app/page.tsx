@@ -164,6 +164,46 @@ export default function Home() {
 
   const handleFilterChange = (newFilters: FilterState) => {
     setFilters(newFilters)
+
+    // Apply filters to restaurants
+    let filteredRestaurants = [...restaurants]
+
+    // Filter by category if selected
+    if (selectedCategory) {
+      filteredRestaurants = filteredRestaurants.filter((restaurant) =>
+        restaurant.categories?.some((cat) => cat.toLowerCase().includes(selectedCategory.toLowerCase()))
+      )
+    }
+
+    // Apply other filters
+    if (newFilters.underThirtyMins) {
+      // Filter by delivery time (using the time string from restaurant data)
+      filteredRestaurants = filteredRestaurants.filter((restaurant) => {
+        const timeMatch = restaurant.time.match(/(\d+)/)
+        const deliveryTime = timeMatch ? parseInt(timeMatch[1]) : 60
+        return deliveryTime <= 30
+      })
+    }
+
+    if (newFilters.deals) {
+      filteredRestaurants = filteredRestaurants.filter((restaurant) => restaurant.discount && restaurant.discount.length > 0)
+    }
+
+    if (newFilters.overRating) {
+      filteredRestaurants = filteredRestaurants.filter((restaurant) => restaurant.rating >= newFilters.overRating!)
+    }
+
+    if (newFilters.price && newFilters.price.length > 0) {
+      filteredRestaurants = filteredRestaurants.filter((restaurant) =>
+        newFilters.price!.includes(restaurant.priceRange)
+      )
+    }
+
+    if (newFilters.dashPass) {
+      filteredRestaurants = filteredRestaurants.filter((restaurant) => restaurant.dashPass)
+    }
+
+    setAllFilteredRestaurants(filteredRestaurants)
   }
 
   // Modify the handleReset function to avoid calling the child's resetFilters method
@@ -189,9 +229,7 @@ export default function Home() {
     return (
       selectedCategory !== null ||
       filters.underThirtyMins ||
-      filters.schedule ||
       filters.deals ||
-      filters.pickup ||
       filters.overRating !== null ||
       (filters.price !== null && filters.price.length > 0) ||
       filters.dashPass
