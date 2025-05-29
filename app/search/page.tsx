@@ -8,6 +8,7 @@ import { Heart, Star } from "lucide-react"
 import { restaurants } from "@/constants/restaurants"
 import { menuItems } from "@/constants/menu-items"
 import type { Restaurant } from "@/constants/restaurants"
+import { useCartStore } from "@/store/cart-store"
 
 interface SearchResultRestaurant extends Restaurant {
   matchType: "restaurant" | "menu-item"
@@ -19,6 +20,7 @@ export default function SearchPage() {
   const query = searchParams.get("q") || ""
   const [searchResults, setSearchResults] = useState<SearchResultRestaurant[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const { updateSearchResults, clearSearchResults } = useCartStore()
 
   // Search for restaurants that serve specific menu items
   const searchByMenuItem = (searchTerm: string) => {
@@ -95,8 +97,16 @@ export default function SearchPage() {
       setIsLoading(false)
     }, 500)
 
+    updateSearchResults(searchResults)
+
     return () => clearTimeout(timer)
   }, [query])
+
+  useEffect(() => {
+    return () => {
+      clearSearchResults()
+    }
+  }, [])
 
   // Save search to recent searches
   useEffect(() => {

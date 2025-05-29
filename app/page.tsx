@@ -27,6 +27,7 @@ export default function Home() {
   const [allFilteredRestaurants, setAllFilteredRestaurants] = useState<Restaurant[]>([])
   const filterOptionsRef = useRef<FilterOptionsRef>(null)
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
+  const { updateSearchResults, clearSearchResults } = useCartStore()
 
   // Get cart store to set category
   const cartStore = useCartStore()
@@ -156,9 +157,11 @@ export default function Home() {
 
       // Apply filters to all unique restaurants
       setAllFilteredRestaurants(applyFilters(uniqueRestaurants))
+      updateSearchResults(allFilteredRestaurants)
     } else {
       // Reset filtered restaurants when no filters are active
       setAllFilteredRestaurants([])
+      clearSearchResults();
     }
   }, [filters, nationalFavorites, fastestNearYou, dealsForYou, newOnDoorDash, allStores, selectedCategory])
 
@@ -223,6 +226,7 @@ export default function Home() {
     // Update the state with the reset filters
     setFilters(resetFilters)
     setSelectedCategory(null)
+    clearSearchResults();
   }
 
   const hasActiveFilters = () => {
