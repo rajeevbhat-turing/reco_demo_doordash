@@ -1,0 +1,9 @@
+{
+  "flows": {
+    "search-starbucks": {
+      "description": "Search for Starbucks and navigate to it",
+      "verifier": "try { const cartData = localStorage.getItem('multicategory-cart'); if (!cartData) return false; const state = JSON.parse(cartData).state; if (!state || !state.currentStore || !state.currentStore.name) return false; return state.currentStore.name.includes('Starbucks'); } catch (error) { console.error('Verifier error:', error); return false; }",
+      "category": "search"
+    }
+  }
+} 
