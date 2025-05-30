@@ -102,7 +102,7 @@ export interface StoreConfig {
 export interface Product {
   id: number;
   name: string;
-  price: number;
+  price: number|string;
   quantity?: string;
   image: string;
   description?: string;
@@ -110,7 +110,7 @@ export interface Product {
 }
 
 export interface ProductSection {
-  id: number;
+  id: number|string;
   title: string;
   products: Product[];
 }
