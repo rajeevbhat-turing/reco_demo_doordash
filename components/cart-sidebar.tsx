@@ -416,7 +416,7 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
             <div key={item.id} className="p-4 flex">
               <div className="relative h-14 w-14 mr-4 flex-shrink-0">
                 <Image
-                  src={item.image.trim() || "/placeholder.svg?height=96&width=96&query=burger"}
+                  src={item.image?.trim() || ""}
                   alt={item.itemName}
                   width={96}
                   height={96}
