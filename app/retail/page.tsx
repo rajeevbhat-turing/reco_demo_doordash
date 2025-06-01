@@ -2,12 +2,41 @@
 
 import CategoryFilters from "@/components/category-filters"
 import StoreCard from "@/components/storeCard"
+import GrocerySchedule from "@/components/grocery-schedule"
 import { stores } from "@/constants/store"
 import { ChevronRight } from "lucide-react"
 import Image from "next/image"
 import { useState, useEffect } from "react"
 import { useCartStore } from "@/store/cart-store"
 import { CartProvider } from "@/context/cart-context"
+
+// Retail-specific banner data
+const retailBanners = [
+  {
+    id: "1",
+    title: "Home improvement and hardware essentials from Lowe's",
+    description: "Find tools, appliances, garden supplies, and home improvement materials for every project.",
+    buttonText: "Shop now",
+    backgroundColor: "#f0f8ff",
+    buttonColor: "bg-[#004990] hover:bg-[#003d7a]",
+    textColor: "text-black",
+    image: "https://img.cdn4dd.com/cdn-cgi/image/fit=contain,format=auto/https://doordash-static.s3.amazonaws.com/media/photosV2/e35cca4a-a694-4eed-823f-7253f72b8e6f-retina-large.jpg",
+    logoImage: "https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=112,height=112,format=auto,quality=50/https://doordash-static.s3.amazonaws.com/media/restaurant/cover_square/600d6586-8659-48a9-aa31-68ba6c1860d5.png",
+    link: "/convenience/store/lowes?storeType=retail"
+  },
+  {
+    id: "2",
+    title: "Office supplies and electronics from Staples",
+    description: "Browse office furniture, tech accessories, printing services, and business essentials.",
+    buttonText: "Shop Staples",
+    backgroundColor: "#fff5f5",
+    buttonColor: "bg-[#cc0000] hover:bg-[#b30000]",
+    textColor: "text-black",
+    image: "https://img.cdn4dd.com/cdn-cgi/image/fit=contain,format=auto/https://doordash-static.s3.amazonaws.com/media/photosV2/6d6338d1-1d18-4cb3-b146-232913b74923-retina-large.png",
+    logoImage: "https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=112,height=112,format=auto,quality=50/https://doordash-static.s3.amazonaws.com/media/restaurant/cover_square/600d6586-8659-48a9-aa31-68ba6c1860d5.png",
+    link: "/retail/store/staples"
+  }
+];
 
 export default function Retail() {
   const [activeFilters, setActiveFilters] = useState<string[]>([])
@@ -41,7 +70,6 @@ export default function Retail() {
       }
       return [...prev, filter]
     })
-    updateSearchResults(filteredStores)
   }
 
   const handleReset = () => {
@@ -54,8 +82,9 @@ export default function Retail() {
 
   return (
     <CartProvider category="retail">
-      <main className="max-w-[1200px] mx-auto px-4 pt-24">
-        <h1 className="text-[32px] font-bold mb-4">Stores Near You</h1>
+      <main className="max-w-[1200px] mx-auto px-4 pt-16">
+        {/* Promotional Banners */}
+        <GrocerySchedule promos={retailBanners} />
 
         <CategoryFilters
           categories={[

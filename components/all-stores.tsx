@@ -5,6 +5,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { Heart, Info } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { getDefaultRating } from "@/utils/rating-utils"
 
 // Default stores data (fallback)
 const defaultStores = [
@@ -142,7 +143,7 @@ interface Store {
   image: string;
   inStorePrice: boolean;
   discount: string;
-  rating?: string;
+  rating?: string | number | null;
   numRatings?: string;
   isSnap?: boolean;
 }
@@ -183,7 +184,7 @@ export default function AllStores({
               pathname: seeAllLink,
               query: { 
                 title: encodeURIComponent(title),
-                type: 'grocery',
+                type: storeType,
                 section: encodeURIComponent(title.toLowerCase().replace(/\s+/g, '-'))
               }
             }}
@@ -248,11 +249,9 @@ export default function AllStores({
                     )}
                   </div>
 
-                  {store.rating && (
-                    <div className="text-sm text-gray-500">
-                      ★ {store.rating} ({store.numRatings || "0"})
-                    </div>
-                  )}
+                  <div className="text-sm text-gray-500">
+                    ★ {getDefaultRating(store.rating)} ({store.numRatings || "0"})
+                  </div>
 
                   <div className="text-sm text-gray-500">{store.time}</div>
 

@@ -1,6 +1,9 @@
+import React, { useState, useRef, useEffect } from "react"
 import Image from "next/image"
 import { ChevronLeft, ChevronRight, Plus } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { useCartStore } from "@/store/cart-store"
+import { getDefaultRating } from "@/utils/rating-utils"
 
 interface Product {
   id: string;
@@ -31,6 +34,9 @@ export default function ProductCarousel({
 }: ProductCarouselProps) {
   return (
     <div className="py-6">
+      <div className="mb-4">
+        <h2 className="text-2xl font-bold">{title}</h2>
+      </div>
       <div className="flex items-start mb-4">
         <div className="relative w-12 h-12 rounded-full overflow-hidden bg-gray-100 mr-4">
           <Image
@@ -46,7 +52,6 @@ export default function ProductCarousel({
         <div className="flex-grow">
           <div className="flex justify-between items-start">
             <div>
-              <h2 className="text-2xl font-bold">{title}</h2>
               <div className="flex items-center text-sm text-gray-600">
                 <span>From {storeName}</span>
                 {time && (
@@ -64,9 +69,6 @@ export default function ProductCarousel({
             </div>
 
             <div className="flex items-center gap-2">
-              <a href="#" className="text-sm font-medium">
-                See All
-              </a>
               <div className="flex gap-1">
                 <Button variant="outline" size="icon" className="rounded-full bg-white">
                   <ChevronLeft className="h-4 w-4" />
@@ -114,12 +116,8 @@ export default function ProductCarousel({
               <div className="text-sm text-gray-700 line-clamp-2">{product.name}</div>
 
               {product.rating && (
-                <div className="flex items-center mt-1 text-xs text-gray-500">
-                  <span className="flex">
-                    {[1,2,3,4,5].map((i) => (
-                      <span key={i} className={i <= parseFloat(product.rating) ? "text-yellow-500" : "text-gray-300"}>★</span>
-                    ))}
-                  </span>
+                <div className="flex items-center text-sm text-gray-500">
+                  <span>★ {getDefaultRating(product.rating)}</span>
                   <span className="ml-1">({product.numRatings})</span>
                 </div>
               )}

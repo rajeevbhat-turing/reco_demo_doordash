@@ -4,7 +4,6 @@ import { Inter } from "next/font/google"
 import "./globals.css"
 import Header from "@/components/header"
 import Sidebar from "@/components/sidebar"
-import Footer from "@/components/footer"
 import { ReplaceCartProvider } from "@/context/replace-cart-context"
 
 const inter = Inter({ subsets: ["latin"] })
@@ -29,7 +28,6 @@ export default function RootLayout({
               <Sidebar />
               <div className="flex-1 w-0 min-w-0 md:ml-[220px]">
                 <main className="flex-1">{children}</main>
-                <Footer />
               </div>
             </div>
           </div>

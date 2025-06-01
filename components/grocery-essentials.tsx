@@ -39,34 +39,25 @@ export default function GroceryEssentials({ data }: GroceryEssentialsProps) {
 
   return (
     <div className="py-6">
-      <div className="flex justify-between items-center mb-4">
-        <div>
-          <h2 className="text-2xl font-bold">{title}</h2>
-          <div className="flex items-center gap-1 text-sm text-gray-600">
-            <span>From {storeName}</span>
-            <span className="text-xs">•</span>
-            <span>{deliveryTime}</span>
-          </div>
-          {showInStorePrice && (
-            <div className="flex items-center gap-1 text-xs text-gray-500 mt-1">
-              <Info className="h-3 w-3" />
-              In-store prices
-            </div>
+      <div className="mb-4">
+        <h2 className="text-2xl font-bold">{title}</h2>
+        <div className="flex items-center gap-1 text-sm text-gray-600">
+          <span>From {storeName}</span>
+          {deliveryTime && (
+            <>
+              <span>•</span>
+              <span>{deliveryTime}</span>
+            </>
           )}
-        </div>
-
-        <div className="flex items-center gap-2">
-          <a href="#" className="text-sm font-medium">
-            See All
-          </a>
-          <div className="flex gap-1">
-            <Button variant="outline" size="icon" className="rounded-full bg-white">
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
-            <Button variant="outline" size="icon" className="rounded-full bg-white">
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-          </div>
+          {showInStorePrice && (
+            <>
+              <span>•</span>
+              <span className="flex items-center gap-1">
+                <Info className="h-3 w-3" />
+                In-store prices
+              </span>
+            </>
+          )}
         </div>
       </div>
 

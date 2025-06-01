@@ -4,11 +4,12 @@ import { useEffect, useState } from "react"
 import { useSearchParams } from "next/navigation"
 import Image from "next/image"
 import Link from "next/link"
-import { Heart, Star } from "lucide-react"
+import { Heart, Star, ArrowLeft } from "lucide-react"
 import { restaurants } from "@/constants/restaurants"
 import { menuItems } from "@/constants/menu-items"
 import type { Restaurant } from "@/constants/restaurants"
 import { useCartStore } from "@/store/cart-store"
+import { getDefaultRating } from "@/utils/rating-utils"
 
 interface SearchResultRestaurant extends Restaurant {
   matchType: "restaurant" | "menu-item"
@@ -222,6 +223,17 @@ export default function SearchPage() {
 
                 {restaurant.discount && (
                   <div className="mt-1 text-sm text-red-600 font-medium">{restaurant.discount}</div>
+                )}
+
+                {restaurant.rating && (
+                  <div className="flex items-center text-sm text-gray-500">
+                    <span>★ {getDefaultRating(restaurant.rating)}</span>
+                    <span className="ml-1">({restaurant.reviews})</span>
+                    <span className="mx-1">•</span>
+                    <span>{restaurant.distance}</span>
+                    <span className="mx-1">•</span>
+                    <span>{restaurant.time}</span>
+                  </div>
                 )}
 
               </div>

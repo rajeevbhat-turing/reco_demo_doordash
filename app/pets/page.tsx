@@ -21,15 +21,13 @@ import {
   filterProductsByCategory
 } from "@/app/pets/data/pet-response-mapper"
 import { allPetStores } from "@/data/pet-data"
+import { getDefaultRating } from "@/utils/rating-utils"
 
 export default function Pets() {
   // Filter state
   const [activeFilters, setActiveFilters] = useState<FilterState>({
     underThirtyMins: false,
-    schedule: false,
-    scheduledTime: null,
     deals: false,
-    pickup: false,
     overRating: null,
     price: null,
     dashPass: false,
@@ -66,6 +64,14 @@ export default function Pets() {
     return () => unsubscribe()
   }, [])
   
+  // Function to check if an image URL is valid (not placeholder/empty)
+  const hasValidImage = (imageUrl: string | undefined): boolean => {
+    if (!imageUrl || imageUrl.trim() === '') return false;
+    if (imageUrl.includes('placeholder.svg')) return false;
+    if (imageUrl.includes('placeholder.png')) return false;
+    return true;
+  };
+  
   // Get the data from our pet response mapper
   const filterOptions = getFilterOptions();
   const allPetStores = getAllPetStores();
@@ -79,46 +85,73 @@ export default function Pets() {
   };
   
   // Filter stores based on active filters
-  const filterStores = (storeList: any[]) => {
-    return storeList.filter(store => {
-      // Filter by under 30 min
-      if (activeFilters.underThirtyMins) {
-        const timeString = store.time || "";
-        const minutes = parseInt(timeString.match(/\d+/)?.[0] || "100");
-        if (minutes >= 30) return false;
-      }
-      
-      // Filter by rating
-      if (activeFilters.overRating && store.rating) {
-        const rating = parseFloat(store.rating);
-        if (rating < activeFilters.overRating) return false;
-      }
-      
-      // Filter by DashPass
-      if (activeFilters.dashPass && !store.isDashPass) {
-        return false;
-      }
-      
-      return true;
-    });
-  };
+  const filteredStores = allPetStores.filter(store => {
+    // Filter by under 30 min
+    if (activeFilters.underThirtyMins) {
+      const timeString = store.time || "";
+      const minutes = parseInt(timeString.match(/\d+/)?.[0] || "100");
+      if (minutes >= 30) return false;
+    }
+    
+    // Filter by rating
+    if (activeFilters.overRating && store.rating) {
+      const rating = getDefaultRating(store.rating)
+      if (rating < activeFilters.overRating) return false;
+    }
+    
+    // Filter by DashPass
+    if (activeFilters.dashPass && !store.isDashPass) {
+      return false;
+    }
+    
+    return true;
+  });
   
-  // Apply filters to data
-  const filteredStores = filterStores(allPetStores);
+  // Filter featured stores with valid images and convert to proper format
+  const featuredStores = allPetStores
+    .filter(store => hasValidImage(store.image))
+    .slice(0, 8)
+    .map(store => ({
+      id: store.id,
+      name: store.name,
+      rating: store.rating,
+      numRatings: store.ratingCount,
+      distance: store.distance,
+      time: store.time,
+      delivery: "$0 delivery fee",
+      image: store.image,
+      open: true,
+      openTime: "",
+      inStorePrice: true,
+      discount: "",
+      isSnap: false,
+      isDashPass: store.isDashPass,
+    }));
   
-  // Split stores into different categories
-  const featuredStores = allPetStores.filter(store => 
-    featuredPetStoreIds.includes(store.id)
-  );
-  
-  // Create a "fastest near you" category - take the first 5 stores that have delivery time < 30 min
+  // Filter fastest stores with valid images (delivery time under 25 min)
   const fastestStores = allPetStores
     .filter(store => {
       const timeString = store.time || "";
       const minutes = parseInt(timeString.match(/\d+/)?.[0] || "100");
-      return minutes < 30;
+      return minutes < 25 && hasValidImage(store.image);
     })
-    .slice(0, 5);
+    .slice(0, 8)
+    .map(store => ({
+      id: store.id,
+      name: store.name,
+      rating: store.rating,
+      numRatings: store.ratingCount,
+      distance: store.distance,
+      time: store.time,
+      delivery: "$0 delivery fee",
+      image: store.image,
+      open: true,
+      openTime: "",
+      inStorePrice: true,
+      discount: "",
+      isSnap: false,
+      isDashPass: store.isDashPass,
+    }));
 
   return (
     <CartProvider category="pets">

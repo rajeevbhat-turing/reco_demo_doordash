@@ -30,6 +30,7 @@ import ReviewDialog from "@/components/review-dialog";
 import StoreDetailsDialog from "@/components/store-details-dialog";
 import ServiceFeesInfo from "@/components/service-fees-info";
 import { CartProvider } from "@/context/cart-context";
+import { getDefaultRating } from "@/utils/rating-utils";
 
 const menuTypes = [
   {
@@ -382,7 +383,7 @@ export default function RestaurantPage() {
                 )}
                 <div className="flex items-center mb-1">
                   <span className="text-sm">
-                    {restaurant.rating ? `${restaurant.rating} ★` : '-- ★'} {restaurant.reviews ? `(${restaurant.reviews} ratings)` : '(0 ratings)'} •{" "}
+                    {getDefaultRating(restaurant.rating)} ★ {restaurant.reviews ? `(${restaurant.reviews} ratings)` : '(0 ratings)'} •{" "}
                     {restaurant.distance || 'Distance unavailable'}
                   </span>
                 </div>
@@ -788,7 +789,7 @@ export default function RestaurantPage() {
                             {item.rating && (
                               <div className="flex items-center mt-1">
                                 <span className="text-sm">
-                                  {Math.round(item.rating * 100)}%
+                                  {Math.round(getDefaultRating(item.rating) * 20)}%
                                 </span>
                                 {item.ratingCount && (
                                   <span className="text-sm text-gray-500 ml-1">

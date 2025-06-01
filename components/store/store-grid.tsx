@@ -5,11 +5,12 @@ import { Heart, Info, ChevronLeft, ChevronRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { useRef, useState } from "react"
+import { getDefaultRating } from "@/utils/rating-utils"
 
 interface Store {
   id: string
   name: string
-  rating?: string
+  rating?: string | number | null
   numRatings?: string
   distance?: string
   time?: string
@@ -37,7 +38,7 @@ export default function StoreGrid({
   title,
   stores,
   variant = "all",
-  showSeeAll = true,
+  showSeeAll = false,
   showNavigation = true,
   seeAllLink = "/all-items",
   storeType = "grocery"
@@ -94,7 +95,7 @@ export default function StoreGrid({
                   pathname: seeAllLink,
                   query: { 
                     title: encodeURIComponent(title),
-                    type: 'grocery',
+                    type: storeType,
                     section: encodeURIComponent(title.toLowerCase().replace(/\s+/g, '-'))
                   }
                 }}
@@ -194,11 +195,14 @@ export default function StoreGrid({
                           )}
                         </div>
 
-                        {store.rating && (
-                          <div className="text-sm text-gray-500">
-                            ★ {store.rating} ({store.numRatings || "0"})
-                          </div>
-                        )}
+                        <div className="flex items-center text-sm text-gray-500 mt-1">
+                          <span>★ {getDefaultRating(store.rating)}</span>
+                          <span className="ml-1">({store.numRatings})</span>
+                          <span className="mx-1">•</span>
+                          <span>{store.distance}</span>
+                          <span className="mx-1">•</span>
+                          <span>{store.time}</span>
+                        </div>
 
                         {store.open !== undefined ? (
                           <div className="text-sm text-gray-500">{store.open ? store.time : "Closed"}</div>
@@ -256,7 +260,7 @@ export default function StoreGrid({
                         )}
                       </div>
                       <div className="flex items-center text-sm text-gray-500 flex-wrap">
-                        {store.rating && <span>★ {store.rating}</span>}
+                        <span>★ {getDefaultRating(store.rating)}</span>
                         {store.numRatings && (
                           <>
                             <span className="mx-1">•</span>

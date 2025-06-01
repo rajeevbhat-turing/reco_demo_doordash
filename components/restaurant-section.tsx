@@ -3,8 +3,9 @@
 import { useState, useRef, useEffect } from "react"
 import Image from "next/image"
 import Link from "next/link"
-import { Heart, ChevronLeft, ChevronRight } from "lucide-react"
+import { Heart, ChevronLeft, ChevronRight, Star } from "lucide-react"
 import type { Restaurant } from "@/constants/restaurants"
+import { getDefaultRating } from "@/utils/rating-utils"
 
 interface RestaurantSectionProps {
   title: string
@@ -83,135 +84,54 @@ export default function RestaurantSection({ title, restaurants, seeAllLink = "/a
   };
 
   return (
-    <div className="mt-10 mb-8">
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-bold text-gray-900">{title}</h2>
-        <div className="flex items-center gap-4">
-          <Link
-            href={{
-              pathname: '/all-items',
-              query: {
-                title: encodeURIComponent(title),
-                type: 'restaurant',
-                section: encodeURIComponent(title.toLowerCase().replace(/\s+/g, '-'))
-              }
-            }}
-            className="text-gray-900 font-medium text-sm"
+    <section className="py-6">
+      <h2 className="text-2xl font-bold mb-4">{title}</h2>
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {restaurants.map((restaurant) => (
+          <Link 
+            href={`/store/${restaurant.id}`} 
+            key={restaurant.id}
+            className="block border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
           >
-            See All
-          </Link>
-          <div className="flex gap-2">
-            <button
-              onClick={() => scroll("left")}
-              className={`p-2 rounded-full border border-gray-200 ${!showLeftArrow ? "text-gray-300" : "text-gray-600"}`}
-              disabled={!showLeftArrow}
-            >
-              <ChevronLeft className="h-5 w-5" />
-            </button>
-            <button
-              onClick={() => scroll("right")}
-              className={`p-2 rounded-full border border-gray-200 ${!showRightArrow ? "text-gray-300" : "text-gray-600"}`}
-              disabled={!showRightArrow}
-            >
-              <ChevronRight className="h-5 w-5" />
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <div
-        ref={scrollContainerRef}
-        className="flex overflow-x-auto gap-4 pb-4 hide-scrollbar snap-x"
-        onScroll={handleScroll}
-      >
-        {restaurants.map((restaurant, index) => (
-          <div
-            key={restaurant.id + index}
-            className="restaurant-card flex-shrink-0 snap-start"
-            style={{ width: `${cardWidth}px` }}
-          >
-            <Link href={`/store/${restaurant.id}`} className="block">
-              <div className="relative h-[200px] bg-gray-100">
+            <div className="flex gap-4">
+              <div className="relative w-16 h-16 rounded-full overflow-hidden bg-gray-100">
                 <Image
-                  src={restaurant.banner}
+                  src={restaurant.logo}
                   alt={restaurant.name}
-                  fill
-                  className="object-cover rounded-lg"
+                  width={64}
+                  height={64}
+                  className="object-cover"
                 />
               </div>
-            </Link>
 
-            <div className="py-3">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <h3 className="font-bold text-lg">{restaurant.name}</h3>
+              <div className="flex-1">
+                <div className="flex justify-between">
+                  <h3 className="font-medium">{restaurant.name}</h3>
+                </div>
+
+                <div className="flex flex-wrap gap-x-1 gap-y-1 mt-1">
                   {restaurant.dashPass && (
-                    <div className="text-teal-600">
-                      <svg width="20" height="12" viewBox="0 0 20 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path
-                          d="M18.5 1.5L11.5 9.5L7.5 5.5L1.5 10.5"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
-                    </div>
+                    <span className="text-xs font-medium text-blue-700 bg-blue-50 px-2 py-0.5 rounded inline-flex items-center">
+                      DashPass
+                    </span>
                   )}
                 </div>
-                <button
-                  className="p-1 hover:bg-gray-100 rounded-full"
-                  onClick={toggleFavorite(restaurant.id)}
-                >
-                  <svg
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill={favorites[restaurant.id] ? "currentColor" : "none"}
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className={favorites[restaurant.id] ? "text-red-500" : "text-gray-500"}
-                  >
-                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-                  </svg>
-                </button>
+
+                <div className="text-sm text-gray-500">
+                  ★ {getDefaultRating(restaurant.rating)} ({restaurant.reviews || "0"})
+                </div>
+
+                <div className="text-sm text-gray-500">{restaurant.time}</div>
+
+                <div className="text-sm text-gray-500">{restaurant.deliveryFee}</div>
+
+                {restaurant.discount && <div className="text-sm text-[#ff3008] mt-1">{restaurant.discount}</div>}
               </div>
-
-              <div className="flex items-center mt-1 text-sm text-gray-700 flex-wrap">
-                {restaurant.rating && (
-                  <div className="flex items-center text-sm text-gray-700">
-                    <span className="font-semibold">{restaurant.rating}</span>
-                    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" className="ml-1">
-                      <path d="M8 0L10.2571 5.08631L16 5.87013L11.8 9.79752L12.9443 15.5L8 12.5863L3.05573 15.5L4.2 9.79752L0 5.87013L5.74286 5.08631L8 0Z" />
-                    </svg>
-
-                    {restaurant.reviews && (
-                      <>
-                        <span className="mx-1">
-                          {restaurant.reviews.startsWith("(") ? restaurant.reviews : `(${restaurant.reviews})`}
-                        </span>
-                        <span className="mx-1">•</span>
-                      </>
-                    )}
-                  </div>
-                )}
-                <span>{restaurant.distance}</span>
-                <span className="mx-1">•</span>
-                <span>{restaurant.time}</span>
-              </div>
-
-              <div className="mt-1 text-sm text-gray-500">{restaurant.deliveryFee}</div>
-
-              {restaurant.discount && (
-                <div className="mt-1 text-sm text-red-600 font-medium">{restaurant.discount}</div>
-              )}
-
             </div>
-          </div>
+          </Link>
         ))}
       </div>
-    </div>
+    </section>
   )
 }
