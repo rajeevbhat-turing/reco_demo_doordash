@@ -13,10 +13,14 @@ import {
   List,
   HeartIcon as HeartOutline,
   ChevronLeft,
+  ArrowLeft,
+  Plus,
+  Heart,
+  Phone,
+  Info,
 } from "lucide-react"
 import { HeartIcon as HeartFilled } from "lucide-react"
 import Image from "next/image"
-import CategoryNav from "@/components/category-nav"
 import ProductDisplay from "@/components/product/product-display"
 import type { ProductSection as ProductSectionType, Product } from "@/types"
 import type { Store, StoreConfig } from "@/types/store"
@@ -24,9 +28,7 @@ import ShopListModal from "@/components/modals/shop-list-modal"
 import ConvenienceCartSidebar from "@/components/convenience-cart-sidebar"
 import { useCart } from "@/context/cart-context"
 import ProductDetailModal from "@/components/modals/product-detail-modal"
-import { groceryCategories } from "@/data/grocery-category-data"
-import { petCategories } from "@/data/pet-data"
-import {retailCategories} from "@/constants/store";
+import { getDefaultRating } from "@/utils/rating-utils"
 
 interface GenericStorePageProps {
   onBackClick: () => void
@@ -42,7 +44,6 @@ export default function GenericStorePage({
   storeConfig
 }: GenericStorePageProps) {
   const [searchTerm, setSearchTerm] = useState("")
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
   const [filteredData, setFilteredData] = useState<ProductSectionType[]>(productData)
   const [isShopListModalOpen, setIsShopListModalOpen] = useState(false)
   const [isSaved, setIsSaved] = useState(false)
@@ -65,72 +66,33 @@ export default function GenericStorePage({
     dashPassBannerText: "Save with DashPass. Unlimited $0 delivery fees on eligible orders."
   }
 
-  // Determine which categories to use based on store type
-  const getCategories = () => {
-    if ('storeType' in storeData) {
-      switch (storeData.storeType) {
-        case 'pets':
-          return petCategories;
-        case 'grocery':
-          return groceryCategories;
-        case 'retail':
-          return retailCategories;
-        // Add more cases for other store types as needed
-        default:
-          return groceryCategories; // Default to grocery categories
-      }
-    }
-    return groceryCategories; // Default to grocery categories
-  }
-
-  // Enhanced filtering that handles both search and category filtering
+  // Enhanced filtering that handles search functionality
   useEffect(() => {
-    if (!searchTerm && !selectedCategory) {
+    if (!searchTerm) {
       setFilteredData(productData)
       return
     }
 
     const filtered = productData.map((section) => {
-      // Filter products by both search term and category
+      // Filter products by search term
       const filteredProducts = section.products.filter((product) => {
         // First filter by search term
         const matchesSearch = !searchTerm || 
           product.name.toLowerCase().includes(searchTerm.toLowerCase());
         
-        // Then filter by category
-        const matchesCategory = !selectedCategory || 
-          selectedCategory === "All" || 
-          // Match by product.category field if it exists
-          (product.category && (
-            // If category is an array of strings (for pet products)
-            (Array.isArray(product.category) && product.category.some(cat => 
-              cat.toLowerCase() === selectedCategory.toLowerCase()
-            )) ||
-            // If category is a string (legacy format)
-            (typeof product.category === 'string' && 
-              product.category.toLowerCase() === selectedCategory.toLowerCase())
-          )) ||
-          // Match by section title as fallback
-          section.title === selectedCategory;
-        
-        // Product should match both search and category filters
-        return matchesSearch && matchesCategory;
+        // Product should match search filter
+        return matchesSearch;
       });
 
       return { ...section, products: filteredProducts };
     }).filter((section) => section.products.length > 0); // Only keep sections with products
 
     setFilteredData(filtered);
-  }, [searchTerm, selectedCategory, productData]);
+  }, [searchTerm, productData]);
 
   // Handle search input change
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value)
-  }
-
-  // Handle category selection
-  const handleCategorySelect = (categoryName: string) => {
-    setSelectedCategory(categoryName === selectedCategory ? null : categoryName)
   }
 
   // Handle product click
@@ -207,7 +169,7 @@ export default function GenericStorePage({
                 <>
                   <div className="flex items-center mr-2">
                     <Star className="w-4 h-4 fill-current text-yellow-500 mr-1" />
-                    <span>{storeData.rating}</span>
+                    <span>{getDefaultRating(storeData.rating)}</span>
                     <span className="text-gray-500 ml-1">
                       ({('reviewCount' in storeData ? storeData.reviewCount : ('reviews' in storeData ? storeData.reviews : 0))}+)
                     </span>
@@ -261,20 +223,12 @@ export default function GenericStorePage({
           </div>
         </div>
 
-        {/* Category Navigation */}
-        <CategoryNav
-          selectedCategory={selectedCategory}
-          onCategorySelect={handleCategorySelect}
-          categories={getCategories()}
-        />
-
         {/* Search Results Summary */}
-        {(searchTerm || selectedCategory) && (
+        {searchTerm && (
           <div className="px-4 py-2 bg-gray-50">
             <p className="text-sm text-gray-700">
               {filteredData.reduce((total, section) => total + section.products.length, 0)} results
               {searchTerm && ` for "${searchTerm}"`}
-              {selectedCategory && selectedCategory !== "All" && ` in ${selectedCategory}`}
             </p>
           </div>
         )}
@@ -305,7 +259,6 @@ export default function GenericStorePage({
                   products={section.products}
                   onProductClick={handleProductClick}
                   variant="section"
-                  category={'storeType' in storeData ? storeData.storeType : 'grocery'}
                   storeId={storeData.id}
                 />
               </div>
@@ -325,7 +278,6 @@ export default function GenericStorePage({
                 className="px-4 py-2 bg-red-600 text-white rounded-full"
                 onClick={() => {
                   setSearchTerm("")
-                  setSelectedCategory(null)
                 }}
               >
                 {uiConfig.noResultsMessage.buttonText}
@@ -340,7 +292,6 @@ export default function GenericStorePage({
         product={selectedProduct} 
         onClose={closeProductModal}
         storeId={storeData.id}
-        category={'storeType' in storeData ? storeData.storeType : 'grocery'}
         storeName={storeData.name}
       />
     </div>

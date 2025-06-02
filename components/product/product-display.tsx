@@ -169,15 +169,6 @@ export default function ProductDisplay({
         </div>
 
         <div className="flex items-center">
-          {variant === "section" ? (
-            <Link href={`/category/${categorySlug}`} className="text-sm mr-4">
-              See All
-            </Link>
-          ) : (
-            <a href="#" className="text-sm font-medium mr-4">
-              See All
-            </a>
-          )}
           <div className="flex space-x-2">
             <button
               onClick={scrollLeft}

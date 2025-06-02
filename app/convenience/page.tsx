@@ -1,116 +1,147 @@
 "use client"
 
-import { useState, useRef, useEffect } from "react"
-import FilterOptions, { FilterState, FilterOptionsRef } from "@/components/filter-options"
+import { useState, useEffect, useRef } from "react"
+import FilterOptions, { FilterOptionsRef, FilterState } from "@/components/filter-options"
 import GrocerySchedule from "@/components/grocery-schedule"
 import StoreGrid from "@/components/store/store-grid"
 import LocalGrocers from "@/components/local-grocers"
 import ProductDisplay from "@/components/product/product-display"
 import { CartProvider } from "@/context/cart-context"
 import { useCartStore } from "@/store/cart-store"
+import { convenienceStores } from "@/data/convenience-store-data"
 import {
   getFilterOptions,
-  getAllStores,
   getConvenienceScheduleData,
-  getConvenienceEssentialsData,
-  getConvenienceFavorites,
-  getFastestNearYou,
   getProductCarouselData,
-} from "@/app/convenience/data/convenience-response-mapper"
-import AllStores from "@/components/all-stores";
+} from "./data/convenience-response-mapper"
+import AllStores from "@/components/all-stores"
+import { getDefaultRating } from "@/utils/rating-utils"
 
 export default function Convenience() {
-  // Filter state
+  // Filter state using the correct FilterState interface
   const [activeFilters, setActiveFilters] = useState<FilterState>({
     underThirtyMins: false,
     deals: false,
     overRating: null,
     price: null,
     dashPass: false,
-  });
+  })
   
-  const filterOptionsRef = useRef<FilterOptionsRef>(null);
+  const filterOptionsRef = useRef<FilterOptionsRef>(null)
   
-  // Get the data from our convenience response mapper
-  const filterOptions = getFilterOptions()
-  const allStores = getAllStores()
-  const scheduleData = getConvenienceScheduleData()
-  const essentialsData = getConvenienceEssentialsData()
-  const allFavoriteStores = getConvenienceFavorites()
-  const allFastestStores = getFastestNearYou()
-  const allProductCarousels = getProductCarouselData()
-  
-  // Handle filter changes
-  const handleFilterChange = (filters: FilterState) => {
-    setActiveFilters(filters);
+  // Function to check if an image URL is valid (not placeholder/empty)
+  const hasValidImage = (imageUrl: string | undefined): boolean => {
+    if (!imageUrl || imageUrl.trim() === '') return false;
+    if (imageUrl.includes('placeholder.svg')) return false;
+    if (imageUrl.includes('placeholder.png')) return false;
+    return true;
   };
+  
+  // Get all convenience stores and convert to the format expected by the UI
+  const allConvenienceStores = Object.values(convenienceStores)
+    .filter(store => store.name && store.id) // Filter out empty entries
+    .map(store => ({
+      id: store.id,
+      name: store.name,
+      time: store.deliveryTime.includes('min') ? store.deliveryTime : `${store.deliveryTime}`,
+      delivery: "$0 delivery fee",
+      open: store.open ?? true,
+      openTime: store.openTime || store.deliveryTime,
+      image: store.logo || "https://via.placeholder.com/112x112?text=Store",
+      inStorePrice: true,
+      discount: store.discount || "",
+      rating: store.rating,
+      numRatings: store.reviewCount?.toLocaleString() || "",
+      isSnap: store.isSnap || false,
+      isDashPass: store.isDashPass,
+      distance: store.distance || "",
+      priceLevel: store.priceLevel || "$",
+    }))
+  
+  // Get other data
+  const filterOptions = getFilterOptions()
+  const scheduleData = getConvenienceScheduleData()
+  const productCarousels = getProductCarouselData()
   
   // Filter stores based on active filters
-  const filterStores = (storeList: any[]) => {
-    return storeList.filter(store => {
-      // Filter by under 30 min
-      if (activeFilters.underThirtyMins) {
-        const timeString = store.time || "";
-        const minutes = parseInt(timeString.match(/\d+/)?.[0] || "100");
-        if (minutes >= 30) return false;
-      }
-      
-      // Filter by rating
-      if (activeFilters.overRating && store.rating) {
-        const rating = parseFloat(store.rating);
-        if (rating < activeFilters.overRating) return false;
-      }
-      
-      // Filter by DashPass
-      if (activeFilters.dashPass && !store.isDashPass) {
-        return false;
-      }
-      
-      return true;
-    });
-  };
-  
-  // Apply filters to data
-  const stores = filterStores(allStores);
-  const favoriteStores = filterStores(allFavoriteStores);
-  const fastestStores = filterStores(allFastestStores);
-  
-  // Filter product carousels (keep the carousel if any products match)
-  const productCarousels = allProductCarousels.map(carousel => {
-    // Apply price filter to products if needed
-    if (activeFilters.price && activeFilters.price.length > 0) {
-      const priceRanges = {
-        '$': [0, 10],
-        '$$': [10, 25],
-        '$$$': [25, 45],
-        '$$$$': [45, 999]
-      };
-      
-      // Only keep products in the selected price ranges
-      const filteredProducts = carousel.products.filter(product => {
-        const priceString = typeof product.price === 'string' ? product.price : String(product.price);
-        const price = parseFloat(priceString.replace('$', ''));
-        
-        return activeFilters.price!.some(range => {
-          const [min, max] = priceRanges[range as keyof typeof priceRanges];
-          return price >= min && price <= max;
-        });
-      });
-      
-      return {
-        ...carousel,
-        products: filteredProducts
-      };
+  const filteredStores = allConvenienceStores.filter(store => {
+    // DashPass filter
+    if (activeFilters.dashPass && !store.isDashPass) {
+      return false
     }
     
-    return carousel;
-  }).filter(carousel => carousel.products.length > 0); // Only keep carousels with products
-
+    // Time filter (under 30 min)
+    if (activeFilters.underThirtyMins) {
+      const timeMatch = store.time.match(/(\d+)\s*min/)
+      if (timeMatch) {
+        const minutes = parseInt(timeMatch[1])
+        if (minutes >= 30) return false
+      }
+    }
+    
+    // Rating filter
+    if (activeFilters.overRating && store.rating) {
+      const rating = getDefaultRating(store.rating)
+      if (rating < activeFilters.overRating) return false
+    }
+    
+    // Price filter
+    if (activeFilters.price && activeFilters.price.length > 0) {
+      if (!activeFilters.price.includes(store.priceLevel)) {
+        return false
+      }
+    }
+    
+    return true
+  })
+  
+  // Get featured stores (exclude 7-Eleven and Walgreens, add other stores)
+  const favoriteStores = allConvenienceStores
+    .filter(store => {
+      // Exclude 7-Eleven and Walgreens
+      if (store.id === "1" || store.id === "2") {
+        return false;
+      }
+      // Include specific stores we want to feature and filter by valid images
+      return ["cvs", "dashmart", "speedway", "extramile"].includes(store.id) && hasValidImage(store.image);
+    })
+    .slice(0, 8)
+    .map(store => ({
+      id: store.id,
+      name: store.name,
+      rating: store.rating, // Keep original rating value
+      numRatings: store.numRatings || "1,200+", // Default rating count
+      distance: store.distance || "0.5 mi", // Default distance
+      time: store.time,
+      image: store.image,
+    }));
+  
+  // Get fastest stores (delivery time under 25 min)
+  const fastestStores = allConvenienceStores
+    .filter(store => {
+      const timeMatch = store.time.match(/(\d+)\s*min/)
+      return timeMatch && parseInt(timeMatch[1]) <= 25 && hasValidImage(store.image)
+    })
+    .slice(0, 8)
+    .map(store => ({
+      id: store.id,
+      name: store.name,
+      rating: store.rating, // Keep original rating value
+      numRatings: store.numRatings,
+      distance: store.distance,
+      time: store.time,
+      image: store.image,
+    }))
+  
+  const handleFilterChange = (filters: FilterState) => {
+    setActiveFilters(filters)
+  }
+  
   // Set category explicitly
   useEffect(() => {
-    const cartStore = useCartStore.getState();
-    cartStore.setCategory("convenience");
-  }, []);
+    const cartStore = useCartStore.getState()
+    cartStore.setCategory("convenience")
+  }, [])
   
   return (
     <CartProvider category="convenience">
@@ -125,11 +156,11 @@ export default function Convenience() {
         />
 
         {/* Promotional Banners */}
-        <GrocerySchedule data={scheduleData} />
+        <GrocerySchedule data={scheduleData} promos={scheduleData.promos} />
 
         {/* All Stores Section */}
-        {stores.length > 0 ? (
-          <AllStores title="All Stores" stores={stores} storeType="convenience" />
+        {filteredStores.length > 0 ? (
+          <AllStores title="All Stores" stores={filteredStores} storeType="convenience" />
         ) : (
           <div className="py-10 text-center">
             <p className="text-lg text-gray-500">No stores match your filters</p>
@@ -158,14 +189,14 @@ export default function Convenience() {
           productCarousels.map((carousel, index: number) => {
             // Map carousel titles to correct store IDs
             let storeId = `${index + 1}`; // fallback
-            if (carousel.title === "Snacks & Drinks from 7-Eleven") {
-              storeId = "1"; // 7-Eleven store ID
-            } else if (carousel.title === "Health & Beauty from Walgreens") {
-              storeId = "2"; // Walgreens store ID
-            } else if (carousel.storeName === "7-Eleven") {
-              storeId = "1";
-            } else if (carousel.storeName === "Walgreens") {
-              storeId = "2";
+            if (carousel.title === "Snacks & Drinks from CVS") {
+              storeId = "cvs"; // CVS store ID
+            } else if (carousel.title === "Household Essentials from DashMart") {
+              storeId = "dashmart"; // DashMart store ID
+            } else if (carousel.storeName === "CVS") {
+              storeId = "cvs";
+            } else if (carousel.storeName === "DashMart") {
+              storeId = "dashmart";
             }
             
             return (
@@ -180,7 +211,7 @@ export default function Convenience() {
                 storeId={storeId}
                 category="convenience"
               />
-            );
+            )
           })
         )}
 
@@ -190,8 +221,6 @@ export default function Convenience() {
           </div>
         )}
 
-        {/* Local Convenience Stores Section */}
-        <LocalGrocers />
       </div>
     </CartProvider>
   )

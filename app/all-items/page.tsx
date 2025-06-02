@@ -8,7 +8,9 @@ import {
   getGroceryFavorites, 
   getFastestNearYou 
 } from "@/app/grocery/data/retail-response-mapper"
+import { convenienceStores } from "@/data/convenience-store-data"
 import { Suspense } from "react"
+import { getDefaultRating } from "@/utils/rating-utils"
 
 // Inner component that uses searchParams
 function AllItemsContent() {
@@ -20,40 +22,122 @@ function AllItemsContent() {
   const type = searchParams.get('type') || "restaurant"
   const section = searchParams.get('section') ? decodeURIComponent(searchParams.get('section') || "") : ""
   
+  // Function to check if an image URL is valid (not placeholder/empty)
+  const hasValidLogo = (logoUrl: string | undefined): boolean => {
+    if (!logoUrl || logoUrl.trim() === '') return false;
+    if (logoUrl.includes('placeholder.svg')) return false;
+    if (logoUrl.includes('placeholder.png')) return false;
+    return true;
+  };
+  
   // Get the items based on the section
   const getItems = () => {
     // Restaurant items
     if (type === 'restaurant') {
+      let filteredRestaurants: any[] = []
       switch (section) {
         case 'national-favourites':
-          return restaurants.filter(r => r.featured === true)
+          filteredRestaurants = restaurants.filter(r => r.featured === true && hasValidLogo(r.logo))
+          break
         case 'fastest-near-you':
-          return restaurants.filter(r => {
+          filteredRestaurants = restaurants.filter(r => {
             const timeStr = r.time
             const minutes = parseInt(timeStr.match(/\d+/)?.[0] || "100")
-            return minutes < 30
+            return minutes < 30 && hasValidLogo(r.logo)
           })
+          break
         case 'deals-for-you':
-          return restaurants.filter(r => r.discount)
+          filteredRestaurants = restaurants.filter(r => r.discount && hasValidLogo(r.logo))
+          break
         case 'new-on-doordash':
-          return restaurants.filter(r => r.new)
+          filteredRestaurants = restaurants.filter(r => r.new && hasValidLogo(r.logo))
+          break
         case 'all-stores':
         default:
-          return restaurants
+          filteredRestaurants = restaurants // Don't filter the "all-stores" section
       }
+      
+      // Convert restaurants to ListItem format
+      return filteredRestaurants.map(restaurant => ({
+        id: restaurant.id,
+        name: restaurant.name,
+        image: restaurant.banner || restaurant.logo || "",
+        rating: restaurant.rating,
+        reviews: restaurant.reviews,
+        distance: restaurant.distance,
+        time: restaurant.time,
+        deliveryFee: restaurant.deliveryFee,
+        category: restaurant.category,
+        cuisine: restaurant.cuisine,
+        tags: restaurant.tags,
+        dashPass: restaurant.dashPass,
+        isOpen: restaurant.isOpen,
+        discount: restaurant.discount,
+        featured: restaurant.featured,
+        new: restaurant.new
+      }))
     }
     
     // Grocery items
     if (type === 'grocery') {
+      let groceryStores: any[] = []
       switch (section) {
         case 'all-stores':
-          return getAllStores()
+          groceryStores = getAllStores()
+          break
         case 'grocery-favorites':
-          return getGroceryFavorites()
+          groceryStores = getGroceryFavorites()
+          break
         case 'fastest-near-you':
-          return getFastestNearYou()
+          groceryStores = getFastestNearYou()
+          break
         default:
-          return getAllStores()
+          groceryStores = getAllStores()
+      }
+      
+      // Convert grocery stores to ListItem format
+      return groceryStores.map(store => ({
+        id: store.id,
+        name: store.name,
+        image: store.image,
+        rating: store.rating,
+        reviews: store.numRatings,
+        time: store.time,
+        deliveryFee: store.delivery,
+        discount: store.discount,
+        isSnapEligible: store.isSnap,
+        inStorePrice: store.inStorePrice,
+        isOpen: store.open
+      }))
+    }
+    
+    // Convenience items
+    if (type === 'convenience') {
+      // Convert convenience store data to array and match expected format
+      const formattedStores = Object.values(convenienceStores).map((store: any) => ({
+        id: store.id,
+        name: store.name,
+        image: store.logo,
+        rating: store.rating?.toString() || "4.5",
+        reviews: store.reviewCount?.toString() || "1,000+",
+        time: store.deliveryTime || store.expressTime || "30 min",
+        deliveryFee: "$0 delivery fee",
+        discount: store.discount || "",
+        isSnapEligible: store.isSnap || false,
+        inStorePrice: true,
+        isOpen: store.open !== false,
+        dashPass: store.isDashPass
+      })).filter((store: any) => store.id && store.name) // Filter out empty stores
+      
+      switch (section) {
+        case 'convenience-favorites':
+          // Filter for featured convenience stores
+          return formattedStores.filter((store: any) => 
+            ["cvs", "dashmart", "speedway", "extramile"].includes(store.id)
+          )
+        case 'all-stores':
+        default:
+          return formattedStores
       }
     }
     
@@ -76,6 +160,9 @@ function AllItemsContent() {
       case 'retail':
         router.push('/retail')
         break
+      case 'convenience':
+        router.push('/convenience')
+        break
       default:
         router.push('/')
     }
@@ -87,8 +174,12 @@ function AllItemsContent() {
       case 'restaurant':
         return '/store'
       case 'grocery':
+        return '/grocery/store'
       case 'pets':
+        return '/pets/store'
       case 'retail':
+        return '/retail/store'
+      case 'convenience':
         return '/convenience/store'
       default:
         return '/store'

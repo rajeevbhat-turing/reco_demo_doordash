@@ -45,13 +45,39 @@ export function getAllStores() {
 
 export function getConvenienceScheduleData() {
   return {
-    title: "Schedule your convenience delivery",
-    description: "Get your essentials delivered on your schedule",
-    buttonText: "Schedule now",
+    title: "Essential items from your favorite convenience stores",
+    description: "Quick delivery of snacks, drinks, and daily necessities",
+    buttonText: "Shop now",
     stores: [
-      { name: "7-Eleven", logo: "/placeholder.svg?height=40&width=40" },
-      { name: "Walgreens", logo: "/placeholder.svg?height=40&width=40" },
+      { name: "CVS", logo: "https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=112,height=112,format=auto,quality=50/https://doordash-static.s3.amazonaws.com/media/restaurant/cover_square/cvs_logo.png" },
+      { name: "DashMart", logo: "https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=112,height=112,format=auto,quality=50/https://doordash-static.s3.amazonaws.com/media/restaurant/cover_square/9ebc5499-da9e-43bb-ae50-df979da10a50.png" },
     ],
+    promos: [
+      {
+        id: "1",
+        title: "Snacks, drinks, and daily essentials from CVS",
+        description: "Browse pharmacy items, health products, snacks, beverages, and personal care essentials.",
+        buttonText: "Shop CVS",
+        backgroundColor: "#e8f3ff",
+        buttonColor: "bg-[#cc0000] hover:bg-[#aa0000]",
+        textColor: "text-black",
+        image: "https://img.cdn4dd.com/cdn-cgi/image/fit=contain,format=auto/https://doordash-static.s3.amazonaws.com/media/photosV2/f957de72-9f40-4a07-9d3c-c28c12deb5a6-retina-large.jpg",
+        logoImage: "https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=112,height=112,format=auto,quality=50/https://doordash-static.s3.amazonaws.com/media/restaurant/cover_square/cvs_logo.png",
+        link: "/convenience/store/cvs"
+      },
+      {
+        id: "2",
+        title: "Household items and groceries from DashMart",
+        description: "Get cleaning supplies, pantry staples, fresh food, and convenience items delivered fast.",
+        buttonText: "Shop DashMart",
+        backgroundColor: "#fff5e6",
+        buttonColor: "bg-[#eb1700] hover:bg-[#cf1500]",
+        textColor: "text-black",
+        image: "https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=50/media/photosV2/4b5bba6d-9105-40df-857f-9a0ca362df79-retina-large.png",
+        logoImage: "https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=112,height=112,format=auto,quality=50/https://doordash-static.s3.amazonaws.com/media/restaurant/cover_square/9ebc5499-da9e-43bb-ae50-df979da10a50.png",
+        link: "/convenience/store/dashmart"
+      }
+    ]
   }
 }
 
@@ -104,102 +130,74 @@ export function getFastestNearYou() {
 export function getProductCarouselData() {
   return [
     {
-      title: "Snacks & Drinks from 7-Eleven",
-      storeName: "7-Eleven",
-      storeImage: "https://img.cdn4dd.com/cdn-cgi/image/fit=contain,width=1200,height=672,format=auto/https://doordash-static.s3.amazonaws.com/media/restaurant/cover_square/7eleven_logo.png",
-      time: "15 min",
+      title: "Snacks & Drinks from CVS",
+      storeName: "CVS",
+      storeImage: "https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=112,height=112,format=auto,quality=50/https://doordash-static.s3.amazonaws.com/media/restaurant/cover_square/cvs_logo.png",
+      time: "28 min",
       products: [
         {
-          id: "1",
-          name: "Coca-Cola Classic 20oz",
-          price: "$2.49",
-          image: "https://img.cdn4dd.com/cdn-cgi/image/fit=contain,width=400,height=400,format=auto/https://doordash-static.s3.amazonaws.com/media/photosV2/coca_cola_20oz.jpg",
-          description: "Classic Coca-Cola in 20oz bottle"
+          id: "14042403389",
+          name: "Lay's Baked Original Potato Crisps",
+          price: "$5.99",
+          image: "https://img.cdn4dd.com/cdn-cgi/image/fit=contain,width=1200,height=672,format=auto/https://doordash-static.s3.amazonaws.com/media/photosV2/f957de72-9f40-4a07-9d3c-c28c12deb5a6-retina-large.jpg",
+          description: "Baked potato chips, 6.25 oz"
         },
         {
-          id: "2",
-          name: "Doritos Nacho Cheese",
-          price: "$3.99",
-          image: "https://img.cdn4dd.com/cdn-cgi/image/fit=contain,width=400,height=400,format=auto/https://doordash-static.s3.amazonaws.com/media/photosV2/doritos_nacho.jpg",
-          description: "Classic nacho cheese flavored tortilla chips"
+          id: "22086361095",
+          name: "RXBAR Chocolate Sea Salt Protein Bar",
+          price: "$3.49",
+          image: "https://img.cdn4dd.com/cdn-cgi/image/fit=contain,width=1200,height=672,format=auto/https://doordash-static.s3.amazonaws.com/media/photosV2/403c5536-c0fe-427c-968b-ada46974d90c-retina-large.jpg",
+          description: "Protein bar, 1.8 oz"
         },
         {
-          id: "3",
-          name: "Red Bull Energy Drink",
-          price: "$3.29",
-          image: "https://img.cdn4dd.com/cdn-cgi/image/fit=contain,width=400,height=400,format=auto/https://doordash-static.s3.amazonaws.com/media/photosV2/red_bull.jpg",
-          description: "Original Red Bull energy drink 8.4oz"
+          id: "14042250402",
+          name: "Gatorade Lemon Lime Bottles",
+          price: "$10.79",
+          image: "https://img.cdn4dd.com/cdn-cgi/image/fit=contain,width=1200,height=672,format=auto/https://doordash-static.s3.amazonaws.com/media/photosV2/8c0159a3-873e-4977-b57d-9331342dcf63-retina-large.jpg",
+          description: "Sports drink, 20 fl oz x 8 ct"
         },
         {
-          id: "4",
-          name: "Kit Kat Bar",
-          price: "$1.79",
-          image: "https://img.cdn4dd.com/cdn-cgi/image/fit=contain,width=400,height=400,format=auto/https://doordash-static.s3.amazonaws.com/media/photosV2/kit_kat.jpg",
-          description: "Crispy wafer chocolate bar"
-        },
-        {
-          id: "5",
-          name: "Arizona Iced Tea",
-          price: "$1.99",
-          image: "https://img.cdn4dd.com/cdn-cgi/image/fit=contain,width=400,height=400,format=auto/https://doordash-static.s3.amazonaws.com/media/photosV2/arizona_tea.jpg",
-          description: "Sweet tea in 23oz can"
-        },
-        {
-          id: "6",
-          name: "Pringles Original",
-          price: "$2.99",
-          image: "https://img.cdn4dd.com/cdn-cgi/image/fit=contain,width=400,height=400,format=auto/https://doordash-static.s3.amazonaws.com/media/photosV2/pringles.jpg",
-          description: "Original flavored potato crisps"
+          id: "11561471042",
+          name: "Coke Soda Bottle",
+          price: "$4.19",
+          image: "https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=50/media/photosV2/0de78b00-cbfe-43fe-831b-03ae3ce6397a-retina-large.png",
+          description: "Classic Coca-Cola bottle"
         }
       ]
     },
     {
-      title: "Health & Beauty from Walgreens",
-      storeName: "Walgreens",
-      storeImage: "https://img.cdn4dd.com/cdn-cgi/image/fit=contain,width=1200,height=672,format=auto/https://doordash-static.s3.amazonaws.com/media/restaurant/cover_square/walgreens_logo.png",
-      time: "22 min",
+      title: "Household Essentials from DashMart",
+      storeName: "DashMart",
+      storeImage: "https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=112,height=112,format=auto,quality=50/https://doordash-static.s3.amazonaws.com/media/restaurant/cover_square/9ebc5499-da9e-43bb-ae50-df979da10a50.png",
+      time: "25 min",
       products: [
         {
-          id: "7",
-          name: "Advil Pain Reliever",
-          price: "$8.99",
-          image: "https://img.cdn4dd.com/cdn-cgi/image/fit=contain,width=400,height=400,format=auto/https://doordash-static.s3.amazonaws.com/media/photosV2/advil.jpg",
-          description: "Ibuprofen pain reliever, 200mg, 100 tablets"
+          id: "11561386364",
+          name: "Lucerne Vitamin D Whole Milk Carton",
+          price: "$3.89",
+          image: "https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=50/media/photosV2/4b5bba6d-9105-40df-857f-9a0ca362df79-retina-large.png",
+          description: "Whole milk carton, 1 gallon"
         },
         {
-          id: "8",
-          name: "Neutrogena Face Wash",
-          price: "$7.49",
-          image: "https://img.cdn4dd.com/cdn-cgi/image/fit=contain,width=400,height=400,format=auto/https://doordash-static.s3.amazonaws.com/media/photosV2/neutrogena.jpg",
-          description: "Daily facial cleanser for all skin types"
-        },
-        {
-          id: "9",
-          name: "Crest Toothpaste",
+          id: "11561479330",
+          name: "Best Foods Real Mayonnaise",
           price: "$4.99",
-          image: "https://img.cdn4dd.com/cdn-cgi/image/fit=contain,width=400,height=400,format=auto/https://doordash-static.s3.amazonaws.com/media/photosV2/crest.jpg",
-          description: "Whitening toothpaste with fluoride"
+          image: "https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=50/media/photosV2/c339adb7-4402-4449-98b2-0b10f4f4299e-retina-large.jpg",
+          description: "Real mayonnaise, 15 oz jar"
         },
         {
-          id: "10",
-          name: "Band-Aid Bandages",
-          price: "$5.49",
-          image: "https://img.cdn4dd.com/cdn-cgi/image/fit=contain,width=400,height=400,format=auto/https://doordash-static.s3.amazonaws.com/media/photosV2/bandaid.jpg",
-          description: "Flexible fabric adhesive bandages"
+          id: "21136547730",
+          name: "Simply All Natural Strawberry Juice Drink",
+          price: "$5.39",
+          image: "https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=50/media/photosV2/9ec01544-ebc9-4cc2-959e-a2e0c241fad2-retina-large.png",
+          description: "Natural strawberry juice drink"
         },
         {
-          id: "11",
-          name: "Tylenol Extra Strength",
-          price: "$9.99",
-          image: "https://img.cdn4dd.com/cdn-cgi/image/fit=contain,width=400,height=400,format=auto/https://doordash-static.s3.amazonaws.com/media/photosV2/tylenol.jpg",
-          description: "Acetaminophen pain reliever, 500mg"
-        },
-        {
-          id: "12",
-          name: "Chapstick Lip Balm",
-          price: "$2.99",
-          image: "https://img.cdn4dd.com/cdn-cgi/image/fit=contain,width=400,height=400,format=auto/https://doordash-static.s3.amazonaws.com/media/photosV2/chapstick.jpg",
-          description: "Classic moisturizing lip balm"
+          id: "11561469464",
+          name: "Kraft Grated Parmesan Cheese",
+          price: "$6.99",
+          image: "https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=50/media/photosV2/ca67167c-5f89-4352-9144-adc26189b61a-retina-large.png",
+          description: "Grated parmesan cheese"
         }
       ]
     }

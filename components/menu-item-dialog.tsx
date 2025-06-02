@@ -5,6 +5,11 @@ import Image from "next/image"
 import { X, ThumbsUp, ChevronLeft, ChevronRight, ChevronRightIcon } from "lucide-react"
 import { useCartStore } from "@/store/cart-store"
 import { useReplaceCart } from "@/context/replace-cart-context"
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { Button } from "@/components/ui/button"
+import { Minus, Plus } from "lucide-react"
+import { MenuItem } from "@/constants/menu-items"
+import { getDefaultRating } from "@/utils/rating-utils"
 
 // Types for the menu item options
 interface MenuItemOption {
@@ -385,10 +390,9 @@ export default function MenuItemDialog({ isOpen, onClose, item }: MenuItemDialog
         <div className="p-6 pt-14 pb-20">
           <h2 className="text-2xl font-bold">{item.name}</h2>
           {item.rating && item.ratingCount && (
-            <div className="flex items-center mt-1 mb-2">
-              <ThumbsUp className="h-5 w-5 mr-1 text-gray-700" />
-              <span className="text-gray-700">
-                {Math.round(item.rating * 100)}% ({item.ratingCount})
+            <div className="flex items-center text-sm text-gray-500 mb-3">
+              <span className="bg-green-600 text-white px-2 py-1 rounded text-xs">
+                {Math.round(getDefaultRating(item.rating) * 20)}% ({item.ratingCount})
               </span>
             </div>
           )}

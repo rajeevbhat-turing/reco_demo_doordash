@@ -1,6 +1,10 @@
+"use client"
+
 import Image from "next/image"
 import { Heart, Info } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import Link from "next/link"
+import { getDefaultRating } from "@/utils/rating-utils"
 
 // Default stores data (fallback)
 const defaultStores = [
@@ -174,7 +178,7 @@ export default function GroceryAllStores({ stores = defaultStores }: AllStoresPr
 
                     {store.rating && (
                         <div className="text-sm text-gray-500">
-                          ★ {store.rating} ({store.numRatings || "0"})
+                          ★ {getDefaultRating(store.rating)} ({store.numRatings || "0"})
                         </div>
                     )}
 

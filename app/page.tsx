@@ -12,14 +12,12 @@ import { restaurants } from "@/constants/restaurants"
 import type { Restaurant } from "@/constants/restaurants"
 import { CartProvider } from "@/context/cart-context"
 import { useCartStore } from "@/store/cart-store"
+import { getDefaultRating } from "@/utils/rating-utils"
 
 export default function Home() {
   const [filters, setFilters] = useState<FilterState>({
     underThirtyMins: false,
-    schedule: false,
-    scheduledTime: null,
     deals: false,
-    pickup: false,
     overRating: null,
     price: null,
     dashPass: false,
@@ -37,23 +35,50 @@ export default function Home() {
     cartStore.setCategory("restaurant")
   }, [])
 
+  // Function to check if an image URL is valid (not placeholder/empty)
+  const hasValidLogo = (logoUrl: string | undefined): boolean => {
+    if (!logoUrl || logoUrl.trim() === '') return false;
+    if (logoUrl.includes('placeholder.svg')) return false;
+    if (logoUrl.includes('placeholder.png')) return false;
+    return true;
+  };
+
+  // Function to filter out non-restaurant stores from the restaurants array
+  const filterOnlyRestaurants = (restaurantList: Restaurant[]): Restaurant[] => {
+    const nonRestaurantIds = ['target', 'michaels', 'designer-blooms', 'safeway-flower-shop', 'the-bouqs-co.-flower-shop'];
+    return restaurantList.filter(restaurant => !nonRestaurantIds.includes(restaurant.id));
+  };
+
+  // Function to apply default ratings to restaurants
+  const withDefaultRatings = (restaurantList: Restaurant[]): Restaurant[] => {
+    return restaurantList.map(restaurant => ({
+      ...restaurant,
+      rating: getDefaultRating(restaurant.rating)
+    }));
+  };
+
   const handleCategorySelect = (category: string | null) => {
     setSelectedCategory(category)
     // Scroll to top when a category is selected
     window.scrollTo({ top: 0, behavior: "smooth" })
   }
 
+  // Get only actual restaurants (filter out stores like Target, flower shops)
+  const actualRestaurants = useMemo(() => {
+    return withDefaultRatings(filterOnlyRestaurants(restaurants));
+  }, []);
+
   // Memoize the original restaurant sections to prevent recreating them on every render
   const nationalFavorites = useMemo(() => {
-    return restaurants.filter((restaurant) => restaurant.featured).slice(0, 8)
-  }, [])
+    return actualRestaurants.filter((restaurant) => restaurant.featured && hasValidLogo(restaurant.logo)).slice(0, 8)
+  }, [actualRestaurants])
 
   const fastestNearYou = useMemo(() => {
-    return restaurants
+    return actualRestaurants
       .filter((restaurant) => {
         const timeStr = restaurant.time
         const minutes = Number.parseInt(timeStr.match(/\d+/)?.[0] || "100")
-        return minutes < 30
+        return minutes < 30 && hasValidLogo(restaurant.logo)
       })
       .sort((a, b) => {
         const timeA = Number.parseInt(a.time.match(/\d+/)?.[0] || "100")
@@ -61,19 +86,19 @@ export default function Home() {
         return timeA - timeB
       })
       .slice(0, 8)
-  }, [])
+  }, [actualRestaurants])
 
   const dealsForYou = useMemo(() => {
-    return restaurants.filter((restaurant) => restaurant.discount).slice(0, 8)
-  }, [])
+    return actualRestaurants.filter((restaurant) => restaurant.discount && hasValidLogo(restaurant.logo)).slice(0, 8)
+  }, [actualRestaurants])
 
   const newOnDoorDash = useMemo(() => {
-    return restaurants.filter((restaurant) => restaurant.new).slice(0, 8)
-  }, [])
+    return actualRestaurants.filter((restaurant) => restaurant.new && hasValidLogo(restaurant.logo)).slice(0, 8)
+  }, [actualRestaurants])
 
   const allStores = useMemo(() => {
-    return restaurants
-  }, [])
+    return actualRestaurants // Now only contains actual restaurants, not stores from other categories
+  }, [actualRestaurants])
 
   // Apply filters to all restaurants
   useEffect(() => {
@@ -118,7 +143,7 @@ export default function Home() {
       }
 
       if (filters.overRating) {
-        filtered = filtered.filter((restaurant) => restaurant.rating >= filters.overRating!)
+        filtered = filtered.filter((restaurant) => getDefaultRating(restaurant.rating) >= filters.overRating!)
       }
 
       if (filters.dashPass) {
@@ -133,11 +158,6 @@ export default function Home() {
       if (filters.deals) {
         // Filter restaurants that have deals
         filtered = filtered.filter((restaurant) => restaurant.discount)
-      }
-
-      if (filters.pickup) {
-        // For demo, we'll just take a different subset
-        filtered = filtered.filter((_, index) => index % 3 === 0)
       }
 
       return filtered
@@ -157,7 +177,6 @@ export default function Home() {
 
       // Apply filters to all unique restaurants
       setAllFilteredRestaurants(applyFilters(uniqueRestaurants))
-      updateSearchResults(allFilteredRestaurants)
     } else {
       // Reset filtered restaurants when no filters are active
       setAllFilteredRestaurants([])
@@ -193,7 +212,7 @@ export default function Home() {
     }
 
     if (newFilters.overRating) {
-      filteredRestaurants = filteredRestaurants.filter((restaurant) => restaurant.rating >= newFilters.overRating!)
+      filteredRestaurants = filteredRestaurants.filter((restaurant) => getDefaultRating(restaurant.rating) >= newFilters.overRating!)
     }
 
     if (newFilters.price && newFilters.price.length > 0) {
@@ -214,10 +233,7 @@ export default function Home() {
     // Create a fresh filter state object
     const resetFilters = {
       underThirtyMins: false,
-      schedule: false,
-      scheduledTime: null,
       deals: false,
-      pickup: false,
       overRating: null,
       price: null,
       dashPass: false,

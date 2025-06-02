@@ -4,7 +4,6 @@ import { useState, useRef, useEffect } from "react"
 import FilterOptions, { FilterState, FilterOptionsRef } from "@/components/filter-options"
 import GrocerySchedule from "@/components/grocery-schedule"
 import StoreGrid from "@/components/store/store-grid"
-import LocalGrocers from "@/components/local-grocers"
 import ProductDisplay from "@/components/product/product-display"
 import { CartProvider } from "@/context/cart-context"
 import { useCartStore } from "@/store/cart-store"
@@ -17,16 +16,14 @@ import {
   getFastestNearYou,
   getProductCarouselData,
 } from "@/app/grocery/data/retail-response-mapper"
-import AllStores from "@/components/all-stores";
+import AllStores from "@/components/all-stores"
+import { getDefaultRating } from "@/utils/rating-utils"
 
 export default function Grocery() {
   // Filter state
   const [activeFilters, setActiveFilters] = useState<FilterState>({
     underThirtyMins: false,
-    schedule: false,
-    scheduledTime: null,
     deals: false,
-    pickup: false,
     overRating: null,
     price: null,
     dashPass: false,
@@ -34,13 +31,21 @@ export default function Grocery() {
   
   const filterOptionsRef = useRef<FilterOptionsRef>(null);
   
+  // Function to check if an image URL is valid (not placeholder/empty)
+  const hasValidImage = (imageUrl: string | undefined): boolean => {
+    if (!imageUrl || imageUrl.trim() === '') return false;
+    if (imageUrl.includes('placeholder.svg')) return false;
+    if (imageUrl.includes('placeholder.png')) return false;
+    return true;
+  };
+  
   // Get the data from our retail response mapper
   const filterOptions = getFilterOptions()
   const allStores = getAllStores()
   const scheduleData = getGroceryScheduleData()
   const essentialsData = getGroceryEssentialsData()
-  const allFavoriteStores = getGroceryFavorites()
-  const allFastestStores = getFastestNearYou()
+  const allFavoriteStores = getGroceryFavorites().filter(store => hasValidImage(store.image))
+  const allFastestStores = getFastestNearYou().filter(store => hasValidImage(store.image))
   const allProductCarousels = getProductCarouselData()
   
   // Handle filter changes
@@ -60,7 +65,7 @@ export default function Grocery() {
       
       // Filter by rating
       if (activeFilters.overRating && store.rating) {
-        const rating = parseFloat(store.rating);
+        const rating = getDefaultRating(store.rating)
         if (rating < activeFilters.overRating) return false;
       }
       
@@ -198,9 +203,6 @@ export default function Grocery() {
           <p className="text-lg text-gray-500">No products match your price filter</p>
         </div>
       )}
-
-      {/* Local Grocers Section */}
-      <LocalGrocers />
     </div>
     </CartProvider>
   )

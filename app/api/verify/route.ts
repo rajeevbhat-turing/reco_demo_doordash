@@ -4,7 +4,20 @@ import flowVerifiers from '@/config/flow-verifiers.json'
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url)
   const flowId = searchParams.get('flowId')
-  const action = searchParams.get('action') // 'get' or 'execute'
+  const action = searchParams.get('action') // 'get', 'execute', or 'getAll'
+
+  // Handle getting all flows
+  if (action === 'getAll') {
+    const flows = Object.entries(flowVerifiers.flows).map(([id, flow]) => ({
+      flowId: id,
+      description: flow.description,
+      category: flow.category
+    }))
+
+    return NextResponse.json({
+      flows: flows.sort((a, b) => a.category.localeCompare(b.category) || a.flowId.localeCompare(b.flowId))
+    })
+  }
 
   if (!flowId) {
     return NextResponse.json({ error: 'flowId parameter is required' }, { status: 400 })

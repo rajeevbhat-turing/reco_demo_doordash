@@ -1,10 +1,11 @@
 "use client"
 
-import { useState } from "react"
+import React, { useState, useMemo } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { Heart, ChevronLeft, Star, Info } from "lucide-react"
 import type { Restaurant } from "@/constants/restaurants"
+import { getDefaultRating } from "@/utils/rating-utils"
 
 // Generic item type that covers different types of stores/items
 interface ListItem {
