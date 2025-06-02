@@ -1,0 +1,29 @@
+{
+  "flows": {
+    "add-cinnamon-roll-combo": {
+      "description": "Add a Cinnamon Roll with Soda combo from Gateway Croissant to the cart",
+      "verifier": "try { const state = JSON.parse(localStorage.getItem('multicategory-cart')).state; const cart = state.items; if (!cart || cart.length === 0 || !cart[0] || !cart[0].customizations) return false; const customizations = cart[0].customizations; const isAllCustomizationsPresent = customizations.includes('#2 · Value Combo') && customizations.includes('Soda'); return state.currentStore.name === 'Gateway Croissant' && cart.length === 1 && cart[0].itemName === 'Cinnamon Roll' && isAllCustomizationsPresent; } catch (error) { console.error('Verifier error:', error); return false; }",
+      "category": "restaurant-cart"
+    },
+    "add-immunity-shot": {
+      "description": "Add a default sized Immunity Shot to the cart",
+      "verifier": "try { const state = JSON.parse(localStorage.getItem('multicategory-cart')).state; const cart = state.items; if (!cart || cart.length === 0 || !cart[0]) return false; const isCustomizationsEmpty = Array.isArray(cart[0].customizations) ? cart[0].customizations.length === 0 : !cart[0].customizations; return state.currentStore.name === 'Pressed Acai Bowls' && cart.length === 1 && cart[0].itemName === 'Immunity Shot' && isCustomizationsEmpty; } catch (error) { console.error('Verifier error:', error); return false; }",
+      "category": "restaurant-cart"
+    },
+    "add-customized-croissant": {
+      "description": "Add a large Ham and Cheese croissant with customizations to the cart",
+      "verifier": "try { const state = JSON.parse(localStorage.getItem('multicategory-cart')).state; const cart = state.items; if (!cart || cart.length === 0 || !cart[0] || !cart[0].customizations) return false; const customizations = cart[0].customizations; const isAllCustomizationsPresent = customizations.includes('Large') && customizations.includes('Light Salad') && customizations.includes('Fruit Portion') && customizations.includes('Juice') && customizations.includes('Low Sugar'); return state.currentStore.name === 'Gateway Croissant' && cart.length === 1 && cart[0].itemName === 'Ham, Egg and Cheese Croissant' && isAllCustomizationsPresent; } catch (error) { console.error('Verifier error:', error); return false; }",
+      "category": "restaurant-cart"
+    },
+    "add-two-custom-lattes": {
+      "description": "Add 2 Caffè Latte from Starbucks: one vegan medium size and one low sugar small size",
+      "verifier": "try { const state = JSON.parse(localStorage.getItem('multicategory-cart')).state; const cart = state.items; if (!cart || cart.length < 2 || !cart[0] || !cart[1] || !cart[0].customizations || !cart[1].customizations) return false; const firstCartItemIsCorrect = cart[0].itemName === 'Caffè Latte' && cart[0].customizations.includes('Medium') && cart[0].customizations.includes('Vegan Option'); const secondCartItemIsCorrect = cart[1].itemName === 'Caffè Latte' && cart[1].customizations.includes('Small') && cart[1].customizations.includes('Low Sugar'); return state.currentStore.name.includes('Starbucks') && cart.length === 2 && firstCartItemIsCorrect && secondCartItemIsCorrect; } catch (error) { console.error('Verifier error:', error); return false; }",
+      "category": "restaurant-cart"
+    },
+    "add-fruits": {
+      "description": "Go to Gus's Community Market and shop for fruits: 3 kiwis, 1 avocado, 1 bunch of strawberries",
+      "verifier": "try { const state = JSON.parse(localStorage.getItem('multicategory-cart')).state; const cartItems = state.items; if (!cartItems || cartItems.length < 3) return false; const avocado = cartItems[0]; const kiwi = cartItems[1]; const strawberries = cartItems[2]; return state.currentStore.name === 'Gus\\'s Community Market' && avocado && avocado.itemName == 'Avocado' && avocado.quantity == 1 && kiwi && kiwi.itemName == 'Kiwi' && kiwi.quantity == 3 && strawberries && strawberries.itemName == 'Strawberries' && strawberries.quantity == 1; } catch (error) { console.error('Verifier error:', error); return false; }",
+      "category": "grocery-cart"
+    }
+  }
+} 

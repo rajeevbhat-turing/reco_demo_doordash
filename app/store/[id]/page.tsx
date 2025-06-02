@@ -117,6 +117,20 @@ export default function RestaurantPage() {
 
   const { setCurrentStore, clearCurrentStore } = useCartStore()
 
+  // Check if user came from search and record navigation
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const referrer = document.referrer
+      if (referrer.includes('/search')) {
+        console.log('[NAVIGATION] User came from search page, recording navigation')
+        // Small delay to ensure search info is set before navigation
+        setTimeout(() => {
+          useCartStore.getState().recordNavigationFromSearch()
+        }, 100)
+      }
+    }
+  }, [])
+
   // Set the cart category to restaurant when the component mounts
   useEffect(() => {
     // Set the category to restaurant
@@ -136,7 +150,9 @@ export default function RestaurantPage() {
       );
       const beefItemsData = getMenuItemsByCategory(id, "Beef");
 
-      setCurrentStore(restaurantData)
+      if (restaurantData) {
+        setCurrentStore(restaurantData)
+      }
       setRestaurant(restaurantData);
       setFeaturedItems(featuredItemsData);
       setMenuCategories(menuCategoriesData);

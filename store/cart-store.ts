@@ -108,6 +108,21 @@ interface CartStore {
   totalCartValue: number
   // Current store object
   currentStore: Record<string, any>
+  // Clear tracking for verifiers
+  lastClearInfo: { itemsBeforeClear: number; timestamp: number } | null
+  // Track the maximum items reached for verifier support
+  maxItemsReached: number
+  // Track if verifier has been consumed (passed once already)
+  verifierConsumed: boolean
+  // Search tracking for search verifiers
+  lastSearchInfo: { searchTerm: string; timestamp: number; navigatedFromSearch: boolean } | null
+  searchVerifierConsumed: boolean
+  // Removal tracking for removal verifiers
+  lastRemovalInfo: { removedItems: CartItem[]; timestamp: number } | null
+  removalVerifierConsumed: boolean
+  // Quantity change tracking for quantity verifiers
+  lastQuantityChangeInfo: { itemName: string; oldQuantity: number; newQuantity: number; timestamp: number } | null
+  quantityVerifierConsumed: boolean
 
   // Category methods
   setCategory: (category: CartCategory) => void
@@ -160,6 +175,20 @@ interface CartStore {
   // Current store methods
   setCurrentStore: (store: Record<string, any>) => void
   clearCurrentStore: () => void
+  
+  // Verifier consumption tracking
+  markVerifierConsumed: () => void
+
+  // Search tracking methods
+  recordSearch: (searchTerm: string) => void
+  recordNavigationFromSearch: () => void
+  markSearchVerifierConsumed: () => void
+  
+  // Removal tracking methods
+  markRemovalVerifierConsumed: () => void
+  
+  // Quantity change tracking methods
+  markQuantityVerifierConsumed: () => void
 }
 
 export const useCartStore = create<CartStore>()(
@@ -176,6 +205,15 @@ export const useCartStore = create<CartStore>()(
         searchResults: [],
         totalCartValue: 0,
         currentStore: {},
+        lastClearInfo: null,
+        maxItemsReached: 0,
+        verifierConsumed: false,
+        lastSearchInfo: null,
+        searchVerifierConsumed: false,
+        lastRemovalInfo: null,
+        removalVerifierConsumed: false,
+        lastQuantityChangeInfo: null,
+        quantityVerifierConsumed: false,
 
         // Set active category without clearing cart
         setCategory: (category: CartCategory) => {
@@ -196,7 +234,9 @@ export const useCartStore = create<CartStore>()(
 
         // Add item to cart (without automatic conflict resolution)
         addItem: (item, category, storeName) => {
-          const { items, currentCategory, currentStoreId, currentRestaurantId } = get()
+          const { items, currentCategory, currentStoreId, currentRestaurantId, maxItemsReached } = get()
+
+          console.log(`[CART] Adding item: ${item.itemName}, current cart size: ${items.length}`)
 
           // Use provided category or default to current category
           const itemCategory = category || currentCategory
@@ -220,42 +260,87 @@ export const useCartStore = create<CartStore>()(
           // Standard add to cart logic (for all items)
           const existingItem = items.find((i) => i.id === item.id)
 
+          let newItems
           if (existingItem) {
             // Increment quantity if item already exists
-            set({
-              items: items.map((i) => (i.id === item.id ? { ...i, quantity: i.quantity + 1 } : i)),
-            })
+            newItems = items.map((i) => (i.id === item.id ? { ...i, quantity: i.quantity + 1 } : i))
           } else {
             // Add new item with quantity 1
-            set({
-              items: [
-                ...items,
-                {
-                  ...item,
-                  itemName, // Use the determined itemName
-                  storeName: resolvedStoreName, // Use resolved storeName
-                  quantity: 1,
-                  category: itemCategory,
-                },
-              ],
-              currentCategory: itemCategory,
-              currentStoreId: item.storeId || currentStoreId,
-              currentRestaurantId: item.restaurantId || currentRestaurantId,
-            })
+            newItems = [
+              ...items,
+              {
+                ...item,
+                itemName, // Use the determined itemName
+                storeName: resolvedStoreName, // Use resolved storeName
+                quantity: 1,
+                category: itemCategory,
+              },
+            ]
           }
+
+          // Calculate new total items
+          const newTotalItems = newItems.reduce((total, item) => total + item.quantity, 0)
+          const newMaxItemsReached = Math.max(maxItemsReached, newTotalItems)
+
+          console.log(`[CART] After adding: ${newTotalItems} items, max reached: ${newMaxItemsReached}`)
+
+          // Reset lastClearInfo when adding items after a clear (so verifier only passes once)
+          const shouldResetClearInfo = get().lastClearInfo !== null
+          if (shouldResetClearInfo) {
+            console.log(`[CART] Resetting clear info since new items are being added`)
+          }
+
+          set({
+            items: newItems,
+            currentCategory: itemCategory,
+            currentStoreId: item.storeId || currentStoreId,
+            currentRestaurantId: item.restaurantId || currentRestaurantId,
+            maxItemsReached: newMaxItemsReached,
+            lastClearInfo: shouldResetClearInfo ? null : get().lastClearInfo,
+            verifierConsumed: false, // Reset verifier consumption when adding items
+          })
+
           // After adding the item, update the total cart value
           setTimeout(() => get().updateTotalCartValue(), 0)
         },
 
         // Remove item from cart
         removeItem: (id) => {
-          const { items } = get()
+          const { items, maxItemsReached } = get()
+          console.log(`[CART] Removing item with id: ${id}, current cart size: ${items.length}`)
+          
+          // Find the item being removed for tracking
+          const removedItem = items.find((item) => item.id === id)
+          
           const newItems = items.filter((item) => item.id !== id)
+          const newTotalItems = newItems.reduce((total, item) => total + item.quantity, 0)
+          
+          console.log(`[CART] After removing: ${newTotalItems} items, max was: ${maxItemsReached}`)
+          
+          // Track removal for verifiers
+          let newLastRemovalInfo = null
+          if (removedItem) {
+            newLastRemovalInfo = { removedItems: [removedItem], timestamp: Date.now() }
+            console.log(`[CART] Recording removal of item: ${removedItem.itemName}`)
+          }
+          
+          // Check if cart became empty after having 3+ items
+          let newLastClearInfo = get().lastClearInfo
+          if (newTotalItems === 0 && maxItemsReached >= 3) {
+            newLastClearInfo = { itemsBeforeClear: maxItemsReached, timestamp: Date.now() }
+            console.log(`[CART] Cart became empty after having ${maxItemsReached} items - recording clear info`)
+          }
 
           set({
             items: newItems,
             currentStoreId: newItems.length > 0 ? get().currentStoreId : null,
             currentRestaurantId: newItems.length > 0 ? get().currentRestaurantId : null,
+            lastClearInfo: newLastClearInfo,
+            lastRemovalInfo: newLastRemovalInfo,
+            // Reset maxItemsReached when cart becomes empty
+            maxItemsReached: newTotalItems === 0 ? 0 : maxItemsReached,
+            verifierConsumed: false, // Reset verifier consumption on any cart change
+            removalVerifierConsumed: false, // Reset removal verifier consumption
           })
           // After removing the item, update the total cart value
           setTimeout(() => get().updateTotalCartValue(), 0)
@@ -263,39 +348,77 @@ export const useCartStore = create<CartStore>()(
 
         // Update item quantity
         updateQuantity: (id, quantity) => {
-          const { items } = get()
+          const { items, maxItemsReached } = get()
+          console.log(`[CART] Updating quantity for item ${id} to ${quantity}, current cart size: ${items.length}`)
 
+          // Find the item being updated for tracking
+          const existingItem = items.find((item) => item.id === id)
+          
+          let newItems
+          let newLastQuantityChangeInfo = null
+          
           if (quantity <= 0) {
             // Remove item if quantity is 0 or less
-            set({
-              items: items.filter((item) => item.id !== id),
-            })
+            newItems = items.filter((item) => item.id !== id)
           } else {
             // Update quantity
-            set({
-              items: items.map((item) => (item.id === id ? { ...item, quantity } : item)),
-            })
+            newItems = items.map((item) => (item.id === id ? { ...item, quantity } : item))
+            
+            // Track quantity change for verifiers
+            if (existingItem && existingItem.quantity !== quantity) {
+              newLastQuantityChangeInfo = { 
+                itemName: existingItem.itemName, 
+                oldQuantity: existingItem.quantity, 
+                newQuantity: quantity, 
+                timestamp: Date.now() 
+              }
+              console.log(`[CART] Recording quantity change for ${existingItem.itemName}: ${existingItem.quantity} -> ${quantity}`)
+            }
           }
 
-          // Update store and restaurant IDs if cart is empty
-          const updatedItems = get().items
-          if (updatedItems.length === 0) {
-            set({
-              currentStoreId: null,
-              currentRestaurantId: null,
-            })
+          const newTotalItems = newItems.reduce((total, item) => total + item.quantity, 0)
+          console.log(`[CART] After quantity update: ${newTotalItems} items, max was: ${maxItemsReached}`)
+
+          // Check if cart became empty after having 3+ items
+          let newLastClearInfo = get().lastClearInfo
+          if (newTotalItems === 0 && maxItemsReached >= 3) {
+            newLastClearInfo = { itemsBeforeClear: maxItemsReached, timestamp: Date.now() }
+            console.log(`[CART] Cart became empty after having ${maxItemsReached} items - recording clear info`)
           }
+
+          set({
+            items: newItems,
+            currentStoreId: newItems.length > 0 ? get().currentStoreId : null,
+            currentRestaurantId: newItems.length > 0 ? get().currentRestaurantId : null,
+            lastClearInfo: newLastClearInfo,
+            lastQuantityChangeInfo: newLastQuantityChangeInfo,
+            // Reset maxItemsReached when cart becomes empty
+            maxItemsReached: newTotalItems === 0 ? 0 : maxItemsReached,
+            verifierConsumed: false, // Reset verifier consumption on any cart change
+            quantityVerifierConsumed: false, // Reset quantity verifier consumption
+          })
+
           // After updating quantity, update the total cart value
           setTimeout(() => get().updateTotalCartValue(), 0)
         },
 
         // Clear cart
         clearCart: () => {
+          const { items, maxItemsReached } = get()
+          const currentTotalItems = items.reduce((total, item) => total + item.quantity, 0)
+          console.log(`[CART] Clearing cart: ${currentTotalItems} items, max was: ${maxItemsReached}`)
+          
+          const itemsBeforeClear = Math.max(currentTotalItems, maxItemsReached)
+          console.log(`[CART] Recording clear info with ${itemsBeforeClear} items before clear`)
+          
           set({
             items: [],
             currentStoreId: null,
             currentRestaurantId: null,
             totalCartValue: 0,
+            lastClearInfo: { itemsBeforeClear, timestamp: Date.now() },
+            maxItemsReached: 0,
+            verifierConsumed: false, // Reset verifier consumption on any cart change
           })
         },
 
@@ -485,12 +608,71 @@ export const useCartStore = create<CartStore>()(
         },
         // Set current store object
         setCurrentStore: (store: Record<string, any>) => {
-          set({ currentStore: store })
+          console.log(`[STORE] Setting current store: ${store.name}`)
+          
+          // Check if this might be navigation from search results
+          const { lastSearchInfo } = get()
+          if (lastSearchInfo && !lastSearchInfo.navigatedFromSearch) {
+            console.log(`[STORE] Navigation from search detected`)
+            set({ 
+              currentStore: store,
+              lastSearchInfo: { ...lastSearchInfo, navigatedFromSearch: true },
+              searchVerifierConsumed: false, // Reset search verifier consumption on new navigation
+            })
+          } else {
+            set({ 
+              currentStore: store,
+              searchVerifierConsumed: false, // Reset search verifier consumption on store change
+            })
+          }
         },
 
         // Clear current store object
         clearCurrentStore: () => {
           set({ currentStore: {} })
+        },
+
+        // Verifier consumption tracking
+        markVerifierConsumed: () => {
+          set({ verifierConsumed: true })
+        },
+
+        // Search tracking methods
+        recordSearch: (searchTerm: string) => {
+          console.log(`[SEARCH] Recording search for: ${searchTerm}`)
+          set({ 
+            lastSearchInfo: { 
+              searchTerm, 
+              timestamp: Date.now(), 
+              navigatedFromSearch: false 
+            },
+            searchVerifierConsumed: false, // Reset consumption on new search
+          })
+        },
+        recordNavigationFromSearch: () => {
+          const { lastSearchInfo } = get()
+          if (lastSearchInfo) {
+            console.log(`[SEARCH] Recording navigation from search for: ${lastSearchInfo.searchTerm}`)
+            set({ 
+              lastSearchInfo: { 
+                ...lastSearchInfo, 
+                navigatedFromSearch: true 
+              } 
+            })
+          }
+        },
+        markSearchVerifierConsumed: () => {
+          set({ searchVerifierConsumed: true })
+        },
+        
+        // Removal tracking methods
+        markRemovalVerifierConsumed: () => {
+          set({ removalVerifierConsumed: true })
+        },
+        
+        // Quantity change tracking methods
+        markQuantityVerifierConsumed: () => {
+          set({ quantityVerifierConsumed: true })
         },
       }),
       {
@@ -506,6 +688,15 @@ export const useCartStore = create<CartStore>()(
           searchResults: state.searchResults,
           totalCartValue: state.totalCartValue,
           currentStore: state.currentStore,
+          lastClearInfo: state.lastClearInfo,
+          maxItemsReached: state.maxItemsReached,
+          verifierConsumed: state.verifierConsumed,
+          lastSearchInfo: state.lastSearchInfo,
+          searchVerifierConsumed: state.searchVerifierConsumed,
+          lastRemovalInfo: state.lastRemovalInfo,
+          removalVerifierConsumed: state.removalVerifierConsumed,
+          lastQuantityChangeInfo: state.lastQuantityChangeInfo,
+          quantityVerifierConsumed: state.quantityVerifierConsumed,
         }),
         merge: (persistedState: any, currentState) => {
           // Handle migration of old cart items
@@ -535,6 +726,15 @@ export const useCartStore = create<CartStore>()(
             ...persistedState,
             items: migratedItems,
             currentStore: persistedState.currentStore || {},
+            lastClearInfo: persistedState.lastClearInfo || null,
+            maxItemsReached: persistedState.maxItemsReached || 0,
+            verifierConsumed: persistedState.verifierConsumed || false,
+            lastSearchInfo: persistedState.lastSearchInfo || null,
+            searchVerifierConsumed: persistedState.searchVerifierConsumed || false,
+            lastRemovalInfo: persistedState.lastRemovalInfo || null,
+            removalVerifierConsumed: persistedState.removalVerifierConsumed || false,
+            lastQuantityChangeInfo: persistedState.lastQuantityChangeInfo || null,
+            quantityVerifierConsumed: persistedState.quantityVerifierConsumed || false,
           }
         },
       },
