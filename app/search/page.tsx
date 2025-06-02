@@ -21,7 +21,7 @@ export default function SearchPage() {
   const query = searchParams.get("q") || ""
   const [searchResults, setSearchResults] = useState<SearchResultRestaurant[]>([])
   const [isLoading, setIsLoading] = useState(true)
-  const { updateSearchResults, clearSearchResults } = useCartStore()
+  const { updateSearchResults, clearSearchResults, recordSearch } = useCartStore()
 
   // Search for restaurants that serve specific menu items
   const searchByMenuItem = (searchTerm: string) => {
@@ -96,9 +96,21 @@ export default function SearchPage() {
     const timer = setTimeout(() => {
       setSearchResults(combinedResults)
       setIsLoading(false)
+      
+      // Convert results to SearchResult format for cart store
+      const cartSearchResults = combinedResults.map(restaurant => ({
+        id: restaurant.id,
+        name: restaurant.name,
+        logo: restaurant.logo || "",
+        description: restaurant.cuisine,
+        dashPass: restaurant.dashPass,
+        type: "restaurant" as const,
+        restaurantId: restaurant.id,
+        matchedItem: restaurant.matchType === "menu-item" ? restaurant.matchedItems?.[0] : undefined
+      }))
+      
+      updateSearchResults(cartSearchResults)
     }, 500)
-
-    updateSearchResults(searchResults)
 
     return () => clearTimeout(timer)
   }, [query])
@@ -129,6 +141,13 @@ export default function SearchPage() {
       }
     }
   }, [query])
+
+  // Record search in cart store for verifier tracking
+  useEffect(() => {
+    if (query) {
+      recordSearch(query)
+    }
+  }, [query, recordSearch])
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8 mt-14">

@@ -30,7 +30,7 @@ const SearchBar = () => {
   const searchInputRef = useRef<HTMLInputElement>(null)
   const searchContainerRef = useRef<HTMLDivElement>(null)
   const router = useRouter()
-  const { updateSearchResults, clearSearchResults } = useCartStore()
+  const { updateSearchResults, clearSearchResults, recordSearch } = useCartStore()
 
   // Load recent searches from localStorage on component mount
   useEffect(() => {
@@ -194,6 +194,7 @@ const SearchBar = () => {
     e.preventDefault()
     if (searchTerm.trim()) {
       saveRecentSearch(searchTerm)
+      recordSearch(searchTerm)
       router.push(`/search?q=${encodeURIComponent(searchTerm)}`)
       setIsSearchActive(false)
     }
@@ -202,6 +203,7 @@ const SearchBar = () => {
   // Handle clicking on a search result
   const handleResultClick = (result: SearchResult) => {
     saveRecentSearch(searchTerm)
+    recordSearch(searchTerm)
     router.push(`/store/${result.id}`)
     setIsSearchActive(false)
   }
@@ -210,6 +212,7 @@ const SearchBar = () => {
   const handleSuggestionClick = (suggestion: string) => {
     setSearchTerm(suggestion)
     saveRecentSearch(suggestion)
+    recordSearch(suggestion)
     router.push(`/search?q=${encodeURIComponent(suggestion)}`)
     setIsSearchActive(false)
   }
