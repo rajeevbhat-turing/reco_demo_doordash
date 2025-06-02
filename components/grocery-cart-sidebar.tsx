@@ -80,8 +80,10 @@ export default function GroceryCartSidebar({ storeData }: CartSidebarProps) {
     <div className="flex flex-col h-full">
       <div className="p-4 border-b">
         <h2 className="font-medium">Your cart from</h2>
-        <h3 className="font-bold text-lg mb-1">{storeData.name}</h3>
-        <p className="text-sm text-gray-500">Maximum order limit: ${storeData.maxOrderLimit.toLocaleString()}</p>
+        <div className="flex items-center">
+          <h3 className="font-bold text-lg">{storeData.name}</h3>
+          <ChevronRight className="h-5 w-5 ml-1" />
+        </div>
         
         {isGroupOrder && (
           <div className="mt-2 py-2 px-3 bg-blue-50 rounded-md flex items-center">

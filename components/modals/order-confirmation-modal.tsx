@@ -11,6 +11,7 @@ interface OrderConfirmationModalProps {
   onClose: () => void
   orderId: string
   total: number
+  tipAmount?: number
   scheduledTime?: string
   deliveryTime?: string
   storeName?: string
@@ -23,6 +24,7 @@ export default function OrderConfirmationModal({
   onClose, 
   orderId, 
   total,
+  tipAmount = 0,
   scheduledTime,
   deliveryTime,
   storeName,
@@ -30,7 +32,7 @@ export default function OrderConfirmationModal({
   category
 }: OrderConfirmationModalProps) {
   const router = useRouter()
-  const { items, clearCart, currentCategory, currentStoreId, currentRestaurantId } = useCartStore()
+  const { items, clearCart, currentCategory, currentStoreId, currentRestaurantId, recordOrderCompletion } = useCartStore()
   const { addOrder } = useOrdersStore()
 
   useEffect(() => {
@@ -46,6 +48,16 @@ export default function OrderConfirmationModal({
   }, [isOpen])
 
   const handleClose = () => {
+    // Record order completion in cart store for verifiers
+    recordOrderCompletion({
+      orderId,
+      tipAmount,
+      orderTotal: total,
+      storeName: storeName || "Store",
+      category: category || currentCategory,
+      items
+    })
+
     // Add order to orders store
     addOrder({
       orderId,

@@ -57,6 +57,7 @@ export default function PetStorePage({ onBackClick, storeData, productData = pet
       storeData={petStore}
       productData={productData}
       storeConfig={petConfig}
+      category="pets"
     />
   )
 }

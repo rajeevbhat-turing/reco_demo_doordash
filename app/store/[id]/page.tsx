@@ -50,7 +50,11 @@ const menuTypes = [
   },
 ];
 
-function SearchBar({ restaurantName, searchQuery, onSearchChange }) {
+function SearchBar({ restaurantName, searchQuery, onSearchChange }: {
+  restaurantName: string;
+  searchQuery: string;
+  onSearchChange: (query: string) => void;
+}) {
   return (
     <div className="relative flex-1 max-w-md">
       <div className="relative">
@@ -78,7 +82,8 @@ function SearchBar({ restaurantName, searchQuery, onSearchChange }) {
 
 export default function RestaurantPage() {
   const params = useParams();
-  const id = params.id as string;
+  const rawId = params.id as string;
+  const id = decodeURIComponent(rawId); // Decode URL-encoded characters like %26 to &
   const [restaurant, setRestaurant] = useState<any>(null);
   const [featuredItems, setFeaturedItems] = useState<any[]>([]);
   const [menuCategories, setMenuCategories] = useState<any[]>([]);
@@ -508,13 +513,17 @@ export default function RestaurantPage() {
                   <h2 className="text-xl font-bold mb-4">Search Results</h2>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {/* Filter all menu items across categories */}
-                    {menuCategories.flatMap(category => 
-                      getMenuItemsByCategory(id, category.name)
-                        .filter(item => 
-                          item.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                          (item.description && item.description.toLowerCase().includes(searchQuery.toLowerCase()))
-                        )
-                        .map(item => (
+                    {(() => {
+                      const filteredItems = menuCategories.flatMap(category => 
+                        getMenuItemsByCategory(id, category.name)
+                          .filter(item => 
+                            item.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                            (item.description && item.description.toLowerCase().includes(searchQuery.toLowerCase()))
+                          )
+                      );
+                      
+                      return filteredItems.length > 0 ? (
+                        filteredItems.map(item => (
                           <div
                             key={item.id}
                             className="border border-gray-200 rounded-lg overflow-hidden cursor-pointer"
@@ -546,23 +555,18 @@ export default function RestaurantPage() {
                             </div>
                           </div>
                         ))
-                    )}
-                    {menuCategories.flatMap(category => 
-                      getMenuItemsByCategory(id, category.name)
-                    ).filter(item => 
-                      item.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                      (item.description && item.description.toLowerCase().includes(searchQuery.toLowerCase()))
-                    ).length === 0 && (
-                      <div className="col-span-2 py-8 text-center">
-                        <p className="text-gray-500">No items found matching "{searchQuery}"</p>
-                        <button 
-                          className="mt-2 text-red-600" 
-                          onClick={() => setSearchQuery("")}
-                        >
-                          Clear search
-                        </button>
-                      </div>
-                    )}
+                      ) : (
+                        <div className="col-span-2 py-8 text-center">
+                          <p className="text-gray-500">No items found matching "{searchQuery}"</p>
+                          <button 
+                            className="mt-2 text-red-600" 
+                            onClick={() => setSearchQuery("")}
+                          >
+                            Clear search
+                          </button>
+                        </div>
+                      );
+                    })()}
                   </div>
                 </div>
               ) : (
@@ -765,7 +769,7 @@ export default function RestaurantPage() {
                 <>
                   {/* Most Ordered */}
                   <div
-                    ref={(el) => (sectionRefs.current["Most Ordered"] = el)}
+                    ref={(el) => { sectionRefs.current["Most Ordered"] = el; }}
                     className="mt-8 pt-4"
                     id="most-ordered"
                   >
@@ -832,7 +836,7 @@ export default function RestaurantPage() {
                     .map((category) => (
                       <div
                         key={category.id}
-                        ref={(el) => (sectionRefs.current[category.name] = el)}
+                        ref={(el) => { sectionRefs.current[category.name] = el; }}
                         className="mt-8 pt-4"
                         id={category.name.toLowerCase().replace(/\s+/g, "-")}
                       >

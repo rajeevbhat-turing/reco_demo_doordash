@@ -76,35 +76,37 @@ export default function ProductDetailModal({ product, onClose, storeId, category
           </p>
           <div className="inline-block bg-gray-100 px-3 py-1 rounded-md mb-6">SNAP</div>
 
-          {/* Nutrition information */}
-          <div className="border-t border-b py-4">
-            <button
-              className="flex items-center justify-between w-full"
-              onClick={() => setIsNutritionOpen(!isNutritionOpen)}
-            >
-              <span className="font-bold text-lg">Nutrition Information</span>
-              {isNutritionOpen ? <ChevronUp className="w-6 h-6" /> : <ChevronDown className="w-6 h-6" />}
-            </button>
-            {isNutritionOpen && (
-              <div className="mt-4">
-                <p className="text-gray-600">
-                  Serving size: {nutritionInfo.servingSize}
-                  <br />
-                  Calories: {nutritionInfo.calories}
-                  <br />
-                  Total Fat: {nutritionInfo.totalFat}
-                  <br />
-                  Sodium: {nutritionInfo.sodium}
-                  <br />
-                  Total Carbohydrates: {nutritionInfo.totalCarbs}
-                  <br />
-                  Sugars: {nutritionInfo.sugars}
-                  <br />
-                  Protein: {nutritionInfo.protein}
-                </p>
-              </div>
-            )}
-          </div>
+          {/* Nutrition information - only show for restaurants */}
+          {category === "restaurant" && (
+            <div className="border-t border-b py-4">
+              <button
+                className="flex items-center justify-between w-full"
+                onClick={() => setIsNutritionOpen(!isNutritionOpen)}
+              >
+                <span className="font-bold text-lg">Nutrition Information</span>
+                {isNutritionOpen ? <ChevronUp className="w-6 h-6" /> : <ChevronDown className="w-6 h-6" />}
+              </button>
+              {isNutritionOpen && (
+                <div className="mt-4">
+                  <p className="text-gray-600">
+                    Serving size: {nutritionInfo.servingSize}
+                    <br />
+                    Calories: {nutritionInfo.calories}
+                    <br />
+                    Total Fat: {nutritionInfo.totalFat}
+                    <br />
+                    Sodium: {nutritionInfo.sodium}
+                    <br />
+                    Total Carbohydrates: {nutritionInfo.totalCarbs}
+                    <br />
+                    Sugars: {nutritionInfo.sugars}
+                    <br />
+                    Protein: {nutritionInfo.protein}
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
 

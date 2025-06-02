@@ -86,7 +86,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'mint-mojito-iced-coffee',
+    id: 'philz-coffee-mint-mojito-iced-coffee',
     restaurantId: 'philz-coffee',
     name: 'Mint Mojito Iced Coffee',
     description: 'Our Ecstatic iced coffee, sweet and creamy with fresh mint.',
@@ -98,7 +98,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'philtered-soul-cold-brew',
+    id: 'philz-coffee-philtered-soul-cold-brew',
     restaurantId: 'philz-coffee',
     name: 'Philtered Soul Cold Brew',
     description: 'Rich and smooth cold brew with flavor notes of hazelnut and chocolate.',
@@ -110,7 +110,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'honey-haze',
+    id: 'philz-coffee-honey-haze',
     restaurantId: 'philz-coffee',
     name: 'Honey Haze',
     description: 'A sweet hazelnut treat made with Philtered Soul Cold Brew, honey and oat milk.',
@@ -122,7 +122,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'philtered-soul',
+    id: 'philz-coffee-philtered-soul',
     restaurantId: 'philz-coffee',
     name: 'Philtered Soul',
     description: 'Hazelnut flavor and Chocolate.',
@@ -134,7 +134,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'iced-nutty-caramel-nirvana',
+    id: 'philz-coffee-iced-nutty-caramel-nirvana',
     restaurantId: 'philz-coffee',
     name: 'Iced Nutty Caramel Nirvana',
     description:
@@ -159,7 +159,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'mint-mojito-iced-coffee',
+    id: 'philz-coffee-mint-mojito-iced-coffee-2',
     restaurantId: 'philz-coffee',
     name: 'Mint Mojito Iced Coffee',
     description: 'Our Ecstatic iced coffee, sweet and creamy with fresh mint.',
@@ -171,7 +171,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'ecstatic-iced-coffee',
+    id: 'philz-coffee-ecstatic-iced-coffee',
     restaurantId: 'philz-coffee',
     name: 'Ecstatic Iced Coffee',
     description: 'Darker blend with flavor notes of nuts and toffee.',
@@ -255,7 +255,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'philtered-soul',
+    id: 'philz-coffee-philtered-soul-2',
     restaurantId: 'philz-coffee',
     name: 'Philtered Soul',
     description: 'Hazelnut flavor and Chocolate.',
@@ -351,7 +351,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'honey-haze',
+    id: 'philz-coffee-honey-haze-2',
     restaurantId: 'philz-coffee',
     name: 'Honey Haze',
     description: 'A sweet hazelnut treat made with Philtered Soul Cold Brew, honey and oat milk.',
@@ -363,7 +363,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'iced-mocha-tesora',
+    id: 'philz-coffee-iced-mocha-tesora',
     restaurantId: 'philz-coffee',
     name: 'Iced Mocha Tesora',
     description: 'Ghirardelli chocolate and our Tesora blend combine for a chocolatey treat.',
@@ -399,7 +399,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'mint-mojito-iced-coffee',
+    id: 'philz-coffee-mint-mojito-iced-coffee-3',
     restaurantId: 'philz-coffee',
     name: 'Mint Mojito Iced Coffee',
     description: 'Our Ecstatic iced coffee, sweet and creamy with fresh mint.',
@@ -423,7 +423,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'bacon-burrito',
+    id: 'philz-coffee-bacon-burrito',
     restaurantId: 'philz-coffee',
     name: 'Bacon Burrito',
     description:
@@ -671,7 +671,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'philtered-soul-cold-brew-32-oz',
+    id: 'philz-coffee-philtered-soul-cold-brew-32-oz',
     restaurantId: 'philz-coffee',
     name: 'Philtered Soul Cold Brew (32 Oz)',
     description: 'Rich Hazelnut, Chocolate',
@@ -779,7 +779,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 28,
   },
   {
-    id: 'caffe-latte',
+    id: 'peet-caffe-latte',
     restaurantId: "peet's-coffee",
     name: 'Caffe Latte',
     description:
@@ -792,7 +792,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 21,
   },
   {
-    id: 'cappuccino',
+    id: 'peet-cappuccino',
     restaurantId: "peet's-coffee",
     name: 'Cappuccino',
     description:
@@ -817,7 +817,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 18,
   },
   {
-    id: 'baridi-cold-brew',
+    id: 'peet-baridi-cold-brew',
     restaurantId: "peet's-coffee",
     name: 'Baridi Cold Brew',
     description:
@@ -830,7 +830,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 12,
   },
   {
-    id: 'turkey-bacon--egg-white-sandwich',
+    id: 'peet-turkey-bacon--egg-white-sandwich',
     restaurantId: "peet's-coffee",
     name: 'Turkey Bacon & Egg White Sandwich',
     description:
@@ -1025,7 +1025,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'caffe-latte',
+    id: 'peet-caffe-latte-2',
     restaurantId: "peet's-coffee",
     name: 'Caffe Latte',
     description:
@@ -1090,7 +1090,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 16,
   },
   {
-    id: 'cappuccino',
+    id: 'peet-cappuccino-2',
     restaurantId: "peet's-coffee",
     name: 'Cappuccino',
     description:
@@ -1142,7 +1142,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'caffe-macchiato',
+    id: 'peet-caffe-macchiato',
     restaurantId: "peet's-coffee",
     name: 'Caffe Macchiato',
     description:
@@ -1207,7 +1207,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'baridi-cold-brew',
+    id: 'peet-baridi-cold-brew-2',
     restaurantId: "peet's-coffee",
     name: 'Baridi Cold Brew',
     description:
@@ -1232,7 +1232,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'coconut-water-cold-brew',
+    id: 'peet-coconut-water-cold-brew',
     restaurantId: "peet's-coffee",
     name: 'Coconut Water Cold Brew',
     description:
@@ -1349,7 +1349,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'iced-lavender-vanilla-latte',
+    id: 'peet-iced-lavender-vanilla-latte',
     restaurantId: "peet's-coffee",
     name: 'Iced Lavender Vanilla Latte',
     description:
@@ -1439,7 +1439,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'turkey-bacon--egg-white-sandwich',
+    id: 'peet-turkey-bacon--egg-white-sandwich-2',
     restaurantId: "peet's-coffee",
     name: 'Turkey Bacon & Egg White Sandwich',
     description:
@@ -1452,7 +1452,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 12,
   },
   {
-    id: 'bacon-cheddar-brioche',
+    id: 'peet-bacon-cheddar-brioche',
     restaurantId: "peet's-coffee",
     name: 'Bacon Cheddar Brioche',
     description: 'Smoky bacon, aged cheddar and homestyle egg on a buttery brioche bun.',
@@ -1856,7 +1856,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'coconut-water-matcha',
+    id: 'peet-coconut-water-matcha',
     restaurantId: "peet's-coffee",
     name: 'Coconut Water Matcha',
     description:
@@ -1972,7 +1972,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'sparkling-lavender-lemonade',
+    id: 'peet-sparkling-lavender-lemonade',
     restaurantId: "peet's-coffee",
     name: 'Sparkling Lavender Lemonade',
     description:
@@ -2102,7 +2102,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'americano',
+    id: 'peet-americano',
     restaurantId: "peet's-coffee",
     name: 'Americano',
     description:
@@ -2115,7 +2115,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 8,
   },
   {
-    id: 'featured-dark-roast',
+    id: 'peet-featured-dark-roast',
     restaurantId: "peet's-coffee",
     name: 'Featured Dark Roast',
     description:
@@ -2128,7 +2128,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'featured-medium-roast',
+    id: 'peet-featured-medium-roast',
     restaurantId: "peet's-coffee",
     name: 'Featured Medium Roast',
     description:
@@ -2141,7 +2141,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 8,
   },
   {
-    id: 'chamomile-citrus-tea-pouch',
+    id: 'peet-chamomile-citrus-tea-pouch',
     restaurantId: "peet's-coffee",
     name: 'Chamomile Citrus Tea Pouch',
     description: 'An herbal infusion of chamomile, orange & lemon.',
@@ -2153,7 +2153,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'green-tea-tropical-tea-pouch',
+    id: 'peet-green-tea-tropical-tea-pouch',
     restaurantId: "peet's-coffee",
     name: 'Green Tea Tropical Tea Pouch',
     description:
@@ -2166,7 +2166,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'organic-mint-melange-tea-pouch',
+    id: 'peet-organic-mint-melange-tea-pouch',
     restaurantId: "peet's-coffee",
     name: 'Organic Mint Melange Tea Pouch',
     description:
@@ -2179,7 +2179,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 6,
   },
   {
-    id: 'horchata-cold-brew-oat-latte',
+    id: 'peet-horchata-cold-brew-oat-latte',
     restaurantId: "peet's-coffee",
     name: 'Horchata Cold Brew Oat Latte',
     description:
@@ -2205,7 +2205,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'iced-black-tea',
+    id: 'peet-iced-black-tea',
     restaurantId: "peet's-coffee",
     name: 'Iced Black Tea',
     description: 'Refreshingly rich China and India black tea.',
@@ -2217,7 +2217,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'baridi-cold-brew',
+    id: 'peet-baridi-cold-brew-3',
     restaurantId: "peet's-coffee",
     name: 'Baridi Cold Brew',
     description:
@@ -2230,7 +2230,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 12,
   },
   {
-    id: 'iced-americano',
+    id: 'peet-iced-americano',
     restaurantId: "peet's-coffee",
     name: 'Iced Americano',
     description:
@@ -2243,7 +2243,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'original-cold-brew-oat-latte',
+    id: 'peet-original-cold-brew-oat-latte',
     restaurantId: "peet's-coffee",
     name: 'Original Cold Brew Oat Latte',
     description:
@@ -2318,7 +2318,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'sencha-mints',
+    id: 'peet-sencha-mints',
     restaurantId: "peet's-coffee",
     name: 'Sencha Mints',
     description: null,
@@ -2380,7 +2380,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'cold-pressed-orange-juice-by-happy-moose',
+    id: 'peet-cold-pressed-orange-juice-by-happy-moose',
     restaurantId: "peet's-coffee",
     name: 'Cold-Pressed Orange Juice by Happy Moose',
     description:
@@ -2393,7 +2393,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'vive-organic-immunity-boost-wellness-shot-2oz',
+    id: 'peet-vive-organic-immunity-boost-wellness-shot-2oz',
     restaurantId: "peet's-coffee",
     name: 'Vive Organic Immunity Boost Wellness Shot 2oz',
     description:
@@ -2850,7 +2850,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'bacon-egg-and-cheese-croissant',
+    id: 'gateway-croissant-bacon-egg-and-cheese-croissant',
     restaurantId: 'gateway-croissant',
     name: 'Bacon, Egg and Cheese Croissant',
     description: 'Flaky croissant filled with crispy bacon, scrambled eggs, and melted cheese.',
@@ -2862,7 +2862,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 15,
   },
   {
-    id: 'filled-croissant',
+    id: 'gateway-croissant-filled-croissant',
     restaurantId: 'gateway-croissant',
     name: 'Filled Croissant',
     description:
@@ -2875,7 +2875,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 8,
   },
   {
-    id: 'a-dozen-donut-hole',
+    id: 'gateway-croissant-a-dozen-donut-hole',
     restaurantId: 'gateway-croissant',
     name: 'A Dozen Donut Hole',
     description: 'Glazed donuts.',
@@ -2887,7 +2887,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 7,
   },
   {
-    id: 'ham-egg-and-cheese-croissant',
+    id: 'gateway-croissant-ham-egg-and-cheese-croissant',
     restaurantId: 'gateway-croissant',
     name: 'Ham, Egg and Cheese Croissant',
     description: 'Flaky croissant filled with savory ham, a fluffy egg, and melted cheese.',
@@ -2899,7 +2899,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'plain-croissant',
+    id: 'gateway-croissant-plain-croissant',
     restaurantId: 'gateway-croissant',
     name: 'Plain Croissant',
     description: 'Flaky, buttery pastry with a golden-brown crust and soft, airy interior.',
@@ -2911,7 +2911,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'fruit-salad',
+    id: 'gateway-croissant-fruit-salad',
     restaurantId: 'gateway-croissant',
     name: 'Fruit Salad',
     description: 'Choice of mix fruit or watermelon only.',
@@ -2923,7 +2923,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'fruit-salad',
+    id: 'gateway-croissant-fruit-salad-2',
     restaurantId: 'gateway-croissant',
     name: 'Fruit Salad',
     description: 'Choice of mix fruit or watermelon only.',
@@ -3015,7 +3015,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'a-dozen-donut-hole',
+    id: 'gateway-croissant-a-dozen-donut-hole-2',
     restaurantId: 'gateway-croissant',
     name: 'A Dozen Donut Hole',
     description: 'Glazed donuts.',
@@ -3087,7 +3087,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'bacon-egg-and-cheese-croissant',
+    id: 'gateway-croissant-bacon-egg-and-cheese-croissant-2',
     restaurantId: 'gateway-croissant',
     name: 'Bacon, Egg and Cheese Croissant',
     description: 'Flaky croissant filled with crispy bacon, scrambled eggs, and melted cheese.',
@@ -3099,7 +3099,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 15,
   },
   {
-    id: 'ham-egg-and-cheese-croissant',
+    id: 'gateway-croissant-ham-egg-and-cheese-croissant-2',
     restaurantId: 'gateway-croissant',
     name: 'Ham, Egg and Cheese Croissant',
     description: 'Flaky croissant filled with savory ham, a fluffy egg, and melted cheese.',
@@ -3320,7 +3320,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'chai-latte',
+    id: 'gateway-croissant-chai-latte',
     restaurantId: 'gateway-croissant',
     name: 'Chai Latte',
     description: 'Chai tea latte: Single, double, or iced option available.',
@@ -3426,7 +3426,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'chocolate-banana-protein-smoothie',
+    id: 'pressed-acai-bowls-chocolate-banana-protein-smoothie',
     restaurantId: 'pressed-acai-bowls',
     name: 'Chocolate Banana Protein Smoothie',
     description:
@@ -3439,7 +3439,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'daily-greens-3-ginger-juice',
+    id: 'pressed-acai-bowls-daily-greens-3-ginger-juice',
     restaurantId: 'pressed-acai-bowls',
     name: 'Daily Greens 3: Ginger Juice',
     description:
@@ -3452,7 +3452,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'simple-cleanse-juice',
+    id: 'pressed-acai-bowls-simple-cleanse-juice',
     restaurantId: 'pressed-acai-bowls',
     name: 'Simple Cleanse Juice',
     description:
@@ -3543,7 +3543,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'simple-cleanse-debloat-vacation-prep-pack',
+    id: 'pressed-acai-bowls-simple-cleanse-debloat-vacation-prep-pack',
     restaurantId: 'pressed-acai-bowls',
     name: 'Simple Cleanse+ Debloat: Vacation Prep Pack',
     description:
@@ -3569,7 +3569,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'simple-cleanse-immunity-event-prep-pack',
+    id: 'pressed-acai-bowls-simple-cleanse-immunity-event-prep-pack',
     restaurantId: 'pressed-acai-bowls',
     name: 'Simple Cleanse+ Immunity: Event Prep Pack',
     description:
@@ -3582,7 +3582,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: '7-day-celery-cleanse-pack',
+    id: 'pressed-acai-bowls-7-day-celery-cleanse-pack',
     restaurantId: 'pressed-acai-bowls',
     name: '7-Day Celery Cleanse Pack',
     description:
@@ -3620,7 +3620,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'daily-greens-3-ginger-juice',
+    id: 'pressed-acai-bowls-daily-greens-3-ginger-juice-2',
     restaurantId: 'pressed-acai-bowls',
     name: 'Daily Greens 3: Ginger Juice',
     description:
@@ -3672,7 +3672,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'daily-citrus-2-pineapple-mint-juice',
+    id: 'pressed-acai-bowls-daily-citrus-2-pineapple-mint-juice',
     restaurantId: 'pressed-acai-bowls',
     name: 'Daily Citrus 2: Pineapple Mint Juice',
     description:
@@ -3685,7 +3685,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'simple-cleanse-juice',
+    id: 'pressed-acai-bowls-simple-cleanse-juice-2',
     restaurantId: 'pressed-acai-bowls',
     name: 'Simple Cleanse Juice',
     description:
@@ -3698,7 +3698,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'orange-juice',
+    id: 'pressed-acai-bowls-orange-juice',
     restaurantId: 'pressed-acai-bowls',
     name: 'Orange Juice',
     description:
@@ -3711,7 +3711,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'chocolate-banana-protein-smoothie',
+    id: 'pressed-acai-bowls-chocolate-banana-protein-smoothie-2',
     restaurantId: 'pressed-acai-bowls',
     name: 'Chocolate Banana Protein Smoothie',
     description:
@@ -3750,7 +3750,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'immunity-shot',
+    id: 'pressed-acai-bowls-immunity-shot',
     restaurantId: 'pressed-acai-bowls',
     name: 'Immunity Shot',
     description:
@@ -4032,7 +4032,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 172,
   },
   {
-    id: 'latte',
+    id: 'il-canto-cafe-latte',
     restaurantId: 'il-canto-cafe',
     name: 'Latte',
     description: null,
@@ -4056,7 +4056,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 172,
   },
   {
-    id: 'chipotle-burrito',
+    id: 'il-canto-cafe-chipotle-burrito',
     restaurantId: 'il-canto-cafe',
     name: 'Chipotle Burrito',
     description:
@@ -4069,7 +4069,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 1263,
   },
   {
-    id: 'chipotle-meatlover-burrito',
+    id: 'il-canto-cafe-chipotle-meatlover-burrito',
     restaurantId: 'il-canto-cafe',
     name: 'Chipotle Meatlover Burrito',
     description:
@@ -4082,7 +4082,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 379,
   },
   {
-    id: 'deluxe-2-eggs-and-cheese-sandwich',
+    id: 'il-canto-cafe-deluxe-2-eggs-and-cheese-sandwich',
     restaurantId: 'il-canto-cafe',
     name: 'Deluxe 2 Eggs and Cheese Sandwich',
     description:
@@ -4107,7 +4107,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 136,
   },
   {
-    id: 'fresh-squeezed-orange-juice',
+    id: 'il-canto-cafe-fresh-squeezed-orange-juice',
     restaurantId: 'il-canto-cafe',
     name: 'Fresh Squeezed Orange Juice',
     description:
@@ -4120,7 +4120,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 172,
   },
   {
-    id: 'latte',
+    id: 'il-canto-cafe-latte-2',
     restaurantId: 'il-canto-cafe',
     name: 'Latte',
     description: 'Medium roast Gusto Crema blend espresso by Caffe Umbria',
@@ -4132,7 +4132,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 132,
   },
   {
-    id: 'chipotle-burrito',
+    id: 'il-canto-cafe-chipotle-burrito-2',
     restaurantId: 'il-canto-cafe',
     name: 'Chipotle Burrito',
     description:
@@ -4145,7 +4145,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 1263,
   },
   {
-    id: 'chipotle-meatlover-burrito',
+    id: 'il-canto-cafe-chipotle-meatlover-burrito-2',
     restaurantId: 'il-canto-cafe',
     name: 'Chipotle Meatlover Burrito',
     description:
@@ -4286,7 +4286,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 51,
   },
   {
-    id: 'latte',
+    id: 'il-canto-cafe-latte-3',
     restaurantId: 'il-canto-cafe',
     name: 'Latte',
     description: 'Medium roast Gusto Crema blend espresso by Caffe Umbria',
@@ -4298,7 +4298,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 132,
   },
   {
-    id: 'fresh-squeezed-orange-juice',
+    id: 'il-canto-cafe-fresh-squeezed-orange-juice-2',
     restaurantId: 'il-canto-cafe',
     name: 'Fresh Squeezed Orange Juice',
     description:
@@ -4311,7 +4311,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 172,
   },
   {
-    id: 'cold-brew-coffee',
+    id: 'il-canto-cafe-cold-brew-coffee',
     restaurantId: 'il-canto-cafe',
     name: 'Cold Brew Coffee',
     description: 'Iced medium-dark roast coffee brewed daily for 24 hours.',
@@ -4493,7 +4493,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 29,
   },
   {
-    id: 'crispy-grilled-cheese-on-sourdough',
+    id: 'starbucks--299-fremont-street--crispy-grilled-cheese-on-sourdough',
     restaurantId: 'starbucks-(299-fremont-street)',
     name: 'Crispy Grilled Cheese on Sourdough',
     description:
@@ -4506,7 +4506,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 17,
   },
   {
-    id: 'double-smoked-bacon-cheddar--egg-sandwich',
+    id: 'starbucks--299-fremont-street--double-smoked-bacon-cheddar--egg-sandwich',
     restaurantId: 'starbucks-(299-fremont-street)',
     name: 'Double-Smoked Bacon, Cheddar & Egg Sandwich',
     description:
@@ -4519,7 +4519,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 13,
   },
   {
-    id: 'cheese-danish',
+    id: 'starbucks--299-fremont-street--cheese-danish',
     restaurantId: 'starbucks-(299-fremont-street)',
     name: 'Cheese Danish',
     description:
@@ -4532,7 +4532,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 7,
   },
   {
-    id: 'caff-latte',
+    id: 'starbucks--299-fremont-street--caff-latte',
     restaurantId: 'starbucks-(299-fremont-street)',
     name: 'Caffè Latte',
     description:
@@ -4558,7 +4558,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'caff-latte',
+    id: 'starbucks--299-fremont-street--caff-latte-2',
     restaurantId: 'starbucks-(299-fremont-street)',
     name: 'Caffè Latte',
     description:
@@ -4571,7 +4571,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 11,
   },
   {
-    id: 'coffee-traveler--pike-place-roast',
+    id: 'starbucks--299-fremont-street--coffee-traveler--pike-place-roast',
     restaurantId: 'starbucks-(299-fremont-street)',
     name: 'Coffee Traveler – Pike Place® Roast',
     description:
@@ -4623,7 +4623,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'caramel-macchiato',
+    id: 'starbucks--299-fremont-street--caramel-macchiato',
     restaurantId: 'starbucks-(299-fremont-street)',
     name: 'Caramel Macchiato',
     description:
@@ -4636,7 +4636,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 12,
   },
   {
-    id: 'cappuccino',
+    id: 'starbucks--299-fremont-street--cappuccino',
     restaurantId: 'starbucks-(299-fremont-street)',
     name: 'Cappuccino',
     description:
@@ -4649,7 +4649,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'white-chocolate-mocha',
+    id: 'starbucks--299-fremont-street--white-chocolate-mocha',
     restaurantId: 'starbucks-(299-fremont-street)',
     name: 'White Chocolate Mocha',
     description:
@@ -4662,7 +4662,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'iced-brown-sugar-oatmilk-shaken-espresso',
+    id: 'starbucks--299-fremont-street--iced-brown-sugar-oatmilk-shaken-espresso',
     restaurantId: 'starbucks-(299-fremont-street)',
     name: 'Iced Brown Sugar Oatmilk Shaken Espresso',
     description:
@@ -4714,7 +4714,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'iced-white-chocolate-mocha',
+    id: 'starbucks--299-fremont-street--iced-white-chocolate-mocha',
     restaurantId: 'starbucks-(299-fremont-street)',
     name: 'Iced White Chocolate Mocha',
     description:
@@ -4727,7 +4727,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'iced-caramel-macchiato',
+    id: 'starbucks--299-fremont-street--iced-caramel-macchiato',
     restaurantId: 'starbucks-(299-fremont-street)',
     name: 'Iced Caramel Macchiato',
     description:
@@ -4766,7 +4766,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'matcha-latte',
+    id: 'starbucks--299-fremont-street--matcha-latte',
     restaurantId: 'starbucks-(299-fremont-street)',
     name: 'Matcha Latte',
     description:
@@ -4779,7 +4779,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'chai-latte',
+    id: 'starbucks--299-fremont-street--chai-latte',
     restaurantId: 'starbucks-(299-fremont-street)',
     name: 'Chai Latte',
     description:
@@ -4857,7 +4857,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'iced-black-tea',
+    id: 'starbucks--299-fremont-street--iced-black-tea',
     restaurantId: 'starbucks-(299-fremont-street)',
     name: 'Iced Black Tea',
     description:
@@ -4948,7 +4948,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'mocha-cookie-crumble-frappuccino-blended-beverage',
+    id: 'starbucks--299-fremont-street--mocha-cookie-crumble-frappuccino-blended-beverage',
     restaurantId: 'starbucks-(299-fremont-street)',
     name: 'Mocha Cookie Crumble Frappuccino® Blended Beverage',
     description:
@@ -5000,7 +5000,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'matcha-crme-frappuccino-blended-beverage',
+    id: 'starbucks--299-fremont-street--matcha-crme-frappuccino-blended-beverage',
     restaurantId: 'starbucks-(299-fremont-street)',
     name: 'Matcha Crème Frappuccino® Blended Beverage',
     description:
@@ -5026,7 +5026,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'steamed-milk',
+    id: 'starbucks--299-fremont-street--steamed-milk',
     restaurantId: 'starbucks-(299-fremont-street)',
     name: 'Steamed Milk',
     description:
@@ -5156,7 +5156,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'double-smoked-bacon-cheddar--egg-sandwich',
+    id: 'starbucks--299-fremont-street--double-smoked-bacon-cheddar--egg-sandwich-2',
     restaurantId: 'starbucks-(299-fremont-street)',
     name: 'Double-Smoked Bacon, Cheddar & Egg Sandwich',
     description:
@@ -5234,7 +5234,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'banana-walnut--pecan-loaf',
+    id: 'starbucks--299-fremont-street--banana-walnut--pecan-loaf',
     restaurantId: 'starbucks-(299-fremont-street)',
     name: 'Banana, Walnut & Pecan Loaf',
     description:
@@ -5273,7 +5273,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'cheese-danish',
+    id: 'starbucks--299-fremont-street--cheese-danish-2',
     restaurantId: 'starbucks-(299-fremont-street)',
     name: 'Cheese Danish',
     description:
@@ -5415,7 +5415,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'madeleines',
+    id: 'starbucks--299-fremont-street--madeleines',
     restaurantId: 'starbucks-(299-fremont-street)',
     name: 'Madeleines',
     description:
@@ -5491,7 +5491,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'latte',
+    id: 'latte-express-latte',
     restaurantId: 'latte-express',
     name: 'Latte',
     description: null,
@@ -5598,7 +5598,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'latte',
+    id: 'latte-express-latte-2',
     restaurantId: 'latte-express',
     name: 'Latte',
     description: 'Vietnamese coffee latte, offered in small, medium, or large sizes.',
@@ -5632,7 +5632,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'americano',
+    id: 'latte-express-americano',
     restaurantId: 'latte-express',
     name: 'Americano',
     description: 'Vietnamese-style Americano, available in small, medium, or large.',
@@ -5643,7 +5643,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'cappuccino',
+    id: 'latte-express-cappuccino',
     restaurantId: 'latte-express',
     name: 'Cappuccino',
     description: 'Vietnamese-style cappuccino. Size options: small, medium, large.',
@@ -5654,7 +5654,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'mocha',
+    id: 'latte-express-mocha',
     restaurantId: 'latte-express',
     name: 'Mocha',
     description: 'Vietnamese mocha, available in small, medium, large.',
@@ -5665,7 +5665,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: '13-croissant',
+    id: 'latte-express-13-croissant',
     restaurantId: 'latte-express',
     name: '13. Croissant',
     description: 'Sausage, egg, cheese.',
@@ -5688,7 +5688,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: '19-bagel',
+    id: 'latte-express-19-bagel',
     restaurantId: 'latte-express',
     name: '19. Bagel',
     description: 'Egg, tomato, mayo or cream cheese.',
@@ -5700,7 +5700,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: '12-english-muffin',
+    id: 'latte-express-12-english-muffin',
     restaurantId: 'latte-express',
     name: '12. English Muffin',
     description: 'Sausage, egg, cheese.',
@@ -5723,7 +5723,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: '17-bagel',
+    id: 'latte-express-17-bagel',
     restaurantId: 'latte-express',
     name: '17. Bagel',
     description: 'Cream, cheese, tomato.',
@@ -5735,7 +5735,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: '18-bagel',
+    id: 'latte-express-18-bagel',
     restaurantId: 'latte-express',
     name: '18. Bagel',
     description: 'Cream, cheese, salami.',
@@ -5819,7 +5819,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'caesar-salad',
+    id: 'lava-wings-caesar-salad',
     restaurantId: 'lava-wings',
     name: 'Caesar Salad',
     description:
@@ -5832,7 +5832,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'french-fries',
+    id: 'lava-wings-french-fries',
     restaurantId: 'lava-wings',
     name: 'French Fries',
     description: null,
@@ -5844,7 +5844,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'bbq-bone-in-wings',
+    id: 'lava-wings-bbq-bone-in-wings',
     restaurantId: 'lava-wings',
     name: 'BBQ Bone-In Wings',
     description:
@@ -5857,7 +5857,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'cheese-fries',
+    id: 'lava-wings-cheese-fries',
     restaurantId: 'lava-wings',
     name: 'Cheese Fries',
     description: null,
@@ -5869,7 +5869,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'bbq-bone-in-wings',
+    id: 'lava-wings-bbq-bone-in-wings-2',
     restaurantId: 'lava-wings',
     name: 'BBQ Bone-In Wings',
     description:
@@ -6171,7 +6171,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: '15-egg-cheese--one-choice-of-meat',
+    id: 'my-happy-donut-15-egg-cheese--one-choice-of-meat',
     restaurantId: 'my-happy-donut',
     name: '15. Egg, Cheese & One Choice of Meat',
     description:
@@ -6210,7 +6210,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: '9-breakfast-burrito',
+    id: 'my-happy-donut-9-breakfast-burrito',
     restaurantId: 'my-happy-donut',
     name: '9. Breakfast Burrito',
     description:
@@ -6223,7 +6223,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: '1-all-american-favorite',
+    id: 'my-happy-donut-1-all-american-favorite',
     restaurantId: 'my-happy-donut',
     name: '1. All-American Favorite',
     description:
@@ -6236,7 +6236,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: '14-eggs-cheese--avocado',
+    id: 'my-happy-donut-14-eggs-cheese--avocado',
     restaurantId: 'my-happy-donut',
     name: '14. Eggs, Cheese & Avocado',
     description:
@@ -6249,7 +6249,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: '12-mixed-donut-holes',
+    id: 'my-happy-donut-12-mixed-donut-holes',
     restaurantId: 'my-happy-donut',
     name: '12 Mixed Donut Holes',
     description:
@@ -6334,7 +6334,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'bagel-with-peanut-butter',
+    id: 'my-happy-donut-bagel-with-peanut-butter',
     restaurantId: 'my-happy-donut',
     name: 'Bagel with Peanut Butter',
     description: 'Hand-rolled bagel generously spread with creamy peanut butter.',
@@ -6507,7 +6507,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'latte',
+    id: 'my-happy-donut-latte',
     restaurantId: 'my-happy-donut',
     name: 'Latte',
     description: 'Coffee latte with options for small, medium, or large sizes.',
@@ -6518,7 +6518,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'mocha',
+    id: 'my-happy-donut-mocha',
     restaurantId: 'my-happy-donut',
     name: 'Mocha',
     description:
@@ -6615,7 +6615,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'chicken-shish-kabob',
+    id: 'icu-deli-inc-chicken-shish-kabob',
     restaurantId: 'icu-deli-inc',
     name: 'Chicken Shish Kabob',
     description:
@@ -6628,7 +6628,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'lasagna',
+    id: 'icu-deli-inc-lasagna',
     restaurantId: 'icu-deli-inc',
     name: 'Lasagna',
     description: 'Layered dish with wide flat pasta.',
@@ -6640,7 +6640,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'teriyaki-chicken',
+    id: 'icu-deli-inc-teriyaki-chicken',
     restaurantId: 'icu-deli-inc',
     name: 'Teriyaki Chicken',
     description: 'Grilled Chicken Glazed in Sweet and Savory Teriyaki Sauce',
@@ -6652,7 +6652,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'pastrami',
+    id: 'icu-deli-inc-pastrami',
     restaurantId: 'icu-deli-inc',
     name: 'Pastrami',
     description: null,
@@ -6664,7 +6664,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'chicken-alfredo',
+    id: 'icu-deli-inc-chicken-alfredo',
     restaurantId: 'icu-deli-inc',
     name: 'Chicken Alfredo',
     description:
@@ -6773,7 +6773,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'chicken-shish-kabob',
+    id: 'icu-deli-inc-chicken-shish-kabob-2',
     restaurantId: 'icu-deli-inc',
     name: 'Chicken Shish Kabob',
     description:
@@ -6786,7 +6786,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'lasagna',
+    id: 'icu-deli-inc-lasagna-2',
     restaurantId: 'icu-deli-inc',
     name: 'Lasagna',
     description: 'Layered dish with wide flat pasta.',
@@ -6798,7 +6798,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'bagel-with-cream-cheese',
+    id: 'icu-deli-inc-bagel-with-cream-cheese',
     restaurantId: 'icu-deli-inc',
     name: 'Bagel with Cream Cheese',
     description:
@@ -6969,7 +6969,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'cheese-pizza-14medium',
+    id: 'modena-pizza---ice-cream-cheese-pizza-14medium',
     restaurantId: 'modena-pizza-&-ice-cream',
     name: 'Cheese Pizza 14"medium',
     description:
@@ -7007,7 +7007,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'spaghetti-with-meatballs-marinara-sauce',
+    id: 'modena-pizza---ice-cream-spaghetti-with-meatballs-marinara-sauce',
     restaurantId: 'modena-pizza-&-ice-cream',
     name: 'Spaghetti with Meatballs Marinara Sauce',
     description: 'pasta sauce and meatballs.',
@@ -7091,7 +7091,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'chicken-tender-5-pieces',
+    id: 'modena-pizza---ice-cream-chicken-tender-5-pieces',
     restaurantId: 'modena-pizza-&-ice-cream',
     name: 'Chicken Tender (5 Pieces)',
     description: 'Crispy breaded chicken tenders served with a side of tangy marinara sauce.',
@@ -7161,7 +7161,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'cheeseburger',
+    id: 'modena-pizza---ice-cream-cheeseburger',
     restaurantId: 'modena-pizza-&-ice-cream',
     name: 'Cheeseburger',
     description: 'Served with out fries',
@@ -7207,7 +7207,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'spaghetti-with-meatballs-marinara-sauce',
+    id: 'modena-pizza---ice-cream-spaghetti-with-meatballs-marinara-sauce-2',
     restaurantId: 'modena-pizza-&-ice-cream',
     name: 'Spaghetti with Meatballs Marinara Sauce',
     description: 'pasta sauce and meatballs.',
@@ -7219,7 +7219,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'cheese-pizza-18-x-large',
+    id: 'modena-pizza---ice-cream-cheese-pizza-18-x-large',
     restaurantId: 'modena-pizza-&-ice-cream',
     name: 'Cheese Pizza 18" X-Large',
     description:
@@ -7232,7 +7232,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'cheese-pizza-14medium',
+    id: 'modena-pizza---ice-cream-cheese-pizza-14medium-2',
     restaurantId: 'modena-pizza-&-ice-cream',
     name: 'Cheese Pizza 14"medium',
     description:
@@ -7245,7 +7245,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'cheese-pizza-12-small',
+    id: 'modena-pizza---ice-cream-cheese-pizza-12-small',
     restaurantId: 'modena-pizza-&-ice-cream',
     name: 'Cheese Pizza 12" Small',
     description:
@@ -7258,7 +7258,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'cheese-pizza-16-large',
+    id: 'modena-pizza---ice-cream-cheese-pizza-16-large',
     restaurantId: 'modena-pizza-&-ice-cream',
     name: 'Cheese Pizza 16" Large',
     description:
@@ -7282,7 +7282,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'bbq-chicken-pizza',
+    id: 'modena-pizza---ice-cream-bbq-chicken-pizza',
     restaurantId: 'modena-pizza-&-ice-cream',
     name: 'BBQ Chicken Pizza',
     description: 'No red sauce. BBQ sauce, chicken, red onions, cilantro.',
@@ -7328,7 +7328,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'chocolate-mousse-cake',
+    id: 'modena-pizza---ice-cream-chocolate-mousse-cake',
     restaurantId: 'modena-pizza-&-ice-cream',
     name: 'Chocolate Mousse Cake',
     description: 'Decadent chocolate mousse cake that will satisfy all your sweet cravings.',
@@ -7384,7 +7384,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'apple-juice',
+    id: 'modena-pizza---ice-cream-apple-juice',
     restaurantId: 'modena-pizza-&-ice-cream',
     name: 'Apple Juice',
     description:
@@ -7457,7 +7457,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'smart-water1-liter',
+    id: 'deena-s-market-and-smoke-shop-smart-water1-liter',
     restaurantId: 'deena’s-market-and-smoke-shop',
     name: 'Smart Water(1 Liter)',
     description: '1 Liter bottle',
@@ -7469,7 +7469,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'raspberry-cheesecake',
+    id: 'deena-s-market-and-smoke-shop-raspberry-cheesecake',
     restaurantId: 'deena’s-market-and-smoke-shop',
     name: 'Raspberry Cheesecake',
     description: null,
@@ -7525,7 +7525,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'build-your-own-sandwiches',
+    id: 'deena-s-market-and-smoke-shop-build-your-own-sandwiches',
     restaurantId: 'deena’s-market-and-smoke-shop',
     name: 'Build Your Own Sandwiches',
     description: null,
@@ -7591,7 +7591,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'bbq-chicken-wings-5-pieces',
+    id: 'deena-s-market-and-smoke-shop-bbq-chicken-wings-5-pieces',
     restaurantId: 'deena’s-market-and-smoke-shop',
     name: 'BBQ Chicken Wings (5 Pieces)',
     description: '5 pieces.',
@@ -7602,7 +7602,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'spicy-chicken-wings-5-pieces',
+    id: 'deena-s-market-and-smoke-shop-spicy-chicken-wings-5-pieces',
     restaurantId: 'deena’s-market-and-smoke-shop',
     name: 'Spicy Chicken Wings (5 pieces)',
     description: '5 pieces.',
@@ -7635,7 +7635,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'raspberry-cheesecake',
+    id: 'deena-s-market-and-smoke-shop-raspberry-cheesecake-2',
     restaurantId: 'deena’s-market-and-smoke-shop',
     name: 'Raspberry Cheesecake',
     description: null,
@@ -7658,7 +7658,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'strawberry-cheesecake',
+    id: 'deena-s-market-and-smoke-shop-strawberry-cheesecake',
     restaurantId: 'deena’s-market-and-smoke-shop',
     name: 'Strawberry Cheesecake',
     description: null,
@@ -7691,7 +7691,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'diet-coke',
+    id: 'deena-s-market-and-smoke-shop-diet-coke',
     restaurantId: 'deena’s-market-and-smoke-shop',
     name: 'Diet Coke',
     description: '12 Oz can',
@@ -7737,7 +7737,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'smart-water1-liter',
+    id: 'deena-s-market-and-smoke-shop-smart-water1-liter-2',
     restaurantId: 'deena’s-market-and-smoke-shop',
     name: 'Smart Water(1 Liter)',
     description: '1 Liter bottle',
@@ -7773,7 +7773,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'orange-juice',
+    id: 'allstar-donuts-orange-juice',
     restaurantId: 'allstar-donuts',
     name: 'Orange Juice',
     description: 'Classic citrus refreshment.',
@@ -7840,7 +7840,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'teriyaki-chicken',
+    id: 'allstar-donuts-teriyaki-chicken',
     restaurantId: 'allstar-donuts',
     name: 'Teriyaki Chicken',
     description: 'Grilled Chicken Breast with Teriyaki Sauce.',
@@ -7933,7 +7933,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'orange-juice',
+    id: 'mellis-cafe-orange-juice',
     restaurantId: 'mellis-cafe',
     name: 'Orange Juice',
     description: null,
@@ -7945,7 +7945,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'eggs-cheese--ham-or-bacon',
+    id: 'mellis-cafe-eggs-cheese--ham-or-bacon',
     restaurantId: 'mellis-cafe',
     name: 'Eggs, Cheese & Ham, or Bacon',
     description: 'Bagels filled with eggs, cheese, and your choice of ham or bacon.',
@@ -7957,7 +7957,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'sandwiches',
+    id: 'mellis-cafe-sandwiches',
     restaurantId: 'mellis-cafe',
     name: 'Sandwiches',
     description:
@@ -7970,7 +7970,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'yogurt-parfait',
+    id: 'mellis-cafe-yogurt-parfait',
     restaurantId: 'mellis-cafe',
     name: 'Yogurt Parfait',
     description: 'Creamy yogurt layered with fresh raspberries, blueberries, and crunchy granola.',
@@ -7982,7 +7982,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'iced-mocha',
+    id: 'mellis-cafe-iced-mocha',
     restaurantId: 'mellis-cafe',
     name: 'Iced Mocha',
     description: 'Large 16 oz.',
@@ -7994,7 +7994,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'orange-juice',
+    id: 'mellis-cafe-orange-juice-2',
     restaurantId: 'mellis-cafe',
     name: 'Orange Juice',
     description: 'Large 16 oz.',
@@ -8137,7 +8137,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'cafe-latte',
+    id: 'mellis-cafe-cafe-latte',
     restaurantId: 'mellis-cafe',
     name: 'Cafe Latte',
     description:
@@ -8149,7 +8149,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'cappuccino',
+    id: 'mellis-cafe-cappuccino',
     restaurantId: 'mellis-cafe',
     name: 'Cappuccino',
     description:
@@ -8161,7 +8161,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'mocha',
+    id: 'mellis-cafe-mocha',
     restaurantId: 'mellis-cafe',
     name: 'Mocha',
     description:
@@ -8173,7 +8173,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'chai-latte',
+    id: 'mellis-cafe-chai-latte',
     restaurantId: 'mellis-cafe',
     name: 'Chai Latte',
     description: 'Spiced chai tea with steamed milk. Options: medium (12 oz), large (16 oz).',
@@ -8206,7 +8206,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'yogurt-parfait',
+    id: 'mellis-cafe-yogurt-parfait-2',
     restaurantId: 'mellis-cafe',
     name: 'Yogurt Parfait',
     description: 'Creamy yogurt layered with fresh raspberries, blueberries, and crunchy granola.',
@@ -8262,7 +8262,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'orange-juice',
+    id: 'mellis-cafe-orange-juice-3',
     restaurantId: 'mellis-cafe',
     name: 'Orange Juice',
     description: 'Large 16 oz.',
@@ -8274,7 +8274,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'plain-croissant',
+    id: 'polk---sutter-cafe-deli-plain-croissant',
     restaurantId: 'polk-&-sutter-cafe-deli',
     name: 'Plain Croissant',
     description: null,
@@ -8310,7 +8310,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'macchiato',
+    id: 'polk---sutter-cafe-deli-macchiato',
     restaurantId: 'polk-&-sutter-cafe-deli',
     name: 'Macchiato',
     description: null,
@@ -8334,7 +8334,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'plain-croissant',
+    id: 'polk---sutter-cafe-deli-plain-croissant-2',
     restaurantId: 'polk-&-sutter-cafe-deli',
     name: 'Plain Croissant',
     description: 'A buttery, flaky pastry made from laminated yeast dough and butter.',
@@ -8346,7 +8346,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'melted-cheese',
+    id: 'polk---sutter-cafe-deli-melted-cheese',
     restaurantId: 'polk-&-sutter-cafe-deli',
     name: 'Melted Cheese',
     description: 'Toasted Bread with Cheese',
@@ -8358,7 +8358,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'tuna-salad',
+    id: 'polk---sutter-cafe-deli-tuna-salad',
     restaurantId: 'polk-&-sutter-cafe-deli',
     name: 'Tuna Salad',
     description:
@@ -8371,7 +8371,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'macchiato',
+    id: 'polk---sutter-cafe-deli-macchiato-2',
     restaurantId: 'polk-&-sutter-cafe-deli',
     name: 'Macchiato',
     description: null,
@@ -8454,7 +8454,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'chocolate-chip-cookie',
+    id: 'polk---sutter-cafe-deli-chocolate-chip-cookie',
     restaurantId: 'polk-&-sutter-cafe-deli',
     name: 'Chocolate Chip Cookie',
     description:
@@ -8582,7 +8582,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'cheese-fries',
+    id: 'wild-philly-steak-cheese-fries',
     restaurantId: 'wild-philly-steak',
     name: 'Cheese Fries',
     description:
@@ -8607,7 +8607,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'french-fries',
+    id: 'wild-philly-steak-french-fries',
     restaurantId: 'wild-philly-steak',
     name: 'French Fries',
     description:
@@ -8632,7 +8632,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: '8-mushroom-philly-steak',
+    id: 'wild-philly-steak-8-mushroom-philly-steak',
     restaurantId: 'wild-philly-steak',
     name: '8" Mushroom Philly Steak',
     description:
@@ -8682,7 +8682,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'french-fries',
+    id: 'wild-philly-steak-french-fries-2',
     restaurantId: 'wild-philly-steak',
     name: 'French Fries',
     description:
@@ -8695,7 +8695,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'mac-n-cheese-8oz',
+    id: 'wild-philly-steak-mac-n-cheese-8oz',
     restaurantId: 'wild-philly-steak',
     name: 'Mac N Cheese 8oz',
     description: 'Cheesy Macaroni that makes your meal a tad much better',
@@ -8707,7 +8707,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'cheese-fries',
+    id: 'wild-philly-steak-cheese-fries-2',
     restaurantId: 'wild-philly-steak',
     name: 'Cheese Fries',
     description:
@@ -8720,7 +8720,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'garlic-fries',
+    id: 'wild-philly-steak-garlic-fries',
     restaurantId: 'wild-philly-steak',
     name: 'Garlic Fries',
     description: 'Yummy Garlic Fries that make the day better',
@@ -8758,7 +8758,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'strawberry-cheesecake',
+    id: 'wild-philly-steak-strawberry-cheesecake',
     restaurantId: 'wild-philly-steak',
     name: 'Strawberry Cheesecake',
     description:
@@ -8771,7 +8771,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'tiramisu',
+    id: 'wild-philly-steak-tiramisu',
     restaurantId: 'wild-philly-steak',
     name: 'Tiramisu',
     description: 'Tiramisu that just hits the spot. An excellent choice for Chocolate Lovers',
@@ -8807,7 +8807,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'blue-cheese',
+    id: 'wild-philly-steak-blue-cheese',
     restaurantId: 'wild-philly-steak',
     name: 'Blue Cheese',
     description: 'Creamy Blue Cheese Sauce on the Side',
@@ -8842,7 +8842,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'diet-pepsi',
+    id: 'wild-philly-steak-diet-pepsi',
     restaurantId: 'wild-philly-steak',
     name: 'Diet Pepsi',
     description: 'A Refreshing Diet Pepsi',
@@ -8961,7 +8961,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'chicken-mushroom-spaghetti',
+    id: 'papa-pasta-chicken-mushroom-spaghetti',
     restaurantId: 'papa-pasta',
     name: 'Chicken Mushroom Spaghetti',
     description: 'Spaghetti made with chicken, mushrooms, and marinara sauce.',
@@ -8973,7 +8973,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'lasagna-al-forno',
+    id: 'papa-pasta-lasagna-al-forno',
     restaurantId: 'papa-pasta',
     name: 'Lasagna Al Forno',
     description:
@@ -8986,7 +8986,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'ravioli-meat-sauce',
+    id: 'papa-pasta-ravioli-meat-sauce',
     restaurantId: 'papa-pasta',
     name: 'Ravioli Meat Sauce',
     description: 'Meat-filled ravioli in our homemade sauce.',
@@ -9010,7 +9010,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'pesto-fettuccine',
+    id: 'papa-pasta-pesto-fettuccine',
     restaurantId: 'papa-pasta',
     name: 'Pesto Fettuccine',
     description: 'Made in a white sauce with pesto',
@@ -9022,7 +9022,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'original-cheesesteak',
+    id: 'papa-pasta-original-cheesesteak',
     restaurantId: 'papa-pasta',
     name: 'Original Cheesesteak',
     description: "Creamy Cheesecake with a tasty Crust, Can't go wrong with a Classic Choice",
@@ -9046,7 +9046,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'onion-rings',
+    id: 'papa-pasta-onion-rings',
     restaurantId: 'papa-pasta',
     name: 'Onion Rings',
     description: 'French onion, coated with batter, and deep-fried',
@@ -9058,7 +9058,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'french-fries',
+    id: 'papa-pasta-french-fries',
     restaurantId: 'papa-pasta',
     name: 'French Fries',
     description: 'Our homemade crispy fries drizzled with yummy cheese sauce',
@@ -9070,7 +9070,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: '7-pesto-garlic-bread',
+    id: 'papa-pasta-7-pesto-garlic-bread',
     restaurantId: 'papa-pasta',
     name: '7" Pesto Garlic Bread',
     description: 'Toasted bread topped with garlic pesto and mozzarella cheese.',
@@ -9082,7 +9082,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'caesar-salad',
+    id: 'papa-pasta-caesar-salad',
     restaurantId: 'papa-pasta',
     name: 'Caesar Salad',
     description: 'Lettuce, Croutons, fresh parmesan cheese',
@@ -9094,7 +9094,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'greek-salad',
+    id: 'papa-pasta-greek-salad',
     restaurantId: 'papa-pasta',
     name: 'Greek Salad',
     description: 'Fresh romaine lettuce, feta cheese, cucumber, tomatoes, olives',
@@ -9106,7 +9106,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'chicken-mushroom-spaghetti',
+    id: 'papa-pasta-chicken-mushroom-spaghetti-2',
     restaurantId: 'papa-pasta',
     name: 'Chicken Mushroom Spaghetti',
     description: 'Spaghetti made with chicken, mushrooms, and marinara sauce.',
@@ -9130,7 +9130,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'veggie-lasagna',
+    id: 'papa-pasta-veggie-lasagna',
     restaurantId: 'papa-pasta',
     name: 'Veggie Lasagna',
     description: 'Mixed vegetables with lasagna pasta',
@@ -9166,7 +9166,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'lasagna-al-forno',
+    id: 'papa-pasta-lasagna-al-forno-2',
     restaurantId: 'papa-pasta',
     name: 'Lasagna Al Forno',
     description:
@@ -9192,7 +9192,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'original-cheesesteak',
+    id: 'papa-pasta-original-cheesesteak-2',
     restaurantId: 'papa-pasta',
     name: 'Original Cheesesteak',
     description: "Creamy Cheesecake with a tasty Crust, Can't go wrong with a Classic Choice",
@@ -9204,7 +9204,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'oreo-mousse-cake',
+    id: 'papa-pasta-oreo-mousse-cake',
     restaurantId: 'papa-pasta',
     name: 'Oreo Mousse Cake',
     description: 'Super Delicious Oreo Mousse Cake that you must try!',
@@ -9216,7 +9216,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'tiramisu',
+    id: 'papa-pasta-tiramisu',
     restaurantId: 'papa-pasta',
     name: 'Tiramisu',
     description:
@@ -9253,7 +9253,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'snapple',
+    id: 'papa-pasta-snapple',
     restaurantId: 'papa-pasta',
     name: 'Snapple',
     description: 'Refreshing Snapple Drink',
@@ -9265,7 +9265,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'apple-juice',
+    id: 'papa-pasta-apple-juice',
     restaurantId: 'papa-pasta',
     name: 'Apple Juice',
     description: 'Sweet & Refreshing Apple Juice that goes with your Pasta!',
@@ -9278,7 +9278,7 @@ export const menuItems: MenuItem[] = [
   },
 
   {
-    id: 'carrot-cake',
+    id: 'sweet-flex-carrot-cake',
     restaurantId: 'sweet-flex',
     name: 'Carrot Cake',
     description: null,
@@ -9338,7 +9338,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'carrot-cake',
+    id: 'sweet-flex-carrot-cake-2',
     restaurantId: 'sweet-flex',
     name: 'Carrot Cake',
     description:
@@ -9351,7 +9351,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'sprite',
+    id: 'sweet-flex-sprite',
     restaurantId: 'sweet-flex',
     name: 'Sprite',
     description: 'Refreshing and just hits the spot!',
@@ -9363,7 +9363,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'nutella-cheesecake',
+    id: 'sweet-flex-nutella-cheesecake',
     restaurantId: 'sweet-flex',
     name: 'Nutella Cheesecake',
     description:
@@ -9376,7 +9376,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'oreo-cake',
+    id: 'sweet-flex-oreo-cake',
     restaurantId: 'sweet-flex',
     name: 'Oreo Cake',
     description:
@@ -9389,7 +9389,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'new-york-cheesecake',
+    id: 'sweet-flex-new-york-cheesecake',
     restaurantId: 'sweet-flex',
     name: 'New York Cheesecake',
     description:
@@ -9415,7 +9415,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'nutella-cheesecake',
+    id: 'sweet-flex-nutella-cheesecake-2',
     restaurantId: 'sweet-flex',
     name: 'Nutella Cheesecake',
     description:
@@ -9428,7 +9428,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'new-york-cheesecake',
+    id: 'sweet-flex-new-york-cheesecake-2',
     restaurantId: 'sweet-flex',
     name: 'New York Cheesecake',
     description:
@@ -9453,7 +9453,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'caramel-fudge-cheesecake',
+    id: 'sweet-flex-caramel-fudge-cheesecake',
     restaurantId: 'sweet-flex',
     name: 'Caramel Fudge Cheesecake',
     description:
@@ -9466,7 +9466,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'sprite',
+    id: 'sweet-flex-sprite-2',
     restaurantId: 'sweet-flex',
     name: 'Sprite',
     description: 'Refreshing and just hits the spot!',
@@ -9514,7 +9514,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'apple-juice',
+    id: 'sweet-flex-apple-juice',
     restaurantId: 'sweet-flex',
     name: 'Apple Juice',
     description: 'Sweet & Refreshing Apple Juice that goes with your Pasta!',
@@ -9526,7 +9526,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'sparkling-water',
+    id: 'sweet-flex-sparkling-water',
     restaurantId: 'sweet-flex',
     name: 'Sparkling Water',
     description: 'A healthier choice. refreshing and just hits the spot',
@@ -9599,7 +9599,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'eggs--tots-breakfast-burrito',
+    id: 'mucho-breakfast-burrito-eggs--tots-breakfast-burrito',
     restaurantId: 'mucho-breakfast-burrito',
     name: 'Eggs & Tots Breakfast Burrito',
     description:
@@ -9612,7 +9612,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'bacon-avocado-breakfast-burrito',
+    id: 'mucho-breakfast-burrito-bacon-avocado-breakfast-burrito',
     restaurantId: 'mucho-breakfast-burrito',
     name: 'Bacon Avocado Breakfast Burrito',
     description:
@@ -9625,7 +9625,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'bacon-egg--cheese-breakfast-burrito',
+    id: 'mucho-breakfast-burrito-bacon-egg--cheese-breakfast-burrito',
     restaurantId: 'mucho-breakfast-burrito',
     name: 'Bacon Egg & Cheese Breakfast Burrito',
     description:
@@ -9638,7 +9638,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'tater-tots',
+    id: 'mucho-breakfast-burrito-tater-tots',
     restaurantId: 'mucho-breakfast-burrito',
     name: 'Tater Tots',
     description:
@@ -9651,7 +9651,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'bacon-avocado-breakfast-burrito',
+    id: 'mucho-breakfast-burrito-bacon-avocado-breakfast-burrito-2',
     restaurantId: 'mucho-breakfast-burrito',
     name: 'Bacon Avocado Breakfast Burrito',
     description:
@@ -9689,7 +9689,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'eggs--tots-breakfast-burrito',
+    id: 'mucho-breakfast-burrito-eggs--tots-breakfast-burrito-2',
     restaurantId: 'mucho-breakfast-burrito',
     name: 'Eggs & Tots Breakfast Burrito',
     description:
@@ -9763,7 +9763,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'roast-beef-sandwich',
+    id: 'subs-bro-roast-beef-sandwich',
     restaurantId: 'subs-bro',
     name: 'Roast Beef Sandwich',
     description:
@@ -9776,7 +9776,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'bacon--egg-sandwich',
+    id: 'subs-bro-bacon--egg-sandwich',
     restaurantId: 'subs-bro',
     name: 'Bacon & Egg Sandwich',
     description:
@@ -9839,7 +9839,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'buffalo-sauce',
+    id: 'subs-bro-buffalo-sauce',
     restaurantId: 'subs-bro',
     name: 'Buffalo Sauce',
     description: 'Buffalo Sauce on the Side',
@@ -9851,7 +9851,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'ranch',
+    id: 'subs-bro-ranch',
     restaurantId: 'subs-bro',
     name: 'Ranch',
     description: 'Creamy Ranch on the Side',
@@ -9924,7 +9924,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'caesar-salad',
+    id: 'late-nite-appetite-caesar-salad',
     restaurantId: 'late-nite-appetite',
     name: 'Caesar Salad',
     description: null,
@@ -9948,7 +9948,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'caesar-salad',
+    id: 'late-nite-appetite-caesar-salad-2',
     restaurantId: 'late-nite-appetite',
     name: 'Caesar Salad',
     description: 'Romaine lettuce, pepperoncini, croutons, cheese, and your choice of dressing',
@@ -9960,7 +9960,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: '8-philly-cheese-steak',
+    id: 'late-nite-appetite-8-philly-cheese-steak',
     restaurantId: 'late-nite-appetite',
     name: '8" Philly Cheese Steak',
     description: 'Grilled Onions, Green Peppers and Cheese. Comes w/ Fries',
@@ -9972,7 +9972,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'mozzarella-sticks-6-pcs',
+    id: 'late-nite-appetite-mozzarella-sticks-6-pcs',
     restaurantId: 'late-nite-appetite',
     name: 'Mozzarella Sticks (6 pcs)',
     description: 'Crunch on the outside, smooth on the inside, & mozzarella cheese',
@@ -9984,7 +9984,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'cheese-burger',
+    id: 'late-nite-appetite-cheese-burger',
     restaurantId: 'late-nite-appetite',
     name: 'Cheese Burger',
     description: 'Cheese, lettuce, tomatoes, onions and house sauce',
@@ -9996,7 +9996,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'garlic-fries',
+    id: 'late-nite-appetite-garlic-fries',
     restaurantId: 'late-nite-appetite',
     name: 'Garlic Fries',
     description: 'Crispy Fries mixed with freshly chopped garlic',
@@ -10008,7 +10008,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'bacon-cheese-burger',
+    id: 'late-nite-appetite-bacon-cheese-burger',
     restaurantId: 'late-nite-appetite',
     name: 'Bacon Cheese Burger',
     description: 'Lettuce, Tomatoes, Onions, and House sauce',
@@ -10020,7 +10020,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: '8-philly-cheese-steak',
+    id: 'late-nite-appetite-8-philly-cheese-steak-2',
     restaurantId: 'late-nite-appetite',
     name: '8" Philly Cheese Steak',
     description: 'Grilled Onions, Green Peppers and Cheese. Comes w/ Fries',
@@ -10056,7 +10056,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'bacon-cheese-burger',
+    id: 'late-nite-appetite-bacon-cheese-burger-2',
     restaurantId: 'late-nite-appetite',
     name: 'Bacon Cheese Burger',
     description: 'Lettuce, Tomatoes, Onions, and House sauce',
@@ -10068,7 +10068,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'garlic-fries',
+    id: 'late-nite-appetite-garlic-fries-2',
     restaurantId: 'late-nite-appetite',
     name: 'Garlic Fries',
     description: 'Crispy Fries mixed with freshly chopped garlic',
@@ -10080,7 +10080,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'cheese-fries',
+    id: 'late-nite-appetite-cheese-fries',
     restaurantId: 'late-nite-appetite',
     name: 'Cheese Fries',
     description: 'Crispy french fries drizzled with yummy cheese sauce',
@@ -10092,7 +10092,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'onion-rings',
+    id: 'late-nite-appetite-onion-rings',
     restaurantId: 'late-nite-appetite',
     name: 'Onion Rings',
     description: 'French onion, coated with batter, and deep-fried',
@@ -10104,7 +10104,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'french-fries',
+    id: 'late-nite-appetite-french-fries',
     restaurantId: 'late-nite-appetite',
     name: 'French Fries',
     description: 'Deep-fried crispy fries',
@@ -10116,7 +10116,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'greek-salad',
+    id: 'late-nite-appetite-greek-salad',
     restaurantId: 'late-nite-appetite',
     name: 'Greek Salad',
     description:
@@ -10129,7 +10129,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'caesar-salad',
+    id: 'late-nite-appetite-caesar-salad-3',
     restaurantId: 'late-nite-appetite',
     name: 'Caesar Salad',
     description: 'Romaine lettuce, pepperoncini, croutons, cheese, and your choice of dressing',
@@ -10153,7 +10153,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'tiramisu',
+    id: 'late-nite-appetite-tiramisu',
     restaurantId: 'late-nite-appetite',
     name: 'Tiramisu',
     description: 'Tiramisu that just hits the spot. an excellent choice for chocolate lovers',
@@ -10165,7 +10165,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'original-cheesecake',
+    id: 'late-nite-appetite-original-cheesecake',
     restaurantId: 'late-nite-appetite',
     name: 'Original Cheesecake',
     description:
@@ -10178,7 +10178,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'strawberry-cheesecake',
+    id: 'late-nite-appetite-strawberry-cheesecake',
     restaurantId: 'late-nite-appetite',
     name: 'Strawberry Cheesecake',
     description: null,
@@ -10190,7 +10190,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'caramel-fudge-cheesecake',
+    id: 'late-nite-appetite-caramel-fudge-cheesecake',
     restaurantId: 'late-nite-appetite',
     name: 'Caramel Fudge Cheesecake',
     description: null,
@@ -10202,7 +10202,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'ranch',
+    id: 'late-nite-appetite-ranch',
     restaurantId: 'late-nite-appetite',
     name: 'Ranch',
     description: 'Creamy Ranch Sauce on the Side',
@@ -10248,7 +10248,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'teriyaki-sauce',
+    id: 'late-nite-appetite-teriyaki-sauce',
     restaurantId: 'late-nite-appetite',
     name: 'Teriyaki Sauce',
     description: 'Sweet Teriyaki Sauce on the Side',
@@ -10296,7 +10296,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'sprite-can',
+    id: 'late-nite-appetite-sprite-can',
     restaurantId: 'late-nite-appetite',
     name: 'Sprite Can',
     description: 'A Refreshing Sprite Can',
@@ -10308,7 +10308,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'dr-pepper-can',
+    id: 'late-nite-appetite-dr-pepper-can',
     restaurantId: 'late-nite-appetite',
     name: 'Dr. Pepper Can',
     description: 'A Refreshing Dr. Pepper Can',
@@ -10320,7 +10320,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'sunkist-orange-can',
+    id: 'late-nite-appetite-sunkist-orange-can',
     restaurantId: 'late-nite-appetite',
     name: 'Sunkist Orange  Can',
     description: 'A Refreshing Orange Soda Can',
@@ -10332,7 +10332,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'mexican-coke',
+    id: 'late-nite-appetite-mexican-coke',
     restaurantId: 'late-nite-appetite',
     name: 'Mexican Coke',
     description: 'Popular Choice. A Refreshing Mexican Coke',
@@ -10381,7 +10381,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 118,
   },
   {
-    id: 'apple-fritter',
+    id: 'sam-apple-fritter',
     restaurantId: "sam's-bakery",
     name: 'Apple Fritter',
     description: null,
@@ -10393,7 +10393,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 26,
   },
   {
-    id: 'cinnamon-roll',
+    id: 'sam-cinnamon-roll',
     restaurantId: "sam's-bakery",
     name: 'Cinnamon Roll',
     description: null,
@@ -10405,7 +10405,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 32,
   },
   {
-    id: 'dozen-donut-hole',
+    id: 'sam-dozen-donut-hole',
     restaurantId: "sam's-bakery",
     name: 'Dozen Donut Hole',
     description: null,
@@ -10417,7 +10417,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 118,
   },
   {
-    id: 'sausage-egg--cheese-sandwich',
+    id: 'sam-sausage-egg--cheese-sandwich',
     restaurantId: "sam's-bakery",
     name: 'Sausage, Egg & Cheese Sandwich',
     description: 'Sausage, egg, and cheese on choice of croissant, bagel, or toast.',
@@ -10429,7 +10429,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 48,
   },
   {
-    id: 'apple-fritter',
+    id: 'sam-apple-fritter-2',
     restaurantId: "sam's-bakery",
     name: 'Apple Fritter',
     description: 'A deep-fried pastry with diced apples, glazed in a sweet coating.',
@@ -10441,7 +10441,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 26,
   },
   {
-    id: 'cinnamon-roll',
+    id: 'sam-cinnamon-roll-2',
     restaurantId: "sam's-bakery",
     name: 'Cinnamon Roll',
     description:
@@ -10465,7 +10465,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 21,
   },
   {
-    id: 'bacon-egg--cheese-sandwich',
+    id: 'sam-bacon-egg--cheese-sandwich',
     restaurantId: "sam's-bakery",
     name: 'Bacon, Egg & Cheese Sandwich',
     description: 'Bacon, egg, and melted cheese, choice of croissant, bagel, or toast.',
@@ -10489,7 +10489,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 9,
   },
   {
-    id: 'pastrami-sandwich',
+    id: 'sam-pastrami-sandwich',
     restaurantId: "sam's-bakery",
     name: 'Pastrami Sandwich',
     description:
@@ -10513,7 +10513,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'roast-beef-sandwich',
+    id: 'sam-roast-beef-sandwich',
     restaurantId: "sam's-bakery",
     name: 'Roast Beef Sandwich',
     description:
@@ -10583,7 +10583,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'latte',
+    id: 'sam-latte',
     restaurantId: "sam's-bakery",
     name: 'Latte',
     description:
@@ -10595,7 +10595,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 7,
   },
   {
-    id: 'chai-latte',
+    id: 'sam-chai-latte',
     restaurantId: "sam's-bakery",
     name: 'Chai Latte',
     description: 'A sweet, delicious, flavorful chai latte made with whole milk.',
@@ -10618,7 +10618,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'hot-chocolate',
+    id: 'sam-hot-chocolate',
     restaurantId: "sam's-bakery",
     name: 'Hot Chocolate',
     description: 'Rich hot chocolate in two sizes: 12 oz or 16 oz.',
@@ -10654,7 +10654,7 @@ export const menuItems: MenuItem[] = [
   },
 
   {
-    id: 'onion-rings',
+    id: 'thursday-calzones-onion-rings',
     restaurantId: 'thursday-calzones',
     name: 'Onion Rings',
     description: null,
@@ -10666,7 +10666,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'cheese-fries',
+    id: 'thursday-calzones-cheese-fries',
     restaurantId: 'thursday-calzones',
     name: 'Cheese Fries',
     description: null,
@@ -10678,7 +10678,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'tiramisu',
+    id: 'thursday-calzones-tiramisu',
     restaurantId: 'thursday-calzones',
     name: 'Tiramisu',
     description: null,
@@ -10690,7 +10690,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'caesar-salad',
+    id: 'thursday-calzones-caesar-salad',
     restaurantId: 'thursday-calzones',
     name: 'Caesar Salad',
     description: null,
@@ -10714,7 +10714,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'onion-rings',
+    id: 'thursday-calzones-onion-rings-2',
     restaurantId: 'thursday-calzones',
     name: 'Onion Rings',
     description: 'French onion, coated with batter, and deep-fried',
@@ -10726,7 +10726,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'caesar-salad',
+    id: 'thursday-calzones-caesar-salad-2',
     restaurantId: 'thursday-calzones',
     name: 'Caesar Salad',
     description: 'Lettuce, Croutons, fresh parmesan cheese',
@@ -10750,7 +10750,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'cheese-fries',
+    id: 'thursday-calzones-cheese-fries-2',
     restaurantId: 'thursday-calzones',
     name: 'Cheese Fries',
     description:
@@ -10763,7 +10763,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'tiramisu',
+    id: 'thursday-calzones-tiramisu-2',
     restaurantId: 'thursday-calzones',
     name: 'Tiramisu',
     description: 'Italian famous coffee flavored dessert.',
@@ -10775,7 +10775,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'apple-juice',
+    id: 'thursday-calzones-apple-juice',
     restaurantId: 'thursday-calzones',
     name: 'Apple Juice',
     description: 'Sweet & Refreshing Apple Juice that goes with your Pasta!',
@@ -10992,7 +10992,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'cheese-fries',
+    id: 'thursday-calzones-cheese-fries-3',
     restaurantId: 'thursday-calzones',
     name: 'Cheese Fries',
     description:
@@ -11018,7 +11018,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'onion-rings',
+    id: 'thursday-calzones-onion-rings-3',
     restaurantId: 'thursday-calzones',
     name: 'Onion Rings',
     description: 'French onion, coated with batter, and deep-fried',
@@ -11030,7 +11030,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'french-fries',
+    id: 'thursday-calzones-french-fries',
     restaurantId: 'thursday-calzones',
     name: 'French Fries',
     description: 'Deep-fried crispy fries',
@@ -11054,7 +11054,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'buffalo-wings',
+    id: 'thursday-calzones-buffalo-wings',
     restaurantId: 'thursday-calzones',
     name: 'Buffalo Wings',
     description: 'Delicious Chicken Wings Fried to Perfection & Tossed in Spicy Buffalo Sauce',
@@ -11078,7 +11078,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'greek-salad',
+    id: 'thursday-calzones-greek-salad',
     restaurantId: 'thursday-calzones',
     name: 'Greek Salad',
     description: 'Fresh romaine lettuce, feta cheese, cucumber, tomatoes, olives',
@@ -11090,7 +11090,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'caesar-salad',
+    id: 'thursday-calzones-caesar-salad-3',
     restaurantId: 'thursday-calzones',
     name: 'Caesar Salad',
     description: 'Lettuce, Croutons, fresh parmesan cheese',
@@ -11102,7 +11102,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'dinner-salad',
+    id: 'thursday-calzones-dinner-salad',
     restaurantId: 'thursday-calzones',
     name: 'Dinner Salad',
     description: 'Lettuce, carrot, tomatoes, olives, cucumber, red onion',
@@ -11114,7 +11114,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'original-cheesesteak',
+    id: 'thursday-calzones-original-cheesesteak',
     restaurantId: 'thursday-calzones',
     name: 'Original Cheesesteak',
     description: 'Delicious classic cheesecake.',
@@ -11126,7 +11126,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'tiramisu',
+    id: 'thursday-calzones-tiramisu-3',
     restaurantId: 'thursday-calzones',
     name: 'Tiramisu',
     description: 'Italian famous coffee flavored dessert.',
@@ -11138,7 +11138,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'oreo-mousse-cake',
+    id: 'thursday-calzones-oreo-mousse-cake',
     restaurantId: 'thursday-calzones',
     name: 'Oreo Mousse Cake',
     description: 'Creamy oreo flavored mousse cake.',
@@ -11150,7 +11150,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'ranch',
+    id: 'thursday-calzones-ranch',
     restaurantId: 'thursday-calzones',
     name: 'Ranch',
     description: 'Creamy Ranch Sauce on the Side',
@@ -11162,7 +11162,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'sweet-chilli-sauce',
+    id: 'thursday-calzones-sweet-chilli-sauce',
     restaurantId: 'thursday-calzones',
     name: 'Sweet Chilli sauce',
     description: 'Sweet Chilli Sauce on the Side',
@@ -11173,7 +11173,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'sweet-and-sour-sauce',
+    id: 'thursday-calzones-sweet-and-sour-sauce',
     restaurantId: 'thursday-calzones',
     name: 'Sweet and Sour Sauce',
     description: 'Sweet & Sour Sauce on the Side',
@@ -11185,7 +11185,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'orange-sauce',
+    id: 'thursday-calzones-orange-sauce',
     restaurantId: 'thursday-calzones',
     name: 'Orange Sauce',
     description: 'Sweet Orange Sauce on the Side',
@@ -11196,7 +11196,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'teriyaki-sauce',
+    id: 'thursday-calzones-teriyaki-sauce',
     restaurantId: 'thursday-calzones',
     name: 'Teriyaki Sauce',
     description: 'Sweet Teriyaki Sauce on the Side',
@@ -11208,7 +11208,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'ketchup',
+    id: 'thursday-calzones-ketchup',
     restaurantId: 'thursday-calzones',
     name: 'Ketchup',
     description: 'Classic Ketchup Packets',
@@ -11220,7 +11220,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'snapple',
+    id: 'thursday-calzones-snapple',
     restaurantId: 'thursday-calzones',
     name: 'Snapple',
     description: 'Refreshing Snapple Drink',
@@ -11232,7 +11232,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'apple-juice',
+    id: 'thursday-calzones-apple-juice-2',
     restaurantId: 'thursday-calzones',
     name: 'Apple Juice',
     description: 'Sweet & Refreshing Apple Juice that goes with your Pasta!',
@@ -11244,7 +11244,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'gatorade',
+    id: 'thursday-calzones-gatorade',
     restaurantId: 'thursday-calzones',
     name: 'Gatorade',
     description: 'Refreshing Gatorade',
@@ -11281,7 +11281,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 7,
   },
   {
-    id: '8-mushroom-philly-steak',
+    id: 'og-philly-steak-8-mushroom-philly-steak',
     restaurantId: 'og-philly-steak',
     name: '8" Mushroom Philly Steak',
     description:
@@ -11294,7 +11294,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'cheese-fries',
+    id: 'og-philly-steak-cheese-fries',
     restaurantId: 'og-philly-steak',
     name: 'Cheese Fries',
     description:
@@ -11307,7 +11307,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'mac-n-cheese-8oz',
+    id: 'og-philly-steak-mac-n-cheese-8oz',
     restaurantId: 'og-philly-steak',
     name: 'Mac N Cheese 8oz',
     description: 'Cheesy Macaroni that makes your meal a tad much better',
@@ -11319,7 +11319,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: '8-philly-cheesesteak',
+    id: 'og-philly-steak-8-philly-cheesesteak',
     restaurantId: 'og-philly-steak',
     name: '8" Philly Cheesesteak',
     description:
@@ -11332,7 +11332,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: '8-bbq-bacon-philly',
+    id: 'og-philly-steak-8-bbq-bacon-philly',
     restaurantId: 'og-philly-steak',
     name: '8" BBQ Bacon Philly',
     description:
@@ -11345,7 +11345,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: '8-mushroom-philly-steak',
+    id: 'og-philly-steak-8-mushroom-philly-steak-2',
     restaurantId: 'og-philly-steak',
     name: '8" Mushroom Philly Steak',
     description:
@@ -11358,7 +11358,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: '8-bacon-buffalo-ranch-philly',
+    id: 'og-philly-steak-8-bacon-buffalo-ranch-philly',
     restaurantId: 'og-philly-steak',
     name: '8" Bacon Buffalo Ranch Philly',
     description:
@@ -11371,7 +11371,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: '8-bbq-bacon-philly',
+    id: 'og-philly-steak-8-bbq-bacon-philly-2',
     restaurantId: 'og-philly-steak',
     name: '8" BBQ Bacon Philly',
     description:
@@ -11384,7 +11384,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: '8-philly-steak-deluxe',
+    id: 'og-philly-steak-8-philly-steak-deluxe',
     restaurantId: 'og-philly-steak',
     name: '8" Philly Steak Deluxe',
     description:
@@ -11397,7 +11397,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'mac-n-cheese-8oz',
+    id: 'og-philly-steak-mac-n-cheese-8oz-2',
     restaurantId: 'og-philly-steak',
     name: 'Mac N Cheese 8oz',
     description: 'Cheesy Macaroni that makes your meal a tad much better',
@@ -11409,7 +11409,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'french-fries',
+    id: 'og-philly-steak-french-fries',
     restaurantId: 'og-philly-steak',
     name: 'French Fries',
     description:
@@ -11422,7 +11422,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'cheese-fries',
+    id: 'og-philly-steak-cheese-fries-2',
     restaurantId: 'og-philly-steak',
     name: 'Cheese Fries',
     description:
@@ -11435,7 +11435,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'garlic-fries',
+    id: 'og-philly-steak-garlic-fries',
     restaurantId: 'og-philly-steak',
     name: 'Garlic Fries',
     description: 'Yummy Garlic Fries that make the day better',
@@ -11447,7 +11447,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'chocolate-new-york-cheesecake',
+    id: 'og-philly-steak-chocolate-new-york-cheesecake',
     restaurantId: 'og-philly-steak',
     name: 'Chocolate New York Cheesecake',
     description:
@@ -11460,7 +11460,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'original-cheesecake',
+    id: 'og-philly-steak-original-cheesecake',
     restaurantId: 'og-philly-steak',
     name: 'Original Cheesecake',
     description:
@@ -11473,7 +11473,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'tiramisu',
+    id: 'og-philly-steak-tiramisu',
     restaurantId: 'og-philly-steak',
     name: 'Tiramisu',
     description: 'Tiramisu that just hits the spot. An excellent choice for Chocolate Lovers',
@@ -11485,7 +11485,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'strawberry-cheesecake',
+    id: 'og-philly-steak-strawberry-cheesecake',
     restaurantId: 'og-philly-steak',
     name: 'Strawberry Cheesecake',
     description:
@@ -11498,7 +11498,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'buffalo-sauce',
+    id: 'og-philly-steak-buffalo-sauce',
     restaurantId: 'og-philly-steak',
     name: 'Buffalo Sauce',
     description: 'Spicy Buffalo Sauce on the Side',
@@ -11510,7 +11510,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'honey-mustard',
+    id: 'og-philly-steak-honey-mustard',
     restaurantId: 'og-philly-steak',
     name: 'Honey Mustard',
     description: 'Sweet Tangy Honey Mustard on the side',
@@ -11522,7 +11522,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'ranch',
+    id: 'og-philly-steak-ranch',
     restaurantId: 'og-philly-steak',
     name: 'Ranch',
     description: 'Creamy Ranch Sauce on the Side',
@@ -11534,7 +11534,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'blue-cheese',
+    id: 'og-philly-steak-blue-cheese',
     restaurantId: 'og-philly-steak',
     name: 'Blue Cheese',
     description: 'Creamy Blue Cheese Sauce on the Side',
@@ -11546,7 +11546,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'snapple',
+    id: 'og-philly-steak-snapple',
     restaurantId: 'og-philly-steak',
     name: 'Snapple',
     description: 'A Refreshing Snapple with your choice of Mango Madness & Kiwi Strawberry',
@@ -11558,7 +11558,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'dr-pepper-can',
+    id: 'og-philly-steak-dr-pepper-can',
     restaurantId: 'og-philly-steak',
     name: 'Dr. Pepper Can',
     description: 'A Refreshing Dr. Pepper Can',
@@ -11570,7 +11570,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'vitamin-water',
+    id: 'og-philly-steak-vitamin-water',
     restaurantId: 'og-philly-steak',
     name: 'Vitamin Water',
     description: 'A healthier choice of Refreshing Vitamin Water',
@@ -11582,7 +11582,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'diet-pepsi',
+    id: 'og-philly-steak-diet-pepsi',
     restaurantId: 'og-philly-steak',
     name: 'Diet Pepsi',
     description: 'A Refreshing Diet Pepsi',
@@ -11594,7 +11594,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'sprite-can',
+    id: 'og-philly-steak-sprite-can',
     restaurantId: 'og-philly-steak',
     name: 'Sprite Can',
     description: 'A Refreshing Sprite Can',
@@ -11606,7 +11606,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'sunkist-orange-can',
+    id: 'og-philly-steak-sunkist-orange-can',
     restaurantId: 'og-philly-steak',
     name: 'Sunkist Orange  Can',
     description: 'A Refreshing Orange Soda Can',
@@ -11774,7 +11774,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'lamb--beef-shawarma-sandwich',
+    id: 'kabob-nation-lamb--beef-shawarma-sandwich',
     restaurantId: 'kabob-nation',
     name: 'Lamb & Beef Shawarma Sandwich',
     description:
@@ -11908,7 +11908,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'basbosa-cake',
+    id: 'kabob-nation-basbosa-cake',
     restaurantId: 'kabob-nation',
     name: 'Basbosa Cake',
     description: 'Delicious Mediterranean Dessert That goes great after a falafel Wrap!',
@@ -11932,7 +11932,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'sprite-can',
+    id: 'kabob-nation-sprite-can',
     restaurantId: 'kabob-nation',
     name: 'Sprite Can',
     description: 'A Refreshing Sprite Can',
@@ -11944,7 +11944,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'orange-soda',
+    id: 'kabob-nation-orange-soda',
     restaurantId: 'kabob-nation',
     name: 'Orange Soda',
     description: 'Refreshing and just hits the spot!',
@@ -11956,7 +11956,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'dr-pepper-can',
+    id: 'kabob-nation-dr-pepper-can',
     restaurantId: 'kabob-nation',
     name: 'Dr. Pepper Can',
     description: 'A Refreshing Dr. Pepper Can',
@@ -11968,7 +11968,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'apple-juice',
+    id: 'kabob-nation-apple-juice',
     restaurantId: 'kabob-nation',
     name: 'Apple Juice',
     description: 'Sweet & Refreshing Apple Juice that goes with your Pasta!',
@@ -11980,7 +11980,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'sparkling-water',
+    id: 'kabob-nation-sparkling-water',
     restaurantId: 'kabob-nation',
     name: 'Sparkling Water',
     description: 'A healthier choice of Refreshing Sparkling Water',
@@ -11992,7 +11992,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'snapple',
+    id: 'kabob-nation-snapple',
     restaurantId: 'kabob-nation',
     name: 'Snapple',
     description: 'A Refreshing Snapple with your choice of Mango Madness & Kiwi Strawberry',
@@ -12065,7 +12065,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'spicy-chicken-shawarma-wrap',
+    id: 'shawarma-junction-spicy-chicken-shawarma-wrap',
     restaurantId: 'shawarma-junction',
     name: 'Spicy Chicken Shawarma Wrap',
     description:
@@ -12078,7 +12078,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'lamb-shawarma-wrap',
+    id: 'shawarma-junction-lamb-shawarma-wrap',
     restaurantId: 'shawarma-junction',
     name: 'Lamb Shawarma Wrap',
     description:
@@ -12091,7 +12091,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'kofta-kabab-wrap',
+    id: 'shawarma-junction-kofta-kabab-wrap',
     restaurantId: 'shawarma-junction',
     name: 'Kofta Kabab Wrap',
     description:
@@ -12104,7 +12104,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'french-fries',
+    id: 'shawarma-junction-french-fries',
     restaurantId: 'shawarma-junction',
     name: 'French Fries',
     description:
@@ -12117,7 +12117,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'spicy-lamb-shawarma-wrap',
+    id: 'shawarma-junction-spicy-lamb-shawarma-wrap',
     restaurantId: 'shawarma-junction',
     name: 'Spicy Lamb Shawarma Wrap',
     description:
@@ -12130,7 +12130,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'spicy-falafel-wrap',
+    id: 'shawarma-junction-spicy-falafel-wrap',
     restaurantId: 'shawarma-junction',
     name: 'Spicy Falafel Wrap',
     description:
@@ -12155,7 +12155,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'lamb-shawarma-wrap',
+    id: 'shawarma-junction-lamb-shawarma-wrap-2',
     restaurantId: 'shawarma-junction',
     name: 'Lamb Shawarma Wrap',
     description:
@@ -12168,7 +12168,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'spicy-lamb-shawarma-wrap',
+    id: 'shawarma-junction-spicy-lamb-shawarma-wrap-2',
     restaurantId: 'shawarma-junction',
     name: 'Spicy Lamb Shawarma Wrap',
     description:
@@ -12181,7 +12181,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'spicy-chicken-shawarma-wrap',
+    id: 'shawarma-junction-spicy-chicken-shawarma-wrap-2',
     restaurantId: 'shawarma-junction',
     name: 'Spicy Chicken Shawarma Wrap',
     description:
@@ -12194,7 +12194,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'kofta-kabab-wrap',
+    id: 'shawarma-junction-kofta-kabab-wrap-2',
     restaurantId: 'shawarma-junction',
     name: 'Kofta Kabab Wrap',
     description:
@@ -12220,7 +12220,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'cheese-fries',
+    id: 'shawarma-junction-cheese-fries',
     restaurantId: 'shawarma-junction',
     name: 'Cheese Fries',
     description:
@@ -12233,7 +12233,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'french-fries',
+    id: 'shawarma-junction-french-fries-2',
     restaurantId: 'shawarma-junction',
     name: 'French Fries',
     description:
@@ -12246,7 +12246,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'onion-rings',
+    id: 'shawarma-junction-onion-rings',
     restaurantId: 'shawarma-junction',
     name: 'Onion Rings',
     description: 'French onion, coated with batter, and deep-fried',
@@ -12270,7 +12270,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'ranch',
+    id: 'shawarma-junction-ranch',
     restaurantId: 'shawarma-junction',
     name: 'Ranch',
     description: 'Creamy Ranch on the Side',
@@ -12282,7 +12282,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'vegan-mayo',
+    id: 'shawarma-junction-vegan-mayo',
     restaurantId: 'shawarma-junction',
     name: 'Vegan Mayo',
     description: 'Creamy Healthy Vegan Mayo on the Side',
@@ -12294,7 +12294,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'bbq-sauce',
+    id: 'shawarma-junction-bbq-sauce',
     restaurantId: 'shawarma-junction',
     name: 'BBQ Sauce',
     description: 'Sweet BBQ Sauce on the Side',
@@ -12306,7 +12306,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'original-cheesecake',
+    id: 'shawarma-junction-original-cheesecake',
     restaurantId: 'shawarma-junction',
     name: 'Original Cheesecake',
     description: null,
@@ -12318,7 +12318,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'chocolate-new-york-cheesecake',
+    id: 'shawarma-junction-chocolate-new-york-cheesecake',
     restaurantId: 'shawarma-junction',
     name: 'Chocolate New York Cheesecake',
     description: null,
@@ -12330,7 +12330,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'tiramisu',
+    id: 'shawarma-junction-tiramisu',
     restaurantId: 'shawarma-junction',
     name: 'Tiramisu',
     description: null,
@@ -12342,7 +12342,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'strawberry-cheesecake',
+    id: 'shawarma-junction-strawberry-cheesecake',
     restaurantId: 'shawarma-junction',
     name: 'Strawberry Cheesecake',
     description: null,
@@ -12354,7 +12354,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'dr-pepper-can',
+    id: 'shawarma-junction-dr-pepper-can',
     restaurantId: 'shawarma-junction',
     name: 'Dr. Pepper Can',
     description: null,
@@ -12366,7 +12366,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'water-bottle',
+    id: 'shawarma-junction-water-bottle',
     restaurantId: 'shawarma-junction',
     name: 'Water Bottle',
     description: null,
@@ -12378,7 +12378,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'pepsi-can',
+    id: 'shawarma-junction-pepsi-can',
     restaurantId: 'shawarma-junction',
     name: 'Pepsi Can',
     description: null,
@@ -12390,7 +12390,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'sprite-can',
+    id: 'shawarma-junction-sprite-can',
     restaurantId: 'shawarma-junction',
     name: 'Sprite Can',
     description: null,
@@ -12463,7 +12463,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 18,
   },
   {
-    id: 'thai-iced-tea',
+    id: 'allstars-cafe-inc-thai-iced-tea',
     restaurantId: 'allstars-cafe-inc',
     name: 'Thai Iced Tea',
     description: 'Choice of size.',
@@ -12475,7 +12475,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 35,
   },
   {
-    id: 'fried-egg-sandwich',
+    id: 'allstars-cafe-inc-fried-egg-sandwich',
     restaurantId: 'allstars-cafe-inc',
     name: 'Fried Egg Sandwich',
     description:
@@ -12488,7 +12488,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 26,
   },
   {
-    id: 'blt-sandwich',
+    id: 'allstars-cafe-inc-blt-sandwich',
     restaurantId: 'allstars-cafe-inc',
     name: 'BLT Sandwich',
     description: 'Bacon, lettuce and tomato.',
@@ -12500,7 +12500,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 12,
   },
   {
-    id: 'croissant-with-ham-and-cheese',
+    id: 'allstars-cafe-inc-croissant-with-ham-and-cheese',
     restaurantId: 'allstars-cafe-inc',
     name: 'Croissant with Ham and Cheese',
     description: 'A buttery croissant filled with savory ham and melted cheese.',
@@ -12549,7 +12549,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'egg-salad-sandwich',
+    id: 'allstars-cafe-inc-egg-salad-sandwich',
     restaurantId: 'allstars-cafe-inc',
     name: 'Egg Salad Sandwich',
     description: null,
@@ -12560,7 +12560,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 7,
   },
   {
-    id: 'avocado-sandwich',
+    id: 'allstars-cafe-inc-avocado-sandwich',
     restaurantId: 'allstars-cafe-inc',
     name: 'Avocado Sandwich',
     description:
@@ -12586,7 +12586,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 9,
   },
   {
-    id: 'pastrami-sandwich',
+    id: 'allstars-cafe-inc-pastrami-sandwich',
     restaurantId: 'allstars-cafe-inc',
     name: 'Pastrami Sandwich',
     description:
@@ -12668,7 +12668,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'old-fashioned-donut',
+    id: 'allstars-cafe-inc-old-fashioned-donut',
     restaurantId: 'allstars-cafe-inc',
     name: 'Old Fashioned Donut',
     description:
@@ -12718,7 +12718,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 14,
   },
   {
-    id: 'chocolate-bar-donut',
+    id: 'allstars-cafe-inc-chocolate-bar-donut',
     restaurantId: 'allstars-cafe-inc',
     name: 'Chocolate Bar Donut',
     description:
@@ -12731,7 +12731,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 9,
   },
   {
-    id: 'scone',
+    id: 'allstars-cafe-inc-scone',
     restaurantId: 'allstars-cafe-inc',
     name: 'Scone',
     description: null,
@@ -12753,7 +12753,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'plain-croissant',
+    id: 'allstars-cafe-inc-plain-croissant',
     restaurantId: 'allstars-cafe-inc',
     name: 'Plain Croissant',
     description: 'Flaky and buttery croissant with a golden-brown crust and soft, airy interior.',
@@ -12765,7 +12765,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'blt-sandwich',
+    id: 'allstars-cafe-inc-blt-sandwich-2',
     restaurantId: 'allstars-cafe-inc',
     name: 'BLT Sandwich',
     description: 'Bacon, lettuce and tomato.',
@@ -12777,7 +12777,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 12,
   },
   {
-    id: 'fried-egg-sandwich',
+    id: 'allstars-cafe-inc-fried-egg-sandwich-2',
     restaurantId: 'allstars-cafe-inc',
     name: 'Fried Egg Sandwich',
     description:
@@ -12858,7 +12858,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'bagel--cream-cheese',
+    id: 'allstars-cafe-inc-bagel--cream-cheese',
     restaurantId: 'allstars-cafe-inc',
     name: 'Bagel & Cream Cheese',
     description: 'Cream cheese',
@@ -12881,7 +12881,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'plain-bagel',
+    id: 'allstars-cafe-inc-plain-bagel',
     restaurantId: 'allstars-cafe-inc',
     name: 'Plain Bagel',
     description: null,
@@ -12892,7 +12892,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'croissant-with-ham-and-cheese',
+    id: 'allstars-cafe-inc-croissant-with-ham-and-cheese-2',
     restaurantId: 'allstars-cafe-inc',
     name: 'Croissant with Ham and Cheese',
     description: 'A buttery croissant filled with savory ham and melted cheese.',
@@ -12915,7 +12915,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'thai-iced-tea',
+    id: 'allstars-cafe-inc-thai-iced-tea-2',
     restaurantId: 'allstars-cafe-inc',
     name: 'Thai Iced Tea',
     description: 'Choice of size.',
@@ -12938,7 +12938,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'mocha',
+    id: 'allstars-cafe-inc-mocha',
     restaurantId: 'allstars-cafe-inc',
     name: 'Mocha',
     description: 'Choice of size.',
@@ -12960,7 +12960,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'espresso',
+    id: 'allstars-cafe-inc-espresso',
     restaurantId: 'allstars-cafe-inc',
     name: 'Espresso',
     description: 'Choice of size.',
@@ -12971,7 +12971,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'latte',
+    id: 'allstars-cafe-inc-latte',
     restaurantId: 'allstars-cafe-inc',
     name: 'Latte',
     description: 'Choice of size.',
@@ -12995,7 +12995,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'bagel-with-cream-cheese',
+    id: 'good-bagels-bagel-with-cream-cheese',
     restaurantId: 'good-bagels',
     name: 'Bagel with Cream Cheese',
     description: null,
@@ -13043,7 +13043,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'bacon-egg--cheese-breakfast-bagel',
+    id: 'good-bagels-bacon-egg--cheese-breakfast-bagel',
     restaurantId: 'good-bagels',
     name: 'Bacon Egg & Cheese Breakfast Bagel',
     description: 'A classic combination of egg, cheese, mayo, and bacon in a breakfast bagel.',
@@ -13055,7 +13055,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'bagel-with-cream-cheese',
+    id: 'good-bagels-bagel-with-cream-cheese-2',
     restaurantId: 'good-bagels',
     name: 'Bagel with Cream Cheese',
     description: 'Bagel, Cream Cheese',
@@ -13067,7 +13067,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'bacon-avocado-breakfast-bagel',
+    id: 'good-bagels-bacon-avocado-breakfast-bagel',
     restaurantId: 'good-bagels',
     name: 'Bacon Avocado Breakfast Bagel',
     description: 'A delightful combination of egg, mayo, bacon, and fresh avocado on a bagel.',
@@ -13079,7 +13079,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'deluxe-bacon-breakfast-bagel',
+    id: 'good-bagels-deluxe-bacon-breakfast-bagel',
     restaurantId: 'good-bagels',
     name: 'Deluxe Bacon Breakfast Bagel',
     description: 'A premium breakfast bagel with egg, cheese, mayo, bacon, lettuce, and tomato.',
@@ -13091,7 +13091,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'bagel-with-butter',
+    id: 'good-bagels-bagel-with-butter',
     restaurantId: 'good-bagels',
     name: 'Bagel with Butter',
     description: 'Bagel, Butter',
@@ -13103,7 +13103,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'turkey-pesto-breakfast-bagel',
+    id: 'good-bagels-turkey-pesto-breakfast-bagel',
     restaurantId: 'good-bagels',
     name: 'Turkey Pesto Breakfast Bagel',
     description:
@@ -13116,7 +13116,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'bacon-egg--cheese-breakfast-bagel',
+    id: 'good-bagels-bacon-egg--cheese-breakfast-bagel-2',
     restaurantId: 'good-bagels',
     name: 'Bacon Egg & Cheese Breakfast Bagel',
     description: 'A classic combination of egg, cheese, mayo, and bacon in a breakfast bagel.',
@@ -13128,7 +13128,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'bacon-avocado-breakfast-bagel',
+    id: 'good-bagels-bacon-avocado-breakfast-bagel-2',
     restaurantId: 'good-bagels',
     name: 'Bacon Avocado Breakfast Bagel',
     description: 'A delightful combination of egg, mayo, bacon, and fresh avocado on a bagel.',
@@ -13140,7 +13140,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'deluxe-bacon-breakfast-bagel',
+    id: 'good-bagels-deluxe-bacon-breakfast-bagel-2',
     restaurantId: 'good-bagels',
     name: 'Deluxe Bacon Breakfast Bagel',
     description: 'A premium breakfast bagel with egg, cheese, mayo, bacon, lettuce, and tomato.',
@@ -13152,7 +13152,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'turkey-pesto-breakfast-bagel',
+    id: 'good-bagels-turkey-pesto-breakfast-bagel-2',
     restaurantId: 'good-bagels',
     name: 'Turkey Pesto Breakfast Bagel',
     description:
@@ -13202,7 +13202,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'ranch',
+    id: 'good-bagels-ranch',
     restaurantId: 'good-bagels',
     name: 'Ranch',
     description: 'Creamy Ranch on the Side',
@@ -13214,7 +13214,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'bbq-sauce',
+    id: 'good-bagels-bbq-sauce',
     restaurantId: 'good-bagels',
     name: 'BBQ Sauce',
     description: 'Sweet BBQ Sauce on the Side',
@@ -13226,7 +13226,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'buffalo-sauce',
+    id: 'good-bagels-buffalo-sauce',
     restaurantId: 'good-bagels',
     name: 'Buffalo Sauce',
     description: 'Spicy Buffalo Sauce on the Side',
@@ -13238,7 +13238,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'thousand-island',
+    id: 'good-bagels-thousand-island',
     restaurantId: 'good-bagels',
     name: 'Thousand Island',
     description: 'Thousand Island on the Side',
@@ -13260,7 +13260,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'macaroni-salad',
+    id: 'good-bagels-macaroni-salad',
     restaurantId: 'good-bagels',
     name: 'Macaroni Salad',
     description: null,
@@ -13296,7 +13296,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'egg-salad',
+    id: 'good-bagels-egg-salad',
     restaurantId: 'good-bagels',
     name: 'Egg Salad',
     description: null,
@@ -13368,7 +13368,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'macchiato-large',
+    id: 'good-bagels-macchiato-large',
     restaurantId: 'good-bagels',
     name: 'Macchiato (Large)',
     description: null,
@@ -13465,7 +13465,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 23,
   },
   {
-    id: 'big-steak-omelette',
+    id: 'ihop-big-steak-omelette',
     restaurantId: 'ihop',
     name: 'Big Steak Omelette',
     description:
@@ -13478,7 +13478,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 139,
   },
   {
-    id: 'breakfast-sampler',
+    id: 'ihop-breakfast-sampler',
     restaurantId: 'ihop',
     name: 'Breakfast Sampler',
     description:
@@ -13528,7 +13528,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 71,
   },
   {
-    id: 'spinach--mushroom-omelette',
+    id: 'ihop-spinach--mushroom-omelette',
     restaurantId: 'ihop',
     name: 'Spinach & Mushroom Omelette',
     description:
@@ -13861,7 +13861,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'sirloin-steak-tips--eggs',
+    id: 'ihop-sirloin-steak-tips--eggs',
     restaurantId: 'ihop',
     name: 'Sirloin Steak Tips & Eggs',
     description:
@@ -13939,7 +13939,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 8,
   },
   {
-    id: 'big-steak-omelette',
+    id: 'ihop-big-steak-omelette-2',
     restaurantId: 'ihop',
     name: 'Big Steak Omelette',
     description:
@@ -13952,7 +13952,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 139,
   },
   {
-    id: 'spinach--mushroom-omelette',
+    id: 'ihop-spinach--mushroom-omelette-2',
     restaurantId: 'ihop',
     name: 'Spinach & Mushroom Omelette',
     description:
@@ -13965,7 +13965,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 62,
   },
   {
-    id: 'build-your-own-omelette',
+    id: 'ihop-build-your-own-omelette',
     restaurantId: 'ihop',
     name: 'Build Your Own Omelette+',
     description:
@@ -14212,7 +14212,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 10,
   },
   {
-    id: 'new-bananas-foster-french-toast',
+    id: 'ihop-new-bananas-foster-french-toast',
     restaurantId: 'ihop',
     name: 'NEW Bananas Foster French Toast',
     description:
@@ -14276,7 +14276,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 16,
   },
   {
-    id: 'hash-browns',
+    id: 'ihop-hash-browns',
     restaurantId: 'ihop',
     name: 'Hash Browns',
     description:
@@ -14289,7 +14289,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 81,
   },
   {
-    id: 'hickory-smoked-bacon-strips',
+    id: 'ihop-hickory-smoked-bacon-strips',
     restaurantId: 'ihop',
     name: 'Hickory-Smoked Bacon Strips',
     description: 'Gluten-friendly',
@@ -14314,7 +14314,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 26,
   },
   {
-    id: 'pork-sausage-links',
+    id: 'ihop-pork-sausage-links',
     restaurantId: 'ihop',
     name: 'Pork Sausage Links',
     description: 'Gluten-friendly',
@@ -14351,7 +14351,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 19,
   },
   {
-    id: 'french-fries',
+    id: 'ihop-french-fries',
     restaurantId: 'ihop',
     name: 'French Fries',
     description: 'Gluten-friendly',
@@ -14411,7 +14411,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'onion-rings',
+    id: 'ihop-onion-rings',
     restaurantId: 'ihop',
     name: 'Onion Rings',
     description: null,
@@ -14654,7 +14654,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'pork-sausage-links',
+    id: 'ihop-pork-sausage-links-2',
     restaurantId: 'ihop',
     name: 'Pork Sausage Links',
     description: 'Gluten-Friendly',
@@ -14666,7 +14666,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 71,
   },
   {
-    id: 'hash-browns',
+    id: 'ihop-hash-browns-2',
     restaurantId: 'ihop',
     name: 'Hash Browns',
     description: 'Gluten-Friendly',
@@ -14690,7 +14690,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'crispy-breakfast-potatoes',
+    id: 'ihop-crispy-breakfast-potatoes',
     restaurantId: 'ihop',
     name: 'Crispy Breakfast Potatoes',
     description: 'Gluten-friendly.',
@@ -14752,7 +14752,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'new-silver-5',
+    id: 'ihop-new-silver-5',
     restaurantId: 'ihop',
     name: 'NEW Silver 5',
     description: '5 Silver dollars buttermilk pancakes.',
@@ -14985,7 +14985,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'farmhouse',
+    id: 'noah-farmhouse',
     restaurantId: "noah's-new-york-bagels",
     name: 'Farmhouse',
     description:
@@ -14998,7 +14998,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'chorizo-avocado-sunrise',
+    id: 'noah-chorizo-avocado-sunrise',
     restaurantId: "noah's-new-york-bagels",
     name: 'Chorizo Avocado Sunrise',
     description:
@@ -15011,7 +15011,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'brunch-box',
+    id: 'noah-brunch-box',
     restaurantId: "noah's-new-york-bagels",
     name: 'Brunch Box',
     description:
@@ -15024,7 +15024,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'bakers-dozen-bagels-with-shmear',
+    id: 'noah-bakers-dozen-bagels-with-shmear',
     restaurantId: "noah's-new-york-bagels",
     name: 'Baker’s Dozen Bagels with Shmear',
     description:
@@ -15088,7 +15088,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'farmhouse',
+    id: 'noah-farmhouse-2',
     restaurantId: "noah's-new-york-bagels",
     name: 'Farmhouse',
     description:
@@ -15101,7 +15101,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'chorizo-avocado-sunrise',
+    id: 'noah-chorizo-avocado-sunrise-2',
     restaurantId: "noah's-new-york-bagels",
     name: 'Chorizo Avocado Sunrise',
     description:
@@ -15114,7 +15114,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'bacon--cheddar',
+    id: 'noah-bacon--cheddar',
     restaurantId: "noah's-new-york-bagels",
     name: 'Bacon & Cheddar',
     description: 'Cage-free egg, bacon, and melted cheddar cheese.',
@@ -15268,7 +15268,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'chocolate-chip-cookie',
+    id: 'noah-chocolate-chip-cookie',
     restaurantId: "noah's-new-york-bagels",
     name: 'Chocolate Chip Cookie',
     description: 'A classic chocolate chip cookie with semi-sweet chocolate chips baked-in-house.',
@@ -15328,7 +15328,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'orange-juice',
+    id: 'noah-orange-juice',
     restaurantId: "noah's-new-york-bagels",
     name: 'Orange Juice',
     description: 'Free Pour Orange Juice.',
@@ -15390,7 +15390,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'apple-fritter',
+    id: 'bob-apple-fritter',
     restaurantId: "bob's-donuts",
     name: 'Apple Fritter',
     description: null,
@@ -15426,7 +15426,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'dozen-assorted-donuts',
+    id: 'bob-dozen-assorted-donuts',
     restaurantId: "bob's-donuts",
     name: 'Dozen Assorted Donuts',
     description:
@@ -15439,7 +15439,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: '12-dozen-assorted-donuts',
+    id: 'bob-12-dozen-assorted-donuts',
     restaurantId: "bob's-donuts",
     name: '1/2 Dozen Assorted Donuts',
     description:
@@ -15452,7 +15452,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'apple-fritter',
+    id: 'bob-apple-fritter-2',
     restaurantId: "bob's-donuts",
     name: 'Apple Fritter',
     description:
@@ -15465,7 +15465,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'malasadas-choose-your-filling',
+    id: 'bob-malasadas-choose-your-filling',
     restaurantId: "bob's-donuts",
     name: 'Malasadas! Choose your filling',
     description:
@@ -15478,7 +15478,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'bar---chocolate',
+    id: 'bob-bar---chocolate',
     restaurantId: "bob's-donuts",
     name: 'Bar - Chocolate',
     description: 'Chocolate or Maple Bars, with or without custard!',
@@ -15502,7 +15502,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'giant-donut',
+    id: 'bob-giant-donut',
     restaurantId: "bob's-donuts",
     name: 'Giant Donut',
     description: 'A donut as big as your head! Great for birthdays!',
@@ -15514,7 +15514,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'dozen-assorted-donuts',
+    id: 'bob-dozen-assorted-donuts-2',
     restaurantId: "bob's-donuts",
     name: 'Dozen Assorted Donuts',
     description:
@@ -15527,7 +15527,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: '12-dozen-assorted-donuts',
+    id: 'bob-12-dozen-assorted-donuts-2',
     restaurantId: "bob's-donuts",
     name: '1/2 Dozen Assorted Donuts',
     description:
@@ -15615,7 +15615,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'old-fashioned-donut',
+    id: 'bob-old-fashioned-donut',
     restaurantId: "bob's-donuts",
     name: 'Old Fashioned Donut',
     description: 'Golden, crisp-edged, and delightfully dense. Glaze, Chocolate, or Maple',
@@ -15663,7 +15663,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'bar---chocolate',
+    id: 'bob-bar---chocolate-2',
     restaurantId: "bob's-donuts",
     name: 'Bar - Chocolate',
     description: 'Chocolate or Maple Bars, with or without custard!',
@@ -15711,7 +15711,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'apple-fritter',
+    id: 'bob-apple-fritter-3',
     restaurantId: "bob's-donuts",
     name: 'Apple Fritter',
     description:
@@ -15724,7 +15724,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'cinnamon-roll',
+    id: 'bob-cinnamon-roll',
     restaurantId: "bob's-donuts",
     name: 'Cinnamon Roll',
     description: 'Swirled with cinnamon and topped with a light glaze.',
@@ -15736,7 +15736,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'malasadas-choose-your-filling',
+    id: 'bob-malasadas-choose-your-filling-2',
     restaurantId: "bob's-donuts",
     name: 'Malasadas! Choose your filling',
     description:
@@ -15865,7 +15865,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 27,
   },
   {
-    id: 'cheeseburger',
+    id: 'halal-burgers---more-cheeseburger',
     restaurantId: 'halal-burgers-&-more',
     name: 'Cheeseburger',
     description: null,
@@ -15889,7 +15889,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 9,
   },
   {
-    id: 'double-double-cheeseburger-wfries',
+    id: 'halal-burgers---more-double-double-cheeseburger-wfries',
     restaurantId: 'halal-burgers-&-more',
     name: 'Double-Double Cheeseburger W/Fries',
     description:
@@ -15902,7 +15902,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 20,
   },
   {
-    id: 'fish-5-pcs',
+    id: 'halal-burgers---more-fish-5-pcs',
     restaurantId: 'halal-burgers-&-more',
     name: 'Fish 5 Pcs',
     description:
@@ -15927,7 +15927,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 15,
   },
   {
-    id: 'cheeseburger',
+    id: 'halal-burgers---more-cheeseburger-2',
     restaurantId: 'halal-burgers-&-more',
     name: 'Cheeseburger',
     description: null,
@@ -15939,7 +15939,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 16,
   },
   {
-    id: 'spicy-deluxe-chicken-sandwich--fries',
+    id: 'halal-burgers---more-spicy-deluxe-chicken-sandwich--fries',
     restaurantId: 'halal-burgers-&-more',
     name: 'Spicy Deluxe Chicken Sandwich + Fries',
     description:
@@ -15952,7 +15952,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 9,
   },
   {
-    id: '4pcs-shrimp4pcs-fishfries',
+    id: 'halal-burgers---more-4pcs-shrimp4pcs-fishfries',
     restaurantId: 'halal-burgers-&-more',
     name: '4pcs Shrimp+4pcs Fish+fries',
     description:
@@ -16013,7 +16013,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'spicy-deluxe-chicken-sandwich--fries',
+    id: 'halal-burgers---more-spicy-deluxe-chicken-sandwich--fries-2',
     restaurantId: 'halal-burgers-&-more',
     name: 'Spicy Deluxe Chicken Sandwich + Fries',
     description: null,
@@ -16036,7 +16036,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: '4pcs-shrimp4pcs-fishfries',
+    id: 'halal-burgers---more-4pcs-shrimp4pcs-fishfries-2',
     restaurantId: 'halal-burgers-&-more',
     name: '4pcs Shrimp+4pcs Fish+fries',
     description:
@@ -16186,7 +16186,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'fish-5-pcs',
+    id: 'halal-burgers---more-fish-5-pcs-2',
     restaurantId: 'halal-burgers-&-more',
     name: 'Fish 5 Pcs',
     description:
@@ -16222,7 +16222,7 @@ export const menuItems: MenuItem[] = [
   },
 
   {
-    id: 'espresso',
+    id: 'java-haven-espresso',
     restaurantId: 'java-haven',
     name: 'Espresso',
     description: null,
@@ -16234,7 +16234,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'americano',
+    id: 'java-haven-americano',
     restaurantId: 'java-haven',
     name: 'Americano',
     description: null,
@@ -16258,7 +16258,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'latte',
+    id: 'java-haven-latte',
     restaurantId: 'java-haven',
     name: 'Latte',
     description: null,
@@ -16282,7 +16282,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'latte',
+    id: 'java-haven-latte-2',
     restaurantId: 'java-haven',
     name: 'Latte',
     description:
@@ -16295,7 +16295,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'cappuccino',
+    id: 'java-haven-cappuccino',
     restaurantId: 'java-haven',
     name: 'Cappuccino',
     description: 'Espresso with frothy milk and a sprinkle of cocoa powder. Available hot or iced.',
@@ -16307,7 +16307,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'mocha',
+    id: 'java-haven-mocha',
     restaurantId: 'java-haven',
     name: 'Mocha',
     description:
@@ -16332,7 +16332,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'scones',
+    id: 'java-haven-scones',
     restaurantId: 'java-haven',
     name: 'Scones',
     description: 'A scone served with a side of whipped cream and strawberry jam.',
@@ -16441,7 +16441,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 42,
   },
   {
-    id: 'white-gummi',
+    id: 'jamba-juice--152-kearny-street--white-gummi',
     restaurantId: 'jamba-juice-(152-kearny-street)',
     name: 'white gummi',
     description:
@@ -16454,7 +16454,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 51,
   },
   {
-    id: 'belgian-waffle',
+    id: 'jamba-juice--152-kearny-street--belgian-waffle',
     restaurantId: 'jamba-juice-(152-kearny-street)',
     name: 'belgian waffle',
     description:
@@ -16467,7 +16467,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 48,
   },
   {
-    id: 'acai-super-antioxidant',
+    id: 'jamba-juice--152-kearny-street--acai-super-antioxidant',
     restaurantId: 'jamba-juice-(152-kearny-street)',
     name: 'acai super antioxidant™',
     description:
@@ -16493,7 +16493,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 36,
   },
   {
-    id: 'strawberries-wild',
+    id: 'jamba-juice--152-kearny-street--strawberries-wild',
     restaurantId: 'jamba-juice-(152-kearny-street)',
     name: 'strawberries wild®',
     description:
@@ -16506,7 +16506,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 29,
   },
   {
-    id: 'razzmatazz',
+    id: 'jamba-juice--152-kearny-street--razzmatazz',
     restaurantId: 'jamba-juice-(152-kearny-street)',
     name: 'razzmatazz®',
     description:
@@ -16519,7 +16519,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 39,
   },
   {
-    id: 'white-gummi',
+    id: 'jamba-juice--152-kearny-street--white-gummi-2',
     restaurantId: 'jamba-juice-(152-kearny-street)',
     name: 'white gummi',
     description:
@@ -16532,7 +16532,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 51,
   },
   {
-    id: 'razzmatazz',
+    id: 'jamba-juice--152-kearny-street--razzmatazz-2',
     restaurantId: 'jamba-juice-(152-kearny-street)',
     name: 'razzmatazz®',
     description:
@@ -16545,7 +16545,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 39,
   },
   {
-    id: 'strawberries-wild',
+    id: 'jamba-juice--152-kearny-street--strawberries-wild-2',
     restaurantId: 'jamba-juice-(152-kearny-street)',
     name: 'strawberries wild®',
     description:
@@ -16571,7 +16571,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 22,
   },
   {
-    id: 'acai-super-antioxidant',
+    id: 'jamba-juice--152-kearny-street--acai-super-antioxidant-2',
     restaurantId: 'jamba-juice-(152-kearny-street)',
     name: 'acai super antioxidant™',
     description:
@@ -16623,7 +16623,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 14,
   },
   {
-    id: 'belgian-waffle',
+    id: 'jamba-juice--152-kearny-street--belgian-waffle-2',
     restaurantId: 'jamba-juice-(152-kearny-street)',
     name: 'belgian waffle',
     description:
@@ -16674,7 +16674,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 11,
   },
   {
-    id: 'acai-primo',
+    id: 'jamba-juice--152-kearny-street--acai-primo',
     restaurantId: 'jamba-juice-(152-kearny-street)',
     name: 'acai primo™',
     description:
@@ -16875,7 +16875,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 6,
   },
   {
-    id: 'spam-musubi',
+    id: 'enter-the-cafe-spam-musubi',
     restaurantId: 'enter-the-cafe',
     name: 'Spam Musubi',
     description: '2 pieces of Spam Musubi. Seto Fumi Furikake. Unagi Sauce.',
@@ -16887,7 +16887,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 33,
   },
   {
-    id: 'wake-up',
+    id: 'enter-the-cafe-wake-up',
     restaurantId: 'enter-the-cafe',
     name: 'Wake Up',
     description:
@@ -16900,7 +16900,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 24,
   },
   {
-    id: 'sausage-egg-wrap',
+    id: 'enter-the-cafe-sausage-egg-wrap',
     restaurantId: 'enter-the-cafe',
     name: 'Sausage Egg Wrap',
     description:
@@ -16913,7 +16913,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 17,
   },
   {
-    id: 'super-green',
+    id: 'enter-the-cafe-super-green',
     restaurantId: 'enter-the-cafe',
     name: 'Super Green',
     description: 'Baby Spinach, Cucumber. Banana, Apple, Almond milk.',
@@ -16938,7 +16938,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 12,
   },
   {
-    id: 'organic-acai-bowl',
+    id: 'enter-the-cafe-organic-acai-bowl',
     restaurantId: 'enter-the-cafe',
     name: 'Organic Acai Bowl',
     description:
@@ -16951,7 +16951,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 9,
   },
   {
-    id: 'wake-up',
+    id: 'enter-the-cafe-wake-up-2',
     restaurantId: 'enter-the-cafe',
     name: 'Wake Up',
     description:
@@ -16964,7 +16964,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 24,
   },
   {
-    id: 'morning-king',
+    id: 'enter-the-cafe-morning-king',
     restaurantId: 'enter-the-cafe',
     name: 'Morning King',
     description:
@@ -17224,7 +17224,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'bottled-water',
+    id: 'enter-the-cafe-bottled-water',
     restaurantId: 'enter-the-cafe',
     name: 'Bottled Water',
     description: 'Pure and refreshing bottled water.',
@@ -17235,7 +17235,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'hot-chocolate',
+    id: 'enter-the-cafe-hot-chocolate',
     restaurantId: 'enter-the-cafe',
     name: 'Hot Chocolate',
     description: 'Smooth, rich chocolate drink, perfectly steamed to warm your soul.',
@@ -17283,7 +17283,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'banana',
+    id: 'enter-the-cafe-banana',
     restaurantId: 'enter-the-cafe',
     name: 'Banana',
     description:
@@ -17394,7 +17394,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: '1-beef-and-lamb-gyros',
+    id: 'locali-mediterranean-1-beef-and-lamb-gyros',
     restaurantId: 'locali-mediterranean',
     name: '1. Beef And Lamb Gyros',
     description: 'On pita spread with tzatziki, topped with tomatoes, and onions.',
@@ -17406,7 +17406,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 10,
   },
   {
-    id: '13-rice-plate',
+    id: 'locali-mediterranean-13-rice-plate',
     restaurantId: 'locali-mediterranean',
     name: '13. Rice Plate',
     description: 'Beef & lamb, or chicken, greek salad, hummus, & rice.',
@@ -17430,7 +17430,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 7,
   },
   {
-    id: '6-chicken-shawarma',
+    id: 'locali-mediterranean-6-chicken-shawarma',
     restaurantId: 'locali-mediterranean',
     name: '6. Chicken Shawarma',
     description: 'Marinated and grilled.',
@@ -17442,7 +17442,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: '19-greek-gyros-salad',
+    id: 'locali-mediterranean-19-greek-gyros-salad',
     restaurantId: 'locali-mediterranean',
     name: '19. Greek Gyros Salad',
     description: 'Our greek salad with gyros meat.',
@@ -17489,7 +17489,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: '6-chicken-shawarma',
+    id: 'locali-mediterranean-6-chicken-shawarma-2',
     restaurantId: 'locali-mediterranean',
     name: '6. Chicken Shawarma',
     description: 'Marinated and grilled.',
@@ -17524,7 +17524,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: '9-beef-and-lamb-plate',
+    id: 'locali-mediterranean-9-beef-and-lamb-plate',
     restaurantId: 'locali-mediterranean',
     name: '9. Beef And Lamb Plate',
     description: 'Spit-roasted beef and lamb, hummus, greek salad, tzatziki, and pita.',
@@ -17536,7 +17536,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: '11-combo-plate',
+    id: 'locali-mediterranean-11-combo-plate',
     restaurantId: 'locali-mediterranean',
     name: '11. Combo Plate',
     description:
@@ -17549,7 +17549,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: '13-rice-plate',
+    id: 'locali-mediterranean-13-rice-plate-2',
     restaurantId: 'locali-mediterranean',
     name: '13. Rice Plate',
     description: 'Beef & lamb, or chicken, greek salad, hummus, & rice.',
@@ -17645,7 +17645,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: '19-greek-gyros-salad',
+    id: 'locali-mediterranean-19-greek-gyros-salad-2',
     restaurantId: 'locali-mediterranean',
     name: '19. Greek Gyros Salad',
     description: 'Our greek salad with gyros meat.',
@@ -17693,7 +17693,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: '30-fries',
+    id: 'locali-mediterranean-30-fries',
     restaurantId: 'locali-mediterranean',
     name: '30. Fries',
     description: 'Cut potatoes fried and salted to perfection.',
@@ -17809,7 +17809,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'baklava',
+    id: 'locali-mediterranean-baklava',
     restaurantId: 'locali-mediterranean',
     name: 'Baklava',
     description: 'Flaky layers of phyllo dough chopped pistachio drizzled with simple syrup',
@@ -17822,7 +17822,7 @@ export const menuItems: MenuItem[] = [
   },
 
   {
-    id: 'caff-latte',
+    id: 'blue-bottle-coffee-caff-latte',
     restaurantId: 'blue-bottle-coffee',
     name: 'Caffè Latte',
     description: null,
@@ -17846,7 +17846,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'cappuccino',
+    id: 'blue-bottle-coffee-cappuccino',
     restaurantId: 'blue-bottle-coffee',
     name: 'Cappuccino',
     description: null,
@@ -17882,7 +17882,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'caff-latte',
+    id: 'blue-bottle-coffee-caff-latte-2',
     restaurantId: 'blue-bottle-coffee',
     name: 'Caffè Latte',
     description:
@@ -17895,7 +17895,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'iced-nola',
+    id: 'blue-bottle-coffee-iced-nola',
     restaurantId: 'blue-bottle-coffee',
     name: 'Iced NOLA',
     description:
@@ -17908,7 +17908,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'cappuccino',
+    id: 'blue-bottle-coffee-cappuccino-2',
     restaurantId: 'blue-bottle-coffee',
     name: 'Cappuccino',
     description:
@@ -17921,7 +17921,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'iced-matcha',
+    id: 'blue-bottle-coffee-iced-matcha',
     restaurantId: 'blue-bottle-coffee',
     name: 'Iced Matcha',
     description:
@@ -17934,7 +17934,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'americano',
+    id: 'blue-bottle-coffee-americano',
     restaurantId: 'blue-bottle-coffee',
     name: 'Americano',
     description:
@@ -18024,7 +18024,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'hot-chocolate',
+    id: 'blue-bottle-coffee-hot-chocolate',
     restaurantId: 'blue-bottle-coffee',
     name: 'Hot Chocolate',
     description:
@@ -18050,7 +18050,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'toast',
+    id: 'blue-bottle-coffee-toast',
     restaurantId: 'blue-bottle-coffee',
     name: 'Toast',
     description: null,
@@ -18126,7 +18126,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'cappuccino',
+    id: 'blue-bottle-coffee-cappuccino-3',
     restaurantId: 'blue-bottle-coffee',
     name: 'Cappuccino',
     description:
@@ -18139,7 +18139,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'americano',
+    id: 'blue-bottle-coffee-americano-2',
     restaurantId: 'blue-bottle-coffee',
     name: 'Americano',
     description:
@@ -18189,7 +18189,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'iced-caff-latte',
+    id: 'blue-bottle-coffee-iced-caff-latte',
     restaurantId: 'blue-bottle-coffee',
     name: 'Iced Caffè Latte',
     description:
@@ -18227,7 +18227,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'iced-americano',
+    id: 'blue-bottle-coffee-iced-americano',
     restaurantId: 'blue-bottle-coffee',
     name: 'Iced Americano',
     description: 'Our iced Americano is espresso pulled over cold water, served over ice.',
@@ -18276,7 +18276,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'scone',
+    id: 'blue-bottle-coffee-scone',
     restaurantId: 'blue-bottle-coffee',
     name: 'Scone',
     description: 'A morning or afternoon treat baked by one of our local bakery partners.',
@@ -18288,7 +18288,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'cookies',
+    id: 'blue-bottle-coffee-cookies',
     restaurantId: 'blue-bottle-coffee',
     name: 'Cookies',
     description:
@@ -18461,7 +18461,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'caesar-salad',
+    id: 'gambinos-new-york-subs-caesar-salad',
     restaurantId: 'gambinos-new-york-subs',
     name: 'Caesar Salad',
     description: null,
@@ -18485,7 +18485,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: '2-turkey--cheese',
+    id: 'gambinos-new-york-subs-2-turkey--cheese',
     restaurantId: 'gambinos-new-york-subs',
     name: '#2. Turkey & Cheese',
     description:
@@ -18498,7 +18498,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: '15-tribeca',
+    id: 'gambinos-new-york-subs-15-tribeca',
     restaurantId: 'gambinos-new-york-subs',
     name: '#15. Tribeca',
     description: 'Chicken, Basil, Balsamic Vinaigrette, Provolone Cheese, Roasted Red Peppers.',
@@ -18620,7 +18620,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'bagel-with-cream-cheese',
+    id: 'gambinos-new-york-subs-bagel-with-cream-cheese',
     restaurantId: 'gambinos-new-york-subs',
     name: 'Bagel with Cream Cheese',
     description:
@@ -18632,7 +18632,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'bagel',
+    id: 'gambinos-new-york-subs-bagel',
     restaurantId: 'gambinos-new-york-subs',
     name: 'Bagel',
     description:
@@ -18711,7 +18711,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'caesar-salad',
+    id: 'gambinos-new-york-subs-caesar-salad-2',
     restaurantId: 'gambinos-new-york-subs',
     name: 'Caesar Salad',
     description:
@@ -18724,7 +18724,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'greek-salad',
+    id: 'gambinos-new-york-subs-greek-salad',
     restaurantId: 'gambinos-new-york-subs',
     name: 'Greek Salad',
     description: 'Fresh mixed greens, olives, feta, cucumber, and tomato in homemade dressing.',
@@ -18735,7 +18735,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'tuna-salad',
+    id: 'gambinos-new-york-subs-tuna-salad',
     restaurantId: 'gambinos-new-york-subs',
     name: 'Tuna Salad',
     description: 'Fresh and satisfying mixed greens topped with flavorful tuna',
@@ -18746,7 +18746,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'antipasta-salad',
+    id: 'gambinos-new-york-subs-antipasta-salad',
     restaurantId: 'gambinos-new-york-subs',
     name: 'Antipasta Salad',
     description:
@@ -18843,7 +18843,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: '14-the-italian',
+    id: 'gambinos-new-york-subs-14-the-italian',
     restaurantId: 'gambinos-new-york-subs',
     name: '#14. The Italian',
     description: 'Mortadella, Cappicola, Salami, Pepperoni, Provolone.',
@@ -18865,7 +18865,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: '15-tribeca',
+    id: 'gambinos-new-york-subs-15-tribeca-2',
     restaurantId: 'gambinos-new-york-subs',
     name: '#15. Tribeca',
     description: 'Chicken, Basil, Balsamic Vinaigrette, Provolone Cheese, Roasted Red Peppers.',
@@ -18968,7 +18968,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'macaroni-salad',
+    id: 'gambinos-new-york-subs-macaroni-salad',
     restaurantId: 'gambinos-new-york-subs',
     name: 'Macaroni Salad',
     description: 'Macaroni salad available in 1/2 pint or pint sizes.',
@@ -18979,7 +18979,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'potato-salad',
+    id: 'gambinos-new-york-subs-potato-salad',
     restaurantId: 'gambinos-new-york-subs',
     name: 'Potato Salad',
     description: 'Potato salad. Available in 1/2 pint or pint sizes.',
@@ -18990,7 +18990,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'fruit-salad',
+    id: 'gambinos-new-york-subs-fruit-salad',
     restaurantId: 'gambinos-new-york-subs',
     name: 'Fruit Salad',
     description:
@@ -19109,7 +19109,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'sunnies',
+    id: 'cafe-encore-sunnies',
     restaurantId: 'cafe-encore',
     name: 'Sunnies',
     description: 'Scrambled egg, cheddar cheese, avocado, cucumber, tomato.',
@@ -19121,7 +19121,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'pb-java-mocha-smoothie-24-oz',
+    id: 'cafe-encore-pb-java-mocha-smoothie-24-oz',
     restaurantId: 'cafe-encore',
     name: 'PB Java Mocha Smoothie (24 oz)',
     description: 'Blended chilled coffee, milk, banana, chocolate, non-fat yogurt, peanut butter.',
@@ -19169,7 +19169,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'chipotle-chicken',
+    id: 'cafe-encore-chipotle-chicken',
     restaurantId: 'cafe-encore',
     name: 'Chipotle Chicken',
     description:
@@ -19182,7 +19182,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'veggie-quiche',
+    id: 'cafe-encore-veggie-quiche',
     restaurantId: 'cafe-encore',
     name: 'veggie quiche',
     description: 'daily baked',
@@ -19194,7 +19194,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'quiche-lorraines',
+    id: 'cafe-encore-quiche-lorraines',
     restaurantId: 'cafe-encore',
     name: 'quiche Lorraines',
     description: 'ham and cheese',
@@ -19218,7 +19218,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'california-dream',
+    id: 'cafe-encore-california-dream',
     restaurantId: 'cafe-encore',
     name: 'California Dream',
     description: 'Smoked turkey, avocado, tomato, cheddar cheese, mayo, and honey mustard.',
@@ -19255,7 +19255,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'cleo',
+    id: 'cafe-encore-cleo',
     restaurantId: 'cafe-encore',
     name: 'Cleo',
     description:
@@ -19294,7 +19294,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'sunnies',
+    id: 'cafe-encore-sunnies-2',
     restaurantId: 'cafe-encore',
     name: 'Sunnies',
     description: 'Scrambled egg, cheddar cheese, avocado, cucumber, tomato.',
@@ -19379,7 +19379,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'americano',
+    id: 'cafe-encore-americano',
     restaurantId: 'cafe-encore',
     name: 'Americano',
     description: 'Americano, sizes available in single (12 oz) or double (16 oz).',
@@ -19415,7 +19415,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'cappuccino',
+    id: 'cafe-encore-cappuccino',
     restaurantId: 'cafe-encore',
     name: 'Cappuccino',
     description: 'Frothy milk over espresso. Sizes: small (8 oz), single (12 oz), double (16 oz).',
@@ -19427,7 +19427,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'red-eye',
+    id: 'cafe-encore-red-eye',
     restaurantId: 'cafe-encore',
     name: 'Red Eye',
     description:
@@ -19440,7 +19440,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'fruit-smoothie-24-oz',
+    id: 'cafe-encore-fruit-smoothie-24-oz',
     restaurantId: 'cafe-encore',
     name: 'Fruit Smoothie (24 oz)',
     description:
@@ -19465,7 +19465,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'pb-java-mocha-smoothie-24-oz',
+    id: 'cafe-encore-pb-java-mocha-smoothie-24-oz-2',
     restaurantId: 'cafe-encore',
     name: 'PB Java Mocha Smoothie (24 oz)',
     description: 'Blended chilled coffee, milk, banana, chocolate, non-fat yogurt, peanut butter.',
@@ -19511,7 +19511,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'can-soda',
+    id: 'cafe-encore-can-soda',
     restaurantId: 'cafe-encore',
     name: 'can soda',
     description: 'coke, diet coke, Coke Zero, Fanta, Sprite',
@@ -19630,7 +19630,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 53,
   },
   {
-    id: 'pick-a-pair',
+    id: 'boudin-bakery-pick-a-pair',
     restaurantId: 'boudin-bakery',
     name: 'Pick a Pair',
     description:
@@ -19643,7 +19643,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 203,
   },
   {
-    id: 'clam-chowder',
+    id: 'boudin-bakery-clam-chowder',
     restaurantId: 'boudin-bakery',
     name: 'Clam Chowder',
     description:
@@ -19656,7 +19656,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 167,
   },
   {
-    id: 'turkey-avocado',
+    id: 'boudin-bakery-turkey-avocado',
     restaurantId: 'boudin-bakery',
     name: 'Turkey Avocado',
     description:
@@ -19669,7 +19669,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 85,
   },
   {
-    id: 'rustic-tomato',
+    id: 'boudin-bakery-rustic-tomato',
     restaurantId: 'boudin-bakery',
     name: 'Rustic Tomato',
     description:
@@ -19682,7 +19682,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 53,
   },
   {
-    id: 'broccoli-cheddar',
+    id: 'boudin-bakery-broccoli-cheddar',
     restaurantId: 'boudin-bakery',
     name: 'Broccoli Cheddar',
     description:
@@ -19707,7 +19707,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 54,
   },
   {
-    id: 'broccoli-cheddar',
+    id: 'boudin-bakery-broccoli-cheddar-2',
     restaurantId: 'boudin-bakery',
     name: 'Broccoli Cheddar',
     description:
@@ -19720,7 +19720,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 53,
   },
   {
-    id: 'rustic-tomato',
+    id: 'boudin-bakery-rustic-tomato-2',
     restaurantId: 'boudin-bakery',
     name: 'Rustic Tomato',
     description:
@@ -19746,7 +19746,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 29,
   },
   {
-    id: 'clam-chowder',
+    id: 'boudin-bakery-clam-chowder-2',
     restaurantId: 'boudin-bakery',
     name: 'Clam Chowder',
     description:
@@ -19759,7 +19759,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 167,
   },
   {
-    id: 'pick-a-pair',
+    id: 'boudin-bakery-pick-a-pair-2',
     restaurantId: 'boudin-bakery',
     name: 'Pick a Pair',
     description:
@@ -20011,7 +20011,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'turkey-sandwich',
+    id: 'boudin-bakery-turkey-sandwich',
     restaurantId: 'boudin-bakery',
     name: 'Turkey Sandwich',
     description: null,
@@ -20035,7 +20035,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'semi-sweet-chocolate-chip',
+    id: 'boudin-bakery-semi-sweet-chocolate-chip',
     restaurantId: 'boudin-bakery',
     name: 'Semi Sweet Chocolate Chip',
     description: 'Semisweet chocolate goodness.',
@@ -20241,7 +20241,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'cookie-monster-ice-cream-1-pt',
+    id: 'afters-ice-cream-shop-cookie-monster-ice-cream-1-pt',
     restaurantId: 'afters-ice-cream-shop',
     name: 'Cookie Monster Ice Cream (1 pt)',
     description:
@@ -20254,7 +20254,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'ube-brownie-ice-cream-1-pt',
+    id: 'afters-ice-cream-shop-ube-brownie-ice-cream-1-pt',
     restaurantId: 'afters-ice-cream-shop',
     name: 'Ube Brownie Ice Cream (1 pt)',
     description: 'Ube ice cream with chunks of gooey brownies.',
@@ -20266,7 +20266,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'dark-matter-brownie-batter-ice-cream-1-pt',
+    id: 'afters-ice-cream-shop-dark-matter-brownie-batter-ice-cream-1-pt',
     restaurantId: 'afters-ice-cream-shop',
     name: 'Dark Matter Brownie Batter Ice Cream (1 pt)',
     description:
@@ -20279,7 +20279,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'strawberry-cookie-crunch-ice-cream-1-pt',
+    id: 'afters-ice-cream-shop-strawberry-cookie-crunch-ice-cream-1-pt',
     restaurantId: 'afters-ice-cream-shop',
     name: 'Strawberry Cookie Crunch Ice Cream (1 pt)',
     description:
@@ -20292,7 +20292,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'cookie-butter-ice-cream-1-pt',
+    id: 'afters-ice-cream-shop-cookie-butter-ice-cream-1-pt',
     restaurantId: 'afters-ice-cream-shop',
     name: 'Cookie Butter Ice Cream (1 pt)',
     description:
@@ -20318,7 +20318,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'cookie-butter-ice-cream-1-pt',
+    id: 'afters-ice-cream-shop-cookie-butter-ice-cream-1-pt-2',
     restaurantId: 'afters-ice-cream-shop',
     name: 'Cookie Butter Ice Cream (1 pt)',
     description:
@@ -20331,7 +20331,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'dark-matter-brownie-batter-ice-cream-1-pt',
+    id: 'afters-ice-cream-shop-dark-matter-brownie-batter-ice-cream-1-pt-2',
     restaurantId: 'afters-ice-cream-shop',
     name: 'Dark Matter Brownie Batter Ice Cream (1 pt)',
     description:
@@ -20344,7 +20344,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'strawberry-cookie-crunch-ice-cream-1-pt',
+    id: 'afters-ice-cream-shop-strawberry-cookie-crunch-ice-cream-1-pt-2',
     restaurantId: 'afters-ice-cream-shop',
     name: 'Strawberry Cookie Crunch Ice Cream (1 pt)',
     description:
@@ -20794,7 +20794,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'naked-juice-green-machine-152oz',
+    id: 'extramile-naked-juice-green-machine-152oz',
     restaurantId: 'extramile',
     name: 'Naked Juice Green Machine 15.2oz',
     description: null,
@@ -20806,7 +20806,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'barebells-protein-bar-cookies-and-cream-194oz',
+    id: 'extramile-barebells-protein-bar-cookies-and-cream-194oz',
     restaurantId: 'extramile',
     name: 'Barebells Protein Bar Cookies and Cream 1.94oz',
     description: null,
@@ -20818,7 +20818,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'naked-juice-blue-machine-152oz',
+    id: 'extramile-naked-juice-blue-machine-152oz',
     restaurantId: 'extramile',
     name: 'Naked Juice Blue Machine 15.2oz',
     description: null,
@@ -20830,7 +20830,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'hillshire-genoa-salami-and-cheese-tray',
+    id: 'extramile-hillshire-genoa-salami-and-cheese-tray',
     restaurantId: 'extramile',
     name: 'Hillshire Genoa Salami and Cheese Tray',
     description: null,
@@ -20842,7 +20842,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'muscle-milk-pro-chocolate-14oz',
+    id: 'extramile-muscle-milk-pro-chocolate-14oz',
     restaurantId: 'extramile',
     name: 'Muscle Milk Pro Chocolate 14oz',
     description: null,
@@ -20914,7 +20914,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'hillshire-genoa-salami-and-cheese-tray',
+    id: 'extramile-hillshire-genoa-salami-and-cheese-tray-2',
     restaurantId: 'extramile',
     name: 'Hillshire Genoa Salami and Cheese Tray',
     description: null,
@@ -21058,7 +21058,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'small-coffee',
+    id: 'extramile-small-coffee',
     restaurantId: 'extramile',
     name: 'Small Coffee',
     description: null,
@@ -21178,7 +21178,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'naked-juice-blue-machine-152oz',
+    id: 'extramile-naked-juice-blue-machine-152oz-2',
     restaurantId: 'extramile',
     name: 'Naked Juice Blue Machine 15.2oz',
     description: null,
@@ -21190,7 +21190,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'naked-juice-green-machine-152oz',
+    id: 'extramile-naked-juice-green-machine-152oz-2',
     restaurantId: 'extramile',
     name: 'Naked Juice Green Machine 15.2oz',
     description: null,
@@ -21250,7 +21250,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'planters-honey-roasted-cashews-3oz',
+    id: 'extramile-planters-honey-roasted-cashews-3oz',
     restaurantId: 'extramile',
     name: 'Planters Honey Roasted Cashews 3oz',
     description: null,
@@ -21839,7 +21839,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'tunacado-sandwich',
+    id: 'joe---the-juice-tunacado-sandwich',
     restaurantId: 'joe-&-the-juice',
     name: 'Tunacado Sandwich',
     description: "Joe's Classic Bread, Avocado, Tomato, Tuna Mousse, Vegan Pesto",
@@ -21851,7 +21851,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 36,
   },
   {
-    id: 'joes-club-sandwich',
+    id: 'joe---the-juice-joes-club-sandwich',
     restaurantId: 'joe-&-the-juice',
     name: 'JOE´s Club Sandwich',
     description: "Joe's Classic Bread, Vegan Pesto, Avocado, Chicken, Tomato",
@@ -21863,7 +21863,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 11,
   },
   {
-    id: 'power-shake-16oz',
+    id: 'joe---the-juice-power-shake-16oz',
     restaurantId: 'joe-&-the-juice',
     name: 'Power Shake 16oz',
     description: 'Vanilla Milk, Ice, Strawberries, Banana',
@@ -21875,7 +21875,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'spicy-tuna-sandwich',
+    id: 'joe---the-juice-spicy-tuna-sandwich',
     restaurantId: 'joe-&-the-juice',
     name: 'Spicy Tuna Sandwich',
     description: "Joe's Classic Bread, Tomato, Jalapenos, Tabasco, Vegan Pesto, Tuna Mousse",
@@ -21887,7 +21887,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 11,
   },
   {
-    id: 'new-the-steak',
+    id: 'joe---the-juice-new-the-steak',
     restaurantId: 'joe-&-the-juice',
     name: 'NEW The Steak',
     description:
@@ -21937,7 +21937,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'blueberry-muffin',
+    id: 'joe---the-juice-blueberry-muffin',
     restaurantId: 'joe-&-the-juice',
     name: 'Blueberry Muffin',
     description: 'Blueberry Muffin',
@@ -22131,7 +22131,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 69,
   },
   {
-    id: 'fresh-orange-juice',
+    id: 'allstar-cafe-fresh-orange-juice',
     restaurantId: 'allstar-cafe',
     name: 'Fresh Orange Juice',
     description: 'Bright, Zesty, and Full of Vitamin C',
@@ -22143,7 +22143,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 48,
   },
   {
-    id: 'bacon',
+    id: 'allstar-cafe-bacon',
     restaurantId: 'allstar-cafe',
     name: 'Bacon',
     description:
@@ -22156,7 +22156,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 45,
   },
   {
-    id: 'hash-browns',
+    id: 'allstar-cafe-hash-browns',
     restaurantId: 'allstar-cafe',
     name: 'Hash Browns',
     description: 'Crispy and golden breakfast potatoes, perfect for starting your day off right.',
@@ -22168,7 +22168,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 56,
   },
   {
-    id: 'classic-spam--eggs',
+    id: 'allstar-cafe-classic-spam--eggs',
     restaurantId: 'allstar-cafe',
     name: 'Classic Spam & Eggs',
     description:
@@ -22181,7 +22181,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 37,
   },
   {
-    id: 'all-star-omelette',
+    id: 'allstar-cafe-all-star-omelette',
     restaurantId: 'allstar-cafe',
     name: 'All Star Omelette',
     description:
@@ -22264,7 +22264,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 157,
   },
   {
-    id: 'cheeseburger-omelette',
+    id: 'allstar-cafe-cheeseburger-omelette',
     restaurantId: 'allstar-cafe',
     name: 'Cheeseburger Omelette',
     description:
@@ -22290,7 +22290,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 18,
   },
   {
-    id: 'veggie',
+    id: 'allstar-cafe-veggie',
     restaurantId: 'allstar-cafe',
     name: 'Veggie',
     description:
@@ -22314,7 +22314,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'bacon',
+    id: 'allstar-cafe-bacon-2',
     restaurantId: 'allstar-cafe',
     name: 'Bacon',
     description:
@@ -22340,7 +22340,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 22,
   },
   {
-    id: 'bacon-and-sausage-combo',
+    id: 'allstar-cafe-bacon-and-sausage-combo',
     restaurantId: 'allstar-cafe',
     name: 'Bacon and Sausage Combo',
     description:
@@ -22366,7 +22366,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'egg-salad',
+    id: 'allstar-cafe-egg-salad',
     restaurantId: 'allstar-cafe',
     name: 'Egg Salad',
     description: 'Egg salad, lettuce, tomato, pickles, onions, garlic aioli.',
@@ -22402,7 +22402,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 14,
   },
   {
-    id: 'cheeseburger',
+    id: 'allstar-cafe-cheeseburger',
     restaurantId: 'allstar-cafe',
     name: 'Cheeseburger',
     description:
@@ -22414,7 +22414,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 9,
   },
   {
-    id: 'hamburger',
+    id: 'allstar-cafe-hamburger',
     restaurantId: 'allstar-cafe',
     name: 'Hamburger',
     description: null,
@@ -22547,7 +22547,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 10,
   },
   {
-    id: 'fresh-orange-juice',
+    id: 'allstar-cafe-fresh-orange-juice-2',
     restaurantId: 'allstar-cafe',
     name: 'Fresh Orange Juice',
     description: 'Bright, Zesty, and Full of Vitamin C',
@@ -22559,7 +22559,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 48,
   },
   {
-    id: 'coffee',
+    id: 'allstar-cafe-coffee',
     restaurantId: 'allstar-cafe',
     name: 'Coffee',
     description: 'Available in large, medium, or small sizes.',
@@ -22594,7 +22594,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'sapporo-premium-beer-can-22-fl-oz',
+    id: 'allstar-cafe-sapporo-premium-beer-can-22-fl-oz',
     restaurantId: 'allstar-cafe',
     name: 'Sapporo Premium Beer Can (22 fl oz)',
     description: 'Sapporo Beer Premium - 22 Oz',
@@ -22704,7 +22704,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'fried-chicken-drumettes--',
+    id: 'new-golden-daisy-fried-chicken-drumettes--',
     restaurantId: 'new-golden-daisy',
     name: 'Fried Chicken Drumettes / 一磅炸雞腿',
     description:
@@ -22717,7 +22717,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 6,
   },
   {
-    id: 'roast-pork-over-rice-or-noodle-with-mix-vegetables--',
+    id: 'new-golden-daisy-roast-pork-over-rice-or-noodle-with-mix-vegetables--',
     restaurantId: 'new-golden-daisy',
     name: 'Roast Pork Over Rice or Noodle with Mix Vegetables / 燒肉飯或炒麵拼雜菜',
     description: 'Roast pork, mix vegetables, choice of rice or noodles',
@@ -22729,7 +22729,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'roast-duck-over-rice-or-noodle-with-mix-vegetables--',
+    id: 'new-golden-daisy-roast-duck-over-rice-or-noodle-with-mix-vegetables--',
     restaurantId: 'new-golden-daisy',
     name: 'Roast Duck Over Rice or Noodle with Mix Vegetables / 燒鴨飯或炒麵拼雜菜',
     description: 'Roast duck served with rice or noodles, accompanied by mixed vegetables.',
@@ -22741,7 +22741,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'fried-chicken-wings--',
+    id: 'new-golden-daisy-fried-chicken-wings--',
     restaurantId: 'new-golden-daisy',
     name: 'Fried Chicken Wings / 一磅炸雞翅',
     description: 'Deep-fried marinated chicken wings, typically seasoned with salt and pepper.',
@@ -22753,7 +22753,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'bbq-pork-over-rice-or-noodle-with-mixed-vegetables--',
+    id: 'new-golden-daisy-bbq-pork-over-rice-or-noodle-with-mixed-vegetables--',
     restaurantId: 'new-golden-daisy',
     name: 'BBQ Pork Over Rice or Noodle with Mixed Vegetables / 叉燒飯或炒麵拼雜菜',
     description: 'BBQ pork with mixed vegetables, served with your choice of rice or noodles.',
@@ -22777,7 +22777,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'fried-chicken-drumettes--',
+    id: 'new-golden-daisy-fried-chicken-drumettes---2',
     restaurantId: 'new-golden-daisy',
     name: 'Fried Chicken Drumettes / 一磅炸雞腿',
     description:
@@ -22802,7 +22802,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'bbq-pork-over-rice-or-noodle-with-mixed-vegetables--',
+    id: 'new-golden-daisy-bbq-pork-over-rice-or-noodle-with-mixed-vegetables---2',
     restaurantId: 'new-golden-daisy',
     name: 'BBQ Pork Over Rice or Noodle with Mixed Vegetables / 叉燒飯或炒麵拼雜菜',
     description: 'BBQ pork with mixed vegetables, served with your choice of rice or noodles.',
@@ -22814,7 +22814,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'fried-chicken-wings--',
+    id: 'new-golden-daisy-fried-chicken-wings---2',
     restaurantId: 'new-golden-daisy',
     name: 'Fried Chicken Wings / 一磅炸雞翅',
     description: 'Deep-fried marinated chicken wings, typically seasoned with salt and pepper.',
@@ -22837,7 +22837,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'fried-chicken-drumettes-over-rice-or-noodle-with-mixed-vegetables--',
+    id: 'new-golden-daisy-fried-chicken-drumettes-over-rice-or-noodle-with-mixed-vegetables--',
     restaurantId: 'new-golden-daisy',
     name: 'Fried Chicken Drumettes Over Rice or Noodle with Mixed Vegetables / 炸雞腿飯或炒麵拼雜菜',
     description: 'Fried chicken drumettes with mixed vegetables, choice of rice or noodle.',
@@ -22848,6 +22848,69 @@ export const menuItems: MenuItem[] = [
     rating: null,
     ratingCount: null,
   },
+
+  // Sushi items for New Golden Daisy Sushi & Asian Kitchen
+  {
+    id: 'california-roll-ngd',
+    restaurantId: 'new-golden-daisy',
+    name: 'California Roll / 加州卷',
+    description: 'Fresh avocado, cucumber, and imitation crab wrapped in seasoned rice and nori.',
+    price: '$8.99',
+    image:
+      'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=70/media/photosV2/6c60bd75-f31d-4d6d-98de-e3d15a107cca-retina-large.jpeg',
+    category: 'Sushi Rolls',
+    rating: null,
+    ratingCount: null,
+  },
+  {
+    id: 'salmon-avocado-roll-ngd',
+    restaurantId: 'new-golden-daisy',
+    name: 'Salmon Avocado Roll / 三文鱼牛油果卷',
+    description: 'Fresh salmon and creamy avocado rolled with sushi rice and seaweed.',
+    price: '$10.99',
+    image:
+      'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=70/media/photosV2/eef5c576-e235-4468-b356-06fb5bcbb9e6-npp-retina-large.jpg',
+    category: 'Sushi Rolls',
+    rating: '95%',
+    ratingCount: 12,
+  },
+  {
+    id: 'spicy-tuna-roll-ngd',
+    restaurantId: 'new-golden-daisy',
+    name: 'Spicy Tuna Roll / 辣吞拿鱼卷',
+    description: 'Spicy tuna mixed with mayo and sriracha, cucumber, wrapped in rice and nori.',
+    price: '$11.99',
+    image:
+      'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=70/media/photosV2/9730c488-0f1d-41a5-9a00-6bf19c534fb5-retina-large.jpeg',
+    category: 'Sushi Rolls',
+    rating: '88%',
+    ratingCount: 8,
+  },
+  {
+    id: 'salmon-nigiri-ngd',
+    restaurantId: 'new-golden-daisy',
+    name: 'Salmon Nigiri (2 pieces) / 三文鱼寿司 (2个)',
+    description: 'Fresh salmon over seasoned sushi rice.',
+    price: '$6.99',
+    image:
+      'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=70/media/photosV2/2814e2f5-d196-41fb-b4d5-3e32e01b7b58-retina-large.jpeg',
+    category: 'Nigiri Sushi',
+    rating: '90%',
+    ratingCount: 10,
+  },
+  {
+    id: 'chirashi-bowl-ngd',
+    restaurantId: 'new-golden-daisy',
+    name: 'Chirashi Bowl / 散寿司',
+    description: 'Assorted fresh sashimi over seasoned sushi rice.',
+    price: '$18.99',
+    image:
+      'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=70/media/photosV2/9f1377ad-e237-4e59-8e20-d4f1ba10e185-npp-retina-large.jpg',
+    category: 'Sushi Bowls',
+    rating: '96%',
+    ratingCount: 5,
+  },
+
 
   {
     id: 'so-yesterday-4',
@@ -22910,7 +22973,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'make-it-your-way-acai-16oz',
+    id: 'sf-organica-make-it-your-way-acai-16oz',
     restaurantId: 'sf-organica',
     name: 'Make It Your Way Acai (16oz)',
     description: 'Choose up to 5 items for $9.95',
@@ -22922,7 +22985,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 15,
   },
   {
-    id: 'so-yesterday-4',
+    id: 'sf-organica-so-yesterday-4',
     restaurantId: 'sf-organica',
     name: 'So Yesterday #4',
     description:
@@ -22948,7 +23011,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 10,
   },
   {
-    id: 'make-your-own',
+    id: 'sf-organica-make-your-own',
     restaurantId: 'sf-organica',
     name: 'Make Your Own',
     description:
@@ -22961,7 +23024,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 10,
   },
   {
-    id: 'organica-8',
+    id: 'sf-organica-organica-8',
     restaurantId: 'sf-organica',
     name: 'OrganiCA #8',
     description: 'Grilled Chicken, Garlic Spread, Pesto, Pepperoncini, Lettuce, Tomato, Herbal Mix',
@@ -22986,7 +23049,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 6,
   },
   {
-    id: 'macaroni-salad',
+    id: 'sf-organica-macaroni-salad',
     restaurantId: 'sf-organica',
     name: 'Macaroni Salad',
     description: null,
@@ -22997,7 +23060,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'potato-salad',
+    id: 'sf-organica-potato-salad',
     restaurantId: 'sf-organica',
     name: 'Potato Salad',
     description: null,
@@ -23031,7 +23094,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'cheese-danish',
+    id: 'sf-organica-cheese-danish',
     restaurantId: 'sf-organica',
     name: 'Cheese Danish',
     description: null,
@@ -23053,7 +23116,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'morning-bun',
+    id: 'sf-organica-morning-bun',
     restaurantId: 'sf-organica',
     name: 'Morning Bun',
     description: null,
@@ -23064,7 +23127,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'chocolate-croissant',
+    id: 'sf-organica-chocolate-croissant',
     restaurantId: 'sf-organica',
     name: 'Chocolate Croissant',
     description: null,
@@ -23604,7 +23667,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'pearl-caviar-spoon',
+    id: 'skazka-caviar-pearl-caviar-spoon',
     restaurantId: 'skazka-caviar',
     name: 'Pearl Caviar Spoon',
     description:
@@ -23617,7 +23680,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'osetra-caviar-oprahs-favorite',
+    id: 'skazka-caviar-osetra-caviar-oprahs-favorite',
     restaurantId: 'skazka-caviar',
     name: 'Osetra Caviar "Oprah\'s Favorite"',
     description:
@@ -23630,7 +23693,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'caviar-sampler-2oz-kaluga--2oz-osetra',
+    id: 'skazka-caviar-caviar-sampler-2oz-kaluga--2oz-osetra',
     restaurantId: 'skazka-caviar',
     name: 'Caviar Sampler (2oz Kaluga + 2oz Osetra)',
     description: 'A sampler of our most popular caviars.',
@@ -23642,7 +23705,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'kaluga-sturgeon-caviar-river-beluga',
+    id: 'skazka-caviar-kaluga-sturgeon-caviar-river-beluga',
     restaurantId: 'skazka-caviar',
     name: 'Kaluga Sturgeon Caviar "River Beluga"',
     description:
@@ -23667,7 +23730,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'beluga-sturgeon-caviar-king-grade',
+    id: 'skazka-caviar-beluga-sturgeon-caviar-king-grade',
     restaurantId: 'skazka-caviar',
     name: 'Beluga Sturgeon Caviar "King Grade"',
     description: 'Finest quality caviar premium XL KING Grade caviar',
@@ -23679,7 +23742,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'pearl-caviar-spoon',
+    id: 'skazka-caviar-pearl-caviar-spoon-2',
     restaurantId: 'skazka-caviar',
     name: 'Pearl Caviar Spoon',
     description:
@@ -23704,7 +23767,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'pearl-caviar-spoon-set-of-5',
+    id: 'skazka-caviar-pearl-caviar-spoon-set-of-5',
     restaurantId: 'skazka-caviar',
     name: 'Pearl Caviar Spoon (Set of 5)',
     description:
@@ -23717,7 +23780,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'caviar-sampler-2oz-kaluga--2oz-osetra',
+    id: 'skazka-caviar-caviar-sampler-2oz-kaluga--2oz-osetra-2',
     restaurantId: 'skazka-caviar',
     name: 'Caviar Sampler (2oz Kaluga + 2oz Osetra)',
     description: 'A sampler of our most popular caviars.',
@@ -23730,7 +23793,7 @@ export const menuItems: MenuItem[] = [
   },
 
   {
-    id: 'pastrami-sandwich',
+    id: 'cafe-gourmand-pastrami-sandwich',
     restaurantId: 'cafe-gourmand',
     name: 'Pastrami Sandwich',
     description: null,
@@ -23754,7 +23817,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'tiramisu',
+    id: 'cafe-gourmand-tiramisu',
     restaurantId: 'cafe-gourmand',
     name: 'Tiramisu',
     description: null,
@@ -23790,7 +23853,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'pastrami-sandwich',
+    id: 'cafe-gourmand-pastrami-sandwich-2',
     restaurantId: 'cafe-gourmand',
     name: 'Pastrami Sandwich',
     description:
@@ -23803,7 +23866,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'tiramisu',
+    id: 'cafe-gourmand-tiramisu-2',
     restaurantId: 'cafe-gourmand',
     name: 'Tiramisu',
     description:
@@ -23816,7 +23879,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'mediterranean-tuna',
+    id: 'cafe-gourmand-mediterranean-tuna',
     restaurantId: 'cafe-gourmand',
     name: 'Mediterranean Tuna',
     description:
@@ -23829,7 +23892,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'egg-bacon--cheese',
+    id: 'cafe-gourmand-egg-bacon--cheese',
     restaurantId: 'cafe-gourmand',
     name: 'Egg, Bacon & Cheese',
     description: 'Egg, bacon, and cheese on your choice of bagel or croissant.',
@@ -23867,7 +23930,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'chicken-achiote',
+    id: 'cafe-gourmand-chicken-achiote',
     restaurantId: 'cafe-gourmand',
     name: 'Chicken Achiote',
     description:
@@ -23880,7 +23943,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'ham-sandwich',
+    id: 'cafe-gourmand-ham-sandwich',
     restaurantId: 'cafe-gourmand',
     name: 'Ham Sandwich',
     description:
@@ -23893,7 +23956,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'blt-sandwich',
+    id: 'cafe-gourmand-blt-sandwich',
     restaurantId: 'cafe-gourmand',
     name: 'BLT Sandwich',
     description:
@@ -23919,7 +23982,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'espresso',
+    id: 'cafe-gourmand-espresso',
     restaurantId: 'cafe-gourmand',
     name: 'Espresso',
     description: 'Rich, bold espresso in three sizes: large, medium, or small.',
@@ -23941,7 +24004,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'egg--cheese',
+    id: 'cafe-gourmand-egg--cheese',
     restaurantId: 'cafe-gourmand',
     name: 'Egg & Cheese',
     description: 'Egg and cheese sandwich, choice of bagel or croissant.',
@@ -23965,7 +24028,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'egg-bacon--cheese',
+    id: 'cafe-gourmand-egg-bacon--cheese-2',
     restaurantId: 'cafe-gourmand',
     name: 'Egg, Bacon & Cheese',
     description: 'Egg, bacon, and cheese on your choice of bagel or croissant.',
@@ -23989,7 +24052,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'greek-salad',
+    id: 'cafe-gourmand-greek-salad',
     restaurantId: 'cafe-gourmand',
     name: 'Greek Salad',
     description: 'Fresh mixed greens, olives, feta, cucumber, and tomato in homemade dressing.',
@@ -24001,7 +24064,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'macaroni-salad',
+    id: 'cafe-gourmand-macaroni-salad',
     restaurantId: 'cafe-gourmand',
     name: 'Macaroni Salad',
     description: 'Macaroni mixed with creamy dressing, available in 1/2 pint or pint sizes.',
@@ -24023,7 +24086,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'tuna-salad',
+    id: 'cafe-gourmand-tuna-salad',
     restaurantId: 'cafe-gourmand',
     name: 'Tuna Salad',
     description: 'Tuna salad with choice of 1/2 pint or pint sizes.',
@@ -24047,7 +24110,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'danish',
+    id: 'cafe-gourmand-danish',
     restaurantId: 'cafe-gourmand',
     name: 'Danish',
     description: 'bluberry cheese,apple raisin,almond cream,apricot,raisin custard',
@@ -24071,7 +24134,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'morning-bun',
+    id: 'cafe-gourmand-morning-bun',
     restaurantId: 'cafe-gourmand',
     name: 'Morning Bun',
     description:
@@ -24109,7 +24172,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'fresh-squeezed-orange-juice',
+    id: 'cafe-gourmand-fresh-squeezed-orange-juice',
     restaurantId: 'cafe-gourmand',
     name: 'Fresh Squeezed Orange Juice',
     description: 'Freshly Squeezed, Vibrant Orange Juice - Citrus Burst in Every Sip',
@@ -24229,7 +24292,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'americano',
+    id: 'cafe-gourmand-americano',
     restaurantId: 'cafe-gourmand',
     name: 'Americano',
     description: 'Americano coffee in large, medium, or small sizes.',
@@ -24240,7 +24303,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'chai-latte',
+    id: 'cafe-gourmand-chai-latte',
     restaurantId: 'cafe-gourmand',
     name: 'Chai Latte',
     description: 'infused with chai tea spices. Available in small, medium, or large.',
@@ -24251,7 +24314,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'latte',
+    id: 'cafe-gourmand-latte',
     restaurantId: 'cafe-gourmand',
     name: 'Latte',
     description: 'Chinese-style coffee latte available in three sizes: large, medium, small.',
@@ -24262,7 +24325,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'vanilla-latte',
+    id: 'cafe-gourmand-vanilla-latte',
     restaurantId: 'cafe-gourmand',
     name: 'Vanilla Latte',
     description: 'Vanilla infused coffee latte, available in large, medium, or small.',
@@ -24273,7 +24336,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'caramel-macchiato',
+    id: 'cafe-gourmand-caramel-macchiato',
     restaurantId: 'cafe-gourmand',
     name: 'Caramel Macchiato',
     description: 'Caramel macchiato in mocha style, available in small, medium, or large.',
@@ -24284,7 +24347,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'mocha',
+    id: 'cafe-gourmand-mocha',
     restaurantId: 'cafe-gourmand',
     name: 'Mocha',
     description: 'Rich Chinese-style mocha, available in large, medium, or small sizes.',
@@ -24306,7 +24369,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'sapporo-premium-beer-can-22-fl-oz',
+    id: 'cafe-gourmand-sapporo-premium-beer-can-22-fl-oz',
     restaurantId: 'cafe-gourmand',
     name: 'Sapporo Premium Beer Can (22 fl oz)',
     description: 'Sapporo Beer Premium - 22 Oz',
@@ -24354,7 +24417,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'jose-cuervo-authentic-cuervo-classic-lime-margarita-cocktail-rtd-bottle-175-l',
+    id: 'cafe-gourmand-jose-cuervo-authentic-cuervo-classic-lime-margarita-cocktail-rtd-bottle-175-l',
     restaurantId: 'cafe-gourmand',
     name: 'Jose Cuervo Authentic Cuervo Classic Lime Margarita Cocktail RTD Bottle (1.75 L)',
     description:
@@ -24380,7 +24443,7 @@ export const menuItems: MenuItem[] = [
   },
 
   {
-    id: 'thai-iced-tea',
+    id: 'peacock-pansy-restaurant-thai-iced-tea',
     restaurantId: 'peacock-pansy-restaurant',
     name: 'Thai Iced Tea',
     description: 'A refreshing blend of black tea, spices, and sweetened condensed milk over ice.',
@@ -24535,7 +24598,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'garlic-bread-with-mozzarella-cheese-m',
+    id: 'little-italy-pasta-garlic-bread-with-mozzarella-cheese-m',
     restaurantId: 'little-italy-pasta',
     name: 'Garlic bread with mozzarella cheese (M)',
     description: null,
@@ -24547,7 +24610,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'fettuccine-alfredo-with-chicken-m',
+    id: 'little-italy-pasta-fettuccine-alfredo-with-chicken-m',
     restaurantId: 'little-italy-pasta',
     name: 'Fettuccine Alfredo with Chicken (M)',
     description: null,
@@ -24559,7 +24622,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'meat-sauce-lasagna-m',
+    id: 'little-italy-pasta-meat-sauce-lasagna-m',
     restaurantId: 'little-italy-pasta',
     name: 'Meat Sauce Lasagna (M)',
     description: null,
@@ -24571,7 +24634,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'fettuccine-alfredo-pasta-m',
+    id: 'little-italy-pasta-fettuccine-alfredo-pasta-m',
     restaurantId: 'little-italy-pasta',
     name: 'Fettuccine Alfredo Pasta (M)',
     description: null,
@@ -24583,7 +24646,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'spaghetti--meatballs-m',
+    id: 'little-italy-pasta-spaghetti--meatballs-m',
     restaurantId: 'little-italy-pasta',
     name: 'Spaghetti & Meatballs (M)',
     description: null,
@@ -24754,7 +24817,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'tiramisu-m',
+    id: 'little-italy-pasta-tiramisu-m',
     restaurantId: 'little-italy-pasta',
     name: 'Tiramisu (M)',
     description: null,
@@ -24911,7 +24974,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 134,
   },
   {
-    id: 'chicken-mixed-bowl',
+    id: 'ben-chicken-mixed-bowl',
     restaurantId: "ben's-fast-food",
     name: 'Chicken Mixed Bowl',
     description:
@@ -24924,7 +24987,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 1201,
   },
   {
-    id: 'green-smoothie',
+    id: 'ben-green-smoothie',
     restaurantId: "ben's-fast-food",
     name: 'Green Smoothie',
     description:
@@ -24937,7 +25000,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 1066,
   },
   {
-    id: 'chicken-hearty-bowl',
+    id: 'ben-chicken-hearty-bowl',
     restaurantId: "ben's-fast-food",
     name: 'Chicken Hearty Bowl',
     description:
@@ -24950,7 +25013,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 1044,
   },
   {
-    id: 'pork-shoulder-hearty-bowl',
+    id: 'ben-pork-shoulder-hearty-bowl',
     restaurantId: "ben's-fast-food",
     name: 'Pork Shoulder Hearty Bowl',
     description:
@@ -25079,7 +25142,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 70,
   },
   {
-    id: 'wagyu-beef-hearty-bowl',
+    id: 'ben-wagyu-beef-hearty-bowl',
     restaurantId: "ben's-fast-food",
     name: 'Wagyu Beef Hearty Bowl',
     description:
@@ -25105,7 +25168,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 47,
   },
   {
-    id: 'slow-roasted-chicken',
+    id: 'ben-slow-roasted-chicken',
     restaurantId: "ben's-fast-food",
     name: 'Slow Roasted Chicken',
     description: 'juicy chicken slow roasted with BFF seasoning // gluten, dairy, soy free',
@@ -25217,7 +25280,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 16,
   },
   {
-    id: 'not-a-cheeseburger',
+    id: 'mr--charlie-not-a-cheeseburger',
     restaurantId: "mr.-charlie's",
     name: 'Not a Cheeseburger',
     description: 'Plant-based patty, plant-based cheese, pickles, onion, ketchup & mustard',
@@ -25265,7 +25328,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 8,
   },
   {
-    id: 'not-a-chicken-sandwich',
+    id: 'mr--charlie-not-a-chicken-sandwich',
     restaurantId: "mr.-charlie's",
     name: 'Not a Chicken Sandwich',
     description: 'Plant based chicken patty, plant-based mayo, lettuce',
@@ -25277,7 +25340,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 16,
   },
   {
-    id: 'no-5-double-not-frowny',
+    id: 'mr--charlie-no-5-double-not-frowny',
     restaurantId: "mr.-charlie's",
     name: 'No. 5 Double Not Frowny',
     description: 'Double Not with 4 nuggets, fries & drink.',
@@ -25289,7 +25352,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'no-7-mr-chuck-frowny',
+    id: 'mr--charlie-no-7-mr-chuck-frowny',
     restaurantId: "mr.-charlie's",
     name: 'No. 7 Mr. Chuck Frowny',
     description: 'Mr.Chuck with 4 nuggets, fries & drink.',
@@ -25301,7 +25364,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'no-5-double-not-frowny',
+    id: 'mr--charlie-no-5-double-not-frowny-2',
     restaurantId: "mr.-charlie's",
     name: 'No. 5 Double Not Frowny',
     description: 'Double Not with 4 nuggets, fries & drink.',
@@ -25361,7 +25424,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'not-a-chicken-sandwich',
+    id: 'mr--charlie-not-a-chicken-sandwich-2',
     restaurantId: "mr.-charlie's",
     name: 'Not a Chicken Sandwich',
     description: 'Plant based chicken patty, plant-based mayo, lettuce',
@@ -25459,7 +25522,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'frowny-fries',
+    id: 'mr--charlie-frowny-fries',
     restaurantId: "mr.-charlie's",
     name: 'Frowny Fries',
     description: 'Use your imagination',
@@ -25471,7 +25534,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 8,
   },
   {
-    id: 'not-chicken-nuggets',
+    id: 'mr--charlie-not-chicken-nuggets',
     restaurantId: "mr.-charlie's",
     name: 'Not Chicken Nuggets',
     description: 'Plant-based Nuggets (7) and two sauces',
@@ -25483,7 +25546,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 16,
   },
   {
-    id: 'tots',
+    id: 'mr--charlie-tots',
     restaurantId: "mr.-charlie's",
     name: 'Tots',
     description: 'Potato tots',
@@ -25543,7 +25606,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'sprite',
+    id: 'mr--charlie-sprite',
     restaurantId: "mr.-charlie's",
     name: 'Sprite',
     description: 'Fountain Drink',
@@ -25555,7 +25618,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'bottled-water',
+    id: 'mr--charlie-bottled-water',
     restaurantId: "mr.-charlie's",
     name: 'Bottled Water',
     description: 'Bottle',
@@ -25591,7 +25654,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'ketchup',
+    id: 'mr--charlie-ketchup',
     restaurantId: "mr.-charlie's",
     name: 'Ketchup',
     description: 'Ketchup',
@@ -25820,7 +25883,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 16,
   },
   {
-    id: 'build-your-own',
+    id: 'boichik-bagels-build-your-own',
     restaurantId: 'boichik-bagels',
     name: 'Build Your Own',
     description: null,
@@ -25832,7 +25895,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 31,
   },
   {
-    id: 'chive-cc',
+    id: 'boichik-bagels-chive-cc',
     restaurantId: 'boichik-bagels',
     name: 'Chive CC',
     description: '8 oz',
@@ -25844,7 +25907,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 20,
   },
   {
-    id: 'plain-cc',
+    id: 'boichik-bagels-plain-cc',
     restaurantId: 'boichik-bagels',
     name: 'Plain CC',
     description: '8 oz',
@@ -25856,7 +25919,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 16,
   },
   {
-    id: 'dozen-bagels---one-free',
+    id: 'boichik-bagels-dozen-bagels---one-free',
     restaurantId: 'boichik-bagels',
     name: 'Dozen Bagels - One Free!',
     description: null,
@@ -25868,7 +25931,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 14,
   },
   {
-    id: 'classic',
+    id: 'boichik-bagels-classic',
     restaurantId: 'boichik-bagels',
     name: 'Classic',
     description: '3 oz of nova lox, chive cream cheese, capers, onion and tomato.',
@@ -25892,7 +25955,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 7,
   },
   {
-    id: 'sparkling-water',
+    id: 'boichik-bagels-sparkling-water',
     restaurantId: 'boichik-bagels',
     name: 'Sparkling Water',
     description: 'Beverage - 11oz Perrier',
@@ -25987,7 +26050,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'egg-salad',
+    id: 'boichik-bagels-egg-salad',
     restaurantId: 'boichik-bagels',
     name: 'Egg Salad',
     description: 'Organic pasture-raised egg salad, 8 oz.',
@@ -26151,7 +26214,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'pesto-chicken-sandwich',
+    id: 'crust---fresh-sourdough-deli-pesto-chicken-sandwich',
     restaurantId: 'crust---fresh-sourdough-deli',
     name: 'Pesto Chicken Sandwich',
     description: null,
@@ -26199,7 +26262,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'oven-roasted-turkey-sandwich',
+    id: 'crust---fresh-sourdough-deli-oven-roasted-turkey-sandwich',
     restaurantId: 'crust---fresh-sourdough-deli',
     name: 'Oven Roasted Turkey Sandwich',
     description:
@@ -26212,7 +26275,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'pesto-chicken-sandwich',
+    id: 'crust---fresh-sourdough-deli-pesto-chicken-sandwich-2',
     restaurantId: 'crust---fresh-sourdough-deli',
     name: 'Pesto Chicken Sandwich',
     description:
@@ -26225,7 +26288,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'crust-hot-pastrami',
+    id: 'crust---fresh-sourdough-deli-crust-hot-pastrami',
     restaurantId: 'crust---fresh-sourdough-deli',
     name: 'CRUST Hot Pastrami',
     description: '2X Hot Pastrami, Melted Meunster, Pepperoncini, Onion, Lettuce, House Spread',
@@ -26237,7 +26300,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'spicy-turkey-sandwich',
+    id: 'crust---fresh-sourdough-deli-spicy-turkey-sandwich',
     restaurantId: 'crust---fresh-sourdough-deli',
     name: 'Spicy Turkey Sandwich',
     description:
@@ -26262,7 +26325,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'roast-beef-sandwich',
+    id: 'crust---fresh-sourdough-deli-roast-beef-sandwich',
     restaurantId: 'crust---fresh-sourdough-deli',
     name: 'Roast Beef Sandwich',
     description:
@@ -26372,7 +26435,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'craft-sodas---boylan-bottling-co',
+    id: 'crust---fresh-sourdough-deli-craft-sodas---boylan-bottling-co',
     restaurantId: 'crust---fresh-sourdough-deli',
     name: 'Craft Sodas - Boylan Bottling Co',
     description: 'Boylan bottled sodas and crafted with real cane sugar.',
@@ -26714,7 +26777,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'garlic-butter-salmon',
+    id: 'salmon-bliss-garlic-butter-salmon',
     restaurantId: 'salmon-bliss',
     name: 'Garlic Butter Salmon',
     description: 'Salmon filet with garlic butter, garnished with lemon wedges and parsley.',
@@ -26726,7 +26789,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: 9,
   },
   {
-    id: 'salmon-pasta',
+    id: 'salmon-bliss-salmon-pasta',
     restaurantId: 'salmon-bliss',
     name: 'Salmon Pasta',
     description:
@@ -26739,7 +26802,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'salmon-sushi-roll',
+    id: 'salmon-bliss-salmon-sushi-roll',
     restaurantId: 'salmon-bliss',
     name: 'Salmon Sushi Roll',
     description:
@@ -26752,7 +26815,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'lemon-herb-salmon',
+    id: 'salmon-bliss-lemon-herb-salmon',
     restaurantId: 'salmon-bliss',
     name: 'Lemon Herb Salmon',
     description:
@@ -26777,7 +26840,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'yuzu-salmon',
+    id: 'salmon-bliss-yuzu-salmon',
     restaurantId: 'salmon-bliss',
     name: 'Yuzu Salmon',
     description: 'Salmon seasoned with yuzu zest, served with snap peas and bok choy.',
@@ -26850,7 +26913,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'designers-choice-vase---sweet--loving-grande',
+    id: 'designer-blooms-designers-choice-vase---sweet--loving-grande',
     restaurantId: 'designer-blooms',
     name: "Designer's Choice Vase - Sweet & Loving (Grande)",
     description:
@@ -26863,7 +26926,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'designers-choice-bouquet---sweet--loving-grande',
+    id: 'designer-blooms-designers-choice-bouquet---sweet--loving-grande',
     restaurantId: 'designer-blooms',
     name: "Designer's Choice Bouquet - Sweet & Loving (Grande)",
     description:
@@ -26876,7 +26939,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'designers-choice-vase---bright--cheerful-grande',
+    id: 'designer-blooms-designers-choice-vase---bright--cheerful-grande',
     restaurantId: 'designer-blooms',
     name: "Designer's Choice Vase - Bright & Cheerful (Grande)",
     description:
@@ -26889,7 +26952,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'garnet-bouquet-standard',
+    id: 'designer-blooms-garnet-bouquet-standard',
     restaurantId: 'designer-blooms',
     name: 'Garnet Bouquet (Standard)',
     description:
@@ -26902,7 +26965,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'mini-bouquet',
+    id: 'designer-blooms-mini-bouquet',
     restaurantId: 'designer-blooms',
     name: 'Mini Bouquet',
     description: null,
@@ -27117,7 +27180,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'overjoyed-boutique-fragrant-rose-bouquet',
+    id: 'safeway-flower-shop-overjoyed-boutique-fragrant-rose-bouquet',
     restaurantId: 'safeway-flower-shop',
     name: 'Overjoyed Boutique Fragrant Rose Bouquet',
     description: 'Roses and Lilies with greens, color may vary',
@@ -27129,7 +27192,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'mini-carnations-bunch',
+    id: 'safeway-flower-shop-mini-carnations-bunch',
     restaurantId: 'safeway-flower-shop',
     name: 'Mini Carnations Bunch',
     description: 'Fresh Cut, colors may vary',
@@ -27141,7 +27204,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'white-oriental-lilies',
+    id: 'safeway-flower-shop-white-oriental-lilies',
     restaurantId: 'safeway-flower-shop',
     name: 'White Oriental Lilies',
     description: 'Fresh Cut, variety can be Stargazer, Oriental, or Sonata',
@@ -27165,7 +27228,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'overjoyed-boutique-orchid-phalaenopsis',
+    id: 'safeway-flower-shop-overjoyed-boutique-orchid-phalaenopsis',
     restaurantId: 'safeway-flower-shop',
     name: 'Overjoyed Boutique Orchid Phalaenopsis',
     description: 'Colors and number of spikes may vary. Usually in claypot but may vary.',
@@ -27251,7 +27314,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'vanilla-cake-bouquet',
+    id: 'the-bouqs-co--flower-shop-vanilla-cake-bouquet',
     restaurantId: 'the-bouqs-co.-flower-shop',
     name: 'Vanilla Cake Bouquet',
     description: 'Photo is of an Original-sized Bouquet.',
@@ -27263,7 +27326,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'florist-favorite-bouquet',
+    id: 'the-bouqs-co--flower-shop-florist-favorite-bouquet',
     restaurantId: 'the-bouqs-co.-flower-shop',
     name: 'Florist Favorite Bouquet',
     description:
@@ -27276,7 +27339,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'always-there-bouquet',
+    id: 'the-bouqs-co--flower-shop-always-there-bouquet',
     restaurantId: 'the-bouqs-co.-flower-shop',
     name: 'Always There Bouquet',
     description: 'Photo is of a Deluxe-sized Bouquet.',
@@ -27397,7 +27460,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'chicken-fried-steak--2-eggs',
+    id: 'the-original-mels-diner-chicken-fried-steak--2-eggs',
     restaurantId: 'the-original-mels-diner',
     name: 'Chicken-Fried Steak & 2 Eggs',
     description:
@@ -27410,7 +27473,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'ribeye-steak--eggs',
+    id: 'the-original-mels-diner-ribeye-steak--eggs',
     restaurantId: 'the-original-mels-diner',
     name: 'Ribeye steak & eggs',
     description: '10oz Ribeye served with 2 farm fresh eggs, choice of potatoes and toast',
@@ -27422,7 +27485,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'new-recipe-mels-sampler',
+    id: 'the-original-mels-diner-new-recipe-mels-sampler',
     restaurantId: 'the-original-mels-diner',
     name: 'New Recipe Mels Sampler',
     description:
@@ -27435,7 +27498,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: '6-oz-new-york-steak--2-eggs',
+    id: 'the-original-mels-diner-6-oz-new-york-steak--2-eggs',
     restaurantId: 'the-original-mels-diner',
     name: '6 oz. New York Steak & 2 Eggs',
     description: '910-1370 cal.',
@@ -27510,7 +27573,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'wolfman-jack',
+    id: 'the-original-mels-diner-wolfman-jack',
     restaurantId: 'the-original-mels-diner',
     name: 'Wolfman Jack',
     description:
@@ -27610,7 +27673,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'mozzarella-sticks',
+    id: 'the-original-mels-diner-mozzarella-sticks',
     restaurantId: 'the-original-mels-diner',
     name: 'Mozzarella Sticks',
     description: 'Battered, fried.',
@@ -27622,7 +27685,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'new-recipe-mels-sampler',
+    id: 'the-original-mels-diner-new-recipe-mels-sampler-2',
     restaurantId: 'the-original-mels-diner',
     name: 'New Recipe Mels Sampler',
     description:
@@ -27635,7 +27698,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'milk-shake-or-malt',
+    id: 'the-original-mels-diner-milk-shake-or-malt',
     restaurantId: 'the-original-mels-diner',
     name: 'Milk Shake or Malt',
     description: 'Choose your flavor and Make It a Malt if you please!',
@@ -27762,7 +27825,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'ribeye-steak--eggs',
+    id: 'the-original-mels-diner-ribeye-steak--eggs-2',
     restaurantId: 'the-original-mels-diner',
     name: 'Ribeye steak & eggs',
     description: '10oz Ribeye served with 2 farm fresh eggs, choice of potatoes and toast',
@@ -27774,7 +27837,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'chicken-fried-steak--2-eggs',
+    id: 'the-original-mels-diner-chicken-fried-steak--2-eggs-2',
     restaurantId: 'the-original-mels-diner',
     name: 'Chicken-Fried Steak & 2 Eggs',
     description:
@@ -27787,7 +27850,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: '6-oz-new-york-steak--2-eggs',
+    id: 'the-original-mels-diner-6-oz-new-york-steak--2-eggs-2',
     restaurantId: 'the-original-mels-diner',
     name: '6 oz. New York Steak & 2 Eggs',
     description: '910-1370 cal.',
@@ -27975,7 +28038,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'oj',
+    id: 'the-original-mels-diner-oj',
     restaurantId: 'the-original-mels-diner',
     name: 'O.J.',
     description: '11.50oz Bottle of Simply Orange Juice 100% Juice',
@@ -28069,7 +28132,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'xl-chocolate-chip-cookie',
+    id: 'detroit-cookie-company-xl-chocolate-chip-cookie',
     restaurantId: 'detroit-cookie-company',
     name: 'XL Chocolate Chip Cookie',
     description:
@@ -28082,7 +28145,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'raspberry-oreo-cheesecake-cookie',
+    id: 'detroit-cookie-company-raspberry-oreo-cheesecake-cookie',
     restaurantId: 'detroit-cookie-company',
     name: 'Raspberry Oreo Cheesecake Cookie',
     description: 'Raspberries, Oreos, and Cheesecake in a cookie- Need we say more!?',
@@ -28094,7 +28157,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'xl-mm-cookie',
+    id: 'detroit-cookie-company-xl-mm-cookie',
     restaurantId: 'detroit-cookie-company',
     name: 'XL M&M Cookie',
     description: 'Our Signature Chocolate Chunk cookie- tripled in size, hand studded with M&M’s!',
@@ -28106,7 +28169,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'chocolate-chunk-cookie',
+    id: 'detroit-cookie-company-chocolate-chunk-cookie',
     restaurantId: 'detroit-cookie-company',
     name: 'Chocolate Chunk Cookie',
     description:
@@ -28119,7 +28182,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'banana-pudding-cookie',
+    id: 'detroit-cookie-company-banana-pudding-cookie',
     restaurantId: 'detroit-cookie-company',
     name: 'Banana Pudding Cookie',
     description: 'A scrumptious banana pudding cookie swirled with vanilla wafers!',
@@ -28205,7 +28268,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'stuffed-cookies--cream-cookie-6-oz',
+    id: 'hello-chonky-cookie-co-stuffed-cookies--cream-cookie-6-oz',
     restaurantId: 'hello-chonky-cookie-co',
     name: 'Stuffed Cookies & Cream Cookie (6 oz)',
     description:
@@ -28218,7 +28281,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'chonky-chip-cookie-6-oz',
+    id: 'hello-chonky-cookie-co-chonky-chip-cookie-6-oz',
     restaurantId: 'hello-chonky-cookie-co',
     name: 'Chonky Chip Cookie (6 oz)',
     description:
@@ -28231,7 +28294,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'biscoff-oreo-stuffed-cookie-6-oz',
+    id: 'hello-chonky-cookie-co-biscoff-oreo-stuffed-cookie-6-oz',
     restaurantId: 'hello-chonky-cookie-co',
     name: 'Biscoff Oreo Stuffed Cookie (6 oz)',
     description:
@@ -28244,7 +28307,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'chocolate-lava-brownie-6-oz',
+    id: 'hello-chonky-cookie-co-chocolate-lava-brownie-6-oz',
     restaurantId: 'hello-chonky-cookie-co',
     name: 'Chocolate Lava Brownie (6 oz)',
     description:
@@ -28283,7 +28346,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'stuffed-cookies--cream-cookie-6-oz',
+    id: 'hello-chonky-cookie-co-stuffed-cookies--cream-cookie-6-oz-2',
     restaurantId: 'hello-chonky-cookie-co',
     name: 'Stuffed Cookies & Cream Cookie (6 oz)',
     description:
@@ -28296,7 +28359,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'biscoff-oreo-stuffed-cookie-6-oz',
+    id: 'hello-chonky-cookie-co-biscoff-oreo-stuffed-cookie-6-oz-2',
     restaurantId: 'hello-chonky-cookie-co',
     name: 'Biscoff Oreo Stuffed Cookie (6 oz)',
     description:
@@ -28309,7 +28372,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'chocolate-lava-brownie-6-oz',
+    id: 'hello-chonky-cookie-co-chocolate-lava-brownie-6-oz-2',
     restaurantId: 'hello-chonky-cookie-co',
     name: 'Chocolate Lava Brownie (6 oz)',
     description:
@@ -28335,7 +28398,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'ultimate-peanut-butter',
+    id: 'hello-chonky-cookie-co-ultimate-peanut-butter',
     restaurantId: 'hello-chonky-cookie-co',
     name: 'Ultimate Peanut Butter',
     description:
@@ -28412,7 +28475,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'olipop-sparkling-tonic-strawberry-vanilla-12-oz',
+    id: 'hello-chonky-cookie-co-olipop-sparkling-tonic-strawberry-vanilla-12-oz',
     restaurantId: 'hello-chonky-cookie-co',
     name: 'Olipop Sparkling Tonic Strawberry Vanilla (12 oz)',
     description:
@@ -28551,7 +28614,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'pistachio-cremino-bar-110-g',
+    id: 'venchi-chocolates-pistachio-cremino-bar-110-g',
     restaurantId: 'venchi-chocolates',
     name: 'Pistachio Cremino Bar (110 g)',
     description:
@@ -28564,7 +28627,7 @@ export const menuItems: MenuItem[] = [
     ratingCount: null,
   },
   {
-    id: 'tiramisu-chocolate-bar-110-g',
+    id: 'venchi-chocolates-tiramisu-chocolate-bar-110-g',
     restaurantId: 'venchi-chocolates',
     name: 'Tiramisu Chocolate Bar (110 g)',
     description:
