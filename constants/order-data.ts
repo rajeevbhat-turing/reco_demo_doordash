@@ -248,7 +248,7 @@ export const orderData: Order[] = [
   },
   {
     id: 'order-17',
-    restaurantId: 'peet-s-coffee',
+    restaurantId: 'peet\'s-coffee',
     restaurantName: "Peet's Coffee",
     orderDate: 'Mon, Mar 4',
     totalAmount: 45.75,
@@ -322,5 +322,5 @@ export const orderData: Order[] = [
     orderType: 'Personal',
     isDashPass: true,
     tags: ['Fragile Items']
-  }
+  },
 ]; 

@@ -82,7 +82,8 @@ function SearchBar({ restaurantName, searchQuery, onSearchChange }: {
 
 export default function RestaurantPage() {
   const params = useParams();
-  const id = params.id as string;
+  const rawId = params.id as string;
+  const id = decodeURIComponent(rawId); // Decode URL-encoded characters like %26 to &
   const [restaurant, setRestaurant] = useState<any>(null);
   const [featuredItems, setFeaturedItems] = useState<any[]>([]);
   const [menuCategories, setMenuCategories] = useState<any[]>([]);

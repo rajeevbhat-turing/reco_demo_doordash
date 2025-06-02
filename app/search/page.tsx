@@ -7,13 +7,15 @@ import Link from "next/link"
 import { Heart, Star, ArrowLeft } from "lucide-react"
 import { restaurants } from "@/constants/restaurants"
 import { menuItems } from "@/constants/menu-items"
+import { getAllStores } from "@/app/grocery/data/retail-response-mapper"
 import type { Restaurant } from "@/constants/restaurants"
 import { useCartStore } from "@/store/cart-store"
 import { getDefaultRating } from "@/utils/rating-utils"
 
 interface SearchResultRestaurant extends Restaurant {
-  matchType: "restaurant" | "menu-item"
+  matchType: "restaurant" | "menu-item" | "grocery"
   matchedItems?: string[]
+  storeType?: "grocery"
 }
 
 export default function SearchPage() {
@@ -69,6 +71,37 @@ export default function SearchPage() {
         matchType: "restaurant" as const,
       }))
 
+    // Search grocery stores by name
+    const groceryStores = getAllStores()
+    const groceryResults = groceryStores
+      .filter((store) => {
+        return store.name.toLowerCase().includes(query.toLowerCase())
+      })
+      .map((store) => ({
+        id: `grocery-${store.id}`,
+        name: store.name,
+        logo: store.image,
+        banner: store.image,
+        detailsBanner: store.image,
+        cuisine: "Grocery Store",
+        priceRange: "$",
+        time: store.time,
+        distance: "Nearby",
+        deliveryFee: store.delivery,
+        rating: parseFloat(store.rating),
+        reviews: store.numRatings,
+        dashPass: false,
+        new: false,
+        discount: store.discount || undefined,
+        isOpen: store.open,
+        openingHours: store.openTime || "9:00 AM - 9:00 PM",
+        address: "Local Area",
+        phone: "(555) 123-4567",
+        categories: ["grocery"],
+        matchType: "grocery" as const,
+        storeType: "grocery" as const,
+      }))
+
     // Search restaurants by menu items
     const menuItemResults = searchByMenuItem(query)
 
@@ -81,6 +114,14 @@ export default function SearchPage() {
       if (!addedRestaurantIds.has(restaurant.id)) {
         combinedResults.push(restaurant)
         addedRestaurantIds.add(restaurant.id)
+      }
+    })
+
+    // Add grocery store matches
+    groceryResults.forEach((store) => {
+      if (!addedRestaurantIds.has(store.id)) {
+        combinedResults.push(store)
+        addedRestaurantIds.add(store.id)
       }
     })
 
@@ -104,7 +145,7 @@ export default function SearchPage() {
         logo: restaurant.logo || "",
         description: restaurant.cuisine,
         dashPass: restaurant.dashPass,
-        type: "restaurant" as const,
+        type: restaurant.matchType === "grocery" ? "restaurant" as const : "restaurant" as const,
         restaurantId: restaurant.id,
         matchedItem: restaurant.matchType === "menu-item" ? restaurant.matchedItems?.[0] : undefined
       }))
@@ -166,7 +207,13 @@ export default function SearchPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {searchResults.map((restaurant) => (
             <div key={restaurant.id} className="restaurant-card">
-              <Link href={`/store/${restaurant.id}`} className="block">
+              <Link 
+                href={restaurant.storeType === "grocery" 
+                  ? `/grocery/store/${restaurant.id.replace("grocery-", "")}` 
+                  : `/store/${restaurant.id}`
+                } 
+                className="block"
+              >
                 <div className="relative h-[200px] bg-gray-100 rounded-t-lg overflow-hidden">
                   <Image
                     src={

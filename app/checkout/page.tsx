@@ -440,6 +440,7 @@ export default function CheckoutPage() {
         onClose={() => setShowOrderConfirmation(false)}
         orderId={orderId}
         total={getTotalWithExtras()}
+        tipAmount={selectedTip}
         scheduledTime={selectedDeliveryOption === "schedule" ? selectedScheduleTime : undefined}
         deliveryTime={deliveryTime}
         storeName={getStoreName()}

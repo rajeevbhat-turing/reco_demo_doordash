@@ -8,6 +8,7 @@ import { Search, X, ArrowLeft } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { restaurants } from "@/constants/restaurants"
 import { menuItems } from "@/constants/menu-items"
+import { getAllStores } from "@/app/grocery/data/retail-response-mapper"
 import { useCartStore } from "@/store/cart-store"
 
 interface SearchResult {
@@ -16,7 +17,7 @@ interface SearchResult {
   logo: string
   description: string
   dashPass?: boolean
-  type: "restaurant" | "menu-item"
+  type: "restaurant" | "menu-item" | "grocery"
   restaurantId?: string
   matchedItem?: string
 }
@@ -116,7 +117,7 @@ const SearchBar = () => {
             restaurant.cuisine.toLowerCase().includes(value.toLowerCase())
           )
         })
-        .slice(0, 3)
+        .slice(0, 2)
         .map((restaurant) => ({
           id: restaurant.id,
           name: restaurant.name,
@@ -124,13 +125,31 @@ const SearchBar = () => {
           description: generateDescription(restaurant),
           dashPass: restaurant.dashPass,
           type: "restaurant" as const,
+          matchedItem: undefined,
+        }))
+
+      // Search grocery stores by name
+      const groceryStores = getAllStores()
+      const groceryResults = groceryStores
+        .filter((store) => {
+          return store.name.toLowerCase().includes(value.toLowerCase())
+        })
+        .slice(0, 2)
+        .map((store) => ({
+          id: `grocery-${store.id}`,
+          name: store.name,
+          logo: store.image,
+          description: `${store.time} • ${store.delivery} • ★ ${store.rating}`,
+          dashPass: false,
+          type: "grocery" as const,
+          matchedItem: undefined,
         }))
 
       // Search restaurants by menu items
-      const menuItemResults = searchByMenuItem(value).slice(0, 3)
+      const menuItemResults = searchByMenuItem(value).slice(0, 2)
 
-      // Combine results, prioritizing restaurant matches
-      const combinedResults = [...restaurantResults, ...menuItemResults].slice(0, 5)
+      // Combine results, prioritizing restaurant matches, then grocery, then menu items
+      const combinedResults = [...restaurantResults, ...groceryResults, ...menuItemResults].slice(0, 5)
 
       // Generate search suggestions based on search term
       const suggestions = generateSearchSuggestions(value)
@@ -139,8 +158,18 @@ const SearchBar = () => {
       setSearchSuggestions(suggestions)
       setIsSearchActive(true)
 
-      // Update cart store with search results
-      updateSearchResults(restaurantResults)
+      // Update cart store with search results (convert all to restaurant format for compatibility)
+      const cartSearchResults = combinedResults.map(result => ({
+        id: result.id,
+        name: result.name,
+        logo: result.logo,
+        description: result.description,
+        dashPass: result.dashPass,
+        type: result.type === "grocery" ? "restaurant" as const : result.type,
+        restaurantId: result.id,
+        matchedItem: result.matchedItem
+      }))
+      updateSearchResults(cartSearchResults)
     } else {
       setSearchResults([])
       setSearchSuggestions([])
@@ -204,7 +233,14 @@ const SearchBar = () => {
   const handleResultClick = (result: SearchResult) => {
     saveRecentSearch(searchTerm)
     recordSearch(searchTerm)
-    router.push(`/store/${result.id}`)
+    
+    if (result.type === "grocery") {
+      // Extract the actual grocery store ID (remove "grocery-" prefix)
+      const actualId = result.id.replace("grocery-", "")
+      router.push(`/grocery/store/${actualId}`)
+    } else {
+      router.push(`/store/${result.id}`)
+    }
     setIsSearchActive(false)
   }
 

@@ -123,6 +123,19 @@ interface CartStore {
   // Quantity change tracking for quantity verifiers
   lastQuantityChangeInfo: { itemName: string; oldQuantity: number; newQuantity: number; timestamp: number } | null
   quantityVerifierConsumed: boolean
+  
+  // Order completion tracking for order verifiers
+  lastOrderInfo: { 
+    orderId: string
+    tipAmount: number
+    orderTotal: number
+    timestamp: number
+    isCompleted: boolean
+    storeName: string
+    category: string
+    items: CartItem[]
+  } | null
+  orderVerifierConsumed: boolean
 
   // Category methods
   setCategory: (category: CartCategory) => void
@@ -189,6 +202,17 @@ interface CartStore {
   
   // Quantity change tracking methods
   markQuantityVerifierConsumed: () => void
+  
+  // Order completion tracking methods
+  recordOrderCompletion: (orderInfo: {
+    orderId: string
+    tipAmount: number
+    orderTotal: number
+    storeName: string
+    category: string
+    items: CartItem[]
+  }) => void
+  markOrderVerifierConsumed: () => void
 }
 
 export const useCartStore = create<CartStore>()(
@@ -214,6 +238,8 @@ export const useCartStore = create<CartStore>()(
         removalVerifierConsumed: false,
         lastQuantityChangeInfo: null,
         quantityVerifierConsumed: false,
+        lastOrderInfo: null,
+        orderVerifierConsumed: false,
 
         // Set active category without clearing cart
         setCategory: (category: CartCategory) => {
@@ -674,6 +700,30 @@ export const useCartStore = create<CartStore>()(
         markQuantityVerifierConsumed: () => {
           set({ quantityVerifierConsumed: true })
         },
+
+        // Order completion tracking methods
+        recordOrderCompletion: (orderInfo: {
+          orderId: string
+          tipAmount: number
+          orderTotal: number
+          storeName: string
+          category: string
+          items: CartItem[]
+        }) => {
+          console.log(`[ORDER] Recording order completion:`, orderInfo)
+          set({
+            lastOrderInfo: {
+              ...orderInfo,
+              timestamp: Date.now(),
+              isCompleted: true,
+            },
+            // Reset orderVerifierConsumed for new orders so the verifier can be tested again
+            orderVerifierConsumed: false,
+          })
+        },
+        markOrderVerifierConsumed: () => {
+          set({ orderVerifierConsumed: true })
+        },
       }),
       {
         name: "multicategory-cart",
@@ -697,6 +747,8 @@ export const useCartStore = create<CartStore>()(
           removalVerifierConsumed: state.removalVerifierConsumed,
           lastQuantityChangeInfo: state.lastQuantityChangeInfo,
           quantityVerifierConsumed: state.quantityVerifierConsumed,
+          lastOrderInfo: state.lastOrderInfo,
+          orderVerifierConsumed: state.orderVerifierConsumed,
         }),
         merge: (persistedState: any, currentState) => {
           // Handle migration of old cart items
@@ -735,6 +787,8 @@ export const useCartStore = create<CartStore>()(
             removalVerifierConsumed: persistedState.removalVerifierConsumed || false,
             lastQuantityChangeInfo: persistedState.lastQuantityChangeInfo || null,
             quantityVerifierConsumed: persistedState.quantityVerifierConsumed || false,
+            lastOrderInfo: persistedState.lastOrderInfo || null,
+            orderVerifierConsumed: persistedState.orderVerifierConsumed || false,
           }
         },
       },
