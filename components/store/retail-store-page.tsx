@@ -57,6 +57,7 @@ export default function RetailStorePage({ onBackClick, storeData, productData, s
       storeData={retailStore}
       productData={productData}
       storeConfig={retailConfig}
+      category={storeType === "convenience" ? "convenience" : "retail"}
     />
   )
 }

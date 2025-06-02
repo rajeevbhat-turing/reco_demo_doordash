@@ -122,6 +122,7 @@ export default function GroceryStorePage({ onBackClick, storeData }: GroceryStor
       storeData={groceryStore}
       productData={getProductData()}
       storeConfig={groceryConfig}
+      category="grocery"
     />
   )
 }

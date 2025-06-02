@@ -22,6 +22,7 @@ export interface Restaurant {
   featured?: boolean;
   new?: boolean;
   categories?: string[]; // Array of category IDs for filtering
+  section?: string; // Section grouping for UI display
 }
 
 export const restaurants: Restaurant[] = [
@@ -48,6 +49,7 @@ export const restaurants: Restaurant[] = [
     featured: true,
     discount: '$3 off orders $14+',
     categories: ['coffee', 'breakfast', 'healthy'],
+    section: 'Your past orders',
   },
   {
     id: 'peet-s-coffee',
@@ -69,9 +71,10 @@ export const restaurants: Restaurant[] = [
     openingHours: '24 hours',
     address: '123 Main St, Sydney NSW 2000',
     phone: '+61 2 1234 5678',
-    featured: true,
+    featured: false,
     discount: '$5 off orders $25+',
     categories: ['coffee', 'breakfast', 'desserts'],
+    section: 'Your past orders',
   },
   {
     id: 'gateway-croissant',
@@ -96,6 +99,7 @@ export const restaurants: Restaurant[] = [
     featured: true,
     discount: '',
     categories: ['bakery', 'breakfast', 'desserts'],
+    section: 'Your past orders',
   },
   {
     id: 'pressed-acai-bowls',
@@ -120,6 +124,7 @@ export const restaurants: Restaurant[] = [
     featured: true,
     discount: '',
     categories: ['healthy', 'smoothie', 'breakfast'],
+    section: 'Your past orders',
   },
   {
     id: 'il-canto-cafe',
@@ -144,6 +149,7 @@ export const restaurants: Restaurant[] = [
     featured: true,
     discount: '',
     categories: ['coffee', 'breakfast', 'comfort-food'],
+    section: 'Your past orders',
   },
   {
     id: 'starbucks-(299-fremont-street)',
@@ -168,6 +174,7 @@ export const restaurants: Restaurant[] = [
     featured: true,
     discount: '',
     categories: ['coffee', 'breakfast', 'desserts'],
+    section: 'Your past orders',
   },
   {
     id: 'latte-express',
@@ -192,6 +199,7 @@ export const restaurants: Restaurant[] = [
     featured: true,
     discount: '',
     categories: ['coffee', 'breakfast', 'desserts'],
+    section: 'Your past orders',
   },
   {
     id: 'lava-wings',
@@ -216,6 +224,7 @@ export const restaurants: Restaurant[] = [
     featured: true,
     discount: '',
     categories: ['chicken', 'fast-food', 'comfort-food'],
+    section: 'Your past orders',
   },
   {
     id: 'big-save-market',
@@ -239,6 +248,7 @@ export const restaurants: Restaurant[] = [
     discount: '',
     new: true,
     categories: ['healthy', 'comfort-food', 'fast-food'],
+    section: 'Grocery',
   },
   {
     id: 'my-happy-donut',
@@ -264,6 +274,7 @@ export const restaurants: Restaurant[] = [
     discount: '',
     new: true,
     categories: ['desserts', 'bakery', 'breakfast'],
+    section: 'Grocery',
   },
   {
     id: 'midtown-market',
@@ -287,6 +298,7 @@ export const restaurants: Restaurant[] = [
     discount: '',
     new: true,
     categories: ['healthy', 'fast-food', 'comfort-food'],
+    section: 'Grocery',
   },
   {
     id: 'icu-deli-inc',
@@ -312,6 +324,7 @@ export const restaurants: Restaurant[] = [
     discount: '',
     new: true,
     categories: ['breakfast', 'fast-food', 'comfort-food'],
+    section: 'Grocery',
   },
   {
     id: 'modena-pizza-ice-cream',
@@ -337,6 +350,7 @@ export const restaurants: Restaurant[] = [
     discount: '',
     new: true,
     categories: ['pizza', 'desserts', 'fast-food'],
+    section: 'Grocery',
   },
   {
     id: '5-star-food-liquor',
@@ -360,6 +374,7 @@ export const restaurants: Restaurant[] = [
     discount: '',
     new: true,
     categories: ['fast-food', 'comfort-food'],
+    section: 'Grocery',
   },
   {
     id: 'deena-s-market-and-smoke-shop',
@@ -385,6 +400,7 @@ export const restaurants: Restaurant[] = [
     discount: '',
     new: true,
     categories: ['fast-food', 'comfort-food'],
+    section: 'Grocery',
   },
   {
     id: 'allstar-donuts',
@@ -410,6 +426,7 @@ export const restaurants: Restaurant[] = [
     discount: '',
     new: true,
     categories: ['desserts', 'bakery', 'breakfast'],
+    section: 'Grocery',
   },
   {
     id: '24-bart-liquor-store',
@@ -432,6 +449,7 @@ export const restaurants: Restaurant[] = [
     featured: false,
     discount: '',
     categories: ['fast-food', 'comfort-food'],
+    section: 'Grocery',
   },
   {
     id: 'mellis-cafe',
@@ -456,6 +474,7 @@ export const restaurants: Restaurant[] = [
     featured: false,
     discount: '',
     categories: ['coffee', 'breakfast', 'comfort-food'],
+    section: 'Grocery',
   },
   {
     id: 'polk-sutter-cafe-deli',
@@ -480,6 +499,7 @@ export const restaurants: Restaurant[] = [
     featured: false,
     discount: '',
     categories: ['fast-food', 'comfort-food', 'burgers'],
+    section: 'Grocery',
   },
   {
     id: 'wild-philly-steak',
@@ -504,6 +524,7 @@ export const restaurants: Restaurant[] = [
     featured: false,
     discount: '',
     categories: ['fast-food', 'comfort-food'],
+    section: 'Grocery',
   },
   {
     id: 'yesdrink-com',
@@ -526,6 +547,7 @@ export const restaurants: Restaurant[] = [
     featured: false,
     discount: '',
     categories: ['comfort-food', 'healthy'],
+    section: 'Grocery',
   },
   {
     id: 'papa-pasta',
@@ -547,9 +569,10 @@ export const restaurants: Restaurant[] = [
     openingHours: '24 hours',
     address: '123 Main St, Sydney NSW 2000',
     phone: '+61 2 1234 5678',
-    featured: false,
+    featured: true,
     discount: '',
     categories: ['desserts', 'bakery', 'healthy'],
+    section: 'Grocery',
   },
   {
     id: 'sweet-flex',
@@ -574,6 +597,7 @@ export const restaurants: Restaurant[] = [
     featured: false,
     discount: '',
     categories: ['breakfast', 'fast-food', 'comfort-food'],
+    section: 'Grocery',
   },
   {
     id: 'mucho-breakfast-burrito',
@@ -598,6 +622,7 @@ export const restaurants: Restaurant[] = [
     featured: false,
     discount: '',
     categories: ['fast-food', 'comfort-food'],
+    section: 'Grocery',
   },
   {
     id: 'subs-bro',
@@ -621,6 +646,7 @@ export const restaurants: Restaurant[] = [
     phone: '+61 2 1234 5678',
     featured: false,
     discount: '',
+    section: 'Grocery',
   },
   {
     id: 'late-nite-appetite',
@@ -645,6 +671,7 @@ export const restaurants: Restaurant[] = [
     featured: false,
     discount: '20% off, up to $4',
     categories: ['fast-food', 'comfort-food'],
+    section: 'Grocery',
   },
   {
     id: 'sam-s-bakery',
@@ -669,6 +696,7 @@ export const restaurants: Restaurant[] = [
     featured: false,
     discount: '',
     categories: ['pizza', 'comfort-food', 'fast-food'],
+    section: 'Grocery',
   },
   {
     id: 'thursday-calzones',
@@ -693,6 +721,7 @@ export const restaurants: Restaurant[] = [
     featured: false,
     discount: '',
     categories: ['fast-food', 'comfort-food'],
+    section: 'Grocery',
   },
   {
     id: 'og-philly-steak',
@@ -717,6 +746,7 @@ export const restaurants: Restaurant[] = [
     featured: false,
     discount: '',
     categories: ['comfort-food', 'healthy'],
+    section: 'Grocery',
   },
   {
     id: 'kabob-nation',
@@ -741,6 +771,7 @@ export const restaurants: Restaurant[] = [
     featured: false,
     discount: '',
     categories: ['fast-food', 'comfort-food'],
+    section: 'Grocery',
   },
   {
     id: 'shawarma-junction',
@@ -765,6 +796,7 @@ export const restaurants: Restaurant[] = [
     featured: false,
     discount: '',
     categories: ['coffee', 'breakfast', 'comfort-food'],
+    section: 'Grocery',
   },
   {
     id: 'allstars-cafe-inc',
@@ -789,6 +821,7 @@ export const restaurants: Restaurant[] = [
     featured: false,
     discount: '',
     categories: ['bakery', 'breakfast'],
+    section: 'Grocery',
   },
   {
     id: 'good-bagels',
@@ -813,6 +846,7 @@ export const restaurants: Restaurant[] = [
     featured: false,
     discount: '',
     categories: ['breakfast', 'comfort-food'],
+    section: 'Grocery',
   },
   {
     id: 'ihop',
@@ -837,6 +871,7 @@ export const restaurants: Restaurant[] = [
     featured: false,
     discount: '',
     categories: ['bakery', 'breakfast', 'coffee'],
+    section: 'Grocery',
   },
   {
     id: 'noah-s-new-york-bagels',
@@ -861,6 +896,7 @@ export const restaurants: Restaurant[] = [
     featured: false,
     discount: '',
     categories: ['bakery', 'desserts', 'breakfast'],
+    section: 'Grocery',
   },
   {
     id: 'bob-s-donuts',
@@ -884,7 +920,8 @@ export const restaurants: Restaurant[] = [
     phone: '+61 2 1234 5678',
     featured: false,
     discount: '',
-    categories: ['burgers', 'fast-food', 'comfort-food'],
+    categories: ['desserts', 'bakery', 'breakfast'],
+    section: 'Grocery',
   },
   {
     id: 'halal-burgers-more',
@@ -909,6 +946,7 @@ export const restaurants: Restaurant[] = [
     featured: false,
     discount: '',
     categories: ['burgers', 'fast-food', 'comfort-food'],
+    section: 'Grocery',
   },
   {
     id: 'java-haven',
@@ -957,6 +995,7 @@ export const restaurants: Restaurant[] = [
     discount: '',
     new: true,
     section: 'Your past orders',
+    categories: ['smoothie', 'bubble-tea', 'healthy'],
   },
   {
     id: 'enter-the-cafe',
@@ -1086,7 +1125,7 @@ export const restaurants: Restaurant[] = [
     id: 'cvs',
     name: 'CVS',
     logo: 'https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/cvs_logo.png',
-    banner: null,
+    banner: '',
     detailsBanner: '',
     rating: getDefaultRating(4.8),
     reviews: '(500+)',
@@ -1181,7 +1220,7 @@ export const restaurants: Restaurant[] = [
     id: 'safeway',
     name: 'Safeway',
     logo: 'https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/Screen_Shot_2021-01-22_at_1.31.06_PM_230x230.png',
-    banner: null,
+    banner: '',
     detailsBanner: '',
     rating: getDefaultRating(4.7),
     reviews: '(4k+)',
@@ -1425,7 +1464,7 @@ export const restaurants: Restaurant[] = [
   },
   {
     id: 'new-golden-daisy',
-    name: 'New Golden Daisy',
+    name: 'New Golden Daisy Sushi & Asian Kitchen',
     logo: 'https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/373385ad-02f1-47af-b4f0-76ba79a2bdee.png',
     banner:
       'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/photosV2/6c60bd75-f31d-4d6d-98de-e3d15a107cca-retina-large.jpeg',
@@ -1447,6 +1486,7 @@ export const restaurants: Restaurant[] = [
     discount: '',
     new: true,
     section: 'Stores you might like',
+    categories: ['asian', 'comfort-food', 'sushi'],
   },
   {
     id: 'sf-organica',

@@ -231,24 +231,9 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
     return total.toFixed(2)
   }
 
-  // Get maximum order limit based on store type
-  const getMaxOrderLimit = () => {
-    if (currentCategory === 'restaurant' && restaurant) {
-      return restaurant.maxOrderLimit || 500;
-    } else if (currentCategory !== 'restaurant' && store) {
-      return store.maxOrderLimit || 500;
-    }
-    return 500;
-  };
-
   // Check if delivery fee applies (only for non-restaurant categories)
   const shouldShowDeliveryFeeNotice = () => {
     return currentCategory !== 'restaurant' && ['grocery', 'retail', 'pets', 'convenience'].includes(currentCategory);
-  };
-
-  // Get the delivery fee threshold to display (always $35 for non-restaurant as per requirement)
-  const getDisplayDeliveryThreshold = () => {
-    return 35; // Always show $35 as per requirement
   };
 
   const handleAddComplementItem = (item: any) => {
@@ -291,7 +276,7 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
   }
 
   const subtotal = getSubtotal()
-  const displayThreshold = getDisplayDeliveryThreshold()
+  const displayThreshold = categoryConfig.freeDeliveryThreshold
 
   return (
     <div className={cartClasses}>
@@ -303,7 +288,6 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
             <h3 className="font-bold text-lg">{getDisplayName()}</h3>
             <ChevronRight className="h-5 w-5 ml-1" />
           </div>
-          <p className="text-sm text-gray-500 mt-1">Maximum order limit: ${getMaxOrderLimit().toLocaleString()}</p>
         </div>
         <button onClick={onClose} className="p-2">
           <X className="h-6 w-6" />

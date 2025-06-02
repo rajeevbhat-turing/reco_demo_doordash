@@ -90,67 +90,67 @@ export default function ConvenienceCartSidebar({
     )
   }
 
-  // Get the order limit depending on store type
-  const orderLimit = 'maxOrderLimit' in storeData ? storeData.maxOrderLimit : 500;
-
   return (
-    <div className="flex flex-col h-full">
-      <div className="p-4 border-b">
-        <h2 className="font-medium">Your cart from</h2>
-        <h3 className="font-bold text-lg mb-1">{storeData.name}</h3>
-        {orderLimit && (
-          <p className="text-sm text-gray-500">Maximum order limit: ${orderLimit.toLocaleString()}</p>
-        )}
-
-        {/* Progress bar */}
-        <div className="h-1 bg-gray-200 rounded-full mt-2 mb-4">
-          <div
-            className="h-1 bg-red-600 rounded-full"
-            style={{ width: `${Math.min((subtotal / cartConfig.freeDeliveryThreshold) * 100, 100)}%` }}
-          ></div>
-        </div>
-
-        {/* Delivery fee notice */}
-        {subtotal < cartConfig.freeDeliveryThreshold && (
-          <div className="flex items-start text-sm mb-4">
-            <div className="text-red-600 mr-2 mt-1">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path
-                  d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-                <path d="M12 8V12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                <path
-                  d="M12 16H12.01"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </div>
-            <div>
-              <p className="font-medium text-red-600">
-                Add ${(cartConfig.freeDeliveryThreshold - subtotal).toFixed(2)} for $0 delivery fee
-              </p>
-              <p className="text-gray-500">
-                + service fees ({cartConfig.serviceFeePercentage * 100}%, min ${cartConfig.minServiceFee})
-              </p>
-            </div>
+    <div className="fixed inset-y-0 right-0 z-50 w-full md:w-96 bg-white shadow-xl flex flex-col overflow-hidden">
+      {/* Header */}
+      <div className="flex-shrink-0">
+        <div className="p-4 border-b">
+          <h2 className="font-medium">Your cart from</h2>
+          <div className="flex items-center">
+            <h3 className="font-bold text-lg">{storeData.name}</h3>
+            <ChevronRight className="h-5 w-5 ml-1" />
           </div>
-        )}
-
-        {/* Checkout button - Moved from bottom to here */}
-        <button className="w-full bg-red-600 hover:bg-red-700 text-white font-medium py-3 rounded-full mb-3 text-lg">
-          Continue
-        </button>
-        <p className="text-center text-sm mb-1">
-          ${(subtotal + (subtotal >= cartConfig.freeDeliveryThreshold ? 0 : deliveryFee)).toFixed(2)} without tax
-        </p>
+        </div>
       </div>
+
+      {/* Progress bar */}
+      <div className="h-1 bg-gray-200 rounded-full mt-2 mb-4">
+        <div
+          className="h-1 bg-red-600 rounded-full"
+          style={{ width: `${Math.min((subtotal / cartConfig.freeDeliveryThreshold) * 100, 100)}%` }}
+        ></div>
+      </div>
+
+      {/* Delivery fee notice */}
+      {subtotal < cartConfig.freeDeliveryThreshold && (
+        <div className="flex items-start text-sm mb-4">
+          <div className="text-red-600 mr-2 mt-1">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+              <path d="M12 8V12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              <path
+                d="M12 16H12.01"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </div>
+          <div>
+            <p className="font-medium text-red-600">
+              Add ${(cartConfig.freeDeliveryThreshold - subtotal).toFixed(2)} for $0 delivery fee
+            </p>
+            <p className="text-gray-500">
+              + service fees ({cartConfig.serviceFeePercentage * 100}%, min ${cartConfig.minServiceFee})
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* Checkout button - Moved from bottom to here */}
+      <button className="w-full bg-red-600 hover:bg-red-700 text-white font-medium py-3 rounded-full mb-3 text-lg">
+        Continue
+      </button>
+      <p className="text-center text-sm mb-1">
+        ${(subtotal + (subtotal >= cartConfig.freeDeliveryThreshold ? 0 : deliveryFee)).toFixed(2)} without tax
+      </p>
 
       {/* Cart items */}
       <div className="flex-1 overflow-auto p-4">

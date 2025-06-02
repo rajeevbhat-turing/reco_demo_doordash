@@ -12,12 +12,12 @@
     },
     "search-target": {
       "description": "Search for 'target' and navigate to Target Store",
-      "verifier": "try { const state = JSON.parse(localStorage.getItem('multicategory-cart')).state; return state.currentStore.name === 'Target'; } catch (error) { console.error('Verifier error:', error); return false; }",
+      "verifier": "try { const state = JSON.parse(localStorage.getItem('multicategory-cart')).state; return state.currentStore?.name === 'Target'; } catch (error) { console.error('Verifier error:', error); return false; }",
       "category": "search"
     },
     "add-kiwi-strawberries": {
       "description": "Add bananas and milk from DoorDash Market store (subtotal should be $4.98)",
-      "verifier": "try { const calculateCartTotal = (items) => { return items.reduce((total, item) => { const price = parseFloat(item.price.replace(/[^0-9.]/g, '')); return total + price * item.quantity; }, 0); }; const cart = JSON.parse(localStorage.getItem('multicategory-cart')).state.items; return cart.length === 2 && cart.some(i => i.itemName === 'Bananas') && cart.some(i => i.itemName === 'Milk') && calculateCartTotal(cart) === 4.98; } catch (error) { console.error('Verifier error:', error); return false; }",
+      "verifier": "try { const cart = JSON.parse(localStorage.getItem('multicategory-cart')).state.items; const hasBananas = cart.some(i => i.itemName === 'Bananas'); const hasMilk = cart.some(i => i.itemName === 'Milk'); return cart.length === 2 && hasBananas && hasMilk; } catch (error) { console.error('Verifier error:', error); return false; }",
       "category": "grocery-cart"
     },
     "remove-item-from-cart": {
@@ -37,17 +37,17 @@
     },
     "search-starbucks": {
       "description": "Search for 'starbucks' and navigate to a Starbucks store",
-      "verifier": "try { const state = JSON.parse(localStorage.getItem('multicategory-cart')).state; return state.currentStore.name.includes('Starbucks'); } catch (error) { console.error('Verifier error:', error); return false; }",
+      "verifier": "try { const state = JSON.parse(localStorage.getItem('multicategory-cart')).state; return state.currentStore?.name?.includes('Starbucks'); } catch (error) { console.error('Verifier error:', error); return false; }",
       "category": "search"
     },
     "find-chocolate-cake": {
       "description": "Search for 'chocolate cake' and navigate to Mellis Cafe",
-      "verifier": "try { const state = JSON.parse(localStorage.getItem('multicategory-cart')).state; return state.currentStore.name.includes('Mellis Cafe'); } catch (error) { console.error('Verifier error:', error); return false; }",
+      "verifier": "try { const state = JSON.parse(localStorage.getItem('multicategory-cart')).state; return state.currentStore?.name?.includes('Mellis Cafe'); } catch (error) { console.error('Verifier error:', error); return false; }",
       "category": "search"
     },
     "find-new-restaurant": {
       "description": "Search for 'new restaurant' and navigate to Big Save Market",
-      "verifier": "try { const state = JSON.parse(localStorage.getItem('multicategory-cart')).state; return state.currentStore.name.includes('Big Save Market'); } catch (error) { console.error('Verifier error:', error); return false; }",
+      "verifier": "try { const state = JSON.parse(localStorage.getItem('multicategory-cart')).state; return state.currentStore?.name?.includes('Big Save Market'); } catch (error) { console.error('Verifier error:', error); return false; }",
       "category": "search"
     },
     "find-pizza-restaurants": {
@@ -67,17 +67,17 @@
     },
     "add-cooler-bag": {
       "description": "Navigate to Boichik Bagels and add a Blue Cooler Bag to the cart",
-      "verifier": "try { const state = JSON.parse(localStorage.getItem('multicategory-cart')).state; const cart = state.items; return state.currentStore.name === 'Boichik Bagels' && cart.length === 1 && cart[0] && cart[0].itemName === 'Blue Cooler Bag'; } catch (error) { console.error('Verifier error:', error); return false; }",
+      "verifier": "try { const state = JSON.parse(localStorage.getItem('multicategory-cart')).state; const cart = state.items; return state.currentStore?.name === 'Boichik Bagels' && cart.length === 1 && cart[0] && cart[0].itemName === 'Blue Cooler Bag'; } catch (error) { console.error('Verifier error:', error); return false; }",
       "category": "restaurant-cart"
     },
     "add-cheap-coffee": {
       "description": "Search for cheap coffee restaurants and add coffee from Philz Coffee",
-      "verifier": "try { const state = JSON.parse(localStorage.getItem('multicategory-cart')).state; const doesAllHasCoffeeCategory = !state.searchResults.some(resto => !resto.categories.includes('coffee')); const doesAllHas$PriceRange = !state.searchResults.some(rest => rest.priceRange !== '$'); const cart = state.items; const doesCartHasSomeItems = cart.length > 0; const isSelectedRestaurantPhilz = state.currentStore.name === 'Philz Coffee'; return doesAllHasCoffeeCategory && doesAllHas$PriceRange && doesCartHasSomeItems && isSelectedRestaurantPhilz; } catch (error) { console.error('Verifier error:', error); return false; }",
+      "verifier": "try { const state = JSON.parse(localStorage.getItem('multicategory-cart')).state; const doesAllHasCoffeeCategory = !state.searchResults.some(resto => !resto.categories.includes('coffee')); const doesAllHas$PriceRange = !state.searchResults.some(rest => rest.priceRange !== '$'); const cart = state.items; const doesCartHasSomeItems = cart.length > 0; const isSelectedRestaurantPhilz = state.currentStore?.name === 'Philz Coffee'; return doesAllHasCoffeeCategory && doesAllHas$PriceRange && doesCartHasSomeItems && isSelectedRestaurantPhilz; } catch (error) { console.error('Verifier error:', error); return false; }",
       "category": "restaurant-cart"
     },
     "find-dessert-restaurants": {
       "description": "Search for dessert restaurants with average price range ($ or $$)",
-      "verifier": "try { const state = JSON.parse(localStorage.getItem('multicategory-cart')).state; const doesAllHasDessertCategory = !state.searchResults.some(resto => !resto.categories.includes('dessert')); const doesAllHasAveragePriceRange = state.searchResults.filter(resto => resto.priceRange === '$' || resto.priceRange === '$$').length === state.searchResults.length; return doesAllHasDessertCategory && doesAllHasAveragePriceRange; } catch (error) { console.error('Verifier error:', error); return false; }",
+      "verifier": "try { console.log('[VERIFIER find-dessert-restaurants] Checking dessert restaurants verifier...'); const state = JSON.parse(localStorage.getItem('multicategory-cart')).state; const searchResults = state.searchResults; const lastSearchInfo = state.lastSearchInfo; const searchVerifierConsumed = state.searchVerifierConsumed; console.log('[VERIFIER find-dessert-restaurants] Search results:', searchResults.length, 'lastSearchInfo:', lastSearchInfo, 'searchVerifierConsumed:', searchVerifierConsumed); if (searchVerifierConsumed) { console.log('[VERIFIER find-dessert-restaurants] Already consumed, returning false'); return false; } if (!lastSearchInfo) { console.log('[VERIFIER find-dessert-restaurants] No search action recorded'); return false; } const hasValidSearchTerms = /dessert|sweet|cake|bakery|pastry/i.test(lastSearchInfo.searchTerm); if (!hasValidSearchTerms) { console.log('[VERIFIER find-dessert-restaurants] Invalid search terms for dessert restaurants'); return false; } if (searchResults.length === 0) { console.log('[VERIFIER find-dessert-restaurants] No search results found'); return false; } const doesAllHasDessertCategory = !searchResults.some(resto => !resto.categories.includes('dessert')); const doesAllHasAveragePriceRange = searchResults.filter(resto => resto.priceRange === '$' || resto.priceRange === '$$').length === searchResults.length; const isValidDessertSearch = doesAllHasDessertCategory && doesAllHasAveragePriceRange; console.log('[VERIFIER find-dessert-restaurants] All have dessert category:', doesAllHasDessertCategory, 'All have average price range:', doesAllHasAveragePriceRange, 'Valid search:', isValidDessertSearch); if (isValidDessertSearch) { console.log('[VERIFIER find-dessert-restaurants] PASSED - Marking as consumed'); const cartStore = window.useCartStore?.getState(); if (cartStore?.markSearchVerifierConsumed) cartStore.markSearchVerifierConsumed(); } return isValidDessertSearch; } catch (error) { console.error('Verifier error:', error); return false; }",
       "category": "search"
     },
     "find-expensive-breakfast": {
@@ -137,27 +137,27 @@
     },
     "add-most-ordered": {
       "description": "Navigate to Philz Coffee and add 'Mint Mojito Iced Coffee' from the Most Ordered section",
-      "verifier": "try { const state = JSON.parse(localStorage.getItem('multicategory-cart')).state; const cart = state.items; return state.currentStore.name === 'Philz Coffee' && cart.length === 1 && cart[0] && cart[0].itemName === 'Mint Mojito Iced Coffee'; } catch (error) { console.error('Verifier error:', error); return false; }",
+      "verifier": "try { const state = JSON.parse(localStorage.getItem('multicategory-cart')).state; const cart = state.items; return state.currentStore?.name === 'Philz Coffee' && cart.length === 1 && cart[0] && cart[0].itemName === 'Mint Mojito Iced Coffee'; } catch (error) { console.error('Verifier error:', error); return false; }",
       "category": "restaurant-cart"
     },
     "add-cinnamon-roll-combo": {
       "description": "Add a Cinnamon Roll with Soda combo from Gateway Croissant to the cart",
-      "verifier": "try { const state = JSON.parse(localStorage.getItem('multicategory-cart')).state; const cart = state.items; if (!cart || cart.length === 0 || !cart[0] || !cart[0].customizations) return false; const customizations = cart[0].customizations; const isAllCustomizationsPresent = customizations.includes('#2 · Value Combo') && customizations.includes('Soda'); return state.currentStore.name === 'Gateway Croissant' && cart.length === 1 && cart[0].itemName === 'Cinnamon Roll' && isAllCustomizationsPresent; } catch (error) { console.error('Verifier error:', error); return false; }",
+      "verifier": "try { const state = JSON.parse(localStorage.getItem('multicategory-cart')).state; const cart = state.items; if (!cart || cart.length === 0 || !cart[0] || !cart[0].customizations) return false; const customizations = cart[0].customizations; const isAllCustomizationsPresent = customizations.includes('#2 · Value Combo') && customizations.includes('Soda'); return state.currentStore?.name === 'Gateway Croissant' && cart.length === 1 && cart[0].itemName === 'Cinnamon Roll' && isAllCustomizationsPresent; } catch (error) { console.error('Verifier error:', error); return false; }",
       "category": "restaurant-cart"
     },
     "add-immunity-shot": {
       "description": "Navigate to Pressed Acai Bowls and add a default sized Immunity Shot to the cart",
-      "verifier": "try { const state = JSON.parse(localStorage.getItem('multicategory-cart')).state; const cart = state.items; if (!cart || cart.length === 0 || !cart[0]) return false; const isCustomizationsEmpty = Array.isArray(cart[0].customizations) ? cart[0].customizations.length === 0 : !cart[0].customizations; return state.currentStore.name === 'Pressed Acai Bowls' && cart.length === 1 && cart[0].itemName === 'Immunity Shot' && isCustomizationsEmpty; } catch (error) { console.error('Verifier error:', error); return false; }",
+      "verifier": "try { const state = JSON.parse(localStorage.getItem('multicategory-cart')).state; const cart = state.items; if (!cart || cart.length === 0 || !cart[0]) return false; const isCustomizationsEmpty = Array.isArray(cart[0].customizations) ? cart[0].customizations.length === 0 : !cart[0].customizations; return state.currentStore?.name === 'Pressed Acai Bowls' && cart.length === 1 && cart[0].itemName === 'Immunity Shot' && isCustomizationsEmpty; } catch (error) { console.error('Verifier error:', error); return false; }",
       "category": "restaurant-cart"
     },
     "add-customized-croissant": {
       "description": "Navigate to Gateway Croissant and add a Ham, Egg and Cheese Croissant with Large size, Light Salad, Fruit Portion, Juice, and Low Sugar",
-      "verifier": "try { const state = JSON.parse(localStorage.getItem('multicategory-cart')).state; const cart = state.items; if (!cart || cart.length === 0 || !cart[0] || !cart[0].customizations) return false; const customizations = cart[0].customizations; const isAllCustomizationsPresent = customizations.includes('Large') && customizations.includes('Light Salad') && customizations.includes('Fruit Portion') && customizations.includes('Juice') && customizations.includes('Low Sugar'); return state.currentStore.name === 'Gateway Croissant' && cart.length === 1 && cart[0].itemName === 'Ham, Egg and Cheese Croissant' && isAllCustomizationsPresent; } catch (error) { console.error('Verifier error:', error); return false; }",
+      "verifier": "try { const state = JSON.parse(localStorage.getItem('multicategory-cart')).state; const cart = state.items; if (!cart || cart.length === 0 || !cart[0] || !cart[0].customizations) return false; const customizations = cart[0].customizations; const isAllCustomizationsPresent = customizations.includes('Large') && customizations.includes('Light Salad') && customizations.includes('Fruit Portion') && customizations.includes('Juice') && customizations.includes('Low Sugar'); return state.currentStore?.name === 'Gateway Croissant' && cart.length === 1 && cart[0].itemName === 'Ham, Egg and Cheese Croissant' && isAllCustomizationsPresent; } catch (error) { console.error('Verifier error:', error); return false; }",
       "category": "restaurant-cart"
     },
     "add-two-custom-lattes": {
       "description": "Add 2 Caffè Latte from Starbucks: one vegan medium size and one low sugar small size",
-      "verifier": "try { const state = JSON.parse(localStorage.getItem('multicategory-cart')).state; const cart = state.items; if (!cart || cart.length < 2 || !cart[0] || !cart[1] || !cart[0].customizations || !cart[1].customizations) return false; const firstCartItemIsCorrect = cart[0].itemName === 'Caffè Latte' && cart[0].customizations.includes('Medium') && cart[0].customizations.includes('Vegan Option'); const secondCartItemIsCorrect = cart[1].itemName === 'Caffè Latte' && cart[1].customizations.includes('Small') && cart[1].customizations.includes('Low Sugar'); return state.currentStore.name.includes('Starbucks') && cart.length === 2 && firstCartItemIsCorrect && secondCartItemIsCorrect; } catch (error) { console.error('Verifier error:', error); return false; }",
+      "verifier": "try { const state = JSON.parse(localStorage.getItem('multicategory-cart')).state; const cart = state.items; if (!cart || cart.length < 2) return false; const lattes = cart.filter(item => item.itemName === 'Caffè Latte'); if (lattes.length < 2 || !lattes[0].customizations || !lattes[1].customizations) return false; const hasVeganMedium = lattes.some(latte => latte.customizations.includes('Medium') && latte.customizations.includes('Vegan Option')); const hasLowSugarSmall = lattes.some(latte => latte.customizations.includes('Small') && latte.customizations.includes('Low Sugar')); return state.currentStore?.name?.includes('Starbucks') && cart.length === 2 && hasVeganMedium && hasLowSugarSmall; } catch (error) { console.error('Verifier error:', error); return false; }",
       "category": "restaurant-cart"
     },
     "add-croissant-high-rated": {
@@ -167,32 +167,32 @@
     },
     "increase-bagel-quantity": {
       "description": "Add a Classic bagel and a YooHoo beverage to Boichik Bagels cart and then increase the quantity of bagels to 4",
-      "verifier": "try { const state = JSON.parse(localStorage.getItem('multicategory-cart')).state; const cart = state.items; return state.currentStore.name.includes('Boichik Bagels') && cart.length === 2 && cart[0] && cart[0].itemName === 'Classic' && cart[0].quantity === 4 && cart[1] && cart[1].itemName === 'YooHoo' && cart[1].quantity === 1; } catch (error) { console.error('Verifier error:', error); return false; }",
+      "verifier": "try { const state = JSON.parse(localStorage.getItem('multicategory-cart')).state; const cart = state.items; const bagel = cart.find(item => item.itemName === 'Classic'); const yooHoo = cart.find(item => item.itemName === 'YooHoo'); return state.currentStore?.name?.includes('Boichik Bagels') && cart.length === 2 && bagel && bagel.quantity === 4 && yooHoo && yooHoo.quantity === 1; } catch (error) { console.error('Verifier error:', error); return false; }",
       "category": "restaurant-cart"
     },
     "remove-coffee-from-cart": {
       "description": "Add a Turkey Sausage Sandwich and a Philtered Soul coffee from Philz Coffee then remove the coffee from the cart",
-      "verifier": "try { const state = JSON.parse(localStorage.getItem('multicategory-cart')).state; const cart = state.items; return state.currentStore.name.includes('Philz Coffee') && cart.length === 1 && cart[0] && cart[0].itemName === 'Turkey Sausage Sandwich'; } catch (error) { console.error('Verifier error:', error); return false; }",
+      "verifier": "try { const state = JSON.parse(localStorage.getItem('multicategory-cart')).state; const cart = state.items; return state.currentStore?.name?.includes('Philz Coffee') && cart.length === 1 && cart[0] && cart[0].itemName === 'Turkey Sausage Sandwich'; } catch (error) { console.error('Verifier error:', error); return false; }",
       "category": "restaurant-cart"
     },
     "add-recommended-item": {
       "description": "Add a medium Bacon Burrito with snack from Philz Coffee and then complement the cart with a recommended item",
-      "verifier": "try { const state = JSON.parse(localStorage.getItem('multicategory-cart')).state; const cart = state.items; if (!cart || cart.length === 0 || !cart[0] || !cart[0].customizations) return false; return state.currentStore.name.includes('Philz Coffee') && cart.length === 2 && cart[0].itemName === 'Bacon Burrito' && cart[0].customizations.includes('Medium') && cart[0].customizations.includes('Snack Item'); } catch (error) { console.error('Verifier error:', error); return false; }",
+      "verifier": "try { const state = JSON.parse(localStorage.getItem('multicategory-cart')).state; const cart = state.items; if (!cart || cart.length === 0 || !cart[0] || !cart[0].customizations) return false; return state.currentStore?.name?.includes('Philz Coffee') && cart.length === 2 && cart[0].itemName === 'Bacon Burrito' && cart[0].customizations.includes('Medium') && cart[0].customizations.includes('Snack Item'); } catch (error) { console.error('Verifier error:', error); return false; }",
       "category": "restaurant-cart"
     },
     "clear-all-items": {
       "description": "Add a juice pack, a shot pack and a smoothie from Pressed Acai Bowls and then clear all items from the cart",
-      "verifier": "try { const state = JSON.parse(localStorage.getItem('multicategory-cart')).state; const cart = state.items; return state.currentStore.name.includes('Pressed Acai Bowls') && cart.length === 0; } catch (error) { console.error('Verifier error:', error); return false; }",
+      "verifier": "try { const state = JSON.parse(localStorage.getItem('multicategory-cart')).state; const cart = state.items; return state.currentStore?.name?.includes('Pressed Acai Bowls') && cart.length === 0; } catch (error) { console.error('Verifier error:', error); return false; }",
       "category": "restaurant-cart"
     },
     "start-new-order": {
       "description": "Start new order from Gateway Croissant",
-      "verifier": "try { const state = JSON.parse(localStorage.getItem('multicategory-cart')).state; const cart = state.items; const allItemsFromGatewayCroissant = cart.every(item => item.storeName === 'Gateway Croissant'); return state.currentStore.name.includes('Gateway Croissant') && cart.length > 0 && allItemsFromGatewayCroissant; } catch (error) { console.error('Verifier error:', error); return false; }",
+      "verifier": "try { const state = JSON.parse(localStorage.getItem('multicategory-cart')).state; const cart = state.items; const allItemsFromGatewayCroissant = cart.every(item => item.storeName === 'Gateway Croissant'); return state.currentStore?.name?.includes('Gateway Croissant') && cart.length > 0 && allItemsFromGatewayCroissant; } catch (error) { console.error('Verifier error:', error); return false; }",
       "category": "restaurant-cart"
     },
     "adjust-cart-quantities": {
       "description": "Add one more Latte and remove one Apple Juice from the cart",
-      "verifier": "try { const state = JSON.parse(localStorage.getItem('multicategory-cart')).state; const cart = state.items; return state.currentStore.name.includes('IL Canto Cafe') && cart.length === 2 && cart[0] && cart[0].itemName === 'Latte' && cart[0].quantity === 2 && cart[1] && cart[1].itemName === 'Apple Juice' && cart[1].quantity === 2; } catch (error) { console.error('Verifier error:', error); return false; }",
+      "verifier": "try { const state = JSON.parse(localStorage.getItem('multicategory-cart')).state; const cart = state.items; const latte = cart.find(item => item.itemName === 'Latte'); const appleJuice = cart.find(item => item.itemName === 'Apple Juice'); return state.currentStore?.name?.includes('IL Canto Cafe') && cart.length === 2 && latte && latte.quantity === 2 && appleJuice && appleJuice.quantity === 2; } catch (error) { console.error('Verifier error:', error); return false; }",
       "category": "restaurant-cart"
     },
     "add-fast-grocery-item": {
@@ -202,17 +202,17 @@
     },
     "add-organic-eggs": {
       "description": "Navigate to Sprouts Farmers Market and add 2 Vital Farms Organic Pasture Raised Eggs to the cart",
-      "verifier": "try { const state = JSON.parse(localStorage.getItem('multicategory-cart')).state; const cart = state.items; return state.currentStore.name === 'Sprouts Farmers Market' && cart.length === 2 && cart[0] && cart[0].itemName === 'Vital Farms Organic Pasture Raised Eggs '; } catch (error) { console.error('Verifier error:', error); return false; }",
+      "verifier": "try { const state = JSON.parse(localStorage.getItem('multicategory-cart')).state; const cart = state.items; const eggs = cart.find(item => item.itemName === 'Vital Farms Organic Pasture Raised Eggs '); return state.currentStore?.name === 'Sprouts Farmers Market' && cart.length === 1 && eggs && eggs.quantity === 2; } catch (error) { console.error('Verifier error:', error); return false; }",
       "category": "grocery-cart"
     },
     "add-vegetables": {
       "description": "Shop for vegetables (cucumber, broccoli and carrot) on Target",
-      "verifier": "try { const state = JSON.parse(localStorage.getItem('multicategory-cart')).state; const cartItems = state.items; const itemList = cartItems.map(item=>item.itemName); return state.currentStore.name === 'Target' && JSON.stringify(itemList.sort()) === JSON.stringify(['Baby Carrots', 'Broccoli Crown', 'Cucumber']); } catch (error) { console.error('Verifier error:', error); return false; }",
+      "verifier": "try { const state = JSON.parse(localStorage.getItem('multicategory-cart')).state; const cartItems = state.items; if (!cartItems || cartItems.length !== 3) { return false; } const itemList = cartItems.map(item=>item.itemName); const expectedItems = ['Baby Carrots', 'Broccoli Crown', 'Cucumber']; const hasExactItems = JSON.stringify(itemList.sort()) === JSON.stringify(expectedItems); return state.currentStore?.name === 'Target' && hasExactItems; } catch (error) { console.error('Verifier error:', error); return false; }",
       "category": "grocery-cart"
     },
     "add-fruits": {
       "description": "Go to Gus's Community Market and shop for fruits: 3 kiwis, 1 avocado, 1 bunch of strawberries",
-      "verifier": "try { const state = JSON.parse(localStorage.getItem('multicategory-cart')).state; const cartItems = state.items; if (!cartItems || cartItems.length < 3) return false; const avocado = cartItems[0]; const kiwi = cartItems[1]; const strawberries = cartItems[2]; return state.currentStore.name === 'Gus\\'s Community Market' && avocado && avocado.itemName == 'Avocado' && avocado.quantity == 1 && kiwi && kiwi.itemName == 'Kiwi' && kiwi.quantity == 3 && strawberries && strawberries.itemName == 'Strawberries' && strawberries.quantity == 1; } catch (error) { console.error('Verifier error:', error); return false; }",
+      "verifier": "try { console.log('[VERIFIER add-fruits] Checking add fruits verifier...'); const state = JSON.parse(localStorage.getItem('multicategory-cart')).state; const cartItems = state.items; console.log('[VERIFIER add-fruits] Current store:', state.currentStore?.name || 'undefined'); console.log('[VERIFIER add-fruits] Cart items count:', cartItems.length); console.log('[VERIFIER add-fruits] Cart items:', cartItems); if (!cartItems || cartItems.length !== 3) { console.log('[VERIFIER add-fruits] FAILED - Must have exactly 3 items, found:', cartItems.length); return false; } const avocado = cartItems.find(item => item.itemName === 'Avocado'); const kiwi = cartItems.find(item => item.itemName === 'Kiwi'); const strawberries = cartItems.find(item => item.itemName === 'Strawberries'); console.log('[VERIFIER add-fruits] Found avocado:', !!avocado, 'kiwi:', !!kiwi, 'strawberries:', !!strawberries); if (!avocado || !kiwi || !strawberries) { console.log('[VERIFIER add-fruits] FAILED - Missing required items'); return false; } if (kiwi.quantity !== 3 || avocado.quantity !== 1 || strawberries.quantity !== 1) { console.log('[VERIFIER add-fruits] FAILED - Wrong quantities. Kiwi:', kiwi.quantity, 'Avocado:', avocado.quantity, 'Strawberries:', strawberries.quantity); return false; } const isAtGusMarket = state.currentStore?.name === \"Gus's Community Market\"; console.log('[VERIFIER add-fruits] At correct store:', isAtGusMarket); return isAtGusMarket; } catch (error) { console.error('Verifier error:', error); return false; }",
       "category": "grocery-cart"
     },
     "remove-cheese": {
@@ -227,32 +227,32 @@
     },
     "start-new-grocery-order": {
       "description": "Start a new grocery order from Target",
-      "verifier": "try { const state = JSON.parse(localStorage.getItem('multicategory-cart')).state; const cartItems = state.items; return state.currentStore.name === 'Target' && cartItems.length > 0; } catch (error) { console.error('Verifier error:', error); return false; }",
+      "verifier": "try { const state = JSON.parse(localStorage.getItem('multicategory-cart')).state; const cartItems = state.items; return state.currentStore?.name === 'Target' && cartItems.length > 0; } catch (error) { console.error('Verifier error:', error); return false; }",
       "category": "grocery-cart"
     },
     "add-gift-from-michaels": {
       "description": "Navigate to Michaels and add a $2.99 gift item to the cart",
-      "verifier": "try { const state = JSON.parse(localStorage.getItem('multicategory-cart')).state; const cartItems = state.items; return state.currentStore.name === 'Michaels' && cartItems.length == 1 && cartItems[0] && cartItems[0].price == '$2.99'; } catch (error) { console.error('Verifier error:', error); return false; }",
+      "verifier": "try { const state = JSON.parse(localStorage.getItem('multicategory-cart')).state; const cartItems = state.items; return state.currentStore?.name === 'Michaels' && cartItems.length == 1 && cartItems[0] && cartItems[0].price == '$2.99'; } catch (error) { console.error('Verifier error:', error); return false; }",
       "category": "retail-cart"
     },
     "add-headphones": {
       "description": "Navigate to Best Buy and add 2 JBL TUNE520BT wireless headphones to the cart",
-      "verifier": "try { const state = JSON.parse(localStorage.getItem('multicategory-cart')).state; const cartItems = state.items; return state.currentStore.name === 'Bestbuy' && cartItems.length == 1 && cartItems[0] && cartItems[0].quantity == 2 && cartItems[0].itemName == 'JBL - TUNE520BT wireless on-ear headphones - Black'; } catch (error) { console.error('Verifier error:', error); return false; }",
+      "verifier": "try { const state = JSON.parse(localStorage.getItem('multicategory-cart')).state; const cartItems = state.items; return state.currentStore?.name === 'Bestbuy' && cartItems.length == 1 && cartItems[0] && cartItems[0].quantity == 2 && cartItems[0].itemName == 'JBL - TUNE520BT wireless on-ear headphones - Black'; } catch (error) { console.error('Verifier error:', error); return false; }",
       "category": "retail-cart"
     },
     "add-pet-items": {
       "description": "Search for a dog poop bag and a cat shampoo on PetSmart and add it to the cart",
-      "verifier": "try { const state = JSON.parse(localStorage.getItem('multicategory-cart')).state; const cartItems = state.items; if (!cartItems || cartItems.length < 2) return false; const poopBags = cartItems[0]; const catShampoo = cartItems[1]; return state.currentStore.name === 'PetSmart' && cartItems.length == 2 && poopBags && poopBags.quantity == 1 && poopBags.itemName == 'Earth Rated Dog Poop Bags Refill Roll Unscented (120 ct)' && catShampoo && catShampoo.quantity == 1 && catShampoo.itemName == 'Advantage Treatment Shampoo for Cats & Kittens (8 oz)'; } catch (error) { console.error('Verifier error:', error); return false; }",
+      "verifier": "try { const state = JSON.parse(localStorage.getItem('multicategory-cart')).state; const cartItems = state.items; if (!cartItems || cartItems.length < 2) return false; const poopBags = cartItems.find(item => item.itemName === 'Earth Rated Dog Poop Bags Refill Roll Unscented (120 ct)'); const catShampoo = cartItems.find(item => item.itemName === 'Advantage Treatment Shampoo for Cats & Kittens (8 oz)'); return state.currentStore?.name === 'PetSmart' && cartItems.length == 2 && poopBags && poopBags.quantity == 1 && catShampoo && catShampoo.quantity == 1; } catch (error) { console.error('Verifier error:', error); return false; }",
       "category": "pets-cart"
     },
     "add-milk-from-safeway": {
       "description": "Search for Safeway in the Grocery section and add a gallon of milk to the cart",
-      "verifier": "try { const state = JSON.parse(localStorage.getItem('multicategory-cart')).state; const searchResults = state.searchResults; if (searchResults[0] && searchResults[0].name !== 'Safeway') return false; const cartItems = state.items; return state.currentStore.name === 'Safeway' && cartItems.length == 1 && cartItems[0] && (cartItems[0].name === 'Lucerne Vitamin D Whole Milk Carton' || cartItems[0].itemName === 'Lucerne Vitamin D Whole Milk Carton') && cartItems[0].quantity == 1; } catch (error) { console.error('Verifier error:', error); return false; }",
+      "verifier": "try { const state = JSON.parse(localStorage.getItem('multicategory-cart')).state; const searchResults = state.searchResults; if (searchResults[0] && searchResults[0].name !== 'Safeway') return false; const cartItems = state.items; return state.currentStore?.name === 'Safeway' && cartItems.length == 1 && cartItems[0] && (cartItems[0].name === 'Lucerne Vitamin D Whole Milk Carton' || cartItems[0].itemName === 'Lucerne Vitamin D Whole Milk Carton') && cartItems[0].quantity == 1; } catch (error) { console.error('Verifier error:', error); return false; }",
       "category": "grocery-cart"
     },
     "add-airpods": {
       "description": "Search for Best Buy in the Retail section and add a pair of AirPods Pro 2 to the cart",
-      "verifier": "try { const state = JSON.parse(localStorage.getItem('multicategory-cart')).state; const cart = state.items; return state.currentStore.name.includes('Best Buy') && cart.length === 1 && cart[0] && cart[0].itemName.includes('Apple - AirPods Pro 2'); } catch (error) { console.error('Verifier error:', error); return false; }",
+      "verifier": "try { const state = JSON.parse(localStorage.getItem('multicategory-cart')).state; const cart = state.items; return state.currentStore?.name?.includes('Best Buy') && cart.length === 1 && cart[0] && cart[0].itemName.includes('Apple - AirPods Pro 2'); } catch (error) { console.error('Verifier error:', error); return false; }",
       "category": "retail-cart"
     }
   }

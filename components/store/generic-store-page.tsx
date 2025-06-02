@@ -35,13 +35,15 @@ interface GenericStorePageProps {
   storeData: Store
   productData: ProductSectionType[]
   storeConfig: StoreConfig
+  category?: "grocery" | "retail" | "convenience" | "pets" | "restaurant"
 }
 
 export default function GenericStorePage({
   onBackClick,
   storeData,
   productData,
-  storeConfig
+  storeConfig,
+  category = "grocery"
 }: GenericStorePageProps) {
   const [searchTerm, setSearchTerm] = useState("")
   const [filteredData, setFilteredData] = useState<ProductSectionType[]>(productData)
@@ -260,6 +262,7 @@ export default function GenericStorePage({
                   onProductClick={handleProductClick}
                   variant="section"
                   storeId={storeData.id}
+                  category={category}
                 />
               </div>
             ))
@@ -293,6 +296,7 @@ export default function GenericStorePage({
         onClose={closeProductModal}
         storeId={storeData.id}
         storeName={storeData.name}
+        category={category}
       />
     </div>
   )
