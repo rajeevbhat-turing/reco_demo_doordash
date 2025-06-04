@@ -310,7 +310,7 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
           {/* Progress bar */}
           <div className="h-1 bg-gray-200 rounded-full mb-4">
             <div
-              className="h-1 bg-red-600 rounded-full transition-all duration-300"
+              className="h-1 bg-blue-600 rounded-full transition-all duration-300"
               style={{ width: `${Math.min((subtotal / displayThreshold) * 100, 100)}%` }}
               suppressHydrationWarning
             ></div>
@@ -319,7 +319,7 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
           {/* Delivery fee notice */}
           {subtotal < displayThreshold ? (
             <div className="flex items-start text-sm mb-4">
-              <div className="text-red-600 mr-2 mt-1 flex-shrink-0">
+              <div className="text-blue-600 mr-2 mt-1 flex-shrink-0">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path
                     d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z"
@@ -339,7 +339,7 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
                 </svg>
               </div>
               <div>
-                <p className="font-medium text-red-600" suppressHydrationWarning>
+                <p className="font-medium text-blue-600" suppressHydrationWarning>
                   Add ${(displayThreshold - subtotal).toFixed(2)} for $0 delivery fee
                 </p>
                 <span className="text-gray-500" suppressHydrationWarning>
@@ -372,7 +372,7 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
           )}
 
           {/* Continue button */}
-          <button className="w-full bg-red-600 hover:bg-red-700 text-white font-medium py-3 rounded-full mb-3 text-lg" onClick={handleContinueToCheckout}>
+          <button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-full mb-3 text-lg" onClick={handleContinueToCheckout}>
             Continue
           </button>
           <p className="text-center text-sm text-gray-600" suppressHydrationWarning>

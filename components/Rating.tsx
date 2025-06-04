@@ -42,7 +42,7 @@ export const Rating = ({ initialRating = 0, onChange }: RatingProps) => {
           >
             <span className={`${
               star <= (hover || rating) 
-                ? 'text-[#ff3008]' // DoorDash red color when selected/hovered
+                ? 'text-[#2563EB]' // DashDoor blue color when selected/hovered
                 : 'text-[#E6E6E6]'  // Light gray for empty stars
             }`}>
               <StarIcon />

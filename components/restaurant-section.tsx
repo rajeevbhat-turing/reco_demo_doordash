@@ -126,7 +126,7 @@ export default function RestaurantSection({ title, restaurants, seeAllLink = "/a
 
                 <div className="text-sm text-gray-500">{restaurant.deliveryFee}</div>
 
-                {restaurant.discount && <div className="text-sm text-[#ff3008] mt-1">{restaurant.discount}</div>}
+                {restaurant.discount && <div className="text-sm text-blue-600 mt-1">{restaurant.discount}</div>}
               </div>
             </div>
           </Link>

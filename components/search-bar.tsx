@@ -315,7 +315,7 @@ const SearchBar = () => {
           <input
             ref={searchInputRef}
             type="text"
-            placeholder="Search DoorDash"
+            placeholder="Search DashDoor"
             className={`block w-full bg-transparent py-2 ${
               isSearchActive ? "pl-2 pr-10" : "pl-10 pr-3"
             } text-sm focus:outline-none`}

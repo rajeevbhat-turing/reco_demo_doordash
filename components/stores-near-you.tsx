@@ -31,7 +31,7 @@ export default function StoresNearYou({ stores }: StoresNearYouProps) {
               </div>
 
               <div className="flex-1">
-                {store.openTime && <div className="text-sm text-[#ff3008] font-medium mb-1">{store.openTime}</div>}
+                {store.openTime && <div className="text-sm text-blue-600 font-medium mb-1">{store.openTime}</div>}
                 <div className="flex justify-between">
                   <h3 className="font-medium">{store.name}</h3>
                   <Button variant="ghost" size="icon" className="rounded-full -mr-2 -mt-2">
@@ -54,7 +54,7 @@ export default function StoresNearYou({ stores }: StoresNearYouProps) {
                   </div>
                 )}
 
-                {store.discount && <div className="text-sm text-[#ff3008] mt-1">{store.discount}</div>}
+                {store.discount && <div className="text-sm text-blue-600 mt-1">{store.discount}</div>}
               </div>
             </div>
           </div>

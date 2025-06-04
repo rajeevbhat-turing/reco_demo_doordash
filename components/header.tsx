@@ -5,7 +5,7 @@ import { MapPin, Bell, ChevronDown, ShoppingCart } from "lucide-react"
 import { useCartStore } from "@/store/cart-store"
 import SearchBar from "@/components/search-bar"
 import CartSidebar from "@/components/cart-sidebar"
-import { DoorDashLogoMark, DoorDashWordMark } from './common/Icons'
+import { DashDoorLogoMark, DashDoorWordMark } from './common/Icons'
 
 export default function Header() {
   const getTotalItems = useCartStore((state) => state.getTotalItems)
@@ -39,11 +39,11 @@ export default function Header() {
             {/* Logo */}
             <Link href="/" className="flex-shrink-0">
             <div className="flex items-center">
-                <DoorDashLogoMark />
+                <DashDoorLogoMark />
                 <div className="ml-1">
-                  <DoorDashWordMark />
+                  <DashDoorWordMark />
                 </div>
-                <span className="sr-only">DoorDash</span>
+                <span className="sr-only">DashDoor</span>
               </div>
             </Link>
 
@@ -70,7 +70,7 @@ export default function Header() {
             {/* Cart */}
             <div className="ml-4">
               <button
-                className="relative h-8 w-14 rounded-full bg-[#ff3008] text-white text-sm font-semibold flex items-center justify-center"
+                className="relative h-8 w-14 rounded-full bg-[#2563EB] text-white text-sm font-semibold flex items-center justify-center"
                 onClick={toggleCart}
               >
                 <ShoppingCart className="h-4 w-4 text-white mr-1" />

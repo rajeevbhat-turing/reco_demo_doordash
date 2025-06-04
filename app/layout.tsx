@@ -9,8 +9,8 @@ import { ReplaceCartProvider } from "@/context/replace-cart-context"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "DoorDash: Food Delivery & Takeaway",
-  description: "Order food online for delivery or pickup",
+  title: "DashDoor: Food Delivery & Takeaway",
+  description: "Order food online from restaurants and get it delivered to your door",
 }
 
 export default function RootLayout({

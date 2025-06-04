@@ -197,7 +197,7 @@ export default function GroceryAllStores({ stores = defaultStores }: AllStoresPr
                         </div>
                     )}
 
-                    {store.discount && <div className="text-sm text-[#ff3008] mt-1">{store.discount}</div>}
+                    {store.discount && <div className="text-sm text-blue-600 mt-1">{store.discount}</div>}
                   </div>
                 </div>
               </div>

@@ -33,8 +33,8 @@ export default function CategoryNav({ selectedCategory, onCategorySelect, catego
               </div>
             </div>
             <span
-              className={`text-xs font-medium text-center transition-colors ${
-                selectedCategory === category.name ? "font-bold text-red-600" : ""
+              className={`px-4 py-2 rounded-full text-sm whitespace-nowrap transition-colors ${
+                selectedCategory === category.name ? "font-bold text-blue-600" : ""
               }`}
             >
               {category.name}
