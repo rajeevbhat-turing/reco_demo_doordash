@@ -54,11 +54,11 @@ export const restaurants: Restaurant[] = [
   {
     id: 'peet\'s-coffee',
     name: "Peet's Coffee",
-    logo: 'https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/00024eac-4e74-4e99-a5be-5c9f4a1ab7c5.png',
+    logo: 'https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/8ca5d03b-706e-4919-9746-ca9c45bc8b3d.png',
     banner:
-      'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/store/header/5b23c8ee-e8ee-4e5c-bb2a-a44d8dab6dc5.png',
+      'https://img.cdn4dd.com/cdn-cgi/image/fit=contain,format=auto,width=800,quality=50/https://doordash-static.s3.amazonaws.com/media/photosV2/79f1c263-68f2-4d8c-ba18-8ea65537e7ec-retina-large.jpg',
     detailsBanner:
-      'https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=1000,height=300,format=auto,quality=80/https://doordash-static.s3.amazonaws.com/media/store/header/5b23c8ee-e8ee-4e5c-bb2a-a44d8dab6dc5.png',
+      'https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=1000,height=300,format=auto,quality=80/https://doordash-static.s3.amazonaws.com/media/store/header/4a111d3c-0ed8-4fd3-9355-0b6a490aa3cc.jpg',
     rating: getDefaultRating(4.6),
     reviews: '200+',
     distance: '0.8 mi',
@@ -477,7 +477,7 @@ export const restaurants: Restaurant[] = [
     section: 'Grocery',
   },
   {
-    id: 'polk-sutter-cafe-deli',
+    id: 'polk-&-sutter-cafe-deli',
     name: 'Polk & Sutter Cafe Deli',
     logo: 'https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/60ef35cf-7d0b-4a06-8f71-f6ed350c2662.55',
     banner:
@@ -924,7 +924,7 @@ export const restaurants: Restaurant[] = [
     section: 'Grocery',
   },
   {
-    id: 'halal-burgers-more',
+    id: 'halal-burgers-&-more',
     name: 'Halal Burgers & More',
     logo: 'https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/5b8c38ba-0c5c-4d38-9cd3-a1e4a6853c05.png',
     banner:
