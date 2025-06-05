@@ -149,7 +149,7 @@ export default function ConvenienceCartSidebar({
         Continue
       </button>
       <p className="text-center text-sm mb-1">
-        ${(subtotal + (subtotal >= cartConfig.freeDeliveryThreshold ? 0 : deliveryFee)).toFixed(2)} without tax
+        ${subtotal.toFixed(2)} without tax
       </p>
 
       {/* Cart items */}
