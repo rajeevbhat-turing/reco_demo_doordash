@@ -674,7 +674,7 @@ export const restaurants: Restaurant[] = [
     section: 'Grocery',
   },
   {
-    id: 'sam-s-bakery',
+    id: "sam's-bakery",
     name: "Sam's Bakery",
     logo: '',
     banner:
@@ -695,7 +695,7 @@ export const restaurants: Restaurant[] = [
     phone: '+61 2 1234 5678',
     featured: false,
     discount: '',
-    categories: ['pizza', 'comfort-food', 'fast-food'],
+    categories: ['bakery', 'breakfast', 'comfort-food'],
     section: 'Grocery',
   },
   {
@@ -874,7 +874,7 @@ export const restaurants: Restaurant[] = [
     section: 'Grocery',
   },
   {
-    id: 'noah-s-new-york-bagels',
+    id: "noah's-new-york-bagels",
     name: "Noah's New York Bagels",
     logo: 'https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/2003-4088_NOAH_DoorDash_logo.jpg',
     banner:
@@ -895,7 +895,7 @@ export const restaurants: Restaurant[] = [
     phone: '+61 2 1234 5678',
     featured: false,
     discount: '',
-    categories: ['bakery', 'desserts', 'breakfast'],
+    categories: ['bakery', 'desserts', 'breakfast', 'pizza', 'burgers'],
     section: 'Grocery',
   },
   {
