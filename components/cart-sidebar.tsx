@@ -223,12 +223,10 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
     return total
   }
 
-  // Calculate total
+  // Calculate total for cart display (only subtotal - item prices)
   const getTotal = () => {
     const subtotal = getSubtotal()
-    const deliveryFee = (currentCategory !== 'restaurant' && subtotal < categoryConfig.freeDeliveryThreshold) ? categoryConfig.defaultDeliveryFee : 0
-    const total = subtotal + deliveryFee
-    return total.toFixed(2)
+    return subtotal.toFixed(2)
   }
 
   // Check if delivery fee applies (only for non-restaurant categories)

@@ -509,15 +509,15 @@ export const useCartStore = create<CartStore>()(
           return getSubtotal() >= config.freeDeliveryThreshold ? 0 : config.defaultDeliveryFee
         },
 
-        // Calculate total
+        // Calculate total (includes all fees - for checkout)
         getTotal: () => {
           const { getSubtotal, getServiceFee, getDeliveryFee } = get()
           return getSubtotal() + getServiceFee() + getDeliveryFee()
         },
 
-        // Get formatted total price (for display)
+        // Get formatted total price (for cart display - only subtotal, no fees)
         getTotalPrice: () => {
-          return `$${get().getTotal().toFixed(2)}`
+          return `$${get().getSubtotal().toFixed(2)}`
         },
 
         // Check if item is from a different store

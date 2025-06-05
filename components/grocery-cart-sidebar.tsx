@@ -37,10 +37,10 @@ export default function GroceryCartSidebar({ storeData }: CartSidebarProps) {
   // Use state for calculated total to avoid hydration issues
   const [totalPrice, setTotalPrice] = useState<string>("Checkout")
   
-  // Calculate total on client-side only
+  // Calculate total on client-side only (only subtotal - item prices)
   useEffect(() => {
-    setTotalPrice(`$${(subtotal + (subtotal >= cartConfig.freeDeliveryThreshold ? 0 : deliveryFee)).toFixed(2)}`)
-  }, [subtotal, deliveryFee])
+    setTotalPrice(`$${subtotal.toFixed(2)}`)
+  }, [subtotal])
 
   // Use a subset of recommended products for the cart sidebar
   const cartRecommendations = recommendedProducts.slice(0, 3)
