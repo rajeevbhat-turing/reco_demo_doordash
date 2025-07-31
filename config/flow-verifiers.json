@@ -2,11 +2,11 @@
   "flows": {
     "add-sweet-pretzel": {
       "description": "Add a sweet pretzel from Jamba Juice to the cart",
-      "verifier": "try { const cart = JSON.parse(localStorage.getItem('multicategory-cart') || '{}').state.items; return cart.length === 1 && cart[0].itemName === 'sweet pretzel' && cart[0].storeName === 'Jamba Juice'; } catch (error) { console.error('Verifier error:', error); return false; }",
+      "verifier": "try { const cart = JSON.parse(localStorage.getItem('multicategory-cart') || '{}').state.items; return cart.length === 1 && cart[0].itemName === 'sweet pretzel' && cart[0].storeName === 'Jamba Juice (152 Kearny Street)'; } catch (error) { console.error('Verifier error:', error); return false; }",
       "category": "restaurant-cart"
     },
-    "pick-meal-under-10": {
-      "description": "Pick a Meal Under $10 That Looks Tasty",
+    "add-meal-under-10": {
+      "description": "Add a Meal Under $10 That Looks Tasty",
       "verifier": "try { const cart = JSON.parse(localStorage.getItem('multicategory-cart') || '{}').state.items; return cart.length === 1 && cart[0].price < 10; } catch (error) { console.error('Verifier error:', error); return false; }",
       "category": "restaurant-cart"
     },
@@ -101,12 +101,12 @@
       "category": "pets-cart"
     },
     "order-7eleven-with-tip": {
-      "description": "Order 2 Lays Crisps, 1 fruit punch and 1 red bull from 7-Eleven, and add a $5 tip",
+      "description": "Order 2 Lays Crisps, 1 fruit punch and 1 red bull from 7-Eleven, and add a $5 tip. Close the popup",
       "verifier": "try { const state = JSON.parse(localStorage.getItem('multicategory-cart') || '{}').state; const lastOrderInfo = state?.lastOrderInfo; const orderVerifierConsumed = state?.orderVerifierConsumed; if (orderVerifierConsumed) return false; if (!lastOrderInfo || !lastOrderInfo.isCompleted) return false; const isSevenEleven = lastOrderInfo.storeName?.toLowerCase().includes('7-eleven') || lastOrderInfo.storeName?.toLowerCase().includes('seven eleven'); if (!isSevenEleven || lastOrderInfo.tipAmount !== 5) return false; const orderItems = lastOrderInfo.items || []; let laysCount = 0; let fruitPunchCount = 0; let redBullCount = 0; orderItems.forEach(item => { const itemName = item.itemName?.toLowerCase().replace(/[^a-z0-9\\s]/g, '') || ''; if (itemName.includes('lay') && itemName.includes('crisp')) laysCount += item.quantity; if (itemName.includes('fruit') && itemName.includes('punch')) fruitPunchCount += item.quantity; if (itemName.includes('red') && itemName.includes('bull')) redBullCount += item.quantity; }); const hasCorrectItems = laysCount === 2 && fruitPunchCount === 1 && redBullCount === 1; if (!hasCorrectItems) return false; const currentState = JSON.parse(localStorage.getItem('multicategory-cart') || '{}'); if (!currentState.state) currentState.state = {}; currentState.state.orderVerifierConsumed = true; localStorage.setItem('multicategory-cart', JSON.stringify(currentState)); return true; } catch (error) { console.error('Verifier error:', error); return false; }",
       "category": "convenience-cart"
     },
     "buy-dog-cupcake": {
-      "description": "Buy a cupcake for my dog",
+      "description": "Buy a cupcake for my dog from pets section",
       "verifier": "try { const state = JSON.parse(localStorage.getItem('multicategory-cart') || '{}').state; const lastOrderInfo = state?.lastOrderInfo; const orderVerifierConsumed = state?.orderVerifierConsumed; if (orderVerifierConsumed) return false; if (!lastOrderInfo || !lastOrderInfo.isCompleted) return false; const orderItems = lastOrderInfo.items || []; let hasDogCupcake = false; orderItems.forEach(item => { const itemName = item.itemName?.toLowerCase().replace(/[^a-z0-9\\s]/g, '') || ''; if ((itemName.includes('dog') && itemName.includes('cupcake')) || (itemName.includes('puppy') && itemName.includes('cupcake')) || (itemName.includes('canine') && itemName.includes('cupcake')) || itemName.includes('pupcake')) { hasDogCupcake = true; } }); if (!hasDogCupcake) return false; const currentState = JSON.parse(localStorage.getItem('multicategory-cart') || '{}'); if (!currentState.state) currentState.state = {}; currentState.state.orderVerifierConsumed = true; localStorage.setItem('multicategory-cart', JSON.stringify(currentState)); return true; } catch (error) { console.error('Verifier error:', error); return false; }",
       "category": "pets-cart"
     }

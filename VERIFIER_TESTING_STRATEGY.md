@@ -67,7 +67,7 @@ node scripts/test-verifiers.js category <category-name>
 
 **Test Order**:
 1. `add-sweet-pretzel` - Simple single item test
-2. `pick-meal-under-10` - Price-based validation
+2. `add-meal-under-10` - Price-based validation
 3. `add-most-ordered` - Section-specific item
 4. `add-two-custom-lattes` - Multiple customized items
 5. Continue with remaining 13...

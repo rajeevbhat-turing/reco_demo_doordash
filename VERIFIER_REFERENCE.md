@@ -7,7 +7,7 @@ This file contains all available verifier task IDs and their descriptions for ea
 | Task ID | Description |
 |---------|-------------|
 | `add-sweet-pretzel` | Add a sweet pretzel from Jamba Juice to the cart |
-| `pick-meal-under-10` | Pick a Meal Under $10 That Looks Tasty |
+| `add-meal-under-10` | Add a Meal Under $10 That Looks Tasty |
 | `add-cooler-bag` | Navigate to Boichik Bagels and add a Blue Cooler Bag to the cart |
 | `add-most-ordered` | Navigate to Philz Coffee and add 'Mint Mojito Iced Coffee' from the Most Ordered section |
 | `add-customized-croissant` | Navigate to Gateway Croissant and add a Ham, Egg and Cheese Croissant with Large size, Light Salad, Fruit Portion, Juice, and Low Sugar |
@@ -44,7 +44,7 @@ This file contains all available verifier task IDs and their descriptions for ea
 | Task ID | Description |
 |---------|-------------|
 | `add-pet-items` | Search for a dog poop bag and a cat shampoo on PetSmart and add it to the cart |
-| `buy-dog-cupcake` | Buy a cupcake for my dog |
+| `buy-dog-cupcake` | Buy a cupcake for my dog from pets section |
 
 ## Cart Management Verifiers
 

@@ -73,7 +73,7 @@ The system includes several categories of verifiers:
 
 ### Restaurant Cart Verifiers
 - `add-sweet-pretzel` - Add a sweet pretzel from Jamba Juice
-- `pick-meal-under-10` - Pick a meal under $10
+- `add-meal-under-10` - Add a meal under $10
 - `add-cooler-bag` - Add a Blue Cooler Bag from Boichik Bagels
 - `add-most-ordered` - Add Mint Mojito Iced Coffee from Philz Coffee
 - `add-customized-croissant` - Add customized Ham, Egg and Cheese Croissant
