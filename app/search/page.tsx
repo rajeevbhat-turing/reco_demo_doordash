@@ -35,6 +35,7 @@ export default function SearchPage() {
     overRating: null,
     price: null,
     dashPass: false,
+    category: null,
   })
   const { updateSearchResults, clearSearchResults, recordSearch } = useCartStore()
 
@@ -83,13 +84,32 @@ export default function SearchPage() {
     // Simulate loading
     setIsLoading(true)
 
-    // Search restaurants by name and cuisine
+    // Search restaurants by name, cuisine, and categories
     const restaurantResults = restaurants
       .filter((restaurant) => {
-        return (
-          restaurant.name.toLowerCase().includes(query.toLowerCase()) ||
-          restaurant.cuisine.toLowerCase().includes(query.toLowerCase())
-        )
+        const queryLower = query.toLowerCase();
+        
+        // Check if name or cuisine contains the query
+        const nameMatch = restaurant.name.toLowerCase().includes(queryLower);
+        const cuisineMatch = restaurant.cuisine.toLowerCase().includes(queryLower);
+        
+        // For categories, use more precise matching - check if any category contains the query
+        // For dessert specifically, we want exact matches or word boundaries
+        const categoryMatch = restaurant.categories && restaurant.categories.some(category => {
+          const categoryLower = category.toLowerCase();
+          // For dessert search, be more precise
+          if (queryLower === 'dessert') {
+            return categoryLower === 'desserts' || categoryLower === 'dessert';
+          }
+          return categoryLower.includes(queryLower);
+        });
+        
+        // For dessert search, only return restaurants that actually have dessert categories
+        if (queryLower === 'dessert') {
+          return categoryMatch; // Only return if it has dessert category
+        }
+        
+        return nameMatch || cuisineMatch || categoryMatch;
       })
       .map((restaurant) => ({
         ...restaurant,
@@ -344,6 +364,16 @@ export default function SearchPage() {
         console.log(`[SEARCH] After deals filter: ${filteredResults.length} results`);
       }
       
+      // Filter by category
+      if (activeFilters.category) {
+        filteredResults = filteredResults.filter(restaurant => {
+          const hasCategory = restaurant.categories && restaurant.categories.includes(activeFilters.category!);
+          console.log(`[SEARCH] ${restaurant.name}: categories ${restaurant.categories} - Has category ${activeFilters.category}: ${hasCategory}`);
+          return hasCategory;
+        });
+        console.log(`[SEARCH] After category filter: ${filteredResults.length} results`);
+      }
+      
       console.log(`[SEARCH] Final filtered results: ${filteredResults.length}`);
       setSearchResults(filteredResults)
       setIsLoading(false)
@@ -357,11 +387,32 @@ export default function SearchPage() {
         dashPass: restaurant.dashPass,
         type: restaurant.storeType === "grocery" || restaurant.storeType === "pets" || restaurant.storeType === "pet-product" || restaurant.storeType === "convenience" ? "restaurant" as const : "restaurant" as const,
         restaurantId: restaurant.id,
-        matchedItem: restaurant.matchType === "menu-item" || restaurant.matchType === "pet-product" || restaurant.matchType === "convenience" ? restaurant.matchedItems?.[0] : undefined
+        matchedItem: restaurant.matchType === "menu-item" || restaurant.matchType === "pet-product" || restaurant.matchType === "convenience" ? restaurant.matchedItems?.[0] : undefined,
+        categories: restaurant.categories,
+        priceRange: restaurant.priceRange
       }))
       
+      console.log(`[SEARCH] Updating cart store with ${cartSearchResults.length} results`);
+      console.log(`[SEARCH] Sample result:`, cartSearchResults[0]);
       updateSearchResults(cartSearchResults)
     }, 500)
+
+    // Also update search results immediately for verifier
+    const immediateCartSearchResults = combinedResults.map(restaurant => ({
+      id: restaurant.id,
+      name: restaurant.name,
+      logo: restaurant.logo || "",
+      description: restaurant.cuisine,
+      dashPass: restaurant.dashPass,
+      type: restaurant.storeType === "grocery" || restaurant.storeType === "pets" || restaurant.storeType === "pet-product" || restaurant.storeType === "convenience" ? "restaurant" as const : "restaurant" as const,
+      restaurantId: restaurant.id,
+      matchedItem: restaurant.matchType === "menu-item" || restaurant.matchType === "pet-product" || restaurant.matchType === "convenience" ? restaurant.matchedItems?.[0] : undefined,
+      categories: restaurant.categories,
+      priceRange: restaurant.priceRange
+    }))
+    
+    console.log(`[SEARCH] Immediate update with ${immediateCartSearchResults.length} results`);
+    updateSearchResults(immediateCartSearchResults)
 
     return () => clearTimeout(timer)
   }, [query, activeFilters])

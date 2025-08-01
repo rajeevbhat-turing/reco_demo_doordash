@@ -22,6 +22,8 @@ interface SearchResult {
   type: "restaurant" | "menu-item" | "grocery" | "pets" | "pet-product" | "convenience"
   restaurantId?: string
   matchedItem?: string
+  categories?: string[]
+  priceRange?: string
 }
 
 const SearchBar = () => {
@@ -102,6 +104,8 @@ const SearchBar = () => {
       type: "menu-item" as const,
       restaurantId: restaurant.id,
       matchedItem: items[0],
+      categories: restaurant.categories,
+      priceRange: restaurant.priceRange,
     }))
   }
 
@@ -116,7 +120,10 @@ const SearchBar = () => {
         .filter((restaurant) => {
           return (
             restaurant.name.toLowerCase().includes(value.toLowerCase()) ||
-            restaurant.cuisine.toLowerCase().includes(value.toLowerCase())
+            restaurant.cuisine.toLowerCase().includes(value.toLowerCase()) ||
+            (restaurant.categories && restaurant.categories.some(category => 
+              category.toLowerCase().includes(value.toLowerCase())
+            ))
           )
         })
         .slice(0, 2)
@@ -128,6 +135,8 @@ const SearchBar = () => {
           dashPass: restaurant.dashPass,
           type: "restaurant" as const,
           matchedItem: undefined,
+          categories: restaurant.categories,
+          priceRange: restaurant.priceRange,
         }))
 
       // Search grocery stores by name
@@ -215,16 +224,30 @@ const SearchBar = () => {
       setIsSearchActive(true)
 
       // Update cart store with search results (convert all to restaurant format for compatibility)
-      const cartSearchResults = combinedResults.map(result => ({
-        id: result.id,
-        name: result.name,
-        logo: result.logo,
-        description: result.description,
-        dashPass: result.dashPass,
-        type: result.type === "grocery" || result.type === "pets" || result.type === "pet-product" || result.type === "convenience" ? "restaurant" as const : result.type,
-        restaurantId: result.id,
-        matchedItem: result.matchedItem
-      }))
+      const cartSearchResults = combinedResults.map(result => {
+        const baseResult = {
+          id: result.id,
+          name: result.name,
+          logo: result.logo,
+          description: result.description,
+          dashPass: result.dashPass,
+          type: result.type === "grocery" || result.type === "pets" || result.type === "pet-product" || result.type === "convenience" ? "restaurant" as const : result.type,
+          restaurantId: result.id,
+          matchedItem: result.matchedItem
+        }
+        
+        // For restaurant results, include categories and priceRange from original data
+        if (result.type === "restaurant" || result.type === "menu-item") {
+          const originalRestaurant = restaurants.find(r => r.id === result.id)
+          return {
+            ...baseResult,
+            categories: originalRestaurant?.categories,
+            priceRange: originalRestaurant?.priceRange
+          }
+        }
+        
+        return baseResult
+      })
       updateSearchResults(cartSearchResults)
     } else {
       setSearchResults([])
