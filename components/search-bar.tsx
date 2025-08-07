@@ -9,6 +9,8 @@ import { useRouter } from "next/navigation"
 import { restaurants } from "@/constants/restaurants"
 import { menuItems } from "@/constants/menu-items"
 import { getAllStores } from "@/app/grocery/data/retail-response-mapper"
+import { getAllStores as getConvenienceStores } from "@/app/convenience/data/convenience-response-mapper"
+import { getAllPetStores, getEnrichedPetProducts } from "@/app/pets/data/pet-response-mapper"
 import { useCartStore } from "@/store/cart-store"
 
 interface SearchResult {
@@ -17,9 +19,11 @@ interface SearchResult {
   logo: string
   description: string
   dashPass?: boolean
-  type: "restaurant" | "menu-item" | "grocery"
+  type: "restaurant" | "menu-item" | "grocery" | "pets" | "pet-product" | "convenience"
   restaurantId?: string
   matchedItem?: string
+  categories?: string[]
+  priceRange?: string
 }
 
 const SearchBar = () => {
@@ -100,6 +104,8 @@ const SearchBar = () => {
       type: "menu-item" as const,
       restaurantId: restaurant.id,
       matchedItem: items[0],
+      categories: restaurant.categories,
+      priceRange: restaurant.priceRange,
     }))
   }
 
@@ -114,7 +120,10 @@ const SearchBar = () => {
         .filter((restaurant) => {
           return (
             restaurant.name.toLowerCase().includes(value.toLowerCase()) ||
-            restaurant.cuisine.toLowerCase().includes(value.toLowerCase())
+            restaurant.cuisine.toLowerCase().includes(value.toLowerCase()) ||
+            (restaurant.categories && restaurant.categories.some(category => 
+              category.toLowerCase().includes(value.toLowerCase())
+            ))
           )
         })
         .slice(0, 2)
@@ -126,6 +135,8 @@ const SearchBar = () => {
           dashPass: restaurant.dashPass,
           type: "restaurant" as const,
           matchedItem: undefined,
+          categories: restaurant.categories,
+          priceRange: restaurant.priceRange,
         }))
 
       // Search grocery stores by name
@@ -145,11 +156,65 @@ const SearchBar = () => {
           matchedItem: undefined,
         }))
 
+      // Search convenience stores by name
+      const convenienceStores = getConvenienceStores()
+      const convenienceResults = convenienceStores
+        .filter((store) => {
+          return store.name.toLowerCase().includes(value.toLowerCase())
+        })
+        .slice(0, 2)
+        .map((store) => ({
+          id: `convenience-${store.id}`,
+          name: store.name,
+          logo: store.image,
+          description: `${store.time} • Convenience • ★ ${store.rating}`,
+          dashPass: store.isDashPass,
+          type: "convenience" as const,
+          matchedItem: undefined,
+        }))
+
+      // Search pet stores by name
+      const petStores = getAllPetStores()
+      const petStoreResults = petStores
+        .filter((store) => {
+          return store.name.toLowerCase().includes(value.toLowerCase())
+        })
+        .slice(0, 2)
+        .map((store) => ({
+          id: `pets-${store.id}`,
+          name: store.name,
+          logo: store.image,
+          description: `${store.time} • Pet Supplies • ★ ${store.rating}`,
+          dashPass: store.isDashPass,
+          type: "pets" as const,
+          matchedItem: undefined,
+        }))
+
+      // Search pet products
+      const petProducts = getEnrichedPetProducts()
+      const petProductResults: SearchResult[] = []
+      petProducts.forEach((section: any) => {
+        section.products.forEach((product: any) => {
+          const matches = product.name.toLowerCase().includes(value.toLowerCase())
+          if (matches && petProductResults.length < 2) {
+            petProductResults.push({
+              id: `pet-product-${product.id}`,
+              name: product.name,
+              logo: product.image,
+              description: `Pet Product • ${product.price}`,
+              dashPass: false,
+              type: "pet-product" as const,
+              matchedItem: product.name,
+            })
+          }
+        })
+      })
+
       // Search restaurants by menu items
       const menuItemResults = searchByMenuItem(value).slice(0, 2)
 
       // Combine results, prioritizing restaurant matches, then grocery, then menu items
-      const combinedResults = [...restaurantResults, ...groceryResults, ...menuItemResults].slice(0, 5)
+      const combinedResults = [...restaurantResults, ...groceryResults, ...convenienceResults, ...petStoreResults, ...petProductResults, ...menuItemResults].slice(0, 5)
 
       // Generate search suggestions based on search term
       const suggestions = generateSearchSuggestions(value)
@@ -159,16 +224,30 @@ const SearchBar = () => {
       setIsSearchActive(true)
 
       // Update cart store with search results (convert all to restaurant format for compatibility)
-      const cartSearchResults = combinedResults.map(result => ({
-        id: result.id,
-        name: result.name,
-        logo: result.logo,
-        description: result.description,
-        dashPass: result.dashPass,
-        type: result.type === "grocery" ? "restaurant" as const : result.type,
-        restaurantId: result.id,
-        matchedItem: result.matchedItem
-      }))
+      const cartSearchResults = combinedResults.map(result => {
+        const baseResult = {
+          id: result.id,
+          name: result.name,
+          logo: result.logo,
+          description: result.description,
+          dashPass: result.dashPass,
+          type: result.type === "grocery" || result.type === "pets" || result.type === "pet-product" || result.type === "convenience" ? "restaurant" as const : result.type,
+          restaurantId: result.id,
+          matchedItem: result.matchedItem
+        }
+        
+        // For restaurant results, include categories and priceRange from original data
+        if (result.type === "restaurant" || result.type === "menu-item") {
+          const originalRestaurant = restaurants.find(r => r.id === result.id)
+          return {
+            ...baseResult,
+            categories: originalRestaurant?.categories,
+            priceRange: originalRestaurant?.priceRange
+          }
+        }
+        
+        return baseResult
+      })
       updateSearchResults(cartSearchResults)
     } else {
       setSearchResults([])
@@ -207,13 +286,32 @@ const SearchBar = () => {
       "italian",
     ]
 
+    const petCategories = [
+      "pet food",
+      "dog food",
+      "cat food",
+      "pet treats",
+      "dog treats",
+      "cat treats",
+      "pet toys",
+      "dog toys",
+      "cat toys",
+      "pet supplies",
+      "pet shampoo",
+      "pet medicine",
+    ]
+
     const locationSuggestions = [`${term} near me`, `${term} delivery`, `${term} restaurant`, `${term} takeaway`]
 
     const foodSuggestions = foodCategories
       .filter((category) => category.includes(term.toLowerCase()) || term.toLowerCase().includes(category))
       .map((category) => category)
 
-    const allSuggestions = [term, ...locationSuggestions, ...foodSuggestions, `best ${term}`, `${term} deals`]
+    const petSuggestions = petCategories
+      .filter((category) => category.includes(term.toLowerCase()) || term.toLowerCase().includes(category))
+      .map((category) => category)
+
+    const allSuggestions = [term, ...locationSuggestions, ...foodSuggestions, ...petSuggestions, `best ${term}`, `${term} deals`]
 
     return allSuggestions.slice(0, 5)
   }
@@ -238,6 +336,17 @@ const SearchBar = () => {
       // Extract the actual grocery store ID (remove "grocery-" prefix)
       const actualId = result.id.replace("grocery-", "")
       router.push(`/grocery/store/${actualId}`)
+    } else if (result.type === "convenience") {
+      // Extract the actual convenience store ID (remove "convenience-" prefix)
+      const actualId = result.id.replace("convenience-", "")
+      router.push(`/convenience/store/${actualId}`)
+    } else if (result.type === "pets") {
+      // Extract the actual pet store ID (remove "pets-" prefix)
+      const actualId = result.id.replace("pets-", "")
+      router.push(`/pets/store/${actualId}`)
+    } else if (result.type === "pet-product") {
+      // For pet products, navigate to the pets page with search term
+      router.push(`/pets?search=${encodeURIComponent(result.matchedItem || result.name)}`)
     } else {
       router.push(`/store/${result.id}`)
     }
