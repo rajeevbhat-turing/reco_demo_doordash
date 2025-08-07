@@ -28,7 +28,7 @@ export default function VerifyPage() {
   // Generate a unique session ID for this browser session
   function generateSessionId(): string {
     const timestamp = Date.now().toString()
-    const random = Math.random().toString(36).substring(2, 8)
+    const random = globalThis.crypto.randomUUID().split('-')[0]
     return `${timestamp.slice(-8)}-${random}`
   }
 

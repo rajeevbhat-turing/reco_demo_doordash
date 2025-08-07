@@ -83,8 +83,8 @@ export const getOrCreateSessionId = (): string => {
   let sessionId = sessionStorage.getItem(storageKey)
   
   if (!sessionId) {
-    // Create new session ID
-    sessionId = `${Date.now()}-${Math.random().toString(36).substring(2, 8)}`
+    // Create new session ID using crypto.randomUUID()
+    sessionId = `${Date.now()}-${globalThis.crypto.randomUUID().split('-')[0]}`
     sessionStorage.setItem(storageKey, sessionId)
     console.log(`🆔 New session created: ${sessionId}`)
   } else {

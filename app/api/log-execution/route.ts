@@ -1,12 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server'
 import fs from 'fs'
 import path from 'path'
+import crypto from 'crypto'
+
+// Sanitize sessionId to prevent path traversal attacks
+function sanitizeSessionId(sessionId: string): string {
+  // Remove any path traversal characters and limit to alphanumeric, dashes, and underscores
+  return sessionId.replace(/[^a-zA-Z0-9\-_]/g, '').substring(0, 50)
+}
 
 export async function POST(request: NextRequest) {
   try {
     const logData = await request.json()
     
-    // Create log entry
+    // Create log entry with sanitized sessionId
     const logEntry = {
       timestamp: logData.timestamp,
       taskId: logData.taskId,
@@ -18,7 +25,7 @@ export async function POST(request: NextRequest) {
       currentStore: logData.currentStore,
       userAgent: logData.userAgent,
       url: logData.url,
-      sessionId: logData.sessionId || generateSessionId(logData.userAgent, logData.timestamp)
+      sessionId: sanitizeSessionId(logData.sessionId || generateSessionId(logData.userAgent, logData.timestamp))
     }
 
     // Create logs directory if it doesn't exist
@@ -71,11 +78,10 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// Generate a simple session ID based on user agent and timestamp
+// Generate a secure session ID using crypto.randomUUID()
 function generateSessionId(userAgent: string, timestamp: string): string {
-  const hash = userAgent.split('').reduce((acc, char) => {
-    return ((acc << 5) - acc + char.charCodeAt(0)) & 0xffffffff
-  }, 0)
+  // Use crypto.randomUUID() for cryptographically secure randomness
+  const uuid = crypto.randomUUID()
   const timeHash = new Date(timestamp).getTime().toString().slice(-6)
-  return `session-${Math.abs(hash).toString(16).slice(0, 6)}-${timeHash}`
+  return `session-${uuid.split('-')[0]}-${timeHash}`
 } 
