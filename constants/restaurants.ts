@@ -54,11 +54,11 @@ export const restaurants: Restaurant[] = [
   {
     id: 'peet\'s-coffee',
     name: "Peet's Coffee",
-    logo: 'https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/00024eac-4e74-4e99-a5be-5c9f4a1ab7c5.png',
+    logo: 'https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/8ca5d03b-706e-4919-9746-ca9c45bc8b3d.png',
     banner:
-      'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/store/header/5b23c8ee-e8ee-4e5c-bb2a-a44d8dab6dc5.png',
+      'https://img.cdn4dd.com/cdn-cgi/image/fit=contain,format=auto,width=800,quality=50/https://doordash-static.s3.amazonaws.com/media/photosV2/79f1c263-68f2-4d8c-ba18-8ea65537e7ec-retina-large.jpg',
     detailsBanner:
-      'https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=1000,height=300,format=auto,quality=80/https://doordash-static.s3.amazonaws.com/media/store/header/5b23c8ee-e8ee-4e5c-bb2a-a44d8dab6dc5.png',
+      'https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=1000,height=300,format=auto,quality=80/https://doordash-static.s3.amazonaws.com/media/store/header/4a111d3c-0ed8-4fd3-9355-0b6a490aa3cc.jpg',
     rating: getDefaultRating(4.6),
     reviews: '200+',
     distance: '0.8 mi',
@@ -477,7 +477,7 @@ export const restaurants: Restaurant[] = [
     section: 'Grocery',
   },
   {
-    id: 'polk-sutter-cafe-deli',
+    id: 'polk-&-sutter-cafe-deli',
     name: 'Polk & Sutter Cafe Deli',
     logo: 'https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/60ef35cf-7d0b-4a06-8f71-f6ed350c2662.55',
     banner:
@@ -674,7 +674,7 @@ export const restaurants: Restaurant[] = [
     section: 'Grocery',
   },
   {
-    id: 'sam-s-bakery',
+    id: "sam's-bakery",
     name: "Sam's Bakery",
     logo: '',
     banner:
@@ -695,7 +695,7 @@ export const restaurants: Restaurant[] = [
     phone: '+61 2 1234 5678',
     featured: false,
     discount: '',
-    categories: ['pizza', 'comfort-food', 'fast-food'],
+    categories: ['bakery', 'breakfast', 'comfort-food'],
     section: 'Grocery',
   },
   {
@@ -874,7 +874,7 @@ export const restaurants: Restaurant[] = [
     section: 'Grocery',
   },
   {
-    id: 'noah-s-new-york-bagels',
+    id: "noah's-new-york-bagels",
     name: "Noah's New York Bagels",
     logo: 'https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/2003-4088_NOAH_DoorDash_logo.jpg',
     banner:
@@ -895,7 +895,7 @@ export const restaurants: Restaurant[] = [
     phone: '+61 2 1234 5678',
     featured: false,
     discount: '',
-    categories: ['bakery', 'desserts', 'breakfast'],
+    categories: ['bakery', 'desserts', 'breakfast', 'pizza', 'burgers'],
     section: 'Grocery',
   },
   {
@@ -924,7 +924,7 @@ export const restaurants: Restaurant[] = [
     section: 'Grocery',
   },
   {
-    id: 'halal-burgers-more',
+    id: 'halal-burgers-&-more',
     name: 'Halal Burgers & More',
     logo: 'https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/5b8c38ba-0c5c-4d38-9cd3-a1e4a6853c05.png',
     banner:
@@ -980,7 +980,7 @@ export const restaurants: Restaurant[] = [
     detailsBanner:
       'https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=1000,height=300,format=auto,quality=80/https://doordash-static.s3.amazonaws.com/media/store/header/8c2febac-6c6c-47b3-96fd-16e5e950a1ae.jpg',
     rating: getDefaultRating(4.6),
-    reviews: '(1k+)',
+    reviews: '1k+',
     distance: '900 ft',
     time: '17 min',
     deliveryFee: '$​0 delivery fee',
@@ -1006,7 +1006,7 @@ export const restaurants: Restaurant[] = [
     detailsBanner:
       'https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=1000,height=300,format=auto,quality=80/https://doordash-static.s3.amazonaws.com/media/store/header/f853deb8-a914-4f09-a842-dbc20280d3de.jpg',
     rating: getDefaultRating(4.8),
-    reviews: '(200+)',
+    reviews: '200+',
     distance: '0.7 mi',
     time: '21 min',
     deliveryFee: '$​0 delivery fee',
@@ -1031,7 +1031,7 @@ export const restaurants: Restaurant[] = [
     detailsBanner:
       'https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=1000,height=300,format=auto,quality=80/https://doordash-static.s3.amazonaws.com/media/store/header/890d4815-00f8-40ac-b275-64b7bfeda52a.539',
     rating: getDefaultRating(4.8),
-    reviews: '(100+)',
+    reviews: '100+',
     distance: '800 ft',
     time: '30 min',
     deliveryFee: '$​0 delivery fee',
@@ -1056,7 +1056,7 @@ export const restaurants: Restaurant[] = [
     detailsBanner:
       'https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=1000,height=300,format=auto,quality=80/https://doordash-static.s3.amazonaws.com/media/store/header/c7079c45-4080-4bd0-bce8-48722875563a.jpg',
     rating: getDefaultRating(4.8),
-    reviews: '(20+)',
+    reviews: '20+',
     distance: '400 ft',
     time: '18 min',
     deliveryFee: '$​0 delivery fee',
@@ -1081,7 +1081,7 @@ export const restaurants: Restaurant[] = [
     detailsBanner:
       'https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=1000,height=300,format=auto,quality=80/https://doordash-static.s3.amazonaws.com/media/store/header/139e97d4-efb4-42e1-81d6-e7203faed37a.jpg',
     rating: getDefaultRating(4.7),
-    reviews: '(500+)',
+    reviews: '500+',
     distance: '700 ft',
     time: '24 min',
     deliveryFee: '$​0 delivery fee',
@@ -1105,7 +1105,7 @@ export const restaurants: Restaurant[] = [
       'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/photosV2/80c824d1-9429-40fe-9399-44e918a23b1f-retina-large.png',
     detailsBanner: '',
     rating: getDefaultRating(4.8),
-    reviews: '(500+)',
+    reviews: '500+',
     distance: '900 ft',
     time: '20 min',
     deliveryFee: '$​0 delivery fee',
@@ -1128,7 +1128,7 @@ export const restaurants: Restaurant[] = [
     banner: '',
     detailsBanner: '',
     rating: getDefaultRating(4.8),
-    reviews: '(500+)',
+    reviews: '500+',
     distance: '1.2 mi',
     time: '25 min',
     deliveryFee: '$​0 delivery fee',
@@ -1152,7 +1152,7 @@ export const restaurants: Restaurant[] = [
       'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/store/header/f5b22640-191d-46ed-a12c-7b20b3310e25.jpg',
     detailsBanner: '',
     rating: getDefaultRating(4.6),
-    reviews: '(200+)',
+    reviews: '200+',
     distance: '1.9 mi',
     time: '46 min',
     deliveryFee: '$0 delivery fee by 10:59 AM',
@@ -1177,7 +1177,7 @@ export const restaurants: Restaurant[] = [
     detailsBanner:
       'https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=1000,height=300,format=auto,quality=80/https://doordash-static.s3.amazonaws.com/media/store/header/b78ca11d-ef8a-4341-ba8c-24b3d86a7e68.jpg',
     rating: getDefaultRating(4.8),
-    reviews: '(50+)',
+    reviews: '50+',
     distance: '0.3 mi',
     time: '25 min',
     deliveryFee: '$​0 delivery fee',
@@ -1202,7 +1202,7 @@ export const restaurants: Restaurant[] = [
     detailsBanner:
       'https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=1000,height=300,format=auto,quality=80/https://doordash-static.s3.amazonaws.com/media/store/header/089aed8c-5cce-4566-a480-76b682cb740d.jpg',
     rating: getDefaultRating(4.6),
-    reviews: '(50+)',
+    reviews: '50+',
     distance: '0.5 mi',
     time: '21 min',
     deliveryFee: '$​0 delivery fee',
@@ -1227,7 +1227,7 @@ export const restaurants: Restaurant[] = [
     detailsBanner:
       'https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=1000,height=300,format=auto,quality=80/https://doordash-static.s3.amazonaws.com/media/store/header/2732.jpg',
     rating: getDefaultRating(4.5),
-    reviews: '(500+)',
+    reviews: '500+',
     distance: '0.4 mi',
     time: '25 min',
     deliveryFee: '$​0 delivery fee',
@@ -1251,7 +1251,7 @@ export const restaurants: Restaurant[] = [
       'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/store/header/a5771f13-30a8-48e4-9e0b-ee98b7cacf3d.png',
     detailsBanner: '',
     rating: getDefaultRating(4.7),
-    reviews: '(100+)',
+    reviews: '100+',
     distance: '1.2 mi',
     time: '32 min',
     deliveryFee: '$​0 delivery fee',
@@ -1276,7 +1276,7 @@ export const restaurants: Restaurant[] = [
     detailsBanner:
       'https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=1000,height=300,format=auto,quality=80/https://doordash-static.s3.amazonaws.com/media/store/header/476486ae-b011-4be6-832b-43400368072f.png',
     rating: getDefaultRating(4.8),
-    reviews: '(20+)',
+    reviews: '20+',
     distance: '3.2 mi',
     time: '32 min',
     deliveryFee: '$​0 delivery fee',
@@ -1300,7 +1300,7 @@ export const restaurants: Restaurant[] = [
       'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/photosV2/cc006cf2-fe43-4857-9f38-50ba48ae01b5-retina-large.png',
     detailsBanner: '',
     rating: getDefaultRating(4.7),
-    reviews: '(200+)',
+    reviews: '200+',
     distance: '7.4 mi',
     time: '30 min',
     deliveryFee: '$​0 delivery fee',
@@ -1325,7 +1325,7 @@ export const restaurants: Restaurant[] = [
     detailsBanner:
       'https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=1000,height=300,format=auto,quality=80/https://doordash-static.s3.amazonaws.com/media/store/header/80dddec6-43ad-4a0c-b49b-a5ba0c117541.jpg',
     rating: getDefaultRating(4.4),
-    reviews: '(200+)',
+    reviews: '200+',
     distance: '0.9 mi',
     time: '26 min',
     deliveryFee: '$​0 delivery fee',
@@ -1350,7 +1350,7 @@ export const restaurants: Restaurant[] = [
     detailsBanner:
       'https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=1000,height=300,format=auto,quality=80/https://doordash-static.s3.amazonaws.com/media/store/header/824c189c-761c-442c-9cac-711a7c32c556.jpg',
     rating: getDefaultRating(4.6),
-    reviews: '(200+)',
+    reviews: '200+',
     distance: '400 ft',
     time: '20 min',
     deliveryFee: '$​0 delivery fee',
@@ -1375,7 +1375,7 @@ export const restaurants: Restaurant[] = [
     detailsBanner:
       'https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=1000,height=300,format=auto,quality=80/https://doordash-static.s3.amazonaws.com/media/store/header/f18cd898-6d3d-47db-8354-7d8fccf54f85.jpg',
     rating: getDefaultRating(4.6),
-    reviews: '(2k+)',
+    reviews: '2k+',
     distance: '1.2 mi',
     time: '23 min',
     deliveryFee: '$​0 delivery fee',
@@ -1400,7 +1400,7 @@ export const restaurants: Restaurant[] = [
     detailsBanner:
       'https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=1000,height=300,format=auto,quality=80/https://doordash-static.s3.amazonaws.com/media/store/header/56fc0fa7-9539-415e-ba7d-ed07f0d3573c.jpg',
     rating: getDefaultRating(4.6),
-    reviews: '(20+)',
+    reviews: '20+',
     distance: '0.6 mi',
     time: '22 min',
     deliveryFee: '$​0 delivery fee',
@@ -1426,7 +1426,7 @@ export const restaurants: Restaurant[] = [
     detailsBanner:
       'https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=1000,height=300,format=auto,quality=80/https://doordash-static.s3.amazonaws.com/media/store/header/79ff25dc-8b1e-421e-bb09-f2f0e772562d.jpg',
     rating: getDefaultRating(4.9),
-    reviews: '(200+)',
+    reviews: '200+',
     distance: '1.0 mi',
     time: '23 min',
     deliveryFee: '$​0 delivery fee',
@@ -1476,7 +1476,7 @@ export const restaurants: Restaurant[] = [
     detailsBanner:
       'https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=1000,height=300,format=auto,quality=80/https://doordash-static.s3.amazonaws.com/media/store/header/ad8ffe8b-3b72-4c6c-86ab-7775b174091e.jpg',
     rating: getDefaultRating(5),
-    reviews: '(20+)',
+    reviews: '20+',
     distance: '0.9 mi',
     time: '30 min',
     deliveryFee: '$​0 delivery fee',
@@ -1501,7 +1501,7 @@ export const restaurants: Restaurant[] = [
     detailsBanner:
       'https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=1000,height=300,format=auto,quality=80/https://doordash-static.s3.amazonaws.com/media/store/header/f34d25dc-481d-4c2b-b0c9-de4ade0fd067.jpg',
     rating: getDefaultRating(4.5),
-    reviews: '(20+)',
+    reviews: '20+',
     distance: '1.5 mi',
     time: '35 min',
     deliveryFee: '$​0 delivery fee',
@@ -1526,7 +1526,7 @@ export const restaurants: Restaurant[] = [
     detailsBanner:
       'https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=1000,height=300,format=auto,quality=80/https://doordash-static.s3.amazonaws.com/media/store/header/4b58096f-00d1-4327-b410-e57ab71028bd.jpg',
     rating: getDefaultRating(3.9),
-    reviews: '(200+)',
+    reviews: '200+',
     distance: '1.1 mi',
     time: '25 min',
     deliveryFee: '$​0 delivery fee',
@@ -1551,7 +1551,7 @@ export const restaurants: Restaurant[] = [
     detailsBanner:
       'https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=1000,height=300,format=auto,quality=80/https://doordash-static.s3.amazonaws.com/media/store/header/421746.jpg',
     rating: getDefaultRating(4.8),
-    reviews: '(10k+)',
+    reviews: '10k+',
     distance: '0.9 mi',
     time: '22 min',
     deliveryFee: '$​0 delivery fee',
@@ -1576,7 +1576,7 @@ export const restaurants: Restaurant[] = [
     detailsBanner:
       'https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=1000,height=300,format=auto,quality=80/https://doordash-static.s3.amazonaws.com/media/store/header/64ca3ed3-5e49-4a8a-a3b5-01d21821e12d.jpg',
     rating: 4.8,
-    reviews: '(200+)',
+    reviews: '200+',
     distance: '0.4 mi',
     time: '21 min',
     deliveryFee: '$​0 delivery fee',
@@ -1601,7 +1601,7 @@ export const restaurants: Restaurant[] = [
     detailsBanner:
       'https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=1000,height=300,format=auto,quality=80/https://doordash-static.s3.amazonaws.com/media/store/header/fcb350f4-3484-4376-b923-8f399aa0fda9.3',
     rating: 4.8,
-    reviews: '(200+)',
+    reviews: '200+',
     distance: '700 ft',
     time: '15 min',
     deliveryFee: '$​0 delivery fee',
@@ -1626,7 +1626,7 @@ export const restaurants: Restaurant[] = [
     detailsBanner:
       'https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=1000,height=300,format=auto,quality=80/https://doordash-static.s3.amazonaws.com/media/store/header/5c9c5e25-a382-44ed-8048-093aa8a4038e.jpg',
     rating: 4.8,
-    reviews: '(50+)',
+    reviews: '50+',
     distance: '0.9 mi',
     time: '26 min',
     deliveryFee: '$​0 delivery fee',
@@ -1651,7 +1651,7 @@ export const restaurants: Restaurant[] = [
     detailsBanner:
       'https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=1000,height=300,format=auto,quality=80/https://doordash-static.s3.amazonaws.com/media/store/header/5c8c1ac0-6f3f-4737-8692-8a6e94fd1a21.jpg',
     rating: 4.8,
-    reviews: '(20+)',
+    reviews: '20+',
     distance: '0.8 mi',
     time: '30 min',
     deliveryFee: '$​0 delivery fee',
@@ -1675,7 +1675,7 @@ export const restaurants: Restaurant[] = [
       'https://img.cdn4dd.com/p/fit=cover,width=1200,format=auto,quality=50/media/photosV2/6240b2db-25e3-4b8f-b62f-547184e6e311-retina-large.png',
     detailsBanner: '',
     rating: 4.7,
-    reviews: '(200+)',
+    reviews: '200+',
     distance: '8.7 mi',
     time: '45 min',
     deliveryFee: '$​0 delivery fee',
@@ -1700,7 +1700,7 @@ export const restaurants: Restaurant[] = [
     detailsBanner:
       'https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=1000,height=300,format=auto,quality=80/https://doordash-static.s3.amazonaws.com/media/store/header/f6a18ee3-60b3-474f-b7f3-b1fd96a697f5.png',
     rating: 3.9,
-    reviews: '(10+)',
+    reviews: '10+',
     distance: '0.6 mi',
     time: '58 min',
     deliveryFee: '$​0 delivery fee',
@@ -1725,7 +1725,7 @@ export const restaurants: Restaurant[] = [
     detailsBanner:
       'https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=1000,height=300,format=auto,quality=80/https://doordash-static.s3.amazonaws.com/media/store/header/4240dbc0-2bb7-4e46-a2aa-a2f8efed716e.jpeg',
     rating: 4.3,
-    reviews: '(20+)',
+    reviews: '20+',
     distance: '3.7 mi',
     time: '43 min',
     deliveryFee: '$​0 delivery fee',
@@ -1750,7 +1750,7 @@ export const restaurants: Restaurant[] = [
     detailsBanner:
       'https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=1000,height=300,format=auto,quality=80/https://doordash-static.s3.amazonaws.com/media/store/header/710d0c2e-308e-4d56-961b-7314a425a0b6.jpeg',
     rating: 4.6,
-    reviews: '(100+)',
+    reviews: '100+',
     distance: '1.2 mi',
     time: '39 min',
     deliveryFee: '$​0 delivery fee',
@@ -1775,7 +1775,7 @@ export const restaurants: Restaurant[] = [
     detailsBanner:
       'https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=1000,height=300,format=auto,quality=80/https://doordash-static.s3.amazonaws.com/media/store/header/f0cc32be-55a2-46c6-8d21-08c26788e138.jpg',
     rating: 4.5,
-    reviews: '(10+)',
+    reviews: '10+',
     distance: '1.0 mi',
     time: '30 min',
     deliveryFee: '$​0 delivery fee',
@@ -1800,7 +1800,7 @@ export const restaurants: Restaurant[] = [
     detailsBanner:
       'https://img.cdn4dd.com/cdn-cgi/image/fit=cover,width=1000,height=300,format=auto,quality=80/https://doordash-static.s3.amazonaws.com/media/store/header/17f218b8-c50d-4665-b825-d92775c49fab.png',
     rating: 4,
-    reviews: '(20+)',
+    reviews: '20+',
     distance: '3.2 mi',
     time: '27 min',
     deliveryFee: '$​0 delivery fee',

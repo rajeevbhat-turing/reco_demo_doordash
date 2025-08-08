@@ -58,7 +58,7 @@ export function CartProvider({
       if (category === "restaurant" && storeId) {
         cartStore.addItem({
           id: product.id,
-          name: product.name,
+          itemName: product.name,
           price: product.price,
           image: product.image,
           restaurantId: storeId,
@@ -66,7 +66,7 @@ export function CartProvider({
       } else if (storeId) {
         cartStore.addItem({
           id: product.id,
-          name: product.name,
+          itemName: product.name,
           price: product.price,
           image: product.image,
           storeId: storeId,
@@ -75,7 +75,7 @@ export function CartProvider({
         // Default case - just add the product without store ID
         cartStore.addItem({
           id: product.id,
-          name: product.name,
+          itemName: product.name,
           price: product.price,
           image: product.image,
         }, category)
@@ -88,7 +88,7 @@ export function CartProvider({
     subtotal: cartStore.getSubtotal(),
     serviceFee: cartStore.getServiceFee(),
     deliveryFee: cartStore.getDeliveryFee(),
-    total: cartStore.getTotal(),
+    total: cartStore.getSubtotal(), // For cart display, only show subtotal
   }
   
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>
