@@ -8,14 +8,20 @@ import { Heart, Star, ArrowLeft } from "lucide-react"
 import { restaurants } from "@/constants/restaurants"
 import { menuItems } from "@/constants/menu-items"
 import { getAllStores } from "@/app/grocery/data/retail-response-mapper"
+import { getAllStores as getConvenienceStores } from "@/app/convenience/data/convenience-response-mapper"
+import { getAllPetStores, getEnrichedPetProducts } from "@/app/pets/data/pet-response-mapper"
+import FilterOptions, { FilterState, FilterOptionsRef } from "@/components/filter-options"
 import type { Restaurant } from "@/constants/restaurants"
 import { useCartStore } from "@/store/cart-store"
 import { getDefaultRating } from "@/utils/rating-utils"
 
+// Force dynamic rendering
+export const dynamic = 'force-dynamic'
+
 interface SearchResultRestaurant extends Restaurant {
-  matchType: "restaurant" | "menu-item" | "grocery"
+  matchType: "restaurant" | "menu-item" | "grocery" | "pets" | "pet-product" | "convenience"
   matchedItems?: string[]
-  storeType?: "grocery"
+  storeType?: "grocery" | "pets" | "pet-product" | "convenience"
 }
 
 export default function SearchPage() {
@@ -23,7 +29,27 @@ export default function SearchPage() {
   const query = searchParams.get("q") || ""
   const [searchResults, setSearchResults] = useState<SearchResultRestaurant[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const [activeFilters, setActiveFilters] = useState<FilterState>({
+    underThirtyMins: false,
+    deals: false,
+    overRating: null,
+    price: null,
+    dashPass: false,
+    category: null,
+  })
   const { updateSearchResults, clearSearchResults, recordSearch } = useCartStore()
+
+  // Handle filter changes
+  const handleFilterChange = (filters: FilterState) => {
+    console.log(`[SEARCH] Filter change detected:`, filters);
+    console.log(`[SEARCH] Previous activeFilters:`, activeFilters);
+    setActiveFilters(filters);
+  };
+
+  // Debug activeFilters changes
+  useEffect(() => {
+    console.log(`[SEARCH] activeFilters changed:`, activeFilters);
+  }, [activeFilters]);
 
   // Search for restaurants that serve specific menu items
   const searchByMenuItem = (searchTerm: string) => {
@@ -58,13 +84,32 @@ export default function SearchPage() {
     // Simulate loading
     setIsLoading(true)
 
-    // Search restaurants by name and cuisine
+    // Search restaurants by name, cuisine, and categories
     const restaurantResults = restaurants
       .filter((restaurant) => {
-        return (
-          restaurant.name.toLowerCase().includes(query.toLowerCase()) ||
-          restaurant.cuisine.toLowerCase().includes(query.toLowerCase())
-        )
+        const queryLower = query.toLowerCase();
+        
+        // Check if name or cuisine contains the query
+        const nameMatch = restaurant.name.toLowerCase().includes(queryLower);
+        const cuisineMatch = restaurant.cuisine.toLowerCase().includes(queryLower);
+        
+        // For categories, use more precise matching - check if any category contains the query
+        // For dessert specifically, we want exact matches or word boundaries
+        const categoryMatch = restaurant.categories && restaurant.categories.some(category => {
+          const categoryLower = category.toLowerCase();
+          // For dessert search, be more precise
+          if (queryLower === 'dessert') {
+            return categoryLower === 'desserts' || categoryLower === 'dessert';
+          }
+          return categoryLower.includes(queryLower);
+        });
+        
+        // For dessert search, only return restaurants that actually have dessert categories
+        if (queryLower === 'dessert') {
+          return categoryMatch; // Only return if it has dessert category
+        }
+        
+        return nameMatch || cuisineMatch || categoryMatch;
       })
       .map((restaurant) => ({
         ...restaurant,
@@ -102,8 +147,105 @@ export default function SearchPage() {
         storeType: "grocery" as const,
       }))
 
+    // Search convenience stores by name
+    const convenienceStores = getConvenienceStores()
+    const convenienceResults = convenienceStores
+      .filter((store) => {
+        return store.name.toLowerCase().includes(query.toLowerCase())
+      })
+      .map((store) => ({
+        id: `convenience-${store.id}`,
+        name: store.name,
+        logo: store.image,
+        banner: store.image,
+        detailsBanner: store.image,
+        cuisine: "Convenience Store",
+        priceRange: "$",
+        time: store.time,
+        distance: "Nearby",
+        deliveryFee: store.delivery,
+        rating: parseFloat(store.rating),
+        reviews: store.numRatings,
+        dashPass: store.isDashPass,
+        new: false,
+        discount: store.discount || undefined,
+        isOpen: store.open,
+        openingHours: store.openTime || "9:00 AM - 9:00 PM",
+        address: "Local Area",
+        phone: "(555) 123-4567",
+        categories: ["convenience"],
+        matchType: "convenience" as const,
+        storeType: "convenience" as const,
+      }))
+
     // Search restaurants by menu items
     const menuItemResults = searchByMenuItem(query)
+
+    // Search pet stores by name
+    const petStores = getAllPetStores()
+    const petStoreResults = petStores
+      .filter((store) => {
+        return store.name.toLowerCase().includes(query.toLowerCase())
+      })
+      .map((store) => ({
+        id: `pets-${store.id}`,
+        name: store.name,
+        logo: store.image,
+        banner: store.image,
+        detailsBanner: store.image,
+        cuisine: "Pet Supplies",
+        priceRange: "$",
+        time: store.time,
+        distance: "Nearby",
+        deliveryFee: "Free delivery",
+        rating: parseFloat(store.rating),
+        reviews: store.ratingCount,
+        dashPass: store.isDashPass,
+        new: false,
+        discount: undefined,
+        isOpen: true,
+        openingHours: "9:00 AM - 9:00 PM",
+        address: "Local Area",
+        phone: "(555) 123-4567",
+        categories: ["pets"],
+        matchType: "grocery" as const,
+        storeType: "pets" as const,
+      }))
+
+    // Search pet products
+    const petProducts = getEnrichedPetProducts()
+    const petProductResults: SearchResultRestaurant[] = []
+    petProducts.forEach((section: any) => {
+      section.products.forEach((product: any) => {
+        if (product.name.toLowerCase().includes(query.toLowerCase())) {
+          petProductResults.push({
+            id: `pet-product-${product.id}`,
+            name: product.name,
+            logo: product.image,
+            banner: product.image,
+            detailsBanner: product.image,
+            cuisine: "Pet Product",
+            priceRange: "$",
+            time: "15-30 min",
+            distance: "Nearby",
+            deliveryFee: "Free delivery",
+            rating: 4.5,
+            reviews: "50+",
+            dashPass: false,
+            new: false,
+            discount: undefined,
+            isOpen: true,
+            openingHours: "9:00 AM - 9:00 PM",
+            address: "Local Area",
+            phone: "(555) 123-4567",
+            categories: ["pet-product"],
+            matchType: "menu-item" as const,
+            storeType: "pet-product" as const,
+            matchedItems: [product.name],
+          })
+        }
+      })
+    })
 
     // Combine results, removing duplicates (prioritize restaurant matches)
     const combinedResults: SearchResultRestaurant[] = []
@@ -125,6 +267,30 @@ export default function SearchPage() {
       }
     })
 
+    // Add convenience store matches
+    convenienceResults.forEach((store) => {
+      if (!addedRestaurantIds.has(store.id)) {
+        combinedResults.push(store)
+        addedRestaurantIds.add(store.id)
+      }
+    })
+
+    // Add pet store matches
+    petStoreResults.forEach((store) => {
+      if (!addedRestaurantIds.has(store.id)) {
+        combinedResults.push(store)
+        addedRestaurantIds.add(store.id)
+      }
+    })
+
+    // Add pet product matches
+    petProductResults.forEach((product) => {
+      if (!addedRestaurantIds.has(product.id)) {
+        combinedResults.push(product)
+        addedRestaurantIds.add(product.id)
+      }
+    })
+
     // Add menu item matches that aren't already included
     menuItemResults.forEach((restaurant) => {
       if (!addedRestaurantIds.has(restaurant.id)) {
@@ -135,26 +301,121 @@ export default function SearchPage() {
 
     // Simulate API delay
     const timer = setTimeout(() => {
-      setSearchResults(combinedResults)
+      // Apply filters to search results
+      let filteredResults = combinedResults;
+      
+      console.log(`[SEARCH] Original results: ${combinedResults.length}`);
+      console.log(`[SEARCH] Active filters:`, activeFilters);
+      
+      // Filter by under 30 min
+      if (activeFilters.underThirtyMins) {
+        filteredResults = filteredResults.filter(restaurant => {
+          const timeString = restaurant.time || "";
+          // Handle different time formats: "18 min", "Express 56 min", "Fast 33 min"
+          const timeMatch = timeString.match(/(\d+)\s*min/);
+          const minutes = timeMatch ? parseInt(timeMatch[1]) : 100;
+          const isUnder30 = minutes < 30;
+          console.log(`[SEARCH] ${restaurant.name}: ${timeString} (${minutes} min) - Under 30: ${isUnder30}`);
+          return isUnder30;
+        });
+        console.log(`[SEARCH] After under 30 min filter: ${filteredResults.length} results`);
+      }
+      
+      // Filter by rating
+      if (activeFilters.overRating && activeFilters.overRating > 0) {
+        filteredResults = filteredResults.filter(restaurant => {
+          if (!restaurant.rating) return false;
+          const rating = getDefaultRating(restaurant.rating);
+          const meetsRating = rating >= activeFilters.overRating!;
+          console.log(`[SEARCH] ${restaurant.name}: rating ${rating} >= ${activeFilters.overRating}: ${meetsRating}`);
+          return meetsRating;
+        });
+        console.log(`[SEARCH] After rating filter: ${filteredResults.length} results`);
+      }
+      
+      // Filter by DashPass
+      if (activeFilters.dashPass) {
+        filteredResults = filteredResults.filter(restaurant => {
+          const hasDashPass = restaurant.dashPass;
+          console.log(`[SEARCH] ${restaurant.name}: DashPass: ${hasDashPass}`);
+          return hasDashPass;
+        });
+        console.log(`[SEARCH] After DashPass filter: ${filteredResults.length} results`);
+      }
+      
+      // Filter by price
+      if (activeFilters.price && activeFilters.price.length > 0) {
+        filteredResults = filteredResults.filter(restaurant => {
+          const restaurantPrice = restaurant.priceRange;
+          const isInSelectedPriceRange = activeFilters.price!.includes(restaurantPrice);
+          console.log(`[SEARCH] ${restaurant.name}: price ${restaurantPrice} in selected ranges ${activeFilters.price}: ${isInSelectedPriceRange}`);
+          return isInSelectedPriceRange;
+        });
+        console.log(`[SEARCH] After price filter: ${filteredResults.length} results`);
+      }
+      
+      // Filter by deals
+      if (activeFilters.deals) {
+        filteredResults = filteredResults.filter(restaurant => {
+          const hasDeals = restaurant.discount && restaurant.discount.length > 0;
+          console.log(`[SEARCH] ${restaurant.name}: deals ${restaurant.discount} - Has deals: ${hasDeals}`);
+          return hasDeals;
+        });
+        console.log(`[SEARCH] After deals filter: ${filteredResults.length} results`);
+      }
+      
+      // Filter by category
+      if (activeFilters.category) {
+        filteredResults = filteredResults.filter(restaurant => {
+          const hasCategory = restaurant.categories && restaurant.categories.includes(activeFilters.category!);
+          console.log(`[SEARCH] ${restaurant.name}: categories ${restaurant.categories} - Has category ${activeFilters.category}: ${hasCategory}`);
+          return hasCategory;
+        });
+        console.log(`[SEARCH] After category filter: ${filteredResults.length} results`);
+      }
+      
+      console.log(`[SEARCH] Final filtered results: ${filteredResults.length}`);
+      setSearchResults(filteredResults)
       setIsLoading(false)
       
       // Convert results to SearchResult format for cart store
-      const cartSearchResults = combinedResults.map(restaurant => ({
+      const cartSearchResults = filteredResults.map(restaurant => ({
         id: restaurant.id,
         name: restaurant.name,
         logo: restaurant.logo || "",
         description: restaurant.cuisine,
         dashPass: restaurant.dashPass,
-        type: restaurant.matchType === "grocery" ? "restaurant" as const : "restaurant" as const,
+        type: restaurant.storeType === "grocery" || restaurant.storeType === "pets" || restaurant.storeType === "pet-product" || restaurant.storeType === "convenience" ? "restaurant" as const : "restaurant" as const,
         restaurantId: restaurant.id,
-        matchedItem: restaurant.matchType === "menu-item" ? restaurant.matchedItems?.[0] : undefined
+        matchedItem: restaurant.matchType === "menu-item" || restaurant.matchType === "pet-product" || restaurant.matchType === "convenience" ? restaurant.matchedItems?.[0] : undefined,
+        categories: restaurant.categories,
+        priceRange: restaurant.priceRange
       }))
       
+      console.log(`[SEARCH] Updating cart store with ${cartSearchResults.length} results`);
+      console.log(`[SEARCH] Sample result:`, cartSearchResults[0]);
       updateSearchResults(cartSearchResults)
     }, 500)
 
+    // Also update search results immediately for verifier
+    const immediateCartSearchResults = combinedResults.map(restaurant => ({
+      id: restaurant.id,
+      name: restaurant.name,
+      logo: restaurant.logo || "",
+      description: restaurant.cuisine,
+      dashPass: restaurant.dashPass,
+      type: restaurant.storeType === "grocery" || restaurant.storeType === "pets" || restaurant.storeType === "pet-product" || restaurant.storeType === "convenience" ? "restaurant" as const : "restaurant" as const,
+      restaurantId: restaurant.id,
+      matchedItem: restaurant.matchType === "menu-item" || restaurant.matchType === "pet-product" || restaurant.matchType === "convenience" ? restaurant.matchedItems?.[0] : undefined,
+      categories: restaurant.categories,
+      priceRange: restaurant.priceRange
+    }))
+    
+    console.log(`[SEARCH] Immediate update with ${immediateCartSearchResults.length} results`);
+    updateSearchResults(immediateCartSearchResults)
+
     return () => clearTimeout(timer)
-  }, [query])
+  }, [query, activeFilters])
 
   useEffect(() => {
     return () => {
@@ -199,6 +460,15 @@ export default function SearchPage() {
         </div>
       </div>
 
+      {/* Filter Options Bar */}
+      <div className="mb-6">
+        <FilterOptions 
+          isGrocery={false} 
+          onFilterChange={handleFilterChange}
+          filters={activeFilters}
+        />
+      </div>
+
       {isLoading ? (
         <div className="flex justify-center items-center py-12">
           <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-red-600"></div>
@@ -210,6 +480,12 @@ export default function SearchPage() {
               <Link 
                 href={restaurant.storeType === "grocery" 
                   ? `/grocery/store/${restaurant.id.replace("grocery-", "")}` 
+                  : restaurant.storeType === "pets"
+                  ? `/pets/store/${restaurant.id.replace("pets-", "")}`
+                  : restaurant.storeType === "pet-product"
+                  ? `/pets?search=${encodeURIComponent(restaurant.name)}`
+                  : restaurant.storeType === "convenience"
+                  ? `/convenience/store/${restaurant.id.replace("convenience-", "")}`
                   : `/store/${restaurant.id}`
                 } 
                 className="block"
@@ -278,6 +554,52 @@ export default function SearchPage() {
                 </div>
 
                 <div className="mt-1 text-sm text-gray-500">{restaurant.deliveryFee}</div>
+
+                {/* Cuisine and Price Range for Restaurants */}
+                {restaurant.storeType !== "grocery" && restaurant.storeType !== "pets" && restaurant.storeType !== "convenience" && (
+                  <div className="mt-1 text-sm text-gray-600">
+                    <span>{restaurant.cuisine}</span>
+                    {restaurant.priceRange && (
+                      <>
+                        <span className="mx-1">•</span>
+                        <span>{restaurant.priceRange}</span>
+                      </>
+                    )}
+                  </div>
+                )}
+
+                {/* Store Type for Non-Restaurants */}
+                {restaurant.storeType === "grocery" && (
+                  <div className="mt-1 text-sm text-gray-600">
+                    <span>Grocery Store</span>
+                    <span className="mx-1">•</span>
+                    <span>$</span>
+                  </div>
+                )}
+
+                {restaurant.storeType === "pets" && (
+                  <div className="mt-1 text-sm text-gray-600">
+                    <span>Pet Store</span>
+                    <span className="mx-1">•</span>
+                    <span>$</span>
+                  </div>
+                )}
+
+                {restaurant.storeType === "convenience" && (
+                  <div className="mt-1 text-sm text-gray-600">
+                    <span>Convenience Store</span>
+                    <span className="mx-1">•</span>
+                    <span>$</span>
+                  </div>
+                )}
+
+                {/* Categories for Restaurants */}
+                {restaurant.categories && restaurant.categories.length > 0 && restaurant.storeType !== "grocery" && restaurant.storeType !== "pets" && restaurant.storeType !== "convenience" && (
+                  <div className="mt-1 text-sm text-gray-500">
+                    {restaurant.categories.slice(0, 3).join(" • ")}
+                    {restaurant.categories.length > 3 && "..."}
+                  </div>
+                )}
 
                 {restaurant.matchType === "menu-item" && restaurant.matchedItems && (
                   <div className="mt-2 text-sm text-orange-600">

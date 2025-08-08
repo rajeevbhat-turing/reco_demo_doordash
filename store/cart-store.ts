@@ -31,6 +31,8 @@ export interface SearchResult {
   type: "restaurant" | "menu-item"
   restaurantId?: string
   matchedItem?: string
+  categories?: string[]
+  priceRange?: string
 }
 
 // Category-specific configurations
