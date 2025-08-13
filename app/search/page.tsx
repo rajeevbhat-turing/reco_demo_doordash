@@ -10,6 +10,8 @@ import { menuItems } from "@/constants/menu-items"
 import { getAllStores } from "@/app/grocery/data/retail-response-mapper"
 import { getAllStores as getConvenienceStores } from "@/app/convenience/data/convenience-response-mapper"
 import { getAllPetStores, getEnrichedPetProducts } from "@/app/pets/data/pet-response-mapper"
+import { convenienceData } from "@/data/convenience-data"
+import { stores as retailStores } from "@/constants/store"
 import FilterOptions, { FilterState, FilterOptionsRef } from "@/components/filter-options"
 import type { Restaurant } from "@/constants/restaurants"
 import { useCartStore } from "@/store/cart-store"
@@ -217,7 +219,12 @@ export default function SearchPage() {
     const petProductResults: SearchResultRestaurant[] = []
     petProducts.forEach((section: any) => {
       section.products.forEach((product: any) => {
-        if (product.name.toLowerCase().includes(query.toLowerCase())) {
+        // Improved search: check if all words in query are present in product name
+        const queryWords = query.toLowerCase().split(' ').filter(word => word.length > 0)
+        const productName = product.name.toLowerCase()
+        const allWordsMatch = queryWords.every(word => productName.includes(word))
+        
+        if (allWordsMatch) {
           petProductResults.push({
             id: `pet-product-${product.id}`,
             name: product.name,
@@ -245,6 +252,90 @@ export default function SearchPage() {
           })
         }
       })
+    })
+
+    // Search convenience store products
+    const convenienceProductResults: SearchResultRestaurant[] = []
+    Object.values(convenienceData).forEach((storeProducts: any) => {
+      storeProducts.forEach((section: any) => {
+        section.products.forEach((product: any) => {
+          // Improved search: check if all words in query are present in product name
+          const queryWords = query.toLowerCase().split(' ').filter(word => word.length > 0)
+          const productName = product.name.toLowerCase()
+          const allWordsMatch = queryWords.every(word => productName.includes(word))
+          
+          if (allWordsMatch) {
+            convenienceProductResults.push({
+              id: `convenience-product-${product.id}`,
+              name: product.name,
+              logo: product.image,
+              banner: product.image,
+              detailsBanner: product.image,
+              cuisine: "Convenience Product",
+              priceRange: "$",
+              time: "10-25 min",
+              distance: "Nearby",
+              deliveryFee: "Free delivery",
+              rating: 4.3,
+              reviews: "100+",
+              dashPass: false,
+              new: false,
+              discount: undefined,
+              isOpen: true,
+              openingHours: "24 hours",
+              address: "Local Area",
+              phone: "(555) 123-4567",
+              categories: ["convenience"],
+              matchType: "menu-item" as const,
+              storeType: "convenience" as const,
+              matchedItems: [product.name],
+            })
+          }
+        })
+      })
+    })
+
+    // Search retail store products
+    const retailProductResults: SearchResultRestaurant[] = []
+    retailStores.forEach((store: any) => {
+      if (store.items) {
+        store.items.forEach((section: any) => {
+          section.products.forEach((product: any) => {
+            // Improved search: check if all words in query are present in product name
+            const queryWords = query.toLowerCase().split(' ').filter(word => word.length > 0)
+            const productName = product.name.toLowerCase()
+            const allWordsMatch = queryWords.every(word => productName.includes(word))
+            
+            if (allWordsMatch) {
+              retailProductResults.push({
+                id: `retail-product-${product.id}`,
+                name: product.name,
+                logo: product.image,
+                banner: product.image,
+                detailsBanner: product.image,
+                cuisine: "Retail Product",
+                priceRange: "$",
+                time: "30-45 min",
+                distance: "Nearby",
+                deliveryFee: "Free delivery",
+                rating: 4.4,
+                reviews: "200+",
+                dashPass: false,
+                new: false,
+                discount: undefined,
+                isOpen: true,
+                openingHours: "9:00 AM - 9:00 PM",
+                address: "Local Area",
+                phone: "(555) 123-4567",
+                categories: ["retail"],
+                matchType: "menu-item" as const,
+                storeType: "convenience" as const,
+                matchedItems: [product.name],
+              })
+            }
+          })
+        })
+      }
     })
 
     // Combine results, removing duplicates (prioritize restaurant matches)
@@ -285,6 +376,22 @@ export default function SearchPage() {
 
     // Add pet product matches
     petProductResults.forEach((product) => {
+      if (!addedRestaurantIds.has(product.id)) {
+        combinedResults.push(product)
+        addedRestaurantIds.add(product.id)
+      }
+    })
+
+    // Add convenience product matches
+    convenienceProductResults.forEach((product) => {
+      if (!addedRestaurantIds.has(product.id)) {
+        combinedResults.push(product)
+        addedRestaurantIds.add(product.id)
+      }
+    })
+
+    // Add retail product matches
+    retailProductResults.forEach((product) => {
       if (!addedRestaurantIds.has(product.id)) {
         combinedResults.push(product)
         addedRestaurantIds.add(product.id)
