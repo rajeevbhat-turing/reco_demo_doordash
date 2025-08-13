@@ -13,6 +13,7 @@ import type { Restaurant } from "@/constants/restaurants"
 import { CartProvider } from "@/context/cart-context"
 import { useCartStore } from "@/store/cart-store"
 import { getDefaultRating } from "@/utils/rating-utils"
+import { filterRestaurantsWithMenuItems } from "@/utils/restaurant-utils"
 
 export default function Home() {
   const [filters, setFilters] = useState<FilterState>({
@@ -63,9 +64,9 @@ export default function Home() {
     window.scrollTo({ top: 0, behavior: "smooth" })
   }
 
-  // Get only actual restaurants (filter out stores like Target, flower shops)
+  // Get only actual restaurants (filter out stores like Target, flower shops) and those with menu items
   const actualRestaurants = useMemo(() => {
-    return withDefaultRatings(filterOnlyRestaurants(restaurants));
+    return withDefaultRatings(filterRestaurantsWithMenuItems(filterOnlyRestaurants(restaurants)));
   }, []);
 
   // Memoize the original restaurant sections to prevent recreating them on every render

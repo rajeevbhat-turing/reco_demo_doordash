@@ -13,6 +13,7 @@ import { getAllStores as getConvenienceStores } from "@/app/convenience/data/con
 import { getAllPetStores, getEnrichedPetProducts } from "@/app/pets/data/pet-response-mapper"
 import { convenienceData } from "@/data/convenience-data"
 import { stores as retailStores } from "@/constants/store"
+import { filterRestaurantsWithMenuItems } from "@/utils/restaurant-utils"
 import { useCartStore } from "@/store/cart-store"
 
 interface SearchResult {
@@ -87,8 +88,11 @@ const SearchBar = () => {
 
     const restaurantMatches = new Map<string, { restaurant: any; items: string[] }>()
 
+    // Only consider restaurants that have menu items
+    const restaurantsWithMenus = filterRestaurantsWithMenuItems(restaurants);
+    
     matchingItems.forEach((item) => {
-      const restaurant = restaurants.find((r) => r.id === item.restaurantId)
+      const restaurant = restaurantsWithMenus.find((r) => r.id === item.restaurantId)
       if (restaurant) {
         if (!restaurantMatches.has(restaurant.id)) {
           restaurantMatches.set(restaurant.id, { restaurant, items: [] })
@@ -117,8 +121,8 @@ const SearchBar = () => {
     setSearchTerm(value)
 
     if (value.trim()) {
-      // Search restaurants by name and cuisine
-      const restaurantResults = restaurants
+      // Search restaurants by name and cuisine - only include restaurants with menu items
+      const restaurantResults = filterRestaurantsWithMenuItems(restaurants)
         .filter((restaurant) => {
           return (
             restaurant.name.toLowerCase().includes(value.toLowerCase()) ||

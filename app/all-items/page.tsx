@@ -11,6 +11,7 @@ import {
 import { convenienceStores } from "@/data/convenience-store-data"
 import { Suspense } from "react"
 import { getDefaultRating } from "@/utils/rating-utils"
+import { filterRestaurantsWithMenuItems } from "@/utils/restaurant-utils"
 
 // Inner component that uses searchParams
 function AllItemsContent() {
@@ -35,26 +36,29 @@ function AllItemsContent() {
     // Restaurant items
     if (type === 'restaurant') {
       let filteredRestaurants: any[] = []
+      // First filter restaurants to only include those with menu items
+      const restaurantsWithMenus = filterRestaurantsWithMenuItems(restaurants);
+      
       switch (section) {
         case 'national-favourites':
-          filteredRestaurants = restaurants.filter(r => r.featured === true && hasValidLogo(r.logo))
+          filteredRestaurants = restaurantsWithMenus.filter(r => r.featured === true && hasValidLogo(r.logo))
           break
         case 'fastest-near-you':
-          filteredRestaurants = restaurants.filter(r => {
+          filteredRestaurants = restaurantsWithMenus.filter(r => {
             const timeStr = r.time
             const minutes = parseInt(timeStr.match(/\d+/)?.[0] || "100")
             return minutes < 30 && hasValidLogo(r.logo)
           })
           break
         case 'deals-for-you':
-          filteredRestaurants = restaurants.filter(r => r.discount && hasValidLogo(r.logo))
+          filteredRestaurants = restaurantsWithMenus.filter(r => r.discount && hasValidLogo(r.logo))
           break
         case 'new-on-doordash':
-          filteredRestaurants = restaurants.filter(r => r.new && hasValidLogo(r.logo))
+          filteredRestaurants = restaurantsWithMenus.filter(r => r.new && hasValidLogo(r.logo))
           break
         case 'all-stores':
         default:
-          filteredRestaurants = restaurants // Don't filter the "all-stores" section
+          filteredRestaurants = restaurantsWithMenus // Filter "all-stores" section too
       }
       
       // Convert restaurants to ListItem format

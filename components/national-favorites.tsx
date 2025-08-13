@@ -6,17 +6,20 @@ import Link from "next/link"
 import { Heart, Star } from "lucide-react"
 import { restaurants } from "@/constants/restaurants"
 import type { FilterState } from "@/components/filter-options"
+import { filterRestaurantsWithMenuItems } from "@/utils/restaurant-utils"
 
 interface NationalFavoritesProps {
   activeFilters: FilterState
 }
 
 export default function NationalFavorites({ activeFilters }: NationalFavoritesProps) {
-  const [filteredRestaurants, setFilteredRestaurants] = useState(restaurants)
-  const [resultsCount, setResultsCount] = useState(restaurants.length)
+  // Only include restaurants with menu items
+  const restaurantsWithMenus = filterRestaurantsWithMenuItems(restaurants);
+  const [filteredRestaurants, setFilteredRestaurants] = useState(restaurantsWithMenus)
+  const [resultsCount, setResultsCount] = useState(restaurantsWithMenus.length)
 
   useEffect(() => {
-    let filteredRestaurants = [...restaurants]
+    let filteredRestaurants = [...restaurantsWithMenus]
 
     // Apply filters
     if (activeFilters.underThirtyMins) {

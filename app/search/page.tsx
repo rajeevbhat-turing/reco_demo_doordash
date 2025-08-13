@@ -16,6 +16,7 @@ import FilterOptions, { FilterState, FilterOptionsRef } from "@/components/filte
 import type { Restaurant } from "@/constants/restaurants"
 import { useCartStore } from "@/store/cart-store"
 import { getDefaultRating } from "@/utils/rating-utils"
+import { filterRestaurantsWithMenuItems } from "@/utils/restaurant-utils"
 
 // Force dynamic rendering
 export const dynamic = 'force-dynamic'
@@ -65,8 +66,11 @@ export default function SearchPage() {
 
     const restaurantMatches = new Map<string, { restaurant: Restaurant; items: string[] }>()
 
+    // Only consider restaurants that have menu items
+    const restaurantsWithMenus = filterRestaurantsWithMenuItems(restaurants);
+    
     matchingItems.forEach((item) => {
-      const restaurant = restaurants.find((r) => r.id === item.restaurantId)
+      const restaurant = restaurantsWithMenus.find((r) => r.id === item.restaurantId)
       if (restaurant) {
         if (!restaurantMatches.has(restaurant.id)) {
           restaurantMatches.set(restaurant.id, { restaurant, items: [] })
@@ -86,8 +90,8 @@ export default function SearchPage() {
     // Simulate loading
     setIsLoading(true)
 
-    // Search restaurants by name, cuisine, and categories
-    const restaurantResults = restaurants
+    // Search restaurants by name, cuisine, and categories - only include restaurants with menu items
+    const restaurantResults = filterRestaurantsWithMenuItems(restaurants)
       .filter((restaurant) => {
         const queryLower = query.toLowerCase();
         
