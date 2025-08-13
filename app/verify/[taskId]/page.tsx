@@ -289,31 +289,17 @@ export default function VerifyTaskPage() {
             </div>
           )}
 
-          {/* Description */}
-          {result?.description && (
-            <div className="mt-6">
-              <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
-              <div className="text-sm bg-white text-gray-800 p-3 rounded border">
-                {result.description}
-              </div>
-            </div>
-          )}
+
         </div>
 
         {/* Additional Actions */}
-        <div className="mt-6 flex justify-center space-x-4">
+        <div className="mt-6 flex justify-center">
           <button
             onClick={() => executeVerification()}
             disabled={isRunning}
             className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             {isRunning ? 'Running...' : 'Run Again'}
-          </button>
-          <button
-            onClick={() => router.push('/verify')}
-            className="px-6 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
-          >
-            Go to Manual Verify
           </button>
         </div>
       </div>
