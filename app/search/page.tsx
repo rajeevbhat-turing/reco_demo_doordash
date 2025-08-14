@@ -18,6 +18,7 @@ import type { Restaurant } from "@/constants/restaurants"
 import { useCartStore } from "@/store/cart-store"
 import { getDefaultRating } from "@/utils/rating-utils"
 import { filterRestaurantsWithMenuItems } from "@/utils/restaurant-utils"
+import { useReplaceCart } from "@/context/replace-cart-context"
 
 // Force dynamic rendering
 export const dynamic = 'force-dynamic'
@@ -33,6 +34,7 @@ export default function SearchPage() {
   const query = searchParams.get("q") || ""
   const [searchResults, setSearchResults] = useState<SearchResultRestaurant[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const { addItemWithConflictCheck } = useReplaceCart()
   const [activeFilters, setActiveFilters] = useState<FilterState>({
     underThirtyMins: false,
     deals: false,
@@ -811,23 +813,22 @@ export default function SearchPage() {
                             storeId = product.cuisine?.toLowerCase().replace(/\s+/g, '-') || "retail-store"
                           }
                           
-                          // Add to cart using the cart store
-                          const cartStore = useCartStore.getState()
-                          cartStore.setCategory(category)
-                          
                           // Parse price
                           const price = typeof product.priceRange === 'string' 
                             ? parseFloat(product.priceRange.replace(/[^0-9.]/g, '')) || 0
                             : product.priceRange || 0
                           
-                          // Add item to cart with the store name as the third parameter
-                          cartStore.addItem({
+                          const newItem = {
                             id: product.id,
                             itemName: product.name,
                             price: price,
                             image: product.logo || product.banner || '/placeholder.svg',
                             storeId: storeId,
-                          }, category, product.cuisine) // Pass the store name (cuisine) as the third parameter
+                            storeName: product.cuisine, // Pass the store name
+                          }
+                          
+                          // Use the replace cart context to handle conflicts automatically
+                          addItemWithConflictCheck(newItem, category)
                           
                           console.log('Added to cart:', product.name, 'from', product.cuisine)
                         }}
