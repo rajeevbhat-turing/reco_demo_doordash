@@ -4,14 +4,15 @@ import { useEffect, useState } from "react"
 import { useSearchParams } from "next/navigation"
 import Image from "next/image"
 import Link from "next/link"
-import { Heart, Star, ArrowLeft } from "lucide-react"
+import { Heart, Star, ArrowLeft, ShoppingCart } from "lucide-react"
 import { restaurants } from "@/constants/restaurants"
 import { menuItems } from "@/constants/menu-items"
 import { getAllStores } from "@/app/grocery/data/retail-response-mapper"
-import { getAllStores as getConvenienceStores } from "@/app/convenience/data/convenience-response-mapper"
+import { getAllStores as getConvenienceStores, getProductCarouselData } from "@/app/convenience/data/convenience-response-mapper"
 import { getAllPetStores, getEnrichedPetProducts } from "@/app/pets/data/pet-response-mapper"
 import { convenienceData } from "@/data/convenience-data"
 import { stores as retailStores } from "@/constants/store"
+import { groceryData, storeSpecificData } from "@/data/grocery-data"
 import FilterOptions, { FilterState, FilterOptionsRef } from "@/components/filter-options"
 import type { Restaurant } from "@/constants/restaurants"
 import { useCartStore } from "@/store/cart-store"
@@ -22,9 +23,9 @@ import { filterRestaurantsWithMenuItems } from "@/utils/restaurant-utils"
 export const dynamic = 'force-dynamic'
 
 interface SearchResultRestaurant extends Restaurant {
-  matchType: "restaurant" | "menu-item" | "grocery" | "pets" | "pet-product" | "convenience"
+  matchType: "restaurant" | "menu-item" | "grocery" | "pets" | "pet-product" | "convenience" | "retail"
   matchedItems?: string[]
-  storeType?: "grocery" | "pets" | "pet-product" | "convenience"
+  storeType?: "grocery" | "pets" | "pet-product" | "convenience" | "retail"
 }
 
 export default function SearchPage() {
@@ -38,7 +39,6 @@ export default function SearchPage() {
     overRating: null,
     price: null,
     dashPass: false,
-    category: null,
   })
   const { updateSearchResults, clearSearchResults, recordSearch } = useCartStore()
 
@@ -229,13 +229,30 @@ export default function SearchPage() {
         const allWordsMatch = queryWords.every(word => productName.includes(word))
         
         if (allWordsMatch) {
-          petProductResults.push({
+          // Get store name from pet stores
+          let storeName = null
+          const petStores = getAllPetStores()
+          
+          // Try to find which store this product belongs to
+          const matchingStore = petStores.find((store: any) => 
+            store.items?.some((section: any) => 
+              section.products?.some((p: any) => p.id === product.id)
+            )
+          )
+          
+          if (matchingStore) {
+            storeName = matchingStore.name
+          }
+          
+          // Only add products that have a valid store name
+          if (storeName) {
+            petProductResults.push({
             id: `pet-product-${product.id}`,
             name: product.name,
             logo: product.image,
             banner: product.image,
             detailsBanner: product.image,
-            cuisine: "Pet Product",
+            cuisine: storeName,
             priceRange: "$",
             time: "15-30 min",
             distance: "Nearby",
@@ -254,6 +271,7 @@ export default function SearchPage() {
             storeType: "pet-product" as const,
             matchedItems: [product.name],
           })
+          }
         }
       })
     })
@@ -269,13 +287,36 @@ export default function SearchPage() {
           const allWordsMatch = queryWords.every(word => productName.includes(word))
           
           if (allWordsMatch) {
-            convenienceProductResults.push({
+            // Get store name - try to match with carousel data or use fallback
+            let storeName = null
+            const carouselData = getProductCarouselData()
+            const matchingCarouselStore = carouselData.find(store => 
+              store.products.some(p => p.id === product.id)
+            )
+            if (matchingCarouselStore) {
+              storeName = matchingCarouselStore.storeName
+            } else {
+              // Try to get from convenience stores
+              const convenienceStores = getConvenienceStores()
+              const matchingStore = convenienceStores.find((store: any) => 
+                store.items?.some((section: any) => 
+                  section.products?.some((p: any) => p.id === product.id)
+                )
+              )
+              if (matchingStore) {
+                storeName = matchingStore.name
+              }
+            }
+
+            // Only add products that have a valid store name
+            if (storeName) {
+              convenienceProductResults.push({
               id: `convenience-product-${product.id}`,
               name: product.name,
               logo: product.image,
               banner: product.image,
               detailsBanner: product.image,
-              cuisine: "Convenience Product",
+              cuisine: storeName,
               priceRange: "$",
               time: "10-25 min",
               distance: "Nearby",
@@ -294,6 +335,7 @@ export default function SearchPage() {
               storeType: "convenience" as const,
               matchedItems: [product.name],
             })
+            }
           }
         })
       })
@@ -311,13 +353,15 @@ export default function SearchPage() {
             const allWordsMatch = queryWords.every(word => productName.includes(word))
             
             if (allWordsMatch) {
-              retailProductResults.push({
+              // Only add products that have a valid store name
+              if (store.name) {
+                retailProductResults.push({
                 id: `retail-product-${product.id}`,
                 name: product.name,
                 logo: product.image,
                 banner: product.image,
                 detailsBanner: product.image,
-                cuisine: "Retail Product",
+                cuisine: store.name,
                 priceRange: "$",
                 time: "30-45 min",
                 distance: "Nearby",
@@ -333,13 +377,105 @@ export default function SearchPage() {
                 phone: "(555) 123-4567",
                 categories: ["retail"],
                 matchType: "menu-item" as const,
-                storeType: "convenience" as const,
+                storeType: "retail" as const,
                 matchedItems: [product.name],
               })
+              }
             }
           })
         })
       }
+    })
+
+    // Search grocery products
+    const groceryProductResults: SearchResultRestaurant[] = []
+    
+    // Search through general grocery data
+    groceryData.forEach((section: any) => {
+      section.products.forEach((product: any) => {
+        if (!product.name) return // Skip products without names
+        const queryWords = query.toLowerCase().split(' ').filter(word => word.length > 0)
+        const productName = product.name.toLowerCase()
+        const allWordsMatch = queryWords.every(word => productName.includes(word))
+        
+        if (allWordsMatch) {
+          const storeName = "General Grocery Store"
+          
+          groceryProductResults.push({
+            id: `grocery-product-${product.id}`,
+            name: product.name,
+            logo: product.image,
+            banner: product.image,
+            detailsBanner: product.image,
+            cuisine: storeName,
+            priceRange: product.price ? `$${product.price}` : "$",
+            time: "30-45 min",
+            distance: "Nearby",
+            deliveryFee: "Free delivery",
+            rating: 4.4,
+            reviews: "150+",
+            dashPass: false,
+            new: false,
+            discount: undefined,
+            isOpen: true,
+            openingHours: "9:00 AM - 9:00 PM",
+            address: "Local Area",
+            phone: "(555) 123-4567",
+            categories: ["grocery"],
+            matchType: "menu-item" as const,
+            storeType: "grocery" as const,
+            matchedItems: [product.name],
+          })
+        }
+      })
+    })
+
+    // Search through store-specific grocery data
+    Object.entries(storeSpecificData).forEach(([storeId, storeSections]: [string, any]) => {
+      storeSections.forEach((section: any) => {
+        section.products.forEach((product: any) => {
+          if (!product.name) return // Skip products without names
+          const queryWords = query.toLowerCase().split(' ').filter(word => word.length > 0)
+          const productName = product.name.toLowerCase()
+          const allWordsMatch = queryWords.every(word => productName.includes(word))
+          
+          if (allWordsMatch) {
+            // Get store name from grocery stores
+            const groceryStores = getAllStores()
+            const store = groceryStores.find(s => s.id === storeId)
+            const storeName = store?.name
+            
+            // Only add products that have a valid store name
+            if (storeName) {
+              groceryProductResults.push({
+                id: `grocery-product-${product.id}`,
+                name: product.name,
+                logo: product.image,
+                banner: product.image,
+                detailsBanner: product.image,
+                cuisine: storeName,
+                priceRange: product.price || "$",
+                time: "30-45 min",
+                distance: "Nearby",
+                deliveryFee: "Free delivery",
+                rating: 4.4,
+                reviews: "150+",
+                dashPass: false,
+                new: false,
+                discount: undefined,
+                isOpen: true,
+                openingHours: "9:00 AM - 9:00 PM",
+                address: "Local Area",
+                phone: "(555) 123-4567",
+                categories: ["grocery"],
+                matchType: "menu-item" as const,
+                storeType: "grocery" as const,
+                matchedItems: [product.name],
+              })
+            }
+          }
+        })
+      })
     })
 
     // Combine results, removing duplicates (prioritize restaurant matches)
@@ -396,6 +532,14 @@ export default function SearchPage() {
 
     // Add retail product matches
     retailProductResults.forEach((product) => {
+      if (!addedRestaurantIds.has(product.id)) {
+        combinedResults.push(product)
+        addedRestaurantIds.add(product.id)
+      }
+    })
+
+    // Add grocery product matches
+    groceryProductResults.forEach((product) => {
       if (!addedRestaurantIds.has(product.id)) {
         combinedResults.push(product)
         addedRestaurantIds.add(product.id)
@@ -475,15 +619,7 @@ export default function SearchPage() {
         console.log(`[SEARCH] After deals filter: ${filteredResults.length} results`);
       }
       
-      // Filter by category
-      if (activeFilters.category) {
-        filteredResults = filteredResults.filter(restaurant => {
-          const hasCategory = restaurant.categories && restaurant.categories.includes(activeFilters.category!);
-          console.log(`[SEARCH] ${restaurant.name}: categories ${restaurant.categories} - Has category ${activeFilters.category}: ${hasCategory}`);
-          return hasCategory;
-        });
-        console.log(`[SEARCH] After category filter: ${filteredResults.length} results`);
-      }
+
       
       console.log(`[SEARCH] Final filtered results: ${filteredResults.length}`);
       setSearchResults(filteredResults)
@@ -562,6 +698,223 @@ export default function SearchPage() {
     }
   }, [query, recordSearch])
 
+  // Helper function to render grouped search results
+  const renderSearchResults = () => {
+    // Group products by store and separate standalone stores
+    const storeGroups: { [key: string]: SearchResultRestaurant[] } = {}
+    const standaloneStores: SearchResultRestaurant[] = []
+    
+    searchResults.forEach((result) => {
+      const isProduct = result.id.includes("-product-")
+      if (isProduct) {
+        const storeName = result.cuisine || "Unknown Store"
+        if (!storeGroups[storeName]) {
+          storeGroups[storeName] = []
+        }
+        storeGroups[storeName].push(result)
+      } else {
+        standaloneStores.push(result)
+      }
+    })
+    
+    return (
+      <>
+        {/* Render store groups with products */}
+        {Object.entries(storeGroups).map(([storeName, products]) => (
+          <div key={storeName} className="bg-white rounded-lg shadow-sm border">
+            {/* Store Header */}
+            <div className="p-4 border-b">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="text-xl font-semibold">{storeName}</h2>
+                  <div className="flex items-center text-sm text-gray-600 mt-1">
+                    <span>{products[0]?.time || "30-45 min"}</span>
+                    {products[0]?.discount && (
+                      <>
+                        <span className="mx-2">•</span>
+                        <span className="text-red-600">{products[0].discount}</span>
+                      </>
+                    )}
+                  </div>
+                </div>
+                <button className="p-2">
+                  <Heart className="w-6 h-6 text-gray-400" />
+                </button>
+              </div>
+              {products[0]?.isOpen === false && (
+                <div className="mt-2">
+                  <span className="text-sm text-gray-500">Closed</span>
+                  <span className="text-sm text-gray-600 ml-2">Opens Thu at 6:00 AM</span>
+                </div>
+              )}
+            </div>
+            
+            {/* Products Grid */}
+            <div className="p-4">
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
+                {products.map((product) => (
+                  <div key={product.id} className="flex flex-col">
+                    {/* Product Image */}
+                    <div className="relative aspect-square bg-gray-100 rounded-lg overflow-hidden mb-2">
+                      <Image
+                        src={product.banner || product.logo || `/placeholder.svg?height=150&width=150&query=${product.name}`}
+                        alt={product.name}
+                        fill
+                        className="object-cover"
+                      />
+                      {product.new && (
+                        <div className="absolute top-2 left-2 bg-black text-white text-xs font-bold px-1.5 py-0.5 rounded">
+                          NEW
+                        </div>
+                      )}
+                    </div>
+                    
+                    {/* Product Info */}
+                    <div className="flex-1 flex flex-col">
+                      <h3 className="font-medium text-sm leading-tight mb-1 line-clamp-2">{product.name}</h3>
+                      {product.matchedItems && product.matchedItems.length > 0 && (
+                        <p className="text-xs text-gray-500 mb-2">Many in stock</p>
+                      )}
+                      
+                      {/* Add to Cart Button - More Prominent */}
+                      <button
+                        onClick={(e) => {
+                          e.preventDefault()
+                          e.stopPropagation()
+                          
+                          // Determine store category and generate a proper store ID using the store name
+                          let category: "grocery" | "pets" | "convenience" | "retail" = "grocery"
+                          let storeId = ""
+                          
+                          if (product.storeType === "grocery") {
+                            category = "grocery"
+                            storeId = product.cuisine?.toLowerCase().replace(/\s+/g, '-') || "grocery-store"
+                          } else if (product.storeType === "pets" || product.storeType === "pet-product") {
+                            category = "pets"
+                            storeId = product.cuisine?.toLowerCase().replace(/\s+/g, '-') || "pet-store"
+                          } else if (product.storeType === "convenience") {
+                            category = "convenience"
+                            storeId = product.cuisine?.toLowerCase().replace(/\s+/g, '-') || "convenience-store"
+                          } else if (product.storeType === "retail") {
+                            category = "retail"
+                            storeId = product.cuisine?.toLowerCase().replace(/\s+/g, '-') || "retail-store"
+                          }
+                          
+                          // Add to cart using the cart store
+                          const cartStore = useCartStore.getState()
+                          cartStore.setCategory(category)
+                          
+                          // Parse price
+                          const price = typeof product.priceRange === 'string' 
+                            ? parseFloat(product.priceRange.replace(/[^0-9.]/g, '')) || 0
+                            : product.priceRange || 0
+                          
+                          // Add item to cart with the store name as the third parameter
+                          cartStore.addItem({
+                            id: product.id,
+                            itemName: product.name,
+                            price: price,
+                            image: product.logo || product.banner || '/placeholder.svg',
+                            storeId: storeId,
+                          }, category, product.cuisine) // Pass the store name (cuisine) as the third parameter
+                          
+                          console.log('Added to cart:', product.name, 'from', product.cuisine)
+                        }}
+                        className="mt-auto w-full py-2 px-3 bg-orange-500 hover:bg-orange-600 text-white rounded-md text-sm font-medium transition-colors shadow-sm flex items-center justify-center gap-1.5"
+                      >
+                        <ShoppingCart className="w-4 h-4" />
+                        Add
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        ))}
+        
+        {/* Render standalone stores */}
+        {standaloneStores.length > 0 && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {standaloneStores.map((restaurant) => (
+              <Link 
+                key={restaurant.id}
+                href={restaurant.storeType === "grocery" 
+                  ? `/grocery/store/${restaurant.id.replace("grocery-", "")}` 
+                  : restaurant.storeType === "pets"
+                  ? `/pets/store/${restaurant.id.replace("pets-", "")}`
+                  : restaurant.storeType === "convenience"
+                  ? `/convenience/store/${restaurant.id.replace("convenience-", "")}`
+                  : `/store/${restaurant.id}`
+                } 
+                className="block"
+              >
+                <div className="restaurant-card">
+                  <div className="relative h-[200px] bg-gray-100 rounded-t-lg overflow-hidden">
+                    <Image
+                      src={
+                        restaurant.banner ||
+                        `/placeholder.svg?height=200&width=400&query=${restaurant.name || "/placeholder.svg"} restaurant`
+                      }
+                      alt={restaurant.name}
+                      fill
+                      className="object-cover"
+                    />
+                    {restaurant.new && (
+                      <div className="absolute top-3 left-3 bg-black text-white text-xs font-bold px-2 py-1 rounded">
+                        NEW
+                      </div>
+                    )}
+                  </div>
+                  <div className="p-4 bg-white rounded-b-lg shadow-sm">
+                    <div className="flex items-start justify-between mb-2">
+                      <div className="flex-1">
+                        <h3 className="font-semibold text-lg leading-tight mb-1">{restaurant.name}</h3>
+                        <p className="text-sm text-gray-600 mb-1">{restaurant.cuisine}</p>
+                      </div>
+                      <button className="ml-2 p-1">
+                        <Heart className="w-5 h-5 text-gray-400" />
+                      </button>
+                    </div>
+                    
+                    <div className="flex items-center text-sm text-gray-600 mb-2">
+                      <Star className="w-4 h-4 text-yellow-400 fill-current mr-1" />
+                      <span className="mr-2">{restaurant.rating}</span>
+                      <span className="mr-2">({restaurant.reviews})</span>
+                      <span className="mr-2">•</span>
+                      <span className="mr-2">{restaurant.time}</span>
+                      <span className="mr-2">•</span>
+                      <span>{restaurant.distance}</span>
+                    </div>
+                    
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center text-sm">
+                        <span className="text-gray-600">{restaurant.deliveryFee}</span>
+                        {restaurant.dashPass && (
+                          <div className="ml-2 px-2 py-1 bg-black text-white text-xs rounded">
+                            DashPass
+                          </div>
+                        )}
+                        {restaurant.discount && (
+                          <div className="ml-2 px-2 py-1 bg-red-100 text-red-800 text-xs rounded">
+                            {restaurant.discount}
+                          </div>
+                        )}
+                      </div>
+                      <div className="text-sm font-medium text-gray-900">
+                        {restaurant.priceRange}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        )}
+      </>
+    )
+  }
+
   return (
     <div className="max-w-7xl mx-auto px-4 py-8 mt-14">
       <div className="flex items-center justify-between mb-6">
@@ -585,159 +938,8 @@ export default function SearchPage() {
           <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-red-600"></div>
         </div>
       ) : searchResults.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {searchResults.map((restaurant) => (
-            <div key={restaurant.id} className="restaurant-card">
-              <Link 
-                href={restaurant.storeType === "grocery" 
-                  ? `/grocery/store/${restaurant.id.replace("grocery-", "")}` 
-                  : restaurant.storeType === "pets"
-                  ? `/pets/store/${restaurant.id.replace("pets-", "")}`
-                  : restaurant.storeType === "pet-product"
-                  ? `/pets?search=${encodeURIComponent(restaurant.name)}`
-                  : restaurant.storeType === "convenience"
-                  ? `/convenience/store/${restaurant.id.replace("convenience-", "")}`
-                  : `/store/${restaurant.id}`
-                } 
-                className="block"
-              >
-                <div className="relative h-[200px] bg-gray-100 rounded-t-lg overflow-hidden">
-                  <Image
-                    src={
-                      restaurant.banner ||
-                      `/placeholder.svg?height=200&width=400&query=${restaurant.name || "/placeholder.svg"} restaurant`
-                    }
-                    alt={restaurant.name}
-                    fill
-                    className="object-cover"
-                  />
-                  {restaurant.new && (
-                    <div className="absolute top-3 left-3 bg-black text-white text-xs font-bold px-2 py-1 rounded">
-                      NEW
-                    </div>
-                  )}
-                </div>
-              </Link>
-
-              <div className="py-3 px-2">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <h3 className="font-bold text-lg">{restaurant.name}</h3>
-                    {restaurant.dashPass && (
-                      <div className="text-teal-600">
-                        <svg width="20" height="12" viewBox="0 0 20 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <path
-                            d="M18.5 1.5L11.5 9.5L7.5 5.5L1.5 10.5"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                        </svg>
-                      </div>
-                    )}
-                  </div>
-                  <button className="text-gray-400 hover:text-gray-600">
-                    <Heart className="h-6 w-6" />
-                  </button>
-                </div>
-
-                <div className="flex items-center mt-1 text-sm text-gray-700 flex-wrap">
-                  {restaurant.rating && (
-                    <div className="flex items-center text-sm text-gray-700">
-                      <span className="font-semibold">{restaurant.rating}</span>
-                      <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" className="ml-1">
-                        <path d="M8 0L10.2571 5.08631L16 5.87013L11.8 9.79752L12.9443 15.5L8 12.5863L3.05573 15.5L4.2 9.79752L0 5.87013L5.74286 5.08631L8 0Z" />
-                      </svg>
-                      {restaurant.reviews && (
-                        <>
-                        <span className="mx-1">
-                          {restaurant.reviews.startsWith("(") ? restaurant.reviews : `(${restaurant.reviews})`}
-                        </span>
-                        <span className="mx-1">•</span>
-                        </>
-                      )}
-                    </div>
-                  )}
-                  <span>{restaurant.distance}</span>
-                  <span className="mx-1">•</span>
-                  <span>{restaurant.time}</span>
-                </div>
-
-                <div className="mt-1 text-sm text-gray-500">{restaurant.deliveryFee}</div>
-
-                {/* Cuisine and Price Range for Restaurants */}
-                {restaurant.storeType !== "grocery" && restaurant.storeType !== "pets" && restaurant.storeType !== "convenience" && (
-                  <div className="mt-1 text-sm text-gray-600">
-                    <span>{restaurant.cuisine}</span>
-                    {restaurant.priceRange && (
-                      <>
-                        <span className="mx-1">•</span>
-                        <span>{restaurant.priceRange}</span>
-                      </>
-                    )}
-                  </div>
-                )}
-
-                {/* Store Type for Non-Restaurants */}
-                {restaurant.storeType === "grocery" && (
-                  <div className="mt-1 text-sm text-gray-600">
-                    <span>Grocery Store</span>
-                    <span className="mx-1">•</span>
-                    <span>$</span>
-                  </div>
-                )}
-
-                {restaurant.storeType === "pets" && (
-                  <div className="mt-1 text-sm text-gray-600">
-                    <span>Pet Store</span>
-                    <span className="mx-1">•</span>
-                    <span>$</span>
-                  </div>
-                )}
-
-                {restaurant.storeType === "convenience" && (
-                  <div className="mt-1 text-sm text-gray-600">
-                    <span>Convenience Store</span>
-                    <span className="mx-1">•</span>
-                    <span>$</span>
-                  </div>
-                )}
-
-                {/* Categories for Restaurants */}
-                {restaurant.categories && restaurant.categories.length > 0 && restaurant.storeType !== "grocery" && restaurant.storeType !== "pets" && restaurant.storeType !== "convenience" && (
-                  <div className="mt-1 text-sm text-gray-500">
-                    {restaurant.categories.slice(0, 3).join(" • ")}
-                    {restaurant.categories.length > 3 && "..."}
-                  </div>
-                )}
-
-                {restaurant.matchType === "menu-item" && restaurant.matchedItems && (
-                  <div className="mt-2 text-sm text-orange-600">
-                    <span className="font-medium">Known for: </span>
-                    {restaurant.matchedItems.slice(0, 3).join(", ")}
-                    {restaurant.matchedItems.length > 3 && "..."}
-                  </div>
-                )}
-
-                {restaurant.discount && (
-                  <div className="mt-1 text-sm text-red-600 font-medium">{restaurant.discount}</div>
-                )}
-
-                {restaurant.rating && (
-                  <div className="flex items-center text-sm text-gray-500">
-                    <span>★ {getDefaultRating(restaurant.rating)}</span>
-                    <span className="ml-1">({restaurant.reviews})</span>
-                    <span className="mx-1">•</span>
-                    <span>{restaurant.distance}</span>
-                    <span className="mx-1">•</span>
-                    <span>{restaurant.time}</span>
-                  </div>
-                )}
-
-              </div>
-            </div>
-          ))}
+        <div className="space-y-8">
+          {renderSearchResults()}
         </div>
       ) : (
         <div className="text-center py-12 bg-gray-50 rounded-lg">
