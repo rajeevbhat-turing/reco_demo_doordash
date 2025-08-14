@@ -217,10 +217,18 @@ const SearchBar = () => {
       const petProductResults: SearchResult[] = []
       petProducts.forEach((section: any) => {
         section.products.forEach((product: any) => {
-          // Improved search: check if all words in query are present in product name
+          // Search: check if ALL words in query are present in product name (with plural/singular handling)
           const queryWords = value.toLowerCase().split(' ').filter(word => word.length > 0)
           const productName = product.name.toLowerCase()
-          const matches = queryWords.every(word => productName.includes(word))
+          const matches = queryWords.every(word => {
+            // Direct match
+            if (productName.includes(word)) return true
+            // Try plural form (add 's')
+            if (productName.includes(word + 's')) return true
+            // Try singular form (remove 's')
+            if (word.endsWith('s') && productName.includes(word.slice(0, -1))) return true
+            return false
+          })
           
           if (matches && petProductResults.length < 2) {
             petProductResults.push({
@@ -447,8 +455,11 @@ const SearchBar = () => {
       const actualId = result.id.replace("pets-", "")
       router.push(`/pets/store/${actualId}`)
     } else if (result.type === "pet-product") {
-      // For pet products, navigate to the pets page with search term
-      router.push(`/pets?search=${encodeURIComponent(result.matchedItem || result.name)}`)
+      // For pet products, navigate to the search results page
+      router.push(`/search?q=${encodeURIComponent(result.matchedItem || result.name)}`)
+    } else if (result.id.includes("-product-")) {
+      // For any other product types (convenience-product, retail-product, etc.), navigate to search results
+      router.push(`/search?q=${encodeURIComponent(result.matchedItem || result.name)}`)
     } else {
       router.push(`/store/${result.id}`)
     }

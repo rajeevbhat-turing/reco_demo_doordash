@@ -32,6 +32,8 @@ interface SearchResultRestaurant extends Restaurant {
 export default function SearchPage() {
   const searchParams = useSearchParams()
   const query = searchParams.get("q") || ""
+  
+  console.log('🚀 SearchPage rendered with query:', query)
   const [searchResults, setSearchResults] = useState<SearchResultRestaurant[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const { addItemWithConflictCheck } = useReplaceCart()
@@ -251,33 +253,30 @@ export default function SearchPage() {
       }))
 
     // Search pet products
-    const petProducts = getEnrichedPetProducts()
     const petProductResults: SearchResultRestaurant[] = []
-    petProducts.forEach((section: any) => {
-      section.products.forEach((product: any) => {
-        // Improved search: check if all words in query are present in product name
-        const queryWords = query.toLowerCase().split(' ').filter(word => word.length > 0)
-        const productName = product.name.toLowerCase()
-        const allWordsMatch = queryWords.every(word => productName.includes(word))
-        
-        if (allWordsMatch) {
-          // Get store name from pet stores
-          let storeName = null
-          const petStores = getAllPetStores()
+    try {
+      const petProducts = getEnrichedPetProducts()
+    
+      petProducts.forEach((section: any) => {
+        section.products.forEach((product: any) => {
+          // Search: check if ALL words in query are present in product name (with plural/singular handling)
+          const queryWords = query.toLowerCase().split(' ').filter(word => word.length > 0)
+          const productName = product.name.toLowerCase()
+          const allWordsMatch = queryWords.every(word => {
+            // Direct match
+            if (productName.includes(word)) return true
+            // Try plural form (add 's')
+            if (productName.includes(word + 's')) return true
+            // Try singular form (remove 's')
+            if (word.endsWith('s') && productName.includes(word.slice(0, -1))) return true
+            return false
+          })
+          if (allWordsMatch) {
+            // Get store name from the section
+            let storeName = section.storeName || "Pet Store"
           
-          // Try to find which store this product belongs to
-          const matchingStore = petStores.find((store: any) => 
-            store.items?.some((section: any) => 
-              section.products?.some((p: any) => p.id === product.id)
-            )
-          )
-          
-          if (matchingStore) {
-            storeName = matchingStore.name
-          }
-          
-          // Only add products that have a valid store name
-          if (storeName) {
+            // Only add products that have a valid store name
+            if (storeName) {
             petProductResults.push({
             id: `pet-product-${product.id}`,
             name: product.name,
@@ -302,21 +301,32 @@ export default function SearchPage() {
             matchType: "menu-item" as const,
             storeType: "pet-product" as const,
             matchedItems: [product.name],
-          })
-          }
+                      })
+            }
         }
       })
     })
+    } catch (error) {
+      console.error('❌ Error in pet product search:', error)
+    }
 
     // Search convenience store products
     const convenienceProductResults: SearchResultRestaurant[] = []
     Object.values(convenienceData).forEach((storeProducts: any) => {
       storeProducts.forEach((section: any) => {
         section.products.forEach((product: any) => {
-          // Improved search: check if all words in query are present in product name
+          // Search: check if ALL words in query are present in product name (with plural/singular handling)
           const queryWords = query.toLowerCase().split(' ').filter(word => word.length > 0)
           const productName = product.name.toLowerCase()
-          const allWordsMatch = queryWords.every(word => productName.includes(word))
+          const allWordsMatch = queryWords.every(word => {
+            // Direct match
+            if (productName.includes(word)) return true
+            // Try plural form (add 's')
+            if (productName.includes(word + 's')) return true
+            // Try singular form (remove 's')
+            if (word.endsWith('s') && productName.includes(word.slice(0, -1))) return true
+            return false
+          })
           
           if (allWordsMatch) {
             // Get store name - try to match with carousel data or use fallback
@@ -371,10 +381,18 @@ export default function SearchPage() {
       if (store.items) {
         store.items.forEach((section: any) => {
           section.products.forEach((product: any) => {
-            // Improved search: check if all words in query are present in product name
+            // Search: check if ALL words in query are present in product name (with plural/singular handling)
             const queryWords = query.toLowerCase().split(' ').filter(word => word.length > 0)
             const productName = product.name.toLowerCase()
-            const allWordsMatch = queryWords.every(word => productName.includes(word))
+            const allWordsMatch = queryWords.every(word => {
+              // Direct match
+              if (productName.includes(word)) return true
+              // Try plural form (add 's')
+              if (productName.includes(word + 's')) return true
+              // Try singular form (remove 's')
+              if (word.endsWith('s') && productName.includes(word.slice(0, -1))) return true
+              return false
+            })
             
             if (allWordsMatch) {
               // Only add products that have a valid store name
@@ -420,7 +438,15 @@ export default function SearchPage() {
         if (!product.name) return // Skip products without names
         const queryWords = query.toLowerCase().split(' ').filter(word => word.length > 0)
         const productName = product.name.toLowerCase()
-        const allWordsMatch = queryWords.every(word => productName.includes(word))
+        const allWordsMatch = queryWords.every(word => {
+          // Direct match
+          if (productName.includes(word)) return true
+          // Try plural form (add 's')
+          if (productName.includes(word + 's')) return true
+          // Try singular form (remove 's')
+          if (word.endsWith('s') && productName.includes(word.slice(0, -1))) return true
+          return false
+        })
         
         if (allWordsMatch) {
           const storeName = "General Grocery Store"
@@ -458,12 +484,20 @@ export default function SearchPage() {
     Object.entries(storeSpecificData).forEach(([storeId, storeSections]: [string, any]) => {
       storeSections.forEach((section: any) => {
         section.products.forEach((product: any) => {
-          if (!product.name) return // Skip products without names
-          const queryWords = query.toLowerCase().split(' ').filter(word => word.length > 0)
-          const productName = product.name.toLowerCase()
-          const allWordsMatch = queryWords.every(word => productName.includes(word))
-          
-          if (allWordsMatch) {
+                      if (!product.name) return // Skip products without names
+            const queryWords = query.toLowerCase().split(' ').filter(word => word.length > 0)
+            const productName = product.name.toLowerCase()
+            const allWordsMatch = queryWords.every(word => {
+              // Direct match
+              if (productName.includes(word)) return true
+              // Try plural form (add 's')
+              if (productName.includes(word + 's')) return true
+              // Try singular form (remove 's')
+              if (word.endsWith('s') && productName.includes(word.slice(0, -1))) return true
+              return false
+            })
+            
+            if (allWordsMatch) {
             // Get store name from grocery stores
             const groceryStores = getAllStores()
             const store = groceryStores.find(s => s.id === storeId)
@@ -654,6 +688,7 @@ export default function SearchPage() {
 
       
       console.log(`[SEARCH] Final filtered results: ${filteredResults.length}`);
+      console.log('[SEARCH] Results details:', filteredResults.map(r => r.name));
       setSearchResults(filteredResults)
       setIsLoading(false)
       

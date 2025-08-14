@@ -76,14 +76,25 @@ export default function GenericStorePage({
     }
 
     const filtered = productData.map((section) => {
-      // Filter products by search term
+      // Filter products by search term using advanced search logic
       const filteredProducts = section.products.filter((product) => {
-        // First filter by search term
-        const matchesSearch = !searchTerm || 
-          product.name.toLowerCase().includes(searchTerm.toLowerCase());
+        // If no search term, include all products
+        if (!searchTerm) return true;
         
-        // Product should match search filter
-        return matchesSearch;
+        // Advanced search: check if ALL words in query are present in product name (with plural/singular handling)
+        const queryWords = searchTerm.toLowerCase().split(' ').filter(word => word.length > 0);
+        const productName = product.name.toLowerCase();
+        const allWordsMatch = queryWords.every(word => {
+          // Direct match
+          if (productName.includes(word)) return true;
+          // Try plural form (add 's')
+          if (productName.includes(word + 's')) return true;
+          // Try singular form (remove 's')
+          if (word.endsWith('s') && productName.includes(word.slice(0, -1))) return true;
+          return false;
+        });
+        
+        return allWordsMatch;
       });
 
       return { ...section, products: filteredProducts };
