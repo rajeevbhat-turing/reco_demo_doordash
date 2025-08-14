@@ -253,7 +253,7 @@ export default function SearchPage() {
             banner: product.image,
             detailsBanner: product.image,
             cuisine: storeName,
-            priceRange: "$",
+            priceRange: product.price || 0,
             time: "15-30 min",
             distance: "Nearby",
             deliveryFee: "Free delivery",
@@ -296,16 +296,8 @@ export default function SearchPage() {
             if (matchingCarouselStore) {
               storeName = matchingCarouselStore.storeName
             } else {
-              // Try to get from convenience stores
-              const convenienceStores = getConvenienceStores()
-              const matchingStore = convenienceStores.find((store: any) => 
-                store.items?.some((section: any) => 
-                  section.products?.some((p: any) => p.id === product.id)
-                )
-              )
-              if (matchingStore) {
-                storeName = matchingStore.name
-              }
+              // Use a default convenience store name since many products don't have specific store mappings
+              storeName = "Convenience Store"
             }
 
             // Only add products that have a valid store name
@@ -317,7 +309,7 @@ export default function SearchPage() {
               banner: product.image,
               detailsBanner: product.image,
               cuisine: storeName,
-              priceRange: "$",
+              priceRange: product.price || 0,
               time: "10-25 min",
               distance: "Nearby",
               deliveryFee: "Free delivery",
@@ -362,7 +354,7 @@ export default function SearchPage() {
                 banner: product.image,
                 detailsBanner: product.image,
                 cuisine: store.name,
-                priceRange: "$",
+                priceRange: product.price || 0,
                 time: "30-45 min",
                 distance: "Nearby",
                 deliveryFee: "Free delivery",
@@ -408,7 +400,7 @@ export default function SearchPage() {
             banner: product.image,
             detailsBanner: product.image,
             cuisine: storeName,
-            priceRange: product.price ? `$${product.price}` : "$",
+            priceRange: product.price || 0,
             time: "30-45 min",
             distance: "Nearby",
             deliveryFee: "Free delivery",
@@ -454,7 +446,7 @@ export default function SearchPage() {
                 banner: product.image,
                 detailsBanner: product.image,
                 cuisine: storeName,
-                priceRange: product.price || "$",
+                priceRange: product.price || 0,
                 time: "30-45 min",
                 distance: "Nearby",
                 deliveryFee: "Free delivery",
@@ -773,7 +765,26 @@ export default function SearchPage() {
                     <div className="flex-1 flex flex-col">
                       <h3 className="font-medium text-sm leading-tight mb-1 line-clamp-2">{product.name}</h3>
                       {product.matchedItems && product.matchedItems.length > 0 && (
-                        <p className="text-xs text-gray-500 mb-2">Many in stock</p>
+                        <p className="text-xs text-gray-500 mb-1">Many in stock</p>
+                      )}
+                      
+                      {/* Price Display */}
+                      {(product.priceRange !== undefined && product.priceRange !== null && 
+                        (typeof product.priceRange === 'string' ? product.priceRange !== '0' && product.priceRange !== '' : product.priceRange !== 0)) && (
+                        <div className="mb-2">
+                          <span className="text-sm font-semibold text-gray-900">
+                            {typeof product.priceRange === 'string' 
+                              ? product.priceRange.startsWith('$') 
+                                ? product.priceRange 
+                                : product.priceRange === '0' || product.priceRange === ''
+                                  ? 'Free'
+                                  : `$${product.priceRange}`
+                              : product.priceRange === 0 
+                                ? 'Free'
+                                : `$${(product.priceRange as number).toFixed(2)}`
+                            }
+                          </span>
+                        </div>
                       )}
                       
                       {/* Add to Cart Button - More Prominent */}
