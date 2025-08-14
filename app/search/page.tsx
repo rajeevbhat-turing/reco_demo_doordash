@@ -220,6 +220,36 @@ export default function SearchPage() {
         storeType: "pets" as const,
       }))
 
+    // Search retail stores by name
+    const retailStoreResults = retailStores
+      .filter((store) => {
+        return store.name.toLowerCase().includes(query.toLowerCase())
+      })
+      .map((store) => ({
+        id: `retail-${store.id}`,
+        name: store.name,
+        logo: store.image,
+        banner: store.image,
+        detailsBanner: store.image,
+        cuisine: "Retail Store",
+        priceRange: "$",
+        time: store.deliveryTime,
+        distance: "Nearby",
+        deliveryFee: "Free delivery",
+        rating: 4.5, // Default rating for retail stores
+        reviews: "1000+", // Default reviews
+        dashPass: store.isDashPass,
+        new: false,
+        discount: store.discount || undefined,
+        isOpen: true,
+        openingHours: store.openTime || "9:00 AM - 9:00 PM",
+        address: "Local Area",
+        phone: "(555) 123-4567",
+        categories: ["retail"],
+        matchType: "grocery" as const, // Use same match type as other stores
+        storeType: "retail" as const,
+      }))
+
     // Search pet products
     const petProducts = getEnrichedPetProducts()
     const petProductResults: SearchResultRestaurant[] = []
@@ -502,6 +532,14 @@ export default function SearchPage() {
 
     // Add pet store matches
     petStoreResults.forEach((store) => {
+      if (!addedRestaurantIds.has(store.id)) {
+        combinedResults.push(store)
+        addedRestaurantIds.add(store.id)
+      }
+    })
+
+    // Add retail store matches
+    retailStoreResults.forEach((store) => {
       if (!addedRestaurantIds.has(store.id)) {
         combinedResults.push(store)
         addedRestaurantIds.add(store.id)

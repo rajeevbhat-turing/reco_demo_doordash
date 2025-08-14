@@ -196,6 +196,22 @@ const SearchBar = () => {
           matchedItem: undefined,
         }))
 
+      // Search retail stores by name
+      const retailStoreResults = retailStores
+        .filter((store) => {
+          return store.name.toLowerCase().includes(value.toLowerCase())
+        })
+        .slice(0, 2)
+        .map((store) => ({
+          id: `retail-${store.id}`,
+          name: store.name,
+          logo: store.image,
+          description: `${store.deliveryTime} • Retail Store • DashPass`,
+          dashPass: store.isDashPass,
+          type: "grocery" as const, // Use same type as other stores
+          matchedItem: undefined,
+        }))
+
       // Search pet products
       const petProducts = getEnrichedPetProducts()
       const petProductResults: SearchResult[] = []
@@ -293,13 +309,14 @@ const SearchBar = () => {
         grocery: groceryResults.length, 
         convenience: convenienceResults.length,
         petStores: petStoreResults.length,
+        retailStores: retailStoreResults.length,
         petProducts: petProductResults.length,
         convenienceProducts: convenienceProductResults.length,
         retailProducts: retailProductResults.length,
         menuItems: menuItemResults.length
       })
 
-      const combinedResults = [...restaurantResults, ...groceryResults, ...convenienceResults, ...petStoreResults, ...petProductResults, ...convenienceProductResults, ...retailProductResults, ...menuItemResults].slice(0, 5)
+      const combinedResults = [...restaurantResults, ...groceryResults, ...convenienceResults, ...petStoreResults, ...retailStoreResults, ...petProductResults, ...convenienceProductResults, ...retailProductResults, ...menuItemResults].slice(0, 5)
 
       // Generate search suggestions based on search term
       const suggestions = generateSearchSuggestions(value)
