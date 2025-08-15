@@ -208,7 +208,7 @@ const SearchBar = () => {
           logo: store.image,
           description: `${store.deliveryTime} • Retail Store • DashPass`,
           dashPass: store.isDashPass,
-          type: "grocery" as const, // Use same type as other stores
+          type: "retail" as const,
           matchedItem: undefined,
         }))
 
@@ -454,6 +454,10 @@ const SearchBar = () => {
       // Extract the actual pet store ID (remove "pets-" prefix)
       const actualId = result.id.replace("pets-", "")
       router.push(`/pets/store/${actualId}`)
+    } else if (result.type === "retail") {
+      // Extract the actual retail store ID (remove "retail-" prefix)
+      const actualId = result.id.replace("retail-", "")
+      router.push(`/retail/store/${actualId}`)
     } else if (result.type === "pet-product") {
       // For pet products, navigate to the search results page
       router.push(`/search?q=${encodeURIComponent(result.matchedItem || result.name)}`)
