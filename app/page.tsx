@@ -290,7 +290,7 @@ export default function Home() {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {allFilteredRestaurants.map((restaurant) => (
                     <div key={restaurant.id} className="restaurant-card">
-                      <Link href={`/store/${restaurant.id}`} className="block">
+                      <Link href={`/store/${restaurant.id}`} className="block" prefetch={false}>
                         <div className="relative h-[200px] bg-gray-100">
                           <Image
                             src={
@@ -300,6 +300,12 @@ export default function Home() {
                             alt={restaurant.name}
                             fill
                             className="object-cover"
+                            style={{ width: 'auto', height: 'auto' }}
+                            onError={(e) => {
+                              // Fallback to placeholder if image fails to load
+                              const target = e.target as HTMLImageElement;
+                              target.src = '/placeholder.svg';
+                            }}
                           />
                           {restaurant.new && (
                             <div className="absolute top-3 left-3 bg-black text-white text-xs font-bold px-2 py-1 rounded">

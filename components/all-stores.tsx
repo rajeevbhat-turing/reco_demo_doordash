@@ -217,11 +217,12 @@ export default function AllStores({
               <div className="flex gap-4">
                 <div className="relative w-16 h-16 rounded-full overflow-hidden bg-gray-100">
                   <Image
-                    src={store.image}
+                    src={store.image || "/placeholder-logo.svg"}
                     alt={store.name}
                     width={64}
                     height={64}
                     className="object-cover"
+                    style={{ width: 'auto', height: 'auto' }}
                   />
                 </div>
 

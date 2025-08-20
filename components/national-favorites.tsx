@@ -85,7 +85,7 @@ export default function NationalFavorites({ activeFilters }: NationalFavoritesPr
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
           {filteredRestaurants.map((restaurant) => (
             <div key={restaurant.id} className="restaurant-card overflow-hidden">
-              <Link href={`/store/${restaurant.id}`} className="block">
+              <Link href={`/store/${restaurant.id}`} className="block" prefetch={false}>
                 <div className="relative h-[200px] bg-gray-100">
                   <Image
                     src={
@@ -94,6 +94,12 @@ export default function NationalFavorites({ activeFilters }: NationalFavoritesPr
                     alt={restaurant.name}
                     fill
                     className="object-cover"
+                    style={{ width: 'auto', height: 'auto' }}
+                    onError={(e) => {
+                      // Fallback to placeholder if image fails to load
+                      const target = e.target as HTMLImageElement;
+                      target.src = '/placeholder.svg';
+                    }}
                   />
                 </div>
               </Link>

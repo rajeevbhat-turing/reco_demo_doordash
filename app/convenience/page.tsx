@@ -47,7 +47,7 @@ export default function Convenience() {
       delivery: "$0 delivery fee",
       open: store.open ?? true,
       openTime: store.openTime || store.deliveryTime,
-      image: store.logo || "https://via.placeholder.com/112x112?text=Store",
+      image: store.logo || "/placeholder-logo.svg",
       inStorePrice: true,
       discount: store.discount || "",
       rating: store.rating,

@@ -93,15 +93,22 @@ export default function RestaurantSection({ title, restaurants, seeAllLink = "/a
             href={`/store/${restaurant.id}`} 
             key={restaurant.id}
             className="block border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
+            prefetch={false}
           >
             <div className="flex gap-4">
               <div className="relative w-16 h-16 rounded-full overflow-hidden bg-gray-100">
                 <Image
-                  src={restaurant.logo}
+                  src={restaurant.logo || '/placeholder-logo.svg'}
                   alt={restaurant.name}
                   width={64}
                   height={64}
                   className="object-cover"
+                  style={{ width: 'auto', height: 'auto' }}
+                  onError={(e) => {
+                    // Fallback to placeholder if image fails to load
+                    const target = e.target as HTMLImageElement;
+                    target.src = '/placeholder-logo.svg';
+                  }}
                 />
               </div>
 
