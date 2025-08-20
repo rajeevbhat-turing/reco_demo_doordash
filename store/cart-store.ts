@@ -83,11 +83,69 @@ const getStoreNameFromRestaurantId = (restaurantId: string): string => {
   return restaurant ? restaurant.name : "Unknown Store"
 }
 
-// Helper function to get store name from store ID (for grocery/retail/convenience stores)
-const getStoreNameFromStoreId = (storeId: string): string => {
+// Helper function to get store name from store ID (for grocery/retail/convenience/pets stores)
+const getStoreNameFromStoreId = (storeId: string, category?: CartCategory): string => {
+  // If category is specified, check that category first
+  if (category) {
+    switch (category) {
+      case 'convenience':
+        if (convenienceStores[storeId]) {
+          return convenienceStores[storeId].name
+        }
+        break
+      case 'pets':
+        const { allPetStores } = require("@/data/pet-data")
+        const petStore = allPetStores.find((store: any) => store.id === storeId)
+        if (petStore) {
+          return petStore.name
+        }
+        break
+      case 'grocery':
+        const { stores } = require("@/data/store-data")
+        if (stores[storeId]) {
+          return stores[storeId].name
+        }
+        break
+      case 'retail':
+        try {
+          const { stores: retailStores } = require("@/constants/store")
+          if (retailStores[storeId]) {
+            return retailStores[storeId].name
+          }
+        } catch (error) {
+          // Ignore if retail stores data is not available
+        }
+        break
+    }
+  }
+  
+  // Fallback: check all categories in order (for backward compatibility)
   // Check convenience stores first
   if (convenienceStores[storeId]) {
     return convenienceStores[storeId].name
+  }
+  
+  // Check pet stores
+  const { allPetStores } = require("@/data/pet-data")
+  const petStore = allPetStores.find((store: any) => store.id === storeId)
+  if (petStore) {
+    return petStore.name
+  }
+  
+  // Check grocery stores
+  const { stores } = require("@/data/store-data")
+  if (stores[storeId]) {
+    return stores[storeId].name
+  }
+  
+  // Check retail stores
+  try {
+    const { stores: retailStores } = require("@/constants/store")
+    if (retailStores[storeId]) {
+      return retailStores[storeId].name
+    }
+  } catch (error) {
+    // Ignore if retail stores data is not available
   }
   
   // For other stores, use the existing formatting logic
@@ -279,7 +337,7 @@ export const useCartStore = create<CartStore>()(
             if (item.restaurantId) {
               resolvedStoreName = getStoreNameFromRestaurantId(item.restaurantId)
             } else if (item.storeId) {
-              resolvedStoreName = getStoreNameFromStoreId(item.storeId)
+              resolvedStoreName = getStoreNameFromStoreId(item.storeId, itemCategory)
             } else {
               resolvedStoreName = "Unknown Store"
             }
@@ -594,7 +652,7 @@ export const useCartStore = create<CartStore>()(
             if (item.restaurantId) {
               resolvedStoreName = getStoreNameFromRestaurantId(item.restaurantId)
             } else if (item.storeId) {
-              resolvedStoreName = getStoreNameFromStoreId(item.storeId)
+              resolvedStoreName = getStoreNameFromStoreId(item.storeId, itemCategory)
             } else {
               resolvedStoreName = "Unknown Store"
             }
@@ -763,7 +821,7 @@ export const useCartStore = create<CartStore>()(
                 if (item.restaurantId) {
                   migratedItem.storeName = getStoreNameFromRestaurantId(item.restaurantId)
                 } else if (item.storeId) {
-                  migratedItem.storeName = getStoreNameFromStoreId(item.storeId)
+                  migratedItem.storeName = getStoreNameFromStoreId(item.storeId, item.category)
                 }
               }
 
