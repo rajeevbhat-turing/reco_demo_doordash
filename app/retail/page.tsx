@@ -88,13 +88,11 @@ export default function Retail() {
 
         <CategoryFilters
           categories={[
-            { name: "Pets", href: "#" },
             { name: "Flowers", href: "#" },
             { name: "Retail", href: "#" },
             { name: "Convenience", href: "#" },
             { name: "Beauty", href: "#" },
             { name: "Alcohol", href: "#" },
-            { name: "Packages", href: "#" },
           ]}
           showRating={true}
           showTime={true}

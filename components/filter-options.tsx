@@ -27,6 +27,7 @@ interface FilterOptionsProps {
   onReset?: () => void
   filters?: FilterState
   filterData?: FilterOption[]
+  showPriceFilter?: boolean
 }
 
 interface ScheduleOption {
@@ -41,7 +42,7 @@ interface TimeOption {
 }
 
 const FilterOptions = forwardRef<FilterOptionsRef, FilterOptionsProps>(
-  ({ isGrocery = false, onFilterChange, onReset, filters: externalFilters, filterData = [] }, ref) => {
+  ({ isGrocery = false, onFilterChange, onReset, filters: externalFilters, filterData = [], showPriceFilter = true }, ref) => {
     const [filters, setFilters] = useState<FilterState>({
       underThirtyMins: false,
       deals: false,
@@ -547,59 +548,61 @@ const FilterOptions = forwardRef<FilterOptionsRef, FilterOptionsProps>(
             )}
           </div>
 
-          <div className="relative">
-            <button
-              ref={priceButtonRef}
-              className={`rounded-full h-9 px-4 text-xs font-semibold ${
-                filters.price && filters.price.length > 0
-                  ? "bg-gray-900 text-white"
-                  : "bg-gray-100 hover:bg-gray-200 text-gray-900"
-              } flex items-center gap-1`}
-              onClick={(e) => {
-                e.stopPropagation()
-                setPriceDropdownOpen(!priceDropdownOpen)
-              }}
-            >
-              {getPriceLabel()}
-              <ChevronDown className="h-4 w-4 ml-1" />
-            </button>
-
-            {priceDropdownOpen && (
-              <div
-                ref={priceDropdownRef}
-                className="fixed z-50 mt-2 w-[400px] bg-white rounded-lg shadow-lg p-6"
-                style={{ left: "50%", transform: "translateX(-50%)" }}
+          {showPriceFilter && (
+            <div className="relative">
+              <button
+                ref={priceButtonRef}
+                className={`rounded-full h-9 px-4 text-xs font-semibold ${
+                  filters.price && filters.price.length > 0
+                    ? "bg-gray-900 text-white"
+                    : "bg-gray-100 hover:bg-gray-200 text-gray-900"
+                } flex items-center gap-1`}
+                onClick={(e) => {
+                  e.stopPropagation()
+                  setPriceDropdownOpen(!priceDropdownOpen)
+                }}
               >
-                <h3 className="text-xl font-bold mb-6">Price</h3>
-                <div className="flex gap-3 mb-6">
-                  {["$", "$$", "$$$", "$$$$"].map((price) => (
-                    <button
-                      key={price}
-                      className={`px-6 py-2 rounded-full text-sm font-medium ${
-                        selectedPrices.includes(price)
-                          ? "bg-black text-white"
-                          : "bg-gray-100 text-gray-900 hover:bg-gray-200"
-                      }`}
-                      onClick={() => handlePriceToggle(price)}
-                    >
-                      {price}
+                {getPriceLabel()}
+                <ChevronDown className="h-4 w-4 ml-1" />
+              </button>
+
+              {priceDropdownOpen && (
+                <div
+                  ref={priceDropdownRef}
+                  className="fixed z-50 mt-2 w-[400px] bg-white rounded-lg shadow-lg p-6"
+                  style={{ left: "50%", transform: "translateX(-50%)" }}
+                >
+                  <h3 className="text-xl font-bold mb-6">Price</h3>
+                  <div className="flex gap-3 mb-6">
+                    {["$", "$$", "$$$", "$$$$"].map((price) => (
+                      <button
+                        key={price}
+                        className={`px-6 py-2 rounded-full text-sm font-medium ${
+                          selectedPrices.includes(price)
+                            ? "bg-black text-white"
+                            : "bg-gray-100 text-gray-900 hover:bg-gray-200"
+                        }`}
+                        onClick={() => handlePriceToggle(price)}
+                      >
+                        {price}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="flex justify-between">
+                    <button className="text-gray-900 font-medium" onClick={resetPriceFilter}>
+                      Reset
                     </button>
-                  ))}
+                    <button
+                      className="bg-red-600 text-white px-4 py-2 rounded-full text-sm font-medium"
+                      onClick={applyPriceFilter}
+                    >
+                      View Results
+                    </button>
+                  </div>
                 </div>
-                <div className="flex justify-between">
-                  <button className="text-gray-900 font-medium" onClick={resetPriceFilter}>
-                    Reset
-                  </button>
-                  <button
-                    className="bg-red-600 text-white px-4 py-2 rounded-full text-sm font-medium"
-                    onClick={applyPriceFilter}
-                  >
-                    View Results
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
     )

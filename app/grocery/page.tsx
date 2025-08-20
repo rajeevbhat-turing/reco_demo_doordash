@@ -25,7 +25,7 @@ export default function Grocery() {
     underThirtyMins: false,
     deals: false,
     overRating: null,
-    price: null,
+    price: null, // Keep this but won't be used
     dashPass: false,
   });
   
@@ -83,36 +83,8 @@ export default function Grocery() {
   const favoriteStores = filterStores(allFavoriteStores);
   const fastestStores = filterStores(allFastestStores);
   
-  // Filter product carousels (keep the carousel if any products match)
-  const productCarousels = allProductCarousels.map(carousel => {
-    // Apply price filter to products if needed
-    if (activeFilters.price && activeFilters.price.length > 0) {
-      const priceRanges = {
-        '$': [0, 10],
-        '$$': [10, 25],
-        '$$$': [25, 45],
-        '$$$$': [45, 999]
-      };
-      
-      // Only keep products in the selected price ranges
-      const filteredProducts = carousel.products.filter(product => {
-        const priceString = typeof product.price === 'string' ? product.price : String(product.price);
-        const price = parseFloat(priceString.replace('$', ''));
-        
-        return activeFilters.price!.some(range => {
-          const [min, max] = priceRanges[range as keyof typeof priceRanges];
-          return price >= min && price <= max;
-        });
-      });
-      
-      return {
-        ...carousel,
-        products: filteredProducts
-      };
-    }
-    
-    return carousel;
-  }).filter(carousel => carousel.products.length > 0); // Only keep carousels with products
+  // Use all product carousels (no price filtering)
+  const productCarousels = allProductCarousels;
 
   // Set category explicitly
   useEffect(() => {
@@ -130,6 +102,7 @@ export default function Grocery() {
         onFilterChange={handleFilterChange}
         filters={activeFilters}
         filterData={filterOptions}
+        showPriceFilter={false}
       />
 
       {/* Promotional Banners */}
@@ -198,11 +171,7 @@ export default function Grocery() {
         })
       )}
 
-      {activeFilters.price && activeFilters.price.length > 0 && productCarousels.length === 0 && (
-        <div className="py-10 text-center">
-          <p className="text-lg text-gray-500">No products match your price filter</p>
-        </div>
-      )}
+
     </div>
     </CartProvider>
   )

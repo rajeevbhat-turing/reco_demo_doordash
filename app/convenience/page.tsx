@@ -63,13 +63,8 @@ export default function Convenience() {
   const scheduleData = getConvenienceScheduleData()
   const productCarousels = getProductCarouselData()
   
-  // Filter stores based on active filters
+  // Filter stores based on active filters (excluding DashPass and Price)
   const filteredStores = allConvenienceStores.filter(store => {
-    // DashPass filter
-    if (activeFilters.dashPass && !store.isDashPass) {
-      return false
-    }
-    
     // Time filter (under 30 min)
     if (activeFilters.underThirtyMins) {
       const timeMatch = store.time.match(/(\d+)\s*min/)
@@ -83,13 +78,6 @@ export default function Convenience() {
     if (activeFilters.overRating && store.rating) {
       const rating = getDefaultRating(store.rating)
       if (rating < activeFilters.overRating) return false
-    }
-    
-    // Price filter
-    if (activeFilters.price && activeFilters.price.length > 0) {
-      if (!activeFilters.price.includes(store.priceLevel)) {
-        return false
-      }
     }
     
     return true
@@ -153,6 +141,7 @@ export default function Convenience() {
           onFilterChange={handleFilterChange}
           filters={activeFilters}
           filterData={filterOptions}
+          showPriceFilter={false}
         />
 
         {/* Promotional Banners */}
@@ -215,11 +204,7 @@ export default function Convenience() {
           })
         )}
 
-        {activeFilters.price && activeFilters.price.length > 0 && productCarousels.length === 0 && (
-          <div className="py-10 text-center">
-            <p className="text-lg text-gray-500">No products match your price filter</p>
-          </div>
-        )}
+
 
       </div>
     </CartProvider>
