@@ -217,6 +217,26 @@ export default function CheckPage() {
     setFlowResults({})
   }
 
+  const handleClearState = () => {
+    try {
+      // Clear all localStorage
+      localStorage.clear()
+      console.log('✅ All localStorage cleared successfully')
+      
+      // Show success message
+      alert('✅ All application state cleared successfully! All verifiers are now ready to run again.')
+      
+      // Clear flow results since state has changed
+      setFlowResults({})
+      
+      // Force page refresh to reflect cleared state
+      window.location.reload()
+    } catch (error) {
+      console.error('❌ Failed to clear localStorage:', error)
+      alert(`❌ Failed to clear localStorage: ${error instanceof Error ? error.message : 'Unknown error'}`)
+    }
+  }
+
   const getCategoryColor = (category: string) => {
     const colors = {
       'restaurant-cart': 'bg-orange-100 text-orange-800',
@@ -302,6 +322,12 @@ export default function CheckPage() {
                 disabled={Object.keys(flowResults).length === 0}
               >
                 Clear Results
+              </button>
+              <button
+                onClick={handleClearState}
+                className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 text-sm"
+              >
+                Clear All State
               </button>
               <button
                 onClick={handleRunAll}
@@ -506,4 +532,4 @@ export default function CheckPage() {
       </div>
     </div>
   )
-} 
+}
