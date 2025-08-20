@@ -300,7 +300,6 @@ export default function Home() {
                             alt={restaurant.name}
                             fill
                             className="object-cover"
-                            style={{ width: 'auto', height: 'auto' }}
                             onError={(e) => {
                               // Fallback to placeholder if image fails to load
                               const target = e.target as HTMLImageElement;
