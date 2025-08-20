@@ -219,7 +219,6 @@ export default function StoreGrid({
                           </div>
                         )}
 
-                        {store.discount && <div className="text-sm text-blue-600 mt-1">{store.discount}</div>}
                       </div>
                     </div>
                   </div>
@@ -280,7 +279,6 @@ export default function StoreGrid({
                           </>
                         )}
                       </div>
-                      {store.discount && <div className="text-sm text-blue-600 mt-1">{store.discount}</div>}
                     </div>
                   </>
                 )}

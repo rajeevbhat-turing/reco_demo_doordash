@@ -980,11 +980,7 @@ export default function SearchPage() {
                             DashPass
                           </div>
                         )}
-                        {restaurant.discount && (
-                          <div className="ml-2 px-2 py-1 bg-red-100 text-red-800 text-xs rounded">
-                            {restaurant.discount}
-                          </div>
-                        )}
+
                       </div>
                       <div className="text-sm font-medium text-gray-900">
                         {restaurant.priceRange}

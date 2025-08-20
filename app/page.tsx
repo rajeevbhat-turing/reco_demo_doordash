@@ -359,9 +359,7 @@ export default function Home() {
 
                         <div className="mt-1 text-sm text-gray-500">{restaurant.deliveryFee}</div>
 
-                        {restaurant.discount && (
-                          <div className="mt-1 text-sm text-red-600 font-medium">{restaurant.discount}</div>
-                        )}
+
                       </div>
                     </div>
                   ))}

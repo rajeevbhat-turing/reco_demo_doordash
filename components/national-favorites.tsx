@@ -141,9 +141,7 @@ export default function NationalFavorites({ activeFilters }: NationalFavoritesPr
 
                 <div className="mt-1 text-sm text-gray-500">{restaurant.deliveryFee}</div>
 
-                {restaurant.discount && (
-                  <span className="mt-1 p-1 rounded-sm bg-red-100 text-xs text-red-600 font-medium">{restaurant.discount}</span>
-                )}
+
 
               </div>
             </div>
