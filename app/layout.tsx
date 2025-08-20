@@ -32,6 +32,81 @@ export default function RootLayout({
             </div>
           </div>
         </ReplaceCartProvider>
+        
+        {/* Global Functions Script */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              // Add global verification functions
+              window.verify = async (taskId) => {
+                try {
+                  // Get current localStorage data
+                  const localStorageData = {};
+                  for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    if (key) {
+                      localStorageData[key] = localStorage.getItem(key);
+                    }
+                  }
+                  
+                  // Create FormData
+                  const formData = new FormData();
+                  formData.append('taskId', taskId);
+                  formData.append('localStorageData', new Blob([JSON.stringify(localStorageData)], { type: 'application/json' }), 'localStorage.json');
+                  
+                  // Call the API
+                  const response = await fetch('/api/verify', {
+                    method: 'POST',
+                    body: formData
+                  });
+                  
+                  const result = await response.json();
+                  console.log('Verification result:', result);
+                  return result;
+                } catch (error) {
+                  console.error('Verification failed:', error);
+                  return { "task-id": taskId, "result": "failed" };
+                }
+              };
+
+              // Add global reset function
+              window.reset = () => {
+                localStorage.clear();
+                // Set default states
+                localStorage.setItem('multicategory-cart', JSON.stringify({
+                  state: {
+                    items: [],
+                    currentCategory: 'restaurant', // Set default category to prevent undefined config
+                    currentStoreId: null,
+                    currentRestaurantId: null,
+                    isGroupOrder: false,
+                    groupOrderId: null,
+                    searchResults: [],
+                    totalCartValue: 0,
+                    currentStore: null,
+                    lastClearInfo: null,
+                    maxItemsReached: false,
+                    verifierConsumed: false,
+                    lastSearchInfo: null,
+                    searchVerifierConsumed: false,
+                    lastRemovalInfo: null,
+                    removalVerifierConsumed: false,
+                    lastQuantityChangeInfo: null,
+                    quantityVerifierConsumed: false,
+                    lastOrderInfo: null,
+                    orderVerifierConsumed: false
+                  },
+                  version: 0
+                }));
+                console.log('Browser state reset');
+              };
+
+              console.log('Global functions loaded! Available:');
+              console.log('- window.verify("task-id")');
+              console.log('- window.reset()');
+            `
+          }}
+        />
       </body>
     </html>
   )

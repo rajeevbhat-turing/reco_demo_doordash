@@ -6,6 +6,40 @@ export async function GET(request: NextRequest) {
   const flowId = searchParams.get('flowId')
   const action = searchParams.get('action') // 'get', 'execute', 'getAll', or 'run'
 
+  // Handle debug test
+  if (action === 'debug') {
+    try {
+      const testData = {
+        "multicategory-cart": "{\"state\":{\"items\":[{\"itemName\":\"Blue Cooler Bag\",\"quantity\":1}],\"currentStore\":{\"name\":\"Boichik Bagels\"}}}"
+      };
+      
+      const mockLocalStorage = {
+        getItem: (key: string) => {
+          return testData[key] || null;
+        }
+      };
+      
+      const flow = flowVerifiers.flows['add-cooler-bag'];
+      const verifierFunction = new Function(
+        'localStorage', 'console', 'window',
+        `return (${flow.verifier})()`
+      );
+      
+      const result = verifierFunction(mockLocalStorage, console, {});
+      
+      return NextResponse.json({
+        debug: true,
+        result: result,
+        testData: testData
+      });
+    } catch (error) {
+      return NextResponse.json({
+        debug: true,
+        error: error instanceof Error ? error.message : 'Unknown error'
+      });
+    }
+  }
+
   // Handle getting all flows
   if (action === 'getAll') {
     const flows = Object.entries(flowVerifiers.flows).map(([id, flow]) => ({
@@ -113,7 +147,7 @@ export async function GET(request: NextRequest) {
         // Create function with the mock context
         const verifierFunction = new Function(
           'localStorage', 'console', 'window',
-          `return (${flow.verifier})()`
+          flow.verifier
         )
         result = verifierFunction(context.localStorage, context.console, context.window)
       } catch (execError) {
@@ -166,6 +200,14 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+  // Check if this is a multipart form data request (file upload)
+  const contentType = request.headers.get('content-type') || '';
+  
+  if (contentType.includes('multipart/form-data')) {
+    return handleFileUpload(request);
+  }
+  
+  // Handle JSON requests (existing functionality)
   const body = await request.json()
   const { flowId, result, error, cartState } = body
 
@@ -224,7 +266,7 @@ export async function POST(request: NextRequest) {
         // Create function with the mock context
         const verifierFunction = new Function(
           'localStorage', 'console', 'window',
-          `return (${flow.verifier})()`
+          flow.verifier
         )
         verificationResult = verifierFunction(context.localStorage, context.console, context.window)
       } catch (execError) {
@@ -280,4 +322,116 @@ export async function POST(request: NextRequest) {
     flowId,
     result
   })
+}
+
+async function handleFileUpload(request: NextRequest) {
+  try {
+    const formData = await request.formData();
+    const taskId = formData.get('taskId') as string;
+    const localStorageFile = formData.get('localStorageData') as File;
+    
+    if (!taskId) {
+      return NextResponse.json({ error: 'taskId is required' }, { status: 400 });
+    }
+    
+    if (!localStorageFile) {
+      return NextResponse.json({ error: 'localStorageData file is required' }, { status: 400 });
+    }
+    
+    // Get the flow verifier
+    const flow = flowVerifiers.flows[taskId as keyof typeof flowVerifiers.flows];
+    if (!flow) {
+      return NextResponse.json({ error: `Task '${taskId}' not found` }, { status: 404 });
+    }
+    
+    // Read and parse the localStorage file
+    const localStorageText = await localStorageFile.text();
+    let localStorageData;
+    try {
+      localStorageData = JSON.parse(localStorageText);
+    } catch (parseError) {
+      return NextResponse.json({ error: 'Invalid JSON in localStorageData file' }, { status: 400 });
+    }
+    
+    // Execute the verifier with the provided localStorage data
+    const startTime = performance.now();
+    
+    // Create a mock localStorage with the uploaded data
+    const mockLocalStorage = {
+      getItem: (key: string) => {
+        const value = localStorageData[key];
+        // Return the value as a string (matching browser localStorage behavior)
+        if (value === undefined) return null;
+        // Ensure it's a string, but don't double-stringify
+        return typeof value === 'string' ? value : JSON.stringify(value);
+      }
+    };
+    
+    // Create a mock console for capturing output
+    const consoleOutput: string[] = [];
+    const mockConsole = {
+      log: (...args: any[]) => {
+        consoleOutput.push(`[LOG] ${args.join(' ')}`);
+      },
+      error: (...args: any[]) => {
+        consoleOutput.push(`[ERROR] ${args.join(' ')}`);
+      }
+    };
+    
+    // Create execution context with mocks
+    const context = {
+      localStorage: mockLocalStorage,
+      console: mockConsole,
+      window: {
+        useCartStore: {
+          getState: () => ({
+            markSearchVerifierConsumed: () => {},
+            markVerifierConsumed: () => {},
+            markRemovalVerifierConsumed: () => {},
+            markQuantityVerifierConsumed: () => {},
+            markOrderVerifierConsumed: () => {}
+          })
+        }
+      }
+    };
+    
+    // Execute the verifier code with the mock context
+    let verificationResult: boolean | undefined;
+    try {
+      // Add debug logging
+      console.log(`[DEBUG] Verifying task: ${taskId}`);
+      console.log(`[DEBUG] localStorage data keys:`, Object.keys(localStorageData));
+      console.log(`[DEBUG] multicategory-cart value:`, localStorageData['multicategory-cart']);
+      
+      // Create function with the mock context
+      const verifierFunction = new Function(
+        'localStorage', 'console', 'window',
+        flow.verifier
+      );
+      verificationResult = verifierFunction(context.localStorage, context.console, context.window);
+      
+      console.log(`[DEBUG] Verification result:`, verificationResult);
+    } catch (execError) {
+      const errorMessage = execError instanceof Error ? execError.message : 'Unknown error';
+      console.log(`[DEBUG] Verification error:`, errorMessage);
+      return NextResponse.json({
+        "task-id": taskId,
+        "result": "failed"
+      });
+    }
+    
+    const executionTime = performance.now() - startTime;
+    
+    return NextResponse.json({
+      "task-id": taskId,
+      "result": verificationResult ? "passed" : "failed"
+    });
+    
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+    return NextResponse.json({
+      "task-id": "unknown",
+      "result": "failed"
+    }, { status: 500 });
+  }
 } 
