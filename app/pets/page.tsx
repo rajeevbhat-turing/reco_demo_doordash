@@ -38,18 +38,8 @@ export default function Pets() {
     if (allStores.length > 0) {
       setCurrentStoreData(allStores[0])
     }
-    
-    // Listen for cart updates to open cart when items are added
-    const unsubscribe = useCartStore.subscribe((state) => {
-      const { items } = state
-      if (items.length > 0 && !isCartOpen) {
-        setIsCartOpen(true)
-      }
-    })
 
     clearCurrentStore();
-    
-    return () => unsubscribe()
   }, [])
   
   // Function to check if an image URL is valid (not placeholder/empty)
@@ -127,6 +117,7 @@ export default function Pets() {
             stores={filteredStores} 
             variant="all" 
             storeType="pets"
+            showSeeAll={false}
           />
         ) : (
           <div className="py-10 text-center">

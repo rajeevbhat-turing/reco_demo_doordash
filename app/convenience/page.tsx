@@ -149,7 +149,7 @@ export default function Convenience() {
 
         {/* All Stores Section */}
         {filteredStores.length > 0 ? (
-          <AllStores title="All Stores" stores={filteredStores} storeType="convenience" />
+          <AllStores title="All Stores" stores={filteredStores} storeType="convenience" showSeeAll={false} />
         ) : (
           <div className="py-10 text-center">
             <p className="text-lg text-gray-500">No stores match your filters</p>

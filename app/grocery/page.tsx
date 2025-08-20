@@ -110,7 +110,7 @@ export default function Grocery() {
 
       {/* All Stores Section */}
       {stores.length > 0 ? (
-        <AllStores title="All Stores" stores={stores} storeType="grocery" />
+        <AllStores title="All Stores" stores={stores} storeType="grocery" showSeeAll={false} />
       ) : (
         <div className="py-10 text-center">
           <p className="text-lg text-gray-500">No stores match your filters</p>
