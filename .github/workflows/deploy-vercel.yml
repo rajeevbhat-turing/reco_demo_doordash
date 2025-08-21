@@ -1,8 +1,8 @@
 name: Vercel Production Deployment
 
 env:
-  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+  VERCEL_ORG_ID: team_FBIDzEp8MHS8uBxAMkbguRfr
+  VERCEL_PROJECT_ID: prj_qqiFxbwdy4Hxvhz6NCZJUUSnbdEu
 
 on:
   push:
