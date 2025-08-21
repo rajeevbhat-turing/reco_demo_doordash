@@ -13,6 +13,7 @@ import type { Restaurant } from "@/constants/restaurants"
 import { CartProvider } from "@/context/cart-context"
 import { useCartStore } from "@/store/cart-store"
 import { getDefaultRating } from "@/utils/rating-utils"
+import { filterRestaurantsWithMenuItems } from "@/utils/restaurant-utils"
 
 export default function Home() {
   const [filters, setFilters] = useState<FilterState>({
@@ -63,9 +64,9 @@ export default function Home() {
     window.scrollTo({ top: 0, behavior: "smooth" })
   }
 
-  // Get only actual restaurants (filter out stores like Target, flower shops)
+  // Get only actual restaurants (filter out stores like Target, flower shops) and those with menu items
   const actualRestaurants = useMemo(() => {
-    return withDefaultRatings(filterOnlyRestaurants(restaurants));
+    return withDefaultRatings(filterRestaurantsWithMenuItems(filterOnlyRestaurants(restaurants)));
   }, []);
 
   // Memoize the original restaurant sections to prevent recreating them on every render
@@ -289,7 +290,7 @@ export default function Home() {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {allFilteredRestaurants.map((restaurant) => (
                     <div key={restaurant.id} className="restaurant-card">
-                      <Link href={`/store/${restaurant.id}`} className="block">
+                      <Link href={`/store/${restaurant.id}`} className="block" prefetch={false}>
                         <div className="relative h-[200px] bg-gray-100">
                           <Image
                             src={
@@ -299,6 +300,11 @@ export default function Home() {
                             alt={restaurant.name}
                             fill
                             className="object-cover"
+                            onError={(e) => {
+                              // Fallback to placeholder if image fails to load
+                              const target = e.target as HTMLImageElement;
+                              target.src = '/placeholder.svg';
+                            }}
                           />
                           {restaurant.new && (
                             <div className="absolute top-3 left-3 bg-black text-white text-xs font-bold px-2 py-1 rounded">
@@ -353,9 +359,7 @@ export default function Home() {
 
                         <div className="mt-1 text-sm text-gray-500">{restaurant.deliveryFee}</div>
 
-                        {restaurant.discount && (
-                          <div className="mt-1 text-sm text-red-600 font-medium">{restaurant.discount}</div>
-                        )}
+
                       </div>
                     </div>
                   ))}

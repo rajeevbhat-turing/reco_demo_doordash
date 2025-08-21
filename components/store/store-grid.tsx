@@ -178,7 +178,7 @@ export default function StoreGrid({
                               toggleFavorite(e, store.id);
                             }}
                           >
-                            <Heart className={`h-5 w-5 ${favorites[store.id] ? 'fill-red-500 text-red-500' : ''}`} />
+                            <Heart className={`h-5 w-5 ${favorites[store.id] ? 'fill-blue-500 text-blue-500' : ''}`} />
                           </Button>
                         </div>
 
@@ -219,7 +219,6 @@ export default function StoreGrid({
                           </div>
                         )}
 
-                        {store.discount && <div className="text-sm text-[#ff3008] mt-1">{store.discount}</div>}
                       </div>
                     </div>
                   </div>
@@ -248,7 +247,7 @@ export default function StoreGrid({
                         toggleFavorite(e, store.id);
                       }}
                     >
-                      <Heart className={`h-5 w-5 ${favorites[store.id] ? 'fill-red-500 text-red-500' : ''}`} />
+                      <Heart className={`h-5 w-5 ${favorites[store.id] ? 'fill-blue-500 text-blue-500' : ''}`} />
                     </Button>
                     <div className="mt-2">
                       <div className="font-medium flex items-center">
@@ -280,7 +279,6 @@ export default function StoreGrid({
                           </>
                         )}
                       </div>
-                      {store.discount && <div className="text-sm text-[#ff3008] mt-1">{store.discount}</div>}
                     </div>
                   </>
                 )}

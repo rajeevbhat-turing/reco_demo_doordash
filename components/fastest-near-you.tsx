@@ -98,9 +98,7 @@ export default function FastestNearYou({ stores = defaultStores }: FastestNearYo
                 <span className="mx-1">•</span>
                 <span>{store.time}</span>
               </div>
-              {store.discount && (
-                <div className="text-sm text-[#ff3008] mt-1">{store.discount}</div>
-              )}
+              
             </div>
           </div>
         ))}

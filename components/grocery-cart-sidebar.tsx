@@ -58,6 +58,20 @@ export default function GroceryCartSidebar({ storeData }: CartSidebarProps) {
     }
   }
 
+  // Get the display name based on cart items first, then fallback to storeData
+  const getDisplayName = () => {
+    // First, try to get store name from cart items themselves
+    if (items.length > 0) {
+      const firstItem = items[0];
+      if (firstItem.storeName) {
+        return firstItem.storeName;
+      }
+    }
+    
+    // Fallback to storeData prop
+    return storeData.name;
+  };
+
   if (items.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center h-60">
@@ -81,7 +95,7 @@ export default function GroceryCartSidebar({ storeData }: CartSidebarProps) {
       <div className="p-4 border-b">
         <h2 className="font-medium">Your cart from</h2>
         <div className="flex items-center">
-          <h3 className="font-bold text-lg">{storeData.name}</h3>
+          <h3 className="font-bold text-lg">{getDisplayName()}</h3>
           <ChevronRight className="h-5 w-5 ml-1" />
         </div>
         

@@ -1,5 +1,5 @@
 import { create } from "zustand"
-import { devtools } from "zustand/middleware"
+import { devtools, persist } from "zustand/middleware"
 import { orderData, Order, OrderItem } from "@/constants/order-data"
 import { CartItem } from "./cart-store"
 
@@ -20,40 +20,49 @@ interface OrdersStore {
 
 export const useOrdersStore = create<OrdersStore>()(
   devtools(
-    (set, get) => ({
-      orders: orderData, // Initialize with existing order data
+    persist(
+      (set, get) => ({
+        orders: orderData, // Initialize with existing order data
 
-      addOrder: (orderInfo) => {
-        const newOrder: Order = {
-          id: orderInfo.orderId,
-          restaurantId: orderInfo.storeId,
-          restaurantName: orderInfo.storeName,
-          orderDate: new Date().toLocaleDateString('en-US', { 
-            weekday: 'short', 
-            month: 'short', 
-            day: 'numeric' 
-          }),
-          totalAmount: orderInfo.total,
-          items: orderInfo.items.map(item => ({
-            id: item.id.toString(),
-            name: item.itemName,
-            quantity: item.quantity,
-            price: typeof item.price === 'number' 
-              ? item.price 
-              : parseFloat(item.price.toString().replace(/[^0-9.]/g, ""))
-          })),
-          status: 'Delivered',
-          orderType: 'Personal',
-          isDashPass: false
-        }
+        addOrder: (orderInfo) => {
+          console.log('[ORDERS STORE] Adding new order:', orderInfo.orderId, orderInfo.storeName)
+          const newOrder: Order = {
+            id: orderInfo.orderId,
+            restaurantId: orderInfo.storeId,
+            restaurantName: orderInfo.storeName,
+            orderDate: new Date().toLocaleDateString('en-US', { 
+              weekday: 'short', 
+              month: 'short', 
+              day: 'numeric' 
+            }),
+            totalAmount: orderInfo.total,
+            items: orderInfo.items.map(item => ({
+              id: item.id.toString(),
+              name: item.itemName,
+              quantity: item.quantity,
+              price: typeof item.price === 'number' 
+                ? item.price 
+                : parseFloat(item.price.toString().replace(/[^0-9.]/g, ""))
+            })),
+            status: 'Delivered',
+            orderType: 'Personal',
+            isDashPass: false
+          }
 
-        set(state => ({
-          orders: [newOrder, ...state.orders] // Add new order at the beginning
-        }))
-      },
+          set(state => {
+            const newOrders = [newOrder, ...state.orders]
+            console.log('[ORDERS STORE] Total orders after add:', newOrders.length)
+            return { orders: newOrders }
+          })
+        },
 
-      getOrders: () => get().orders
-    }),
+        getOrders: () => get().orders
+      }),
+      {
+        name: "orders-store",
+        enabled: true,
+      }
+    ),
     {
       name: "OrdersStore",
       enabled: true,

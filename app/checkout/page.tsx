@@ -53,6 +53,15 @@ export default function CheckoutPage() {
 
   // Get store/restaurant name
   const getStoreName = () => {
+    // First, try to get store name from cart items themselves
+    if (items.length > 0) {
+      const firstItem = items[0];
+      if (firstItem.storeName) {
+        return firstItem.storeName;
+      }
+    }
+    
+    // Fallback to current page context
     if (currentCategory === 'restaurant' && currentRestaurantId) {
       const restaurant = getRestaurantById(currentRestaurantId)
       return restaurant?.name || 'Restaurant'

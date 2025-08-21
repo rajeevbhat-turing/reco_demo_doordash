@@ -1,7 +1,6 @@
 "use client"
 
-import { useState, useRef, useEffect } from "react"
-import FilterOptions, { FilterState, FilterOptionsRef } from "@/components/filter-options"
+import { useState, useEffect } from "react"
 import StoreGrid from "@/components/store/store-grid"
 import ProductDisplay from "@/components/product/product-display"
 import AllStores from "@/components/all-stores"
@@ -24,20 +23,9 @@ import { allPetStores } from "@/data/pet-data"
 import { getDefaultRating } from "@/utils/rating-utils"
 
 export default function Pets() {
-  // Filter state
-  const [activeFilters, setActiveFilters] = useState<FilterState>({
-    underThirtyMins: false,
-    deals: false,
-    overRating: null,
-    price: null,
-    dashPass: false,
-  });
-  
   // Cart state
   const [isCartOpen, setIsCartOpen] = useState(false)
   const [currentStoreData, setCurrentStoreData] = useState<any>(null)
-  
-  const filterOptionsRef = useRef<FilterOptionsRef>(null);
   const cartStore = useCartStore();
   const { setCurrentStore, clearCurrentStore } = useCartStore()
   
@@ -50,18 +38,8 @@ export default function Pets() {
     if (allStores.length > 0) {
       setCurrentStoreData(allStores[0])
     }
-    
-    // Listen for cart updates to open cart when items are added
-    const unsubscribe = useCartStore.subscribe((state) => {
-      const { items } = state
-      if (items.length > 0 && !isCartOpen) {
-        setIsCartOpen(true)
-      }
-    })
 
     clearCurrentStore();
-    
-    return () => unsubscribe()
   }, [])
   
   // Function to check if an image URL is valid (not placeholder/empty)
@@ -73,39 +51,13 @@ export default function Pets() {
   };
   
   // Get the data from our pet response mapper
-  const filterOptions = getFilterOptions();
   const allPetStores = getAllPetStores();
   const uiConfig = getPetUiConfig();
   const featuredPetStoreIds = getFeaturedPetStores();
   const productSections = getPetProductSections();
   
-  // Handle filter changes
-  const handleFilterChange = (filters: FilterState) => {
-    setActiveFilters(filters);
-  };
-  
-  // Filter stores based on active filters
-  const filteredStores = allPetStores.filter(store => {
-    // Filter by under 30 min
-    if (activeFilters.underThirtyMins) {
-      const timeString = store.time || "";
-      const minutes = parseInt(timeString.match(/\d+/)?.[0] || "100");
-      if (minutes >= 30) return false;
-    }
-    
-    // Filter by rating
-    if (activeFilters.overRating && store.rating) {
-      const rating = getDefaultRating(store.rating)
-      if (rating < activeFilters.overRating) return false;
-    }
-    
-    // Filter by DashPass
-    if (activeFilters.dashPass && !store.isDashPass) {
-      return false;
-    }
-    
-    return true;
-  });
+  // Use all stores (no filtering)
+  const filteredStores = allPetStores;
   
   // Filter featured stores with valid images and convert to proper format
   const featuredStores = allPetStores
@@ -156,14 +108,7 @@ export default function Pets() {
   return (
     <CartProvider category="pets">
       <div className="max-w-[1200px] mx-auto px-4 pt-16">
-        {/* Filter Options Bar */}
-        <FilterOptions 
-          ref={filterOptionsRef}
-          isGrocery={false} 
-          onFilterChange={handleFilterChange}
-          filters={activeFilters}
-          filterData={filterOptions}
-        />
+
 
         {/* All Stores Section */}
         {filteredStores.length > 0 ? (
@@ -172,6 +117,7 @@ export default function Pets() {
             stores={filteredStores} 
             variant="all" 
             storeType="pets"
+            showSeeAll={false}
           />
         ) : (
           <div className="py-10 text-center">

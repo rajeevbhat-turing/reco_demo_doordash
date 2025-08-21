@@ -142,42 +142,31 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
     [items],
   )
 
-  // Handle restaurant changes
+  // Only fetch complement items based on cart items, not current page
   useEffect(() => {
-    if (currentCategory === 'restaurant' && currentRestaurantId !== lastRestaurantId) {
-      setComplementItems([])
-      setLastRestaurantId(currentRestaurantId)
-
-      if (currentRestaurantId) {
-        fetchComplementItems(currentRestaurantId)
+    if (items.length > 0) {
+      const firstItem = items[0];
+      if (firstItem.restaurantId) {
+        fetchComplementItems(firstItem.restaurantId);
       } else {
-        setRestaurant(null)
+        setComplementItems([]);
       }
+    } else {
+      setComplementItems([]);
     }
-  }, [currentRestaurantId, lastRestaurantId, fetchComplementItems, currentCategory])
-
-  // Handle store changes
-  useEffect(() => {
-    if (currentCategory !== 'restaurant' && currentStoreId !== lastStoreId) {
-      setLastStoreId(currentStoreId)
-      
-      if (currentStoreId) {
-        const storeInfo = getStoreInfo(currentStoreId, currentCategory)
-        setStore(storeInfo)
-      } else {
-        setStore(null)
-      }
-    }
-  }, [currentStoreId, lastStoreId, currentCategory, getStoreInfo])
-
-  useEffect(() => {
-    if (currentRestaurantId && currentRestaurantId === lastRestaurantId && currentCategory === 'restaurant') {
-      fetchComplementItems(currentRestaurantId)
-    }
-  }, [items, currentRestaurantId, lastRestaurantId, fetchComplementItems, currentCategory])
+  }, [items, fetchComplementItems])
 
   // Get the display name based on current category
   const getDisplayName = () => {
+    // First, try to get store name from cart items themselves
+    if (items.length > 0) {
+      const firstItem = items[0];
+      if (firstItem.storeName) {
+        return firstItem.storeName;
+      }
+    }
+    
+    // Fallback to current page context
     if (currentCategory === 'restaurant' && restaurant) {
       return restaurant.name;
     } else if (currentCategory !== 'restaurant' && store) {
@@ -231,12 +220,14 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
 
   // Check if delivery fee applies (only for non-restaurant categories)
   const shouldShowDeliveryFeeNotice = () => {
-    return currentCategory !== 'restaurant' && ['grocery', 'retail', 'pets', 'convenience'].includes(currentCategory);
+    if (items.length === 0) return false;
+    const firstItem = items[0];
+    return firstItem.category !== 'restaurant' && ['grocery', 'retail', 'pets', 'convenience'].includes(firstItem.category);
   };
 
   const handleAddComplementItem = (item: any) => {
-    // Verify the item belongs to the current restaurant
-    if (item.restaurantId === currentRestaurantId && currentRestaurantId) {
+    // Verify the item belongs to the same restaurant as cart items
+    if (items.length > 0 && item.restaurantId === items[0].restaurantId) {
       addItem({
         id: item.id,
         restaurantId: item.restaurantId,
@@ -308,7 +299,7 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
           {/* Progress bar */}
           <div className="h-1 bg-gray-200 rounded-full mb-4">
             <div
-              className="h-1 bg-red-600 rounded-full transition-all duration-300"
+              className="h-1 bg-blue-600 rounded-full transition-all duration-300"
               style={{ width: `${Math.min((subtotal / displayThreshold) * 100, 100)}%` }}
               suppressHydrationWarning
             ></div>
@@ -317,7 +308,7 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
           {/* Delivery fee notice */}
           {subtotal < displayThreshold ? (
             <div className="flex items-start text-sm mb-4">
-              <div className="text-red-600 mr-2 mt-1 flex-shrink-0">
+              <div className="text-blue-600 mr-2 mt-1 flex-shrink-0">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path
                     d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z"
@@ -337,7 +328,7 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
                 </svg>
               </div>
               <div>
-                <p className="font-medium text-red-600" suppressHydrationWarning>
+                <p className="font-medium text-blue-600" suppressHydrationWarning>
                   Add ${(displayThreshold - subtotal).toFixed(2)} for $0 delivery fee
                 </p>
                 <span className="text-gray-500" suppressHydrationWarning>
@@ -370,7 +361,7 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
           )}
 
           {/* Continue button */}
-          <button className="w-full bg-red-600 hover:bg-red-700 text-white font-medium py-3 rounded-full mb-3 text-lg" onClick={handleContinueToCheckout}>
+          <button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-full mb-3 text-lg" onClick={handleContinueToCheckout}>
             Continue
           </button>
           <p className="text-center text-sm text-gray-600" suppressHydrationWarning>
@@ -398,7 +389,7 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
             <div key={item.id} className="p-4 flex">
               <div className="relative h-14 w-14 mr-4 flex-shrink-0">
                 <Image
-                  src={item.image?.trim() || ""}
+                  src={item.image?.trim() || "/placeholder.svg"}
                   alt={item.itemName}
                   width={96}
                   height={96}
@@ -407,11 +398,9 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
               </div>
               <div className="flex-1">
                 <h4 className="text-base font-medium">{item.itemName}</h4>
-                {item.customizations ? (
+                {item.customizations && (
                   <p className="text-xs text-gray-600 mt-1">{item.customizations}</p>
-                ) : currentCategory === 'restaurant' ? (
-                  <p className="text-xs text-gray-600 mt-1">LARGE (5939 kJ.), Fries (1320 kJ.), Fanta® (716 kJ.)</p>
-                ) : null}
+                )}
                 <div className="mt-2 flex items-center justify-between">
                   <div className="text-sm">${(getItemPrice(item) * item.quantity).toFixed(2)}</div>
                   <div className="flex items-center bg-gray-100 rounded-full shadow-lg">
@@ -450,8 +439,8 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
           ))}
         </div>
 
-        {/* Complement your cart section - only show if we have items from the CURRENT restaurant */}
-        {complementItems.length > 0 && lastRestaurantId === currentRestaurantId && (
+        {/* Complement your cart section - only show if we have restaurant items */}
+        {complementItems.length > 0 && items.length > 0 && items[0].restaurantId && (
           <div className="p-4 border-t">
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-bold text-lg">Complement your cart</h3>
@@ -493,3 +482,4 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
     </div>
   )
 }
+

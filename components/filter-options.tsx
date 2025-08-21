@@ -9,7 +9,6 @@ export interface FilterState {
   overRating: number | null
   price: string[] | null
   dashPass: boolean
-  category: string | null
 }
 
 export interface FilterOptionsRef {
@@ -28,6 +27,7 @@ interface FilterOptionsProps {
   onReset?: () => void
   filters?: FilterState
   filterData?: FilterOption[]
+  showPriceFilter?: boolean
 }
 
 interface ScheduleOption {
@@ -42,14 +42,13 @@ interface TimeOption {
 }
 
 const FilterOptions = forwardRef<FilterOptionsRef, FilterOptionsProps>(
-  ({ isGrocery = false, onFilterChange, onReset, filters: externalFilters, filterData = [] }, ref) => {
+  ({ isGrocery = false, onFilterChange, onReset, filters: externalFilters, filterData = [], showPriceFilter = true }, ref) => {
     const [filters, setFilters] = useState<FilterState>({
       underThirtyMins: false,
       deals: false,
       overRating: null,
       price: null,
       dashPass: false,
-      category: null,
     })
 
     // Update internal state when external filters change
@@ -67,7 +66,7 @@ const FilterOptions = forwardRef<FilterOptionsRef, FilterOptionsProps>(
     const [isTimeOptionsExpanded, setIsTimeOptionsExpanded] = useState(false)
     const [selectedRating, setSelectedRating] = useState<number | null>(null)
     const [selectedPrices, setSelectedPrices] = useState<string[]>([])
-    const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
+  
     const [visibleTimeOptions, setVisibleTimeOptions] = useState<TimeOption[]>([])
 
     // Schedule state - REMOVED
@@ -78,10 +77,10 @@ const FilterOptions = forwardRef<FilterOptionsRef, FilterOptionsProps>(
 
     const ratingButtonRef = useRef<HTMLButtonElement>(null)
     const priceButtonRef = useRef<HTMLButtonElement>(null)
-    const categoryButtonRef = useRef<HTMLButtonElement>(null)
+  
     const ratingDropdownRef = useRef<HTMLDivElement>(null)
     const priceDropdownRef = useRef<HTMLDivElement>(null)
-    const categoryDropdownRef = useRef<HTMLDivElement>(null)
+  
 
     // Generate date options (Today, Tomorrow, and next 3 days)
     useEffect(() => {
@@ -363,19 +362,7 @@ const FilterOptions = forwardRef<FilterOptionsRef, FilterOptionsProps>(
       window.scrollTo({ top: 0, behavior: "smooth" })
     }
 
-    const resetCategoryFilter = () => {
-      setSelectedCategory(null)
-    }
-
-    const getCategoryLabel = () => {
-      return selectedCategory ? selectedCategory : "Category"
-    }
-
-    const applyCategoryFilter = () => {
-      toggleFilter("category", selectedCategory)
-      setCategoryDropdownOpen(false)
-      window.scrollTo({ top: 0, behavior: "smooth" })
-    }
+    
 
     return (
       <div className="sticky top-16 z-40 bg-white py-2 border-b border-gray-100">
@@ -498,59 +485,7 @@ const FilterOptions = forwardRef<FilterOptionsRef, FilterOptionsProps>(
             </button>
           )}
 
-          <div className="relative">
-            <button
-              ref={categoryButtonRef}
-              className={`rounded-full h-9 px-4 text-xs font-semibold ${
-                filters.category ? "bg-gray-900 text-white" : "bg-gray-100 hover:bg-gray-200 text-gray-900"
-              } flex items-center gap-1`}
-              onClick={(e) => {
-                e.stopPropagation()
-                setCategoryDropdownOpen(!categoryDropdownOpen)
-                setRatingDropdownOpen(false)
-                setPriceDropdownOpen(false)
-              }}
-            >
-              {getCategoryLabel()}
-              <ChevronDown className="h-4 w-4 ml-1" />
-            </button>
 
-            {categoryDropdownOpen && (
-              <div
-                ref={categoryDropdownRef}
-                className="fixed z-50 mt-2 w-[400px] bg-white rounded-lg shadow-lg p-6"
-                style={{ left: "50%", transform: "translateX(-50%)" }}
-              >
-                <h3 className="text-xl font-bold mb-6">Category</h3>
-                <div className="grid grid-cols-2 gap-3 mb-6">
-                  {["desserts", "coffee", "breakfast", "fast-food", "comfort-food", "healthy", "bakery", "pizza", "burgers", "asian", "sushi", "smoothie", "bubble-tea", "chicken"].map((category) => (
-                    <button
-                      key={category}
-                      className={`px-4 py-2 rounded-full text-sm font-medium ${
-                        selectedCategory === category
-                          ? "bg-black text-white"
-                          : "bg-gray-100 text-gray-900 hover:bg-gray-200"
-                      }`}
-                      onClick={() => setSelectedCategory(category)}
-                    >
-                      {category.charAt(0).toUpperCase() + category.slice(1)}
-                    </button>
-                  ))}
-                </div>
-                <div className="flex justify-between">
-                  <button className="text-gray-900 font-medium" onClick={resetCategoryFilter}>
-                    Reset
-                  </button>
-                  <button
-                    className="bg-red-600 text-white px-4 py-2 rounded-full text-sm font-medium"
-                    onClick={applyCategoryFilter}
-                  >
-                    View Results
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
 
           <div className="relative">
             <button
@@ -613,59 +548,61 @@ const FilterOptions = forwardRef<FilterOptionsRef, FilterOptionsProps>(
             )}
           </div>
 
-          <div className="relative">
-            <button
-              ref={priceButtonRef}
-              className={`rounded-full h-9 px-4 text-xs font-semibold ${
-                filters.price && filters.price.length > 0
-                  ? "bg-gray-900 text-white"
-                  : "bg-gray-100 hover:bg-gray-200 text-gray-900"
-              } flex items-center gap-1`}
-              onClick={(e) => {
-                e.stopPropagation()
-                setPriceDropdownOpen(!priceDropdownOpen)
-              }}
-            >
-              {getPriceLabel()}
-              <ChevronDown className="h-4 w-4 ml-1" />
-            </button>
-
-            {priceDropdownOpen && (
-              <div
-                ref={priceDropdownRef}
-                className="fixed z-50 mt-2 w-[400px] bg-white rounded-lg shadow-lg p-6"
-                style={{ left: "50%", transform: "translateX(-50%)" }}
+          {showPriceFilter && (
+            <div className="relative">
+              <button
+                ref={priceButtonRef}
+                className={`rounded-full h-9 px-4 text-xs font-semibold ${
+                  filters.price && filters.price.length > 0
+                    ? "bg-gray-900 text-white"
+                    : "bg-gray-100 hover:bg-gray-200 text-gray-900"
+                } flex items-center gap-1`}
+                onClick={(e) => {
+                  e.stopPropagation()
+                  setPriceDropdownOpen(!priceDropdownOpen)
+                }}
               >
-                <h3 className="text-xl font-bold mb-6">Price</h3>
-                <div className="flex gap-3 mb-6">
-                  {["$", "$$", "$$$", "$$$$"].map((price) => (
-                    <button
-                      key={price}
-                      className={`px-6 py-2 rounded-full text-sm font-medium ${
-                        selectedPrices.includes(price)
-                          ? "bg-black text-white"
-                          : "bg-gray-100 text-gray-900 hover:bg-gray-200"
-                      }`}
-                      onClick={() => handlePriceToggle(price)}
-                    >
-                      {price}
+                {getPriceLabel()}
+                <ChevronDown className="h-4 w-4 ml-1" />
+              </button>
+
+              {priceDropdownOpen && (
+                <div
+                  ref={priceDropdownRef}
+                  className="fixed z-50 mt-2 w-[400px] bg-white rounded-lg shadow-lg p-6"
+                  style={{ left: "50%", transform: "translateX(-50%)" }}
+                >
+                  <h3 className="text-xl font-bold mb-6">Price</h3>
+                  <div className="flex gap-3 mb-6">
+                    {["$", "$$", "$$$", "$$$$"].map((price) => (
+                      <button
+                        key={price}
+                        className={`px-6 py-2 rounded-full text-sm font-medium ${
+                          selectedPrices.includes(price)
+                            ? "bg-black text-white"
+                            : "bg-gray-100 text-gray-900 hover:bg-gray-200"
+                        }`}
+                        onClick={() => handlePriceToggle(price)}
+                      >
+                        {price}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="flex justify-between">
+                    <button className="text-gray-900 font-medium" onClick={resetPriceFilter}>
+                      Reset
                     </button>
-                  ))}
+                    <button
+                      className="bg-red-600 text-white px-4 py-2 rounded-full text-sm font-medium"
+                      onClick={applyPriceFilter}
+                    >
+                      View Results
+                    </button>
+                  </div>
                 </div>
-                <div className="flex justify-between">
-                  <button className="text-gray-900 font-medium" onClick={resetPriceFilter}>
-                    Reset
-                  </button>
-                  <button
-                    className="bg-red-600 text-white px-4 py-2 rounded-full text-sm font-medium"
-                    onClick={applyPriceFilter}
-                  >
-                    View Results
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
     )

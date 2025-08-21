@@ -48,6 +48,16 @@ export default function OrderConfirmationModal({
   }, [isOpen])
 
   const handleClose = () => {
+    console.log('[ORDER] 🚀 Order completion starting...', {
+      orderId,
+      tipAmount,
+      total,
+      storeName: storeName || "Store",
+      category: category || currentCategory,
+      itemsCount: items.length,
+      items: items.map(item => item.itemName)
+    })
+
     // Record order completion in cart store for verifiers
     recordOrderCompletion({
       orderId,
@@ -57,9 +67,10 @@ export default function OrderConfirmationModal({
       category: category || currentCategory,
       items
     })
+    console.log('[ORDER] ✅ Recorded order completion in cart store')
 
     // Add order to orders store
-    addOrder({
+    const orderData = {
       orderId,
       storeName: storeName || "Store",
       storeId: storeId || currentStoreId || currentRestaurantId || "unknown",
@@ -68,16 +79,21 @@ export default function OrderConfirmationModal({
       total,
       deliveryTime,
       scheduledTime
-    })
+    };
+    console.log('[ORDER] 📦 Adding order to orders store with data:', orderData);
+    addOrder(orderData);
+    console.log('[ORDER] ✅ Added order to orders store')
 
     // Clear the cart
     clearCart()
+    console.log('[ORDER] ✅ Cart cleared')
 
     // Close modal
     onClose()
 
     // Navigate to home page
     router.push("/")
+    console.log('[ORDER] ✅ Order completion finished - navigating home')
   }
 
   if (!isOpen) return null

@@ -6,17 +6,20 @@ import Link from "next/link"
 import { Heart, Star } from "lucide-react"
 import { restaurants } from "@/constants/restaurants"
 import type { FilterState } from "@/components/filter-options"
+import { filterRestaurantsWithMenuItems } from "@/utils/restaurant-utils"
 
 interface NationalFavoritesProps {
   activeFilters: FilterState
 }
 
 export default function NationalFavorites({ activeFilters }: NationalFavoritesProps) {
-  const [filteredRestaurants, setFilteredRestaurants] = useState(restaurants)
-  const [resultsCount, setResultsCount] = useState(restaurants.length)
+  // Only include restaurants with menu items
+  const restaurantsWithMenus = filterRestaurantsWithMenuItems(restaurants);
+  const [filteredRestaurants, setFilteredRestaurants] = useState(restaurantsWithMenus)
+  const [resultsCount, setResultsCount] = useState(restaurantsWithMenus.length)
 
   useEffect(() => {
-    let filteredRestaurants = [...restaurants]
+    let filteredRestaurants = [...restaurantsWithMenus]
 
     // Apply filters
     if (activeFilters.underThirtyMins) {
@@ -82,7 +85,7 @@ export default function NationalFavorites({ activeFilters }: NationalFavoritesPr
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
           {filteredRestaurants.map((restaurant) => (
             <div key={restaurant.id} className="restaurant-card overflow-hidden">
-              <Link href={`/store/${restaurant.id}`} className="block">
+              <Link href={`/store/${restaurant.id}`} className="block" prefetch={false}>
                 <div className="relative h-[200px] bg-gray-100">
                   <Image
                     src={
@@ -91,6 +94,12 @@ export default function NationalFavorites({ activeFilters }: NationalFavoritesPr
                     alt={restaurant.name}
                     fill
                     className="object-cover"
+                    style={{ width: 'auto', height: 'auto' }}
+                    onError={(e) => {
+                      // Fallback to placeholder if image fails to load
+                      const target = e.target as HTMLImageElement;
+                      target.src = '/placeholder.svg';
+                    }}
                   />
                 </div>
               </Link>
@@ -132,9 +141,7 @@ export default function NationalFavorites({ activeFilters }: NationalFavoritesPr
 
                 <div className="mt-1 text-sm text-gray-500">{restaurant.deliveryFee}</div>
 
-                {restaurant.discount && (
-                  <span className="mt-1 p-1 rounded-sm bg-red-100 text-xs text-red-600 font-medium">{restaurant.discount}</span>
-                )}
+
 
               </div>
             </div>

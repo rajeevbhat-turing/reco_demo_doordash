@@ -135,6 +135,7 @@ export default function PromoBanners() {
             href={banner.href}
             className={`promo-card flex-shrink-0 w-full max-w-xl bg-gradient-to-r ${banner.gradient} overflow-hidden cursor-pointer hover:shadow-lg transition-all duration-300 hover:scale-[1.02] rounded-lg`}
             style={{ scrollSnapAlign: "start" }}
+            prefetch={false}
           >
             <div className="flex">
               <div className="p-6 flex-1">
@@ -157,6 +158,12 @@ export default function PromoBanners() {
                   width={120}
                   height={120}
                   className="object-contain rounded-full"
+                  style={{ width: 'auto', height: 'auto' }}
+                  onError={(e) => {
+                    // Fallback to placeholder if image fails to load
+                    const target = e.target as HTMLImageElement;
+                    target.src = '/placeholder-logo.svg';
+                  }}
                 />
               </div>
             </div>

@@ -88,13 +88,11 @@ export default function Retail() {
 
         <CategoryFilters
           categories={[
-            { name: "Pets", href: "#" },
             { name: "Flowers", href: "#" },
             { name: "Retail", href: "#" },
             { name: "Convenience", href: "#" },
             { name: "Beauty", href: "#" },
             { name: "Alcohol", href: "#" },
-            { name: "Packages", href: "#" },
           ]}
           showRating={true}
           showTime={true}
@@ -133,6 +131,7 @@ export default function Retail() {
                     width={36}
                     height={36}
                     className="rounded-full"
+                    style={{ width: 'auto', height: 'auto' }}
                   />
                   <div className="flex items-center gap-2">
                     <span className="text-[15px] text-gray-900">Lowe's</span>
@@ -149,6 +148,7 @@ export default function Retail() {
                       width={48}
                       height={48}
                       className="rounded-lg object-cover"
+                      style={{ width: 'auto', height: 'auto' }}
                     />
                     <div>
                       <p className="text-red-600 font-bold">$67.60</p>
@@ -162,6 +162,7 @@ export default function Retail() {
                       width={48}
                       height={48}
                       className="rounded-lg object-cover"
+                      style={{ width: 'auto', height: 'auto' }}
                     />
                     <div>
                       <p className="text-red-600 font-bold">$2.42</p>
@@ -175,6 +176,7 @@ export default function Retail() {
                       width={48}
                       height={48}
                       className="rounded-lg object-cover"
+                      style={{ width: 'auto', height: 'auto' }}
                     />
                     <div>
                       <p className="text-red-600 font-bold">$2.00</p>
@@ -188,6 +190,7 @@ export default function Retail() {
                       width={48}
                       height={48}
                       className="rounded-lg object-cover"
+                      style={{ width: 'auto', height: 'auto' }}
                     />
                     <div>
                       <p className="text-red-600 font-bold">$89.99</p>

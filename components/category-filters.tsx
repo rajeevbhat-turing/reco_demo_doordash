@@ -44,7 +44,6 @@ export default function CategoryFilters({
           >
             Over 4.5
             <Star className="h-4 w-4" />
-            <ChevronDown className="h-4 w-4" />
           </button>
         )}
 

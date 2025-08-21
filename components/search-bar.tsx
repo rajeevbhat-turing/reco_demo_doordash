@@ -11,6 +11,9 @@ import { menuItems } from "@/constants/menu-items"
 import { getAllStores } from "@/app/grocery/data/retail-response-mapper"
 import { getAllStores as getConvenienceStores } from "@/app/convenience/data/convenience-response-mapper"
 import { getAllPetStores, getEnrichedPetProducts } from "@/app/pets/data/pet-response-mapper"
+import { convenienceData } from "@/data/convenience-data"
+import { stores as retailStores } from "@/constants/store"
+import { filterRestaurantsWithMenuItems } from "@/utils/restaurant-utils"
 import { useCartStore } from "@/store/cart-store"
 
 interface SearchResult {
@@ -85,8 +88,11 @@ const SearchBar = () => {
 
     const restaurantMatches = new Map<string, { restaurant: any; items: string[] }>()
 
+    // Only consider restaurants that have menu items
+    const restaurantsWithMenus = filterRestaurantsWithMenuItems(restaurants);
+    
     matchingItems.forEach((item) => {
-      const restaurant = restaurants.find((r) => r.id === item.restaurantId)
+      const restaurant = restaurantsWithMenus.find((r) => r.id === item.restaurantId)
       if (restaurant) {
         if (!restaurantMatches.has(restaurant.id)) {
           restaurantMatches.set(restaurant.id, { restaurant, items: [] })
@@ -115,8 +121,8 @@ const SearchBar = () => {
     setSearchTerm(value)
 
     if (value.trim()) {
-      // Search restaurants by name and cuisine
-      const restaurantResults = restaurants
+      // Search restaurants by name and cuisine - only include restaurants with menu items
+      const restaurantResults = filterRestaurantsWithMenuItems(restaurants)
         .filter((restaurant) => {
           return (
             restaurant.name.toLowerCase().includes(value.toLowerCase()) ||
@@ -190,12 +196,40 @@ const SearchBar = () => {
           matchedItem: undefined,
         }))
 
+      // Search retail stores by name
+      const retailStoreResults = retailStores
+        .filter((store) => {
+          return store.name.toLowerCase().includes(value.toLowerCase())
+        })
+        .slice(0, 2)
+        .map((store) => ({
+          id: `retail-${store.id}`,
+          name: store.name,
+          logo: store.image,
+          description: `${store.deliveryTime} • Retail Store • DashPass`,
+          dashPass: store.isDashPass,
+          type: "retail" as const,
+          matchedItem: undefined,
+        }))
+
       // Search pet products
       const petProducts = getEnrichedPetProducts()
       const petProductResults: SearchResult[] = []
       petProducts.forEach((section: any) => {
         section.products.forEach((product: any) => {
-          const matches = product.name.toLowerCase().includes(value.toLowerCase())
+          // Search: check if ALL words in query are present in product name (with plural/singular handling)
+          const queryWords = value.toLowerCase().split(' ').filter(word => word.length > 0)
+          const productName = product.name.toLowerCase()
+          const matches = queryWords.every(word => {
+            // Direct match
+            if (productName.includes(word)) return true
+            // Try plural form (add 's')
+            if (productName.includes(word + 's')) return true
+            // Try singular form (remove 's')
+            if (word.endsWith('s') && productName.includes(word.slice(0, -1))) return true
+            return false
+          })
+          
           if (matches && petProductResults.length < 2) {
             petProductResults.push({
               id: `pet-product-${product.id}`,
@@ -213,8 +247,84 @@ const SearchBar = () => {
       // Search restaurants by menu items
       const menuItemResults = searchByMenuItem(value).slice(0, 2)
 
+      // Search convenience store products
+      const convenienceProductResults: SearchResult[] = []
+      try {
+        Object.values(convenienceData).forEach((storeProducts: any) => {
+          if (Array.isArray(storeProducts)) {
+            storeProducts.forEach((section: any) => {
+              if (section.products && Array.isArray(section.products)) {
+                section.products.forEach((product: any) => {
+                  const queryWords = value.toLowerCase().split(' ').filter(word => word.length > 0)
+                  const productName = product.name ? product.name.toLowerCase() : ''
+                  const matches = queryWords.every(word => productName.includes(word))
+                  
+                  if (matches && convenienceProductResults.length < 2) {
+                    convenienceProductResults.push({
+                      id: `convenience-product-${product.id}`,
+                      name: product.name,
+                      logo: product.image || '',
+                      description: `$${product.price} • Convenience Product`,
+                      dashPass: false,
+                      type: "convenience" as const,
+                      matchedItem: undefined,
+                    })
+                  }
+                })
+              }
+            })
+          }
+        })
+      } catch (error) {
+        console.error('Error searching convenience products:', error)
+      }
+
+      // Search retail store products  
+      const retailProductResults: SearchResult[] = []
+      try {
+        retailStores.forEach((store: any) => {
+          if (store.items && Array.isArray(store.items)) {
+            store.items.forEach((section: any) => {
+              if (section.products && Array.isArray(section.products)) {
+                section.products.forEach((product: any) => {
+                  const queryWords = value.toLowerCase().split(' ').filter(word => word.length > 0)
+                  const productName = product.name ? product.name.toLowerCase() : ''
+                  const matches = queryWords.every(word => productName.includes(word))
+                  
+                  if (matches && retailProductResults.length < 2) {
+                    retailProductResults.push({
+                      id: `retail-product-${product.id}`,
+                      name: product.name,
+                      logo: product.image || '',
+                      description: `${product.price} • Retail Product`,
+                      dashPass: false,
+                      type: "convenience" as const,
+                      matchedItem: undefined,
+                    })
+                  }
+                })
+              }
+            })
+          }
+        })
+      } catch (error) {
+        console.error('Error searching retail products:', error)
+      }
+
       // Combine results, prioritizing restaurant matches, then grocery, then menu items
-      const combinedResults = [...restaurantResults, ...groceryResults, ...convenienceResults, ...petStoreResults, ...petProductResults, ...menuItemResults].slice(0, 5)
+      console.log('🔍 Search results found:', {
+        restaurants: restaurantResults.length,
+        grocery: groceryResults.length, 
+        convenience: convenienceResults.length,
+        petStores: petStoreResults.length,
+        retailStores: retailStoreResults.length,
+        petProducts: petProductResults.length,
+        convenienceProducts: convenienceProductResults.length,
+        retailProducts: retailProductResults.length,
+        menuItems: menuItemResults.length
+      })
+
+      const combinedResults = [...restaurantResults, ...groceryResults, ...convenienceResults, ...petStoreResults, ...retailStoreResults, ...petProductResults, ...convenienceProductResults, ...retailProductResults, ...menuItemResults].slice(0, 5)
 
       // Generate search suggestions based on search term
       const suggestions = generateSearchSuggestions(value)
@@ -344,9 +454,16 @@ const SearchBar = () => {
       // Extract the actual pet store ID (remove "pets-" prefix)
       const actualId = result.id.replace("pets-", "")
       router.push(`/pets/store/${actualId}`)
+    } else if (result.type === "retail") {
+      // Extract the actual retail store ID (remove "retail-" prefix)
+      const actualId = result.id.replace("retail-", "")
+      router.push(`/retail/store/${actualId}`)
     } else if (result.type === "pet-product") {
-      // For pet products, navigate to the pets page with search term
-      router.push(`/pets?search=${encodeURIComponent(result.matchedItem || result.name)}`)
+      // For pet products, navigate to the search results page
+      router.push(`/search?q=${encodeURIComponent(result.matchedItem || result.name)}`)
+    } else if (result.id.includes("-product-")) {
+      // For any other product types (convenience-product, retail-product, etc.), navigate to search results
+      router.push(`/search?q=${encodeURIComponent(result.matchedItem || result.name)}`)
     } else {
       router.push(`/store/${result.id}`)
     }
@@ -424,7 +541,7 @@ const SearchBar = () => {
           <input
             ref={searchInputRef}
             type="text"
-            placeholder="Search DoorDash"
+            placeholder="Search DashDoor"
             className={`block w-full bg-transparent py-2 ${
               isSearchActive ? "pl-2 pr-10" : "pl-10 pr-3"
             } text-sm focus:outline-none`}

@@ -114,7 +114,7 @@ export default function Footer() {
               </li>
               <li>
                 <Link href="#" className="text-gray-600 hover:text-gray-900">
-                  DoorDash Merchant
+                  DashDoor Merchant
                 </Link>
               </li>
               <li>
@@ -124,7 +124,7 @@ export default function Footer() {
               </li>
               <li>
                 <Link href="#" className="text-gray-600 hover:text-gray-900">
-                  Get DoorDash for Business
+                  Get DashDoor for Business
                 </Link>
               </li>
             </ul>
@@ -159,8 +159,8 @@ export default function Footer() {
         <div className="mt-12 pt-6 border-t border-gray-200">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="flex items-center mb-4 md:mb-0">
-              <Link href="/" className="text-[#ff3008] font-bold text-2xl tracking-tight mr-6">
-                DOORDASH
+              <Link href="/" className="text-[#2563EB] font-bold text-2xl tracking-tight mr-6">
+                DASHDOOR
               </Link>
               <div className="flex space-x-4 text-sm text-gray-600">
                 <Link href="#" className="hover:text-gray-900">
@@ -179,7 +179,7 @@ export default function Footer() {
             </div>
 
             <div className="flex items-center space-x-4">
-              <span className="text-gray-600">© 2025 DoorDash</span>
+              <span className="text-gray-600">© 2025 DashDoor</span>
               <div className="flex space-x-3">
                 <Link href="#" className="text-gray-600 hover:text-gray-900">
                   <Facebook size={20} />

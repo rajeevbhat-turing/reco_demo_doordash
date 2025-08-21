@@ -41,8 +41,8 @@ export default function FoodCategories({ selectedCategory, onCategorySelect }: F
               <div className="w-full h-full">{category.svg}</div>
             </div>
             <span
-              className={`mt-1 text-sm ${
-                selectedCategory === category.name ? "text-red-600" : ""
+              className={`text-sm font-medium whitespace-nowrap transition-colors ${
+                selectedCategory === category.name ? "text-blue-600" : ""
               }`}
             >
               {category.name}

@@ -89,10 +89,11 @@ export default function VerticalListPage({
             {/* Item Image */}
             <div className="w-full h-40 relative rounded-lg overflow-hidden">
               <Image 
-                src={item.banner || item.image}
+                src={item.banner || item.image || "/placeholder.svg"}
                 alt={item.name}
                 fill
                 className="object-cover"
+                style={{ width: 'auto', height: 'auto' }}
               />
             </div>
 

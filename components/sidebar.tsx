@@ -21,7 +21,7 @@ export default function Sidebar() {
             <Link
               href="/"
               className={`flex items-center px-4 py-3 rounded-lg mx-2 ${
-                pathname === "/" ? "bg-red-50 text-red-600 font-medium" : "text-gray-700 hover:bg-gray-100"
+                pathname === "/" ? "bg-blue-50 text-blue-600 font-medium" : "text-gray-700 hover:bg-gray-100"
               }`}
             >
               <Home className="h-5 w-5 mr-3" />
@@ -33,7 +33,7 @@ export default function Sidebar() {
               href="/grocery"
               className={`flex items-center px-4 py-3 rounded-lg mx-2 ${
                 pathname.startsWith("/grocery")
-                  ? "bg-red-50 text-red-600 font-medium"
+                  ? "bg-blue-50 text-blue-600 font-medium"
                   : "text-gray-700 hover:bg-gray-100"
               }`}
             >
@@ -46,7 +46,7 @@ export default function Sidebar() {
               href="/retail"
               className={`flex items-center px-4 py-3 rounded-lg mx-2 ${
                 pathname.startsWith("/retail")
-                  ? "bg-red-50 text-red-600 font-medium"
+                  ? "bg-blue-50 text-blue-600 font-medium"
                   : "text-gray-700 hover:bg-gray-100"
               }`}
             >
@@ -58,7 +58,7 @@ export default function Sidebar() {
             <Link
               href="/pets"
               className={`flex items-center px-4 py-3 rounded-lg mx-2 ${
-                pathname.startsWith("/pets") ? "bg-red-50 text-red-600 font-medium" : "text-gray-700 hover:bg-gray-100"
+                pathname.startsWith("/pets") ? "bg-blue-50 text-blue-600 font-medium" : "text-gray-700 hover:bg-gray-100"
               }`}
             >
               <PawPrint className="h-5 w-5 mr-3" />
@@ -69,24 +69,11 @@ export default function Sidebar() {
             <Link
               href="/convenience"
               className={`flex items-center px-4 py-3 rounded-lg mx-2 ${
-                pathname.startsWith("/convenience") ? "bg-red-50 text-red-600 font-medium" : "text-gray-700 hover:bg-gray-100"
+                pathname.startsWith("/convenience") ? "bg-blue-50 text-blue-600 font-medium" : "text-gray-700 hover:bg-gray-100"
               }`}
             >
               <Coffee className="h-5 w-5 mr-3"/>
               <span>Convenience</span>
-            </Link>
-          </li>
-          <li>
-            <Link
-              href="/browse"
-              className={`flex items-center px-4 py-3 rounded-lg mx-2 ${
-                pathname.startsWith("/browse")
-                  ? "bg-red-50 text-red-600 font-medium"
-                  : "text-gray-700 hover:bg-gray-100"
-              }`}
-            >
-              <Search className="h-5 w-5 mr-3" />
-              <span>Browse All</span>
             </Link>
           </li>
         </ul>
@@ -98,7 +85,7 @@ export default function Sidebar() {
                 href="/orders"
                 className={`flex items-center px-4 py-3 rounded-lg mx-2 ${
                   pathname.startsWith("/orders")
-                    ? "bg-red-50 text-red-600 font-medium"
+                    ? "bg-blue-50 text-blue-600 font-medium"
                     : "text-gray-700 hover:bg-gray-100"
                 }`}
               >
