@@ -38,20 +38,26 @@ export default function VerifyTaskPage() {
   const captureCurrentState = () => {
     try {
       const cartState = JSON.parse(localStorage.getItem('multicategory-cart') || '{}')
+      const state = cartState.state || {}
+      
       return {
-        cartItems: cartState.state?.items || [],
-        currentStore: cartState.state?.currentStore || null,
-        searchResults: cartState.state?.searchResults || [],
-        lastSearchInfo: cartState.state?.lastSearchInfo || null,
-        lastClearInfo: cartState.state?.lastClearInfo || null,
-        lastRemovalInfo: cartState.state?.lastRemovalInfo || null,
-        currentCategory: cartState.state?.currentCategory || null,
-        verifierConsumed: cartState.state?.verifierConsumed || false,
-        searchVerifierConsumed: cartState.state?.searchVerifierConsumed || false,
-        removalVerifierConsumed: cartState.state?.removalVerifierConsumed || false
+        cartItems: state.items || [],
+        currentStore: state.currentStore || null,
+        searchResults: state.searchResults || [],
+        lastSearchInfo: state.lastSearchInfo || null,
+        lastClearInfo: state.lastClearInfo || null,
+        lastRemovalInfo: state.lastRemovalInfo || null,
+        lastOrderInfo: state.lastOrderInfo || null,
+        currentCategory: state.currentCategory || null,
+        verifierConsumed: state.verifierConsumed || false,
+        searchVerifierConsumed: state.searchVerifierConsumed || false,
+        removalVerifierConsumed: state.removalVerifierConsumed || false,
+        orderVerifierConsumed: state.orderVerifierConsumed || false,
+        // Raw state for debugging
+        rawState: state
       }
-    } catch {
-      return { error: 'Failed to parse cart state' }
+    } catch (error) {
+      return { error: `Failed to parse cart state: ${error}` }
     }
   }
 
@@ -122,11 +128,11 @@ export default function VerifyTaskPage() {
           consoleOutput,
           description: 'Unknown task',
           category: 'unknown',
-          debugInfo: {
-            cartState: stateBefore,
-            expectedItems: [],
-            actualItems: stateBefore.cartItems?.map((item: any) => `${item.itemName || item.name} x${item.quantity}`) || []
-          }
+        debugInfo: {
+          cartState: stateBefore,
+          expectedItems: extractExpectedItems(data.description || ''),
+          actualItems: stateBefore.cartItems?.map((item: any) => `${item.itemName || item.name} x${item.quantity}`) || []
+        }
         }
         setResult(failureResult)
         await logExecution(failureResult)
@@ -166,7 +172,7 @@ export default function VerifyTaskPage() {
         category: 'unknown',
         debugInfo: {
           cartState: stateAfter,
-          expectedItems: [],
+          expectedItems: extractExpectedItems(data.description || ''),
           actualItems: stateAfter.cartItems?.map((item: any) => `${item.itemName || item.name} x${item.quantity}`) || []
         }
       }
@@ -183,7 +189,12 @@ export default function VerifyTaskPage() {
         executionTime: 0,
         consoleOutput: [],
         description: 'Task execution',
-        category: 'unknown'
+        category: 'unknown',
+        debugInfo: {
+          cartState: captureCurrentState(),
+          expectedItems: [],
+          actualItems: []
+        }
       }
       setResult(errorResult)
       await logExecution(errorResult)
@@ -234,6 +245,127 @@ export default function VerifyTaskPage() {
     return 'bg-yellow-50 border-yellow-200'
   }
 
+  const extractExpectedItems = (description: string): string[] => {
+    const items: string[] = []
+    const desc = description.toLowerCase()
+    
+    // Extract specific items from descriptions
+    if (desc.includes('sweet pretzel')) items.push('sweet pretzel')
+    if (desc.includes('mint mojito iced coffee')) items.push('Mint Mojito Iced Coffee')
+    if (desc.includes('coffee')) items.push('coffee')
+    if (desc.includes('latte')) items.push('latte')
+    if (desc.includes('milk')) items.push('milk')
+    if (desc.includes('eggs')) items.push('eggs')
+    if (desc.includes('fruits')) items.push('fruits')
+    if (desc.includes('kiwi')) items.push('kiwi')
+    if (desc.includes('avocado')) items.push('avocado')
+    if (desc.includes('strawberries')) items.push('strawberries')
+    if (desc.includes('blue cooler bag')) items.push('Blue Cooler Bag')
+    if (desc.includes('ham, egg and cheese croissant')) items.push('Ham, Egg and Cheese Croissant')
+    if (desc.includes('lays crisps')) items.push('Lays Crisps')
+    if (desc.includes('fruit punch')) items.push('fruit punch')
+    if (desc.includes('red bull')) items.push('red bull')
+    if (desc.includes('airpods')) items.push('AirPods Pro 2')
+    if (desc.includes('dog poop bag')) items.push('dog poop bag')
+    if (desc.includes('cat shampoo')) items.push('cat shampoo')
+    if (desc.includes('dog cupcake')) items.push('dog cupcake')
+    
+    // For clear cart tasks, expect 3 items to be cleared
+    if (desc.includes('clear') && desc.includes('cart')) {
+      items.push('3 items in cart (to be cleared)')
+    }
+    
+    return items
+  }
+
+  const getExpectedState = () => {
+    if (!result) return 'Loading...'
+    
+    // Get the task description to understand what's expected
+    const description = result.description || ''
+    const taskId = result.flowId || ''
+    
+    // Create expected state description based on task type
+    if (taskId === 'clear-cart') {
+      return 'Must have 3 items in cart, then clear them.'
+    }
+    
+    if (taskId === 'add-milk-from-safeway') {
+      return 'Must be at Safeway store with exactly 1 milk item in cart.'
+    }
+    
+    if (taskId === 'add-fruits') {
+      return 'Must be at Gus\'s Community Market with exactly 3 items: 1 Avocado, 3 Kiwi, 1 Strawberries.'
+    }
+    
+    if (taskId === 'add-cooler-bag') {
+      return 'Must be at Boichik Bagels with exactly 1 "Blue Cooler Bag" item.'
+    }
+    
+    if (taskId === 'add-most-ordered') {
+      return 'Must be at Philz Coffee with exactly 1 "Mint Mojito Iced Coffee" item.'
+    }
+    
+    if (taskId === 'add-customized-croissant') {
+      return 'Must be at Gateway Croissant with 1 "Ham, Egg and Cheese Croissant" with customizations: Large, Light Salad, Fruit Portion, Juice, Low Sugar.'
+    }
+    
+    if (taskId === 'add-organic-eggs') {
+      return 'Must be at Sprouts Farmers Market with exactly 1 eggs item (quantity 2).'
+    }
+    
+    if (taskId === 'add-pet-items') {
+      return 'Must be at PetSmart with exactly 2 items: "Earth Rated Dog Poop Bags" and "Advantage Treatment Shampoo for Cats & Kittens".'
+    }
+    
+    if (taskId === 'order-7eleven-with-tip') {
+      return 'Must complete order from 7-Eleven with: 2 Lays Crisps, 1 fruit punch, 1 red bull, $5 tip.'
+    }
+    
+    if (taskId === 'buy-dog-cupcake') {
+      return 'Must complete order with 1 dog cupcake item.'
+    }
+    
+    if (taskId === 'add-sweet-pretzel') {
+      return 'Must have exactly 1 "sweet pretzel" item from Jamba Juice (152 Kearny Street) in cart.'
+    }
+    
+    if (taskId === 'add-two-custom-lattes') {
+      return 'Must be at Starbucks with exactly 2 Caffè Latte items: one vegan medium size and one low sugar small size.'
+    }
+    
+    if (taskId === 'add-airpods') {
+      return 'Must be at Best Buy with exactly 1 AirPods Pro 2 item (quantity 2) in cart.'
+    }
+    
+    if (taskId === 'add-gift-from-michaels') {
+      return 'Must be at Michaels with exactly 1 item priced at $2.99 in cart.'
+    }
+    
+    if (taskId === 'sequential-starbucks-bagel') {
+      return 'Must have 2 recent orders: first order from Starbucks with latte, second order with bagel from any restaurant.'
+    }
+    
+    if (taskId === 'reorder-pet-treats') {
+      return 'Must have latest order with exactly 2 items: 2 Icelandic Herring Cat Treats and 1 Icelandic Cod Dog Treats (no other items).'
+    }
+    
+    // Generic fallback based on description
+    if (description.toLowerCase().includes('clear') && description.toLowerCase().includes('cart')) {
+      return 'Must clear cart with exactly 3 items.'
+    }
+    
+    if (description.toLowerCase().includes('order') && description.toLowerCase().includes('tip')) {
+      return 'Must complete order with specific items and tip amount.'
+    }
+    
+    if (description.toLowerCase().includes('add') && description.toLowerCase().includes('store')) {
+      return 'Must be at correct store with specified items in cart.'
+    }
+    
+    return 'Follow the task description to set up the required state.'
+  }
+
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-2xl mx-auto px-4">
@@ -246,12 +378,10 @@ export default function VerifyTaskPage() {
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back
           </button>
-          <h1 className="text-3xl font-bold text-gray-900">Task Verification</h1>
-          <p className="text-gray-600 mt-2">Automatic execution results for task: <code className="bg-gray-100 px-2 py-1 rounded text-sm">{taskId}</code></p>
         </div>
 
         {/* Status Card */}
-        <div className={`border rounded-lg p-8 text-center ${getBgColor()}`}>
+        <div className={`border rounded-lg p-8 ${getBgColor()}`}>
           {/* Task ID */}
           <div className="mb-6">
             <label className="block text-sm font-medium text-gray-700 mb-2">Task ID</label>
@@ -262,22 +392,31 @@ export default function VerifyTaskPage() {
 
           {/* Status */}
           <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-700 mb-4">Status</label>
-            <div className="flex items-center justify-center mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
+            <div className="flex items-center bg-white px-4 py-4 rounded border">
               {getStatusIcon()}
+              <span className={`ml-4 text-2xl font-bold ${getStatusColor()}`}>
+                {getStatusText()}
+              </span>
             </div>
-            <div className={`text-2xl font-bold ${getStatusColor()}`}>
-              {getStatusText()}
+          </div>
+
+          {/* Expected State */}
+          <div className="mb-6">
+            <label className="block text-sm font-medium text-gray-700 mb-2">Expected State</label>
+            <div className="text-lg font-mono bg-white px-4 py-2 rounded border">
+              {isRunning ? '...' : getExpectedState()}
             </div>
           </div>
 
           {/* Execution Time */}
           <div className="mb-6">
             <label className="block text-sm font-medium text-gray-700 mb-2">Execution time</label>
-            <div className="text-lg bg-white px-4 py-2 rounded border">
+            <div className="text-lg font-mono bg-white px-4 py-2 rounded border">
               {isRunning ? '...' : `${result?.executionTime || 0}ms`}
             </div>
           </div>
+
 
           {/* Error Message (if any) */}
           {result?.error && (
