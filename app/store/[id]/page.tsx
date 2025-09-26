@@ -23,7 +23,7 @@ import {
 import { getMenuCategoriesByRestaurantId } from "@/lib/utils";
 import { getDealsByRestaurantId } from "@/constants/deals";
 import { useCartStore } from "@/store/cart-store";
-import { useReplaceCart } from "@/context/replace-cart-context";
+import { useReplaceCart } from "@/context/replace-cart-context-with-sqlite";
 import MenuItemDialog from "@/components/menu-item-dialog";
 import GroupOrderDialog from "@/components/group-order-dialog";
 import ReviewDialog from "@/components/review-dialog";
@@ -712,6 +712,9 @@ export default function RestaurantPage() {
                               alt={item.name}
                               fill
                               className="object-cover"
+                              loading="lazy"
+                              priority={false}
+                              sizes="(max-width: 768px) 200px, 200px"
                             />
                             <button
                               className="absolute bottom-3 right-3 bg-white rounded-full p-1 shadow-md"

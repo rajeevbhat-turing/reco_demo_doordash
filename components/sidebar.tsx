@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Home, ShoppingBag, Store, Activity, Gift, Search, FileText, PawPrint, Coffee } from "lucide-react"
+import { Home, ShoppingBag, Store, Activity, Gift, Search, FileText, PawPrint, Coffee, TestTube } from "lucide-react"
 
 export default function Sidebar() {
   const pathname = usePathname()
@@ -91,6 +91,19 @@ export default function Sidebar() {
               >
                 <FileText className="h-5 w-5 mr-3" />
                 <span>Orders</span>
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="/verify_raw"
+                className={`flex items-center px-4 py-3 rounded-lg mx-2 ${
+                  pathname.startsWith("/verify_raw")
+                    ? "bg-blue-50 text-blue-600 font-medium"
+                    : "text-gray-700 hover:bg-gray-100"
+                }`}
+              >
+                <TestTube className="h-5 w-5 mr-3" />
+                <span>Verify Raw</span>
               </Link>
             </li>
           </ul>

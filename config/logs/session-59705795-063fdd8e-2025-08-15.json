@@ -1,0 +1,28 @@
+[
+  {
+    "timestamp": "2025-08-15T12:08:29.224Z",
+    "taskId": "sequential-starbucks-bagel",
+    "passed": false,
+    "executionTime": 92,
+    "error": null,
+    "description": "Order a latte from Starbucks first, then order any bagel from any restaurant",
+    "cartItemCount": 0,
+    "currentStore": "None",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36",
+    "url": "http://localhost:3000/verify",
+    "sessionId": "59705795-063fdd8e"
+  },
+  {
+    "timestamp": "2025-08-15T12:09:18.271Z",
+    "taskId": "sequential-starbucks-bagel",
+    "passed": false,
+    "executionTime": 72.8,
+    "error": null,
+    "description": "Order a latte from Starbucks first, then order any bagel from any restaurant",
+    "cartItemCount": 0,
+    "currentStore": "None",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36",
+    "url": "http://localhost:3000/verify",
+    "sessionId": "59705795-063fdd8e"
+  }
+]

@@ -4,7 +4,7 @@ import { Inter } from "next/font/google"
 import "./globals.css"
 import Header from "@/components/header"
 import Sidebar from "@/components/sidebar"
-import { ReplaceCartProvider } from "@/context/replace-cart-context"
+import { ReplaceCartProviderWithSQLite } from "@/context/replace-cart-context-with-sqlite"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -21,7 +21,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <ReplaceCartProvider>
+        <ReplaceCartProviderWithSQLite runId="main-app-cart">
           <div className="flex flex-col min-h-screen">
             <Header />
             <div className="flex flex-1 relative">
@@ -31,7 +31,7 @@ export default function RootLayout({
               </div>
             </div>
           </div>
-        </ReplaceCartProvider>
+        </ReplaceCartProviderWithSQLite>
         
         {/* Global Functions Script */}
         <script

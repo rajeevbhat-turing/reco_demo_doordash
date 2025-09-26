@@ -1,0 +1,15 @@
+[
+  {
+    "timestamp": "2025-08-13T12:57:55.743Z",
+    "taskId": "search-staucks",
+    "passed": false,
+    "executionTime": 0,
+    "error": "Flow 'search-staucks' not found",
+    "description": "Unknown task",
+    "cartItemCount": 0,
+    "currentStore": null,
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36",
+    "url": "http://localhost:3000/verify/search-staucks",
+    "sessionId": "89875684-b15d2d91"
+  }
+]

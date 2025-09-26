@@ -1,0 +1,15 @@
+[
+  {
+    "timestamp": "2025-09-14T18:47:03.837Z",
+    "taskId": "order-7eleven-with-tip",
+    "passed": false,
+    "executionTime": 1164.4,
+    "error": null,
+    "description": "Order 2 Lays Crisps, 1 fruit punch and 1 red bull from 7-Eleven, and add a $5 tip. Close the popup",
+    "cartItemCount": 0,
+    "currentStore": null,
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36",
+    "url": "http://localhost:3000/verify/order-7eleven-with-tip",
+    "sessionId": "75622667-c7d54ff5"
+  }
+]
