@@ -21,7 +21,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <ReplaceCartProviderWithSQLite runId="main-app-cart">
+        <ReplaceCartProviderWithSQLite>
           <div className="flex flex-col min-h-screen">
             <Header />
             <div className="flex flex-1 relative">
@@ -69,37 +69,46 @@ export default function RootLayout({
                 }
               };
 
-              // Add global reset function
-              window.reset = () => {
-                localStorage.clear();
-                // Set default states
-                localStorage.setItem('multicategory-cart', JSON.stringify({
-                  state: {
-                    items: [],
-                    currentCategory: 'restaurant', // Set default category to prevent undefined config
-                    currentStoreId: null,
-                    currentRestaurantId: null,
-                    isGroupOrder: false,
-                    groupOrderId: null,
-                    searchResults: [],
-                    totalCartValue: 0,
-                    currentStore: null,
-                    lastClearInfo: null,
-                    maxItemsReached: false,
-                    verifierConsumed: false,
-                    lastSearchInfo: null,
-                    searchVerifierConsumed: false,
-                    lastRemovalInfo: null,
-                    removalVerifierConsumed: false,
-                    lastQuantityChangeInfo: null,
-                    quantityVerifierConsumed: false,
-                    lastOrderInfo: null,
-                    orderVerifierConsumed: false
-                  },
-                  version: 0
-                }));
-                console.log('Browser state reset');
-              };
+                      // Set up reset function with session-based logic
+                      window.reset = async () => {
+                        try {
+                          const sessionMode = localStorage.getItem('session_mode');
+                          
+                          if (sessionMode === 'with-run-id') {
+                            // In with-run-id mode: generate new run_id and reset
+                            const newRunId = \`reset-\${Date.now()}-\${Math.random().toString(36).substr(2, 6)}\`;
+                            
+                            // Update session
+                            localStorage.setItem('current_run_id', newRunId);
+                            
+                            // Clear localStorage but preserve session tracking
+                            const savedSessionMode = localStorage.getItem('session_mode');
+                            localStorage.clear();
+                            localStorage.setItem('session_mode', savedSessionMode || 'with-run-id');
+                            localStorage.setItem('current_run_id', newRunId);
+                            localStorage.setItem('last_run_id', newRunId);
+                            
+                            console.log('✅ WITH-RUN-ID Reset: Generated new run_id:', newRunId);
+                            
+                            // Redirect with new run_id
+                            window.location.href = \`/?run_id=\${newRunId}\`;
+                          } else {
+                            // In without-run-id mode: just clear localStorage manually but preserve session tracking
+                            const savedSessionMode = localStorage.getItem('session_mode');
+                            localStorage.clear();
+                            localStorage.setItem('session_mode', savedSessionMode || 'without-run-id');
+                            localStorage.setItem('current_run_id', '00000000-0000-0000-0000-000000000000');
+                            localStorage.setItem('last_run_id', '00000000-0000-0000-0000-000000000000');
+                            
+                            console.log('✅ WITHOUT-RUN-ID Reset: Cleared localStorage manually');
+                            
+                            // Redirect to clean URL (no run_id)
+                            window.location.href = '/';
+                          }
+                        } catch (error) {
+                          console.error('❌ Reset failed:', error);
+                        }
+                      };
 
               console.log('Global functions loaded! Available:');
               console.log('- window.verify("task-id")');

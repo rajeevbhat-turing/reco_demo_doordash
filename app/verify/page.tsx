@@ -34,6 +34,43 @@ export default function VerifyPage() {
   const [expandedTasks, setExpandedTasks] = useState<Set<string>>(new Set())
   const [taskResults, setTaskResults] = useState<Record<string, VerificationResult | null>>({})
   const [runningTasks, setRunningTasks] = useState<Set<string>>(new Set())
+  const [currentRunId, setCurrentRunId] = useState<string>('')
+
+  // Get current run_id - READ ONLY (don't modify session state)
+  useEffect(() => {
+    const getCurrentRunId = () => {
+      try {
+        // Get URL run_id
+        const urlParams = new URLSearchParams(window.location.search);
+        const urlRunId = urlParams.get('run_id');
+        
+        // Get current session state (READ ONLY) - use localStorage to share between tabs
+        const sessionMode = localStorage.getItem('session_mode');
+        const currentSessionRunId = localStorage.getItem('current_run_id');
+        
+        let finalRunId: string;
+        
+        if (urlRunId) {
+          // If URL has explicit run_id, use it
+          finalRunId = urlRunId;
+        } else if (currentSessionRunId) {
+          // Use session run_id if available
+          finalRunId = currentSessionRunId;
+        } else {
+          // Fallback to static UUID
+          finalRunId = '00000000-0000-0000-0000-000000000000';
+        }
+        
+        console.log(`📋 Verify page - Session Mode: ${sessionMode}, URL run_id: ${urlRunId}, Session run_id: ${currentSessionRunId}, Final: ${finalRunId}`);
+        setCurrentRunId(finalRunId);
+      } catch (error) {
+        console.error('Error getting run_id:', error);
+        setCurrentRunId('00000000-0000-0000-0000-000000000000');
+      }
+    };
+
+    getCurrentRunId();
+  }, []);
 
   // Load tasks from production_tasks.csv
   useEffect(() => {
@@ -321,6 +358,20 @@ export default function VerifyPage() {
               <h1 className="text-3xl font-bold text-gray-900 mb-2">
                 Task Verifier Dashboard
               </h1>
+              <div className="flex items-center gap-4 text-sm text-gray-600">
+                <div className="flex items-center gap-2">
+                  <span className="font-medium">Current Run ID:</span>
+                  <code className="px-2 py-1 bg-gray-100 rounded text-xs font-mono">
+                    {currentRunId || 'Loading...'}
+                  </code>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="font-medium">Session Mode:</span>
+                  <code className="px-2 py-1 bg-blue-100 rounded text-xs font-mono">
+                    {typeof window !== 'undefined' ? localStorage.getItem('session_mode') || 'Loading...' : 'Loading...'}
+                  </code>
+                </div>
+              </div>
             </div>
             <div className="flex items-center gap-4">
               <div className="text-sm text-gray-600 max-w-md">
