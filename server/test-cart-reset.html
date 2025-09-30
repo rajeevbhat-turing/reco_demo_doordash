@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Cart Reset</title>
+</head>
+<body>
+    <h1>Test Cart Reset with Run ID</h1>
+    
+    <div>
+        <h2>Current Run ID: <span id="current-run-id">Loading...</span></h2>
+        <h2>Cart Items: <span id="cart-items">Loading...</span></h2>
+    </div>
+    
+    <div>
+        <h3>Test Steps:</h3>
+        <ol>
+            <li>Add some items to cart (click any store and add items)</li>
+            <li>Change the run_id in URL to a new one</li>
+            <li>Check if cart is empty</li>
+            <li>Navigate to any store - cart should still be empty</li>
+        </ol>
+    </div>
+    
+    <div>
+        <h3>Test URLs:</h3>
+        <ul>
+            <li><a href="?run_id=test-1">Test Run 1</a></li>
+            <li><a href="?run_id=test-2">Test Run 2</a></li>
+            <li><a href="?run_id=test-3">Test Run 3</a></li>
+        </ul>
+    </div>
+    
+    <div>
+        <h3>Manual Reset:</h3>
+        <button onclick="window.reset()">Reset Current Run ID</button>
+    </div>
+    
+    <div>
+        <h3>Debug Info:</h3>
+        <pre id="debug-info"></pre>
+    </div>
+
+    <script>
+        // Mock the cart store for testing
+        const mockCartStore = {
+            items: [],
+            addItem: (item) => {
+                mockCartStore.items.push(item);
+                updateDisplay();
+            },
+            clearCart: () => {
+                mockCartStore.items = [];
+                updateDisplay();
+            }
+        };
+
+        function updateDisplay() {
+            document.getElementById('current-run-id').textContent = getCurrentRunId();
+            document.getElementById('cart-items').textContent = mockCartStore.items.length;
+            
+            const debugInfo = {
+                runId: getCurrentRunId(),
+                cartItems: mockCartStore.items.length,
+                localStorage: Object.keys(localStorage).length,
+                url: window.location.href
+            };
+            document.getElementById('debug-info').textContent = JSON.stringify(debugInfo, null, 2);
+        }
+
+        function getCurrentRunId() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get('run_id') || 'no-run-id';
+        }
+
+        // Simulate adding items to cart
+        function addTestItem() {
+            mockCartStore.addItem({
+                id: Date.now(),
+                name: 'Test Item ' + mockCartStore.items.length + 1,
+                price: 10.99
+            });
+        }
+
+        // Initialize display
+        updateDisplay();
+
+        // Listen for URL changes
+        window.addEventListener('popstate', updateDisplay);
+        window.addEventListener('hashchange', updateDisplay);
+
+        // Add some test buttons
+        document.body.innerHTML += `
+            <div>
+                <h3>Test Actions:</h3>
+                <button onclick="addTestItem()">Add Test Item</button>
+                <button onclick="mockCartStore.clearCart()">Clear Cart</button>
+                <button onclick="updateDisplay()">Refresh Display</button>
+            </div>
+        `;
+    </script>
+</body>
+</html>
