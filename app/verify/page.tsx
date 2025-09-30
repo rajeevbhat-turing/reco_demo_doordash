@@ -44,24 +44,24 @@ export default function VerifyPage() {
         const urlParams = new URLSearchParams(window.location.search);
         const urlRunId = urlParams.get('run_id');
         
-        // Get current session state (READ ONLY) - use localStorage to share between tabs
+        // Get current session state - use localStorage to match cart context
+        const sessionRunId = localStorage.getItem('current_run_id');
         const sessionMode = localStorage.getItem('session_mode');
-        const currentSessionRunId = localStorage.getItem('current_run_id');
         
         let finalRunId: string;
         
         if (urlRunId) {
           // If URL has explicit run_id, use it
           finalRunId = urlRunId;
-        } else if (currentSessionRunId) {
-          // Use session run_id if available
-          finalRunId = currentSessionRunId;
+        } else if (sessionRunId) {
+          // Use session run_id from current tab
+          finalRunId = sessionRunId;
         } else {
           // Fallback to static UUID
           finalRunId = '00000000-0000-0000-0000-000000000000';
         }
         
-        console.log(`📋 Verify page - Session Mode: ${sessionMode}, URL run_id: ${urlRunId}, Session run_id: ${currentSessionRunId}, Final: ${finalRunId}`);
+        console.log(`📋 Verify page - Session Mode: ${sessionMode}, URL run_id: ${urlRunId}, Session run_id: ${sessionRunId}, Final: ${finalRunId}`);
         setCurrentRunId(finalRunId);
       } catch (error) {
         console.error('Error getting run_id:', error);

@@ -16,15 +16,19 @@ class PersistedStateManager {
   private static instance: PersistedStateManager;
   private pendingUpdates: Map<string, PendingUpdate> = new Map();
   private debounceTimer: NodeJS.Timeout | null = null;
+  private continuousSyncTimer: NodeJS.Timeout | null = null;
   private runId: string;
   private serverUrl: string;
   private debounceMs: number;
+  private continuousSyncMs: number;
 
-  constructor(runId: string, serverUrl: string = 'http://localhost:3001', debounceMs: number = 120) {
+  constructor(runId: string, serverUrl: string = 'http://localhost:3001', debounceMs: number = 120, continuousSyncMs: number = 200) {
     this.runId = runId;
     this.serverUrl = serverUrl;
     this.debounceMs = debounceMs;
+    this.continuousSyncMs = continuousSyncMs;
     this.setupUnloadHandler();
+    this.startContinuousSync();
   }
 
   static getInstance(runId: string, serverUrl?: string, debounceMs?: number): PersistedStateManager {
@@ -38,6 +42,7 @@ class PersistedStateManager {
     // Handle page unload with sendBeacon for safety
     window.addEventListener('beforeunload', () => {
       this.flushPendingUpdates(true);
+      this.stopContinuousSync();
     });
 
     // Handle visibility change (tab switching)
@@ -46,6 +51,75 @@ class PersistedStateManager {
         this.flushPendingUpdates(true);
       }
     });
+  }
+
+  private startContinuousSync() {
+    // Continuous sync every 200ms to ensure localStorage → SQLite sync
+    this.continuousSyncTimer = setInterval(() => {
+      this.syncLocalStorageToSQLite();
+    }, this.continuousSyncMs);
+    
+    console.log(`🔄 Started continuous sync every ${this.continuousSyncMs}ms for run_id: ${this.runId}`);
+  }
+
+  private stopContinuousSync() {
+    if (this.continuousSyncTimer) {
+      clearInterval(this.continuousSyncTimer);
+      this.continuousSyncTimer = null;
+      console.log(`⏹️ Stopped continuous sync for run_id: ${this.runId}`);
+    }
+  }
+
+  private async syncLocalStorageToSQLite() {
+    try {
+      // Get all cart-related keys from localStorage
+      const cartKeys = ['cart.items', 'cart.category', 'cart.storeId', 'cart.currentStore'];
+      const localData: Record<string, any> = {};
+      let hasData = false;
+
+      cartKeys.forEach(key => {
+        const localValue = localStorage.getItem(key);
+        if (localValue !== null) {
+          try {
+            localData[key] = JSON.parse(localValue);
+            hasData = true;
+          } catch (error) {
+            console.error(`Failed to parse localStorage value for ${key}:`, error);
+          }
+        }
+      });
+
+      // Also check multicategory-cart (Zustand persistence)
+      const zustandCart = localStorage.getItem('multicategory-cart');
+      if (zustandCart) {
+        try {
+          const cartState = JSON.parse(zustandCart);
+          if (cartState.state) {
+            if (cartState.state.items) {
+              localData['cart.items'] = cartState.state.items;
+              hasData = true;
+            }
+            if (cartState.state.currentCategory) {
+              localData['cart.category'] = cartState.state.currentCategory;
+              hasData = true;
+            }
+            if (cartState.state.currentStore) {
+              localData['cart.currentStore'] = cartState.state.currentStore;
+              hasData = true;
+            }
+          }
+        } catch (error) {
+          console.error('Failed to parse Zustand cart state:', error);
+        }
+      }
+
+      if (hasData) {
+        console.log(`🔄 Continuous sync: Syncing ${Object.keys(localData).length} keys to SQLite for run_id: ${this.runId}`);
+        await this.bulkUpsert(localData);
+      }
+    } catch (error) {
+      console.error('Continuous sync error:', error);
+    }
   }
 
   async bulkGet(keys: string[]): Promise<Record<string, any>> {
@@ -272,16 +346,15 @@ export function usePersistedStates(
         const localValue = localValues[key];
         const initialValue = initialValues[key];
 
-        if (serverValue !== undefined) {
-          // Server has the value, use it
-          finalValues[key] = serverValue;
-          localStorage.setItem(key, JSON.stringify(serverValue));
-        } else if (localValue !== undefined) {
-          // Only local value exists, use it and sync to server
+        if (localValue !== undefined) {
+          // Use localStorage value (single source of truth)
           finalValues[key] = localValue;
-          updatesToServer[key] = localValue;
+          // Sync to server if different from server
+          if (JSON.stringify(localValue) !== JSON.stringify(serverValue)) {
+            updatesToServer[key] = localValue;
+          }
         } else {
-          // No value exists anywhere, use initial value
+          // No localStorage value, use initial value
           finalValues[key] = initialValue;
           localStorage.setItem(key, JSON.stringify(initialValue));
           updatesToServer[key] = initialValue;
