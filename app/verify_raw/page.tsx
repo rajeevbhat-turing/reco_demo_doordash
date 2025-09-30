@@ -1,437 +1,246 @@
-"use client"
+'use client';
 
-import { useState } from 'react'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Switch } from '@/components/ui/switch'
+import { useState } from 'react';
+import { CheckCircle, XCircle, Clock, ChevronRight } from 'lucide-react';
+import VerifierModal from '@/components/verifier-modal';
+
+interface Verifier {
+  id: string;
+  title: string;
+  description: string;
+  status: 'ready' | 'running' | 'completed' | 'failed';
+  assertions: number;
+  completedAssertions: number;
+  category: string;
+  lastRun?: Date;
+}
+
+// Mock data for verifiers
+const mockVerifiers: Verifier[] = [
+  {
+    id: 'DOORDASH-ORDER-CREATE-001',
+    title: 'DoorDash Order Creation',
+    description:
+      'Create a new order for delivery from Philz Coffee with 2 items: Large Coffee and Chocolate Croissant. The order should be placed by user john.doe@example.com with delivery address 123 Main St, San Francisco, CA 94102.',
+    status: 'ready',
+    assertions: 7,
+    completedAssertions: 0,
+    category: 'Order Management',
+    lastRun: new Date('2024-01-15T10:30:00Z'),
+  },
+  {
+    id: 'CART-ADD-ITEMS-002',
+    title: 'Add Items to Cart',
+    description:
+      'Add 3 items to the cart from Safeway: Organic Milk (1 gallon), Whole Wheat Bread (1 loaf), and Fresh Bananas (2 lbs). Validate cart totals and item availability.',
+    status: 'completed',
+    assertions: 5,
+    completedAssertions: 5,
+    category: 'Cart Management',
+    lastRun: new Date('2024-01-15T14:22:00Z'),
+  },
+  {
+    id: 'RESTAURANT-SEARCH-003',
+    title: 'Restaurant Search and Filter',
+    description:
+      'Search for "pizza" restaurants, filter by rating 4.0+, and verify results include proper restaurant information and delivery times.',
+    status: 'failed',
+    assertions: 4,
+    completedAssertions: 2,
+    category: 'Search & Discovery',
+    lastRun: new Date('2024-01-15T16:45:00Z'),
+  },
+  {
+    id: 'PAYMENT-PROCESS-004',
+    title: 'Payment Processing',
+    description:
+      'Process payment for order using credit card ending in 1234, validate payment method, calculate taxes and fees, and confirm order total.',
+    status: 'ready',
+    assertions: 6,
+    completedAssertions: 0,
+    category: 'Payment',
+    lastRun: new Date('2024-01-14T09:15:00Z'),
+  },
+  {
+    id: 'DASHPASS-VALIDATION-005',
+    title: 'DashPass Benefits Validation',
+    description:
+      'Verify DashPass member receives free delivery, reduced service fees, and exclusive discounts on eligible orders.',
+    status: 'running',
+    assertions: 8,
+    completedAssertions: 3,
+    category: 'DashPass',
+    lastRun: new Date('2024-01-15T17:30:00Z'),
+  },
+  {
+    id: 'DELIVERY-TRACKING-006',
+    title: 'Delivery Tracking System',
+    description:
+      'Track order from restaurant preparation to delivery completion, update status at each stage, and send notifications to customer.',
+    status: 'ready',
+    assertions: 6,
+    completedAssertions: 0,
+    category: 'Delivery',
+    lastRun: new Date('2024-01-14T11:20:00Z'),
+  },
+  {
+    id: 'RESTAURANT-REVIEWS-007',
+    title: 'Restaurant Review System',
+    description:
+      'Submit a 5-star review for Philz Coffee with comment "Great coffee and fast delivery", verify review appears in restaurant profile.',
+    status: 'completed',
+    assertions: 4,
+    completedAssertions: 4,
+    category: 'Reviews',
+    lastRun: new Date('2024-01-15T12:15:00Z'),
+  },
+  {
+    id: 'GROUP-ORDER-CREATE-008',
+    title: 'Group Order Creation',
+    description:
+      'Create a group order for office lunch from Chipotle, invite 5 team members, collect individual orders, and process payment.',
+    status: 'failed',
+    assertions: 5,
+    completedAssertions: 2,
+    category: 'Group Orders',
+    lastRun: new Date('2024-01-15T15:45:00Z'),
+  },
+];
 
 export default function VerifyRawPage() {
-  const [taskId, setTaskId] = useState('add-cooler-bag')
-  const [localStorageData, setLocalStorageData] = useState('')
-  const [result, setResult] = useState<any>(null)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
-  const [showRawJson, setShowRawJson] = useState(false)
-  const [modelResponse, setModelResponse] = useState('')
-  const [rawJsonBefore, setRawJsonBefore] = useState<any>(null)
-  const [rawJsonAfter, setRawJsonAfter] = useState<any>(null)
+  const [verifiers, setVerifiers] = useState<Verifier[]>(mockVerifiers);
+  const [selectedVerifier, setSelectedVerifier] = useState<Verifier | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const sampleData = {
-    'add-cooler-bag': {
-      "multicategory-cart": JSON.stringify({
-        "state": {
-          "items": [{"id": "blue-cooler-bag-1758305873707-r135p6e1i", "restaurantId": "boichik-bagels", "itemName": "Blue Cooler Bag", "price": "$14.40", "quantity": 1, "category": "restaurant"}],
-          "currentStore": {"name": "Boichik Bagels", "id": "boichik-bagels"},
-          "currentCategory": "restaurant",
-          "verifierConsumed": false
-        }
-      })
-    },
-    'clear-cart': {
-      "multicategory-cart": JSON.stringify({
-        "state": {
-          "items": [],
-          "lastClearInfo": {"itemsBeforeClear": 3, "timestamp": Date.now()},
-          "verifierConsumed": false
-        }
-      })
-    },
-    'compare-price-deltas': {
-      "philz-coffee": JSON.stringify({
-        "mission-cold-brew": {
-          "regular-price": 5.25,
-          "value-combo-price": 4.50,
-          "price-delta": 0.75
-        }
-      }),
-      "starbucks": JSON.stringify({
-        "cappuccino": {
-          "regular-price": 4.95,
-          "value-combo-price": 4.20,
-          "price-delta": 0.75
-        }
-      })
+  const getStatusIcon = (verifier: Verifier) => {
+    switch (verifier.status) {
+      case 'completed':
+        return <CheckCircle className="w-5 h-5 text-green-500" />;
+      case 'failed':
+        return <XCircle className="w-5 h-5 text-red-500" />;
+      case 'running':
+        return (
+          <div className="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+        );
+      default:
+        return <Clock className="w-5 h-5 text-gray-400" />;
     }
-  }
+  };
 
-  const handleTest = async () => {
-    setLoading(true)
-    setError('')
-    setResult(null)
-
-    try {
-      let data
-      if (localStorageData.trim()) {
-        data = JSON.parse(localStorageData)
-      } else {
-        data = sampleData[taskId as keyof typeof sampleData] || {}
-      }
-
-      const requestBody: any = {
-        taskId,
-        localStorage: data
-      }
-
-      // Add model_response if provided
-      if (modelResponse.trim()) {
-        requestBody.model_response = modelResponse.trim()
-      }
-
-      const response = await fetch('/api/verify_raw', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(requestBody)
-      })
-
-      if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.error || 'Request failed')
-      }
-
-      const resultData = await response.json()
-      setResult(resultData)
-      setRawJsonAfter(resultData)
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Unknown error')
-    } finally {
-      setLoading(false)
+  const getStatusText = (verifier: Verifier) => {
+    switch (verifier.status) {
+      case 'completed':
+        return 'Completed';
+      case 'failed':
+        return 'Failed';
+      case 'running':
+        return 'Running';
+      default:
+        return 'Ready to run';
     }
-  }
+  };
 
-  const loadSampleData = () => {
-    const sample = sampleData[taskId as keyof typeof sampleData]
-    if (sample) {
-      setLocalStorageData(JSON.stringify(sample, null, 2))
+  const getStatusColor = (verifier: Verifier) => {
+    switch (verifier.status) {
+      case 'completed':
+        return 'bg-green-100 text-green-800';
+      case 'failed':
+        return 'bg-red-100 text-red-800';
+      case 'running':
+        return 'bg-blue-100 text-blue-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
     }
-  }
+  };
 
-  const getRawJsonBefore = async () => {
-    try {
-      setLoading(true)
-      setError('')
+  const handleOpenVerifier = (verifier: Verifier) => {
+    setSelectedVerifier(verifier);
+    setIsModalOpen(true);
+  };
 
-      let data
-      if (localStorageData.trim()) {
-        data = JSON.parse(localStorageData)
-      } else {
-        data = sampleData[taskId as keyof typeof sampleData] || {}
-      }
-
-      const requestBody: any = {
-        taskId,
-        localStorage: data
-      }
-
-      // Add model_response if provided
-      if (modelResponse.trim()) {
-        requestBody.model_response = modelResponse.trim()
-      }
-
-      const response = await fetch('/api/verify_raw/raw', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(requestBody)
-      })
-
-      if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.error || 'Request failed')
-      }
-
-      const rawJson = await response.json()
-      setRawJsonBefore(rawJson)
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred')
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const formatRawJsonResult = (result: any) => {
-    if (!result || !result.assertions) return null
-
-    const formattedResult: any = {
-      taskId: result.taskId,
-      description: result.description,
-      assertions: result.assertions.map((assertion: any) => {
-        let actualValue = assertion.actual
-        
-        // For ARRAY_LENGTH operator, show the actual length as a number
-        if (assertion.operator === 'ARRAY_LENGTH' && Array.isArray(assertion.actual)) {
-          actualValue = assertion.actual.length
-        }
-        
-        return {
-          operator: assertion.operator,
-          path: assertion.path,
-          expected: assertion.expected,
-          actual: actualValue,
-          result: assertion.result,
-          error: assertion.error || null
-        }
-      })
-    }
-
-    // Add type field if it exists in the verifier definition
-    if (result.type) {
-      formattedResult.type = result.type
-    }
-
-    // Add rubric if it exists in the verifier definition
-    if (result.rubric) {
-      formattedResult.rubric = result.rubric
-    }
-
-    // Rubric evaluation results are now embedded in the rubric itself
-
-    return formattedResult
-  }
+  const handleClearResults = () => {
+    setVerifiers(prev =>
+      prev.map(v => ({
+        ...v,
+        status: 'ready' as const,
+        completedAssertions: 0,
+      }))
+    );
+  };
 
   return (
-    <div className="container mx-auto p-6 max-w-4xl mt-20">
-      <Card>
-        <CardHeader>
-          <CardTitle>Declarative Verifier Raw Test</CardTitle>
-          <CardDescription>
-            Test the new declarative verifier system. This endpoint shows actual vs expected values for each assertion.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="taskId">Task ID</Label>
-              <Input
-                id="taskId"
-                value={taskId}
-                onChange={(e) => setTaskId(e.target.value)}
-                placeholder="e.g., add-cooler-bag"
-              />
+    <div className="min-h-screen bg-gray-50 py-8 mt-14">
+      <div className="max-w-4xl mx-auto px-6">
+        <div className="rounded-lg p-8">
+          <div className="flex  justify-between mb-8">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">Declarative Raw Verifier</h1>
             </div>
-            <div className="space-y-2">
-              <Label>Sample Data</Label>
-              <Button onClick={loadSampleData} variant="outline" className="w-full">
-                Load Sample Data
-              </Button>
+            <div className="flex items-end gap-4 flex-col max-w-96">
+              <button
+                onClick={handleClearResults}
+                className="px-4 py-2 bg-rose-600 text-white rounded-md hover:bg-rose-600/90 text-sm font-medium"
+              >
+                Clear Results
+              </button>
+              <p className="text-xs text-gray-500 text-right">
+                *Clear the results before starting a new task. This will also clear local storage
+                and reload this page, which will get the verifier ready for the next run.
+              </p>
             </div>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="localStorage">LocalStorage Data (JSON)</Label>
-            <Textarea
-              id="localStorage"
-              value={localStorageData}
-              onChange={(e) => setLocalStorageData(e.target.value)}
-              placeholder="Enter localStorage data as JSON..."
-              rows={8}
-              className="font-mono text-sm"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="modelResponse">Model Response (Optional - for response-dependent tasks)</Label>
-            <Textarea
-              id="modelResponse"
-              value={modelResponse}
-              onChange={(e) => setModelResponse(e.target.value)}
-              placeholder="Enter the model's response for evaluation..."
-              rows={4}
-              className="font-mono text-sm"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Button onClick={getRawJsonBefore} disabled={loading} variant="outline" className="w-full">
-              {loading ? 'Loading...' : 'Get Raw JSON (Before)'}
-            </Button>
-            <Button onClick={handleTest} disabled={loading} className="w-full">
-              {loading ? 'Testing...' : 'Test Verifier (After)'}
-            </Button>
-          </div>
-
-          {error && (
-            <Card className="border-red-200 bg-red-50">
-              <CardContent className="pt-6">
-                <p className="text-red-600 font-medium">Error:</p>
-                <p className="text-red-500">{error}</p>
-              </CardContent>
-            </Card>
-          )}
-
-          {rawJsonBefore && (
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-green-600">Raw JSON (Before Evaluation)</CardTitle>
-                <CardDescription>Task definition and rubric structure before running assertions</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <pre className="bg-gray-100 p-4 rounded-md overflow-auto max-h-96 text-sm">
-                  {JSON.stringify(rawJsonBefore, null, 2)}
-                </pre>
-              </CardContent>
-            </Card>
-          )}
-
-          {rawJsonAfter && (
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-blue-600">Raw JSON (After Evaluation)</CardTitle>
-                <CardDescription>Task results with actual values and pass/fail status</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <pre className="bg-gray-100 p-4 rounded-md overflow-auto max-h-96 text-sm">
-                  {JSON.stringify(rawJsonAfter, null, 2)}
-                </pre>
-              </CardContent>
-            </Card>
-          )}
-
-          {result && (
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  Results for: {result.taskId}
-                  <Badge variant={result.overall?.result === 'pass' ? 'default' : 'destructive'}>
-                    {result.overall?.result === 'pass' ? 'PASS' : 'FAIL'}
-                  </Badge>
-                  <Badge variant="outline">
-                    {result.overall?.passed_tests || 0}/{result.overall?.total_tests || 0} tests passed
-                  </Badge>
-                </CardTitle>
-                <CardDescription>{result.description}</CardDescription>
-                <div className="flex items-center space-x-2 mt-4">
-                  <Switch
-                    id="raw-json-toggle"
-                    checked={showRawJson}
-                    onCheckedChange={setShowRawJson}
-                  />
-                  <Label htmlFor="raw-json-toggle">Show Raw JSON</Label>
-                </div>
-              </CardHeader>
-              <CardContent>
-                {showRawJson ? (
-                  <div className="space-y-4">
-                    <div className="bg-gray-50 p-4 rounded-lg">
-                      <h4 className="font-medium text-sm text-gray-600 mb-2">Raw JSON Result (Spec Format)</h4>
-                      <pre className="text-sm font-mono bg-white p-3 rounded border overflow-auto max-h-96">
-                        {JSON.stringify(formatRawJsonResult(result), null, 2)}
-                      </pre>
+          <div className="space-y-4">
+            {verifiers.map((verifier, index) => (
+              <div
+                key={verifier.id}
+                className="border border-gray-200 rounded-lg overflow-hidden bg-white shadow-sm hover:shadow-md transition-shadow"
+              >
+                <div className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-3 mb-2">
+                          <h3 className="font-semibold text-gray-900">
+                            #{index + 1}: {verifier.title}
+                          </h3>
+                          <span className="px-2 py-1 bg-gray-100 text-gray-600 rounded-full text-xs font-medium">
+                            {verifier.category}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => handleOpenVerifier(verifier)}
+                        className="px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 text-sm font-medium flex items-center gap-2 transition-colors"
+                      >
+                        <ChevronRight className="w-4 h-4" />
+                        Open
+                      </button>
                     </div>
                   </div>
-                ) : (
-                  <div className="space-y-4">
-                    {result.assertions?.map((assertion: any, index: number) => (
-                      <Card key={index} className="border-l-4 border-l-blue-200">
-                        <CardContent className="pt-4">
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                              <h4 className="font-medium text-sm text-gray-600">Assertion {index + 1}</h4>
-                              <p className="text-sm">
-                                <strong>Operator:</strong> {assertion.operator}
-                              </p>
-                              <p className="text-sm">
-                                <strong>Path:</strong> {JSON.stringify(assertion.path)}
-                              </p>
-                              <p className="text-sm">
-                                <strong>Expected:</strong> {JSON.stringify(assertion.expected)}
-                              </p>
-                            </div>
-                            <div>
-                              <h4 className="font-medium text-sm text-gray-600">Result</h4>
-                              <p className="text-sm">
-                                <strong>Actual:</strong> {JSON.stringify(assertion.actual)}
-                              </p>
-                              <Badge 
-                                variant={assertion.result === 'pass' ? 'default' : 'destructive'}
-                              >
-                                {assertion.result.toUpperCase()}
-                              </Badge>
-                              {assertion.error && (
-                                <p className="text-sm text-red-600 mt-1">
-                                  <strong>Error:</strong> {assertion.error}
-                                </p>
-                              )}
-                            </div>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    ))}
+                </div>
+              </div>
+            ))}
+          </div>
 
-                    {/* Rubric Evaluation Results */}
-                    {result.rubric?.overall && (
-                      <Card className="border-l-4 border-l-green-200">
-                        <CardContent className="pt-4">
-                          <h4 className="font-medium text-sm text-gray-600 mb-4">Rubric Evaluation Results</h4>
-                          
-                          <div className="space-y-4">
-                            {/* Overall Results */}
-                            <div className="bg-gray-50 p-3 rounded">
-                              <div className="flex items-center gap-2 mb-2">
-                                <Badge variant={result.rubric.overall?.result === 'pass' ? 'default' : 'destructive'}>
-                                  {result.rubric.overall?.result?.toUpperCase()}
-                                </Badge>
-                                <span className="text-sm font-medium">
-                                  {result.rubric.overall?.passed_tests || 0}/{result.rubric.overall?.total_tests || 0} tests passed
-                                </span>
-                                <span className="text-xs text-gray-500">
-                                  (Score: {result.rubric.overall?.score?.toFixed(2)})
-                                </span>
-                              </div>
-                            </div>
-
-                            {/* Individual Criteria */}
-                            <div className="space-y-2">
-                              {result.rubric.criteria?.map((criterion: any, index: number) => (
-                                <div key={index} className="border rounded p-3">
-                                  <div className="flex items-center gap-2 mb-2">
-                                    <Badge variant={criterion.result === 'pass' ? 'default' : 'destructive'}>
-                                      {criterion.result?.toUpperCase()}
-                                    </Badge>
-                                    <span className="font-medium text-sm">{criterion.name}</span>
-                                    <span className="text-xs text-gray-500">(weight: {criterion.weight || 0})</span>
-                                  </div>
-                                  <p className="text-xs text-gray-600 mb-1">{criterion.description}</p>
-                                  {criterion.error ? (
-                                    <p className="text-xs text-red-600">Error: {criterion.error}</p>
-                                  ) : (
-                                    <div className="text-xs">
-                                      <p><strong>Expected:</strong> {JSON.stringify(criterion.expected)}</p>
-                                      <p><strong>Actual:</strong> {JSON.stringify(criterion.actual)}</p>
-                                    </div>
-                                  )}
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    )}
-
-                    {/* Rubric Evaluation Error */}
-                    {result.rubric?.evaluation_error && (
-                      <Card className="border-l-4 border-l-red-200">
-                        <CardContent className="pt-4">
-                          <h4 className="font-medium text-sm text-gray-600 mb-4">Rubric Evaluation Error</h4>
-                          <div className="text-red-600">
-                            <strong>Error:</strong> {result.rubric.evaluation_error}
-                          </div>
-                        </CardContent>
-                      </Card>
-                    )}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+          {verifiers.length === 0 && (
+            <div className="text-center py-8 text-gray-500">No verifiers available.</div>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </div>
+
+      {selectedVerifier && (
+        <VerifierModal
+          verifier={selectedVerifier}
+          isOpen={isModalOpen}
+          onClose={() => {
+            setIsModalOpen(false);
+            setSelectedVerifier(null);
+          }}
+        />
+      )}
     </div>
-  )
+  );
 }
