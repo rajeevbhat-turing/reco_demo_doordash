@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { X, CheckCircle, XCircle, Clock, ChevronDown, ChevronUp } from 'lucide-react';
 
 interface SingleAssertion {
@@ -59,6 +59,8 @@ export default function VerifierModal({ taskId, isOpen, onClose }: VerifierModal
   >({});
   const [modelResponses, setModelResponses] = useState<Record<number, string>>({});
   const [modelResponsesErrors, setModelResponsesErrors] = useState<Record<number, string>>({});
+  const textareaRefs = useRef<Record<number, HTMLTextAreaElement | null>>({});
+  const executionLogRef = useRef<HTMLDivElement | null>(null);
 
   // Fetch verifier data when modal opens
   useEffect(() => {
@@ -117,6 +119,42 @@ export default function VerifierModal({ taskId, isOpen, onClose }: VerifierModal
       return () => document.removeEventListener('keydown', handleEscape);
     }
   }, [isOpen, onClose]);
+
+  // Focus and scroll to first textarea when there are model response errors
+  useEffect(() => {
+    const hasErrors = Object.values(modelResponsesErrors).some(error => error && error.length > 0);
+    if (hasErrors) {
+      // Find the first textarea with an error
+      const firstErrorIndex = Object.keys(modelResponsesErrors).find(
+        index =>
+          modelResponsesErrors[Number(index)] && modelResponsesErrors[Number(index)].length > 0
+      );
+
+      if (firstErrorIndex !== undefined) {
+        const errorIndex = Number(firstErrorIndex);
+        // Ensure the assertion is expanded to show the textarea
+        setExpandedAssertions(prev => new Set([...prev, errorIndex]));
+
+        const textareaRef = textareaRefs.current[errorIndex];
+        if (textareaRef) {
+          // Small delay to ensure the textarea is rendered and expanded
+          setTimeout(() => {
+            textareaRef.scrollIntoView({
+              behavior: 'smooth',
+              block: 'center',
+            });
+          }, 200); // Increased delay to ensure expansion completes
+        }
+      }
+    }
+  }, [modelResponsesErrors]);
+
+  // Auto-scroll execution log to bottom when new entries are added
+  useEffect(() => {
+    if (executionLogRef.current) {
+      executionLogRef.current.scrollTop = executionLogRef.current.scrollHeight;
+    }
+  }, [executionLog]);
 
   const addLogEntry = (message: string, type: 'info' | 'success' | 'error' = 'info') => {
     const timestamp = new Date().toLocaleTimeString('en-US', {
@@ -545,6 +583,9 @@ export default function VerifierModal({ taskId, isOpen, onClose }: VerifierModal
                                       Model Response:
                                     </label>
                                     <textarea
+                                      ref={el => {
+                                        textareaRefs.current[index] = el;
+                                      }}
                                       className={`w-full h-24 px-3 py-2 border rounded-md resize-none text-sm ${
                                         modelResponsesErrors[index]
                                           ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
@@ -773,7 +814,10 @@ export default function VerifierModal({ taskId, isOpen, onClose }: VerifierModal
 
                 <div className="mb-6">
                   <h3 className="text-lg font-semibold text-gray-900 mb-4">Execution Log</h3>
-                  <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 max-h-64 overflow-y-auto font-mono text-sm">
+                  <div 
+                    ref={executionLogRef}
+                    className="bg-gray-50 border border-gray-200 rounded-lg p-4 max-h-64 overflow-y-auto font-mono text-sm"
+                  >
                     {executionLog.length === 0 ? (
                       <div className="text-gray-500">
                         No execution log entries yet. Run some assertions to see the log.
