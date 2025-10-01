@@ -164,7 +164,7 @@ export default function VerifierModal({ taskId, isOpen, onClose }: VerifierModal
       return;
     }
 
-    addLogEntry(`Starting assertion: ${assertion.title}`);
+    addLogEntry(`Starting assertion: ${assertion.title || `Assertion ${assertionIndex + 1}`}`);
 
     setAssertions(prev =>
       prev.map((a, index) => (index === assertionIndex ? { ...a, status: 'running' } : a))
@@ -233,12 +233,22 @@ export default function VerifierModal({ taskId, isOpen, onClose }: VerifierModal
       }));
 
       if (result.result === 'pass') {
-        addLogEntry(`Assertion ${assertionIndex} PASSED: ${assertion.title}`, 'success');
+        addLogEntry(
+          `Assertion ${assertionIndex} PASSED: ${
+            assertion.title || `Assertion ${assertionIndex + 1}`
+          }`,
+          'success'
+        );
         addLogEntry(`Actual value: ${JSON.stringify(result.actual)}`);
         addLogEntry(`Expected value: ${JSON.stringify(result.expected)}`);
         addLogEntry(`Execution time: ${result.executionTime}ms`);
       } else {
-        addLogEntry(`Assertion ${assertionIndex} FAILED: ${assertion.title}`, 'error');
+        addLogEntry(
+          `Assertion ${assertionIndex} FAILED: ${
+            assertion.title || `Assertion ${assertionIndex + 1}`
+          }`,
+          'error'
+        );
         if (result.error) {
           addLogEntry(`Error: ${result.error}`);
         }
@@ -263,7 +273,12 @@ export default function VerifierModal({ taskId, isOpen, onClose }: VerifierModal
         )
       );
 
-      addLogEntry(`Assertion ${assertionIndex} FAILED: ${assertion.title}`, 'error');
+      addLogEntry(
+        `Assertion ${assertionIndex} FAILED: ${
+          assertion.title || `Assertion ${assertionIndex + 1}`
+        }`,
+        'error'
+      );
       addLogEntry(`Error: ${errorMessage}`);
     }
   };
@@ -474,11 +489,11 @@ export default function VerifierModal({ taskId, isOpen, onClose }: VerifierModal
                       return (
                         <div
                           key={index}
-                          className="border border-gray-200 rounded-lg overflow-hidden cursor-pointer"
+                          className="border border-gray-200 rounded-lg overflow-hidden"
                         >
                           <div className="p-4">
                             <div
-                              className="flex items-center justify-between"
+                              className="flex items-center justify-between cursor-pointer"
                               onClick={() => {
                                 toggleAssertionExpansion(index);
                               }}

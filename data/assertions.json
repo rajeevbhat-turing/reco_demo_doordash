@@ -47,7 +47,7 @@
     ]
   },
   "compare-gatorade-prices": {
-    "prompt": "Compare the price of Gatorade Thirst Quencher between Safeway and Gus's Community Market by visiting both stores. Provide a recommendation on which store offers better value considering both price and delivery time. If price difference is less than 10%, recommend based on faster delivery.",
+    "prompt": "Compare the price of Gatorade Thirst Quencheron Gus's Community Market and Clamato Tomato Juice on Safeway by visiting both stores. Provide a recommendation on which store offers better value considering both price and delivery time. If price difference is less than 10%, recommend based on faster delivery.",
     "assertions": [
       {
         "title": "Should have visited Safeway store",
@@ -64,13 +64,13 @@
       {
         "operator": "LLM_RUBRIC_JUDGE",
         "expected": {
-          "text": "Based on the price comparison between Safeway and Gus's Community Market for Gatorade Thirst Quencher, I recommend [store name] because [reason]. Safeway offers it at $[price1] while Gus's Community Market has it for $[price2]. The price difference is [percentage]%. Since this is [less than/more than] 10%, I'm recommending based on [price/delivery time]. [Store name] can deliver in [time] minutes compared to [other store] at [time] minutes.",
+          "text": "After comparing the prices and delivery times for Gatorade Thirst Quencher at Gus's Community Market and Clamato Tomato Juice at Safeway, I recommend Safeway. Safeway offers Clamato Tomato Juice for $5.89 with a delivery time of 25 minutes, while Gus's Community Market has Gatorade Thirst Quencher for $3.49 with a delivery time of 35 minutes. The price difference is 68.8%, which is more than 10%, so the recommendation is based on price. Safeway provides better value due to the lower price and faster delivery.",
           "fields": {
             "recommended_store": "Safeway",
-            "safeway_price": 3.29,
+            "safeway_price": 5.89,
             "gus_price": 3.49,
-            "price_difference_percent": 6.1,
-            "recommendation_reason": "faster_delivery",
+            "price_difference_percent": 68.8,
+            "recommendation_reason": "price_based",
             "safeway_delivery_time": 25,
             "gus_delivery_time": 35
           }
@@ -150,6 +150,59 @@
         "operator": "JSON_MATCH",
         "path": "multicategory-cart.state.lastCheckoutInfo.tipAmount",
         "expected": 5
+      }
+    ]
+  },
+  "add-customized-croissant": {
+    "prompt": "Navigate to Gateway Croissant and add a Bacon, Egg and Cheese Croissant with Large size, Light Salad, Fruit Portion, Juice, and Low Sugar",
+    "assertions": [
+      {
+        "title": "Cart should contain exactly 1 item",
+        "operator": "JSON_MATCH",
+        "path": "multicategory-cart.state.items.length",
+        "expected": 1
+      },
+      {
+        "title": "Item should be Bacon, Egg and Cheese Croissant",
+        "operator": "JSON_MATCH",
+        "path": "multicategory-cart.state.items[0].itemName",
+        "expected": "Bacon, Egg and Cheese Croissant"
+      },
+      {
+        "title": "Item quantity should be 1",
+        "operator": "JSON_MATCH",
+        "path": "multicategory-cart.state.items[0].quantity",
+        "expected": 1
+      },
+      {
+        "title": "Should have Large size customization",
+        "operator": "STRING_CONTAINS",
+        "path": "multicategory-cart.state.items[0].customizations",
+        "expected": "Large"
+      },
+      {
+        "title": "Should have Light Salad customization",
+        "operator": "STRING_CONTAINS",
+        "path": "multicategory-cart.state.items[0].customizations",
+        "expected": "Light Salad"
+      },
+      {
+        "title": "Should have Fruit Portion customization",
+        "operator": "STRING_CONTAINS",
+        "path": "multicategory-cart.state.items[0].customizations",
+        "expected": "Fruit Portion"
+      },
+      {
+        "title": "Should have Juice customization",
+        "operator": "STRING_CONTAINS",
+        "path": "multicategory-cart.state.items[0].customizations",
+        "expected": "Juice"
+      },
+      {
+        "title": "Should have Low Sugar customization",
+        "operator": "STRING_CONTAINS",
+        "path": "multicategory-cart.state.items[0].customizations",
+        "expected": "Low Sugar"
       }
     ]
   }
