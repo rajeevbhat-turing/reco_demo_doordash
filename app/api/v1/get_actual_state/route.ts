@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { deepParseJson, resolvePath } from '@/lib/utils/path-resolver';
-import { assertionOperators, AssertionOperators } from '@/lib/utils/assertion-operators';
+import { assertionOperators, operatorsWithNoExpected } from '@/lib/utils/assertion-operators';
 import assertions from '@/data/assertions.json';
 
 // Type for assertions data
@@ -114,14 +114,18 @@ export async function POST(request: NextRequest) {
           }
 
           result.actual = actualValue;
-          if (!actualValue) {
+          if (!actualValue && !operatorsWithNoExpected.includes(operator)) {
             result.error =
               'No actual value found, which means the proper sub-check is not completed.';
           }
-          
+
           if (operator === 'LLM_RUBRIC_JUDGE') {
             // For LLM_RUBRIC_JUDGE, the operator returns the full response object
-            const llmResponse = await (assertionOperators as any)[operator](actualValue, expected, options);
+            const llmResponse = await (assertionOperators as any)[operator](
+              actualValue,
+              expected,
+              options
+            );
             result.actual = llmResponse.actual || actualValue;
             result.expected = llmResponse.expected || expected;
             result.passed = llmResponse.result === 'pass';
@@ -132,7 +136,7 @@ export async function POST(request: NextRequest) {
           } else {
             result.passed = (assertionOperators as any)[operator](actualValue, expected, options);
           }
-          
+
           result.executionTime = Date.now() - startTime;
         } catch (error) {
           result.error = (error as Error).message;
@@ -179,7 +183,7 @@ export async function POST(request: NextRequest) {
           }
 
           result.actual = actualValue;
-          if (!actualValue) {
+          if (!actualValue && !operatorsWithNoExpected.includes(operator)) {
             result.error =
               'No actual value found, which means the proper sub-check is not completed.';
           }

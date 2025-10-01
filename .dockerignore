@@ -65,3 +65,7 @@ config/flow-verifiers-backup.json
 *.spec.js
 *.spec.ts
 *.spec.tsx
+
+# Environment variables
+.env*
+**/.env*

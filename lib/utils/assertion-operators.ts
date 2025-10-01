@@ -90,7 +90,11 @@ type StringContainsOperator = (
   options?: StringContainsOptions
 ) => boolean;
 type CompareOperator = (actual: any, expected: any, options: CompareOptions) => boolean;
-type BetweenOperator = (actual: any, expected: BetweenExpected, options?: BetweenOptions) => boolean;
+type BetweenOperator = (
+  actual: any,
+  expected: BetweenExpected,
+  options?: BetweenOptions
+) => boolean;
 type ArrayLengthOperator = (actual: any, expected: number, options?: ArrayLengthOptions) => boolean;
 type DateTimeInRangeOperator = (
   actual: any,
@@ -551,7 +555,12 @@ export const assertionOperators: AssertionOperators = {
       throw new Error('type must be one of: number, string, datetime');
     }
 
-    if (!expected || typeof expected !== 'object' || expected.min === undefined || expected.max === undefined) {
+    if (
+      !expected ||
+      typeof expected !== 'object' ||
+      expected.min === undefined ||
+      expected.max === undefined
+    ) {
       throw new Error('expected must be an object with min and max properties');
     }
 
@@ -613,7 +622,14 @@ export const assertionOperators: AssertionOperators = {
         return false;
       }
 
-      if (!actualDate || !minDate || !maxDate || isNaN(actualDate.getTime()) || isNaN(minDate.getTime()) || isNaN(maxDate.getTime())) {
+      if (
+        !actualDate ||
+        !minDate ||
+        !maxDate ||
+        isNaN(actualDate.getTime()) ||
+        isNaN(minDate.getTime()) ||
+        isNaN(maxDate.getTime())
+      ) {
         return false;
       }
 
@@ -623,10 +639,13 @@ export const assertionOperators: AssertionOperators = {
         minDate.setHours(0, 0, 0, 0);
         maxDate.setHours(0, 0, 0, 0);
       } else if (granularity === 'time') {
-        const actualTime = actualDate.getHours() * 3600 + actualDate.getMinutes() * 60 + actualDate.getSeconds();
-        const minTime = minDate.getHours() * 3600 + minDate.getMinutes() * 60 + minDate.getSeconds();
-        const maxTime = maxDate.getHours() * 3600 + maxDate.getMinutes() * 60 + maxDate.getSeconds();
-        
+        const actualTime =
+          actualDate.getHours() * 3600 + actualDate.getMinutes() * 60 + actualDate.getSeconds();
+        const minTime =
+          minDate.getHours() * 3600 + minDate.getMinutes() * 60 + minDate.getSeconds();
+        const maxTime =
+          maxDate.getHours() * 3600 + maxDate.getMinutes() * 60 + maxDate.getSeconds();
+
         if (inclusive) {
           return actualTime >= minTime && actualTime <= maxTime;
         } else {
@@ -862,3 +881,5 @@ export const assertionOperators: AssertionOperators = {
     return await handleLLMAssertion(assertion, actual);
   },
 };
+
+export const operatorsWithNoExpected = ['EXISTS', 'NOT_EXISTS'];
