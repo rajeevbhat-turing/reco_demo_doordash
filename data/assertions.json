@@ -152,5 +152,119 @@
         "expected": 5
       }
     ]
+  },
+  "flower-balloon-box": {
+    "prompt": "Find me flowers for between 50$ and 60$, I am looking for red flowers that come in a box with a red balloon attached all together. Set it for delivery at 10:30pm and set maximum dasher tip. I will then take a look and place the order.",
+    "assertions": [
+      {
+        "title": "Cart should contain exactly 1 item",
+        "operator": "JSON_MATCH",
+        "path": "multicategory-cart.state.items.length",
+        "expected": 1
+      },
+      {
+        "title": "Item should be from Silvanas Party Supply store",
+        "operator": "JSON_MATCH",
+        "path": "multicategory-cart.state.items[0].storeName",
+        "expected": "Silvanas"
+      },
+      {
+        "title": "Item quantity should be 1",
+        "operator": "JSON_MATCH",
+        "path": "multicategory-cart.state.items[0].quantity",
+        "expected": 1
+      },
+      {
+        "title": "Item price should be between $50 and $60",
+        "operator": "BETWEEN",
+        "path": "multicategory-cart.state.items[0].price",
+        "expected": {
+          "min": 50,
+          "max": 60
+        },
+        "options": {
+          "type": "number",
+          "inclusive": true
+        }
+      },
+      {
+        "title": "Should have navigated to checkout page",
+        "operator": "JSON_MATCH",
+        "path": "multicategory-cart.state.lastCheckoutInfo.navigatedToCheckout",
+        "expected": true
+      },
+      {
+        "title": "Delivery time should be set to 10:30pm",
+        "operator": "STRING_CONTAINS",
+        "path": "multicategory-cart.state.lastCheckoutInfo.deliveryTime",
+        "expected": "10:30"
+      },
+      {
+        "title": "Dasher tip should be set to maximum amount",
+        "operator": "COMPARE",
+        "path": "multicategory-cart.state.lastCheckoutInfo.tipAmount",
+        "expected": 5.0,
+        "options": {
+          "op": ">=",
+          "type": "number"
+        }
+      },
+      {
+        "operator": "LLM_RUBRIC_JUDGE",
+        "expected": {
+          "text": "I found the perfect flower arrangement for you! I selected the [Product Name] from Silvanas Party Supply, which features beautiful red flowers with a red balloon. The price is $[price], which fits perfectly within your $50-60 budget. I've set the delivery time for 10:30pm as requested and applied the maximum dasher tip. The arrangement includes red roses/flowers with a matching red balloon, creating a beautiful gift presentation. You can now review the order and place it when ready.",
+          "fields": {
+            "product_identified": "One of: Flower arrangement in a black box #1, Flower arrangement in a black box #2, or Bouquet of 12 roses /atouch with balloon I love you",
+            "store_name": "Silvanas",
+            "price_range_mentioned": "50-60",
+            "red_flowers_identified": true,
+            "red_balloon_identified": true,
+            "delivery_time_set": "10:30pm",
+            "max_tip_applied": true,
+            "visual_analysis_evident": true
+          }
+        },
+        "options": {
+          "rubric": {
+            "scale": { "min": 0, "max": 1 },
+            "criteria": [
+              {
+                "id": "visual_product_analysis",
+                "weight": 0.3,
+                "definition": "Demonstrates clear visual analysis of product images, identifying red flowers and red balloon components (and black box if applicable to selected product)"
+              },
+              {
+                "id": "product_selection_accuracy",
+                "weight": 0.25,
+                "definition": "Correctly identifies and selects one of the three valid flower arrangement products from Silvanas Party Supply"
+              },
+              {
+                "id": "price_awareness",
+                "weight": 0.15,
+                "definition": "Shows awareness of the $50-60 price range requirement and confirms the selected product fits within budget"
+              },
+              {
+                "id": "delivery_configuration",
+                "weight": 0.15,
+                "definition": "Correctly sets delivery time to 10:30pm as requested"
+              },
+              {
+                "id": "tip_configuration",
+                "weight": 0.1,
+                "definition": "Applies maximum dasher tip as requested"
+              },
+              {
+                "id": "communication_quality",
+                "weight": 0.05,
+                "definition": "Provides clear, helpful explanation of the selection process and order setup"
+              }
+            ],
+            "aggregate": "overall = 0.3*visual_product_analysis + 0.25*product_selection_accuracy + 0.15*price_awareness + 0.15*delivery_configuration + 0.1*tip_configuration + 0.05*communication_quality"
+          },
+          "judge": { "prompt_template": "llm_rubric_judge_v1" },
+          "passThreshold": 0.8
+        }
+      }
+    ]
   }
 }

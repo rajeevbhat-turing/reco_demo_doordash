@@ -36428,7 +36428,7 @@ export const stores: Store[] = [
           },
           {
             id: 'flower-arrangment-in-a-black-box-2',
-            name: 'Flower arrangment in a black box #2',
+            name: 'Flower arrangement in a black box #2',
             image:
               'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=70/media/photosV2/26a39ab8-902e-46c6-aa48-c4b64538c4e0-retina-large.png',
             price: '$59.00',
@@ -36453,7 +36453,7 @@ export const stores: Store[] = [
           },
           {
             id: 'flower-arrangment-in-a-black-box-1',
-            name: 'Flower arrangment in a black box #1',
+            name: 'Flower arrangement in a black box #1',
             image:
               'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=70/media/photosV2/457b6108-9b2b-42f8-896a-9e9cd2d9d506-retina-large.png',
             price: '$59.00',

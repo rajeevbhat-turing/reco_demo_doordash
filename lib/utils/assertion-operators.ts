@@ -31,6 +31,20 @@ export type CompareOptions = {
   input?: 'iso' | 'epochMs' | 'epochSec';
 };
 
+export type BetweenOptions = {
+  type: 'number' | 'string' | 'datetime';
+  inclusive?: boolean;
+  tolerance?: number;
+  tz?: string;
+  granularity?: 'datetime' | 'date' | 'time';
+  input?: 'iso' | 'epochMs' | 'epochSec';
+};
+
+export type BetweenExpected = {
+  min: number | string;
+  max: number | string;
+};
+
 export type ArrayLengthOptions = {
   op?: '==' | '>' | '>=' | '<' | '<=';
 };
@@ -76,6 +90,7 @@ type StringContainsOperator = (
   options?: StringContainsOptions
 ) => boolean;
 type CompareOperator = (actual: any, expected: any, options: CompareOptions) => boolean;
+type BetweenOperator = (actual: any, expected: BetweenExpected, options?: BetweenOptions) => boolean;
 type ArrayLengthOperator = (actual: any, expected: number, options?: ArrayLengthOptions) => boolean;
 type DateTimeInRangeOperator = (
   actual: any,
@@ -121,6 +136,7 @@ export type AssertionOperators = {
   STRING_MATCH: StringMatchOperator;
   STRING_CONTAINS: StringContainsOperator;
   COMPARE: CompareOperator;
+  BETWEEN: BetweenOperator;
   ARRAY_LENGTH: ArrayLengthOperator;
   DATETIME_IN_RANGE: DateTimeInRangeOperator;
   DATETIME_DIFFERENCE: DateTimeDifferenceOperator;
@@ -518,6 +534,114 @@ export const assertionOperators: AssertionOperators = {
           return actualBool !== expectedBool;
         default:
           return false;
+      }
+    }
+
+    return false;
+  },
+
+  BETWEEN: (actual: any, expected: BetweenExpected, options: BetweenOptions = {}) => {
+    const { type = 'number', inclusive = true, tolerance = 0 } = options;
+
+    if (!type) {
+      throw new Error('type is required for BETWEEN operator');
+    }
+
+    if (!['number', 'string', 'datetime'].includes(type)) {
+      throw new Error('type must be one of: number, string, datetime');
+    }
+
+    if (!expected || typeof expected !== 'object' || expected.min === undefined || expected.max === undefined) {
+      throw new Error('expected must be an object with min and max properties');
+    }
+
+    if (type === 'number') {
+      let actualNum = Number(actual);
+      const minNum = Number(expected.min);
+      const maxNum = Number(expected.max);
+
+      // Handle price strings like "$59.00" by removing currency symbols
+      if (isNaN(actualNum) && typeof actual === 'string') {
+        const cleanedActual = actual.replace(/[$,]/g, '');
+        actualNum = Number(cleanedActual);
+      }
+
+      if (isNaN(actualNum) || isNaN(minNum) || isNaN(maxNum)) {
+        return false;
+      }
+
+      if (inclusive) {
+        return actualNum >= minNum && actualNum <= maxNum;
+      } else {
+        return actualNum > minNum && actualNum < maxNum;
+      }
+    }
+
+    if (type === 'string') {
+      const actualStr = String(actual);
+      const minStr = String(expected.min);
+      const maxStr = String(expected.max);
+
+      if (inclusive) {
+        return actualStr >= minStr && actualStr <= maxStr;
+      } else {
+        return actualStr > minStr && actualStr < maxStr;
+      }
+    }
+
+    if (type === 'datetime') {
+      const { tz = 'UTC', granularity = 'datetime', input = 'iso' } = options;
+
+      let actualDate: Date | undefined, minDate: Date | undefined, maxDate: Date | undefined;
+
+      // Parse dates based on input format
+      try {
+        if (input === 'iso') {
+          actualDate = new Date(actual);
+          minDate = new Date(expected.min);
+          maxDate = new Date(expected.max);
+        } else if (input === 'epochMs') {
+          actualDate = new Date(Number(actual));
+          minDate = new Date(Number(expected.min));
+          maxDate = new Date(Number(expected.max));
+        } else if (input === 'epochSec') {
+          actualDate = new Date(Number(actual) * 1000);
+          minDate = new Date(Number(expected.min) * 1000);
+          maxDate = new Date(Number(expected.max) * 1000);
+        }
+      } catch (e) {
+        return false;
+      }
+
+      if (!actualDate || !minDate || !maxDate || isNaN(actualDate.getTime()) || isNaN(minDate.getTime()) || isNaN(maxDate.getTime())) {
+        return false;
+      }
+
+      // Apply granularity
+      if (granularity === 'date') {
+        actualDate.setHours(0, 0, 0, 0);
+        minDate.setHours(0, 0, 0, 0);
+        maxDate.setHours(0, 0, 0, 0);
+      } else if (granularity === 'time') {
+        const actualTime = actualDate.getHours() * 3600 + actualDate.getMinutes() * 60 + actualDate.getSeconds();
+        const minTime = minDate.getHours() * 3600 + minDate.getMinutes() * 60 + minDate.getSeconds();
+        const maxTime = maxDate.getHours() * 3600 + maxDate.getMinutes() * 60 + maxDate.getSeconds();
+        
+        if (inclusive) {
+          return actualTime >= minTime && actualTime <= maxTime;
+        } else {
+          return actualTime > minTime && actualTime < maxTime;
+        }
+      }
+
+      const actualTime = actualDate.getTime();
+      const minTime = minDate.getTime();
+      const maxTime = maxDate.getTime();
+
+      if (inclusive) {
+        return actualTime >= minTime && actualTime <= maxTime;
+      } else {
+        return actualTime > minTime && actualTime < maxTime;
       }
     }
 
