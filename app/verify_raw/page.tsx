@@ -49,13 +49,8 @@ export default function VerifyRawPage() {
   };
 
   const handleClearResults = () => {
-    setVerifiers(prev =>
-      prev.map(v => ({
-        ...v,
-        status: 'ready' as const,
-        completedAssertions: 0,
-      }))
-    );
+    localStorage.clear();
+    window.location.reload();
   };
 
   return (
