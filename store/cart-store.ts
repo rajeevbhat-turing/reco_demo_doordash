@@ -197,6 +197,14 @@ interface CartStore {
   } | null
   orderVerifierConsumed: boolean
 
+  // Checkout tracking for checkout verifiers
+  lastCheckoutInfo: {
+    timestamp: number
+    tipAmount: number
+    navigatedToCheckout: boolean
+  } | null
+  checkoutVerifierConsumed: boolean
+
   // Category methods
   setCategory: (category: CartCategory) => void
   getConfig: () => CategoryConfig
@@ -273,6 +281,11 @@ interface CartStore {
     items: CartItem[]
   }) => void
   markOrderVerifierConsumed: () => void
+
+  // Checkout tracking methods
+  recordCheckoutNavigation: () => void
+  recordTipSelection: (tipAmount: number) => void
+  markCheckoutVerifierConsumed: () => void
 }
 
 export const useCartStore = create<CartStore>()(
@@ -300,6 +313,8 @@ export const useCartStore = create<CartStore>()(
         quantityVerifierConsumed: false,
         lastOrderInfo: null,
         orderVerifierConsumed: false,
+        lastCheckoutInfo: null,
+        checkoutVerifierConsumed: false,
 
         // Set active category without clearing cart
         setCategory: (category: CartCategory) => {
@@ -784,6 +799,33 @@ export const useCartStore = create<CartStore>()(
         markOrderVerifierConsumed: () => {
           set({ orderVerifierConsumed: true })
         },
+
+        // Checkout tracking methods
+        recordCheckoutNavigation: () => {
+          console.log('[CHECKOUT] Recording checkout navigation')
+          set({
+            lastCheckoutInfo: {
+              timestamp: Date.now(),
+              tipAmount: 0, // Default tip amount, will be updated when tip is selected
+              navigatedToCheckout: true,
+            },
+            checkoutVerifierConsumed: false,
+          })
+        },
+        recordTipSelection: (tipAmount: number) => {
+          console.log(`[CHECKOUT] Recording tip selection: $${tipAmount}`)
+          const { lastCheckoutInfo } = get()
+          set({
+            lastCheckoutInfo: {
+              timestamp: lastCheckoutInfo?.timestamp || Date.now(),
+              tipAmount,
+              navigatedToCheckout: lastCheckoutInfo?.navigatedToCheckout || true,
+            }
+          })
+        },
+        markCheckoutVerifierConsumed: () => {
+          set({ checkoutVerifierConsumed: true })
+        },
       }),
       {
         name: "multicategory-cart",
@@ -809,6 +851,8 @@ export const useCartStore = create<CartStore>()(
           quantityVerifierConsumed: state.quantityVerifierConsumed,
           lastOrderInfo: state.lastOrderInfo,
           orderVerifierConsumed: state.orderVerifierConsumed,
+          lastCheckoutInfo: state.lastCheckoutInfo,
+          checkoutVerifierConsumed: state.checkoutVerifierConsumed,
         }),
         merge: (persistedState: any, currentState) => {
           // Handle migration of old cart items
