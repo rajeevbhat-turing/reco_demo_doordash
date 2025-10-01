@@ -64,7 +64,7 @@
       {
         "operator": "LLM_RUBRIC_JUDGE",
         "expected": {
-          "text": "After comparing the prices and delivery times for Gatorade Thirst Quencher at Gus's Community Market and Clamato Tomato Juice at Safeway, I recommend Safeway. Safeway offers Clamato Tomato Juice for $5.89 with a delivery time of 25 minutes, while Gus's Community Market has Gatorade Thirst Quencher for $3.49 with a delivery time of 35 minutes. The price difference is 68.8%, which is more than 10%, so the recommendation is based on price. Safeway provides better value due to the lower price and faster delivery.",
+          "text": "After comparing the prices and delivery times for Gatorade Thirst Quencher at Gus's Community Market and Clamato Tomato Juice at Safeway, I recommend Safeway. Safeway offers Clamato Tomato Juice for $5.89 with a delivery time of 34 minutes, while Gus's Community Market has Gatorade Thirst Quencher for $3.29 with a delivery time of 39 minutes. The price difference is 79%, which is more than 10%, so the recommendation is based on price. Safeway provides better value due to the lower price and faster delivery.",
           "fields": {
             "recommended_store": "Safeway",
             "safeway_price": 5.89,
@@ -81,17 +81,17 @@
             "criteria": [
               {
                 "id": "price_accuracy",
-                "weight": 0.4,
+                "weight": 0.3,
                 "definition": "Correctly identifies and compares the actual prices from both stores"
               },
               {
                 "id": "calculation_accuracy",
-                "weight": 0.3,
+                "weight": 0.2,
                 "definition": "Accurately calculates price difference percentage"
               },
               {
                 "id": "recommendation_logic",
-                "weight": 0.2,
+                "weight": 0.4,
                 "definition": "Applies correct logic: price-based if >10% difference, delivery-based if ≤10%"
               },
               {
@@ -100,7 +100,7 @@
                 "definition": "Clear explanation of reasoning and recommendation"
               }
             ],
-            "aggregate": "overall = 0.4*price_accuracy + 0.3*calculation_accuracy + 0.2*recommendation_logic + 0.1*communication"
+            "aggregate": "overall = 0.3*price_accuracy + 0.2*calculation_accuracy + 0.4*recommendation_logic + 0.1*communication"
           },
           "judge": { "prompt_template": "llm_rubric_judge_v1" },
           "passThreshold": 0.85
@@ -219,7 +219,7 @@
         "title": "Item should be from Silvanas Party Supply store",
         "operator": "JSON_MATCH",
         "path": "multicategory-cart.state.items[0].storeName",
-        "expected": "Silvanas"
+        "expected": "Silvanas Party Supply"
       },
       {
         "title": "Item quantity should be 1",
