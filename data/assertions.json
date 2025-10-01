@@ -68,11 +68,11 @@
           "fields": {
             "recommended_store": "Safeway",
             "safeway_price": 5.89,
-            "gus_price": 3.49,
-            "price_difference_percent": 68.8,
+            "gus_price": 3.29,
+            "price_difference_percent": 79,
             "recommendation_reason": "price_based",
-            "safeway_delivery_time": 25,
-            "gus_delivery_time": 35
+            "safeway_delivery_time": 34,
+            "gus_delivery_time": 39
           }
         },
         "options": {
