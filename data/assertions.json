@@ -107,5 +107,50 @@
         }
       }
     ]
+  },
+  "reorder-pet-treat": {
+    "prompt": "Around end of Feb i made an order of 3 dog fish treats for my pets. Add the same items in same quantity from another store to your cart, go to checkout, and set a $5 tip",
+    "assertions": [
+      {
+        "title": "Cart should contain exactly 1 item type",
+        "operator": "JSON_MATCH",
+        "path": "multicategory-cart.state.items.length",
+        "expected": 1
+      },
+      {
+        "title": "Cart should contain 3 Dog Fish Treats",
+        "operator": "JSON_MATCH",
+        "path": "multicategory-cart.state.items[0].quantity",
+        "expected": 3
+      },
+      {
+        "title": "Item should be the correct Dog Fish Treat product",
+        "operator": "STRING_CONTAINS",
+        "path": "multicategory-cart.state.items[0].itemName",
+        "expected": "Icelandic+ Treats Dog Fish Treat Long Strips Cod Skin"
+      },
+      {
+        "title": "Item should be from pet category",
+        "operator": "JSON_MATCH",
+        "path": "multicategory-cart.state.items[0].category",
+        "expected": "pets"
+      },
+      {
+        "title": "Item should NOT be from Pet Food Express store",
+        "operator": "COMPARE",
+        "path": "multicategory-cart.state.items[0].storeName",
+        "expected": "Pet Food Express",
+        "options": {
+          "op": "!=",
+          "type": "string"
+        }
+      },
+      {
+        "title": "Tip amount should be set to $5",
+        "operator": "JSON_MATCH",
+        "path": "multicategory-cart.state.lastCheckoutInfo.tipAmount",
+        "expected": 5
+      }
+    ]
   }
 }

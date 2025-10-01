@@ -312,10 +312,9 @@ export const orderData: Order[] = [
     restaurantId: 'pet-food-express',
     restaurantName: "Pet Food Express",
     orderDate: 'Thu, Feb 29',
-    totalAmount: 45.97,
+    totalAmount: 59.97,
     items: [
-      { id: '1', name: 'Icelandic+ Herring Whole Fish Cat Treats', quantity: 2, price: 12.99 },
-      { id: '2', name: 'Icelandic+ Treats Dog Fish Treat Long Strips Cod Skin (20 ct)', quantity: 1, price: 19.99 }
+      { id: '1', name: 'Icelandic+ Treats Dog Fish Treat Long Strips Cod Skin (20 ct)', quantity: 3, price: 19.99 }
     ],
     status: 'Delivered',
     orderType: 'Personal',

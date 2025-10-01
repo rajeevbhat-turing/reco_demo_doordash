@@ -213,6 +213,16 @@
     "@jridgewell/resolve-uri" "^3.1.0"
     "@jridgewell/sourcemap-codec" "^1.4.14"
 
+"@jsep-plugin/assignment@^1.3.0":
+  version "1.3.0"
+  resolved "https://registry.npmjs.org/@jsep-plugin/assignment/-/assignment-1.3.0.tgz"
+  integrity sha512-VVgV+CXrhbMI3aSusQyclHkenWSAm95WaiKrMxRFam3JSUiIaQjoMIw2sEs/OX4XifnqeQUN4DYbJjlA8EfktQ==
+
+"@jsep-plugin/regex@^1.0.4":
+  version "1.0.4"
+  resolved "https://registry.npmjs.org/@jsep-plugin/regex/-/regex-1.0.4.tgz"
+  integrity sha512-q7qL4Mgjs1vByCaTnDFcBnV9HS7GVPJX5vyVoCgZHNSC9rjwIlmbXG5sUuorR5ndfHAIlJ8pVStxvjXHbNvtUg==
+
 "@next/env@15.2.4":
   version "15.2.4"
   resolved "https://registry.npmjs.org/@next/env/-/env-15.2.4.tgz"
@@ -952,6 +962,11 @@
   version "3.0.2"
   resolved "https://registry.npmjs.org/@types/d3-timer/-/d3-timer-3.0.2.tgz"
   integrity sha512-Ps3T8E8dZDam6fUyNiMkekK3XUsaUEik+idO9/YjPtfj2qruF8tFBXS7XhtE4iIXBLxhmLjP3SXpLhVf21I9Lw==
+
+"@types/jsonpath-plus@^5.0.5":
+  version "5.0.5"
+  resolved "https://registry.npmjs.org/@types/jsonpath-plus/-/jsonpath-plus-5.0.5.tgz"
+  integrity sha512-aaqqDf5LcGOtAfEntO5qKZS6ixT0MpNhUXNwbVPdLf7ET9hKsufJq+buZr7eXSnWoLRyGzVj2Yz2hbjVSK3wsA==
 
 "@types/node@^22":
   version "22.15.19"
@@ -2100,6 +2115,20 @@ jiti@^1.21.6:
   version "4.0.0"
   resolved "https://registry.npmjs.org/js-tokens/-/js-tokens-4.0.0.tgz"
   integrity sha512-RdJUflcE3cUzKiMqQgsCu06FPu9UdIJO0beYbPhHN4k6apgJtifcoCtT9bcxOpYBtpD2kCM6Sbzg4CausW/PKQ==
+
+jsep@^0.4.0||^1.0.0, jsep@^1.4.0:
+  version "1.4.0"
+  resolved "https://registry.npmjs.org/jsep/-/jsep-1.4.0.tgz"
+  integrity sha512-B7qPcEVE3NVkmSJbaYxvv4cHkVW7DQsZz13pUMrfS8z8Q/BuShN+gcTXrUlPiGqM2/t/EEaI030bpxMqY8gMlw==
+
+jsonpath-plus@^10.3.0:
+  version "10.3.0"
+  resolved "https://registry.npmjs.org/jsonpath-plus/-/jsonpath-plus-10.3.0.tgz"
+  integrity sha512-8TNmfeTCk2Le33A3vRRwtuworG/L5RrgMvdjhKZxvyShO+mBu2fP50OWUjRLNtvw344DdDarFh9buFAZs5ujeA==
+  dependencies:
+    "@jsep-plugin/assignment" "^1.3.0"
+    "@jsep-plugin/regex" "^1.0.4"
+    jsep "^1.4.0"
 
 lilconfig@^3.0.0, lilconfig@^3.1.3:
   version "3.1.3"

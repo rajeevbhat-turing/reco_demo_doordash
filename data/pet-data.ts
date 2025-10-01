@@ -1763,6 +1763,40 @@ export const petProductData: PetProductSection[] = [
         "category": ""
       }
     ]
+  },
+  {
+    "id": 8,
+    "title": "Dog Treats",
+    "storeName": "Petco",
+    "storeImage": "https://img.cdn4dd.com/cdn-cgi/image/fit=contain,width=1200,height=672,format=auto/https://doordash-static.s3.amazonaws.com/media/restaurant/cover_square/903222da-3939-4dbc-8c4a-03ee2118090d.png",
+    "time": "",
+    "isSnapEligible": false,
+    "products": [
+      {
+        "id": "5227872752_petco",
+        "name": "Icelandic+ Treats Dog Fish Treat Long Strips Cod Skin (20 ct)",
+        "price": 5.49,
+        "image": "https://img.cdn4dd.com/cdn-cgi/image/fit=contain,width=1200,height=672,format=auto/https://doordash-static.s3.amazonaws.com/media/photosV2/a1ec0652-73e3-49af-bb45-c9e0e790a42e-retina-large.jpg",
+        "category": ["Dog", "Fish"]
+      }
+    ]
+  },
+  {
+    "id": 9,
+    "title": "Premium Dog Treats",
+    "storeName": "PetSmart",
+    "storeImage": "https://img.cdn4dd.com/cdn-cgi/image/fit=contain,width=1200,height=672,format=auto/https://doordash-static.s3.amazonaws.com/media/restaurant/cover_square/5a4ed405-725e-46ec-a9ce-75212a7f5b24.png",
+    "time": "",
+    "isSnapEligible": false,
+    "products": [
+      {
+        "id": "5227872752_petsmart",
+        "name": "Icelandic+ Treats Dog Fish Treat Long Strips Cod Skin (20 ct)",
+        "price": 4.79,
+        "image": "https://img.cdn4dd.com/cdn-cgi/image/fit=contain,width=1200,height=672,format=auto/https://doordash-static.s3.amazonaws.com/media/photosV2/a1ec0652-73e3-49af-bb45-c9e0e790a42e-retina-large.jpg",
+        "category": ["Dog", "Fish"]
+      }
+    ]
   }
 ];
 
