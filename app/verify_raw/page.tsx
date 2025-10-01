@@ -1,14 +1,14 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ChevronRight } from 'lucide-react';
 import VerifierModal from '@/components/verifier-modal';
 import assertionsData from '@/data/assertions.json';
 
 interface SingleAssertion {
-  title: string;
+  title?: string;
   operator: string;
-  path: string;
+  path?: string;
   expected: any;
   options?: Record<string, any>;
   status?: 'pending' | 'running' | 'passed' | 'failed';
@@ -52,6 +52,10 @@ export default function VerifyRawPage() {
     localStorage.clear();
     window.location.reload();
   };
+
+  useEffect(() => {
+    document.title = 'Declarative Raw Verifier';
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-50 py-8 mt-14">

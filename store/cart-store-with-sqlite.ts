@@ -265,15 +265,16 @@ interface CartStore {
 // Custom hook that integrates SQLite persistence with the existing cart store
 export function useCartStoreWithSQLite(runId: string = 'main-app-cart') {
   // Use our persisted state hook for cart items
-  const [items, setItems] = usePersistedState<CartItem[]>('cart', [], { runId });
-  const [currentCategory, setCurrentCategory] = usePersistedState<CartCategory>('cart_category', 'grocery', { runId });
-  const [currentStoreId, setCurrentStoreId] = usePersistedState<string | null>('cart.storeId', null, { runId });
-  const [currentRestaurantId, setCurrentRestaurantId] = usePersistedState<string | null>('cart.restaurantId', null, { runId });
-  const [isGroupOrder, setIsGroupOrder] = usePersistedState<boolean>('cart.isGroupOrder', false, { runId });
-  const [groupOrderId, setGroupOrderId] = usePersistedState<string | null>('cart.groupOrderId', null, { runId });
-  const [searchResults, setSearchResults] = usePersistedState<SearchResult[]>('cart.searchResults', [], { runId });
-  const [totalCartValue, setTotalCartValue] = usePersistedState<number>('cart.totalValue', 0, { runId });
-  const [currentStore, setCurrentStore] = usePersistedState<Record<string, any>>('cart.currentStore', {}, { runId });
+  const [items, setItems] = usePersistedState<CartItem[]>('cart', []);
+  const [currentCategory, setCurrentCategory] = usePersistedState<CartCategory>('cart_category', 'grocery');
+  const [currentStoreId, setCurrentStoreId] = usePersistedState<string | null>('cart.storeId', null);
+  const [currentRestaurantId, setCurrentRestaurantId] = usePersistedState<string | null>('cart.restaurantId', null);
+  const [isGroupOrder, setIsGroupOrder] = usePersistedState<boolean>('cart.isGroupOrder', false);
+  const [groupOrderId, setGroupOrderId] = usePersistedState<string | null>('cart.groupOrderId', null);
+  const [searchResults, setSearchResults] = usePersistedState<SearchResult[]>('cart.searchResults', []);
+  const [totalCartValue, setTotalCartValue] = usePersistedState<number>('cart.totalValue', 0);
+  const [currentStore, setCurrentStore] = usePersistedState<Record<string, any>>('cart.currentStore', {});
+  const [visitedStores, setVisitedStores] = usePersistedState<string[]>('cart.visitedStores', []);
   
   // Non-persisted state (verifier tracking, etc.)
   const [lastClearInfo, setLastClearInfo] = useState<{ itemsBeforeClear: number; timestamp: number } | null>(null);
@@ -554,7 +555,32 @@ export function useCartStoreWithSQLite(runId: string = 'main-app-cart') {
     setSearchResults([]);
   };
 
-  const setCurrentStore = (store: Record<string, any>) => {
+  const setCurrentStoreWithVisited = (store: Record<string, any>) => {
+    console.log(`[STORE] Setting current store: ${store.name}`)
+    
+    // Add store to visitedStores if it has an id
+    if (store.id) {
+      // Check if store is already in visitedStores to avoid duplicates
+      const existingStoreIndex = visitedStores.findIndex(visitedStoreId => 
+        visitedStoreId === store.id
+      )
+      
+      let newVisitedStores
+      if (existingStoreIndex >= 0) {
+        // Move existing store to the beginning of the array
+        newVisitedStores = [
+          store.id,
+          ...visitedStores.filter((_, index) => index !== existingStoreIndex)
+        ]
+      } else {
+        // Add new store to the beginning of the array
+        newVisitedStores = [store.id, ...visitedStores]
+      }
+      
+      console.log(`[STORE] Added to visited stores: ${store.id}`)
+      setVisitedStores(newVisitedStores)
+    }
+    
     setCurrentStore(store);
     setSearchVerifierConsumed(false);
   };
@@ -627,6 +653,7 @@ export function useCartStoreWithSQLite(runId: string = 'main-app-cart') {
     searchResults,
     totalCartValue,
     currentStore,
+    visitedStores,
     lastClearInfo,
     maxItemsReached,
     verifierConsumed,
@@ -660,7 +687,7 @@ export function useCartStoreWithSQLite(runId: string = 'main-app-cart') {
     updateSearchResults,
     clearSearchResults,
     updateTotalCartValue,
-    setCurrentStore,
+    setCurrentStore: setCurrentStoreWithVisited,
     clearCurrentStore,
     markVerifierConsumed,
     recordSearch,

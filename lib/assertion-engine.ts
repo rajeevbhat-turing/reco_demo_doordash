@@ -10,10 +10,17 @@ interface AssertionResult {
   actual: any
   result: 'match' | 'mismatch' | 'error'
   error?: string
+  score?: number
+  details?: {
+    criteria: Record<string, number>
+    overall: number
+    hard_rules_triggered: string[]
+    rationale: string
+  }
 }
 
 export class AssertionEngine {
-  execute(assertion: Assertion, localStorage: Record<string, any>): AssertionResult {
+  async execute(assertion: Assertion, localStorage: Record<string, any>): Promise<AssertionResult> {
     try {
       switch (assertion.operator) {
         case 'JSON_MATCH':
@@ -36,6 +43,8 @@ export class AssertionEngine {
           return this.executeDatetimeInRange(assertion, localStorage)
         case 'DATETIME_DIFFERENCE':
           return this.executeDatetimeDifference(assertion, localStorage)
+        case 'LLM_RUBRIC_JUDGE':
+          return this.executeLLMRubricJudge(assertion, localStorage)
         default:
           return {
             actual: null,
@@ -416,6 +425,42 @@ export class AssertionEngine {
       actual,
       result: 'error',
       error: 'DATETIME_DIFFERENCE not yet implemented'
+    }
+  }
+
+  private async executeLLMRubricJudge(assertion: Assertion, localStorage: Record<string, any>): Promise<AssertionResult> {
+    try {
+      const actual = this.getValue(assertion.path!, localStorage)
+      const expected = assertion.expectation
+      const options = assertion.options || {}
+      
+      if (!options.judge || !options.judge.prompt_template) {
+        return {
+          actual,
+          result: 'error',
+          error: 'Missing required options: judge.prompt_template'
+        }
+      }
+
+      // Import the assertion operators to use the LLM_RUBRIC_JUDGE
+      const { assertionOperators } = await import('./utils/assertion-operators')
+      
+      // Call the LLM_RUBRIC_JUDGE operator
+      const result = await assertionOperators.LLM_RUBRIC_JUDGE(actual, expected, options as { judge: { prompt_template: string } })
+      
+      return {
+        actual: result.actual,
+        result: result.result === 'pass' ? 'match' : 'mismatch',
+        score: result.score,
+        details: result.details,
+        error: result.error
+      }
+    } catch (error) {
+      return {
+        actual: null,
+        result: 'error',
+        error: error instanceof Error ? error.message : 'Unknown error in LLM_RUBRIC_JUDGE'
+      }
     }
   }
 

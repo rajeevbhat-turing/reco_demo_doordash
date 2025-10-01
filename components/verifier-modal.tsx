@@ -13,6 +13,13 @@ interface SingleAssertion {
   actual?: any;
   error?: string;
   executionTime?: number;
+  score?: number;
+  details?: {
+    criteria: Record<string, number>;
+    overall: number;
+    hard_rules_triggered: string[];
+    rationale: string;
+  };
 }
 interface Assertion {
   prompt: string;
@@ -50,6 +57,8 @@ export default function VerifierModal({ taskId, isOpen, onClose }: VerifierModal
   const [assertionStatuses, setAssertionStatuses] = useState<
     Record<string, 'pending' | 'running' | 'passed' | 'failed'>
   >({});
+  const [modelResponses, setModelResponses] = useState<Record<number, string>>({});
+  const [modelResponsesErrors, setModelResponsesErrors] = useState<Record<number, string>>({});
 
   // Fetch verifier data when modal opens
   useEffect(() => {
@@ -144,6 +153,17 @@ export default function VerifierModal({ taskId, isOpen, onClose }: VerifierModal
     const assertion = assertions[assertionIndex];
     if (!assertion) return;
 
+    // Check if LLM_RUBRIC_JUDGE requires model response
+    if (assertion.operator === 'LLM_RUBRIC_JUDGE' && !modelResponses[assertionIndex]) {
+      setModelResponsesErrors(prev => ({
+        ...prev,
+        [assertionIndex]: 'Please enter a model response for this assertion.',
+      }));
+      // Expand the assertion to show the textarea
+      setExpandedAssertions(prev => new Set([...prev, assertionIndex]));
+      return;
+    }
+
     addLogEntry(`Starting assertion: ${assertion.title}`);
 
     setAssertions(prev =>
@@ -173,6 +193,11 @@ export default function VerifierModal({ taskId, isOpen, onClose }: VerifierModal
       formData.append('localStorageDump', localStorageFile);
       formData.append('assertion', JSON.stringify(assertion));
 
+      // Add model response if it's an LLM_RUBRIC_JUDGE assertion
+      if (assertion.operator === 'LLM_RUBRIC_JUDGE' && modelResponses[assertionIndex]) {
+        formData.append('modelResponse', modelResponses[assertionIndex]);
+      }
+
       // Call the get_actual_state endpoint
       const response = await fetch('/api/v1/get_actual_state', {
         method: 'POST',
@@ -195,6 +220,8 @@ export default function VerifierModal({ taskId, isOpen, onClose }: VerifierModal
                 actual: result.actual,
                 error: result.error,
                 executionTime: result.executionTime,
+                score: result.score,
+                details: result.details,
               }
             : a
         )
@@ -246,6 +273,20 @@ export default function VerifierModal({ taskId, isOpen, onClose }: VerifierModal
     setCompletedCount(0);
     addLogEntry(`Starting execution of ${assertions.length} assertions`);
 
+    // Check for missing model responses before starting
+    for (let i = 0; i < assertions.length; i++) {
+      if (assertions[i].operator === 'LLM_RUBRIC_JUDGE' && !modelResponses[i]) {
+        setModelResponsesErrors(prev => ({
+          ...prev,
+          [i]: 'Please enter a model response for this assertion.',
+        }));
+        // Expand the assertion to show the textarea
+        setExpandedAssertions(prev => new Set([...prev, i]));
+        setIsRunning(false);
+        return;
+      }
+    }
+
     for (let i = 0; i < assertions.length; i++) {
       await runAssertion(i);
     }
@@ -262,9 +303,13 @@ export default function VerifierModal({ taskId, isOpen, onClose }: VerifierModal
         actual: undefined,
         error: undefined,
         executionTime: undefined,
+        score: undefined,
+        details: undefined,
       }))
     );
     setAssertionStatuses({});
+    setModelResponses({});
+    setModelResponsesErrors({});
     setCompletedCount(0);
     setExecutionLog([]);
     setTimeout(() => {
@@ -430,18 +475,26 @@ export default function VerifierModal({ taskId, isOpen, onClose }: VerifierModal
                         <div
                           key={index}
                           className="border border-gray-200 rounded-lg overflow-hidden cursor-pointer"
-                          onClick={() => {
-                            toggleAssertionExpansion(index);
-                          }}
                         >
                           <div className="p-4">
-                            <div className="flex items-center justify-between">
+                            <div
+                              className="flex items-center justify-between"
+                              onClick={() => {
+                                toggleAssertionExpansion(index);
+                              }}
+                            >
                               <div className="flex items-center gap-3">
                                 {getStatusIcon(assertion.status || 'pending')}
                                 <div className="flex-1">
-                                  <h4 className="font-medium text-gray-900">{assertion.title}</h4>
+                                  <h4 className="font-medium text-gray-900">
+                                    {assertion.title || `Assertion ${index + 1}`}
+                                  </h4>
+
                                   <p className="text-sm text-gray-500 font-mono">
-                                    {assertion.operator} - {assertion.path}
+                                    {assertion.operator}
+                                    {assertion.operator !== 'LLM_RUBRIC_JUDGE' &&
+                                      assertion.path &&
+                                      ` - ${assertion.path}`}
                                   </p>
                                 </div>
                               </div>
@@ -471,19 +524,56 @@ export default function VerifierModal({ taskId, isOpen, onClose }: VerifierModal
 
                             {isExpanded && (
                               <div className="mt-4 space-y-4">
+                                {assertion.operator === 'LLM_RUBRIC_JUDGE' && (
+                                  <div className="space-y-2">
+                                    <label className="block text-sm font-medium text-gray-700">
+                                      Model Response:
+                                    </label>
+                                    <textarea
+                                      className={`w-full h-24 px-3 py-2 border rounded-md resize-none text-sm ${
+                                        modelResponsesErrors[index]
+                                          ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
+                                          : 'border-gray-300 focus:border-blue-500 focus:ring-blue-500'
+                                      }`}
+                                      placeholder="Enter model response"
+                                      value={modelResponses[index] || ''}
+                                      onChange={e => {
+                                        setModelResponses(prev => ({
+                                          ...prev,
+                                          [index]: e.target.value,
+                                        }));
+                                        // Clear error when user starts typing
+                                        if (modelResponsesErrors[index]) {
+                                          setModelResponsesErrors(prev => ({
+                                            ...prev,
+                                            [index]: '',
+                                          }));
+                                        }
+                                      }}
+                                      onFocus={() => {
+                                        // Clear error when user focuses
+                                        if (modelResponsesErrors[index]) {
+                                          setModelResponsesErrors(prev => ({
+                                            ...prev,
+                                            [index]: '',
+                                          }));
+                                        }
+                                      }}
+                                    />
+                                    {modelResponsesErrors[index] && (
+                                      <div className="text-sm text-red-600">
+                                        {modelResponsesErrors[index]}
+                                      </div>
+                                    )}
+                                  </div>
+                                )}
                                 <div>
                                   <h5 className="font-medium text-gray-900 mb-2">
                                     Assertion Details:
                                   </h5>
                                   <div className="bg-gray-50 rounded p-3">
-                                    <pre className="text-sm text-gray-700 whitespace-pre-wrap">
-                                      {`{
-  "title": "${assertion.title}",
-  "operator": "${assertion.operator}",
-  "path": "${assertion.path}",
-  "expected": "${assertion.expected}",
-  "options": {}
-}`}
+                                    <pre className="text-xs text-gray-700 whitespace-pre-wrap">
+                                      {JSON.stringify(assertion, null, 2)}
                                     </pre>
                                   </div>
                                 </div>
@@ -536,22 +626,118 @@ export default function VerifierModal({ taskId, isOpen, onClose }: VerifierModal
                                           {assertion.error}
                                         </div>
                                       )}
-                                      <div className="grid grid-cols-2 gap-2">
-                                        <div>
-                                          <span className="font-medium">Actual:</span>
-                                          <span className="ml-1 font-mono text-xs">
-                                            {assertion.actual !== undefined
-                                              ? JSON.stringify(assertion.actual)
-                                              : 'N/A'}
-                                          </span>
+                                      {assertion.operator === 'LLM_RUBRIC_JUDGE' ? (
+                                        <div className="space-y-3">
+                                          <div>
+                                            <span className="font-medium">Model Response:</span>
+                                            <div className="mt-1 p-2 bg-gray-100 rounded text-xs font-mono overflow-y-auto">
+                                              {assertion.actual !== undefined
+                                                ? JSON.stringify(assertion.actual)
+                                                : 'N/A'}
+                                            </div>
+                                          </div>
+                                          <div>
+                                            <span className="font-medium">Expected:</span>
+                                            <div className="mt-1 space-y-2">
+                                              <div>
+                                                <span className="text-xs text-gray-600">Text:</span>
+                                                <div className="p-2 bg-gray-100 rounded text-xs font-mono  overflow-y-auto">
+                                                  {assertion.expected?.text
+                                                    ? JSON.stringify(assertion.expected.text)
+                                                    : 'N/A'}
+                                                </div>
+                                              </div>
+                                              {assertion.expected?.fields && (
+                                                <div>
+                                                  <span className="text-xs text-gray-600">
+                                                    Fields:
+                                                  </span>
+                                                  <div className="p-2 bg-gray-100 rounded text-xs font-mono  overflow-y-auto">
+                                                    {JSON.stringify(assertion.expected.fields)}
+                                                  </div>
+                                                </div>
+                                              )}
+                                            </div>
+                                          </div>
+                                          {assertion.details && (
+                                            <div className="space-y-2">
+                                              <div>
+                                                <span className="font-medium">Rationale:</span>
+                                                <div className="mt-1 p-2 bg-gray-100 rounded text-xs font-mono  overflow-y-auto">
+                                                  {assertion.details.rationale}
+                                                </div>
+                                              </div>
+                                              <div>
+                                                <span className="font-medium">Score:</span>
+                                                <div className="mt-1 p-2 bg-gray-100 rounded text-xs font-mono  overflow-y-auto">
+                                                  {assertion.score}
+                                                </div>
+                                              </div>
+                                              <div className="grid grid-cols-2 gap-2">
+                                                <div>
+                                                  <span className="text-xs text-gray-600">
+                                                    Overall Score:
+                                                  </span>
+                                                  <div className="p-2 bg-gray-100 rounded text-xs font-mono  overflow-y-auto">
+                                                    {assertion.details.overall}
+                                                  </div>
+                                                </div>
+                                                <div>
+                                                  <span className="text-xs text-gray-600">
+                                                    Hard Rules Triggered:
+                                                  </span>
+                                                  <div className="p-2 bg-gray-100 rounded text-xs font-mono  overflow-y-auto">
+                                                    {assertion.details.hard_rules_triggered.length >
+                                                    0
+                                                      ? assertion.actual.details.hard_rules_triggered.join(
+                                                          ', '
+                                                        )
+                                                      : 'None'}
+                                                  </div>
+                                                </div>
+                                              </div>
+                                              <div>
+                                                <span className="text-xs text-gray-600">
+                                                  Criteria:
+                                                </span>
+                                                <div className="space-y-1">
+                                                  {assertion.details.criteria &&
+                                                    Object.entries(assertion.details.criteria).map(
+                                                      ([key, value]) => (
+                                                        <div
+                                                          key={key}
+                                                          className="p-2 bg-gray-100 rounded text-xs font-mono"
+                                                        >
+                                                          <span className="font-medium capitalize">
+                                                            {key}:
+                                                          </span>{' '}
+                                                          {String(value)}
+                                                        </div>
+                                                      )
+                                                    )}
+                                                </div>
+                                              </div>
+                                            </div>
+                                          )}
                                         </div>
-                                        <div>
-                                          <span className="font-medium">Expected:</span>
-                                          <span className="ml-1 font-mono text-xs">
-                                            {JSON.stringify(assertion.expected)}
-                                          </span>
+                                      ) : (
+                                        <div className="grid grid-cols-2 gap-2">
+                                          <div>
+                                            <span className="font-medium">Actual:</span>
+                                            <span className="ml-1 font-mono text-xs">
+                                              {assertion.actual !== undefined
+                                                ? String(assertion.actual)
+                                                : 'N/A'}
+                                            </span>
+                                          </div>
+                                          <div>
+                                            <span className="font-medium">Expected:</span>
+                                            <span className="ml-1 font-mono text-xs">
+                                              {String(assertion.expected)}
+                                            </span>
+                                          </div>
                                         </div>
-                                      </div>
+                                      )}
                                       {assertion.executionTime !== undefined && (
                                         <div>
                                           <span className="font-medium">Execution Time:</span>{' '}

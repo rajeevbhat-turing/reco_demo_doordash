@@ -1,3 +1,5 @@
+import judges from '@/data/judges.json';
+
 export type JsonMatchOptions = {
   unorderedArrays?: boolean;
   allowExtraKeys?: boolean;
@@ -86,6 +88,30 @@ type DateTimeDifferenceOperator = (
   options?: DateTimeDifferenceOptions
 ) => boolean;
 
+// LLM Rubric Judge operator type
+export type LLMRubricJudgeOperator = (
+  actual: any,
+  expected: any,
+  options: {
+    judge: {
+      prompt_template: string;
+    };
+  }
+) => Promise<{
+  operator: string;
+  expected: any;
+  actual: any;
+  result: 'pass' | 'fail';
+  score: number;
+  details: {
+    criteria: Record<string, number>;
+    overall: number;
+    hard_rules_triggered: string[];
+    rationale: string;
+  };
+  error?: string;
+}>;
+
 // Main assertion operators object type
 export type AssertionOperators = {
   JSON_MATCH: JsonMatchOperator;
@@ -98,6 +124,92 @@ export type AssertionOperators = {
   ARRAY_LENGTH: ArrayLengthOperator;
   DATETIME_IN_RANGE: DateTimeInRangeOperator;
   DATETIME_DIFFERENCE: DateTimeDifferenceOperator;
+  LLM_RUBRIC_JUDGE: LLMRubricJudgeOperator;
+};
+
+const handleLLMAssertion = async (assertion: any, modelResponse: any) => {
+  const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
+  const OPENROUTER_URL = process.env.OPENROUTER_URL;
+  const OPENROUTER_MODEL = process.env.OPENROUTER_MODEL;
+
+  if (!OPENROUTER_URL || !OPENROUTER_API_KEY || !OPENROUTER_MODEL) {
+    throw new Error(
+      'Missing required environment variables: OPENROUTER_URL, OPENROUTER_API_KEY, or OPENROUTER_MODEL'
+    );
+  }
+
+  const response = await fetch(OPENROUTER_URL, {
+    method: 'POST',
+    body: JSON.stringify({
+      model: OPENROUTER_MODEL,
+      messages: [
+        {
+          role: 'user',
+          content: [
+            {
+              type: 'text',
+              text: `Model Response: \n\n${modelResponse}\n-------------------`,
+            },
+            {
+              type: 'text',
+              text: `Verifier Definition: \n\n${JSON.stringify(assertion)}\n-------------------`,
+            },
+            {
+              type: 'text',
+              text: `${assertion.options.judge.prompt_template} \n\n ${
+                (judges as any)[assertion.options.judge.prompt_template]
+              }`,
+            },
+          ],
+        },
+      ],
+    }),
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${OPENROUTER_API_KEY}` },
+  });
+
+  if (!response.ok) {
+    throw new Error(`LLM API call failed: ${response.status} ${response.statusText}`);
+  }
+
+  const data = await response.json();
+
+  // Extract the content from the LLM response
+  const content = data.choices?.[0]?.message?.content;
+  if (!content) {
+    throw new Error('No content returned from LLM');
+  }
+
+  try {
+    // Parse the JSON response from the LLM
+    const parsedResponse = JSON.parse(content);
+
+    // Validate the response structure
+    if (!parsedResponse.operator || !parsedResponse.result || parsedResponse.score === undefined) {
+      throw new Error('Invalid LLM response structure');
+    }
+
+    return parsedResponse;
+  } catch (parseError) {
+    // If parsing fails, return a structured error response
+    return {
+      operator: 'LLM_RUBRIC_JUDGE',
+      expected: assertion.expected,
+      actual: modelResponse,
+      result: 'fail',
+      score: 0,
+      details: {
+        criteria: {},
+        overall: 0,
+        hard_rules_triggered: [],
+        rationale: `Failed to parse LLM response: ${
+          parseError instanceof Error ? parseError.message : 'Unknown error'
+        }`,
+      },
+      error: `LLM response parsing failed: ${
+        parseError instanceof Error ? parseError.message : 'Unknown error'
+      }`,
+    };
+  }
 };
 
 export const assertionOperators: AssertionOperators = {
@@ -612,5 +724,17 @@ export const assertionOperators: AssertionOperators = {
 
     const diff = Math.abs(actualDurationMs - expectedDurationMs);
     return diff <= toleranceMs;
+  },
+
+  LLM_RUBRIC_JUDGE: async (
+    actual: any,
+    expected: any,
+    options: { judge: { prompt_template: string } }
+  ) => {
+    const assertion = {
+      expected,
+      options,
+    };
+    return await handleLLMAssertion(assertion, actual);
   },
 };

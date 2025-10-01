@@ -27,7 +27,6 @@ export const resolvePath = (data: any, path: string): any => {
   try {
     const convertedPath = convertPathToBracketNotation(path);
     const result = JSONPath({ path: `$.${convertedPath}`, json: data });
-    console.log('result', result, convertedPath);
     return result[0];
   } catch (e) {
     console.error('Invalid path:', e);

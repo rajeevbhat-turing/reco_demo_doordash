@@ -45,5 +45,67 @@
         "expected": "Gus's Community Market"
       }
     ]
+  },
+  "compare-gatorade-prices": {
+    "prompt": "Compare the price of Gatorade Thirst Quencher between Safeway and Gus's Community Market by visiting both stores. Provide a recommendation on which store offers better value considering both price and delivery time. If price difference is less than 10%, recommend based on faster delivery.",
+    "assertions": [
+      {
+        "title": "Should have visited Safeway store",
+        "operator": "ARRAY_CONTAINS",
+        "path": "multicategory-cart.state.visitedStores",
+        "expected": [2]
+      },
+      {
+        "title": "Should have visited Gus's Community Market store",
+        "operator": "ARRAY_CONTAINS",
+        "path": "multicategory-cart.state.visitedStores",
+        "expected": [8]
+      },
+      {
+        "operator": "LLM_RUBRIC_JUDGE",
+        "expected": {
+          "text": "Based on the price comparison between Safeway and Gus's Community Market for Gatorade Thirst Quencher, I recommend [store name] because [reason]. Safeway offers it at $[price1] while Gus's Community Market has it for $[price2]. The price difference is [percentage]%. Since this is [less than/more than] 10%, I'm recommending based on [price/delivery time]. [Store name] can deliver in [time] minutes compared to [other store] at [time] minutes.",
+          "fields": {
+            "recommended_store": "Safeway",
+            "safeway_price": 3.29,
+            "gus_price": 3.49,
+            "price_difference_percent": 6.1,
+            "recommendation_reason": "faster_delivery",
+            "safeway_delivery_time": 25,
+            "gus_delivery_time": 35
+          }
+        },
+        "options": {
+          "rubric": {
+            "scale": { "min": 0, "max": 1 },
+            "criteria": [
+              {
+                "id": "price_accuracy",
+                "weight": 0.4,
+                "definition": "Correctly identifies and compares the actual prices from both stores"
+              },
+              {
+                "id": "calculation_accuracy",
+                "weight": 0.3,
+                "definition": "Accurately calculates price difference percentage"
+              },
+              {
+                "id": "recommendation_logic",
+                "weight": 0.2,
+                "definition": "Applies correct logic: price-based if >10% difference, delivery-based if ≤10%"
+              },
+              {
+                "id": "communication",
+                "weight": 0.1,
+                "definition": "Clear explanation of reasoning and recommendation"
+              }
+            ],
+            "aggregate": "overall = 0.4*price_accuracy + 0.3*calculation_accuracy + 0.2*recommendation_logic + 0.1*communication"
+          },
+          "judge": { "prompt_template": "llm_rubric_judge_v1" },
+          "passThreshold": 0.85
+        }
+      }
+    ]
   }
 }

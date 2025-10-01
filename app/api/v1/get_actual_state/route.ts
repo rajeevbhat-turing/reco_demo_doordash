@@ -27,6 +27,13 @@ type AssertionResult = {
   expected: any;
   executionTime?: number;
   result?: string;
+  score?: number;
+  details?: {
+    criteria: Record<string, number>;
+    overall: number;
+    hard_rules_triggered: string[];
+    rationale: string;
+  };
 };
 
 export async function POST(request: NextRequest) {
@@ -35,6 +42,7 @@ export async function POST(request: NextRequest) {
     const taskId = formData.get('taskId') as string;
     const assertion = formData.get('assertion') as string;
     const localStorageDumpFile = formData.get('localStorageDump') as File;
+    const modelResponse = formData.get('modelResponse') as string;
 
     if (!taskId) {
       return NextResponse.json({ error: 'taskId is required' }, { status: 400 });
@@ -86,15 +94,23 @@ export async function POST(request: NextRequest) {
           let actualValue;
           const startTime = Date.now();
 
-          if (path) {
-            actualValue = resolvePath(localStorageDump, path);
-          } else if (paths && typeof paths === 'object') {
-            actualValue = {} as Record<string, any>;
-            for (const [key, pathValue] of Object.entries(paths)) {
-              actualValue[key] = resolvePath(localStorageDump, pathValue as string);
+          if (operator === 'LLM_RUBRIC_JUDGE') {
+            // For LLM_RUBRIC_JUDGE, use the modelResponse as the actual value
+            if (!modelResponse) {
+              throw new Error('Model response is required for LLM_RUBRIC_JUDGE operator');
             }
+            actualValue = modelResponse;
           } else {
-            throw new Error("Either 'path' or 'paths' must be specified");
+            if (path) {
+              actualValue = resolvePath(localStorageDump, path);
+            } else if (paths && typeof paths === 'object') {
+              actualValue = {} as Record<string, any>;
+              for (const [key, pathValue] of Object.entries(paths)) {
+                actualValue[key] = resolvePath(localStorageDump, pathValue as string);
+              }
+            } else {
+              throw new Error("Either 'path' or 'paths' must be specified");
+            }
           }
 
           result.actual = actualValue;
@@ -102,7 +118,21 @@ export async function POST(request: NextRequest) {
             result.error =
               'No actual value found, which means the proper sub-check is not completed.';
           }
-          result.passed = (assertionOperators as any)[operator](actualValue, expected, options);
+          
+          if (operator === 'LLM_RUBRIC_JUDGE') {
+            // For LLM_RUBRIC_JUDGE, the operator returns the full response object
+            const llmResponse = await (assertionOperators as any)[operator](actualValue, expected, options);
+            result.actual = llmResponse.actual || actualValue;
+            result.expected = llmResponse.expected || expected;
+            result.passed = llmResponse.result === 'pass';
+            result.result = llmResponse.result;
+            result.score = llmResponse.score;
+            result.details = llmResponse.details;
+            result.error = llmResponse.error;
+          } else {
+            result.passed = (assertionOperators as any)[operator](actualValue, expected, options);
+          }
+          
           result.executionTime = Date.now() - startTime;
         } catch (error) {
           result.error = (error as Error).message;
