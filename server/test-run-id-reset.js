@@ -13,7 +13,7 @@ async function testRunIdReset() {
     body: JSON.stringify({
       run_id: 'test-reset-1',
       data: {
-        'cart.items': JSON.stringify([{id: 1, name: 'Test Item', price: 10.99}]),
+        'cart': JSON.stringify([{id: 1, name: 'Test Item', price: 10.99}]),
         'user.name': JSON.stringify('Test User')
       }
     })
@@ -25,7 +25,7 @@ async function testRunIdReset() {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       run_id: 'test-reset-1',
-      keys: ['cart.items', 'user.name']
+      keys: ['cart', 'user.name']
     })
   });
   const beforeData = await beforeReset.json();
@@ -48,7 +48,7 @@ async function testRunIdReset() {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       run_id: 'test-reset-1',
-      keys: ['cart.items', 'user.name']
+      keys: ['cart', 'user.name']
     })
   });
   const afterData = await afterReset.json();
@@ -61,7 +61,7 @@ async function testRunIdReset() {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       run_id: 'test-reset-2',
-      keys: ['cart.items', 'user.name']
+      keys: ['cart', 'user.name']
     })
   });
   const newRunResult = await newRunData.json();

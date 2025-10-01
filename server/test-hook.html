@@ -203,7 +203,7 @@
             }
             
             // Load cart
-            const cartItems = localStorage.getItem('cart.items');
+            const cartItems = localStorage.getItem('cart');
             if (cartItems) {
                 displayCartItems(JSON.parse(cartItems));
             }
@@ -213,7 +213,7 @@
             try {
                 const keys = [
                     'user.name', 'user.email', 'settings.theme', 
-                    'settings.language', 'settings.notifications', 'cart.items'
+                    'settings.language', 'settings.notifications', 'cart'
                 ];
                 
                 const response = await fetch(`${SERVER_URL}/api/v1/kv/bulk-get`, {
@@ -247,7 +247,7 @@
                             case 'settings.notifications':
                                 document.getElementById('notifications').checked = value;
                                 break;
-                            case 'cart.items':
+                            case 'cart':
                                 displayCartItems(value);
                                 break;
                         }
@@ -262,18 +262,18 @@
         }
 
         function addToCart() {
-            const cartItems = JSON.parse(localStorage.getItem('cart.items') || '[]');
+            const cartItems = JSON.parse(localStorage.getItem('cart') || '[]');
             const newItem = `Item ${cartItems.length + 1}`;
             cartItems.push(newItem);
-            localStorage.setItem('cart.items', JSON.stringify(cartItems));
+            localStorage.setItem('cart', JSON.stringify(cartItems));
             displayCartItems(cartItems);
-            updateValue('cart.items', cartItems);
+            updateValue('cart', cartItems);
         }
 
         function clearCart() {
-            localStorage.setItem('cart.items', JSON.stringify([]));
+            localStorage.setItem('cart', JSON.stringify([]));
             displayCartItems([]);
-            updateValue('cart.items', []);
+            updateValue('cart', []);
         }
 
         function displayCartItems(items) {
@@ -284,11 +284,11 @@
         }
 
         function removeFromCart(index) {
-            const cartItems = JSON.parse(localStorage.getItem('cart.items') || '[]');
+            const cartItems = JSON.parse(localStorage.getItem('cart') || '[]');
             cartItems.splice(index, 1);
-            localStorage.setItem('cart.items', JSON.stringify(cartItems));
+            localStorage.setItem('cart', JSON.stringify(cartItems));
             displayCartItems(cartItems);
-            updateValue('cart.items', cartItems);
+            updateValue('cart', cartItems);
         }
 
         function updateDebugInfo() {
@@ -299,7 +299,7 @@
                 localStorage: {
                     'user.name': localStorage.getItem('user.name'),
                     'user.email': localStorage.getItem('user.email'),
-                    'cart.items': localStorage.getItem('cart.items'),
+                    'cart': localStorage.getItem('cart'),
                     'settings.theme': localStorage.getItem('settings.theme'),
                     'settings.language': localStorage.getItem('settings.language'),
                     'settings.notifications': localStorage.getItem('settings.notifications')

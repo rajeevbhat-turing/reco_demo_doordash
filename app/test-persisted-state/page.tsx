@@ -9,7 +9,7 @@ export default function TestPersistedStatePage() {
   // Test single persisted state
   const [userName, setUserName] = usePersistedState('test.user.name', 'Initial User', { runId });
   const [userEmail, setUserEmail] = usePersistedState('test.user.email', 'user@example.com', { runId });
-  const [cartItems, setCartItems] = usePersistedState('test.cart.items', [], { runId });
+  const [cartItems, setCartItems] = usePersistedState('test.cart', [], { runId });
   
   // Test multiple persisted states
   const [settings, setSettings] = usePersistedStates(

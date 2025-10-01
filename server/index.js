@@ -143,7 +143,7 @@ app.get('/api/v1/run/verify', async (req, res) => {
       }
       
       // Simple verification logic - you can extend this based on your needs
-      const hasCartItems = Array.isArray(rows) && rows.some(row => row.k === 'cart.items' && JSON.parse(row.v).length > 0);
+      const hasCartItems = Array.isArray(rows) && rows.some(row => row.k === 'cart' && JSON.parse(row.v).length > 0);
       const hasUserData = Array.isArray(rows) && rows.some(row => row.k.startsWith('user.'));
       
       // Load flow verifiers from the main config (single source of truth)
@@ -172,9 +172,9 @@ app.get('/api/v1/run/verify', async (req, res) => {
                 const cartState = {};
                 if (Array.isArray(rows)) {
                   rows.forEach(row => {
-                  if (row.k === 'cart.items') {
+                  if (row.k === 'cart') {
                     cartState.items = JSON.parse(row.v);
-                  } else if (row.k === 'cart.category') {
+                  } else if (row.k === 'cart_category') {
                     cartState.currentCategory = JSON.parse(row.v);
                   } else if (row.k === 'cart.storeId') {
                     cartState.currentStoreId = JSON.parse(row.v);

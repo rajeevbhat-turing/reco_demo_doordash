@@ -26,7 +26,7 @@ async function comprehensiveTest() {
         run_id: run1,
         data: {
           'user.name': 'User One',
-          'cart.items': ['item1', 'item2'],
+          'cart': ['item1', 'item2'],
           'settings.theme': 'dark'
         }
       })
@@ -40,7 +40,7 @@ async function comprehensiveTest() {
         run_id: run2,
         data: {
           'user.name': 'User Two',
-          'cart.items': ['item3', 'item4'],
+          'cart': ['item3', 'item4'],
           'settings.theme': 'light'
         }
       })
@@ -52,7 +52,7 @@ async function comprehensiveTest() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         run_id: run1,
-        keys: ['user.name', 'cart.items', 'settings.theme']
+        keys: ['user.name', 'cart', 'settings.theme']
       })
     });
 
@@ -61,7 +61,7 @@ async function comprehensiveTest() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         run_id: run2,
-        keys: ['user.name', 'cart.items', 'settings.theme']
+        keys: ['user.name', 'cart', 'settings.theme']
       })
     });
 

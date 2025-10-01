@@ -37,8 +37,8 @@ export function CartProviderWithSQLite({
   const cartStore = useCartStore()
   
   // Use our persisted state hook for SQLite persistence
-  const [sqliteItems, setSqliteItems] = usePersistedState<CartItem[]>('cart.items', [], { runId })
-  const [sqliteCategory, setSqliteCategory] = usePersistedState<CartCategory>('cart.category', category, { runId })
+  const [sqliteItems, setSqliteItems] = usePersistedState<CartItem[]>('cart', [], { runId })
+  const [sqliteCategory, setSqliteCategory] = usePersistedState<CartCategory>('cart_category', category, { runId })
   
   // Local state to force re-renders when cart changes
   const [localVersion, setLocalVersion] = useState(0)

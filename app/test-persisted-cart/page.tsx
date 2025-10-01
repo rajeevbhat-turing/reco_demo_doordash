@@ -70,11 +70,11 @@ export default function TestPersistedCartPage() {
         <div className="border rounded p-6">
           <h2 className="text-xl font-semibold mb-4">Shopping Cart</h2>
           
-          {cart.items.length === 0 ? (
+          {cart.length === 0 ? (
             <p className="text-gray-500">Your cart is empty</p>
           ) : (
             <div className="space-y-3">
-              {cart.items.map((item) => (
+              {cart.map((item) => (
                 <div key={item.id} className="flex justify-between items-center p-3 bg-gray-50 rounded">
                   <div className="flex-1">
                     <div className="font-medium">{item.itemName}</div>
@@ -109,7 +109,7 @@ export default function TestPersistedCartPage() {
             </div>
           )}
 
-          {cart.items.length > 0 && (
+          {cart.length > 0 && (
             <div className="mt-6 pt-4 border-t">
               <div className="space-y-2">
                 <div className="flex justify-between">
@@ -163,7 +163,7 @@ export default function TestPersistedCartPage() {
           <div><strong>Restaurant ID:</strong> {cart.currentRestaurantId || 'None'}</div>
           <div><strong>Total Items:</strong> {cart.getTotalItems()}</div>
           <div><strong>Total Value:</strong> ${cart.totalCartValue.toFixed(2)}</div>
-          <div><strong>Cart Items:</strong> {cart.items.length} items</div>
+          <div><strong>Cart Items:</strong> {cart.length} items</div>
         </div>
       </div>
 

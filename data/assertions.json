@@ -1,0 +1,213 @@
+{
+  "add-fruits": {
+    "prompt": "Add 3 kiwis, 1 avocado, and 1 bunch of strawberries from Gus's Community Market to your cart",
+    "assertions": [
+      {
+        "title": "Cart should contain exactly 3 unique items",
+        "operator": "JSON_MATCH",
+        "path": "multicategory-cart.state.items.length",
+        "expected": 3
+      },
+      {
+        "title": "Cart should contain 3 Kiwis",
+        "operator": "JSON_MATCH",
+        "path": "multicategory-cart.state.items[?(@.itemName=='Kiwi')].quantity",
+        "expected": 3
+      },
+      {
+        "title": "Cart should contain 1 Avocado",
+        "operator": "JSON_MATCH",
+        "path": "multicategory-cart.state.items[?(@.itemName=='Avocado')].quantity",
+        "expected": 1
+      },
+      {
+        "title": "Cart should contain 1 Strawberries",
+        "operator": "JSON_MATCH",
+        "path": "multicategory-cart.state.items[?(@.itemName=='Strawberries')].quantity",
+        "expected": 1
+      },
+      {
+        "title": "Current store for the first item should be Gus's Community Market",
+        "operator": "JSON_MATCH",
+        "path": "multicategory-cart.state.items[0].storeName",
+        "expected": "Gus's Community Market"
+      },
+      {
+        "title": "Current store for the second item should be Gus's Community Market",
+        "operator": "JSON_MATCH",
+        "path": "multicategory-cart.state.items[1].storeName",
+        "expected": "Gus's Community Market"
+      },
+      {
+        "title": "Current store for the third item should be Gus's Community Market",
+        "operator": "JSON_MATCH",
+        "path": "multicategory-cart.state.items[2].storeName",
+        "expected": "Gus's Community Market"
+      }
+    ]
+  },
+  "add-milk-from-safeway": {
+    "prompt": "Search for Safeway in the Grocery section and add a gallon of milk to the cart",
+    "assertions": [
+      {
+        "title": "Search results should show Safeway as first result",
+        "operator": "JSON_MATCH",
+        "path": "cart.searchResults[0].name",
+        "expected": "Safeway"
+      },
+      {
+        "title": "Cart should contain exactly 1 item",
+        "operator": "JSON_MATCH",
+        "path": "cart.length",
+        "expected": 1
+      },
+      {
+        "title": "Cart item should contain 'milk' in the name",
+        "operator": "CONTAINS",
+        "path": "cart[0].itemName",
+        "expected": "milk"
+      },
+      {
+        "title": "Milk quantity should be 1",
+        "operator": "JSON_MATCH",
+        "path": "cart[0].quantity",
+        "expected": 1
+      },
+      {
+        "title": "Current store should be Safeway",
+        "operator": "JSON_MATCH",
+        "path": "cart[0].storeName",
+        "expected": "Safeway"
+      },
+      {
+        "title": "Cart category should be grocery",
+        "operator": "JSON_MATCH",
+        "path": "cart_category",
+        "expected": "grocery"
+      }
+    ]
+  },
+  "order-7eleven-with-tip": {
+    "prompt": "Order 2 Lays Crisps, 1 fruit punch and 1 red bull from 7-Eleven, and add a $5 tip. Close the popup",
+    "assertions": [
+      {
+        "title": "Order should be completed",
+        "operator": "JSON_MATCH",
+        "path": "cart.lastOrderInfo.isCompleted",
+        "expected": true
+      },
+      {
+        "title": "Store should be 7-Eleven",
+        "operator": "CONTAINS",
+        "path": "cart.lastOrderInfo.storeName",
+        "expected": "7-eleven"
+      },
+      {
+        "title": "Tip amount should be $5",
+        "operator": "JSON_MATCH",
+        "path": "cart.lastOrderInfo.tipAmount",
+        "expected": 5
+      },
+      {
+        "title": "Order should contain 2 Lays Crisps",
+        "operator": "JSON_MATCH",
+        "path": "cart.lastOrderInfo.items[?(@.itemName contains 'Lay' && @.itemName contains 'Crisp')].quantity",
+        "expected": 2
+      },
+      {
+        "title": "Order should contain 1 fruit punch",
+        "operator": "JSON_MATCH",
+        "path": "cart.lastOrderInfo.items[?(@.itemName contains 'fruit' && @.itemName contains 'punch')].quantity",
+        "expected": 1
+      },
+      {
+        "title": "Order should contain 1 red bull",
+        "operator": "JSON_MATCH",
+        "path": "cart.lastOrderInfo.items[?(@.itemName contains 'red' && @.itemName contains 'bull')].quantity",
+        "expected": 1
+      },
+      {
+        "title": "Order verifier should not be consumed before verification",
+        "operator": "JSON_MATCH",
+        "path": "cart.orderVerifierConsumed",
+        "expected": false
+      }
+    ]
+  },
+  "clear-cart": {
+    "prompt": "Add 3 items to your cart and then clear the entire cart",
+    "assertions": [
+      {
+        "title": "Cart should be empty after clearing",
+        "operator": "JSON_MATCH",
+        "path": "cart.length",
+        "expected": 0
+      },
+      {
+        "title": "Clear action should be recorded",
+        "operator": "EXISTS",
+        "path": "cart.lastClearInfo",
+        "expected": true
+      },
+      {
+        "title": "Items before clear should be exactly 3",
+        "operator": "JSON_MATCH",
+        "path": "cart.lastClearInfo.itemsBeforeClear",
+        "expected": 3
+      },
+      {
+        "title": "Clear timestamp should exist",
+        "operator": "EXISTS",
+        "path": "cart.lastClearInfo.timestamp",
+        "expected": true
+      },
+      {
+        "title": "Clear verifier should not be consumed before verification",
+        "operator": "JSON_MATCH",
+        "path": "cart.verifierConsumed",
+        "expected": false
+      }
+    ]
+  },
+  "add-most-ordered": {
+    "prompt": "Navigate to Philz Coffee and add 'Mint Mojito Iced Coffee' from the Most Ordered section",
+    "assertions": [
+      {
+        "title": "Cart should contain exactly 1 item",
+        "operator": "JSON_MATCH",
+        "path": "cart.length",
+        "expected": 1
+      },
+      {
+        "title": "Item should be Mint Mojito Iced Coffee",
+        "operator": "JSON_MATCH",
+        "path": "cart[0].itemName",
+        "expected": "Mint Mojito Iced Coffee"
+      },
+      {
+        "title": "Item quantity should be 1",
+        "operator": "JSON_MATCH",
+        "path": "cart[0].quantity",
+        "expected": 1
+      },
+      {
+        "title": "Current store should be Philz Coffee",
+        "operator": "JSON_MATCH",
+        "path": "cart[0].storeName",
+        "expected": "Philz Coffee"
+      },
+      {
+        "title": "Cart category should be restaurant",
+        "operator": "JSON_MATCH",
+        "path": "cart_category",
+        "expected": "restaurant"
+      },
+      {
+        "title": "Item should be from restaurant category",
+        "operator": "JSON_MATCH",
+        "path": "cart[0].category",
+        "expected": "restaurant"
+      }
+    ]
+  }
+}

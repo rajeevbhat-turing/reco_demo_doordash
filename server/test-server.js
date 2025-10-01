@@ -18,7 +18,7 @@ async function testServer() {
     const testData = {
       'user.name': 'John Doe',
       'user.email': 'john@example.com',
-      'cart.items': [1, 2, 3],
+      'cart': [1, 2, 3],
       'settings.theme': 'dark'
     };
 
@@ -41,7 +41,7 @@ async function testServer() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         run_id: testRunId,
-        keys: ['user.name', 'user.email', 'cart.items', 'settings.theme']
+        keys: ['user.name', 'user.email', 'cart', 'settings.theme']
       })
     });
 
@@ -52,7 +52,7 @@ async function testServer() {
     console.log('\n4. Testing update existing data...');
     const updateData = {
       'user.name': 'Jane Doe',
-      'cart.items': [1, 2, 3, 4, 5],
+      'cart': [1, 2, 3, 4, 5],
       'new.key': 'new value'
     };
 
@@ -75,7 +75,7 @@ async function testServer() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         run_id: testRunId,
-        keys: ['user.name', 'cart.items', 'new.key']
+        keys: ['user.name', 'cart', 'new.key']
       })
     });
 

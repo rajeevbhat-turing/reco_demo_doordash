@@ -19,7 +19,7 @@ async function testRunIdSystem() {
     body: JSON.stringify({
       run_id: runId1,
       data: {
-        'cart.items': JSON.stringify([{id: 1, name: 'Pizza', price: 15.99}]),
+        'cart': JSON.stringify([{id: 1, name: 'Pizza', price: 15.99}]),
         'user.name': JSON.stringify('Alice')
       }
     })
@@ -33,7 +33,7 @@ async function testRunIdSystem() {
     body: JSON.stringify({
       run_id: runId2,
       data: {
-        'cart.items': JSON.stringify([{id: 2, name: 'Burger', price: 12.99}]),
+        'cart': JSON.stringify([{id: 2, name: 'Burger', price: 12.99}]),
         'user.name': JSON.stringify('Bob')
       }
     })
@@ -47,7 +47,7 @@ async function testRunIdSystem() {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       run_id: runId1,
-      keys: ['cart.items', 'user.name']
+      keys: ['cart', 'user.name']
     })
   });
   const data1 = await response1.json();
@@ -58,7 +58,7 @@ async function testRunIdSystem() {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       run_id: runId2,
-      keys: ['cart.items', 'user.name']
+      keys: ['cart', 'user.name']
     })
   });
   const data2 = await response2.json();
@@ -92,7 +92,7 @@ async function testRunIdSystem() {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       run_id: runId1,
-      keys: ['cart.items', 'user.name']
+      keys: ['cart', 'user.name']
     })
   });
   const emptyData = await verifyEmpty.json();
@@ -103,7 +103,7 @@ async function testRunIdSystem() {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       run_id: runId2,
-      keys: ['cart.items', 'user.name']
+      keys: ['cart', 'user.name']
     })
   });
   const stillExistsData = await verifyStillExists.json();
