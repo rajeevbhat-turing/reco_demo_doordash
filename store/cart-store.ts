@@ -204,6 +204,7 @@ interface CartStore {
     timestamp: number
     tipAmount: number
     navigatedToCheckout: boolean
+    deliveryTime?: string
   } | null
   checkoutVerifierConsumed: boolean
 
@@ -287,6 +288,7 @@ interface CartStore {
   // Checkout tracking methods
   recordCheckoutNavigation: () => void
   recordTipSelection: (tipAmount: number) => void
+  recordDeliveryTimeSelection: (deliveryTime: string) => void
   markCheckoutVerifierConsumed: () => void
 }
 
@@ -865,6 +867,19 @@ export const useCartStore = create<CartStore>()(
               timestamp: lastCheckoutInfo?.timestamp || Date.now(),
               tipAmount,
               navigatedToCheckout: lastCheckoutInfo?.navigatedToCheckout || true,
+              deliveryTime: lastCheckoutInfo?.deliveryTime,
+            }
+          })
+        },
+        recordDeliveryTimeSelection: (deliveryTime: string) => {
+          console.log(`[CHECKOUT] Recording delivery time selection: ${deliveryTime}`)
+          const { lastCheckoutInfo } = get()
+          set({
+            lastCheckoutInfo: {
+              timestamp: lastCheckoutInfo?.timestamp || Date.now(),
+              tipAmount: lastCheckoutInfo?.tipAmount || 0,
+              navigatedToCheckout: lastCheckoutInfo?.navigatedToCheckout || true,
+              deliveryTime,
             }
           })
         },
