@@ -1,22 +1,22 @@
-import type React from "react"
-import type { Metadata } from "next"
-import { Inter } from "next/font/google"
-import "./globals.css"
-import Header from "@/components/header"
-import Sidebar from "@/components/sidebar"
-import { ReplaceCartProviderWithSQLite } from "@/context/replace-cart-context-with-sqlite"
+import type React from 'react';
+import type { Metadata } from 'next';
+import { Inter } from 'next/font/google';
+import './globals.css';
+import Header from '@/components/header';
+import Sidebar from '@/components/sidebar';
+import { ReplaceCartProviderWithSQLite } from '@/context/replace-cart-context-with-sqlite';
 
-const inter = Inter({ subsets: ["latin"] })
+const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: "DashDoor: Food Delivery & Takeaway",
-  description: "Order food online from restaurants and get it delivered to your door",
-}
+  title: 'DashDoor: Food Delivery & Takeaway',
+  description: 'Order food online from restaurants and get it delivered to your door',
+};
 
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode
+  children: React.ReactNode;
 }>) {
   return (
     <html lang="en">
@@ -32,7 +32,7 @@ export default function RootLayout({
             </div>
           </div>
         </ReplaceCartProviderWithSQLite>
-        
+
         {/* Global Functions Script */}
         <script
           dangerouslySetInnerHTML={{
@@ -131,10 +131,10 @@ export default function RootLayout({
                 // Log other errors normally
                 originalConsoleError.apply(console, args);
               };
-            `
+            `,
           }}
         />
       </body>
     </html>
-  )
+  );
 }

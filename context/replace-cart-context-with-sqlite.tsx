@@ -31,10 +31,7 @@ export function ReplaceCartProviderWithSQLite({ children }: ReplaceCartProviderP
   const [pendingCategory, setPendingCategory] = useState<string | undefined>(undefined);
   const [conflictType, setConflictType] = useState<'restaurant' | 'store'>('store');
 
-  const { addItem, checkConflict, replaceCartWithItem, items, clearCart } = useCartStore();
-
-  usePersistedState<CartItem[]>('cart', []);
-  usePersistedState<string>('cart_category', 'grocery');
+  const { addItem, checkConflict, replaceCartWithItem } = useCartStore();
 
   const showReplaceModal = (
     item: Omit<CartItem, 'quantity' | 'category'>,
