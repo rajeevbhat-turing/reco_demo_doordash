@@ -201,7 +201,7 @@ export async function POST(request: NextRequest) {
 
       return NextResponse.json({
         taskId: taskId,
-        description: task.prompt,
+        prompt: task.prompt,
         assertions: processedAssertions,
       });
     } catch (error) {

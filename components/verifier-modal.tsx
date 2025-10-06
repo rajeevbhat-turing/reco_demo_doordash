@@ -41,7 +41,7 @@ interface LogEntry {
 
 interface GetExpectedStateResponse {
   taskId: string;
-  description: string;
+  prompt: string;
   assertions: SingleAssertion[];
 }
 
@@ -493,7 +493,7 @@ export default function VerifierModal({ taskId, isOpen, onClose }: VerifierModal
                   </h3>
                   <div className="bg-gray-50 rounded-md p-4">
                     <p className="text-gray-700 leading-relaxed text-sm font-mono">
-                      {verifierData.description}
+                      {verifierData.prompt}
                     </p>
                   </div>
                 </div>
@@ -814,7 +814,7 @@ export default function VerifierModal({ taskId, isOpen, onClose }: VerifierModal
 
                 <div className="mb-6">
                   <h3 className="text-lg font-semibold text-gray-900 mb-4">Execution Log</h3>
-                  <div 
+                  <div
                     ref={executionLogRef}
                     className="bg-gray-50 border border-gray-200 rounded-lg p-4 max-h-64 overflow-y-auto font-mono text-sm"
                   >

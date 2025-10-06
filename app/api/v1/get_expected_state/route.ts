@@ -27,7 +27,7 @@ type GetExpectedStateRequest = {
 
 type GetExpectedStateResponse = {
   taskId: string;
-  description: string;
+  prompt: string;
   assertions: Assertion[];
 };
 
@@ -62,7 +62,7 @@ export async function POST(request: NextRequest) {
 
     const response: GetExpectedStateResponse = {
       taskId: taskId,
-      description: assertion.prompt,
+      prompt: assertion.prompt,
       assertions: transformedAssertions,
     };
 
