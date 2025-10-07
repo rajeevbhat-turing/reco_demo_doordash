@@ -1,0 +1,282 @@
+{
+  "testSuites": {
+    "regression": {
+      "name": "Regression Tests - UI Changes",
+      "description": "Tests to ensure UI changes don't break existing verifiers",
+      "testCases": [
+        {
+          "name": "Sweet Pretzel - Should Pass",
+          "description": "Verifier should pass when cart contains exactly 1 sweet pretzel from Jamba Juice",
+          "initialState": "cartWithSweetPretzel",
+          "verifierId": "add-sweet-pretzel",
+          "expectedResult": true,
+          "timeout": 5000
+        },
+        {
+          "name": "Clear Cart - Should Pass",
+          "description": "Verifier should pass when cart was cleared with exactly 3 items",
+          "initialState": "cartWithThreeItems",
+          "verifierId": "clear-cart",
+          "expectedResult": true,
+          "timeout": 5000
+        },
+        {
+          "name": "Safeway Milk - Should Pass",
+          "description": "Verifier should pass when at Safeway with 1 milk item",
+          "initialState": "atSafewayWithMilk",
+          "verifierId": "add-milk-from-safeway",
+          "expectedResult": true,
+          "timeout": 5000
+        },
+        {
+          "name": "Gus Market Fruits - Should Pass",
+          "description": "Verifier should pass when at Gus Market with correct fruit quantities",
+          "initialState": "atGusMarketWithFruits",
+          "verifierId": "add-fruits",
+          "expectedResult": true,
+          "timeout": 5000
+        },
+        {
+          "name": "Sweet Pretzel - Empty Cart Should Fail",
+          "description": "Verifier should fail when cart is empty",
+          "initialState": "emptyCart",
+          "verifierId": "add-sweet-pretzel",
+          "expectedResult": false,
+          "timeout": 5000
+        },
+        {
+          "name": "Clear Cart - Empty Cart Should Fail",
+          "description": "Verifier should fail when no clear action was performed",
+          "initialState": "emptyCart",
+          "verifierId": "clear-cart",
+          "expectedResult": false,
+          "timeout": 5000
+        },
+        {
+          "name": "Safeway Milk - Wrong Store Should Fail",
+          "description": "Verifier should fail when not at Safeway",
+          "initialState": "cartWithSweetPretzel",
+          "verifierId": "add-milk-from-safeway",
+          "expectedResult": false,
+          "timeout": 5000
+        }
+      ]
+    },
+    "breaking": {
+      "name": "Breaking Change Detection",
+      "description": "Tests to detect breaking changes in verifiers or UI",
+      "testCases": [
+        {
+          "name": "Verifier Already Consumed",
+          "description": "Verifier should fail when already consumed",
+          "initialState": "cartWithSweetPretzelConsumed",
+          "verifierId": "add-sweet-pretzel",
+          "expectedResult": false,
+          "timeout": 5000
+        },
+        {
+          "name": "Malformed Cart State",
+          "description": "Verifier should handle malformed state gracefully",
+          "initialState": "malformedState",
+          "verifierId": "add-sweet-pretzel",
+          "expectedResult": "error",
+          "timeout": 5000
+        }
+      ]
+    },
+    "ui-changes": {
+      "name": "UI Change Impact Tests",
+      "description": "Tests to verify UI changes don't break verifiers",
+      "testCases": [
+        {
+          "name": "Store Name Change Impact",
+          "description": "Test if changing store names breaks verifiers",
+          "initialState": "customStoreName",
+          "verifierId": "add-sweet-pretzel",
+          "expectedResult": false,
+          "timeout": 5000
+        },
+        {
+          "name": "Item Name Change Impact",
+          "description": "Test if changing item names breaks verifiers",
+          "initialState": "customItemName",
+          "verifierId": "add-sweet-pretzel",
+          "expectedResult": false,
+          "timeout": 5000
+        }
+      ]
+    }
+  },
+  "uiStates": {
+    "emptyCart": {
+      "items": [],
+      "currentStore": null,
+      "searchResults": [],
+      "lastSearchInfo": null,
+      "lastClearInfo": null,
+      "lastRemovalInfo": null,
+      "currentCategory": null,
+      "verifierConsumed": false,
+      "searchVerifierConsumed": false,
+      "removalVerifierConsumed": false
+    },
+    "cartWithSweetPretzel": {
+      "items": [{
+        "itemName": "sweet pretzel",
+        "quantity": 1,
+        "price": 3.99,
+        "storeName": "Jamba Juice (152 Kearny Street)"
+      }],
+      "currentStore": {
+        "name": "Jamba Juice (152 Kearny Street)",
+        "id": "jamba-juice-152"
+      },
+      "searchResults": [],
+      "lastSearchInfo": null,
+      "lastClearInfo": null,
+      "lastRemovalInfo": null,
+      "currentCategory": "restaurant",
+      "verifierConsumed": false,
+      "searchVerifierConsumed": false,
+      "removalVerifierConsumed": false
+    },
+    "cartWithSweetPretzelConsumed": {
+      "items": [{
+        "itemName": "sweet pretzel",
+        "quantity": 1,
+        "price": 3.99,
+        "storeName": "Jamba Juice (152 Kearny Street)"
+      }],
+      "currentStore": {
+        "name": "Jamba Juice (152 Kearny Street)",
+        "id": "jamba-juice-152"
+      },
+      "searchResults": [],
+      "lastSearchInfo": null,
+      "lastClearInfo": null,
+      "lastRemovalInfo": null,
+      "currentCategory": "restaurant",
+      "verifierConsumed": true,
+      "searchVerifierConsumed": false,
+      "removalVerifierConsumed": false
+    },
+    "cartWithThreeItems": {
+      "items": [
+        { "itemName": "Item 1", "quantity": 1, "price": 5.99 },
+        { "itemName": "Item 2", "quantity": 2, "price": 3.50 },
+        { "itemName": "Item 3", "quantity": 1, "price": 7.99 }
+      ],
+      "currentStore": {
+        "name": "Test Store",
+        "id": "test-store"
+      },
+      "searchResults": [],
+      "lastSearchInfo": null,
+      "lastClearInfo": {
+        "itemsBeforeClear": 3,
+        "timestamp": "2024-01-01T00:00:00.000Z"
+      },
+      "lastRemovalInfo": null,
+      "currentCategory": "restaurant",
+      "verifierConsumed": false,
+      "searchVerifierConsumed": false,
+      "removalVerifierConsumed": false
+    },
+    "atSafewayWithMilk": {
+      "items": [{
+        "itemName": "Gallon of Milk",
+        "quantity": 1,
+        "price": 4.99
+      }],
+      "currentStore": {
+        "name": "Safeway",
+        "id": "safeway"
+      },
+      "searchResults": [{
+        "name": "Safeway",
+        "id": "safeway"
+      }],
+      "lastSearchInfo": {
+        "query": "Safeway",
+        "results": ["Safeway"]
+      },
+      "lastClearInfo": null,
+      "lastRemovalInfo": null,
+      "currentCategory": "grocery",
+      "verifierConsumed": false,
+      "searchVerifierConsumed": false,
+      "removalVerifierConsumed": false
+    },
+    "atGusMarketWithFruits": {
+      "items": [
+        { "itemName": "Avocado", "quantity": 1, "price": 2.99 },
+        { "itemName": "Kiwi", "quantity": 3, "price": 1.50 },
+        { "itemName": "Strawberries", "quantity": 1, "price": 4.99 }
+      ],
+      "currentStore": {
+        "name": "Gus's Community Market",
+        "id": "gus-market"
+      },
+      "searchResults": [],
+      "lastSearchInfo": null,
+      "lastClearInfo": null,
+      "lastRemovalInfo": null,
+      "currentCategory": "grocery",
+      "verifierConsumed": false,
+      "searchVerifierConsumed": false,
+      "removalVerifierConsumed": false
+    },
+    "malformedState": {
+      "items": null,
+      "currentStore": undefined,
+      "searchResults": "invalid",
+      "lastSearchInfo": null,
+      "lastClearInfo": null,
+      "lastRemovalInfo": null,
+      "currentCategory": null,
+      "verifierConsumed": false,
+      "searchVerifierConsumed": false,
+      "removalVerifierConsumed": false
+    },
+    "customStoreName": {
+      "items": [{
+        "itemName": "sweet pretzel",
+        "quantity": 1,
+        "price": 3.99,
+        "storeName": "Different Store Name"
+      }],
+      "currentStore": {
+        "name": "Different Store Name",
+        "id": "different-store"
+      },
+      "searchResults": [],
+      "lastSearchInfo": null,
+      "lastClearInfo": null,
+      "lastRemovalInfo": null,
+      "currentCategory": "restaurant",
+      "verifierConsumed": false,
+      "searchVerifierConsumed": false,
+      "removalVerifierConsumed": false
+    },
+    "customItemName": {
+      "items": [{
+        "itemName": "different pretzel name",
+        "quantity": 1,
+        "price": 3.99,
+        "storeName": "Jamba Juice (152 Kearny Street)"
+      }],
+      "currentStore": {
+        "name": "Jamba Juice (152 Kearny Street)",
+        "id": "jamba-juice-152"
+      },
+      "searchResults": [],
+      "lastSearchInfo": null,
+      "lastClearInfo": null,
+      "lastRemovalInfo": null,
+      "currentCategory": "restaurant",
+      "verifierConsumed": false,
+      "searchVerifierConsumed": false,
+      "removalVerifierConsumed": false
+    }
+  }
+}

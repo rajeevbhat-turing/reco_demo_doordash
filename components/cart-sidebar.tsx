@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
+import { useState, useEffect, useCallback, useMemo } from "react"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { X, ChevronRight, ChevronLeft, Plus, Minus } from "lucide-react"
@@ -34,12 +34,8 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
     groupOrderId,
     getConfig
   } = useCartStore()
-  const [price, setPrice] = useState("Checkout")
-  
-  // Update price client-side only to avoid hydration errors
-  useEffect(() => {
-    setPrice(getTotalPrice())
-  }, [getTotalPrice, items])
+  // Calculate price directly without state to avoid infinite loops
+  const price = items.length > 0 ? getTotalPrice() : "Checkout"
   
   const [restaurant, setRestaurant] = useState<any>(null)
   const [store, setStore] = useState<any>(null)
@@ -77,7 +73,7 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
 
   // Function to fetch complement items - moved outside useEffect for clarity
   const fetchComplementItems = useCallback(
-    (currentId: string) => {
+    (currentId: string, cartItemIds: string[]) => {
       if (!currentId) {
         setComplementItems([])
         return
@@ -94,9 +90,6 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
       const verifiedMenuItems = menuItems.filter((item) => {
         return item.restaurantId === currentId
       })
-
-      // Get items already in cart
-      const cartItemIds = items.map((item) => item.id)
 
       // Filter out items already in cart
       const availableItems = verifiedMenuItems.filter((item) => !cartItemIds.includes(item.id))
@@ -139,22 +132,24 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
 
       setComplementItems(shuffledItems)
     },
-    [items],
+    [], // Remove items dependency to make it stable
   )
 
-  // Only fetch complement items based on cart items, not current page
-  useEffect(() => {
+  // Fetch complement items when items change - no useEffect needed
+  useMemo(() => {
     if (items.length > 0) {
       const firstItem = items[0];
       if (firstItem.restaurantId) {
-        fetchComplementItems(firstItem.restaurantId);
+        const cartItemIds = items.map(item => item.id);
+        fetchComplementItems(firstItem.restaurantId, cartItemIds);
       } else {
         setComplementItems([]);
       }
     } else {
       setComplementItems([]);
     }
-  }, [items, fetchComplementItems])
+    return null; // useMemo must return something
+  }, [items.length, items[0]?.restaurantId, fetchComplementItems])
 
   // Get the display name based on current category
   const getDisplayName = () => {

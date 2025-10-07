@@ -6,7 +6,7 @@ import Image from "next/image"
 import { Plus, Trash2, Minus } from "lucide-react"
 import type { Product } from "@/types"
 import { CartCategory, useCartStore } from "@/store/cart-store"
-import { useReplaceCart } from "@/context/replace-cart-context"
+import { useReplaceCart } from "@/context/replace-cart-context-with-sqlite"
 import { convenienceStores } from "@/data/convenience-store-data"
 
 interface ProductCardProps {

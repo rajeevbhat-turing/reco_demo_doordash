@@ -14,7 +14,7 @@ import { convenienceStores } from "@/data/convenience-store-data"
 
 export default function CheckoutPage() {
   const router = useRouter()
-  const { items, getSubtotal, getServiceFee, getDeliveryFee, getTotal, getTotalItems, currentCategory, currentRestaurantId, currentStoreId } = useCartStore()
+  const { items, getSubtotal, getServiceFee, getDeliveryFee, getTotal, getTotalItems, currentCategory, currentRestaurantId, currentStoreId, recordCheckoutNavigation, recordTipSelection, recordDeliveryTimeSelection } = useCartStore()
   const [showOrderConfirmation, setShowOrderConfirmation] = useState(false)
   const [orderId, setOrderId] = useState("")
   const [showScheduleModal, setShowScheduleModal] = useState(false)
@@ -32,7 +32,9 @@ export default function CheckoutPage() {
   // Fix hydration by ensuring client-side only rendering
   useEffect(() => {
     setIsClient(true)
-  }, [])
+    // Record checkout navigation for verifiers
+    recordCheckoutNavigation()
+  }, [recordCheckoutNavigation])
   
   // Generate order ID
   const generateOrderId = () => {
@@ -145,10 +147,14 @@ export default function CheckoutPage() {
     setSelectedScheduleTime(time)
     setDeliveryTime(`Scheduled for ${time}`)
     setShowScheduleModal(false)
+    // Record delivery time selection for verifiers
+    recordDeliveryTimeSelection(`Scheduled for ${time}`)
   }
 
   const handleTipSelect = (amount: number) => {
     setSelectedTip(amount)
+    // Record tip selection for verifiers
+    recordTipSelection(amount)
   }
 
   // Calculate total with extra delivery fee and tip

@@ -230,7 +230,7 @@ const SearchBar = () => {
             return false
           })
           
-          if (matches && petProductResults.length < 2) {
+          if (matches && petProductResults.length < 5) {
             petProductResults.push({
               id: `pet-product-${product.id}`,
               name: product.name,
@@ -291,7 +291,7 @@ const SearchBar = () => {
                   const productName = product.name ? product.name.toLowerCase() : ''
                   const matches = queryWords.every(word => productName.includes(word))
                   
-                  if (matches && retailProductResults.length < 2) {
+                  if (matches && retailProductResults.length < 5) {
                     retailProductResults.push({
                       id: `retail-product-${product.id}`,
                       name: product.name,

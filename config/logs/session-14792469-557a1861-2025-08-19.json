@@ -1,0 +1,15 @@
+[
+  {
+    "timestamp": "2025-08-19T14:46:32.521Z",
+    "taskId": "search-starbucks",
+    "passed": true,
+    "executionTime": 47.8,
+    "error": null,
+    "description": "Search for 'starbucks' and navigate to a Starbucks store",
+    "cartItemCount": 0,
+    "currentStore": null,
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36",
+    "url": "http://localhost:3000/verify/search-starbucks?_rsc=8g6rq",
+    "sessionId": "14792469-557a1861"
+  }
+]

@@ -1,17 +1,28 @@
-"use client"
+'use client';
 
-import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { Home, ShoppingBag, Store, Activity, Gift, Search, FileText, PawPrint, Coffee } from "lucide-react"
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import {
+  Home,
+  ShoppingBag,
+  Store,
+  Activity,
+  Gift,
+  Search,
+  FileText,
+  PawPrint,
+  Coffee,
+  TestTube,
+} from 'lucide-react';
 
 export default function Sidebar() {
-  const pathname = usePathname()
+  const pathname = usePathname();
 
   const isActive = (path: string) => {
-    if (path === "/" && pathname === "/") return true
-    if (path !== "/" && pathname.startsWith(path)) return true
-    return false
-  }
+    if (path === '/' && pathname === '/') return true;
+    if (path !== '/' && pathname.startsWith(path)) return true;
+    return false;
+  };
 
   return (
     <aside className="fixed top-16 left-0 w-[220px] border-r border-gray-200 h-[calc(100vh-64px)] overflow-y-auto bg-white z-40 hidden md:block">
@@ -21,7 +32,9 @@ export default function Sidebar() {
             <Link
               href="/"
               className={`flex items-center px-4 py-3 rounded-lg mx-2 ${
-                pathname === "/" ? "bg-blue-50 text-blue-600 font-medium" : "text-gray-700 hover:bg-gray-100"
+                pathname === '/'
+                  ? 'bg-blue-50 text-blue-600 font-medium'
+                  : 'text-gray-700 hover:bg-gray-100'
               }`}
             >
               <Home className="h-5 w-5 mr-3" />
@@ -32,9 +45,9 @@ export default function Sidebar() {
             <Link
               href="/grocery"
               className={`flex items-center px-4 py-3 rounded-lg mx-2 ${
-                pathname.startsWith("/grocery")
-                  ? "bg-blue-50 text-blue-600 font-medium"
-                  : "text-gray-700 hover:bg-gray-100"
+                pathname.startsWith('/grocery')
+                  ? 'bg-blue-50 text-blue-600 font-medium'
+                  : 'text-gray-700 hover:bg-gray-100'
               }`}
             >
               <ShoppingBag className="h-5 w-5 mr-3" />
@@ -45,9 +58,9 @@ export default function Sidebar() {
             <Link
               href="/retail"
               className={`flex items-center px-4 py-3 rounded-lg mx-2 ${
-                pathname.startsWith("/retail")
-                  ? "bg-blue-50 text-blue-600 font-medium"
-                  : "text-gray-700 hover:bg-gray-100"
+                pathname.startsWith('/retail')
+                  ? 'bg-blue-50 text-blue-600 font-medium'
+                  : 'text-gray-700 hover:bg-gray-100'
               }`}
             >
               <Store className="h-5 w-5 mr-3" />
@@ -58,7 +71,9 @@ export default function Sidebar() {
             <Link
               href="/pets"
               className={`flex items-center px-4 py-3 rounded-lg mx-2 ${
-                pathname.startsWith("/pets") ? "bg-blue-50 text-blue-600 font-medium" : "text-gray-700 hover:bg-gray-100"
+                pathname.startsWith('/pets')
+                  ? 'bg-blue-50 text-blue-600 font-medium'
+                  : 'text-gray-700 hover:bg-gray-100'
               }`}
             >
               <PawPrint className="h-5 w-5 mr-3" />
@@ -69,10 +84,12 @@ export default function Sidebar() {
             <Link
               href="/convenience"
               className={`flex items-center px-4 py-3 rounded-lg mx-2 ${
-                pathname.startsWith("/convenience") ? "bg-blue-50 text-blue-600 font-medium" : "text-gray-700 hover:bg-gray-100"
+                pathname.startsWith('/convenience')
+                  ? 'bg-blue-50 text-blue-600 font-medium'
+                  : 'text-gray-700 hover:bg-gray-100'
               }`}
             >
-              <Coffee className="h-5 w-5 mr-3"/>
+              <Coffee className="h-5 w-5 mr-3" />
               <span>Convenience</span>
             </Link>
           </li>
@@ -84,9 +101,9 @@ export default function Sidebar() {
               <Link
                 href="/orders"
                 className={`flex items-center px-4 py-3 rounded-lg mx-2 ${
-                  pathname.startsWith("/orders")
-                    ? "bg-blue-50 text-blue-600 font-medium"
-                    : "text-gray-700 hover:bg-gray-100"
+                  pathname.startsWith('/orders')
+                    ? 'bg-blue-50 text-blue-600 font-medium'
+                    : 'text-gray-700 hover:bg-gray-100'
                 }`}
               >
                 <FileText className="h-5 w-5 mr-3" />
@@ -97,5 +114,5 @@ export default function Sidebar() {
         </div>
       </nav>
     </aside>
-  )
+  );
 }

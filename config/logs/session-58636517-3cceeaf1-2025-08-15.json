@@ -1,0 +1,15 @@
+[
+  {
+    "timestamp": "2025-08-15T11:50:37.034Z",
+    "taskId": "sequential-starbucks-bagel",
+    "passed": false,
+    "executionTime": 513.6,
+    "error": null,
+    "description": "Order a latte from Starbucks first, then order any bagel from any restaurant",
+    "cartItemCount": 0,
+    "currentStore": null,
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36",
+    "url": "http://localhost:3000/verify/sequential-starbucks-bagel",
+    "sessionId": "58636517-3cceeaf1"
+  }
+]

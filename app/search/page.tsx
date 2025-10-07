@@ -18,7 +18,7 @@ import type { Restaurant } from "@/constants/restaurants"
 import { useCartStore } from "@/store/cart-store"
 import { getDefaultRating } from "@/utils/rating-utils"
 import { filterRestaurantsWithMenuItems } from "@/utils/restaurant-utils"
-import { useReplaceCart } from "@/context/replace-cart-context"
+import { useReplaceCart } from "@/context/replace-cart-context-with-sqlite"
 
 // Force dynamic rendering
 export const dynamic = 'force-dynamic'

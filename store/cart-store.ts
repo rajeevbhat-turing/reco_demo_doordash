@@ -168,6 +168,8 @@ interface CartStore {
   totalCartValue: number
   // Current store object
   currentStore: Record<string, any>
+  // Visited stores tracking
+  visitedStores: string[]
   // Clear tracking for verifiers
   lastClearInfo: { itemsBeforeClear: number; timestamp: number } | null
   // Track the maximum items reached for verifier support
@@ -196,6 +198,15 @@ interface CartStore {
     items: CartItem[]
   } | null
   orderVerifierConsumed: boolean
+
+  // Checkout tracking for checkout verifiers
+  lastCheckoutInfo: {
+    timestamp: number
+    tipAmount: number
+    navigatedToCheckout: boolean
+    deliveryTime?: string
+  } | null
+  checkoutVerifierConsumed: boolean
 
   // Category methods
   setCategory: (category: CartCategory) => void
@@ -273,6 +284,12 @@ interface CartStore {
     items: CartItem[]
   }) => void
   markOrderVerifierConsumed: () => void
+
+  // Checkout tracking methods
+  recordCheckoutNavigation: () => void
+  recordTipSelection: (tipAmount: number) => void
+  recordDeliveryTimeSelection: (deliveryTime: string) => void
+  markCheckoutVerifierConsumed: () => void
 }
 
 export const useCartStore = create<CartStore>()(
@@ -289,6 +306,7 @@ export const useCartStore = create<CartStore>()(
         searchResults: [],
         totalCartValue: 0,
         currentStore: {},
+        visitedStores: [],
         lastClearInfo: null,
         maxItemsReached: 0,
         verifierConsumed: false,
@@ -300,6 +318,8 @@ export const useCartStore = create<CartStore>()(
         quantityVerifierConsumed: false,
         lastOrderInfo: null,
         orderVerifierConsumed: false,
+        lastCheckoutInfo: null,
+        checkoutVerifierConsumed: false,
 
         // Set active category without clearing cart
         setCategory: (category: CartCategory) => {
@@ -696,20 +716,62 @@ export const useCartStore = create<CartStore>()(
         setCurrentStore: (store: Record<string, any>) => {
           console.log(`[STORE] Setting current store: ${store.name}`)
           
-          // Check if this might be navigation from search results
-          const { lastSearchInfo } = get()
-          if (lastSearchInfo && !lastSearchInfo.navigatedFromSearch) {
-            console.log(`[STORE] Navigation from search detected`)
-            set({ 
-              currentStore: store,
-              lastSearchInfo: { ...lastSearchInfo, navigatedFromSearch: true },
-              searchVerifierConsumed: false, // Reset search verifier consumption on new navigation
-            })
+          const { visitedStores, currentCategory } = get()
+          
+          // Add store to visitedStores if it has an id
+          if (store.id) {
+            // Check if store is already in visitedStores to avoid duplicates
+            const existingStoreIndex = visitedStores.findIndex(visitedStoreId => 
+              visitedStoreId === store.id
+            )
+            
+            let newVisitedStores
+            if (existingStoreIndex >= 0) {
+              // Move existing store to the beginning of the array
+              newVisitedStores = [
+                store.id,
+                ...visitedStores.filter((_, index) => index !== existingStoreIndex)
+              ]
+            } else {
+              // Add new store to the beginning of the array
+              newVisitedStores = [store.id, ...visitedStores]
+            }
+            
+            console.log(`[STORE] Added to visited stores: ${store.id}`)
+            
+            // Check if this might be navigation from search results
+            const { lastSearchInfo } = get()
+            if (lastSearchInfo && !lastSearchInfo.navigatedFromSearch) {
+              console.log(`[STORE] Navigation from search detected`)
+              set({ 
+                currentStore: store,
+                visitedStores: newVisitedStores,
+                lastSearchInfo: { ...lastSearchInfo, navigatedFromSearch: true },
+                searchVerifierConsumed: false, // Reset search verifier consumption on new navigation
+              })
+            } else {
+              set({ 
+                currentStore: store,
+                visitedStores: newVisitedStores,
+                searchVerifierConsumed: false, // Reset search verifier consumption on store change
+              })
+            }
           } else {
-            set({ 
-              currentStore: store,
-              searchVerifierConsumed: false, // Reset search verifier consumption on store change
-            })
+            // If store doesn't have required fields, just set currentStore without updating visitedStores
+            const { lastSearchInfo } = get()
+            if (lastSearchInfo && !lastSearchInfo.navigatedFromSearch) {
+              console.log(`[STORE] Navigation from search detected`)
+              set({ 
+                currentStore: store,
+                lastSearchInfo: { ...lastSearchInfo, navigatedFromSearch: true },
+                searchVerifierConsumed: false, // Reset search verifier consumption on new navigation
+              })
+            } else {
+              set({ 
+                currentStore: store,
+                searchVerifierConsumed: false, // Reset search verifier consumption on store change
+              })
+            }
           }
         },
 
@@ -784,6 +846,46 @@ export const useCartStore = create<CartStore>()(
         markOrderVerifierConsumed: () => {
           set({ orderVerifierConsumed: true })
         },
+
+        // Checkout tracking methods
+        recordCheckoutNavigation: () => {
+          console.log('[CHECKOUT] Recording checkout navigation')
+          set({
+            lastCheckoutInfo: {
+              timestamp: Date.now(),
+              tipAmount: 0, // Default tip amount, will be updated when tip is selected
+              navigatedToCheckout: true,
+            },
+            checkoutVerifierConsumed: false,
+          })
+        },
+        recordTipSelection: (tipAmount: number) => {
+          console.log(`[CHECKOUT] Recording tip selection: $${tipAmount}`)
+          const { lastCheckoutInfo } = get()
+          set({
+            lastCheckoutInfo: {
+              timestamp: lastCheckoutInfo?.timestamp || Date.now(),
+              tipAmount,
+              navigatedToCheckout: lastCheckoutInfo?.navigatedToCheckout || true,
+              deliveryTime: lastCheckoutInfo?.deliveryTime,
+            }
+          })
+        },
+        recordDeliveryTimeSelection: (deliveryTime: string) => {
+          console.log(`[CHECKOUT] Recording delivery time selection: ${deliveryTime}`)
+          const { lastCheckoutInfo } = get()
+          set({
+            lastCheckoutInfo: {
+              timestamp: lastCheckoutInfo?.timestamp || Date.now(),
+              tipAmount: lastCheckoutInfo?.tipAmount || 0,
+              navigatedToCheckout: lastCheckoutInfo?.navigatedToCheckout || true,
+              deliveryTime,
+            }
+          })
+        },
+        markCheckoutVerifierConsumed: () => {
+          set({ checkoutVerifierConsumed: true })
+        },
       }),
       {
         name: "multicategory-cart",
@@ -798,6 +900,7 @@ export const useCartStore = create<CartStore>()(
           searchResults: state.searchResults,
           totalCartValue: state.totalCartValue,
           currentStore: state.currentStore,
+          visitedStores: state.visitedStores,
           lastClearInfo: state.lastClearInfo,
           maxItemsReached: state.maxItemsReached,
           verifierConsumed: state.verifierConsumed,
@@ -809,6 +912,8 @@ export const useCartStore = create<CartStore>()(
           quantityVerifierConsumed: state.quantityVerifierConsumed,
           lastOrderInfo: state.lastOrderInfo,
           orderVerifierConsumed: state.orderVerifierConsumed,
+          lastCheckoutInfo: state.lastCheckoutInfo,
+          checkoutVerifierConsumed: state.checkoutVerifierConsumed,
         }),
         merge: (persistedState: any, currentState) => {
           // Handle migration of old cart items
@@ -838,6 +943,7 @@ export const useCartStore = create<CartStore>()(
             ...persistedState,
             items: migratedItems,
             currentStore: persistedState.currentStore || {},
+            visitedStores: persistedState.visitedStores || [],
             lastClearInfo: persistedState.lastClearInfo || null,
             maxItemsReached: persistedState.maxItemsReached || 0,
             verifierConsumed: persistedState.verifierConsumed || false,

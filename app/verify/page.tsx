@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { CheckCircle, XCircle, AlertCircle, Play, Loader2, Clock, ChevronRight, ChevronDown } from 'lucide-react'
+import assertionsData from '@/data/assertions.json'
 
 interface Task {
   task_id: string
@@ -35,56 +36,20 @@ export default function VerifyPage() {
   const [taskResults, setTaskResults] = useState<Record<string, VerificationResult | null>>({})
   const [runningTasks, setRunningTasks] = useState<Set<string>>(new Set())
 
-  // Load tasks from production_tasks.csv
+  // Load tasks from assertions.json (same as verify_raw)
   useEffect(() => {
     const loadTasks = async () => {
       try {
-        // For now, we'll use the tasks from flow-verifiers.json
-        // In a real implementation, you'd parse the CSV file
-        const response = await fetch('/api/verify?action=getAll')
-        const data = await response.json()
-        
-        if (response.ok && data.flows) {
-          // Convert flow data to task format
-          const taskList: Task[] = data.flows.map((flow: any, index: number) => ({
-            task_id: flow.flowId,
-            task_description: flow.description,
-            task_link: 'https://turing-dashdoor-clone.vercel.app/',
-            verification_link: `https://turing-dashdoor-clone.vercel.app/verify/${flow.flowId}`,
-            max_steps: 100,
-            max_wait_time: 1800
-          }))
-          setTasks(taskList)
-        } else {
-          // Fallback: create some sample tasks based on your CSV
-          const sampleTasks: Task[] = [
-            {
-              task_id: 'clear-cart',
-              task_description: 'Add 3 Items and Clear the Cart',
-              task_link: 'https://turing-dashdoor-clone.vercel.app/',
-              verification_link: 'https://turing-dashdoor-clone.vercel.app/verify/clear-cart',
-              max_steps: 100,
-              max_wait_time: 1800
-            },
-            {
-              task_id: 'add-milk-from-safeway',
-              task_description: 'Search for Safeway in the Grocery section and add a gallon of milk to the cart',
-              task_link: 'https://turing-dashdoor-clone.vercel.app/',
-              verification_link: 'https://turing-dashdoor-clone.vercel.app/verify/add-milk-from-safeway',
-              max_steps: 100,
-              max_wait_time: 1800
-            },
-            {
-              task_id: 'add-sweet-pretzel',
-              task_description: 'Add a sweet pretzel from Jamba Juice to the cart',
-              task_link: 'https://turing-dashdoor-clone.vercel.app/',
-              verification_link: 'https://turing-dashdoor-clone.vercel.app/verify/add-sweet-pretzel',
-              max_steps: 100,
-              max_wait_time: 1800
-            }
-          ]
-          setTasks(sampleTasks)
-        }
+        // Convert assertions data to task format
+        const taskList: Task[] = Object.entries(assertionsData).map(([id, data]) => ({
+          task_id: id,
+          task_description: data.prompt,
+          task_link: 'https://turing-dashdoor-clone.vercel.app/',
+          verification_link: `https://turing-dashdoor-clone.vercel.app/verify/${id}`,
+          max_steps: 100,
+          max_wait_time: 1800
+        }))
+        setTasks(taskList)
       } catch (err) {
         setError('Failed to load tasks')
         console.error('Error loading tasks:', err)
@@ -129,23 +94,8 @@ export default function VerifyPage() {
   }
 
   const clearResults = () => {
-    try {
-      // Clear all localStorage
-      localStorage.clear()
-      console.log('✅ All localStorage cleared successfully')
-      
-      // Clear task results
-      setTaskResults({})
-      
-      // Show success message
-      alert('✅ All application state cleared successfully! All verifiers are now ready to run again.')
-      
-      // Force page refresh to reflect cleared state
-      window.location.reload()
-    } catch (error) {
-      console.error('❌ Failed to clear localStorage:', error)
-      alert(`❌ Failed to clear localStorage: ${error instanceof Error ? error.message : 'Unknown error'}`)
-    }
+    localStorage.clear()
+    window.location.reload()
   }
 
   const handleRunTask = async (taskId: string) => {
