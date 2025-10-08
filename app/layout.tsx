@@ -40,19 +40,39 @@ export default function RootLayout({
               // Add global verification functions
               window.verify = async (taskId) => {
                 try {
-                  // Get current run_id from localStorage
-                  const currentRunId = localStorage.getItem('current_run_id') || '00000000-0000-0000-0000-000000000000';
+                  // Collect current localStorage data
+                  const localStorageData = {};
+                  for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    if (key) {
+                      localStorageData[key] = localStorage.getItem(key);
+                    }
+                  }
                   
-                  // Call the SQLite verification endpoint
-                  const response = await fetch(\`http://localhost:3001/api/v1/run/verify?run_id=\${encodeURIComponent(currentRunId)}&prompt_id=\${encodeURIComponent(taskId)}\`);
+                  // Call the updated verification endpoint
+                  const response = await fetch('/api/verify/run', {
+                    method: 'POST',
+                    headers: {
+                      'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                      flowId: taskId,
+                      localStorage: localStorageData
+                    })
+                  });
                   
                   if (!response.ok) {
                     throw new Error(\`HTTP error! status: \${response.status}\`);
                   }
                   
                   const result = await response.json();
-                  console.log(\`Verification for \${taskId}: \${result.result}\`);
-                  return result;
+                  console.log(\`Verification for \${taskId}: \${result?.passed ? 'PASSED' : 'FAILED'}\`);
+                  
+                  // Return in the expected format
+                  return {
+                    "prompt_id": taskId,
+                    "result": result.passed ? "passed" : "failed"
+                  };
                 } catch (error) {
                   console.error('Verification failed:', error);
                   return { "prompt_id": taskId, "result": "failed" };
