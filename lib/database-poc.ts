@@ -4,6 +4,7 @@ import path from 'path'
 
 class DatabasePOC {
   private db: any = null
+  private initialized: boolean = false
 
   async init() {
     if (this.db) return this.db
@@ -47,8 +48,21 @@ class DatabasePOC {
       CREATE INDEX IF NOT EXISTS idx_runs_last_updated ON runs(last_updated);
     `)
 
+    this.initialized = true
     console.log('✅ POC Database initialized')
     return this.db
+  }
+
+  // Add method to check if database is ready
+  isInitialized(): boolean {
+    return this.initialized
+  }
+
+  // Ensure database is initialized before operations
+  private async ensureInitialized() {
+    if (!this.initialized) {
+      await this.init()
+    }
   }
 
   async saveState(sessionId: string, state: any) {
@@ -137,7 +151,8 @@ class DatabasePOC {
 
   // Run operations
   async initRun(runId: string) {
-    const db = await this.init()
+    await this.ensureInitialized()
+    const db = this.db
     const now = Date.now()
     
     try {
@@ -155,7 +170,8 @@ class DatabasePOC {
   }
 
   async bulkUpsert(runId: string, items: Array<{key: string, value: any}>) {
-    const db = await this.init()
+    await this.ensureInitialized()
+    const db = this.db
     const now = Date.now()
 
     try {
@@ -187,7 +203,8 @@ class DatabasePOC {
   }
 
   async bulkGet(runId: string, keys: string[]) {
-    const db = await this.init()
+    await this.ensureInitialized()
+    const db = this.db
     
     if (keys.length === 0) return { items: [] }
 
@@ -212,7 +229,8 @@ class DatabasePOC {
   }
 
   async exportRun(runId: string) {
-    const db = await this.init()
+    await this.ensureInitialized()
+    const db = this.db
     
     try {
       const rows = await db.all(
@@ -235,7 +253,8 @@ class DatabasePOC {
   }
 
   async listRuns(limit: number = -1) {
-    const db = await this.init()
+    await this.ensureInitialized()
+    const db = this.db
     
     try {
       const stmt = `
@@ -258,7 +277,8 @@ class DatabasePOC {
   }
 
   async deleteRuns(runIds: string[]) {
-    const db = await this.init()
+    await this.ensureInitialized()
+    const db = this.db
     const uniqueIds = [...new Set(runIds.filter(id => typeof id === "string" && id.trim().length > 0))]
 
     if (uniqueIds.length === 0) {
