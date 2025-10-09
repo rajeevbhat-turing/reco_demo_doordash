@@ -17,7 +17,7 @@ import tasks from '@/data/tasks.json';
 import 'react-diff-view/style/index.css';
 
 interface VerificationResult {
-  flowId: string;
+  prompt_id: string;
   passed: boolean | undefined;
   error: string | null;
   executionTime: number;
@@ -141,7 +141,7 @@ export default function VerifyPage() {
       setTestResults(prev => ({
         ...prev,
         [taskToRun]: {
-          flowId: taskToRun,
+          prompt_id: taskToRun,
           passed,
           error: null,
           executionTime,

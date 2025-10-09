@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { dbPOC } from '@/lib/database-poc'
 
-// POST /api/run/delete - Delete runs
+// POST /api/v1/run/delete - Delete runs
 export async function POST(request: NextRequest) {
   try {
     const { run_ids } = await request.json()

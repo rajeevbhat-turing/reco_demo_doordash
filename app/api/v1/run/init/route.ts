@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { dbPOC } from '@/lib/database-poc'
 
-// POST /api/run/init - Initialize a new run
+// POST /api/v1/run/init - Initialize a new run
 export async function POST(request: NextRequest) {
   try {
     const { run_id } = await request.json()

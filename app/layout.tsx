@@ -69,7 +69,7 @@ export default function RootLayout({
                 
                 // Idempotent registration on the server (safe to fail and continue)
                 try {
-                  await fetch("/api/run/init", {
+                  await fetch("/api/v1/run/init", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ run_id: runId }),
@@ -102,7 +102,7 @@ export default function RootLayout({
                   if (RUN_MODE === 'runid') {
                     // Use database verification (run_id based)
                     const currentRunId = localStorage.getItem('current_run_id') || '00000000-0000-0000-0000-000000000000';
-                    const response = await fetch(\`/api/run/verify?run_id=\${currentRunId}&flowId=\${taskId}\`, {
+                    const response = await fetch(\`/api/v1/run/verify?run_id=\${currentRunId}&prompt_id=\${taskId}\`, {
                       method: 'GET'
                     });
                     
@@ -128,7 +128,7 @@ export default function RootLayout({
                       method: 'POST',
                       headers: { 'Content-Type': 'application/json' },
                       body: JSON.stringify({
-                        flowId: taskId,
+                        prompt_id: taskId,
                         cartState: null, // Not used when localStorage is provided
                         localStorage: localStorageData
                       })

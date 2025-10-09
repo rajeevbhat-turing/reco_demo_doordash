@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { dbPOC } from '@/lib/database-poc'
 
-// GET /api/run/list - List all runs
+// GET /api/v1/run/list - List all runs
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
