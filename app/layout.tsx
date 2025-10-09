@@ -5,6 +5,7 @@ import './globals.css';
 import Header from '@/components/header';
 import Sidebar from '@/components/sidebar';
 import { ReplaceCartProviderWithSQLite } from '@/context/replace-cart-context-with-sqlite';
+import LocalStorageSync from '@/components/LocalStorageSync';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -22,6 +23,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <ReplaceCartProviderWithSQLite>
+          <LocalStorageSync />
           <div className="flex flex-col min-h-screen">
             <Header />
             <div className="flex flex-1 relative">
@@ -37,22 +39,109 @@ export default function RootLayout({
         <script
           dangerouslySetInnerHTML={{
             __html: `
+              /** ===== Run bootstrap (sets run_id) ===== */
+              const RUN_ID_KEY = "current_run_id"; // we'll store under this key; also expose window.RUN_ID
+              
+              async function bootstrapRun() {
+                const url = new URL(window.location.href);
+                const urlRun = url.searchParams.get("run_id"); // may be null
+                const storedRun = localStorage.getItem(RUN_ID_KEY); // may be null
+                
+                if (url.pathname.startsWith("/api/v1")) {
+                  return;
+                }
+                
+                // Decide the run_id to use:
+                let runId = urlRun || storedRun || "00000000-0000-0000-0000-000000000000";
+                
+                // If URL provided a run_id and it's different from stored, start fresh
+                if (urlRun && urlRun !== storedRun) {
+                  localStorage.clear();
+                  localStorage.setItem(RUN_ID_KEY, urlRun);
+                  runId = urlRun;
+                } else {
+                  // Ensure it's persisted when coming from storedRun or default
+                  localStorage.setItem(RUN_ID_KEY, runId);
+                }
+                
+                // Make it visible globally if you want to read it elsewhere quickly
+                window.RUN_ID = runId;
+                
+                // Idempotent registration on the server (safe to fail and continue)
+                try {
+                  await fetch("/api/run/init", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ run_id: runId }),
+                  });
+                  console.log('✅ Run registered with server:', runId);
+                } catch (e) {
+                  // Non-fatal: the app can still run; mirror writes will retry later
+                  console.warn("run/init failed:", e);
+                }
+                
+                // Clean the URL (remove run_id param, keep other params/hash)
+                if (urlRun) {
+                  url.searchParams.delete("run_id");
+                  const newQuery = url.searchParams.toString();
+                  const cleaned = url.pathname + (newQuery ? \`?\${newQuery}\` : "") + (url.hash || "");
+                  window.history.replaceState({}, "", cleaned);
+                }
+                
+                return runId;
+              }
+              
+              // Run bootstrap on page load
+              bootstrapRun();
+
               // Add global verification functions
               window.verify = async (taskId) => {
                 try {
-                  // Get current run_id from localStorage
-                  const currentRunId = localStorage.getItem('current_run_id') || '00000000-0000-0000-0000-000000000000';
+                  const RUN_MODE = '${process.env.VITE_RUN_MODE || 'localstorage'}';
                   
-                  // Call the SQLite verification endpoint
-                  const response = await fetch(\`http://localhost:3001/api/v1/run/verify?run_id=\${encodeURIComponent(currentRunId)}&prompt_id=\${encodeURIComponent(taskId)}\`);
-                  
-                  if (!response.ok) {
-                    throw new Error(\`HTTP error! status: \${response.status}\`);
+                  if (RUN_MODE === 'runid') {
+                    // Use database verification (run_id based)
+                    const currentRunId = localStorage.getItem('current_run_id') || '00000000-0000-0000-0000-000000000000';
+                    const response = await fetch(\`/api/run/verify?run_id=\${currentRunId}&flowId=\${taskId}\`, {
+                      method: 'GET'
+                    });
+                    
+                    if (!response.ok) {
+                      throw new Error(\`HTTP error! status: \${response.status}\`);
+                    }
+                    
+                    const result = await response.json();
+                    console.log(\`Verification for \${taskId}: \${result.passed ? 'passed' : 'failed'}\`);
+                    return result;
+                  } else {
+                    // Use browser localStorage verification (localstorage mode)
+                    const localStorageData = {};
+                    for (let i = 0; i < localStorage.length; i++) {
+                      const key = localStorage.key(i);
+                      if (key) {
+                        localStorageData[key] = localStorage.getItem(key);
+                      }
+                    }
+                    
+                    // Call the SQLite verification endpoint
+                    const response = await fetch('/api/verify/run', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({
+                        flowId: taskId,
+                        cartState: null, // Not used when localStorage is provided
+                        localStorage: localStorageData
+                      })
+                    });
+                    
+                    if (!response.ok) {
+                      throw new Error(\`HTTP error! status: \${response.status}\`);
+                    }
+                    
+                    const result = await response.json();
+                    console.log(\`Verification for \${taskId}: \${result.passed ? 'passed' : 'failed'}\`);
+                    return result;
                   }
-                  
-                  const result = await response.json();
-                  console.log(\`Verification for \${taskId}: \${result.result}\`);
-                  return result;
                 } catch (error) {
                   console.error('Verification failed:', error);
                   return { "prompt_id": taskId, "result": "failed" };
