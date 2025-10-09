@@ -1,13 +1,9 @@
-const sqlite3 = require('sqlite3')
-const { open } = require('sqlite')
-const path = require('path')
+const Database = require('better-sqlite3');
 
 async function initDatabase() {
   try {
-    const db = await open({
-      filename: path.join(process.cwd(), 'poc-database.sqlite'),
-      driver: sqlite3.Database
-    })
+    const db = new Database('app.db');
+    db.pragma('journal_mode = WAL');
 
     // Create tables
     await db.exec(`
@@ -41,13 +37,13 @@ async function initDatabase() {
       CREATE INDEX IF NOT EXISTS idx_sessions_activity ON sessions(last_activity);
       CREATE INDEX IF NOT EXISTS idx_kv_run_updated ON kv(run_id, updated_at);
       CREATE INDEX IF NOT EXISTS idx_runs_last_updated ON runs(last_updated);
-    `)
+    `);
 
-    await db.close()
-    console.log('✅ Database created on server startup')
+    await db.close();
+    console.log('✅ Database created on server startup');
   } catch (error) {
-    console.error('❌ Failed to initialize database:', error)
+    console.error('❌ Failed to initialize database:', error);
   }
 }
 
-initDatabase()
+initDatabase();
