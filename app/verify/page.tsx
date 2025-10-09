@@ -1,281 +1,201 @@
-"use client"
+'use client';
 
-import { useState, useEffect } from 'react'
-import { CheckCircle, XCircle, AlertCircle, Play, Loader2, Clock, ChevronRight, ChevronDown } from 'lucide-react'
-import assertionsData from '@/data/assertions.json'
+import { useState, useEffect, useMemo } from 'react';
+import { CheckCircle, XCircle } from 'lucide-react';
+import { createPatch } from 'diff';
+import { parseDiff } from 'react-diff-view';
+import { UTCDate } from '@date-fns/utc';
+import DiffView from '@/components/DiffView';
+import {
+  sortObjectKeys,
+  processJsonWithHtmlTags,
+  stringifyReplacer,
+  KEYS_TO_CLEAN,
+} from '@/lib/verification-utils';
+import tasks from '@/data/tasks.json';
 
-interface Task {
-  task_id: string
-  task_description: string
-  task_link: string
-  verification_link: string
-  max_steps: number
-  max_wait_time: number
-}
+import 'react-diff-view/style/index.css';
 
 interface VerificationResult {
-  flowId: string
-  passed: boolean | undefined
-  error: string | null
-  executionTime: number
-  consoleOutput: string[]
-  description: string
-  category: string
-  debugInfo?: {
-    cartState: any
-    expectedItems: string[]
-    actualItems: string[]
-  }
+  flowId: string;
+  passed: boolean | undefined;
+  error: string | null;
+  executionTime: number;
+  diffFiles: any[];
+  ranAt: Date;
 }
 
 export default function VerifyPage() {
-  const [tasks, setTasks] = useState<Task[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  const [expandedTasks, setExpandedTasks] = useState<Set<string>>(new Set())
-  const [taskResults, setTaskResults] = useState<Record<string, VerificationResult | null>>({})
-  const [runningTasks, setRunningTasks] = useState<Set<string>>(new Set())
+  const [loading, setLoading] = useState(false);
+  const [runningPrompt, setRunningPrompt] = useState<string | null>(null);
+  const [banner, setBanner] = useState<{ type: string; text: string } | null>(null);
+  const [ranAt, setRanAt] = useState<Date | null>(null);
+  const [testResults, setTestResults] = useState<Record<string, VerificationResult>>({});
+  const [collapsedDescriptions, setCollapsedDescriptions] = useState<Record<string, boolean>>(
+    () => {
+      const initial: Record<string, boolean> = {};
+      Object.keys(tasks).forEach(promptId => {
+        initial[promptId] = true; // Start collapsed
+      });
+      return initial;
+    }
+  );
+  const [collapsedDiffResults, setCollapsedDiffResults] = useState<Record<string, boolean>>(() => {
+    const initial: Record<string, boolean> = {};
+    Object.keys(tasks).forEach(promptId => {
+      initial[promptId] = true; // Start collapsed
+    });
+    return initial;
+  });
 
-  // Load tasks from assertions.json (same as verify_raw)
-  useEffect(() => {
-    const loadTasks = async () => {
+  const promptIds = useMemo(() => Object.keys(tasks), []);
+
+  const getTestStatus = (promptId: string) => {
+    if (!testResults[promptId]) return 'Not Run';
+    return testResults[promptId].passed ? 'Passed' : 'Failed';
+  };
+
+  const getTestStatusIcon = (promptId: string) => {
+    if (!testResults[promptId]) return '⏰';
+    return testResults[promptId].passed ? '✅' : '❌';
+  };
+
+  const toggleDescription = (promptId: string) => {
+    setCollapsedDescriptions(prev => ({
+      ...prev,
+      [promptId]: !prev[promptId],
+    }));
+  };
+
+  const toggleDiffResults = (promptId: string) => {
+    setCollapsedDiffResults(prev => ({
+      ...prev,
+      [promptId]: !prev[promptId],
+    }));
+  };
+
+  const runVerification = (specificTaskId: string) => {
+    const taskToRun = specificTaskId;
+    if (!taskToRun) {
+      return setBanner({ type: 'error', text: 'Please select a task ID.' });
+    }
+
+    setRunningPrompt(taskToRun);
+    setBanner(null);
+
+    const expectedResult = (tasks as any)[taskToRun].result;
+
+    let diffFiles: any[] = [];
+    const startTime = Date.now();
+    for (const key of Object.keys(expectedResult)) {
+      const actualRaw = localStorage.getItem(key);
+      const cleanedExpectedJson = processJsonWithHtmlTags(
+        JSON.parse(expectedResult[key]),
+        KEYS_TO_CLEAN
+      );
+      const cleanedActualJson = processJsonWithHtmlTags(
+        JSON.parse(actualRaw || '{}'),
+        KEYS_TO_CLEAN
+      );
+
+      const oldStr = JSON.stringify(sortObjectKeys(cleanedExpectedJson), stringifyReplacer, 2);
+      const newStr = JSON.stringify(sortObjectKeys(cleanedActualJson), stringifyReplacer, 2);
+
+      let patch = createPatch(key, oldStr, newStr);
+      // Remove the first 2 lines from the generated patch, to ensure proper parsing
+      patch = patch.split('\n').slice(2).join('\n');
+      let diffFile;
       try {
-        // Convert assertions data to task format
-        const taskList: Task[] = Object.entries(assertionsData).map(([id, data]) => ({
-          task_id: id,
-          task_description: data.prompt,
-          task_link: 'https://turing-dashdoor-clone.vercel.app/',
-          verification_link: `https://turing-dashdoor-clone.vercel.app/verify/${id}`,
-          max_steps: 100,
-          max_wait_time: 1800
-        }))
-        setTasks(taskList)
-      } catch (err) {
-        setError('Failed to load tasks')
-        console.error('Error loading tasks:', err)
-      } finally {
-        setLoading(false)
+        diffFile = parseDiff(patch);
+      } catch (error) {
+        diffFile = null;
       }
-    }
 
-    loadTasks()
-  }, [])
-
-  const captureCurrentState = () => {
-    try {
-      const cartState = JSON.parse(localStorage.getItem('multicategory-cart') || '{}')
-      return {
-        cartItems: cartState.state?.items || [],
-        currentStore: cartState.state?.currentStore || null,
-        searchResults: cartState.state?.searchResults || [],
-        lastSearchInfo: cartState.state?.lastSearchInfo || null,
-        lastClearInfo: cartState.state?.lastClearInfo || null,
-        lastRemovalInfo: cartState.state?.lastRemovalInfo || null,
-        currentCategory: cartState.state?.currentCategory || null,
-        verifierConsumed: cartState.state?.verifierConsumed || false,
-        searchVerifierConsumed: cartState.state?.searchVerifierConsumed || false,
-        removalVerifierConsumed: cartState.state?.removalVerifierConsumed || false
-      }
-    } catch {
-      return { error: 'Failed to parse cart state' }
-    }
-  }
-
-  const toggleTaskExpansion = (taskId: string) => {
-    setExpandedTasks(prev => {
-      const newSet = new Set(prev)
-      if (newSet.has(taskId)) {
-        newSet.delete(taskId)
+      // Check if diffFile has any elements before accessing
+      if (diffFile && Array.isArray(diffFile) && diffFile.length > 0 && diffFile[0]) {
+        diffFile[0].key = key;
+        diffFile[0].oldSource = JSON.stringify(
+          sortObjectKeys(cleanedExpectedJson),
+          stringifyReplacer,
+          2
+        );
+        diffFiles.push(diffFile[0]);
       } else {
-        newSet.add(taskId)
+        // Create a dummy diffFile for cases where there are no differences
+        const dummyDiffFile = {
+          key: key,
+          type: 'modify',
+          hunks: [],
+          oldSource: JSON.stringify(sortObjectKeys(cleanedExpectedJson), stringifyReplacer, 2),
+          newSource: JSON.stringify(sortObjectKeys(cleanedActualJson), stringifyReplacer, 2),
+        };
+        diffFiles.push(dummyDiffFile);
       }
-      return newSet
-    })
-  }
+    }
+
+    setLoading(true);
+    setTimeout(() => {
+      const passed = !diffFiles.some(file => file.hunks?.length > 0);
+      const executionTime = Date.now() - startTime;
+
+      setTestResults(prev => ({
+        ...prev,
+        [taskToRun]: {
+          flowId: taskToRun,
+          passed,
+          error: null,
+          executionTime,
+          diffFiles,
+          ranAt: new UTCDate(),
+        },
+      }));
+
+      if (passed) {
+        setBanner({ type: 'success', text: `✅ ${taskToRun} — Passed!` });
+      } else {
+        setBanner({ type: 'error', text: `❌ ${taskToRun} — Failed.` });
+      }
+
+      setRanAt(new UTCDate());
+      setLoading(false);
+      setRunningPrompt(null);
+    }, 100);
+  };
+
+  const runAllFiltered = () => {
+    promptIds.forEach((promptId, index) => {
+      setTimeout(() => runVerification(promptId), index * 100);
+    });
+  };
 
   const clearResults = () => {
-    localStorage.clear()
-    window.location.reload()
-  }
+    setTestResults({});
+    setBanner(null);
+    setRanAt(null);
+    localStorage.clear();
+    window.location.reload();
+  };
 
-  const handleRunTask = async (taskId: string) => {
-    setRunningTasks(prev => new Set(prev).add(taskId))
-    setTaskResults(prev => ({ ...prev, [taskId]: null }))
-
-    try {
-      const startTime = performance.now()
-      
-      // Capture state before verification
-      const stateBefore = captureCurrentState()
-      
-      // Capture console logs
-      const originalConsoleLog = console.log
-      const originalConsoleError = console.error
-      const consoleOutput: string[] = []
-      
-      console.log = (...args) => {
-        consoleOutput.push(`[LOG] ${args.join(' ')}`)
-        originalConsoleLog(...args)
-      }
-      
-      console.error = (...args) => {
-        consoleOutput.push(`[ERROR] ${args.join(' ')}`)
-        originalConsoleError(...args)
-      }
-      
-      // Get verifier code from API
-      const response = await fetch(`/api/verify?flowId=${encodeURIComponent(taskId)}&action=execute`)
-      const data = await response.json()
-
-      if (!response.ok) {
-        const failureResult = {
-          flowId: taskId,
-          passed: false,
-          error: data.error || 'Failed to get verifier code',
-          executionTime: 0,
-          consoleOutput,
-          description: 'Unknown task',
-          category: 'unknown',
-          debugInfo: {
-            cartState: stateBefore,
-            expectedItems: [],
-            actualItems: stateBefore.cartItems?.map((item: any) => `${item.itemName || item.name} x${item.quantity}`) || []
-          }
-        }
-        setTaskResults(prev => ({ ...prev, [taskId]: failureResult }))
-        return
-      }
-
-      // Execute verifier code in browser context
-      let verificationResult: boolean | undefined
-      try {
-        // Create a function from the verifier code and execute it
-        const verifierFunction = new Function(data.verifierCode)
-        verificationResult = verifierFunction()
-      } catch (execError) {
-        console.error('Verifier execution error:', execError)
-        const errorMessage = execError instanceof Error ? execError.message : 'Unknown error'
-        const errorResult = {
-          flowId: taskId,
-          passed: false,
-          error: `Verifier execution failed: ${errorMessage}`,
-          executionTime: Math.round((performance.now() - startTime) * 100) / 100,
-          consoleOutput,
-          description: data.description || 'Unknown task',
-          category: 'unknown',
-          debugInfo: {
-            cartState: stateBefore,
-            expectedItems: [],
-            actualItems: stateBefore.cartItems?.map((item: any) => `${item.itemName || item.name} x${item.quantity}`) || []
-          }
-        }
-        setTaskResults(prev => ({ ...prev, [taskId]: errorResult }))
-        return
-      } finally {
-        // Restore console
-        console.log = originalConsoleLog
-        console.error = originalConsoleError
-      }
-
-      const executionTime = performance.now() - startTime
-
-      const verificationResult_final = {
-        flowId: taskId,
-        passed: verificationResult,
-        error: null,
-        executionTime: Math.round(executionTime * 100) / 100,
-        consoleOutput: consoleOutput.filter(log => 
-          log.includes(`[VERIFIER ${taskId}]`) || log.includes('Verifier error')
-        ),
-        description: data.description || 'Unknown task',
-        category: 'unknown',
-        debugInfo: {
-          cartState: stateBefore,
-          expectedItems: extractExpectedItems(data.description || ''),
-          actualItems: stateBefore.cartItems?.map((item: any) => `${item.itemName || item.name} x${item.quantity}`) || []
-        }
-      }
-
-      setTaskResults(prev => ({ ...prev, [taskId]: verificationResult_final }))
-
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred'
-      const errorResult = {
-        flowId: taskId,
-        passed: false,
-        error: `Verification failed: ${errorMessage}`,
-        executionTime: 0,
-        consoleOutput: [],
-        description: 'Unknown task',
-        category: 'unknown',
-        debugInfo: {
-          cartState: captureCurrentState(),
-          expectedItems: [],
-          actualItems: []
-        }
-      }
-      setTaskResults(prev => ({ ...prev, [taskId]: errorResult }))
-    } finally {
-      setRunningTasks(prev => {
-        const newSet = new Set(prev)
-        newSet.delete(taskId)
-        return newSet
-      })
-    }
-  }
-
-  const extractExpectedItems = (description: string): string[] => {
-    const items: string[] = []
-    // Extract common patterns from descriptions
-    if (description.includes('sweet pretzel')) items.push('sweet pretzel')
-    if (description.includes('coffee')) items.push('Coffee')
-    if (description.includes('latte')) items.push('Latte')
-    if (description.includes('starbucks')) items.push('Starbucks store')
-    return items
-  }
-
-  const getStatusIcon = (result: VerificationResult | null) => {
-    if (!result) return <Clock className="w-5 h-5 text-gray-400" />
-    if (result.passed === true) return <CheckCircle className="w-5 h-5 text-green-500" />
-    if (result.passed === false) return <XCircle className="w-5 h-5 text-red-500" />
-    return <AlertCircle className="w-5 h-5 text-yellow-500" />
-  }
-
-  const getStatusText = (result: VerificationResult | null) => {
-    if (!result) return 'Not Run'
-    if (result.passed === true) return 'Passed'
-    if (result.passed === false) return 'Failed'
-    return 'Undefined'
-  }
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 py-8 mt-14">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="flex items-center justify-center py-8">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-            <span className="ml-3 text-gray-600">Loading tasks...</span>
-          </div>
-        </div>
-      </div>
-    )
-  }
+  useEffect(() => {
+    document.title = 'Task Verifier Dashboard';
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-50 py-8 mt-14">
       <div className="max-w-7xl mx-auto px-6">
         <div className="bg-white rounded-lg shadow-lg p-8">
-          {/* Header */}
+          {/* Header Section */}
           <div className="flex items-center justify-between mb-8">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                Task Verifier Dashboard
-              </h1>
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">Task Verifier Dashboard</h1>
             </div>
             <div className="flex items-center gap-4">
-              <div className="text-sm text-gray-600 max-w-md">
-                <p>Clear the results before starting a new task. This will also clear local storage and reload this page, which will get the verifier ready for the next run.</p>
-              </div>
+              <button
+                onClick={runAllFiltered}
+                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm font-medium"
+              >
+                Run All
+              </button>
               <button
                 onClick={clearResults}
                 className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 text-sm font-medium"
@@ -285,115 +205,137 @@ export default function VerifyPage() {
             </div>
           </div>
 
-          {/* Error Display */}
-          {error && (
-            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-md">
+          {/* Banner */}
+          {banner && (
+            <div
+              className={`mb-6 p-4 rounded-md ${
+                banner.type === 'success'
+                  ? 'bg-green-50 border border-green-200'
+                  : 'bg-red-50 border border-red-200'
+              }`}
+            >
               <div className="flex">
-                <XCircle className="w-5 h-5 text-red-400 mt-0.5 mr-3" />
+                {banner.type === 'success' ? (
+                  <CheckCircle className="w-5 h-5 text-green-400 mt-0.5 mr-3" />
+                ) : (
+                  <XCircle className="w-5 h-5 text-red-400 mt-0.5 mr-3" />
+                )}
                 <div>
-                  <h3 className="text-sm font-medium text-red-800">Error</h3>
-                  <p className="text-sm text-red-700 mt-1">{error}</p>
+                  <p
+                    className={`text-sm font-medium ${
+                      banner.type === 'success' ? 'text-green-800' : 'text-red-800'
+                    }`}
+                  >
+                    {banner.text}
+                  </p>
                 </div>
               </div>
             </div>
           )}
 
-          {/* Task List */}
+          {/* Test Cases List */}
           <div className="space-y-4">
-            {tasks.map((task, index) => {
-              const isExpanded = expandedTasks.has(task.task_id)
-              const result = taskResults[task.task_id]
-              const isRunning = runningTasks.has(task.task_id)
+            {promptIds.map((promptId, index) => {
+              const task = (tasks as any)[promptId];
+              const status = getTestStatus(promptId);
+              const statusIcon = getTestStatusIcon(promptId);
+              const isRunning = runningPrompt === promptId;
+              const result = testResults[promptId];
+              const isDescriptionCollapsed = collapsedDescriptions[promptId];
+              const isDiffResultsCollapsed = collapsedDiffResults[promptId];
 
               return (
-                <div key={task.task_id} className="border border-gray-200 rounded-lg overflow-hidden bg-white shadow-sm">
-                  <div className="p-6">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-4">
-                        <div className="text-2xl font-bold text-gray-900">#{index + 1}</div>
-                        {getStatusIcon(result)}
-                        <div>
-                          <div className="font-medium text-gray-900">
-                            Prompt ID: {task.task_id}
-                          </div>
-                          <button
-                            onClick={() => toggleTaskExpansion(task.task_id)}
-                            className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mt-1"
-                          >
-                            {isExpanded ? (
-                              <ChevronDown className="w-4 h-4" />
-                            ) : (
-                              <ChevronRight className="w-4 h-4" />
-                            )}
-                            Prompt
-                          </button>
-                          <div className="text-sm text-gray-500 mt-1">
-                            {getStatusText(result)}
-                          </div>
+                <div
+                  key={promptId}
+                  className="border border-gray-200 rounded-lg p-6 bg-white shadow-sm"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                      <div className="text-2xl font-bold text-gray-900">#{index + 1}</div>
+                      <div className="text-2xl">{isRunning ? '⏳' : statusIcon}</div>
+                      <div>
+                        <h3 className="text-lg font-semibold text-gray-900">
+                          Prompt ID: {promptId}
+                        </h3>
+                        <div className="text-sm text-gray-500">
+                          {status} {result && `(${result.executionTime}ms)`}
                         </div>
                       </div>
+                    </div>
+                    <div className="flex items-center gap-2">
                       <button
-                        onClick={() => handleRunTask(task.task_id)}
-                        disabled={isRunning}
-                        className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 text-sm font-medium"
+                        onClick={() => toggleDescription(promptId)}
+                        className="px-3 py-1 bg-gray-100 text-gray-700 rounded text-sm"
                       >
-                        {isRunning ? (
-                          <>
-                            <Loader2 className="w-4 h-4 animate-spin" />
-                            Running...
-                          </>
-                        ) : (
-                          <>
-                            <Play className="w-4 h-4" />
-                            Run
-                          </>
-                        )}
+                        {isDescriptionCollapsed ? '▶' : '▼'} Prompt
+                      </button>
+                      <button
+                        onClick={() => runVerification(promptId)}
+                        disabled={isRunning}
+                        className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50 text-sm font-medium"
+                      >
+                        {isRunning ? 'Running...' : '▶ Run'}
                       </button>
                     </div>
-
-                    {/* Expanded Prompt Section */}
-                    {isExpanded && (
-                      <div className="mt-4 p-4 bg-gray-100 rounded-md">
-                        <p className="text-gray-900 leading-relaxed">{task.task_description}</p>
-                      </div>
-                    )}
-
-                    {/* Result Display */}
-                    {result && (
-                      <div className="mt-4 p-4 bg-gray-50 rounded-md">
-                        <div className="flex items-center justify-between mb-2">
-                          <h4 className="font-medium text-gray-900">Result:</h4>
-                          <span className={`px-2 py-1 rounded text-sm font-medium ${
-                            result.passed === true ? 'bg-green-100 text-green-800' :
-                            result.passed === false ? 'bg-red-100 text-red-800' :
-                            'bg-yellow-100 text-yellow-800'
-                          }`}>
-                            {getStatusText(result)}
-                          </span>
-                        </div>
-                        {result.error && (
-                          <div className="text-sm text-red-600 mb-2">
-                            <strong>Error:</strong> {result.error}
-                          </div>
-                        )}
-                        <div className="text-sm text-gray-600">
-                          Execution time: {result.executionTime}ms
-                        </div>
-                      </div>
-                    )}
                   </div>
+
+                  {/* Collapsible Description */}
+                  {!isDescriptionCollapsed && (
+                    <div className="mt-4 p-4 bg-gray-50 rounded-md">
+                      <p className="text-gray-900 leading-relaxed font-mono text-sm">
+                        {task.prompt}
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Collapsible Diff Results */}
+                  {result && result.diffFiles && result.diffFiles.length > 0 && (
+                    <div className="mt-4 border-t pt-4">
+                      <button
+                        onClick={() => toggleDiffResults(promptId)}
+                        className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-4"
+                      >
+                        <span>{isDiffResultsCollapsed ? '▶' : '▼'}</span>
+                        <span>Diff Results</span>
+                        <span
+                          className={`text-sm ${result.passed ? 'text-green-600' : 'text-red-600'}`}
+                        >
+                          {result.passed ? '✅ Passed' : '❌ Failed'}
+                        </span>
+                      </button>
+
+                      {!isDiffResultsCollapsed && (
+                        <div className="space-y-4">
+                          {result.diffFiles.map(({ key, type, hunks, oldSource }, idx) => (
+                            <div key={key} className="border rounded-lg p-4">
+                              <h4 className="font-semibold text-gray-900 mb-2">
+                                Comparison of{' '}
+                                <code className="bg-gray-100 px-2 py-1 rounded">{key}</code>{' '}
+                                {hunks?.length > 0 ? '❌' : '✅'}
+                              </h4>
+                              {hunks && Array.isArray(hunks) && hunks.length > 0 ? (
+                                <DiffView
+                                  hunks={hunks}
+                                  onExpandRange={() => {}}
+                                  oldSource={oldSource}
+                                />
+                              ) : (
+                                <div className="text-green-600 bg-green-50 p-3 rounded">
+                                  No differences. Everything was correctly added.
+                                </div>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
-              )
+              );
             })}
           </div>
-
-          {tasks.length === 0 && !loading && (
-            <div className="text-center py-8 text-gray-500">
-              No tasks available.
-            </div>
-          )}
         </div>
       </div>
     </div>
-  )
-} 
+  );
+}
