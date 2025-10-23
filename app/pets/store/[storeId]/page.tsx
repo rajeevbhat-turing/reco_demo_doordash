@@ -27,7 +27,7 @@ export default function PetStorePageRoute() {
       
       if (foundStore) {
         setStoreData(foundStore)
-        setCurrentStore(foundStore)
+        setCurrentStore(foundStore, "pets")
       } else {
         // If store not found, redirect back to pets page
         router.push("/pets")

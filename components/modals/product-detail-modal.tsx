@@ -5,7 +5,6 @@ import { ChevronDown, ChevronUp, Minus, Plus } from "lucide-react"
 import Image from "next/image"
 import type { Product } from "@/types"
 import { useCartStore } from "@/store/cart-store"
-import { useReplaceCart } from "@/lib/hooks/use-replace-cart"
 import Modal from "@/components/ui/modal"
 import { getProductNutrition } from "@/data/modal-data"
 import { parseCurrency } from "@/lib/utils"
@@ -23,7 +22,7 @@ const fallbackDescription = "The price shown is an estimate. It will be updated 
 export default function ProductDetailModal({ product, onClose, storeId, category = "grocery", storeName }: ProductDetailModalProps) {
   const [quantity, setQuantity] = useState(1)
   const [isNutritionOpen, setIsNutritionOpen] = useState(false)
-  const { addItemWithConflictCheck } = useReplaceCart()
+  const { addItem } = useCartStore()
 
   if (!product) return null
 
@@ -34,12 +33,10 @@ export default function ProductDetailModal({ product, onClose, storeId, category
         itemName: product.name,
         price: product.price,
         image: product.image,
-        storeId: category === 'restaurant' ? undefined : storeId,
-        restaurantId: category === 'restaurant' ? storeId : undefined,
-        storeName: storeName,
       }
       
-      addItemWithConflictCheck(cartItem, category)
+      // Add to cart - will automatically find or create cart for this store
+      addItem(cartItem, category, storeName, storeId)
     }
     onClose()
   }

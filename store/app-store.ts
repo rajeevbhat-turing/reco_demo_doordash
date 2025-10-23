@@ -1,6 +1,9 @@
 import { create } from "zustand"
 import { persist, devtools } from "zustand/middleware"
 
+// Cart category type (imported from cart-store concept)
+export type CartCategory = "restaurant" | "grocery" | "retail" | "pets" | "convenience"
+
 // Search result interface for storing search results
 export interface SearchResult {
   id: string
@@ -20,6 +23,7 @@ interface AppStore {
   // State
   searchResults: SearchResult[]
   currentStore: Record<string, any>
+  currentCategory: CartCategory | null
   visitedStores: string[]
 
   // Search methods
@@ -27,7 +31,7 @@ interface AppStore {
   clearSearchResults: () => void
 
   // Store management methods
-  setCurrentStore: (store: Record<string, any>) => void
+  setCurrentStore: (store: Record<string, any>, category?: CartCategory) => void
   clearCurrentStore: () => void
 }
 
@@ -38,6 +42,7 @@ export const useAppStore = create<AppStore>()(
         // State
         searchResults: [],
         currentStore: {},
+        currentCategory: null,
         visitedStores: [],
 
         // Update search results
@@ -50,9 +55,9 @@ export const useAppStore = create<AppStore>()(
           set({ searchResults: [] })
         },
 
-        // Set current store object
-        setCurrentStore: (store: Record<string, any>) => {
-          console.log(`[STORE] Setting current store: ${store.name}`)
+        // Set current store object and category
+        setCurrentStore: (store: Record<string, any>, category?: CartCategory) => {
+          console.log(`[STORE] Setting current store: ${store.name}${category ? ` with category: ${category}` : ''}`)
           
           const { visitedStores } = get()
           
@@ -79,17 +84,24 @@ export const useAppStore = create<AppStore>()(
             
             set({ 
               currentStore: store,
+              currentCategory: category || null,
               visitedStores: newVisitedStores,
             })
           } else {
             // If store doesn't have required fields, just set currentStore without updating visitedStores
-            set({ currentStore: store })
+            set({ 
+              currentStore: store,
+              currentCategory: category || null
+            })
           }
         },
 
-        // Clear current store object
+        // Clear current store object and category
         clearCurrentStore: () => {
-          set({ currentStore: {} })
+          set({ 
+            currentStore: {},
+            currentCategory: null
+          })
         },
       }),
       {
@@ -97,6 +109,7 @@ export const useAppStore = create<AppStore>()(
         partialize: (state) => ({
           searchResults: state.searchResults,
           currentStore: state.currentStore,
+          currentCategory: state.currentCategory,
           visitedStores: state.visitedStores,
         }),
       },

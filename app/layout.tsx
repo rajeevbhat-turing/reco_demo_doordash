@@ -5,7 +5,6 @@ import './globals.css';
 import Header from '@/components/header';
 import Sidebar from '@/components/sidebar';
 import LocalStorageSync from '@/components/LocalStorageSync';
-import GlobalReplaceCartModal from '@/components/global-replace-cart-modal';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -23,7 +22,6 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <LocalStorageSync />
-        <GlobalReplaceCartModal />
         <div className="flex flex-col min-h-screen">
           <Header />
           <div className="flex flex-1 relative">

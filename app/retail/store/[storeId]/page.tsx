@@ -28,7 +28,7 @@ export default function RetailStorePageRoute() {
       
       if (foundStore) {
         setStoreData(foundStore)
-        setCurrentStore(foundStore)
+        setCurrentStore(foundStore, "retail")
       } else {
         // If store not found, redirect back to retail page
         router.push("/retail")

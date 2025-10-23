@@ -136,6 +136,10 @@ export default function ConvenienceStorePage() {
         })
         // Set the category based on store type
         setCategory(sourceType as any)
+        
+        // Also set in app-store
+        const { setCurrentStore } = require("@/store/app-store").useAppStore.getState()
+        setCurrentStore(foundStore, sourceType as any)
       } else {
         // If store not found, redirect to main convenience page
         router.push("/convenience")

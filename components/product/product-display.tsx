@@ -7,7 +7,6 @@ import type { Product } from "@/types"
 import Link from "next/link"
 import Image from "next/image"
 import { CartCategory, useCartStore } from "@/store/cart-store"
-import { useReplaceCart } from "@/lib/hooks/use-replace-cart"
 import { convenienceStores } from "@/data/convenience-store-data"
 
 interface ProductDisplayProps {
@@ -37,14 +36,16 @@ export default function ProductDisplay({
 }: ProductDisplayProps) {
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   
-  // Use the cart store and replace cart context
-  const { items, updateQuantity, removeItem, setCategory } = useCartStore()
-  const { addItemWithConflictCheck } = useReplaceCart()
+  // Use the cart store
+  const { carts, findCart, updateQuantity, removeItem, setCategory, addItem } = useCartStore()
   
   // Set the category when component mounts
   useEffect(() => {
     setCategory(category)
   }, [category, setCategory])
+  
+  // Get current cart for this store
+  const currentCart = storeId ? findCart(storeId, category) : null
   
   // Scroll left
   const scrollLeft = () => {
@@ -72,7 +73,7 @@ export default function ProductDisplay({
     })
   }
   
-  // Handle adding product to cart with conflict detection
+  // Handle adding product to cart
   const handleAddToCart = (product: Product) => {
     // Get store name based on category and storeId
     let resolvedStoreName = storeName
@@ -85,12 +86,10 @@ export default function ProductDisplay({
       itemName: product.name, // Use itemName instead of name
       price: product.price,
       image: product.image,
-      storeId: category === 'restaurant' ? undefined : storeId,
-      restaurantId: category === 'restaurant' ? storeId : undefined,
-      storeName: resolvedStoreName, // Include store name
     }
     
-    addItemWithConflictCheck(cartItem, category)
+    // Add to cart - will automatically find or create cart for this store
+    addItem(cartItem, category, resolvedStoreName, storeId)
   }
   
   // Handle removing product from cart
@@ -112,7 +111,8 @@ export default function ProductDisplay({
   
   // Find items in cart
   const getItemQuantity = (productId: number | string): number => {
-    const item = items.find(item => item.id === productId)
+    if (!currentCart) return 0
+    const item = currentCart.items.find(item => item.id === productId)
     return item?.quantity || 0
   }
 

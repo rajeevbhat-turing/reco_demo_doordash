@@ -6,7 +6,6 @@ import Image from "next/image"
 import { Plus, Trash2, Minus } from "lucide-react"
 import type { Product } from "@/types"
 import { CartCategory, useCartStore } from "@/store/cart-store"
-import { useReplaceCart } from "@/lib/hooks/use-replace-cart"
 import { convenienceStores } from "@/data/convenience-store-data"
 
 interface ProductCardProps {
@@ -22,16 +21,16 @@ export default function ProductCard({
   storeId,
   category = "grocery"
 }: ProductCardProps) {
-  const { items, updateQuantity, removeItem, setCategory } = useCartStore()
-  const { addItemWithConflictCheck } = useReplaceCart()
+  const { carts, findCart, updateQuantity, removeItem, setCategory, addItem } = useCartStore()
 
   // Set the category when component mounts
   useEffect(() => {
     setCategory(category)
   }, [category, setCategory])
 
-  // Check if product is in cart
-  const cartItem = items.find((item) => item.id === product.id)
+  // Check if product is in cart - search across all carts
+  const currentCart = storeId ? findCart(storeId, category) : null
+  const cartItem = currentCart?.items.find((item) => item.id === product.id)
   const quantity = cartItem?.quantity || 0
 
   // Helper function to format price
@@ -63,12 +62,10 @@ export default function ProductCard({
       itemName: product.name, // Use itemName instead of name
       price: product.price,
       image: product.image,
-      storeId: category === 'restaurant' ? undefined : storeId,
-      restaurantId: category === 'restaurant' ? storeId : undefined,
-      storeName: storeName, // Include store name
     }
     
-    addItemWithConflictCheck(cartItem, category)
+    // Add to cart - will automatically find or create cart for this store
+    addItem(cartItem, category, storeName, storeId)
   }
 
   const handleRemoveFromCart = (e: React.MouseEvent) => {

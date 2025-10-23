@@ -23,7 +23,6 @@ import {
 import { getMenuCategoriesByRestaurantId } from "@/lib/utils";
 import { getDealsByRestaurantId } from "@/constants/deals";
 import { useCartStore } from "@/store/cart-store";
-import { useReplaceCart } from "@/lib/hooks/use-replace-cart";
 import { useAppStore } from "@/store/app-store";
 import { useVerifierStore } from "@/store/verifier-store";
 import MenuItemDialog from "@/components/menu-item-dialog";
@@ -99,7 +98,7 @@ export default function RestaurantPage() {
   const sectionRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
   // Get both setCategory and addItem from the cart store
   const cartStore = useCartStore();
-  const { addItemWithConflictCheck } = useReplaceCart();
+  const { addItem } = useCartStore();
   const ticking = useRef(false);
   const featuredItemsRef = useRef<HTMLDivElement>(null);
 
@@ -163,7 +162,7 @@ export default function RestaurantPage() {
       const beefItemsData = getMenuItemsByCategory(id, "Beef");
 
       if (restaurantData) {
-        setCurrentStore(restaurantData)
+        setCurrentStore(restaurantData, "restaurant")
       }
       setRestaurant(restaurantData);
       setFeaturedItems(featuredItemsData);
@@ -233,16 +232,16 @@ export default function RestaurantPage() {
   }
 
   const handleAddToCart = (item: any) => {
-    // Use conflict detection system for restaurant items
+    // Add to cart - will automatically find or create restaurant cart
     const cartItem = {
       id: `${item.id}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`, // Generate unique ID
-      restaurantId: item.restaurantId || id,
       itemName: item.name, // Use itemName instead of name
       price: item.price,
       image: item.image,
     };
     
-    addItemWithConflictCheck(cartItem, "restaurant");
+    const restaurantId = item.restaurantId || id;
+    addItem(cartItem, "restaurant", restaurant?.name, restaurantId);
   };
 
   const scrollContainer = (

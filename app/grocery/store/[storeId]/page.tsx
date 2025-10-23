@@ -27,7 +27,7 @@ export default function GroceryStorePageRoute() {
       const foundStore = stores[storeId]
       
       if (foundStore) {
-        setCurrentStore(foundStore)
+        setCurrentStore(foundStore, "grocery")
         setStoreData(foundStore)
       } else {
         // If store not found, redirect back to grocery page

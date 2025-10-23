@@ -21,10 +21,11 @@ interface CartSidebarProps {
 export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
   const router = useRouter()
   const { 
-    items, 
-    currentRestaurantId, 
-    currentStoreId, 
-    currentCategory, 
+    carts,
+    findCart,
+    getCurrentCategory,
+    getCurrentStoreId,
+    getCurrentRestaurantId,
     updateQuantity, 
     removeItem, 
     clearCart, 
@@ -34,6 +35,20 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
     groupOrderId,
     getConfig
   } = useCartStore()
+  
+  // Get current store info
+  const currentCategory = getCurrentCategory()
+  const currentStoreId = getCurrentStoreId()
+  const currentRestaurantId = getCurrentRestaurantId()
+  const activeStoreId = currentStoreId || currentRestaurantId
+  
+  // Find the cart for the current store
+  // NOTE: Currently displays only the active store's cart
+  // Future enhancement: Show all carts with tabs or sections
+  // Total carts available: carts.length
+  const currentCart = activeStoreId ? findCart(activeStoreId, currentCategory) : null
+  const items = currentCart?.items || []
+  
   // Calculate price directly without state to avoid infinite loops
   const price = items.length > 0 ? getTotalPrice() : "Checkout"
   
@@ -137,28 +152,20 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
 
   // Fetch complement items when items change - no useEffect needed
   useMemo(() => {
-    if (items.length > 0) {
-      const firstItem = items[0];
-      if (firstItem.restaurantId) {
-        const cartItemIds = items.map(item => item.id);
-        fetchComplementItems(firstItem.restaurantId, cartItemIds);
-      } else {
-        setComplementItems([]);
-      }
+    if (currentCart && currentCart.storeCategory === 'restaurant' && items.length > 0) {
+      const cartItemIds = items.map(item => item.id.toString());
+      fetchComplementItems(currentCart.storeId, cartItemIds);
     } else {
       setComplementItems([]);
     }
     return null; // useMemo must return something
-  }, [items.length, items[0]?.restaurantId, fetchComplementItems])
+  }, [currentCart?.storeId, currentCart?.storeCategory, items.length, fetchComplementItems])
 
-  // Get the display name based on current category
+  // Get the display name based on current cart
   const getDisplayName = () => {
-    // First, try to get store name from cart items themselves
-    if (items.length > 0) {
-      const firstItem = items[0];
-      if (firstItem.storeName) {
-        return firstItem.storeName;
-      }
+    // First, try to get store name from the current cart
+    if (currentCart) {
+      return currentCart.storeName;
     }
     
     // Fallback to current page context
@@ -169,12 +176,12 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
     }
     
     // Fallback - try to get store info if we don't have it yet
-    if (currentCategory !== 'restaurant' && currentStoreId) {
-      const storeInfo = getStoreInfo(currentStoreId, currentCategory);
+    if (currentCategory !== 'restaurant' && activeStoreId) {
+      const storeInfo = getStoreInfo(activeStoreId, currentCategory);
       if (storeInfo) {
         return storeInfo.name;
       }
-      return `Store ${currentStoreId}`;
+      return `Store ${activeStoreId}`;
     }
     
     return 'Unknown Store';
@@ -215,21 +222,19 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
 
   // Check if delivery fee applies (only for non-restaurant categories)
   const shouldShowDeliveryFeeNotice = () => {
-    if (items.length === 0) return false;
-    const firstItem = items[0];
-    return firstItem.category !== 'restaurant' && ['grocery', 'retail', 'pets', 'convenience'].includes(firstItem.category);
+    if (!currentCart || items.length === 0) return false;
+    return currentCart.storeCategory !== 'restaurant' && ['grocery', 'retail', 'pets', 'convenience'].includes(currentCart.storeCategory);
   };
 
   const handleAddComplementItem = (item: any) => {
-    // Verify the item belongs to the same restaurant as cart items
-    if (items.length > 0 && item.restaurantId === items[0].restaurantId) {
+    // Verify the item belongs to the same restaurant as the current cart
+    if (currentCart && currentCart.storeCategory === 'restaurant' && item.restaurantId === currentCart.storeId) {
       addItem({
         id: item.id,
-        restaurantId: item.restaurantId,
         itemName: item.name,
         price: item.price,
         image: item.image,
-      })
+      }, 'restaurant', currentCart.storeName, currentCart.storeId)
     }
   }
 
@@ -434,8 +439,8 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
           ))}
         </div>
 
-        {/* Complement your cart section - only show if we have restaurant items */}
-        {complementItems.length > 0 && items.length > 0 && items[0].restaurantId && (
+        {/* Complement your cart section - only show if we have restaurant cart */}
+        {complementItems.length > 0 && currentCart && currentCart.storeCategory === 'restaurant' && (
           <div className="p-4 border-t">
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-bold text-lg">Complement your cart</h3>
