@@ -23,13 +23,12 @@ import {
 import { getMenuCategoriesByRestaurantId } from "@/lib/utils";
 import { getDealsByRestaurantId } from "@/constants/deals";
 import { useCartStore } from "@/store/cart-store";
-import { useReplaceCart } from "@/context/replace-cart-context-with-sqlite";
+import { useReplaceCart } from "@/lib/hooks/use-replace-cart";
 import MenuItemDialog from "@/components/menu-item-dialog";
 import GroupOrderDialog from "@/components/group-order-dialog";
 import ReviewDialog from "@/components/review-dialog";
 import StoreDetailsDialog from "@/components/store-details-dialog";
 import ServiceFeesInfo from "@/components/service-fees-info";
-import { CartProvider } from "@/context/cart-context";
 import { getDefaultRating } from "@/utils/rating-utils";
 
 const menuTypes = [
@@ -101,6 +100,11 @@ export default function RestaurantPage() {
   const { addItemWithConflictCheck } = useReplaceCart();
   const ticking = useRef(false);
   const featuredItemsRef = useRef<HTMLDivElement>(null);
+
+  // Set the category to restaurant when the page loads
+  useEffect(() => {
+    cartStore.setCategory("restaurant");
+  }, []);
   const dealsRef = useRef<HTMLDivElement>(null);
   const menuDropdownRef = useRef<HTMLDivElement>(null);
 
@@ -302,8 +306,7 @@ export default function RestaurantPage() {
   );
 
   return (
-    <CartProvider category="restaurant">
-      <div className="px-8 py-16">
+    <div className="px-8 py-16">
         {/* Banner Image */}
         <div className="relative w-full h-[220px] rounded-bl-xl rounded-br-xl overflow-hidden">
           <Image
@@ -918,6 +921,5 @@ export default function RestaurantPage() {
           onClose={() => setServiceFeesInfoOpen(false)}
         />
       </div>
-    </CartProvider>
   );
 }

@@ -1,7 +1,6 @@
 "use client"
 
 import { useParams, useRouter } from "next/navigation"
-import { CartProvider } from "@/context/cart-context"
 import { useState, useEffect } from "react"
 import PetStorePage from "@/components/store/pet-store-page"
 import { allPetStores } from "@/data/pet-data"
@@ -14,9 +13,12 @@ export default function PetStorePageRoute() {
   
   const [storeData, setStoreData] = useState<any>(null)
   const [loading, setLoading] = useState(true)
-  const { setCurrentStore } = useCartStore()
+  const { setCurrentStore, setCategory } = useCartStore()
 
   useEffect(() => {
+    // Set category to pets
+    setCategory("pets")
+    
     if (storeId) {
       // Find the pet store by ID
       const foundStore = allPetStores.find(store => store.id === storeId)
@@ -49,11 +51,9 @@ export default function PetStorePageRoute() {
   }
 
   return (
-    <CartProvider category="pets">
-      <PetStorePage 
-        onBackClick={() => router.push("/pets")} 
-        storeData={storeData}
-      />
-    </CartProvider>
+    <PetStorePage 
+      onBackClick={() => router.push("/pets")} 
+      storeData={storeData}
+    />
   )
 } 

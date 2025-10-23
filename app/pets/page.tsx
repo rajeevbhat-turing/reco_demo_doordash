@@ -4,7 +4,6 @@ import { useState, useEffect } from "react"
 import StoreGrid from "@/components/store/store-grid"
 import ProductDisplay from "@/components/product/product-display"
 import AllStores from "@/components/all-stores"
-import { CartProvider } from "@/context/cart-context"
 import CartSidebar from "@/components/cart-sidebar"
 import { useCartStore } from "@/store/cart-store"
 import {
@@ -106,10 +105,8 @@ export default function Pets() {
     }));
 
   return (
-    <CartProvider category="pets">
+    <>
       <div className="max-w-[1200px] mx-auto px-4 pt-16">
-
-
         {/* All Stores Section */}
         {filteredStores.length > 0 ? (
           <AllStores 
@@ -185,6 +182,6 @@ export default function Pets() {
           <span>{cartStore.getTotalPrice()}</span>
         </button>
       )}
-    </CartProvider>
+    </>
   )
 }

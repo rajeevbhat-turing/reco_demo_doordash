@@ -889,32 +889,6 @@ export const useCartStore = create<CartStore>()(
       }),
       {
         name: "multicategory-cart",
-        partialize: (state) => ({
-          // Persist all state fields
-          items: state.items,
-          currentCategory: state.currentCategory,
-          currentStoreId: state.currentStoreId,
-          currentRestaurantId: state.currentRestaurantId,
-          isGroupOrder: state.isGroupOrder,
-          groupOrderId: state.groupOrderId,
-          searchResults: state.searchResults,
-          totalCartValue: state.totalCartValue,
-          currentStore: state.currentStore,
-          visitedStores: state.visitedStores,
-          lastClearInfo: state.lastClearInfo,
-          maxItemsReached: state.maxItemsReached,
-          verifierConsumed: state.verifierConsumed,
-          lastSearchInfo: state.lastSearchInfo,
-          searchVerifierConsumed: state.searchVerifierConsumed,
-          lastRemovalInfo: state.lastRemovalInfo,
-          removalVerifierConsumed: state.removalVerifierConsumed,
-          lastQuantityChangeInfo: state.lastQuantityChangeInfo,
-          quantityVerifierConsumed: state.quantityVerifierConsumed,
-          lastOrderInfo: state.lastOrderInfo,
-          orderVerifierConsumed: state.orderVerifierConsumed,
-          lastCheckoutInfo: state.lastCheckoutInfo,
-          checkoutVerifierConsumed: state.checkoutVerifierConsumed,
-        }),
         merge: (persistedState: any, currentState) => {
           // Handle migration of old cart items
           const migratedItems =

@@ -2,7 +2,6 @@
 
 import { Trash2, Plus, Minus, ChevronRight, ChevronLeft, Users } from "lucide-react"
 import Image from "next/image"
-import { useCart } from "@/context/cart-context"
 import { useCartStore } from "@/store/cart-store"
 import { useRef, useState, useEffect } from "react"
 import { cartConfig } from "@/data/cart-config"
@@ -14,8 +13,10 @@ interface CartSidebarProps {
 }
 
 export default function GroceryCartSidebar({ storeData }: CartSidebarProps) {
-  const { items, removeFromCart, updateQuantity, totalItems, subtotal, deliveryFee } = useCart()
-  const { isGroupOrder } = useCartStore()
+  const { items, removeItem, updateQuantity, getTotalItems, getSubtotal, getDeliveryFee, isGroupOrder } = useCartStore()
+  const totalItems = getTotalItems()
+  const subtotal = getSubtotal()
+  const deliveryFee = getDeliveryFee()
   const recommendationsRef = useRef<HTMLDivElement>(null)
   const { emptyCartMessage } = uiConfig
   
@@ -174,7 +175,7 @@ export default function GroceryCartSidebar({ storeData }: CartSidebarProps) {
               <p className="text-sm">{formatPrice(item.price)}</p>
             </div>
             <div className="flex items-center">
-              <button className="p-1 text-gray-500 hover:text-red-600" onClick={() => removeFromCart(item.id)}>
+              <button className="p-1 text-gray-500 hover:text-red-600" onClick={() => removeItem(item.id)}>
                 <Trash2 className="w-5 h-5" />
               </button>
               <div className="flex items-center border rounded-full px-2 py-1 ml-2">

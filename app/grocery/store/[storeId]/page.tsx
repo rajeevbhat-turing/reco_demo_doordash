@@ -1,7 +1,6 @@
 "use client"
 
 import { useParams, useRouter } from "next/navigation"
-import { CartProvider } from "@/context/cart-context"
 import { useState, useEffect } from "react"
 import GroceryStorePage from "@/components/grocery-store-page"
 import { stores, StoreInfo } from "@/data/store-data"
@@ -15,9 +14,12 @@ export default function GroceryStorePageRoute() {
   const [storeData, setStoreData] = useState<StoreInfo | null>(null)
   const [loading, setLoading] = useState(true)
 
-  const { setCurrentStore, clearCurrentStore } = useCartStore()
+  const { setCurrentStore, clearCurrentStore, setCategory } = useCartStore()
 
   useEffect(() => {
+    // Set category to grocery
+    setCategory("grocery")
+    
     if (storeId) {
       // Find the grocery store by ID
       const foundStore = stores[storeId]
@@ -54,11 +56,9 @@ export default function GroceryStorePageRoute() {
   }
 
   return (
-    <CartProvider category="grocery">
-      <GroceryStorePage 
-        onBackClick={() => router.push("/grocery")} 
-        storeData={storeData}
-      />
-    </CartProvider>
+    <GroceryStorePage 
+      onBackClick={() => router.push("/grocery")} 
+      storeData={storeData}
+    />
   )
 }

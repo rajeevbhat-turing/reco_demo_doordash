@@ -2,7 +2,7 @@
 
 import { Trash2, Plus, Minus, ChevronRight, ChevronLeft } from "lucide-react"
 import Image from "next/image"
-import { useCart } from "@/context/cart-context"
+import { useCartStore } from "@/store/cart-store"
 import { useRef } from "react"
 import { recommendedProducts } from "@/data/modal-data"
 import { Store } from "@/types/store"
@@ -29,7 +29,10 @@ export default function ConvenienceCartSidebar({
   cartConfig = defaultCartConfig,
   uiConfig = defaultUiConfig
 }: ConvenienceCartSidebarProps) {
-  const { items, removeFromCart, updateQuantity, totalItems, subtotal, deliveryFee } = useCart()
+  const { items, removeItem, updateQuantity, getTotalItems, getSubtotal, getDeliveryFee } = useCartStore()
+  const totalItems = getTotalItems()
+  const subtotal = getSubtotal()
+  const deliveryFee = getDeliveryFee()
   const recommendationsRef = useRef<HTMLDivElement>(null)
   
   // Helper function to format price
@@ -170,7 +173,7 @@ export default function ConvenienceCartSidebar({
               <p className="text-sm">{formatPrice(item.price)}</p>
             </div>
             <div className="flex items-center">
-              <button className="p-1 text-gray-500 hover:text-red-600" onClick={() => removeFromCart(item.id)}>
+              <button className="p-1 text-gray-500 hover:text-red-600" onClick={() => removeItem(item.id)}>
                 <Trash2 className="w-5 h-5" />
               </button>
               <div className="flex items-center border rounded-full px-2 py-1 ml-2">

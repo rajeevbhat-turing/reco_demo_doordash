@@ -26,7 +26,7 @@ import type { ProductSection as ProductSectionType, Product } from "@/types"
 import type { Store, StoreConfig } from "@/types/store"
 import ShopListModal from "@/components/modals/shop-list-modal"
 import ConvenienceCartSidebar from "@/components/convenience-cart-sidebar"
-import { useCart } from "@/context/cart-context"
+import { useCartStore } from "@/store/cart-store"
 import ProductDetailModal from "@/components/modals/product-detail-modal"
 import { getDefaultRating } from "@/utils/rating-utils"
 
@@ -50,7 +50,8 @@ export default function GenericStorePage({
   const [isShopListModalOpen, setIsShopListModalOpen] = useState(false)
   const [isSaved, setIsSaved] = useState(false)
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
-  const { totalItems } = useCart()
+  const { getTotalItems } = useCartStore()
+  const totalItems = getTotalItems()
 
   const cartConfig = storeConfig.cartConfig || {
     freeDeliveryThreshold: 35,
