@@ -8,9 +8,10 @@ import type { Cart } from "@/store/cart-store"
 interface OtherCartsProps {
   carts: Cart[]
   onRemoveCart: (storeId: string, storeCategory: string) => void
+  onClose: () => void
 }
 
-export default function OtherCarts({ carts, onRemoveCart }: OtherCartsProps) {
+export default function OtherCarts({ carts, onRemoveCart, onClose }: OtherCartsProps) {
   const router = useRouter()
 
   if (carts.length === 0) {
@@ -20,6 +21,7 @@ export default function OtherCarts({ carts, onRemoveCart }: OtherCartsProps) {
   const handleCheckout = (cart: Cart) => {
     // Navigate to checkout with cart identifier via query params
     router.push(`/checkout?category=${cart.storeCategory}&storeId=${cart.storeId}`)
+    onClose() // Close the cart sidebar
   }
 
   const handleAddMoreItems = (cart: Cart) => {
@@ -49,6 +51,7 @@ export default function OtherCarts({ carts, onRemoveCart }: OtherCartsProps) {
     }
     
     router.push(storePath)
+    onClose() // Close the cart sidebar
   }
 
   return (
