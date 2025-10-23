@@ -5,6 +5,7 @@ import { useState, useEffect } from "react"
 import PetStorePage from "@/components/store/pet-store-page"
 import { allPetStores } from "@/data/pet-data"
 import { useCartStore } from "@/store/cart-store"
+import { useAppStore } from "@/store/app-store"
 
 export default function PetStorePageRoute() {
   const params = useParams()
@@ -13,7 +14,8 @@ export default function PetStorePageRoute() {
   
   const [storeData, setStoreData] = useState<any>(null)
   const [loading, setLoading] = useState(true)
-  const { setCurrentStore, setCategory } = useCartStore()
+  const { setCategory } = useCartStore()
+  const { setCurrentStore } = useAppStore()
 
   useEffect(() => {
     // Set category to pets

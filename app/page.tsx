@@ -11,6 +11,7 @@ import RestaurantSection from "@/components/restaurant-section"
 import { restaurants } from "@/constants/restaurants"
 import type { Restaurant } from "@/constants/restaurants"
 import { useCartStore } from "@/store/cart-store"
+import { useAppStore } from "@/store/app-store"
 import { getDefaultRating } from "@/utils/rating-utils"
 import { filterRestaurantsWithMenuItems } from "@/utils/restaurant-utils"
 
@@ -25,7 +26,7 @@ export default function Home() {
   const [allFilteredRestaurants, setAllFilteredRestaurants] = useState<Restaurant[]>([])
   const filterOptionsRef = useRef<FilterOptionsRef>(null)
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
-  const { updateSearchResults, clearSearchResults } = useCartStore()
+  const { updateSearchResults, clearSearchResults } = useAppStore()
 
   // Get cart store to set category
   const cartStore = useCartStore()

@@ -5,6 +5,7 @@ import { useState, useEffect } from "react"
 import GroceryStorePage from "@/components/grocery-store-page"
 import { stores, StoreInfo } from "@/data/store-data"
 import { useCartStore } from "@/store/cart-store"
+import { useAppStore } from "@/store/app-store"
 
 export default function GroceryStorePageRoute() {
   const params = useParams()
@@ -14,7 +15,8 @@ export default function GroceryStorePageRoute() {
   const [storeData, setStoreData] = useState<StoreInfo | null>(null)
   const [loading, setLoading] = useState(true)
 
-  const { setCurrentStore, clearCurrentStore, setCategory } = useCartStore()
+  const { setCategory } = useCartStore()
+  const { setCurrentStore, clearCurrentStore } = useAppStore()
 
   useEffect(() => {
     // Set category to grocery

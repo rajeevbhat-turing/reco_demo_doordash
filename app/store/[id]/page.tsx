@@ -24,6 +24,8 @@ import { getMenuCategoriesByRestaurantId } from "@/lib/utils";
 import { getDealsByRestaurantId } from "@/constants/deals";
 import { useCartStore } from "@/store/cart-store";
 import { useReplaceCart } from "@/lib/hooks/use-replace-cart";
+import { useAppStore } from "@/store/app-store";
+import { useVerifierStore } from "@/store/verifier-store";
 import MenuItemDialog from "@/components/menu-item-dialog";
 import GroupOrderDialog from "@/components/group-order-dialog";
 import ReviewDialog from "@/components/review-dialog";
@@ -124,7 +126,8 @@ export default function RestaurantPage() {
   const [selectedRating, setSelectedRating] = useState(0);
   const [selectedMenuType, setSelectedMenuType] = useState("Regular Menu");
 
-  const { setCurrentStore, clearCurrentStore } = useCartStore()
+  const { setCurrentStore, clearCurrentStore } = useAppStore()
+  const { recordNavigationFromSearch } = useVerifierStore()
 
   // Check if user came from search and record navigation
   useEffect(() => {
@@ -134,11 +137,11 @@ export default function RestaurantPage() {
         console.log('[NAVIGATION] User came from search page, recording navigation')
         // Small delay to ensure search info is set before navigation
         setTimeout(() => {
-          useCartStore.getState().recordNavigationFromSearch()
+          recordNavigationFromSearch()
         }, 100)
       }
     }
-  }, [])
+  }, [recordNavigationFromSearch])
 
   // Set the cart category to restaurant when the component mounts
   useEffect(() => {

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation"
 import Image from "next/image"
 import { ChevronLeft, ChevronRight, X } from "lucide-react"
 import { useCartStore } from "@/store/cart-store"
+import { useVerifierStore } from "@/store/verifier-store"
 import OrderConfirmationModal from "@/components/modals/order-confirmation-modal"
 import { getRestaurantById } from "@/constants/restaurants"
 import { stores } from "@/data/store-data"
@@ -14,7 +15,8 @@ import { convenienceStores } from "@/data/convenience-store-data"
 
 export default function CheckoutPage() {
   const router = useRouter()
-  const { items, getSubtotal, getServiceFee, getDeliveryFee, getTotal, getTotalItems, currentCategory, currentRestaurantId, currentStoreId, recordCheckoutNavigation, recordTipSelection, recordDeliveryTimeSelection } = useCartStore()
+  const { items, getSubtotal, getServiceFee, getDeliveryFee, getTotal, getTotalItems, currentCategory, currentRestaurantId, currentStoreId } = useCartStore()
+  const { recordCheckoutNavigation, recordTipSelection, recordDeliveryTimeSelection } = useVerifierStore()
   const [showOrderConfirmation, setShowOrderConfirmation] = useState(false)
   const [orderId, setOrderId] = useState("")
   const [showScheduleModal, setShowScheduleModal] = useState(false)

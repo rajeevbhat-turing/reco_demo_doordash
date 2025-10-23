@@ -5,6 +5,7 @@ import { useState, useEffect } from "react"
 import RetailStorePage from "@/components/store/retail-store-page"
 import { stores, Store } from "@/constants/store"
 import { useCartStore } from "@/store/cart-store"
+import { useAppStore } from "@/store/app-store"
 
 export default function RetailStorePageRoute() {
   const params = useParams()
@@ -14,7 +15,8 @@ export default function RetailStorePageRoute() {
   const [storeData, setStoreData] = useState<Store | null>(null)
   const [loading, setLoading] = useState(true)
 
-  const { setCurrentStore, clearCurrentStore, setCategory } = useCartStore()
+  const { setCategory } = useCartStore()
+  const { setCurrentStore, clearCurrentStore } = useAppStore()
 
   useEffect(() => {
     // Set category to retail

@@ -15,10 +15,11 @@ import { stores as retailStores } from "@/constants/store"
 import { groceryData, storeSpecificData } from "@/data/grocery-data"
 import FilterOptions, { FilterState, FilterOptionsRef } from "@/components/filter-options"
 import type { Restaurant } from "@/constants/restaurants"
-import { useCartStore } from "@/store/cart-store"
 import { getDefaultRating } from "@/utils/rating-utils"
 import { filterRestaurantsWithMenuItems } from "@/utils/restaurant-utils"
 import { useReplaceCart } from "@/lib/hooks/use-replace-cart"
+import { useVerifierStore } from "@/store/verifier-store"
+import { useAppStore } from "@/store/app-store"
 
 // Force dynamic rendering
 export const dynamic = 'force-dynamic'
@@ -44,7 +45,8 @@ export default function SearchPage() {
     price: null,
     dashPass: false,
   })
-  const { updateSearchResults, clearSearchResults, recordSearch } = useCartStore()
+  const { updateSearchResults, clearSearchResults } = useAppStore()
+  const { recordSearch } = useVerifierStore()
 
   // Handle filter changes
   const handleFilterChange = (filters: FilterState) => {

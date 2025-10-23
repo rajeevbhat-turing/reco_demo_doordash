@@ -4,6 +4,7 @@ import { useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { X, CheckCircle } from "lucide-react"
 import { useCartStore } from "@/store/cart-store"
+import { useVerifierStore } from "@/store/verifier-store"
 import { useOrdersStore } from "@/store/orders-store"
 
 interface OrderConfirmationModalProps {
@@ -32,7 +33,8 @@ export default function OrderConfirmationModal({
   category
 }: OrderConfirmationModalProps) {
   const router = useRouter()
-  const { items, clearCart, currentCategory, currentStoreId, currentRestaurantId, recordOrderCompletion } = useCartStore()
+  const { items, clearCart, currentCategory, currentStoreId, currentRestaurantId } = useCartStore()
+  const { recordOrderCompletion } = useVerifierStore()
   const { addOrder } = useOrdersStore()
 
   useEffect(() => {

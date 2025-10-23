@@ -6,6 +6,7 @@ import ProductDisplay from "@/components/product/product-display"
 import AllStores from "@/components/all-stores"
 import CartSidebar from "@/components/cart-sidebar"
 import { useCartStore } from "@/store/cart-store"
+import { useAppStore } from "@/store/app-store"
 import {
   getFilterOptions,
   getAllPetStores,
@@ -26,7 +27,7 @@ export default function Pets() {
   const [isCartOpen, setIsCartOpen] = useState(false)
   const [currentStoreData, setCurrentStoreData] = useState<any>(null)
   const cartStore = useCartStore();
-  const { setCurrentStore, clearCurrentStore } = useCartStore()
+  const { clearCurrentStore } = useAppStore()
   
   // Set the category to pets when component mounts
   useEffect(() => {
