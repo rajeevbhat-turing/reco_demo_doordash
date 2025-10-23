@@ -1,36 +1,69 @@
-'use client';
-import { useState, useSyncExternalStore } from 'react';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { MapPin, ChevronDown, ShoppingCart } from 'lucide-react';
-import { useCartStore } from '@/store/cart-store';
-import { useUserStore } from '@/store/user-store';
-import SearchBar from '@/components/search-bar';
-import CartSidebar from '@/components/cart-sidebar';
-import { Button } from '@/components/ui/button';
-import AuthenticationModal from './modals/authentication-modal';
-import { DashDoorLogoMark, DashDoorWordMark } from './common/Icons';
+"use client"
+import { useEffect, useState, useSyncExternalStore } from "react"
+import Link from "next/link"
+import { usePathname } from "next/navigation"
+import { MapPin, ChevronDown, ShoppingCart } from "lucide-react"
+import { useCartStore } from "@/store/cart-store"
+import { useAppStore } from "@/store/app-store"
+import { useUserStore } from "@/store/user-store"
+import SearchBar from "@/components/search-bar"
+import CartSidebar from "@/components/cart-sidebar"
+import { Button } from "@/components/ui/button"
+import AuthenticationModal from "./modals/authentication-modal"
+import { DashDoorLogoMark, DashDoorWordMark } from "./common/Icons"
 
 export default function Header() {
-  const pathname = usePathname();
-  
-  const cartItemCount = useSyncExternalStore(
-    useCartStore.subscribe,
-    () => useCartStore.getState().getTotalItems(),
-    () => 0 // fallback for SSR
-  );
-  
+  const pathname = usePathname()
+  const [isCartOpen, setIsCartOpen] = useState(false)
+  const [authModalMode, setAuthModalMode] = useState<"signin" | "signup" | null>(null)
+  const [cartItemCount, setCartItemCount] = useState(0)
+
+  // Update cart count whenever the cart or current store changes
+  useEffect(() => {
+    const updateCartCount = () => {
+      const cartState = useCartStore.getState()
+      const appState = useAppStore.getState()
+      
+      // If no current store is set, show number of carts
+      if (!appState.currentStore?.id) {
+        setCartItemCount(cartState.carts.length)
+        return
+      }
+      
+      // If current store is set, show items in that store's cart
+      const currentStoreId = appState.currentStore.id
+      const currentCategory = appState.currentCategory || "grocery"
+      const currentCart = cartState.findCart(currentStoreId, currentCategory)
+      
+      if (currentCart) {
+        const itemCount = currentCart.items.reduce((total, item) => total + item.quantity, 0)
+        setCartItemCount(itemCount)
+      } else {
+        setCartItemCount(0)
+      }
+    }
+
+    // Initial cart count
+    updateCartCount()
+
+    // Subscribe to both cart and app store changes
+    const unsubscribeFromCart = useCartStore.subscribe(updateCartCount)
+    const unsubscribeFromApp = useAppStore.subscribe(updateCartCount)
+
+    return () => {
+      unsubscribeFromCart()
+      unsubscribeFromApp()
+    }
+  }, [])
+
   const isAuthenticated = useSyncExternalStore(
     useUserStore.subscribe,
     () => useUserStore.getState().isAuthenticated(),
     () => false // fallback for SSR
-  );
-  
-  const [isCartOpen, setIsCartOpen] = useState(false);
-  const [authModalMode, setAuthModalMode] = useState<'signin' | 'signup' | null>(null);
+  )
 
   // Check if current path is in account flow
-  const isAccountFlow = pathname.startsWith('/consumer') || pathname.startsWith('/password-reset');
+  const isAccountFlow = pathname.startsWith("/consumer") || pathname.startsWith("/password-reset")
 
   const toggleCart = () => {
     setIsCartOpen(!isCartOpen);
