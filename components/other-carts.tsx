@@ -18,8 +18,8 @@ export default function OtherCarts({ carts, onRemoveCart }: OtherCartsProps) {
   }
 
   const handleCheckout = (cart: Cart) => {
-    // Navigate to checkout - could be enhanced to select specific cart
-    router.push('/checkout')
+    // Navigate to checkout with cart identifier via query params
+    router.push(`/checkout?category=${cart.storeCategory}&storeId=${cart.storeId}`)
   }
 
   const handleAddMoreItems = (cart: Cart) => {

@@ -279,7 +279,13 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
 
   // Handle navigation to checkout
   const handleContinueToCheckout = () => {
-    router.push('/checkout')
+    if (currentCart) {
+      // Pass cart identifier via query params for multi-tab support
+      router.push(`/checkout?category=${currentCart.storeCategory}&storeId=${currentCart.storeId}`)
+    } else {
+      // Fallback to basic checkout if no cart found
+      router.push('/checkout')
+    }
     onClose() // Close the cart sidebar
   }
 

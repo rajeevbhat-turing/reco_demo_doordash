@@ -1,10 +1,10 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import Image from "next/image"
 import { ChevronLeft, ChevronRight, X } from "lucide-react"
-import { useCartStore } from "@/store/cart-store"
+import { useCartStore, type CartCategory } from "@/store/cart-store"
 import { useVerifierStore } from "@/store/verifier-store"
 import OrderConfirmationModal from "@/components/modals/order-confirmation-modal"
 import { getRestaurantById } from "@/constants/restaurants"
@@ -15,8 +15,21 @@ import { convenienceStores } from "@/data/convenience-store-data"
 
 export default function CheckoutPage() {
   const router = useRouter()
-  const { items, getSubtotal, getServiceFee, getDeliveryFee, getTotal, getTotalItems, currentCategory, currentRestaurantId, currentStoreId } = useCartStore()
+  const searchParams = useSearchParams()
+  
+  // Get cart identifier from query params
+  const categoryParam = searchParams.get('category') as CartCategory | null
+  const storeIdParam = searchParams.get('storeId')
+  
+  const { findCart, getSubtotal, getServiceFee, getDeliveryFee, getTotal, getTotalItems } = useCartStore()
   const { recordCheckoutNavigation, recordTipSelection, recordDeliveryTimeSelection } = useVerifierStore()
+  
+  // Find the cart using query params
+  const currentCart = categoryParam && storeIdParam ? findCart(storeIdParam, categoryParam) : null
+  const items = currentCart?.items || []
+  const currentCategory = currentCart?.storeCategory || null
+  const currentStoreId = currentCart?.storeId || null
+  
   const [showOrderConfirmation, setShowOrderConfirmation] = useState(false)
   const [orderId, setOrderId] = useState("")
   const [showScheduleModal, setShowScheduleModal] = useState(false)
@@ -38,6 +51,14 @@ export default function CheckoutPage() {
     recordCheckoutNavigation()
   }, [recordCheckoutNavigation])
   
+  // Redirect if cart not found
+  useEffect(() => {
+    if (isClient && !currentCart && categoryParam && storeIdParam) {
+      // Cart was deleted or doesn't exist
+      router.push('/')
+    }
+  }, [isClient, currentCart, categoryParam, storeIdParam, router])
+  
   // Generate order ID
   const generateOrderId = () => {
     return Math.random().toString(36).substr(2, 9).toUpperCase()
@@ -57,17 +78,14 @@ export default function CheckoutPage() {
 
   // Get store/restaurant name
   const getStoreName = () => {
-    // First, try to get store name from cart items themselves
-    if (items.length > 0) {
-      const firstItem = items[0];
-      if (firstItem.storeName) {
-        return firstItem.storeName;
-      }
+    // First, try to get store name from the cart itself
+    if (currentCart) {
+      return currentCart.storeName;
     }
     
-    // Fallback to current page context
-    if (currentCategory === 'restaurant' && currentRestaurantId) {
-      const restaurant = getRestaurantById(currentRestaurantId)
+    // Fallback to looking up by ID if we have the params
+    if (currentCategory === 'restaurant' && currentStoreId) {
+      const restaurant = getRestaurantById(currentStoreId)
       return restaurant?.name || 'Restaurant'
     } else if (currentCategory !== 'restaurant' && currentStoreId) {
       let store = null
@@ -461,8 +479,8 @@ export default function CheckoutPage() {
         scheduledTime={selectedDeliveryOption === "schedule" ? selectedScheduleTime : undefined}
         deliveryTime={deliveryTime}
         storeName={getStoreName()}
-        storeId={currentStoreId || currentRestaurantId || "unknown"}
-        category={currentCategory}
+        storeId={currentStoreId || "unknown"}
+        category={currentCategory || "grocery"}
       />
     </div>
   )
