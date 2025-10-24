@@ -179,13 +179,13 @@ interface CartStore {
   joinGroupOrder: (groupOrderId: string) => void
   leaveGroupOrder: () => void
 
-  // Cart calculations
-  getTotalItems: () => number
-  getSubtotal: () => number
-  getServiceFee: () => number
-  getDeliveryFee: () => number
-  getTotal: () => number
-  getTotalPrice: () => string
+  // Cart calculations (optionally for specific cart)
+  getTotalItems: (storeId?: string, category?: CartCategory) => number
+  getSubtotal: (storeId?: string, category?: CartCategory) => number
+  getServiceFee: (storeId?: string, category?: CartCategory) => number
+  getDeliveryFee: (storeId?: string, category?: CartCategory) => number
+  getTotal: (storeId?: string, category?: CartCategory) => number
+  getTotalPrice: (storeId?: string, category?: CartCategory) => string
 
   // Update total cart value
   updateTotalCartValue: () => void
@@ -588,17 +588,41 @@ export const useCartStore = create<CartStore>()(
           })
         },
 
-        // Get total items count across all carts
-        getTotalItems: () => {
-          const { carts } = get()
+        // Get total items count for specific cart or all carts
+        getTotalItems: (storeId?, category?) => {
+          const { carts, findCart } = get()
+          
+          // If storeId and category provided, calculate for specific cart
+          if (storeId && category) {
+            const cart = findCart(storeId, category)
+            if (!cart) return 0
+            return cart.items.reduce((sum, item) => sum + item.quantity, 0)
+          }
+          
+          // Otherwise calculate across all carts
           return carts.reduce((total, cart) => 
             total + cart.items.reduce((sum, item) => sum + item.quantity, 0), 0
           )
         },
 
-        // Calculate subtotal across all carts
-        getSubtotal: () => {
-          const { carts } = get()
+        // Calculate subtotal for specific cart or all carts
+        getSubtotal: (storeId?, category?) => {
+          const { carts, findCart } = get()
+          
+          // If storeId and category provided, calculate for specific cart
+          if (storeId && category) {
+            const cart = findCart(storeId, category)
+            if (!cart) return 0
+            return cart.items.reduce((sum, item) => {
+              const price =
+                typeof item.price === "number"
+                  ? item.price
+                  : Number.parseFloat(item.price.toString().replace(/[^0-9.]/g, ""))
+              return sum + price * item.quantity
+            }, 0)
+          }
+          
+          // Otherwise calculate across all carts
           return carts.reduce((cartTotal, cart) => 
             cartTotal + cart.items.reduce((sum, item) => {
               const price =
@@ -610,29 +634,31 @@ export const useCartStore = create<CartStore>()(
           )
         },
 
-        // Calculate service fee
-        getServiceFee: () => {
+        // Calculate service fee for specific cart or all carts
+        getServiceFee: (storeId?, category?) => {
           const { getSubtotal, getConfig } = get()
           const config = getConfig()
-          return Math.max(getSubtotal() * config.serviceFeePercentage, config.minServiceFee)
+          const subtotal = getSubtotal(storeId, category)
+          return Math.max(subtotal * config.serviceFeePercentage, config.minServiceFee)
         },
 
-        // Calculate delivery fee
-        getDeliveryFee: () => {
+        // Calculate delivery fee for specific cart or all carts
+        getDeliveryFee: (storeId?, category?) => {
           const { getSubtotal, getConfig } = get()
           const config = getConfig()
-          return getSubtotal() >= config.freeDeliveryThreshold ? 0 : config.defaultDeliveryFee
+          const subtotal = getSubtotal(storeId, category)
+          return subtotal >= config.freeDeliveryThreshold ? 0 : config.defaultDeliveryFee
         },
 
-        // Calculate total (includes all fees - for checkout)
-        getTotal: () => {
+        // Calculate total (includes all fees - for checkout) for specific cart or all carts
+        getTotal: (storeId?, category?) => {
           const { getSubtotal, getServiceFee, getDeliveryFee } = get()
-          return getSubtotal() + getServiceFee() + getDeliveryFee()
+          return getSubtotal(storeId, category) + getServiceFee(storeId, category) + getDeliveryFee(storeId, category)
         },
 
-        // Get formatted total price (for cart display - only subtotal, no fees)
-        getTotalPrice: () => {
-          return `$${get().getSubtotal().toFixed(2)}`
+        // Get formatted total price (for cart display - only subtotal, no fees) for specific cart or all carts
+        getTotalPrice: (storeId?, category?) => {
+          return `$${get().getSubtotal(storeId, category).toFixed(2)}`
         },
 
         // Update total cart value

@@ -57,7 +57,9 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
   const items = currentCart?.items || []
   
   // Calculate price directly without state to avoid infinite loops
-  const price = items.length > 0 ? getTotalPrice() : "Checkout"
+  const price = items.length > 0 && currentCart 
+    ? getTotalPrice(currentCart.storeId, currentCart.storeCategory) 
+    : "Checkout"
   
   const [restaurant, setRestaurant] = useState<any>(null)
   const [store, setStore] = useState<any>(null)

@@ -30,6 +30,12 @@ export default function CheckoutPage() {
   const currentCategory = currentCart?.storeCategory || null
   const currentStoreId = currentCart?.storeId || null
   
+  // Calculate values for this specific cart
+  const subtotal = getSubtotal(currentStoreId || undefined, currentCategory || undefined)
+  const serviceFee = getServiceFee(currentStoreId || undefined, currentCategory || undefined)
+  const deliveryFee = getDeliveryFee(currentStoreId || undefined, currentCategory || undefined)
+  const totalItems = getTotalItems(currentStoreId || undefined, currentCategory || undefined)
+  
   const [showOrderConfirmation, setShowOrderConfirmation] = useState(false)
   const [orderId, setOrderId] = useState("")
   const [showScheduleModal, setShowScheduleModal] = useState(false)
@@ -179,7 +185,8 @@ export default function CheckoutPage() {
 
   // Calculate total with extra delivery fee and tip
   const getTotalWithExtras = () => {
-    return getTotal() + extraDeliveryFee + selectedTip
+    const total = getTotal(currentStoreId || undefined, currentCategory || undefined)
+    return total + extraDeliveryFee + selectedTip
   }
 
   const deliveryOptions = [
@@ -354,19 +361,19 @@ export default function CheckoutPage() {
 
               {/* Order Summary */}
               <div className="mb-6">
-                <h3 className="font-medium mb-2">Order Summary ({getTotalItems()} items)</h3>
+                <h3 className="font-medium mb-2">Order Summary ({totalItems} items)</h3>
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
                     <span>Subtotal</span>
-                    <span>${getSubtotal().toFixed(2)}</span>
+                    <span>${subtotal.toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between">
                     <span>Delivery Fee</span>
-                    <span>${(getDeliveryFee() + extraDeliveryFee).toFixed(2)}</span>
+                    <span>${(deliveryFee + extraDeliveryFee).toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between">
                     <span>Service Fee</span>
-                    <span>${getServiceFee().toFixed(2)}</span>
+                    <span>${serviceFee.toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between">
                     <span>Estimated Tax</span>

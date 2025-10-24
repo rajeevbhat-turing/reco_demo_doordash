@@ -174,7 +174,7 @@ export default function Pets() {
       />
       
       {/* Floating Cart Button */}
-      {cartStore.items.length > 0 && !isCartOpen && (
+      {/* {cartStore.carts.length > 0 && !isCartOpen && (
         <button 
           onClick={() => setIsCartOpen(true)}
           className="fixed bottom-6 right-6 bg-red-600 text-white rounded-full px-6 py-3 flex items-center shadow-lg z-40"
@@ -182,7 +182,7 @@ export default function Pets() {
           <span className="font-medium mr-2">View Cart • {cartStore.getTotalItems()} items</span>
           <span>{cartStore.getTotalPrice()}</span>
         </button>
-      )}
+      )} */}
     </>
   )
 }
