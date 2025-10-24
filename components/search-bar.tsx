@@ -521,7 +521,7 @@ const SearchBar = () => {
     <div ref={searchContainerRef} className="relative flex-1 max-w-xl mx-4">
       <form onSubmit={handleSearchSubmit} className="relative">
         <div
-          className={`flex items-center bg-gray-100 rounded-full transition-all ${
+          className={`flex items-center bg-gray-100 rounded-full transition-all h-8 ${
             isSearchActive ? "bg-white border border-gray-300" : ""
           }`}
         >
@@ -542,7 +542,7 @@ const SearchBar = () => {
             ref={searchInputRef}
             type="text"
             placeholder="Search DashDoor"
-            className={`block w-full bg-transparent py-2 ${
+            className={`block w-full bg-transparent ${
               isSearchActive ? "pl-2 pr-10" : "pl-10 pr-3"
             } text-sm focus:outline-none`}
             value={searchTerm}
