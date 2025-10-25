@@ -7,8 +7,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useUserStore } from '@/store/user-store';
 import { isValidEmail } from '@/lib/utils/helperFunctions';
+import { User } from '@/lib/types/user-types';
 interface SignUpProps {
-  onShowOTP: () => void;
+  onShowOTP: (user: User) => void;
   selectedCountry: any;
   setShowCountryDropdown: (show: boolean) => void;
 }
@@ -138,8 +139,30 @@ export default function SignUp({
         return;
       }
 
-      // Generate OTP and show verification modal
-      onShowOTP();
+      // Create user object and show OTP verification modal
+      const userObject: User = {
+        id: '', // Will be set after OTP verification
+        name: `${formData.firstName} ${formData.lastName}`,
+        email: formData.email,
+        phoneNumber: formData.mobileNumber,
+        password: formData.password,
+        country: {
+          dialCode: selectedCountry.dial_code,
+          code: selectedCountry.code,
+          name: selectedCountry.name,
+        },
+        userCountry: selectedCountry.name,
+        avatar: null,
+      };
+      
+      onShowOTP(userObject);
+
+      // If password is less than 10 characters, show error
+      if (formData.password.length < 10) {
+        setErrors({
+          password: 'Password must contain at least 10 characters.',
+        });
+      }
     }
   };
 

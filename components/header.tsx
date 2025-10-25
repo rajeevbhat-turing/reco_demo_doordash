@@ -14,7 +14,7 @@ import { DashDoorLogoMark, DashDoorWordMark } from './common/Icons';
 export default function Header() {
   const pathname = usePathname();
   const getTotalItems = useCartStore(state => state.getTotalItems);
-  const isAuthenticated = useUserStore(state => state.isAuthenticated);
+  const isAuthenticated = useUserStore(state => state.isAuthenticated());
   const [cartItemCount, setCartItemCount] = useState(0);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [authModalMode, setAuthModalMode] = useState<'signin' | 'signup' | null>(null);
@@ -41,7 +41,7 @@ export default function Header() {
   // Update auth state whenever authentication changes
   useEffect(() => {
     // Initial auth state
-    setAuthState(isAuthenticated());
+    setAuthState(isAuthenticated);
 
     // Subscribe to user store changes
     const unsubscribeFromUserStore = useUserStore.subscribe(state => {

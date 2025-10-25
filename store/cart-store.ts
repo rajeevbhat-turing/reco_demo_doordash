@@ -28,7 +28,7 @@ export interface SearchResult {
   logo: string
   description: string
   dashPass?: boolean
-  type: "restaurant" | "menu-item"
+  type: "restaurant" | "menu-item" | "grocery" | "pets" | "pet-product" | "convenience" | "retail"
   restaurantId?: string
   matchedItem?: string
   categories?: string[]

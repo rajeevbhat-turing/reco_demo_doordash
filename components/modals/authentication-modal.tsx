@@ -33,6 +33,7 @@ export default function AuthenticationModal({
   const [otp, setOtp] = useState<string>('');
   const [showOtpModal, setShowOtpModal] = useState(false);
   const [lastVerifiedUser, setLastVerifiedUser] = useState<User | null>(null);
+  const [signUpUser, setSignUpUser] = useState<User | null>(null);
 
   // Disable body scroll and limit height when modal is open
   useEffect(() => {
@@ -132,6 +133,25 @@ export default function AuthenticationModal({
     return newOtp;
   };
 
+  // Handle user creation
+  const handleUserCreation = (user: User) => {
+    const newUser = {
+      id: Date.now().toString(),
+      name: user.name,
+      email: user.email,
+      phoneNumber: user.phoneNumber,
+      password: user.password,
+      country: user.country,
+      userCountry: user.userCountry,
+      avatar: null,
+    };
+
+    addUser(newUser);
+    setCurrentUser(newUser);
+    setSignUpUser(null);
+    handleClose();
+  };
+
   // Handles OTP verification from the OTP modal
   const handleOTPVerification = (
     enteredOtp: string,
@@ -142,31 +162,21 @@ export default function AuthenticationModal({
     setShowTooManyAttempts: (show: boolean) => void
   ) => {
     if (enteredOtp === generatedOtp) {
-      // OTP is correct - check if last verified user exists
-      if (lastVerifiedUser) {
-        // Check password length from last verified user
-        if (lastVerifiedUser.password.length < 10) {
+      // OTP is correct - check if sign up user exists
+      if (signUpUser) {
+        // Set last verified user
+        setLastVerifiedUser({ ...signUpUser });
+
+        // Check password length from sign up user
+        if (signUpUser.password.length < 10) {
           // Password too short - show error in auth modal
           setShowOtpModal(false);
           return;
         }
 
         // Password is valid - create user and close modal
-        const newUser = {
-          id: Date.now().toString(),
-          name: lastVerifiedUser.name,
-          email: lastVerifiedUser.email,
-          phoneNumber: lastVerifiedUser.phoneNumber,
-          password: lastVerifiedUser.password,
-          country: lastVerifiedUser.country,
-          userCountry: lastVerifiedUser.country.name, // Use phone country as user country
-          avatar: null,
-        };
-
-        addUser(newUser);
-        setCurrentUser(newUser);
-        setLastVerifiedUser(null);
-        handleClose();
+        handleUserCreation(signUpUser);
+        return;
       }
     } else {
       // OTP is incorrect - show error
@@ -186,6 +196,7 @@ export default function AuthenticationModal({
     onClose();
     setMode(defaultMode);
     setLastVerifiedUser(null);
+    setSignUpUser(null);
     setShowOtpModal(false);
   };
 
@@ -195,14 +206,22 @@ export default function AuthenticationModal({
   };
 
   // Handles showing OTP modal
-  const handleShowOTP = () => {
+  const handleShowOTP = (user: User) => {
+    setSignUpUser(user);
+
+    // If user is already verified and last verified user's phone number and country code hasn't changed
+    // and password is at least 10 characters then create user
+    if (
+      lastVerifiedUser &&
+      lastVerifiedUser.phoneNumber === user.phoneNumber &&
+      lastVerifiedUser.country.code === user.country.code &&
+      user.password.length >= 10
+    ) {
+      handleUserCreation(user);
+      return;
+    }
     generateOTP();
     setShowOtpModal(true);
-  };
-
-  // Handles setting last verified user
-  const handleSetLastVerifiedUser = (user: User) => {
-    setLastVerifiedUser(user);
   };
 
   // Handles mode changes with optional email parameter
@@ -341,7 +360,7 @@ export default function AuthenticationModal({
           isOpen={showOtpModal}
           onClose={() => setShowOtpModal(false)}
           onVerify={handleOTPVerification}
-          phoneNumber=""
+          phoneNumber={signUpUser?.phoneNumber || ''}
           countryCode={selectedCountry.dial_code}
           generatedOTP={otp}
         />

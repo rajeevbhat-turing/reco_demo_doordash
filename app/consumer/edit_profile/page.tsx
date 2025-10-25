@@ -318,29 +318,29 @@ export default function AccountSettingsPage() {
         <div className="p-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label className="block text-sm font-medium mb-1">First Name</label>
               <div className="flex justify-between">
-                <input
-                  type="text"
-                  className="w-full p-3 bg-gray-50 rounded-md"
-                  value={formData.firstName}
-                  onChange={e => handleInputChange('firstName', e.target.value)}
-                />
+                <label className="block text-sm font-medium mb-1">First Name</label>
                 <div className="text-sm text-gray-500 ml-4 mt-3">Required</div>
               </div>
+              <input
+                type="text"
+                className="w-full p-3 bg-gray-50 rounded-md"
+                value={formData.firstName}
+                onChange={e => handleInputChange('firstName', e.target.value)}
+              />
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-1">Last Name</label>
               <div className="flex justify-between">
-                <input
-                  type="text"
-                  className="w-full p-3 bg-gray-50 rounded-md"
-                  value={formData.lastName}
-                  onChange={e => handleInputChange('lastName', e.target.value)}
-                />
+                <label className="block text-sm font-medium mb-1">Last Name</label>
                 <div className="text-sm text-gray-500 ml-4 mt-3">Required</div>
               </div>
+              <input
+                type="text"
+                className="w-full p-3 bg-gray-50 rounded-md"
+                value={formData.lastName}
+                onChange={e => handleInputChange('lastName', e.target.value)}
+              />
             </div>
 
             <div>
@@ -382,21 +382,23 @@ export default function AccountSettingsPage() {
                     onChange={e => handleInputChange('phoneNumber', e.target.value)}
                   />
                   <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                    <svg
-                      width="20"
-                      height="20"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M20 6L9 17L4 12"
-                        stroke="#22C55E"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
+                    <div className="border-2 border-[#22C55E] rounded-full">
+                      <svg
+                        width="20"
+                        height="20"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M20 6L9 17L4 12"
+                          stroke="#22C55E"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                    </div>
                   </div>
                 </div>
               </div>

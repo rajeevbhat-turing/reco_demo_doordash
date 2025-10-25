@@ -120,6 +120,7 @@ export const useUserStore = create<UserStore>()(
     ),
     {
       name: "user-store",
+      enabled: process.env.NODE_ENV === 'development',
     }
   )
 );

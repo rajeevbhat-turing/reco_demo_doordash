@@ -18,7 +18,7 @@ import { useUserStore } from '@/store/user-store';
 
 export default function Sidebar() {
   const pathname = usePathname();
-  const isAuthenticated = useUserStore(state => state.isAuthenticated);
+  const isAuthenticated = useUserStore(state => state.isAuthenticated());
   const [authModalMode, setAuthModalMode] = useState<'signin' | 'signup' | null>(null);
   const [showAccountPopup, setShowAccountPopup] = useState(false);
   const [accountButtonRef, setAccountButtonRef] = useState<HTMLDivElement | null>(null);
@@ -27,7 +27,7 @@ export default function Sidebar() {
   // Update auth state whenever authentication changes
   useEffect(() => {
     // Initial auth state
-    setAuthState(isAuthenticated());
+    setAuthState(isAuthenticated);
 
     // Subscribe to user store changes
     const unsubscribeFromUserStore = useUserStore.subscribe(state => {

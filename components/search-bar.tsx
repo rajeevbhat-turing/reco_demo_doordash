@@ -1,8 +1,6 @@
 "use client"
 
-import type React from "react"
-
-import { useState, useRef, useEffect } from "react"
+import React, { useState, useRef, useEffect } from "react"
 import Image from "next/image"
 import { Search, X, ArrowLeft } from "lucide-react"
 import { useRouter } from "next/navigation"
@@ -22,7 +20,7 @@ interface SearchResult {
   logo: string
   description: string
   dashPass?: boolean
-  type: "restaurant" | "menu-item" | "grocery" | "pets" | "pet-product" | "convenience"
+  type: "restaurant" | "menu-item" | "grocery" | "pets" | "pet-product" | "convenience" | "retail"
   restaurantId?: string
   matchedItem?: string
   categories?: string[]
@@ -329,7 +327,7 @@ const SearchBar = () => {
       // Generate search suggestions based on search term
       const suggestions = generateSearchSuggestions(value)
 
-      setSearchResults(combinedResults)
+      setSearchResults(combinedResults as SearchResult[])
       setSearchSuggestions(suggestions)
       setIsSearchActive(true)
 
@@ -522,7 +520,7 @@ const SearchBar = () => {
       <form onSubmit={handleSearchSubmit} className="relative">
         <div
           className={`flex items-center bg-gray-100 rounded-full transition-all h-8 ${
-            isSearchActive ? "bg-white border border-gray-300" : ""
+            isSearchActive ? 'bg-white border border-gray-300' : ''
           }`}
         >
           {isSearchActive ? (
@@ -659,7 +657,7 @@ const SearchBar = () => {
             searchResults.length === 0 &&
             searchSuggestions.length === 0 &&
             recentSearches.length === 0 && (
-              <div className="p-4 text-center text-gray-500">No results found for "{searchTerm}"</div>
+              <div className="p-4 text-center text-gray-500">No results found for {searchTerm}</div>
             )}
         </div>
       )}

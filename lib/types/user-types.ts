@@ -11,4 +11,5 @@ export interface User {
     name: string;
   };
   userCountry: string;
+  avatar: string | null;
 }
