@@ -34,16 +34,19 @@ export default function AuthenticationModal({
   const [showOtpModal, setShowOtpModal] = useState(false);
   const [lastVerifiedUser, setLastVerifiedUser] = useState<User | null>(null);
 
-  // Disable body scroll when modal is open
+  // Disable body scroll and limit height when modal is open
   useEffect(() => {
     if (defaultMode) {
       document.body.style.overflow = 'hidden';
+      document.body.style.height = '100vh';
     } else {
       document.body.style.overflow = 'auto';
+      document.body.style.height = 'auto';
     }
 
     return () => {
       document.body.style.overflow = 'auto';
+      document.body.style.height = 'auto';
     };
   }, [defaultMode]);
 
@@ -156,6 +159,8 @@ export default function AuthenticationModal({
           phoneNumber: lastVerifiedUser.phoneNumber,
           password: lastVerifiedUser.password,
           country: lastVerifiedUser.country,
+          userCountry: lastVerifiedUser.country.name, // Use phone country as user country
+          avatar: null,
         };
 
         addUser(newUser);
@@ -309,12 +314,8 @@ export default function AuthenticationModal({
               <SignIn onSuccess={handleAuthSuccess} setMode={handleSetMode} />
             ) : mode === 'signup' ? (
               <SignUp
-                onSuccess={handleAuthSuccess}
                 onShowOTP={handleShowOTP}
-                onSetLastVerifiedUser={handleSetLastVerifiedUser}
                 selectedCountry={selectedCountry}
-                setSelectedCountry={setSelectedCountry}
-                showCountryDropdown={showCountryDropdown}
                 setShowCountryDropdown={setShowCountryDropdown}
               />
             ) : (

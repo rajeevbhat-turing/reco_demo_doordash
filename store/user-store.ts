@@ -8,6 +8,7 @@ interface UserStore {
   // State
   users: User[];
   currentUser: User | null;
+  changePasswordPhoneVerified: boolean;
 
   // Actions
   setCurrentUser: (user: User | null) => void;
@@ -16,6 +17,8 @@ interface UserStore {
   deleteUser: (id: string) => void;
   isAuthenticated: () => boolean;
   clearUsers: () => void;
+  setChangePasswordPhoneVerified: (verified: boolean) => void;
+  changePassword: (oldPassword: string, newPassword: string) => boolean;
 }
 
 export const useUserStore = create<UserStore>()(
@@ -34,12 +37,18 @@ export const useUserStore = create<UserStore>()(
             code: 'US',
             name: 'United States',
           },
+          userCountry: 'United States',
+          avatar: null,
         }],
         currentUser: null,
+        changePasswordPhoneVerified: false,
 
         // Actions
         setCurrentUser: (user: User | null) => {
-          set({ currentUser: user });
+          set({ 
+            currentUser: user,
+            changePasswordPhoneVerified: user === null ? false : get().changePasswordPhoneVerified,
+          });
         },
 
         addUser: (user: User) => {
@@ -73,12 +82,39 @@ export const useUserStore = create<UserStore>()(
         clearUsers: () => {
           set({ users: [], currentUser: null });
         },
+
+        setChangePasswordPhoneVerified: (verified: boolean) => {
+          set({ changePasswordPhoneVerified: verified });
+        },
+
+        changePassword: (oldPassword: string, newPassword: string) => {
+          const state = get();
+          if (!state.currentUser) return false;
+          
+          // Check if old password is correct
+          if (state.currentUser.password !== oldPassword) {
+            return false;
+          }
+          
+          // Update password
+          const updatedUser = { ...state.currentUser, password: newPassword };
+          set({ 
+            currentUser: updatedUser,
+            users: state.users.map(user => 
+              user.id === state.currentUser!.id ? updatedUser : user
+            ),
+            changePasswordPhoneVerified: false // Reset after password change
+          });
+          
+          return true;
+        },
       }),
       {
         name: "user-store",
         partialize: (state) => ({
           users: state.users,
           currentUser: state.currentUser,
+          changePasswordPhoneVerified: state.changePasswordPhoneVerified,
         }),
       }
     ),

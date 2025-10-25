@@ -1,40 +1,59 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { VerificationIcon } from '@/lib/utils/icons';
 
-interface OTPVerificationModalProps {
+interface TwoStepVerificationModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onVerify: (
-    enteredOtp: string,
-    generatedOtp: string,
-    setOtpError: (error: string) => void,
-    setAttemptsLeft: (attempts: number) => void,
-    attemptsLeft: number,
-    setShowTooManyAttempts: (show: boolean) => void
-  ) => void;
-  phoneNumber: string;
-  countryCode: string;
-  generatedOTP: string;
-  containerClassName?: string;
+  onSuccess: () => void;
+  phoneNumber?: string;
 }
 
-export default function OTPVerificationModal({
+export default function TwoStepVerificationModal({
   isOpen,
   onClose,
-  onVerify,
-  phoneNumber,
-  countryCode,
-  generatedOTP,
-  containerClassName = '',
-}: OTPVerificationModalProps) {
-  const [otpInput, setOtpInput] = useState<string>('');
-  const [otpError, setOtpError] = useState<string>('');
+  onSuccess,
+  phoneNumber = '',
+}: TwoStepVerificationModalProps) {
+  const [code, setCode] = useState('');
+  const [codeError, setCodeError] = useState('');
+  const [resendTimer, setResendTimer] = useState(0);
+  const [generatedCode, setGeneratedCode] = useState('');
   const [attemptsLeft, setAttemptsLeft] = useState(5);
   const [showTooManyAttempts, setShowTooManyAttempts] = useState(false);
-  const [resendTimer, setResendTimer] = useState(0);
+
+  // Disable body scroll and limit height when modal is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+      document.body.style.height = '100vh';
+    } else {
+      document.body.style.overflow = 'auto';
+      document.body.style.height = 'auto';
+    }
+  }, [isOpen]);
+  
+  // Handles code input changes
+  const handleCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value.replace(/\D/g, '').slice(0, 6);
+    setCode(value);
+
+    // Clear errors when user types
+    if (codeError) {
+      setCodeError('');
+    }
+  };
+
+  // Generates a 6-digit verification code
+  const generateCode = () => {
+    const newCode = Math.floor(100000 + Math.random() * 900000).toString();
+    setGeneratedCode(newCode);
+    console.log('Generated verification code:', newCode);
+    return newCode;
+  };
 
   // Starts the resend timer countdown
   const startResendTimer = () => {
@@ -50,38 +69,73 @@ export default function OTPVerificationModal({
     }, 1000);
   };
 
-  // Handles resend OTP functionality
-  const handleResendOTP = () => {
-    if (resendTimer === 0) {
-      // Generate new OTP (this would be handled by parent)
-      startResendTimer();
+  // Handles form submission
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    // Verify the entered code against generated code
+    if (code !== generatedCode) {
+      const newAttemptsLeft = attemptsLeft - 1;
+      setAttemptsLeft(newAttemptsLeft);
+
+      if (newAttemptsLeft <= 0) {
+        setShowTooManyAttempts(true);
+        setCodeError('');
+      } else {
+        setCodeError(
+          `Invalid or incorrect code. Try entering the code again. For security purposes, you have ${newAttemptsLeft} attempts left.`
+        );
+      }
+      return;
     }
+
+    onSuccess();
   };
 
-  // Verifies the entered OTP against the generated OTP
-  const handleOTPVerification = () => {
-    onVerify(
-      otpInput,
-      generatedOTP,
-      setOtpError,
-      setAttemptsLeft,
-      attemptsLeft,
-      setShowTooManyAttempts
-    );
+  // Handles resend code functionality
+  const handleResendCode = () => {
+    if (resendTimer > 0) return;
+
+    // Generate new code and start timer
+    generateCode();
+    startResendTimer();
+    setCode('');
+    setCodeError('');
   };
 
-  // Handles Get Help button click - closes OTP modal
+  // Handles get help functionality
   const handleGetHelp = () => {
+    // Close modal
     onClose();
   };
 
-  // Reset state when modal opens
+  // Handles outside click to close modal
+  const handleOutsideClick = (e: React.MouseEvent) => {
+    if (e.target === e.currentTarget) {
+      onClose();
+    }
+  };
+
+  // Timer countdown effect
+  useEffect(() => {
+    if (resendTimer > 0) {
+      const timer = setTimeout(() => {
+        setResendTimer(prev => prev - 1);
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [resendTimer]);
+
+  // Reset form when modal opens
   useEffect(() => {
     if (isOpen) {
-      setOtpInput('');
-      setOtpError('');
+      setCode('');
+      setCodeError('');
+      setResendTimer(0);
       setAttemptsLeft(5);
       setShowTooManyAttempts(false);
+      // Generate initial code and start timer
+      generateCode();
       startResendTimer();
     }
   }, [isOpen]);
@@ -90,16 +144,27 @@ export default function OTPVerificationModal({
 
   return (
     <div
-      className={`absolute inset-0 z-60 flex items-center justify-center ${containerClassName}`}
+      className="fixed inset-0 z-[150] flex items-center justify-center"
       style={{ backgroundColor: 'rgba(0, 0, 0, 0.65)' }}
+      onClick={handleOutsideClick}
     >
-      <div className="bg-white rounded-xl shadow-xl max-w-md w-full mx-4 pt-6">
+      <div className="bg-white rounded-xl shadow-xl max-w-md w-full mx-4 pt-6 relative">
+        {/* Close Button */}
+        <button
+          onClick={onClose}
+          className="absolute top-4 left-4 text-[#191919ff] hover:text-gray-700 transition-colors z-10"
+        >
+          <X className="h-6 w-6" />
+        </button>
+
         {/* Header */}
         <div className="text-center mt-5 mb-4 px-4">
-          <div className="w-16 h-16 mx-auto mb-3 rounded-full flex items-center justify-center text-red-600">
-            <VerificationIcon />
+          <div className="w-16 h-16 mx-auto mb-3 rounded-full flex items-center justify-center">
+            <div className="text-red-600">
+              <VerificationIcon />
+            </div>
           </div>
-          <h2 className="text-2xl font-bold text-[#191919ff] mb-2">Phone Number Verification</h2>
+          <h2 className="text-2xl font-bold text-[#191919ff] mb-2">2-Step Verification</h2>
           {!showTooManyAttempts && (
             <p className="text-[#191919ff] text-[15px] font-medium">
               For your security, we want to make sure it's really you.
@@ -109,22 +174,19 @@ export default function OTPVerificationModal({
 
         {!showTooManyAttempts ? (
           <>
-            {/* OTP Input */}
-            <div className="mb-4 px-4 mt-4">
+            {/* Code Input */}
+            <div className="mb-4 px-4 mt-8">
               <label className="block text-[15px] font-bold text-[#191919ff] mb-2">
                 Enter 6-digit code
               </label>
               <Input
                 type="text"
                 maxLength={6}
-                value={otpInput}
-                onChange={e => {
-                  setOtpInput(e.target.value.replace(/\D/g, ''));
-                  setOtpError(''); // Clear error when user types
-                }}
+                value={code}
+                onChange={handleCodeChange}
                 className={`w-full border-2 focus-visible:ring-0 focus-visible:ring-offset-0 border-transparent rounded-lg 
                  focus-visible:border-[#191919ff] text-lg font-medium tracking-widest h-12 px-3 ${
-                   otpError ? 'border-[#b71000ff] bg-[#fef0ed]' : 'bg-[#f7f7f7]'
+                   codeError ? 'border-[#b71000ff] bg-[#fef0ed]' : 'bg-[#f7f7f7]'
                  }`}
               />
             </div>
@@ -132,12 +194,12 @@ export default function OTPVerificationModal({
             {/* Phone Number Info */}
             <div className="mb-6 px-4">
               <p className="text-[#191919ff] text-[15px] font-medium">
-                We sent a code to ({countryCode}) {phoneNumber}
+                We sent a code to {phoneNumber}
               </p>
             </div>
 
-            {/* OTP Error Message */}
-            {otpError && (
+            {/* Code Error Message */}
+            {codeError && (
               <div className="mb-6 px-4">
                 <div className="p-3 rounded-xl" style={{ backgroundColor: '#fef6d4' }}>
                   <div className="flex">
@@ -151,11 +213,7 @@ export default function OTPVerificationModal({
                       </svg>
                     </div>
                     <div>
-                      <p className="text-[15px] font-medium text-[#191919ff]">{otpError}</p>
-                      <p className="text-[15px] font-medium text-[#191919ff]">
-                        Try entering the code again. For security purposes, you have {attemptsLeft}{' '}
-                        attempts left.
-                      </p>
+                      <p className="text-[15px] font-medium text-[#191919ff]">{codeError}</p>
                     </div>
                   </div>
                 </div>
@@ -165,7 +223,7 @@ export default function OTPVerificationModal({
             {/* Resend and Help Links */}
             <div className="mb-[70px] flex items-center space-x-3 text-sm px-4">
               <button
-                onClick={handleResendOTP}
+                onClick={handleResendCode}
                 disabled={resendTimer > 0}
                 className={`underline font-semibold text-sm ${
                   resendTimer > 0
@@ -180,40 +238,23 @@ export default function OTPVerificationModal({
                 style={{ backgroundColor: '#191919ff', width: '3px', height: '3px' }}
               ></div>
               <button
-                onClick={() => {}}
-                className="underline font-semibold text-sm text-[#191919ff] hover:text-gray-700"
-              >
-                Receive a code via call
-              </button>
-              <div
-                className="rounded-full"
-                style={{ backgroundColor: '#191919ff', width: '3px', height: '3px' }}
-              ></div>
-              <button
-                onClick={() => {}}
+                onClick={handleGetHelp}
                 className="underline font-semibold text-sm text-[#191919ff] hover:text-gray-700"
               >
                 Get Help
               </button>
             </div>
 
-            {/* Action Buttons */}
-            <div className="flex space-x-3 border-t border-gray-200 p-4">
+            {/* Submit Button */}
+            <div className="border-t border-gray-200 p-4">
               <button
-                onClick={onClose}
-                className="flex-1 py-3 px-4 text-[#242424ff] hover:bg-gray-50 transition-colors text-[18px] font-bold"
-                style={{ backgroundColor: '#f1f1f1ff', borderRadius: '28px' }}
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleOTPVerification}
-                className={`flex-1 py-3 px-4 hover:bg-gray-50 transition-colors text-[18px] font-bold ${
-                  otpInput.trim() !== ''
+                onClick={handleSubmit}
+                className={`w-full py-2 px-4 hover:bg-gray-50 transition-colors text-[18px] font-bold ${
+                  code.trim() !== ''
                     ? 'bg-red-600 hover:bg-red-700 text-white'
                     : 'bg-gray-100 text-gray-400 cursor-not-allowed'
                 }`}
-                disabled={otpInput.trim() === ''}
+                disabled={code.trim() === ''}
                 style={{ borderRadius: '28px' }}
               >
                 Submit
@@ -225,8 +266,8 @@ export default function OTPVerificationModal({
             {/* Too Many Attempts Message */}
             <div className="mb-8 px-4 text-center">
               <p className="text-[#191919ff] text-[15px] font-medium">
-                Too many invalid attempts have been made. Please wait 30 minutes and try again or
-                use a new number.
+                Too many attempts have been made and parts of your DashDoor account are now locked.
+                Please wait 30 minutes before trying to get access again, or contact support.
               </p>
             </div>
 

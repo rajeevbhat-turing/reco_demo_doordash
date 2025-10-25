@@ -7,25 +7,15 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useUserStore } from '@/store/user-store';
 import { isValidEmail } from '@/lib/utils/helperFunctions';
-import { User } from '@/lib/types/user-types';
-
 interface SignUpProps {
-  onSuccess: () => void;
   onShowOTP: () => void;
-  onSetLastVerifiedUser: (user: User) => void;
   selectedCountry: any;
-  setSelectedCountry: (country: any) => void;
-  showCountryDropdown: boolean;
   setShowCountryDropdown: (show: boolean) => void;
 }
 
 export default function SignUp({
-  onSuccess,
   onShowOTP,
-  onSetLastVerifiedUser,
   selectedCountry,
-  setSelectedCountry,
-  showCountryDropdown,
   setShowCountryDropdown,
 }: SignUpProps) {
   const users = useUserStore(state => state.users);
@@ -322,7 +312,7 @@ export default function SignUp({
 
       {/* Legal Text */}
       <p className="text-sm font-medium text-[#606060ff] mt-8 mb-4">
-        By tapping "Sign Up" or "Continue with...," you agree to DoorDash's{' '}
+        By tapping "Sign Up" or "Continue with...," you agree to DashDoor's{' '}
         <a href="" className="text-[#1700ee] underline">
           Terms
         </a>

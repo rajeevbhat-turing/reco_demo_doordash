@@ -385,7 +385,7 @@ export default function ForgotPassword({ onBackToSignIn, email }: ForgotPassword
                 Check {formData.email} for an email to reset your password.
               </p>
               <p className="text-[15px] font-medium text-[#191919ff] mb-4">
-                You'll only receive an email if there is an associated DoorDash account.
+                You'll only receive an email if there is an associated DashDoor account.
               </p>
               <p className="text-[15px] font-medium text-[#191919ff]">Didn't receive an email?</p>
             </div>

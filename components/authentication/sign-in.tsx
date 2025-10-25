@@ -534,7 +534,7 @@ export default function SignIn({ onSuccess, setMode }: SignInProps) {
 
       {/* Legal Text */}
       <p className="text-sm font-medium text-[#606060ff] mt-4 mb-4">
-        By tapping any "Continue" button, you agree to DoorDash's{' '}
+        By tapping any "Continue" button, you agree to DashDoor's{' '}
         <a href="" className="text-[#1700ee] underline">
           Terms
         </a>

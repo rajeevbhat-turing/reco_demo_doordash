@@ -10,4 +10,5 @@ export interface User {
     code: string;
     name: string;
   };
+  userCountry: string;
 }

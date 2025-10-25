@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { MapPin, ChevronDown, ShoppingCart } from 'lucide-react';
 import { useCartStore } from '@/store/cart-store';
 import { useUserStore } from '@/store/user-store';
@@ -11,17 +12,16 @@ import AuthenticationModal from './modals/authentication-modal';
 import { DashDoorLogoMark, DashDoorWordMark } from './common/Icons';
 
 export default function Header() {
+  const pathname = usePathname();
   const getTotalItems = useCartStore(state => state.getTotalItems);
   const isAuthenticated = useUserStore(state => state.isAuthenticated);
   const [cartItemCount, setCartItemCount] = useState(0);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [authModalMode, setAuthModalMode] = useState<'signin' | 'signup' | null>(null);
-  const [isHydrated, setIsHydrated] = useState(false);
+  const [authState, setAuthState] = useState(false);
 
-  // Handle hydration
-  useEffect(() => {
-    setIsHydrated(true);
-  }, []);
+  // Check if current path is in account flow
+  const isAccountFlow = pathname.startsWith('/consumer') || pathname.startsWith('/password-reset');
 
   // Update cart count whenever the cart changes
   useEffect(() => {
@@ -37,6 +37,21 @@ export default function Header() {
       unsubscribeFromStore();
     };
   }, [getTotalItems]);
+
+  // Update auth state whenever authentication changes
+  useEffect(() => {
+    // Initial auth state
+    setAuthState(isAuthenticated());
+
+    // Subscribe to user store changes
+    const unsubscribeFromUserStore = useUserStore.subscribe(state => {
+      setAuthState(state.isAuthenticated());
+    });
+
+    return () => {
+      unsubscribeFromUserStore();
+    };
+  }, [isAuthenticated]);
 
   const toggleCart = () => {
     setIsCartOpen(!isCartOpen);
@@ -72,13 +87,15 @@ export default function Header() {
               <ChevronDown className="h-4 w-4 text-gray-700" />
             </div>
 
-            {/* Delivery/Pickup */}
-            <div className="flex items-center space-x-2 mr-3">
-              <button className="bg-gray-900 text-white px-4 h-8 rounded-full text-sm font-medium">
-                Delivery
-              </button>
-              {/* <button className="text-gray-900 px-4 bg-[#f1f1f1] py-2 rounded-full text-sm font-medium">Pickup</button> */}
-            </div>
+            {/* Delivery/Pickup - Hide in account flow */}
+            {!isAccountFlow && (
+              <div className="flex items-center space-x-2 mr-3">
+                <button className="bg-gray-900 text-white px-4 h-8 rounded-full text-sm font-medium">
+                  Delivery
+                </button>
+                {/* <button className="text-gray-900 px-4 bg-[#f1f1f1] py-2 rounded-full text-sm font-medium">Pickup</button> */}
+              </div>
+            )}
 
             {/* Cart */}
             <div className="ml-4">
@@ -92,7 +109,7 @@ export default function Header() {
             </div>
 
             {/* Sign In and Sign Up */}
-            {isHydrated && !isAuthenticated() && (
+            {!authState && (
               <div className="flex items-center space-x-2 ml-4">
                 <Button
                   onClick={() => setAuthModalMode('signin')}
@@ -114,13 +131,10 @@ export default function Header() {
 
       {/* Cart Sidebar */}
       <CartSidebar isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
-      
+
       {/* Authentication Modal */}
       {authModalMode && (
-        <AuthenticationModal 
-          onClose={() => setAuthModalMode(null)}
-          defaultMode={authModalMode}
-        />
+        <AuthenticationModal onClose={() => setAuthModalMode(null)} defaultMode={authModalMode} />
       )}
     </>
   );
