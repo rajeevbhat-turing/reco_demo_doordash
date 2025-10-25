@@ -34,7 +34,6 @@ export default function RetailStorePage({ onBackClick, storeData, productData, s
     showRating: false,
     showPricing: false,
     showDeliveryInfo: false,
-    categoryFilters: storeData.tags || [],
     cartConfig: {
       freeDeliveryThreshold: cartConfig.freeDeliveryThreshold,
       serviceFeePercentage: cartConfig.serviceFeePercentage,

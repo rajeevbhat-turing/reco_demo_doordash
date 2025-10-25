@@ -6,7 +6,7 @@ import GenericStorePage from "@/components/store/generic-store-page"
 import type { Store } from "@/constants/store"
 import type { PetStore, StoreConfig, ProductSection } from "@/types/store"
 import { cartConfig } from "@/data/cart-config"
-import { petProductData, petCategories } from "@/data/pet-data";
+import { petProductData } from "@/data/pet-data";
 
 interface PetStorePageProps {
   onBackClick: () => void
@@ -34,7 +34,6 @@ export default function PetStorePage({ onBackClick, storeData, productData = pet
     showRating: false,
     showPricing: false,
     showDeliveryInfo: true,
-    categoryFilters: petCategories.map(cat => cat.name),
     cartConfig: {
       freeDeliveryThreshold: cartConfig.freeDeliveryThreshold,
       serviceFeePercentage: cartConfig.serviceFeePercentage,

@@ -8,16 +8,10 @@ import CartSidebar from "@/components/cart-sidebar"
 import { useCartStore } from "@/store/cart-store"
 import { useAppStore } from "@/store/app-store"
 import {
-  getFilterOptions,
   getAllPetStores,
   getPetUiConfig,
   getFeaturedPetStores,
-  getFeaturedPetDealsStore,
-  getFeaturedPetDeals,
   getPetProductSections,
-  getEnrichedPetProducts,
-  getPetCategories,
-  filterProductsByCategory
 } from "@/app/pets/data/pet-response-mapper"
 import { allPetStores } from "@/data/pet-data"
 import { getDefaultRating } from "@/utils/rating-utils"
