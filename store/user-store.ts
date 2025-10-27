@@ -4,11 +4,22 @@ import { create } from "zustand";
 import { persist, devtools } from "zustand/middleware";
 import { User } from '@/lib/types/user-types';
 
+export interface PaymentMethod {
+  id: string;
+  type: string;
+  cardNumber: string;
+  lastFour: string;
+  cvc: string;
+  expiry: string;
+  zipCode: string;
+}
+
 interface UserStore {
   // State
   users: User[];
   currentUser: User | null;
   changePasswordPhoneVerified: boolean;
+  paymentMethods: PaymentMethod[];
 
   // Actions
   setCurrentUser: (user: User | null) => void;
@@ -19,6 +30,9 @@ interface UserStore {
   clearUsers: () => void;
   setChangePasswordPhoneVerified: (verified: boolean) => void;
   changePassword: (oldPassword: string, newPassword: string) => boolean;
+  addPaymentMethod: (method: Omit<PaymentMethod, 'id' | 'type' | 'lastFour'>) => PaymentMethod;
+  removePaymentMethod: (id: string) => void;
+  getPaymentMethods: () => PaymentMethod[];
 }
 
 export const useUserStore = create<UserStore>()(
@@ -42,6 +56,7 @@ export const useUserStore = create<UserStore>()(
         }],
         currentUser: null,
         changePasswordPhoneVerified: false,
+        paymentMethods: [],
 
         // Actions
         setCurrentUser: (user: User | null) => {
@@ -108,6 +123,31 @@ export const useUserStore = create<UserStore>()(
           
           return true;
         },
+
+        addPaymentMethod: (method) => {
+          const id = Math.random().toString(36).substring(2, 15);
+          const lastFour = method.cardNumber.replace(/\s/g, '').slice(-4);
+          const newMethod: PaymentMethod = {
+            ...method,
+            id,
+            type: "MasterCard",
+            lastFour,
+          };
+          set((state) => ({
+            paymentMethods: [...state.paymentMethods, newMethod],
+          }));
+          return newMethod;
+        },
+
+        removePaymentMethod: (id) => {
+          set((state) => ({
+            paymentMethods: state.paymentMethods.filter((method) => method.id !== id),
+          }));
+        },
+
+        getPaymentMethods: () => {
+          return get().paymentMethods;
+        },
       }),
       {
         name: "user-store",
@@ -115,6 +155,7 @@ export const useUserStore = create<UserStore>()(
           users: state.users,
           currentUser: state.currentUser,
           changePasswordPhoneVerified: state.changePasswordPhoneVerified,
+          paymentMethods: state.paymentMethods,
         }),
       }
     ),

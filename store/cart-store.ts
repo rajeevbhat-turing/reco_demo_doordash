@@ -25,6 +25,7 @@ export interface Cart {
   storeName: string // Vendor name
   storeCategory: CartCategory // Type of store
   items: CartItem[] // Items in this cart
+  selectedCard?: any // Selected payment method for this cart
 }
 
 // Category-specific configurations
@@ -173,6 +174,7 @@ interface CartStore {
   updateQuantity: (id: string | number, quantity: number) => void
   clearCart: (storeId?: string, storeCategory?: CartCategory) => void
   clearAllCarts: () => void
+  setSelectedCard: (storeId: string, storeCategory: CartCategory, card: any) => void
 
   // Group order methods
   startGroupOrder: () => string
@@ -555,6 +557,18 @@ export const useCartStore = create<CartStore>()(
             carts: [],
             totalCartValue: 0,
           })
+        },
+
+        // Set selected card for a cart
+        setSelectedCard: (storeId, storeCategory, card) => {
+          const { carts } = get()
+          const updatedCarts = carts.map((cart) => {
+            if (cart.storeId === storeId && cart.storeCategory === storeCategory) {
+              return { ...cart, selectedCard: card }
+            }
+            return cart
+          })
+          set({ carts: updatedCarts })
         },
 
         // Start a group order and return the group order ID

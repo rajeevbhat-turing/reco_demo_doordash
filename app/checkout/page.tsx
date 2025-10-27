@@ -1,12 +1,14 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import Image from "next/image"
-import { ChevronLeft, ChevronRight, X } from "lucide-react"
+import { ChevronLeft, ChevronRight, X, Trash2 } from "lucide-react"
 import { useCartStore, type CartCategory } from "@/store/cart-store"
 import { useVerifierStore } from "@/store/verifier-store"
+import { useUserStore } from "@/store/user-store"
 import OrderConfirmationModal from "@/components/modals/order-confirmation-modal"
+import AddCardModal from "@/components/modals/add-card-modal"
 import { getRestaurantById } from "@/constants/restaurants"
 import { stores } from "@/data/store-data"
 import { stores as retailStores } from "@/constants/store"
@@ -21,8 +23,9 @@ export default function CheckoutPage() {
   const categoryParam = searchParams.get('category') as CartCategory | null
   const storeIdParam = searchParams.get('storeId')
   
-  const { findCart, getSubtotal, getServiceFee, getDeliveryFee, getTotal, getTotalItems } = useCartStore()
+  const { findCart, getSubtotal, getServiceFee, getDeliveryFee, getTotal, getTotalItems, setSelectedCard } = useCartStore()
   const { recordCheckoutNavigation, recordTipSelection, recordDeliveryTimeSelection } = useVerifierStore()
+  const { paymentMethods: savedPaymentMethods, addPaymentMethod, removePaymentMethod } = useUserStore()
   
   // Find the cart using query params
   const currentCart = categoryParam && storeIdParam ? findCart(storeIdParam, categoryParam) : null
@@ -49,6 +52,16 @@ export default function CheckoutPage() {
   
   // Dasher tip
   const [selectedTip, setSelectedTip] = useState(3.00)
+  
+  // Payment details
+  const [showExpandedPayment, setShowExpandedPayment] = useState(false)
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(savedPaymentMethods[0]?.id || "")
+  
+  // Shipping details edit state
+  const [showExpandedShipping, setShowExpandedShipping] = useState(true)
+  
+  // Add card modal state
+  const [showAddCardModal, setShowAddCardModal] = useState(false)
 
   // Fix hydration by ensuring client-side only rendering
   useEffect(() => {
@@ -56,6 +69,13 @@ export default function CheckoutPage() {
     // Record checkout navigation for verifiers
     recordCheckoutNavigation()
   }, [recordCheckoutNavigation])
+  
+  // Update selected payment method when payment methods change
+  useEffect(() => {
+    if (savedPaymentMethods.length > 0 && !selectedPaymentMethod) {
+      updateSelectedPaymentMethod(savedPaymentMethods[0].id)
+    }
+  }, [savedPaymentMethods, selectedPaymentMethod])
   
   // Redirect if cart not found
   useEffect(() => {
@@ -182,6 +202,56 @@ export default function CheckoutPage() {
     // Record tip selection for verifiers
     recordTipSelection(amount)
   }
+  
+  // Helper to update selected payment method and cart store
+  const updateSelectedPaymentMethod = (paymentMethodId: string) => {
+    const paymentMethod = savedPaymentMethods.find(m => m.id === paymentMethodId)
+    setSelectedPaymentMethod(paymentMethodId)
+    if (paymentMethod && currentStoreId && currentCategory) {
+      setSelectedCard(currentStoreId, currentCategory, paymentMethod)
+    }
+  }
+  
+  // Handle section expansion with mutual exclusivity
+  const handleShippingEdit = () => {
+    setShowExpandedShipping(true)
+    setShowExpandedPayment(false)
+  }
+  
+  const handlePaymentEdit = () => {
+    setShowExpandedPayment(true)
+    setShowExpandedShipping(false)
+  }
+  
+  // Handle add card
+  const handleAddCard = (cardData: {
+    cardNumber: string
+    cvc: string
+    expiration: string
+    zipCode: string
+  }) => {
+    const newCard = addPaymentMethod({
+      cardNumber: cardData.cardNumber,
+      cvc: cardData.cvc,
+      expiry: cardData.expiration,
+      zipCode: cardData.zipCode,
+    })
+    updateSelectedPaymentMethod(newCard.id)
+    setShowAddCardModal(false)
+  }
+  
+  // Handle delete payment method
+  const handleDeletePaymentMethod = (e: React.MouseEvent, methodId: string) => {
+    e.stopPropagation() // Prevent card selection when clicking trash
+    removePaymentMethod(methodId)
+    // If deleted card was selected, select the first remaining card
+    if (selectedPaymentMethod === methodId && savedPaymentMethods.length > 1) {
+      const remainingMethods = savedPaymentMethods.filter(m => m.id !== methodId)
+      if (remainingMethods.length > 0) {
+        updateSelectedPaymentMethod(remainingMethods[0].id)
+      }
+    }
+  }
 
   // Calculate total with extra delivery fee and tip
   const getTotalWithExtras = () => {
@@ -214,6 +284,9 @@ export default function CheckoutPage() {
   ]
 
   const tipOptions = [1.00, 3.00, 5.00, 6.00]
+  
+  // Get the selected payment method object
+  const selectedPaymentMethodObj = savedPaymentMethods.find(m => m.id === selectedPaymentMethod)
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -241,97 +314,228 @@ export default function CheckoutPage() {
             </div>
 
             {/* Shipping Details */}
-            <div className="bg-white rounded-lg p-6 shadow-sm">
-              <h2 className="text-lg font-semibold mb-6">2. Shipping details</h2>
-              
-              {/* Delivery/Pickup Toggle */}
-              <div className="flex bg-gray-100 rounded-lg p-1 mb-6 max-w-xs">
-                <button className="flex-1 bg-black text-white rounded-md py-2 px-4 text-sm font-medium">
-                  Delivery
-                </button>
-              </div>
-
-              {/* Delivery Time */}
-              <div className="mb-6">
-                <div className="flex items-center mb-4">
-                  <div className="w-4 h-4 border-2 border-gray-300 rounded-full mr-3"></div>
-                  <span className="font-medium">Delivery Time</span>
-                  <span className="ml-auto text-gray-600">{deliveryTime}</span>
+            <div className="bg-white rounded-lg shadow-sm border border-gray-300">
+              {!showExpandedShipping ? (
+                // Collapsed View
+                <div className="p-6">
+                  <div className="flex items-center justify-between">
+                    <h2 className="text-lg font-semibold">2. Shipping details</h2>
+                    <div className="flex items-center gap-4">
+                      <span className="text-gray-600 text-sm">47 West 13th Street, New ...</span>
+                      <button 
+                        onClick={handleShippingEdit}
+                        className="text-blue-600 font-medium text-lg"
+                      >
+                        Edit
+                      </button>
+                    </div>
+                  </div>
                 </div>
+              ) : (
+                // Expanded View
+                <div className="p-6">
+                  <h2 className="text-lg font-semibold mb-6">2. Shipping details</h2>
+                  
+                  {/* Delivery/Pickup Toggle */}
+                  <div className="flex bg-gray-100 rounded-lg p-1 mb-6 max-w-xs">
+                    <button className="flex-1 bg-black text-white rounded-md py-2 px-4 text-sm font-medium">
+                      Delivery
+                    </button>
+                  </div>
 
-                {/* Delivery Options */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  {deliveryOptions.map((option) => (
-                    <div
-                      key={option.id}
-                      className={`border rounded-lg p-4 cursor-pointer ${
-                        selectedDeliveryOption === option.id 
-                          ? "border-black bg-gray-50" 
-                          : "border-gray-200"
-                      }`}
-                      onClick={() => handleDeliveryOptionChange(option.id)}
-                    >
-                      <div className="flex items-center justify-between mb-2">
-                        <h3 className="font-medium">{option.name}</h3>
-                        <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${
-                          selectedDeliveryOption === option.id 
-                            ? "border-black bg-black" 
-                            : "border-gray-300"
-                        }`}>
-                          {selectedDeliveryOption === option.id && (
-                            <div className="w-2 h-2 bg-white rounded-full"></div>
+                  {/* Delivery Time */}
+                  <div className="mb-6">
+                    <div className="flex items-center mb-4">
+                      <div className="w-4 h-4 border-2 border-gray-300 rounded-full mr-3"></div>
+                      <span className="font-medium">Delivery Time</span>
+                      <span className="ml-auto text-gray-600">{deliveryTime}</span>
+                    </div>
+
+                    {/* Delivery Options */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      {deliveryOptions.map((option) => (
+                        <div
+                          key={option.id}
+                          className={`border rounded-lg p-4 cursor-pointer ${
+                            selectedDeliveryOption === option.id 
+                              ? "border-black bg-gray-50" 
+                              : "border-gray-200"
+                          }`}
+                          onClick={() => handleDeliveryOptionChange(option.id)}
+                        >
+                          <div className="flex items-center justify-between mb-2">
+                            <h3 className="font-medium">{option.name}</h3>
+                            <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${
+                              selectedDeliveryOption === option.id 
+                                ? "border-black bg-black" 
+                                : "border-gray-300"
+                            }`}>
+                              {selectedDeliveryOption === option.id && (
+                                <div className="w-2 h-2 bg-white rounded-full"></div>
+                              )}
+                            </div>
+                          </div>
+                          <p className="text-sm text-gray-600 mb-1">{option.time}</p>
+                          {option.description && (
+                            <p className="text-sm text-gray-500">{option.description}</p>
+                          )}
+                          {option.price > 0 && (
+                            <p className="text-sm font-medium">+${option.price.toFixed(2)}</p>
                           )}
                         </div>
-                      </div>
-                      <p className="text-sm text-gray-600 mb-1">{option.time}</p>
-                      {option.description && (
-                        <p className="text-sm text-gray-500">{option.description}</p>
-                      )}
-                      {option.price > 0 && (
-                        <p className="text-sm font-medium">+${option.price.toFixed(2)}</p>
-                      )}
+                      ))}
                     </div>
-                  ))}
-                </div>
-              </div>
+                  </div>
 
-              {/* Address */}
-              <div className="space-y-4">
-                <div className="p-4 border border-gray-200 rounded-lg">
-                  <div>
-                    <p className="font-medium">548 Market Street</p>
-                    <p className="text-sm text-gray-600">San Francisco, CA 94104</p>
+                  {/* Address */}
+                  <div className="space-y-4">
+                    <div className="p-4 border border-gray-200 rounded-lg">
+                      <div>
+                        <p className="font-medium">548 Market Street</p>
+                        <p className="text-sm text-gray-600">San Francisco, CA 94104</p>
+                      </div>
+                    </div>
+
+                    <div className="p-4 border border-gray-200 rounded-lg">
+                      <div>
+                        <p className="font-medium">Leave it at my door</p>
+                        <p className="text-sm text-gray-600">Please ring the bell and drop off at the door, thank you. Its around the corner on the ground floor</p>
+                      </div>
+                    </div>
+
+                    <div className="p-4 border border-gray-200 rounded-lg">
+                      <div>
+                        <p className="font-medium">(012) 345-678</p>
+                      </div>
+                    </div>
                   </div>
                 </div>
-
-                <div className="p-4 border border-gray-200 rounded-lg">
-                  <div>
-                    <p className="font-medium">Leave it at my door</p>
-                    <p className="text-sm text-gray-600">Please ring the bell and drop off at the door, thank you. Its around the corner on the ground floor</p>
-                  </div>
-                </div>
-
-                <div className="p-4 border border-gray-200 rounded-lg">
-                  <div>
-                    <p className="font-medium">(012) 345-678</p>
-                  </div>
-                </div>
-              </div>
+              )}
             </div>
 
             {/* Payment Details */}
-            <div className="bg-white rounded-lg p-6 shadow-sm">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-semibold">3. Payment details</h2>
-                <div className="flex items-center">
-                  <div className="w-8 h-5 bg-blue-600 rounded mr-2"></div>
-                  <span className="text-sm">...5097</span>
+            <div className="bg-white rounded-lg shadow-sm border border-gray-300">
+              {!showExpandedPayment && savedPaymentMethods.length > 0 ? (
+                // Collapsed View
+                <div className="p-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <h2 className="text-lg font-semibold">3. Payment details</h2>
+                    {selectedPaymentMethodObj && (
+                      <div className="flex items-center">
+                        <div className="w-10 h-7 bg-gradient-to-r from-red-500 to-orange-500 rounded mr-2 flex items-center justify-center">
+                          <div className="flex space-x-0.5">
+                            <div className="w-2 h-2 bg-white rounded-full"></div>
+                            <div className="w-2 h-2 bg-white rounded-full"></div>
+                          </div>
+                        </div>
+                        <span className="text-sm">...{selectedPaymentMethodObj.lastFour}</span>
+                        <button 
+                          onClick={handlePaymentEdit}
+                          className="text-blue-600 ml-6 font-medium text-bold text-lg"
+                        >
+                          Edit
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                  {selectedPaymentMethodObj && (
+                    <div className="flex items-center pl-4">
+                      <div className="flex items-center">
+                        <div className="w-10 h-7 bg-gradient-to-r from-red-500 to-orange-500 rounded mr-2 flex items-center justify-center">
+                          <div className="flex space-x-0.5">
+                            <div className="w-2 h-2 bg-white rounded-full"></div>
+                            <div className="w-2 h-2 bg-white rounded-full"></div>
+                          </div>
+                        </div>
+                        <span className="text-sm">{selectedPaymentMethodObj.type}...{selectedPaymentMethodObj.lastFour}</span>
+                      </div>
+                    </div>
+                  )}
                 </div>
-              </div>
-              <div className="flex items-center">
-                <div className="w-8 h-5 bg-blue-600 rounded mr-2"></div>
-                <span className="text-sm">Visa...5097</span>
-              </div>
+              ) : (
+                // Expanded View
+                <div className="py-6">
+                  <h2 className="text-lg font-semibold mb-6 px-6">3. Payment details</h2>
+                  
+                  <div className="ml-4 px-6">
+                    {/* Saved Payment Methods - only shown if they exist */}
+                    {savedPaymentMethods.length > 0 && (
+                      <div className="mb-6">
+                        <h3 className="text-sm font-medium text-gray-900 mb-3">Saved Payment Methods</h3>
+                        <div className="space-y-3">
+                          {savedPaymentMethods.map((method) => (
+                            <div 
+                              key={method.id}
+                              className="flex items-center justify-between py-4 px-3 cursor-pointer hover:bg-gray-100"
+                              style={{ marginInline: '-12px' }}
+                              onClick={() => updateSelectedPaymentMethod(method.id)}
+                            >
+                              <div className="flex items-center">
+                                <div className="w-10 h-7 bg-gradient-to-r from-red-500 to-orange-500 rounded mr-3 flex items-center justify-center">
+                                  <div className="flex space-x-0.5">
+                                    <div className="w-2 h-2 bg-white rounded-full"></div>
+                                    <div className="w-2 h-2 bg-white rounded-full"></div>
+                                  </div>
+                                </div>
+                              <div>
+                                <p className="font-medium text-sm">{method.type}....{method.lastFour}</p>
+                                <p className="text-xs text-gray-600">Exp. {method.expiry}</p>
+                              </div>
+                            </div>
+                            {selectedPaymentMethod === method.id ? (
+                              <svg className="w-6 h-6 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                              </svg>
+                            ) : (
+                              <button
+                                onClick={(e) => handleDeletePaymentMethod(e, method.id)}
+                                className="p-2 hover:bg-gray-200 rounded-full transition-colors"
+                                aria-label="Delete payment method"
+                              >
+                                <Trash2 className="w-5 h-5 text-gray-600" />
+                              </button>
+                            )}
+                          </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {savedPaymentMethods.length > 0 && (
+                    <div 
+                      className="w-full h-2 bg-gray-200 my-4 border-b border-t border-gray-200 " 
+                      style={{ marginRight: '-10000px' }} 
+                    />
+                  )}
+
+                  {/* Add New Payment Method */}
+                  <div className="ml-4 px-6">
+                    <h3 className="text-sm font-medium text-gray-900 mb-3">Add New Payment Method</h3>
+                    <div className="space-y-3">
+                      {/* Credit/Debit Card Option */}
+                        <div 
+                          className="flex items-center justify-between py-4 px-3 cursor-pointer hover:bg-gray-100"
+                          style={{ marginInline: '-12px' }}
+                          onClick={() => setShowAddCardModal(true)}
+                        >
+                          <div className="flex items-center">
+                            <div className="w-10 h-7 bg-gray-800 rounded mr-3 flex items-center justify-center">
+                              <svg className="w-6 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <rect x="2" y="6" width="20" height="12" rx="2" strokeWidth="2"/>
+                                <line x1="2" y1="10" x2="22" y2="10" strokeWidth="2"/>
+                              </svg>
+                            </div>
+                            <span className="font-medium text-sm">Credit/Debit Card</span>
+                          </div>
+                          <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+                          </svg>
+                        </div>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Place Order Button */}
@@ -488,6 +692,13 @@ export default function CheckoutPage() {
         storeName={getStoreName()}
         storeId={currentStoreId || "unknown"}
         category={currentCategory || "grocery"}
+      />
+
+      {/* Add Card Modal */}
+      <AddCardModal
+        isOpen={showAddCardModal}
+        onClose={() => setShowAddCardModal(false)}
+        onAddCard={handleAddCard}
       />
     </div>
   )
