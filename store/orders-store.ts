@@ -60,7 +60,6 @@ export const useOrdersStore = create<OrdersStore>()(
       }),
       {
         name: "orders-store",
-        enabled: true,
       }
     ),
     {

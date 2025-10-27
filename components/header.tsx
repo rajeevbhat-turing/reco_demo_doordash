@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useState, useSyncExternalStore } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { MapPin, ChevronDown, ShoppingCart } from 'lucide-react';
@@ -13,45 +13,24 @@ import { DashDoorLogoMark, DashDoorWordMark } from './common/Icons';
 
 export default function Header() {
   const pathname = usePathname();
-  const getTotalItems = useCartStore(state => state.getTotalItems);
-  const isAuthenticated = useUserStore(state => state.isAuthenticated());
-  const [cartItemCount, setCartItemCount] = useState(0);
+  
+  const cartItemCount = useSyncExternalStore(
+    useCartStore.subscribe,
+    () => useCartStore.getState().getTotalItems(),
+    () => 0 // fallback for SSR
+  );
+  
+  const isAuthenticated = useSyncExternalStore(
+    useUserStore.subscribe,
+    () => useUserStore.getState().isAuthenticated(),
+    () => false // fallback for SSR
+  );
+  
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [authModalMode, setAuthModalMode] = useState<'signin' | 'signup' | null>(null);
-  const [authState, setAuthState] = useState(false);
 
   // Check if current path is in account flow
   const isAccountFlow = pathname.startsWith('/consumer') || pathname.startsWith('/password-reset');
-
-  // Update cart count whenever the cart changes
-  useEffect(() => {
-    // Initial cart count
-    setCartItemCount(getTotalItems());
-
-    // Subscribe to cart store changes
-    const unsubscribeFromStore = useCartStore.subscribe(state => {
-      setCartItemCount(state.getTotalItems());
-    });
-
-    return () => {
-      unsubscribeFromStore();
-    };
-  }, [getTotalItems]);
-
-  // Update auth state whenever authentication changes
-  useEffect(() => {
-    // Initial auth state
-    setAuthState(isAuthenticated);
-
-    // Subscribe to user store changes
-    const unsubscribeFromUserStore = useUserStore.subscribe(state => {
-      setAuthState(state.isAuthenticated());
-    });
-
-    return () => {
-      unsubscribeFromUserStore();
-    };
-  }, [isAuthenticated]);
 
   const toggleCart = () => {
     setIsCartOpen(!isCartOpen);
@@ -109,7 +88,7 @@ export default function Header() {
             </div>
 
             {/* Sign In and Sign Up */}
-            {!authState && (
+            {!isAuthenticated && (
               <div className="flex items-center space-x-2 ml-4">
                 <Button
                   onClick={() => setAuthModalMode('signin')}

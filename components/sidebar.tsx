@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useState, useEffect } from 'react';
+import { useState, useSyncExternalStore } from 'react';
 import {
   Home,
   ShoppingBag,
@@ -18,26 +18,16 @@ import { useUserStore } from '@/store/user-store';
 
 export default function Sidebar() {
   const pathname = usePathname();
-  const isAuthenticated = useUserStore(state => state.isAuthenticated());
+  
+  const isAuthenticated = useSyncExternalStore(
+    useUserStore.subscribe,
+    () => useUserStore.getState().isAuthenticated(),
+    () => false // fallback for SSR
+  );
+  
   const [authModalMode, setAuthModalMode] = useState<'signin' | 'signup' | null>(null);
   const [showAccountPopup, setShowAccountPopup] = useState(false);
   const [accountButtonRef, setAccountButtonRef] = useState<HTMLDivElement | null>(null);
-  const [authState, setAuthState] = useState(false);
-
-  // Update auth state whenever authentication changes
-  useEffect(() => {
-    // Initial auth state
-    setAuthState(isAuthenticated);
-
-    // Subscribe to user store changes
-    const unsubscribeFromUserStore = useUserStore.subscribe(state => {
-      setAuthState(state.isAuthenticated());
-    });
-
-    return () => {
-      unsubscribeFromUserStore();
-    };
-  }, [isAuthenticated]);
 
   const isActive = (path: string) => {
     if (path === '/' && pathname === '/') return true;
@@ -128,7 +118,7 @@ export default function Sidebar() {
           <div className="border-t border-gray-200 mt-4 pt-4">
             <ul className="space-y-1">
               {/* Orders menu - only show if user is logged in */}
-              {authState && (
+              {isAuthenticated && (
                 <li>
                   <Link
                     href="/orders"
@@ -146,7 +136,7 @@ export default function Sidebar() {
 
               {/* Account menu - show if user is logged in, otherwise show Sign up/Login */}
               <li>
-                {authState ? (
+                {isAuthenticated ? (
                   <div
                     ref={setAccountButtonRef}
                     onClick={handleAccountClick}
