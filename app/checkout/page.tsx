@@ -10,6 +10,7 @@ import { useUserStore } from "@/store/user-store"
 import OrderConfirmationModal from "@/components/modals/order-confirmation-modal"
 import AddCardModal from "@/components/modals/add-card-modal"
 import EditPhoneModal from "@/components/modals/edit-phone-modal"
+import AddressesModal from "@/components/modals/addresses-modal"
 import { getRestaurantById } from "@/constants/restaurants"
 import { stores } from "@/data/store-data"
 import { stores as retailStores } from "@/constants/store"
@@ -73,6 +74,10 @@ export default function CheckoutPage() {
   
   // Edit phone modal state
   const [showEditPhoneModal, setShowEditPhoneModal] = useState(false)
+  
+  // Addresses modal state
+  const [showAddressesModal, setShowAddressesModal] = useState(false)
+  const [selectedAddressId, setSelectedAddressId] = useState(addresses[0]?.id || "")
 
   // Fix hydration by ensuring client-side only rendering
   useEffect(() => {
@@ -268,6 +273,12 @@ export default function CheckoutPage() {
   const handleSavePhoneNumber = (phoneData: { countryCode: string; number: string }) => {
     setPhoneNumber(phoneData)
   }
+  
+  // Handle address selection
+  const handleSelectAddress = (addressId: string) => {
+    setSelectedAddressId(addressId)
+    setShowAddressesModal(false)
+  }
 
   // Calculate total with extra delivery fee and tip
   const getTotalWithExtras = () => {
@@ -303,6 +314,9 @@ export default function CheckoutPage() {
   
   // Get the selected payment method object
   const selectedPaymentMethodObj = savedPaymentMethods.find(m => m.id === selectedPaymentMethod)
+  
+  // Get the selected address object
+  const selectedAddress = addresses.find(a => a.id === selectedAddressId)
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -351,13 +365,6 @@ export default function CheckoutPage() {
                 // Expanded View
                 <div className="p-6">
               <h2 className="text-lg font-semibold mb-6">2. Shipping details</h2>
-              
-              {/* Delivery/Pickup Toggle */}
-              <div className="flex bg-gray-100 rounded-lg p-1 mb-6 max-w-xs">
-                <button className="flex-1 bg-black text-white rounded-md py-2 px-4 text-sm font-medium">
-                  Delivery
-                </button>
-              </div>
 
               {/* Delivery Time */}
               <div className="mb-6">
@@ -403,25 +410,25 @@ export default function CheckoutPage() {
                 </div>
               </div>
 
-              {/* Address */}
+                  {/* Address */}
                   <div>
-                    {addresses.map((address, index) => (
+                    {selectedAddress && (
                       <div 
-                        key={address.id} 
                         className="flex items-center justify-between py-4 px-3 cursor-pointer hover:bg-gray-100 border-b border-gray-200"
+                        onClick={() => setShowAddressesModal(true)}
                       >
                         <div className="flex items-center flex-1">
                           <Home className="w-5 h-5 text-gray-600 mr-3 flex-shrink-0" />
-                  <div>
-                            <p className="font-medium text-sm">{address.street}</p>
-                            <p className="text-xs text-gray-600">{address.city}, {address.state} {address.zipCode}</p>
-                  </div>
-                </div>
+                          <div>
+                            <p className="font-medium text-sm">{selectedAddress.street}</p>
+                            <p className="text-xs text-gray-600">{selectedAddress.city}, {selectedAddress.state} {selectedAddress.zipCode}</p>
+                          </div>
+                        </div>
                         <svg className="w-5 h-5 text-gray-400 flex-shrink-0 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
                         </svg>
                       </div>
-                    ))}
+                    )}
 
                     <div className="flex items-center justify-between py-4 px-3 cursor-pointer hover:bg-gray-100 border-b border-gray-200">
                       <div className="flex items-center flex-1">
@@ -750,6 +757,15 @@ export default function CheckoutPage() {
         onSave={handleSavePhoneNumber}
         initialCountryCode={phoneNumber.countryCode}
         initialNumber={phoneNumber.number}
+      />
+
+      {/* Addresses Modal */}
+      <AddressesModal
+        isOpen={showAddressesModal}
+        onClose={() => setShowAddressesModal(false)}
+        addresses={addresses}
+        selectedAddressId={selectedAddressId}
+        onSelectAddress={handleSelectAddress}
       />
     </div>
   )

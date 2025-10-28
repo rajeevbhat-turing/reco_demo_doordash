@@ -1,0 +1,117 @@
+"use client"
+
+import { useState } from "react"
+import { X, Search, Plus, Edit2 } from "lucide-react"
+import { Address } from "@/store/user-store"
+
+interface AddressesModalProps {
+  isOpen: boolean
+  onClose: () => void
+  addresses: Address[]
+  selectedAddressId?: string
+  onSelectAddress: (addressId: string) => void
+}
+
+export default function AddressesModal({ 
+  isOpen, 
+  onClose, 
+  addresses,
+  selectedAddressId,
+  onSelectAddress
+}: AddressesModalProps) {
+  const [searchQuery, setSearchQuery] = useState("")
+
+  if (!isOpen) return null
+
+  const filteredAddresses = addresses.filter(address => {
+    const fullAddress = `${address.street} ${address.city} ${address.state} ${address.zipCode}`.toLowerCase()
+    return fullAddress.includes(searchQuery.toLowerCase())
+  })
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+      <div className="relative bg-white rounded-2xl w-full max-w-md mx-4">
+        <div className="p-6 pb-0">
+          {/* Close button */}
+          <button 
+            onClick={onClose}
+            className="absolute top-5 left-5 p-1 hover:bg-gray-100 rounded-full transition-colors" 
+            aria-label="Close modal"
+          >
+            <X className="h-6 w-6 text-gray-700" />
+          </button>
+
+          {/* Title */}
+          <h2 className="text-2xl font-bold text-gray-900 mb-6 mt-6">
+            Addresses
+          </h2>
+
+          {/* Search Bar */}
+          <div className="relative mb-4">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Enter Your Address"
+              className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 bg-gray-50"
+            />
+          </div>
+
+          {/* Add Label Button */}
+          <button className="flex items-center text-gray-700 mb-4 hover:text-gray-900 transition-colors">
+            <Plus className="w-5 h-5 mr-2" />
+            <span className="font-medium">Add label</span>
+          </button>
+        </div>
+        {/* Address List */}
+        <div>
+          {filteredAddresses.map((address, index) => (
+            <div 
+              key={address.id}
+              className={`flex items-start p-4 hover:bg-gray-100 cursor-pointer transition-colors ${
+                index === filteredAddresses.length - 1 ? 'rounded-b-2xl' : ''
+              }`}
+              onClick={() => onSelectAddress(address.id)}
+            >
+              {/* Radio Button */}
+              <div className="flex items-center justify-center mt-1 mr-3 flex-shrink-0">
+                <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                  selectedAddressId === address.id 
+                    ? "border-red-500" 
+                    : "border-gray-300"
+                }`}>
+                  {selectedAddressId === address.id && (
+                    <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+                  )}
+                </div>
+              </div>
+
+              {/* Address Content */}
+              <div className="flex-1">
+                <p className="font-medium text-gray-900">{address.street}</p>
+                <p className="text-sm text-gray-600">{address.city}, {address.state} {address.zipCode}</p>
+              </div>
+
+              {/* Edit Icon */}
+              <button 
+                className="flex-shrink-0 p-2 hover:bg-gray-200 rounded-full transition-colors ml-2"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  // TODO: Add edit functionality later
+                }}
+              >
+                <Edit2 className="w-5 h-5 text-gray-600" />
+              </button>
+            </div>
+          ))}
+        </div>
+
+        {filteredAddresses.length === 0 && (
+          <p className="text-center text-gray-500 py-8">No addresses found</p>
+        )}
+      </div>
+    </div>
+  )
+}
+

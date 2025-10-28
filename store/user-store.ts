@@ -90,6 +90,13 @@ export const useUserStore = create<UserStore>()(
             city: "San Francisco",
             state: "CA",
             zipCode: "94104"
+          },
+          {
+            id: "address-2",
+            street: "47 West 13th Street",
+            city: "New York",
+            state: "NY",
+            zipCode: "10011"
           }
         ],
         phoneNumber: {

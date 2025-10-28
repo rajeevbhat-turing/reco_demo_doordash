@@ -61,7 +61,7 @@ export default function EditPhoneModal({
         </button>
 
         {/* Title */}
-        <h2 className="text-2xl font-bold text-gray-900 mb-6">
+        <h2 className="text-2xl font-bold text-gray-900 mb-6 mt-6">
           Edit phone number
         </h2>
 
