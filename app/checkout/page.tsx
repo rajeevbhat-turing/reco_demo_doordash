@@ -285,6 +285,13 @@ export default function CheckoutPage() {
     setShowAddressesModal(false)
   }
 
+  // Handle edit address from addresses modal
+  const handleEditAddress = (addressId: string) => {
+    setSelectedAddressId(addressId)
+    setShowAddressesModal(false)
+    setShowAddressDetailsModal(true)
+  }
+
   // Handle saving address details
   const handleSaveAddressDetails = (addressData: any) => {
     if (selectedAddress) {
@@ -788,6 +795,7 @@ export default function CheckoutPage() {
         addresses={addresses}
         selectedAddressId={selectedAddressId}
         onSelectAddress={handleSelectAddress}
+        onEditAddress={handleEditAddress}
       />
 
       {/* Address Details Modal */}

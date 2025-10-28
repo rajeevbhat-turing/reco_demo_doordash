@@ -10,6 +10,7 @@ interface AddressesModalProps {
   addresses: Address[]
   selectedAddressId?: string
   onSelectAddress: (addressId: string) => void
+  onEditAddress?: (addressId: string) => void
 }
 
 export default function AddressesModal({ 
@@ -17,7 +18,8 @@ export default function AddressesModal({
   onClose, 
   addresses,
   selectedAddressId,
-  onSelectAddress
+  onSelectAddress,
+  onEditAddress
 }: AddressesModalProps) {
   const [searchQuery, setSearchQuery] = useState("")
 
@@ -98,7 +100,9 @@ export default function AddressesModal({
                 className="flex-shrink-0 p-2 hover:bg-gray-200 rounded-full transition-colors ml-2"
                 onClick={(e) => {
                   e.stopPropagation()
-                  // TODO: Add edit functionality later
+                  if (onEditAddress) {
+                    onEditAddress(address.id)
+                  }
                 }}
               >
                 <Edit2 className="w-5 h-5 text-gray-600" />
