@@ -11,6 +11,7 @@ import OrderConfirmationModal from "@/components/modals/order-confirmation-modal
 import AddCardModal from "@/components/modals/add-card-modal"
 import EditPhoneModal from "@/components/modals/edit-phone-modal"
 import AddressesModal from "@/components/modals/addresses-modal"
+import AddressDetailsModal from "@/components/modals/address-details-modal"
 import { getRestaurantById } from "@/constants/restaurants"
 import { stores } from "@/data/store-data"
 import { stores as retailStores } from "@/constants/store"
@@ -33,7 +34,8 @@ export default function CheckoutPage() {
     removePaymentMethod,
     addresses,
     phoneNumber,
-    setPhoneNumber
+    setPhoneNumber,
+    updateAddress
   } = useUserStore()
   
   // Find the cart using query params
@@ -78,6 +80,9 @@ export default function CheckoutPage() {
   // Addresses modal state
   const [showAddressesModal, setShowAddressesModal] = useState(false)
   const [selectedAddressId, setSelectedAddressId] = useState(addresses[0]?.id || "")
+  
+  // Address details modal state
+  const [showAddressDetailsModal, setShowAddressDetailsModal] = useState(false)
 
   // Fix hydration by ensuring client-side only rendering
   useEffect(() => {
@@ -280,6 +285,20 @@ export default function CheckoutPage() {
     setShowAddressesModal(false)
   }
 
+  // Handle saving address details
+  const handleSaveAddressDetails = (addressData: any) => {
+    if (selectedAddress) {
+      updateAddress(selectedAddress.id, {
+        addressType: addressData.addressType,
+        gateCode: addressData.gateCode,
+        deliveryPreference: addressData.deliveryPreference,
+        meetLocation: addressData.meetLocation,
+        deliveryInstructions: addressData.deliveryInstructions,
+        personalLabel: addressData.personalLabel,
+      })
+    }
+  }
+
   // Calculate total with extra delivery fee and tip
   const getTotalWithExtras = () => {
     const total = getTotal(currentStoreId || undefined, currentCategory || undefined)
@@ -430,17 +449,20 @@ export default function CheckoutPage() {
                       </div>
                     )}
 
-                    <div className="flex items-center justify-between py-4 px-3 cursor-pointer hover:bg-gray-100 border-b border-gray-200">
+                    <div 
+                      className="flex items-center justify-between py-4 px-3 cursor-pointer hover:bg-gray-100 border-b border-gray-200"
+                      onClick={() => setShowAddressDetailsModal(true)}
+                    >
                       <div className="flex items-center flex-1">
                         <Package className="w-5 h-5 text-gray-600 mr-3 flex-shrink-0" />
-                      <div>
+                  <div>
                           <p className="font-medium text-sm">Leave it at my door</p>
                           <p className="text-xs text-gray-600">Please ring the bell and drop off at the door, thank you. Its around the corner on the ground floor</p>
+                  </div>
                       </div>
-                    </div>
-                    <svg className="w-5 h-5 text-gray-400 flex-shrink-0 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
-                    </svg>
+                      <svg className="w-5 h-5 text-gray-400 flex-shrink-0 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+                      </svg>
                 </div>
 
                     <div 
@@ -766,6 +788,14 @@ export default function CheckoutPage() {
         addresses={addresses}
         selectedAddressId={selectedAddressId}
         onSelectAddress={handleSelectAddress}
+      />
+
+      {/* Address Details Modal */}
+      <AddressDetailsModal
+        isOpen={showAddressDetailsModal}
+        onClose={() => setShowAddressDetailsModal(false)}
+        address={selectedAddress}
+        onSave={handleSaveAddressDetails}
       />
     </div>
   )

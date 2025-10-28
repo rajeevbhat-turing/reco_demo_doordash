@@ -20,6 +20,12 @@ export interface Address {
   city: string;
   state: string;
   zipCode: string;
+  addressType: "house" | "apartment" | "hotel" | "office" | "other";
+  gateCode?: string;
+  deliveryPreference?: "door" | "location";
+  meetLocation?: "door" | "outside";
+  deliveryInstructions?: string;
+  personalLabel?: string;
 }
 
 export interface PhoneNumber {
@@ -54,6 +60,7 @@ interface UserStore {
   // Address Actions
   addAddress: (address: Omit<Address, 'id'>) => Address;
   removeAddress: (id: string) => void;
+  updateAddress: (id: string, updates: Partial<Omit<Address, 'id'>>) => void;
   getAddresses: () => Address[];
   
   // Phone Number Actions
@@ -89,14 +96,19 @@ export const useUserStore = create<UserStore>()(
             street: "548 Market Street",
             city: "San Francisco",
             state: "CA",
-            zipCode: "94104"
+            zipCode: "94104",
+            addressType: "house",
+            gateCode: "111",
+            deliveryPreference: "door",
+            deliveryInstructions: "Please ring the bell and drop off at the door, thank you. Its around the corner on the ground floor"
           },
           {
             id: "address-2",
             street: "47 West 13th Street",
             city: "New York",
             state: "NY",
-            zipCode: "10011"
+            zipCode: "10011",
+            addressType: "house"
           }
         ],
         phoneNumber: {
@@ -212,6 +224,14 @@ export const useUserStore = create<UserStore>()(
         removeAddress: (id) => {
           set((state) => ({
             addresses: state.addresses.filter((address) => address.id !== id),
+          }));
+        },
+
+        updateAddress: (id, updates) => {
+          set((state) => ({
+            addresses: state.addresses.map((address) =>
+              address.id === id ? { ...address, ...updates } : address
+            ),
           }));
         },
 
