@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import TwoStepVerificationModal from '@/components/modals/two-step-verification-modal';
 import { useUserStore } from '@/store/user-store';
+import { User } from '@/lib/types/user-types';
 
 export default function DeleteAccountPage() {
   const router = useRouter();
@@ -33,6 +34,24 @@ export default function DeleteAccountPage() {
   // Handles final delete account
   const handleDeleteAccount = () => {
     setShowDeletionPage(true);
+
+    // Delete user from local storage immediately
+    const userStore = localStorage.getItem('user-store');
+    if (userStore) {
+      const parsedUserStore = JSON.parse(userStore);
+      const newUserStore = {
+        ...parsedUserStore,
+        state: {
+          ...parsedUserStore.state,
+          users: parsedUserStore.state.users.filter((user: User) => user.id !== currentUser?.id),
+          currentUser: null,
+        },
+      }
+
+      // Set new user store to local storage
+      localStorage.setItem('user-store', JSON.stringify(newUserStore));
+    }
+
 
     // After 3 seconds, delete user and navigate to home
     setTimeout(() => {
