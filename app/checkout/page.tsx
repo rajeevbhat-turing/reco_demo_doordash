@@ -392,6 +392,27 @@ export default function CheckoutPage() {
                 <div className="p-6">
               <h2 className="text-lg font-semibold mb-6">2. Shipping details</h2>
 
+              {/* Map Placeholder */}
+              <div className="mb-6">
+                <div className="relative h-48 bg-gray-100 rounded-lg overflow-hidden">
+                  {/* Map Placeholder */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-gray-200 to-gray-300">
+                    {/* Pin Icon */}
+                    <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-full">
+                      <svg className="w-10 h-10" viewBox="0 0 24 24" fill="black">
+                        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                      </svg>
+                    </div>
+                  </div>
+                  {/* Adjust Pin Button */}
+                  <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2">
+                    <button className="bg-white px-4 py-2 rounded-full shadow-md text-sm font-medium hover:bg-gray-50 transition-colors">
+                      Adjust pin
+                    </button>
+                  </div>
+                </div>
+              </div>
+
               {/* Delivery Time */}
               <div className="mb-6">
                 <div className="flex items-center mb-4">
@@ -448,8 +469,8 @@ export default function CheckoutPage() {
                           <div>
                             <p className="font-medium text-sm">{selectedAddress.street}</p>
                             <p className="text-xs text-gray-600">{selectedAddress.city}, {selectedAddress.state} {selectedAddress.zipCode}</p>
-                          </div>
-                        </div>
+                  </div>
+                </div>
                         <svg className="w-5 h-5 text-gray-400 flex-shrink-0 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
                         </svg>
@@ -485,7 +506,7 @@ export default function CheckoutPage() {
                       <svg className="w-5 h-5 text-gray-400 flex-shrink-0 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
                       </svg>
-                    </div>
+                  </div>
                 </div>
               </div>
               )}
