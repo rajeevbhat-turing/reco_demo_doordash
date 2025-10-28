@@ -12,6 +12,7 @@ import AddCardModal from "@/components/modals/add-card-modal"
 import EditPhoneModal from "@/components/modals/edit-phone-modal"
 import AddressesModal from "@/components/modals/addresses-modal"
 import AddressDetailsModal from "@/components/modals/address-details-modal"
+import ScheduleDeliveryModal from "@/components/modals/schedule-delivery-modal"
 import { getRestaurantById } from "@/constants/restaurants"
 import { stores } from "@/data/store-data"
 import { stores as retailStores } from "@/constants/store"
@@ -54,6 +55,8 @@ export default function CheckoutPage() {
   const [orderId, setOrderId] = useState("")
   const [showScheduleModal, setShowScheduleModal] = useState(false)
   const [selectedScheduleTime, setSelectedScheduleTime] = useState("")
+  const [scheduledDate, setScheduledDate] = useState<Date | null>(null)
+  const [scheduledTimeSlot, setScheduledTimeSlot] = useState("")
   const [isClient, setIsClient] = useState(false)
   
   // Delivery options
@@ -188,6 +191,12 @@ export default function CheckoutPage() {
   }
 
   const handleDeliveryOptionChange = (optionId: string) => {
+    // Clear scheduled date and time when switching away from schedule option
+    if (optionId !== "schedule") {
+      setScheduledDate(null)
+      setScheduledTimeSlot("")
+    }
+    
     setSelectedDeliveryOption(optionId)
     
     switch (optionId) {
@@ -210,12 +219,29 @@ export default function CheckoutPage() {
     }
   }
 
-  const handleScheduleTimeSelect = (time: string) => {
-    setSelectedScheduleTime(time)
-    setDeliveryTime(`Scheduled for ${time}`)
+  const handleScheduleTimeSelect = (date: string, timeType: "asap" | "later", timeSlot?: string, fullDate?: Date, timeSlotDisplay?: string) => {
+    if (timeType === "asap" || !timeSlot) {
+      // Revert to standard option
+      setSelectedDeliveryOption("standard")
+      setDeliveryTime("45-60 min")
+      setExtraDeliveryFee(0)
+      setScheduledDate(null)
+      setScheduledTimeSlot("")
+    } else {
+      // Save scheduled time
+      setSelectedDeliveryOption("schedule")
+      setScheduledDate(fullDate || null)
+      setScheduledTimeSlot(timeSlotDisplay || timeSlot)
+      
+      // Format display
+      const formattedDate = fullDate ? `${fullDate.getDate().toString().padStart(2, '0')}/${(fullDate.getMonth() + 1).toString().padStart(2, '0')}` : date
+      setDeliveryTime(`${formattedDate} at ${timeSlotDisplay || timeSlot}`)
+      setExtraDeliveryFee(0)
+      
+      // Record for verifiers
+      recordDeliveryTimeSelection(`Scheduled for ${formattedDate} at ${timeSlotDisplay || timeSlot}`)
+    }
     setShowScheduleModal(false)
-    // Record delivery time selection for verifiers
-    recordDeliveryTimeSelection(`Scheduled for ${time}`)
   }
 
   const handleTipSelect = (amount: number) => {
@@ -445,7 +471,16 @@ export default function CheckoutPage() {
                           )}
                         </div>
                       </div>
-                      <p className="text-sm text-gray-600 mb-1">{option.time}</p>
+                      {option.id === "schedule" && scheduledDate && scheduledTimeSlot ? (
+                        <div className="flex items-center gap-1">
+                          <p className="text-sm text-gray-600">
+                            {`${scheduledDate.getDate().toString().padStart(2, '0')}/${(scheduledDate.getMonth() + 1).toString().padStart(2, '0')}`}
+                          </p>
+                          <p className="text-sm text-gray-600">{scheduledTimeSlot}</p>
+                        </div>
+                      ) : (
+                        <p className="text-sm text-gray-600 mb-1">{option.time}</p>
+                      )}
                       {option.description && (
                         <p className="text-sm text-gray-500">{option.description}</p>
                       )}
@@ -743,41 +778,19 @@ export default function CheckoutPage() {
         </div>
       </div>
 
-      {/* Schedule Modal */}
-      {showScheduleModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="relative bg-white rounded-lg w-full max-w-md mx-4 p-6">
-            <button 
-              onClick={() => setShowScheduleModal(false)} 
-              className="absolute top-4 right-4 p-1" 
-              aria-label="Close modal"
-            >
-              <X className="h-6 w-6 text-gray-400" />
-            </button>
-
-            <div>
-              <h2 className="text-xl font-bold text-gray-900 mb-4">
-                Schedule Delivery
-              </h2>
-              <p className="text-gray-600 mb-6">
-                Choose a delivery time for today
-              </p>
-
-              <div className="max-h-64 overflow-y-auto space-y-2">
-                {generateScheduleTimes().map((time) => (
-                  <button
-                    key={time.value}
-                    onClick={() => handleScheduleTimeSelect(time.display)}
-                    className="w-full text-left p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
-                  >
-                    {time.display}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Schedule Delivery Modal */}
+      <ScheduleDeliveryModal
+        isOpen={showScheduleModal}
+        onClose={() => {
+          setShowScheduleModal(false)
+          // Revert to standard if modal is closed without selection
+          if (selectedDeliveryOption === "schedule" && !scheduledTimeSlot) {
+            setSelectedDeliveryOption("standard")
+            setDeliveryTime("45-60 min")
+          }
+        }}
+        onSelectTime={handleScheduleTimeSelect}
+      />
 
       {/* Order Confirmation Modal */}
       <OrderConfirmationModal
