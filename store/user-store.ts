@@ -14,12 +14,27 @@ export interface PaymentMethod {
   zipCode: string;
 }
 
+export interface Address {
+  id: string;
+  street: string;
+  city: string;
+  state: string;
+  zipCode: string;
+}
+
+export interface PhoneNumber {
+  countryCode: string;
+  number: string;
+}
+
 interface UserStore {
   // State
   users: User[];
   currentUser: User | null;
   changePasswordPhoneVerified: boolean;
   paymentMethods: PaymentMethod[];
+  addresses: Address[];
+  phoneNumber: PhoneNumber;
 
   // Actions
   setCurrentUser: (user: User | null) => void;
@@ -30,9 +45,20 @@ interface UserStore {
   clearUsers: () => void;
   setChangePasswordPhoneVerified: (verified: boolean) => void;
   changePassword: (oldPassword: string, newPassword: string) => boolean;
+  
+  // Payment Method Actions
   addPaymentMethod: (method: Omit<PaymentMethod, 'id' | 'type' | 'lastFour'>) => PaymentMethod;
   removePaymentMethod: (id: string) => void;
   getPaymentMethods: () => PaymentMethod[];
+  
+  // Address Actions
+  addAddress: (address: Omit<Address, 'id'>) => Address;
+  removeAddress: (id: string) => void;
+  getAddresses: () => Address[];
+  
+  // Phone Number Actions
+  setPhoneNumber: (phoneNumber: PhoneNumber) => void;
+  getPhoneNumber: () => PhoneNumber;
 }
 
 export const useUserStore = create<UserStore>()(
@@ -57,6 +83,19 @@ export const useUserStore = create<UserStore>()(
         currentUser: null,
         changePasswordPhoneVerified: false,
         paymentMethods: [],
+        addresses: [
+          {
+            id: "default-address",
+            street: "548 Market Street",
+            city: "San Francisco",
+            state: "CA",
+            zipCode: "94104"
+          }
+        ],
+        phoneNumber: {
+          countryCode: "+1 (US)",
+          number: "7450946351"
+        },
 
         // Actions
         setCurrentUser: (user: User | null) => {
@@ -124,6 +163,7 @@ export const useUserStore = create<UserStore>()(
           return true;
         },
 
+        // Payment Method Actions
         addPaymentMethod: (method) => {
           const id = Math.random().toString(36).substring(2, 15);
           const lastFour = method.cardNumber.replace(/\s/g, '').slice(-4);
@@ -147,6 +187,38 @@ export const useUserStore = create<UserStore>()(
 
         getPaymentMethods: () => {
           return get().paymentMethods;
+        },
+        
+        // Address Actions
+        addAddress: (address) => {
+          const id = Math.random().toString(36).substring(2, 15);
+          const newAddress: Address = {
+            ...address,
+            id,
+          };
+          set((state) => ({
+            addresses: [...state.addresses, newAddress],
+          }));
+          return newAddress;
+        },
+
+        removeAddress: (id) => {
+          set((state) => ({
+            addresses: state.addresses.filter((address) => address.id !== id),
+          }));
+        },
+
+        getAddresses: () => {
+          return get().addresses;
+        },
+        
+        // Phone Number Actions
+        setPhoneNumber: (phoneNumber: PhoneNumber) => {
+          set({ phoneNumber });
+        },
+
+        getPhoneNumber: () => {
+          return get().phoneNumber;
         },
       }),
       {

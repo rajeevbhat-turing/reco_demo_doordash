@@ -3,12 +3,13 @@
 import { useState, useEffect, useCallback } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import Image from "next/image"
-import { ChevronLeft, ChevronRight, X, Trash2 } from "lucide-react"
+import { ChevronLeft, ChevronRight, X, Trash2, Home, Package, Phone } from "lucide-react"
 import { useCartStore, type CartCategory } from "@/store/cart-store"
 import { useVerifierStore } from "@/store/verifier-store"
 import { useUserStore } from "@/store/user-store"
 import OrderConfirmationModal from "@/components/modals/order-confirmation-modal"
 import AddCardModal from "@/components/modals/add-card-modal"
+import EditPhoneModal from "@/components/modals/edit-phone-modal"
 import { getRestaurantById } from "@/constants/restaurants"
 import { stores } from "@/data/store-data"
 import { stores as retailStores } from "@/constants/store"
@@ -25,7 +26,14 @@ export default function CheckoutPage() {
   
   const { findCart, getSubtotal, getServiceFee, getDeliveryFee, getTotal, getTotalItems, setSelectedCard } = useCartStore()
   const { recordCheckoutNavigation, recordTipSelection, recordDeliveryTimeSelection } = useVerifierStore()
-  const { paymentMethods: savedPaymentMethods, addPaymentMethod, removePaymentMethod } = useUserStore()
+  const { 
+    paymentMethods: savedPaymentMethods, 
+    addPaymentMethod, 
+    removePaymentMethod,
+    addresses,
+    phoneNumber,
+    setPhoneNumber
+  } = useUserStore()
   
   // Find the cart using query params
   const currentCart = categoryParam && storeIdParam ? findCart(storeIdParam, categoryParam) : null
@@ -62,6 +70,9 @@ export default function CheckoutPage() {
   
   // Add card modal state
   const [showAddCardModal, setShowAddCardModal] = useState(false)
+  
+  // Edit phone modal state
+  const [showEditPhoneModal, setShowEditPhoneModal] = useState(false)
 
   // Fix hydration by ensuring client-side only rendering
   useEffect(() => {
@@ -252,6 +263,11 @@ export default function CheckoutPage() {
       }
     }
   }
+  
+  // Handle save phone number
+  const handleSavePhoneNumber = (phoneData: { countryCode: string; number: string }) => {
+    setPhoneNumber(phoneData)
+  }
 
   // Calculate total with extra delivery fee and tip
   const getTotalWithExtras = () => {
@@ -334,82 +350,108 @@ export default function CheckoutPage() {
               ) : (
                 // Expanded View
                 <div className="p-6">
-                  <h2 className="text-lg font-semibold mb-6">2. Shipping details</h2>
-                  
-                  {/* Delivery/Pickup Toggle */}
-                  <div className="flex bg-gray-100 rounded-lg p-1 mb-6 max-w-xs">
-                    <button className="flex-1 bg-black text-white rounded-md py-2 px-4 text-sm font-medium">
-                      Delivery
-                    </button>
-                  </div>
+              <h2 className="text-lg font-semibold mb-6">2. Shipping details</h2>
+              
+              {/* Delivery/Pickup Toggle */}
+              <div className="flex bg-gray-100 rounded-lg p-1 mb-6 max-w-xs">
+                <button className="flex-1 bg-black text-white rounded-md py-2 px-4 text-sm font-medium">
+                  Delivery
+                </button>
+              </div>
 
-                  {/* Delivery Time */}
-                  <div className="mb-6">
-                    <div className="flex items-center mb-4">
-                      <div className="w-4 h-4 border-2 border-gray-300 rounded-full mr-3"></div>
-                      <span className="font-medium">Delivery Time</span>
-                      <span className="ml-auto text-gray-600">{deliveryTime}</span>
-                    </div>
+              {/* Delivery Time */}
+              <div className="mb-6">
+                <div className="flex items-center mb-4">
+                  <span className="font-medium">Delivery Time</span>
+                  <span className="ml-auto text-gray-600">{deliveryTime}</span>
+                </div>
 
-                    {/* Delivery Options */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      {deliveryOptions.map((option) => (
-                        <div
-                          key={option.id}
-                          className={`border rounded-lg p-4 cursor-pointer ${
-                            selectedDeliveryOption === option.id 
-                              ? "border-black bg-gray-50" 
-                              : "border-gray-200"
-                          }`}
-                          onClick={() => handleDeliveryOptionChange(option.id)}
-                        >
-                          <div className="flex items-center justify-between mb-2">
-                            <h3 className="font-medium">{option.name}</h3>
-                            <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${
-                              selectedDeliveryOption === option.id 
-                                ? "border-black bg-black" 
-                                : "border-gray-300"
-                            }`}>
-                              {selectedDeliveryOption === option.id && (
-                                <div className="w-2 h-2 bg-white rounded-full"></div>
-                              )}
-                            </div>
-                          </div>
-                          <p className="text-sm text-gray-600 mb-1">{option.time}</p>
-                          {option.description && (
-                            <p className="text-sm text-gray-500">{option.description}</p>
-                          )}
-                          {option.price > 0 && (
-                            <p className="text-sm font-medium">+${option.price.toFixed(2)}</p>
+                {/* Delivery Options */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {deliveryOptions.map((option) => (
+                    <div
+                      key={option.id}
+                      className={`border rounded-lg p-4 cursor-pointer ${
+                        selectedDeliveryOption === option.id 
+                          ? "border-black bg-gray-50" 
+                          : "border-gray-200"
+                      }`}
+                          style={{ height: "min-content" }}
+                      onClick={() => handleDeliveryOptionChange(option.id)}
+                    >
+                      <div className="flex items-center justify-between mb-2">
+                        <h3 className="font-medium">{option.name}</h3>
+                        <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${
+                          selectedDeliveryOption === option.id 
+                            ? "border-black bg-black" 
+                            : "border-gray-300"
+                        }`}>
+                          {selectedDeliveryOption === option.id && (
+                            <div className="w-2 h-2 bg-white rounded-full"></div>
                           )}
                         </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Address */}
-                  <div className="space-y-4">
-                    <div className="p-4 border border-gray-200 rounded-lg">
-                      <div>
-                        <p className="font-medium">548 Market Street</p>
-                        <p className="text-sm text-gray-600">San Francisco, CA 94104</p>
                       </div>
+                      <p className="text-sm text-gray-600 mb-1">{option.time}</p>
+                      {option.description && (
+                        <p className="text-sm text-gray-500">{option.description}</p>
+                      )}
+                      {option.price > 0 && (
+                        <p className="text-sm font-medium">+${option.price.toFixed(2)}</p>
+                      )}
                     </div>
+                  ))}
+                </div>
+              </div>
 
-                    <div className="p-4 border border-gray-200 rounded-lg">
-                      <div>
-                        <p className="font-medium">Leave it at my door</p>
-                        <p className="text-sm text-gray-600">Please ring the bell and drop off at the door, thank you. Its around the corner on the ground floor</p>
-                      </div>
-                    </div>
-
-                    <div className="p-4 border border-gray-200 rounded-lg">
-                      <div>
-                        <p className="font-medium">(012) 345-678</p>
-                      </div>
-                    </div>
+              {/* Address */}
+                  <div>
+                    {addresses.map((address, index) => (
+                      <div 
+                        key={address.id} 
+                        className="flex items-center justify-between py-4 px-3 cursor-pointer hover:bg-gray-100 border-b border-gray-200"
+                      >
+                        <div className="flex items-center flex-1">
+                          <Home className="w-5 h-5 text-gray-600 mr-3 flex-shrink-0" />
+                  <div>
+                            <p className="font-medium text-sm">{address.street}</p>
+                            <p className="text-xs text-gray-600">{address.city}, {address.state} {address.zipCode}</p>
                   </div>
                 </div>
+                        <svg className="w-5 h-5 text-gray-400 flex-shrink-0 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+                        </svg>
+                      </div>
+                    ))}
+
+                    <div className="flex items-center justify-between py-4 px-3 cursor-pointer hover:bg-gray-100 border-b border-gray-200">
+                      <div className="flex items-center flex-1">
+                        <Package className="w-5 h-5 text-gray-600 mr-3 flex-shrink-0" />
+                  <div>
+                          <p className="font-medium text-sm">Leave it at my door</p>
+                          <p className="text-xs text-gray-600">Please ring the bell and drop off at the door, thank you. Its around the corner on the ground floor</p>
+                  </div>
+                      </div>
+                      <svg className="w-5 h-5 text-gray-400 flex-shrink-0 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+                      </svg>
+                </div>
+
+                    <div 
+                      className="flex items-center justify-between py-4 px-3 cursor-pointer hover:bg-gray-100"
+                      onClick={() => setShowEditPhoneModal(true)}
+                    >
+                      <div className="flex items-center flex-1">
+                        <Phone className="w-5 h-5 text-gray-600 mr-3 flex-shrink-0" />
+                        <div>
+                          <p className="font-medium text-sm">{phoneNumber.number}</p>
+                        </div>
+                      </div>
+                      <svg className="w-5 h-5 text-gray-400 flex-shrink-0 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+                      </svg>
+                    </div>
+                </div>
+              </div>
               )}
             </div>
 
@@ -418,16 +460,16 @@ export default function CheckoutPage() {
               {!showExpandedPayment && savedPaymentMethods.length > 0 ? (
                 // Collapsed View
                 <div className="p-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <h2 className="text-lg font-semibold">3. Payment details</h2>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-lg font-semibold">3. Payment details</h2>
                     {selectedPaymentMethodObj && (
-                      <div className="flex items-center">
+                <div className="flex items-center">
                         <div className="w-10 h-7 bg-gradient-to-r from-red-500 to-orange-500 rounded mr-2 flex items-center justify-center">
                           <div className="flex space-x-0.5">
                             <div className="w-2 h-2 bg-white rounded-full"></div>
                             <div className="w-2 h-2 bg-white rounded-full"></div>
-                          </div>
-                        </div>
+                </div>
+              </div>
                         <span className="text-sm">...{selectedPaymentMethodObj.lastFour}</span>
                         <button 
                           onClick={handlePaymentEdit}
@@ -439,8 +481,8 @@ export default function CheckoutPage() {
                     )}
                   </div>
                   {selectedPaymentMethodObj && (
-                    <div className="flex items-center pl-4">
-                      <div className="flex items-center">
+              <div className="flex items-center pl-4">
+                <div className="flex items-center">
                         <div className="w-10 h-7 bg-gradient-to-r from-red-500 to-orange-500 rounded mr-2 flex items-center justify-center">
                           <div className="flex space-x-0.5">
                             <div className="w-2 h-2 bg-white rounded-full"></div>
@@ -532,8 +574,8 @@ export default function CheckoutPage() {
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
                           </svg>
                         </div>
-                    </div>
-                  </div>
+                </div>
+              </div>
                 </div>
               )}
             </div>
@@ -699,6 +741,15 @@ export default function CheckoutPage() {
         isOpen={showAddCardModal}
         onClose={() => setShowAddCardModal(false)}
         onAddCard={handleAddCard}
+      />
+
+      {/* Edit Phone Modal */}
+      <EditPhoneModal
+        isOpen={showEditPhoneModal}
+        onClose={() => setShowEditPhoneModal(false)}
+        onSave={handleSavePhoneNumber}
+        initialCountryCode={phoneNumber.countryCode}
+        initialNumber={phoneNumber.number}
       />
     </div>
   )
