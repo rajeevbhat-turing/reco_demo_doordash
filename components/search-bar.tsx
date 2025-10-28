@@ -1,8 +1,6 @@
 "use client"
 
-import type React from "react"
-
-import { useState, useRef, useEffect } from "react"
+import React, { useState, useRef, useEffect } from "react"
 import Image from "next/image"
 import { Search, X, ArrowLeft } from "lucide-react"
 import { useRouter } from "next/navigation"
@@ -22,7 +20,7 @@ interface SearchResult {
   logo: string
   description: string
   dashPass?: boolean
-  type: "restaurant" | "menu-item" | "grocery" | "pets" | "pet-product" | "convenience"
+  type: "restaurant" | "menu-item" | "grocery" | "pets" | "pet-product" | "convenience" | "retail"
   restaurantId?: string
   matchedItem?: string
   categories?: string[]
@@ -329,7 +327,7 @@ const SearchBar = () => {
       // Generate search suggestions based on search term
       const suggestions = generateSearchSuggestions(value)
 
-      setSearchResults(combinedResults)
+      setSearchResults(combinedResults as SearchResult[])
       setSearchSuggestions(suggestions)
       setIsSearchActive(true)
 
@@ -521,8 +519,8 @@ const SearchBar = () => {
     <div ref={searchContainerRef} className="relative flex-1 max-w-xl mx-4">
       <form onSubmit={handleSearchSubmit} className="relative">
         <div
-          className={`flex items-center bg-gray-100 rounded-full transition-all ${
-            isSearchActive ? "bg-white border border-gray-300" : ""
+          className={`flex items-center bg-gray-100 rounded-full transition-all h-8 ${
+            isSearchActive ? 'bg-white border border-gray-300' : ''
           }`}
         >
           {isSearchActive ? (
@@ -542,7 +540,7 @@ const SearchBar = () => {
             ref={searchInputRef}
             type="text"
             placeholder="Search DashDoor"
-            className={`block w-full bg-transparent py-2 ${
+            className={`block w-full bg-transparent ${
               isSearchActive ? "pl-2 pr-10" : "pl-10 pr-3"
             } text-sm focus:outline-none`}
             value={searchTerm}
@@ -659,7 +657,7 @@ const SearchBar = () => {
             searchResults.length === 0 &&
             searchSuggestions.length === 0 &&
             recentSearches.length === 0 && (
-              <div className="p-4 text-center text-gray-500">No results found for "{searchTerm}"</div>
+              <div className="p-4 text-center text-gray-500">No results found for {searchTerm}</div>
             )}
         </div>
       )}

@@ -40,9 +40,11 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{
             __html: `
               /** ===== Run bootstrap (sets run_id) ===== */
-              const RUN_ID_KEY = "current_run_id"; // we'll store under this key; also expose window.RUN_ID
-              
-              async function bootstrapRun() {
+              // Only run on client-side
+              if (typeof window !== 'undefined') {
+                const RUN_ID_KEY = "current_run_id"; // we'll store under this key; also expose window.RUN_ID
+                
+                async function bootstrapRun() {
                 const url = new URL(window.location.href);
                 const urlRun = url.searchParams.get("run_id"); // may be null
                 const storedRun = localStorage.getItem(RUN_ID_KEY); // may be null
@@ -74,7 +76,7 @@ export default function RootLayout({
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ run_id: runId }),
                   });
-                  console.log('✅ Run registered with server:', runId);
+                  console.log('Run registered with server:', runId);
                 } catch (e) {
                   // Non-fatal: the app can still run; mirror writes will retry later
                   console.warn("run/init failed:", e);
@@ -84,7 +86,7 @@ export default function RootLayout({
                 if (urlRun) {
                   url.searchParams.delete("run_id");
                   const newQuery = url.searchParams.toString();
-                  const cleaned = url.pathname + (newQuery ? \`?\${newQuery}\` : "") + (url.hash || "");
+                  const cleaned = url.pathname + (newQuery ? '?' + newQuery : "") + (url.hash || "");
                   window.history.replaceState({}, "", cleaned);
                 }
                 
@@ -102,16 +104,16 @@ export default function RootLayout({
                   if (RUN_MODE === 'runid') {
                     // Use database verification (run_id based)
                     const currentRunId = localStorage.getItem('current_run_id') || '00000000-0000-0000-0000-000000000000';
-                    const response = await fetch(\`/api/v1/run/verify?run_id=\${currentRunId}&prompt_id=\${taskId}\`, {
+                    const response = await fetch('/api/v1/run/verify?run_id=' + currentRunId + '&prompt_id=' + taskId, {
                       method: 'GET'
                     });
                     
                     if (!response.ok) {
-                      throw new Error(\`HTTP error! status: \${response.status}\`);
+                      throw new Error('HTTP error! status: ' + response.status);
                     }
                     
                     const result = await response.json();
-                    console.log(\`Verification for \${taskId}: \${result.passed ? 'passed' : 'failed'}\`);
+                    console.log('Verification for ' + taskId + ': ' + (result.passed ? 'passed' : 'failed'));
                     return result;
                   } else {
                     // Use browser localStorage verification (localstorage mode)
@@ -135,11 +137,11 @@ export default function RootLayout({
                     });
                     
                     if (!response.ok) {
-                      throw new Error(\`HTTP error! status: \${response.status}\`);
+                      throw new Error('HTTP error! status: ' + response.status);
                     }
                     
                     const result = await response.json();
-                    console.log(\`Verification for \${taskId}: \${result.passed ? 'passed' : 'failed'}\`);
+                    console.log('Verification for ' + taskId + ': ' + (result.passed ? 'passed' : 'failed'));
                     return result;
                   }
                 } catch (error) {
@@ -155,7 +157,7 @@ export default function RootLayout({
                           
                           if (sessionMode === 'with-run-id') {
                             // In with-run-id mode: generate new run_id and reset
-                            const newRunId = \`reset-\${Date.now()}-\${Math.random().toString(36).substr(2, 6)}\`;
+                            const newRunId = 'reset-' + Date.now() + '-' + Math.random().toString(36).substr(2, 6);
                             
                             // Update session
                             localStorage.setItem('current_run_id', newRunId);
@@ -167,10 +169,10 @@ export default function RootLayout({
                             localStorage.setItem('current_run_id', newRunId);
                             localStorage.setItem('last_run_id', newRunId);
                             
-                            console.log('✅ WITH-RUN-ID Reset: Generated new run_id:', newRunId);
+                            console.log('WITH-RUN-ID Reset: Generated new run_id:', newRunId);
                             
                             // Redirect with new run_id
-                            window.location.href = \`/?run_id=\${newRunId}\`;
+                            window.location.href = '/?run_id=' + newRunId;
                           } else {
                             // In without-run-id mode: just clear localStorage manually but preserve session tracking
                             const savedSessionMode = localStorage.getItem('session_mode');
@@ -179,13 +181,13 @@ export default function RootLayout({
                             localStorage.setItem('current_run_id', '00000000-0000-0000-0000-000000000000');
                             localStorage.setItem('last_run_id', '00000000-0000-0000-0000-000000000000');
                             
-                            console.log('✅ WITHOUT-RUN-ID Reset: Cleared localStorage manually');
+                            console.log('WITHOUT-RUN-ID Reset: Cleared localStorage manually');
                             
                             // Redirect to clean URL (no run_id)
                             window.location.href = '/';
                           }
                         } catch (error) {
-                          console.error('❌ Reset failed:', error);
+                          console.error('Reset failed:', error);
                         }
                       };
 
@@ -220,6 +222,7 @@ export default function RootLayout({
                 // Log other errors normally
                 originalConsoleError.apply(console, args);
               };
+              } // End client-side check
             `,
           }}
         />

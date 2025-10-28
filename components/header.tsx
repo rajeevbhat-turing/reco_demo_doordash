@@ -1,35 +1,40 @@
-"use client"
-import { useEffect, useState } from "react"
-import Link from "next/link"
-import { MapPin, Bell, ChevronDown, ShoppingCart } from "lucide-react"
-import { useCartStore } from "@/store/cart-store"
-import SearchBar from "@/components/search-bar"
-import CartSidebar from "@/components/cart-sidebar"
-import { DashDoorLogoMark, DashDoorWordMark } from './common/Icons'
+'use client';
+import { useState, useSyncExternalStore } from 'react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { MapPin, ChevronDown, ShoppingCart } from 'lucide-react';
+import { useCartStore } from '@/store/cart-store';
+import { useUserStore } from '@/store/user-store';
+import SearchBar from '@/components/search-bar';
+import CartSidebar from '@/components/cart-sidebar';
+import { Button } from '@/components/ui/button';
+import AuthenticationModal from './modals/authentication-modal';
+import { DashDoorLogoMark, DashDoorWordMark } from './common/Icons';
 
 export default function Header() {
-  const getTotalItems = useCartStore((state) => state.getTotalItems)
-  const [cartItemCount, setCartItemCount] = useState(0)
-  const [isCartOpen, setIsCartOpen] = useState(false)
+  const pathname = usePathname();
+  
+  const cartItemCount = useSyncExternalStore(
+    useCartStore.subscribe,
+    () => useCartStore.getState().getTotalItems(),
+    () => 0 // fallback for SSR
+  );
+  
+  const isAuthenticated = useSyncExternalStore(
+    useUserStore.subscribe,
+    () => useUserStore.getState().isAuthenticated(),
+    () => false // fallback for SSR
+  );
+  
+  const [isCartOpen, setIsCartOpen] = useState(false);
+  const [authModalMode, setAuthModalMode] = useState<'signin' | 'signup' | null>(null);
 
-  // Update cart count whenever the cart changes
-  useEffect(() => {
-    // Initial cart count
-    setCartItemCount(getTotalItems())
-
-    // Subscribe to cart store changes
-    const unsubscribeFromStore = useCartStore.subscribe((state) => {
-      setCartItemCount(state.getTotalItems())
-    })
-
-    return () => {
-      unsubscribeFromStore()
-    }
-  }, [getTotalItems])
+  // Check if current path is in account flow
+  const isAccountFlow = pathname.startsWith('/consumer') || pathname.startsWith('/password-reset');
 
   const toggleCart = () => {
-    setIsCartOpen(!isCartOpen)
-  }
+    setIsCartOpen(!isCartOpen);
+  };
 
   return (
     <>
@@ -38,7 +43,7 @@ export default function Header() {
           <div className="flex items-center flex-1 space-x-4">
             {/* Logo */}
             <Link href="/" className="flex-shrink-0">
-            <div className="flex items-center">
+              <div className="flex items-center">
                 <DashDoorLogoMark />
                 <div className="ml-1">
                   <DashDoorWordMark />
@@ -55,17 +60,21 @@ export default function Header() {
 
           <div className="flex">
             {/* Location */}
-            <div className="flex items-center mr-4 bg-[#f1f1f1] rounded-full px-5">
+            <div className="flex items-center mr-4 bg-[#f1f1f1] rounded-full px-5 h-8">
               <MapPin className="h-5 w-5 text-gray-700 mr-1" />
               <span className="text-sm font-medium mr-1">548 Market st</span>
               <ChevronDown className="h-4 w-4 text-gray-700" />
             </div>
 
-            {/* Delivery/Pickup */}
-            <div className="flex items-center space-x-2 mr-3">
-              <button className="bg-gray-900 text-white px-4 py-2 rounded-full text-sm font-medium">Delivery</button>
-              {/* <button className="text-gray-900 px-4 bg-[#f1f1f1] py-2 rounded-full text-sm font-medium">Pickup</button> */}
-            </div>
+            {/* Delivery/Pickup - Hide in account flow */}
+            {!isAccountFlow && (
+              <div className="flex items-center space-x-2 mr-3">
+                <button className="bg-gray-900 text-white px-4 h-8 rounded-full text-sm font-medium">
+                  Delivery
+                </button>
+                {/* <button className="text-gray-900 px-4 bg-[#f1f1f1] py-2 rounded-full text-sm font-medium">Pickup</button> */}
+              </div>
+            )}
 
             {/* Cart */}
             <div className="ml-4">
@@ -77,12 +86,35 @@ export default function Header() {
                 <span className="font-medium">{cartItemCount}</span>
               </button>
             </div>
+
+            {/* Sign In and Sign Up */}
+            {!isAuthenticated && (
+              <div className="flex items-center space-x-2 ml-4">
+                <Button
+                  onClick={() => setAuthModalMode('signin')}
+                  className="bg-transparent text-gray-900 hover:bg-gray-100 rounded-full px-4 h-8 text-sm font-semibold"
+                >
+                  Sign In
+                </Button>
+                <Button
+                  onClick={() => setAuthModalMode('signup')}
+                  className="bg-gray-300 text-gray-900 hover:bg-gray-300 rounded-full px-4 h-8 text-sm font-semibold"
+                >
+                  Sign Up
+                </Button>
+              </div>
+            )}
           </div>
         </div>
       </header>
 
       {/* Cart Sidebar */}
       <CartSidebar isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
+
+      {/* Authentication Modal */}
+      {authModalMode && (
+        <AuthenticationModal onClose={() => setAuthModalMode(null)} defaultMode={authModalMode} />
+      )}
     </>
-  )
+  );
 }
