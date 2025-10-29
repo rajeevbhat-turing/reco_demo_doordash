@@ -1,15 +1,5 @@
 import { PetProductSection, PetUiConfig, PetStore, PetDeal } from "@/types/pet-types";
 
-// Featured pet stores for "Stores Near You" section
-export const featuredPetStores = [
-  "petsmart",
-  "petco",
-  "pawsh",
-  "chewy",
-  "healthy-spot",
-  "pet-food-express"
-];
-
 export const allPetStores = [
   {
     "id": "24207684",
@@ -171,7 +161,7 @@ export const petCategories = [
       "type": "RETAIL_L1_NAVIGATION_TYPE_CATEGORY",
       "isActive": true
     }
-  ];
+];
 
 // Pet product data organized by section
 export const petProductData: PetProductSection[] = [
@@ -1797,60 +1787,5 @@ export const petProductData: PetProductSection[] = [
         "category": ["Dog", "Fish"]
       }
     ]
-  }
-];
-
-// Pet product categories
-export const petProductCategories = [
-  "Dog", "Cat", "Small Pets", "Bird", "Fish", "Reptile"
-];
-
-// Pet UI configuration
-export const petUiConfig: PetUiConfig = {
-  pageTitle: "Pet Supplies",
-  nearbyTitle: "Pet Stores Near You",
-  allStoresTitle: "All Pet Stores",
-  dealsTitle: "Featured Deals",
-  seeAllText: "See All Pet Stores",
-  seeAllDescription: "View all available pet supply stores in your area"
-};
-
-// Featured deal store
-export const featuredDealStore: PetStore = {
-  id: "petsmart",
-  name: "PetSmart",
-  image: "/store-logos/default-store.svg",
-  deliveryTime: "15-30 min"
-};
-
-// Featured deals
-export const featuredDeals: PetDeal[] = [
-  {
-    id: 1,
-    name: "Dog Food",
-    price: 24.99,
-    originalPrice: 29.99,
-    image: "/placeholder.jpg"
-  },
-  {
-    id: 2,
-    name: "Cat Treats",
-    price: 12.99,
-    originalPrice: 16.99,
-    image: "/placeholder.jpg"
-  },
-  {
-    id: 3,
-    name: "Fish Tank",
-    price: 49.99,
-    originalPrice: 69.99,
-    image: "/placeholder.jpg"
-  },
-  {
-    id: 4,
-    name: "Bird Cage",
-    price: 34.99,
-    originalPrice: 44.99,
-    image: "/placeholder.jpg"
   }
 ];

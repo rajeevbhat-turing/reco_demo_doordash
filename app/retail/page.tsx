@@ -8,7 +8,7 @@ import { ChevronRight } from "lucide-react"
 import Image from "next/image"
 import { useState, useEffect } from "react"
 import { useCartStore } from "@/store/cart-store"
-import { CartProvider } from "@/context/cart-context"
+import { useAppStore } from "@/store/app-store"
 
 // Retail-specific banner data
 const retailBanners = [
@@ -40,8 +40,7 @@ const retailBanners = [
 
 export default function Retail() {
   const [activeFilters, setActiveFilters] = useState<string[]>([])
-  const { setCurrentStore, clearCurrentStore } = useCartStore()
-  const { updateSearchResults, clearSearchResults } = useCartStore()
+  const { clearCurrentStore, updateSearchResults, clearSearchResults } = useAppStore()
 
   // Set category explicitly
   useEffect(() => {
@@ -81,8 +80,7 @@ export default function Retail() {
   const resultCount = filteredStores.length
 
   return (
-    <CartProvider category="retail">
-      <main className="max-w-[1200px] mx-auto px-4 pt-16">
+    <main className="max-w-[1200px] mx-auto px-4 pt-16">
         {/* Promotional Banners */}
         <GrocerySchedule promos={retailBanners} />
 
@@ -210,7 +208,6 @@ export default function Retail() {
           ))}
         </div>
       </main>
-    </CartProvider>
   )
 }
 

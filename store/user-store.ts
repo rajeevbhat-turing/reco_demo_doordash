@@ -2,7 +2,7 @@
 
 import { create } from "zustand";
 import { persist, devtools } from "zustand/middleware";
-import { User } from '@/lib/types/user-types';
+import { User, PaymentMethod, Address } from '@/lib/types/user-types';
 
 interface UserStore {
   // State
@@ -19,6 +19,17 @@ interface UserStore {
   clearUsers: () => void;
   setChangePasswordPhoneVerified: (verified: boolean) => void;
   changePassword: (oldPassword: string, newPassword: string) => boolean;
+  
+  // Payment Method Actions
+  addPaymentMethod: (method: Omit<PaymentMethod, 'id' | 'type' | 'lastFour'>) => PaymentMethod;
+  removePaymentMethod: (id: string) => void;
+  getPaymentMethods: () => PaymentMethod[];
+  
+  // Address Actions
+  addAddress: (address: Omit<Address, 'id'>) => Address;
+  removeAddress: (id: string) => void;
+  updateAddress: (id: string, updates: Partial<Omit<Address, 'id'>>) => void;
+  getAddresses: () => Address[];
 }
 
 export const useUserStore = create<UserStore>()(
@@ -39,6 +50,28 @@ export const useUserStore = create<UserStore>()(
           },
           userCountry: 'United States',
           avatar: null,
+          paymentMethods: [],
+          addresses: [
+            {
+              id: "default-address",
+              street: "548 Market Street",
+              city: "San Francisco",
+              state: "CA",
+              zipCode: "94104",
+              addressType: "house",
+              gateCode: "111",
+              deliveryPreference: "door",
+              deliveryInstructions: "Please ring the bell and drop off at the door, thank you. Its around the corner on the ground floor"
+            },
+            {
+              id: "address-2",
+              street: "47 West 13th Street",
+              city: "New York",
+              state: "NY",
+              zipCode: "10011",
+              addressType: "house"
+            }
+          ],
         }],
         currentUser: null,
         changePasswordPhoneVerified: false,
@@ -107,6 +140,118 @@ export const useUserStore = create<UserStore>()(
           });
           
           return true;
+        },
+
+        // Payment Method Actions
+        addPaymentMethod: (method) => {
+          const state = get();
+          if (!state.currentUser) {
+            throw new Error('No current user');
+          }
+          const id = Math.random().toString(36).substring(2, 15);
+          const lastFour = method.cardNumber.replace(/\s/g, '').slice(-4);
+          const newMethod: PaymentMethod = {
+            ...method,
+            id,
+            type: "MasterCard",
+            lastFour,
+          };
+          const updatedUser = {
+            ...state.currentUser,
+            paymentMethods: [...(state.currentUser?.paymentMethods || []), newMethod],
+          };
+          set({
+            currentUser: updatedUser,
+            users: state.users.map(user =>
+              user.id === state.currentUser!.id ? updatedUser : user
+            ),
+          });
+          return newMethod;
+        },
+
+        removePaymentMethod: (id) => {
+          const state = get();
+          if (!state.currentUser) {
+            return;
+          }
+          const updatedUser = {
+            ...state.currentUser,
+            paymentMethods: state.currentUser.paymentMethods.filter((method) => method.id !== id),
+          };
+          set({
+            currentUser: updatedUser,
+            users: state.users.map(user =>
+              user.id === state.currentUser!.id ? updatedUser : user
+            ),
+          });
+        },
+
+        getPaymentMethods: () => {
+          return get().currentUser?.paymentMethods || [];
+        },
+        
+        // Address Actions
+        addAddress: (address) => {
+          const state = get();
+          if (!state.currentUser) {
+            throw new Error('No current user');
+          }
+          const id = Math.random().toString(36).substring(2, 15);
+          const newAddress: Address = {
+            ...address,
+            id,
+          };
+          const updatedUser = {
+            ...state.currentUser,
+            addresses: [...state.currentUser.addresses, newAddress],
+          };
+          set({
+            currentUser: updatedUser,
+            users: state.users.map(user =>
+              user.id === state.currentUser!.id ? updatedUser : user
+            ),
+          });
+          return newAddress;
+        },
+
+        removeAddress: (id) => {
+          const state = get();
+          if (!state.currentUser) {
+            return;
+          }
+          const updatedUser = {
+            ...state.currentUser,
+            addresses: state.currentUser.addresses.filter((address) => address.id !== id),
+          };
+          set({
+            currentUser: updatedUser,
+            users: state.users.map(user =>
+              user.id === state.currentUser!.id ? updatedUser : user
+            ),
+          });
+        },
+
+        updateAddress: (id, updates) => {
+          const state = get();
+          if (!state.currentUser) {
+            return;
+          }
+          const updatedUser = {
+            ...state.currentUser,
+            addresses: state.currentUser.addresses.map((address) =>
+              address.id === id ? { ...address, ...updates } : address
+            ),
+          };
+          set({
+            currentUser: updatedUser,
+            users: state.users.map(user =>
+              user.id === state.currentUser!.id ? updatedUser : user
+            ),
+          });
+        },
+
+        getAddresses: () => {
+          return get().currentUser?.addresses || [];
         },
       }),
       {

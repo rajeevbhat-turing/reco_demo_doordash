@@ -3,36 +3,29 @@ import { persist, devtools } from "zustand/middleware"
 import type { Product } from "@/types"
 import { restaurants } from "@/constants/restaurants"
 import { convenienceStores } from "@/data/convenience-store-data"
+import { useVerifierStore } from "./verifier-store"
+import { useAppStore } from "./app-store"
 
 // Define supported cart categories
 export type CartCategory = "restaurant" | "grocery" | "retail" | "pets" | "convenience"
 
-// Base cart item interface
+// Base cart item interface (simplified - no vendor info)
 export interface CartItem {
   id: number | string
-  itemName: string // Renamed from 'name' to 'itemName'
+  itemName: string
   price: number | string
   image: string
   quantity: number
-  storeId?: string
-  restaurantId?: string
-  storeName?: string // Added storeName property
   customizations?: string
-  category: CartCategory // Add category to each cart item
 }
 
-// Search result interface for storing search results
-export interface SearchResult {
-  id: string
-  name: string
-  logo: string
-  description: string
-  dashPass?: boolean
-  type: "restaurant" | "menu-item" | "grocery" | "pets" | "pet-product" | "convenience" | "retail"
-  restaurantId?: string
-  matchedItem?: string
-  categories?: string[]
-  priceRange?: string
+// Cart interface - represents a cart for a single vendor/store
+export interface Cart {
+  storeId: string // Vendor ID (can be restaurant or store)
+  storeName: string // Vendor name
+  storeCategory: CartCategory // Type of store
+  items: CartItem[] // Items in this cart
+  selectedCard?: any // Selected payment method for this cart
 }
 
 // Category-specific configurations
@@ -158,138 +151,46 @@ const getStoreNameFromStoreId = (storeId: string, category?: CartCategory): stri
 // Cart store interface
 interface CartStore {
   // State
-  items: CartItem[]
-  currentCategory: CartCategory
-  currentStoreId: string | null
-  currentRestaurantId: string | null
+  carts: Cart[] // Multiple carts - one per vendor
   isGroupOrder: boolean
   groupOrderId: string | null
-  searchResults: SearchResult[]
   totalCartValue: number
-  // Current store object
-  currentStore: Record<string, any>
-  // Visited stores tracking
-  visitedStores: string[]
-  // Clear tracking for verifiers
-  lastClearInfo: { itemsBeforeClear: number; timestamp: number } | null
-  // Track the maximum items reached for verifier support
-  maxItemsReached: number
-  // Track if verifier has been consumed (passed once already)
-  verifierConsumed: boolean
-  // Search tracking for search verifiers
-  lastSearchInfo: { searchTerm: string; timestamp: number; navigatedFromSearch: boolean } | null
-  searchVerifierConsumed: boolean
-  // Removal tracking for removal verifiers
-  lastRemovalInfo: { removedItems: CartItem[]; timestamp: number } | null
-  removalVerifierConsumed: boolean
-  // Quantity change tracking for quantity verifiers
-  lastQuantityChangeInfo: { itemName: string; oldQuantity: number; newQuantity: number; timestamp: number } | null
-  quantityVerifierConsumed: boolean
-  
-  // Order completion tracking for order verifiers
-  lastOrderInfo: { 
-    orderId: string
-    tipAmount: number
-    orderTotal: number
-    timestamp: number
-    isCompleted: boolean
-    storeName: string
-    category: string
-    items: CartItem[]
-  } | null
-  orderVerifierConsumed: boolean
 
-  // Checkout tracking for checkout verifiers
-  lastCheckoutInfo: {
-    timestamp: number
-    tipAmount: number
-    navigatedToCheckout: boolean
-    deliveryTime?: string
-  } | null
-  checkoutVerifierConsumed: boolean
+  // Helper methods to get current state from app-store
+  getCurrentCategory: () => CartCategory
+  getCurrentStoreId: () => string | null
+  getCurrentRestaurantId: () => string | null
+
+  // Helper method to find a cart by vendor
+  findCart: (storeId: string, storeCategory: CartCategory) => Cart | undefined
 
   // Category methods
   setCategory: (category: CartCategory) => void
   getConfig: () => CategoryConfig
 
   // Cart operations
-  addItem: (item: Omit<CartItem, "quantity" | "category">, category?: CartCategory, storeName?: string) => void
+  addItem: (item: Omit<CartItem, "quantity">, category?: CartCategory, storeName?: string, storeId?: string) => void
   removeItem: (id: string | number) => void
   updateQuantity: (id: string | number, quantity: number) => void
-  clearCart: () => void
-
-  // Conflict detection methods
-  checkConflict: (
-    item: Omit<CartItem, "quantity" | "category">,
-    category?: CartCategory,
-  ) => {
-    hasConflict: boolean
-    conflictType: "restaurant" | "store" | null
-  }
-  replaceCartWithItem: (
-    item: Omit<CartItem, "quantity" | "category">,
-    category?: CartCategory,
-    storeName?: string,
-  ) => void
+  clearCart: (storeId?: string, storeCategory?: CartCategory) => void
+  clearAllCarts: () => void
+  setSelectedCard: (storeId: string, storeCategory: CartCategory, card: any) => void
 
   // Group order methods
   startGroupOrder: () => string
   joinGroupOrder: (groupOrderId: string) => void
   leaveGroupOrder: () => void
 
-  // Cart calculations
-  getTotalItems: () => number
-  getSubtotal: () => number
-  getServiceFee: () => number
-  getDeliveryFee: () => number
-  getTotal: () => number
-  getTotalPrice: () => string
-
-  // Item source checks
-  hasDifferentStore: (storeId: string) => boolean
-  hasDifferentRestaurant: (restaurantId: string) => boolean
-
-  // Search results methods
-  updateSearchResults: (results: SearchResult[]) => void
-  clearSearchResults: () => void
+  // Cart calculations (optionally for specific cart)
+  getTotalItems: (storeId?: string, category?: CartCategory) => number
+  getSubtotal: (storeId?: string, category?: CartCategory) => number
+  getServiceFee: (storeId?: string, category?: CartCategory) => number
+  getDeliveryFee: (storeId?: string, category?: CartCategory) => number
+  getTotal: (storeId?: string, category?: CartCategory) => number
+  getTotalPrice: (storeId?: string, category?: CartCategory) => string
 
   // Update total cart value
   updateTotalCartValue: () => void
-
-  // Current store methods
-  setCurrentStore: (store: Record<string, any>) => void
-  clearCurrentStore: () => void
-  
-  // Verifier consumption tracking
-  markVerifierConsumed: () => void
-
-  // Search tracking methods
-  recordSearch: (searchTerm: string) => void
-  recordNavigationFromSearch: () => void
-  markSearchVerifierConsumed: () => void
-  
-  // Removal tracking methods
-  markRemovalVerifierConsumed: () => void
-  
-  // Quantity change tracking methods
-  markQuantityVerifierConsumed: () => void
-  
-  // Order completion tracking methods
-  recordOrderCompletion: (orderInfo: {
-    orderId: string
-    tipAmount: number
-    orderTotal: number
-    storeName: string
-    category: string
-    items: CartItem[]
-  }) => void
-  markOrderVerifierConsumed: () => void
-
-  // Checkout tracking methods
-  recordCheckoutNavigation: () => void
-  recordTipSelection: (tipAmount: number) => void
-  recordDeliveryTimeSelection: (deliveryTime: string) => void
-  markCheckoutVerifierConsumed: () => void
 }
 
 export const useCartStore = create<CartStore>()(
@@ -297,235 +198,377 @@ export const useCartStore = create<CartStore>()(
     persist(
       (set, get) => ({
         // State
-        items: [],
-        currentCategory: "grocery" as CartCategory, // Default to grocery
-        currentStoreId: null,
-        currentRestaurantId: null,
+        carts: [], // Multiple carts - one per vendor
         isGroupOrder: false,
         groupOrderId: null,
-        searchResults: [],
         totalCartValue: 0,
-        currentStore: {},
-        visitedStores: [],
-        lastClearInfo: null,
-        maxItemsReached: 0,
-        verifierConsumed: false,
-        lastSearchInfo: null,
-        searchVerifierConsumed: false,
-        lastRemovalInfo: null,
-        removalVerifierConsumed: false,
-        lastQuantityChangeInfo: null,
-        quantityVerifierConsumed: false,
-        lastOrderInfo: null,
-        orderVerifierConsumed: false,
-        lastCheckoutInfo: null,
-        checkoutVerifierConsumed: false,
 
-        // Set active category without clearing cart
+        // Get current category from app-store
+        getCurrentCategory: () => {
+          const appStore = useAppStore.getState()
+          return appStore.currentCategory || "grocery" // Default to grocery
+        },
+
+        // Get current store ID from app-store
+        getCurrentStoreId: () => {
+          const appStore = useAppStore.getState()
+          const store = appStore.currentStore
+          // Return store ID if it's not a restaurant
+          if (store?.id && store?.type !== 'restaurant') {
+            return store.id
+          }
+          return null
+        },
+
+        // Get current restaurant ID from app-store
+        getCurrentRestaurantId: () => {
+          const appStore = useAppStore.getState()
+          const store = appStore.currentStore
+          // Return restaurant ID if it's a restaurant
+          if (store?.id && (store?.type === 'restaurant' || appStore.currentCategory === 'restaurant')) {
+            return store.id
+          }
+          return null
+        },
+
+        // Find a cart by storeId and storeCategory
+        findCart: (storeId: string, storeCategory: CartCategory) => {
+          return get().carts.find(cart => 
+            cart.storeId === storeId && cart.storeCategory === storeCategory
+          )
+        },
+
+        // Set active category (now delegates to app-store)
         setCategory: (category: CartCategory) => {
-          const { currentCategory } = get()
+          const currentCategory = get().getCurrentCategory()
 
-          // Just update the category, don't clear the cart
+          // Just log - the category should be set via app-store's setCurrentStore
           if (currentCategory !== category) {
-            console.log(`Changing category from ${currentCategory} to ${category} - keeping cart`)
-            set({ currentCategory: category })
+            console.log(`[CART] Category change requested from ${currentCategory} to ${category}`)
+            console.log(`[CART] Note: Category should be set via app-store's setCurrentStore method`)
           }
         },
 
         // Get configuration for current category
         getConfig: () => {
-          const { currentCategory } = get()
+          const currentCategory = get().getCurrentCategory()
           return categoryConfigs[currentCategory]
         },
 
-        // Add item to cart (without automatic conflict resolution)
-        addItem: (item, category, storeName) => {
-          const { items, currentCategory, currentStoreId, currentRestaurantId, maxItemsReached } = get()
+        // Add item to cart
+        addItem: (item, category, storeName, storeId) => {
+          const { carts, findCart, getCurrentCategory, getCurrentStoreId, getCurrentRestaurantId } = get()
+          const verifierStore = useVerifierStore.getState()
 
-          console.log(`[CART] Adding item: ${item.itemName}, current cart size: ${items.length}`)
-
-          // Use provided category or default to current category
-          const itemCategory = category || currentCategory
-
-          // Handle backward compatibility with 'name' property
-          const itemName = item.itemName || "Unknown Item"
-
-          // Determine store name based on available information
-          let resolvedStoreName = storeName
-
+          // Determine vendor info
+          const itemCategory = category || getCurrentCategory()
+          const itemStoreId = storeId || getCurrentStoreId() || getCurrentRestaurantId() || "unknown"
+          
+          // Determine store name
+          let resolvedStoreName: string = storeName || ""
           if (!resolvedStoreName) {
-            if (item.restaurantId) {
-              resolvedStoreName = getStoreNameFromRestaurantId(item.restaurantId)
-            } else if (item.storeId) {
-              resolvedStoreName = getStoreNameFromStoreId(item.storeId, itemCategory)
+            // Try to get from app-store first
+            const appStore = useAppStore.getState()
+            if (appStore.currentStore?.name) {
+              resolvedStoreName = appStore.currentStore.name
             } else {
-              resolvedStoreName = "Unknown Store"
+              resolvedStoreName = getStoreNameFromStoreId(itemStoreId, itemCategory) || "Unknown Store"
             }
           }
 
-          // Standard add to cart logic (for all items)
-          const existingItem = items.find((i) => i.id === item.id)
+          console.log(`[CART] Adding item: ${item.itemName} to ${resolvedStoreName} (${itemCategory})`)
 
-          let newItems
-          if (existingItem) {
+          // Find existing cart for this vendor
+          const existingCart = findCart(itemStoreId, itemCategory)
+
+          if (!existingCart) {
+            // Create new cart for this vendor
+            console.log(`[CART] Creating new cart for ${resolvedStoreName}`)
+            
+            const newCart: Cart = {
+              storeId: itemStoreId,
+              storeName: resolvedStoreName,
+              storeCategory: itemCategory,
+              items: [{
+                ...item,
+                quantity: 1,
+              }]
+            }
+
+            verifierStore.updateMaxItemsReached(1)
+            
+            if (verifierStore.lastClearInfo !== null) {
+              verifierStore.resetClearInfo()
+            }
+
+            set({ carts: [...carts, newCart] })
+            verifierStore.resetVerifierConsumed()
+            setTimeout(() => get().updateTotalCartValue(), 0)
+            return
+          }
+
+          // Cart exists for this vendor - add or update item
+          const existingItemIndex = existingCart.items.findIndex((i) => i.id === item.id)
+          let newItems: CartItem[]
+
+          if (existingItemIndex >= 0) {
             // Increment quantity if item already exists
-            newItems = items.map((i) => (i.id === item.id ? { ...i, quantity: i.quantity + 1 } : i))
+            newItems = existingCart.items.map((i, idx) => 
+              idx === existingItemIndex ? { ...i, quantity: i.quantity + 1 } : i
+            )
+            console.log(`[CART] Updated item quantity to ${newItems[existingItemIndex].quantity}`)
           } else {
             // Add new item with quantity 1
             newItems = [
-              ...items,
+              ...existingCart.items,
               {
                 ...item,
-                itemName, // Use the determined itemName
-                storeName: resolvedStoreName, // Use resolved storeName
                 quantity: 1,
-                category: itemCategory,
-              },
+              }
             ]
+            console.log(`[CART] Added new item to existing cart`)
           }
 
-          // Calculate new total items
-          const newTotalItems = newItems.reduce((total, item) => total + item.quantity, 0)
-          const newMaxItemsReached = Math.max(maxItemsReached, newTotalItems)
+          const newTotalItems = newItems.reduce((total, cartItem) => total + cartItem.quantity, 0)
+          verifierStore.updateMaxItemsReached(newTotalItems)
 
-          console.log(`[CART] After adding: ${newTotalItems} items, max reached: ${newMaxItemsReached}`)
-
-          // Reset lastClearInfo when adding items after a clear (so verifier only passes once)
-          const shouldResetClearInfo = get().lastClearInfo !== null
-          if (shouldResetClearInfo) {
-            console.log(`[CART] Resetting clear info since new items are being added`)
+          if (verifierStore.lastClearInfo !== null) {
+            verifierStore.resetClearInfo()
           }
 
-          set({
-            items: newItems,
-            currentCategory: itemCategory,
-            currentStoreId: item.storeId || currentStoreId,
-            currentRestaurantId: item.restaurantId || currentRestaurantId,
-            maxItemsReached: newMaxItemsReached,
-            lastClearInfo: shouldResetClearInfo ? null : get().lastClearInfo,
-            verifierConsumed: false, // Reset verifier consumption when adding items
-          })
+          // Update the specific cart in the carts array
+          const updatedCarts = carts.map(cart => 
+            cart.storeId === itemStoreId && cart.storeCategory === itemCategory
+              ? { ...cart, items: newItems }
+              : cart
+          )
 
-          // After adding the item, update the total cart value
+          set({ carts: updatedCarts })
+          verifierStore.resetVerifierConsumed()
           setTimeout(() => get().updateTotalCartValue(), 0)
         },
 
         // Remove item from cart
         removeItem: (id) => {
-          const { items, maxItemsReached } = get()
-          console.log(`[CART] Removing item with id: ${id}, current cart size: ${items.length}`)
+          const { carts } = get()
+          const verifierStore = useVerifierStore.getState()
           
-          // Find the item being removed for tracking
-          const removedItem = items.find((item) => item.id === id)
+          console.log(`[CART] Removing item with id: ${id}`)
           
-          const newItems = items.filter((item) => item.id !== id)
+          // Find which cart contains the item
+          let removedItem: CartItem | undefined
+          let targetCart: Cart | undefined
+          
+          for (const cart of carts) {
+            const item = cart.items.find((item) => item.id === id)
+            if (item) {
+              removedItem = item
+              targetCart = cart
+              break
+            }
+          }
+          
+          if (!targetCart || !removedItem) {
+            console.log(`[CART] Item not found in any cart`)
+            return
+          }
+          
+          // Remove item from the cart
+          const newItems = targetCart.items.filter((item) => item.id !== id)
           const newTotalItems = newItems.reduce((total, item) => total + item.quantity, 0)
           
-          console.log(`[CART] After removing: ${newTotalItems} items, max was: ${maxItemsReached}`)
+          console.log(`[CART] After removing from ${targetCart.storeName}: ${newTotalItems} items`)
           
           // Track removal for verifiers
-          let newLastRemovalInfo = null
-          if (removedItem) {
-            newLastRemovalInfo = { removedItems: [removedItem], timestamp: Date.now() }
-            console.log(`[CART] Recording removal of item: ${removedItem.itemName}`)
-          }
+          verifierStore.recordRemoval([removedItem])
           
           // Check if cart became empty after having 3+ items
-          let newLastClearInfo = get().lastClearInfo
+          const maxItemsReached = verifierStore.maxItemsReached
           if (newTotalItems === 0 && maxItemsReached >= 3) {
-            newLastClearInfo = { itemsBeforeClear: maxItemsReached, timestamp: Date.now() }
-            console.log(`[CART] Cart became empty after having ${maxItemsReached} items - recording clear info`)
+            verifierStore.recordClearInfo(maxItemsReached)
+            verifierStore.resetMaxItemsReached()
           }
 
-          set({
-            items: newItems,
-            currentStoreId: newItems.length > 0 ? get().currentStoreId : null,
-            currentRestaurantId: newItems.length > 0 ? get().currentRestaurantId : null,
-            lastClearInfo: newLastClearInfo,
-            lastRemovalInfo: newLastRemovalInfo,
-            // Reset maxItemsReached when cart becomes empty
-            maxItemsReached: newTotalItems === 0 ? 0 : maxItemsReached,
-            verifierConsumed: false, // Reset verifier consumption on any cart change
-            removalVerifierConsumed: false, // Reset removal verifier consumption
-          })
+          let updatedCarts: Cart[]
+          
+          // If cart is empty, remove it from the carts array
+          if (newItems.length === 0) {
+            updatedCarts = carts.filter(cart => 
+              !(cart.storeId === targetCart!.storeId && cart.storeCategory === targetCart!.storeCategory)
+            )
+            console.log(`[CART] Removed empty cart for ${targetCart.storeName}`)
+          } else {
+            // Update the cart with new items
+            updatedCarts = carts.map(cart => 
+              cart.storeId === targetCart!.storeId && cart.storeCategory === targetCart!.storeCategory
+                ? { ...cart, items: newItems }
+                : cart
+            )
+          }
+
+          set({ carts: updatedCarts })
+          
+          // Reset verifier consumption on any cart change
+          verifierStore.resetVerifierConsumed()
+          
           // After removing the item, update the total cart value
           setTimeout(() => get().updateTotalCartValue(), 0)
         },
 
         // Update item quantity
         updateQuantity: (id, quantity) => {
-          const { items, maxItemsReached } = get()
-          console.log(`[CART] Updating quantity for item ${id} to ${quantity}, current cart size: ${items.length}`)
-
-          // Find the item being updated for tracking
-          const existingItem = items.find((item) => item.id === id)
+          const { carts } = get()
+          const verifierStore = useVerifierStore.getState()
           
-          let newItems
-          let newLastQuantityChangeInfo = null
+          console.log(`[CART] Updating quantity for item ${id} to ${quantity}`)
+
+          // Find which cart contains the item
+          let existingItem: CartItem | undefined
+          let targetCart: Cart | undefined
+          
+          for (const cart of carts) {
+            const item = cart.items.find((item) => item.id === id)
+            if (item) {
+              existingItem = item
+              targetCart = cart
+              break
+            }
+          }
+          
+          if (!targetCart || !existingItem) {
+            console.log(`[CART] Item not found in any cart`)
+            return
+          }
+          
+          let newItems: CartItem[]
           
           if (quantity <= 0) {
             // Remove item if quantity is 0 or less
-            newItems = items.filter((item) => item.id !== id)
+            newItems = targetCart.items.filter((item) => item.id !== id)
           } else {
             // Update quantity
-            newItems = items.map((item) => (item.id === id ? { ...item, quantity } : item))
+            newItems = targetCart.items.map((item) => (item.id === id ? { ...item, quantity } : item))
             
             // Track quantity change for verifiers
-            if (existingItem && existingItem.quantity !== quantity) {
-              newLastQuantityChangeInfo = { 
-                itemName: existingItem.itemName, 
-                oldQuantity: existingItem.quantity, 
-                newQuantity: quantity, 
-                timestamp: Date.now() 
-              }
-              console.log(`[CART] Recording quantity change for ${existingItem.itemName}: ${existingItem.quantity} -> ${quantity}`)
+            if (existingItem.quantity !== quantity) {
+              verifierStore.recordQuantityChange(existingItem.itemName, existingItem.quantity, quantity)
             }
           }
 
           const newTotalItems = newItems.reduce((total, item) => total + item.quantity, 0)
-          console.log(`[CART] After quantity update: ${newTotalItems} items, max was: ${maxItemsReached}`)
+          console.log(`[CART] After quantity update in ${targetCart.storeName}: ${newTotalItems} items`)
 
           // Check if cart became empty after having 3+ items
-          let newLastClearInfo = get().lastClearInfo
+          const maxItemsReached = verifierStore.maxItemsReached
           if (newTotalItems === 0 && maxItemsReached >= 3) {
-            newLastClearInfo = { itemsBeforeClear: maxItemsReached, timestamp: Date.now() }
-            console.log(`[CART] Cart became empty after having ${maxItemsReached} items - recording clear info`)
+            verifierStore.recordClearInfo(maxItemsReached)
+            verifierStore.resetMaxItemsReached()
           }
 
-          set({
-            items: newItems,
-            currentStoreId: newItems.length > 0 ? get().currentStoreId : null,
-            currentRestaurantId: newItems.length > 0 ? get().currentRestaurantId : null,
-            lastClearInfo: newLastClearInfo,
-            lastQuantityChangeInfo: newLastQuantityChangeInfo,
-            // Reset maxItemsReached when cart becomes empty
-            maxItemsReached: newTotalItems === 0 ? 0 : maxItemsReached,
-            verifierConsumed: false, // Reset verifier consumption on any cart change
-            quantityVerifierConsumed: false, // Reset quantity verifier consumption
-          })
+          let updatedCarts: Cart[]
+          
+          // If cart is empty, remove it from the carts array
+          if (newItems.length === 0) {
+            updatedCarts = carts.filter(cart => 
+              !(cart.storeId === targetCart!.storeId && cart.storeCategory === targetCart!.storeCategory)
+            )
+            console.log(`[CART] Removed empty cart for ${targetCart.storeName}`)
+          } else {
+            // Update the cart with new items
+            updatedCarts = carts.map(cart => 
+              cart.storeId === targetCart!.storeId && cart.storeCategory === targetCart!.storeCategory
+                ? { ...cart, items: newItems }
+                : cart
+            )
+          }
+
+          set({ carts: updatedCarts })
+
+          // Reset verifier consumption on any cart change
+          verifierStore.resetVerifierConsumed()
 
           // After updating quantity, update the total cart value
           setTimeout(() => get().updateTotalCartValue(), 0)
         },
 
-        // Clear cart
-        clearCart: () => {
-          const { items, maxItemsReached } = get()
-          const currentTotalItems = items.reduce((total, item) => total + item.quantity, 0)
-          console.log(`[CART] Clearing cart: ${currentTotalItems} items, max was: ${maxItemsReached}`)
+        // Clear a specific cart or current cart
+        clearCart: (storeId?, storeCategory?) => {
+          const { carts, getCurrentStoreId, getCurrentRestaurantId, getCurrentCategory } = get()
+          const verifierStore = useVerifierStore.getState()
+          
+          // If no storeId provided, try to clear the current store's cart
+          const targetStoreId = storeId || getCurrentStoreId() || getCurrentRestaurantId()
+          const targetCategory = storeCategory || getCurrentCategory()
+          
+          if (!targetStoreId) {
+            console.log(`[CART] No cart to clear - no storeId specified`)
+            return
+          }
+          
+          // Find the cart to clear
+          const cartToClear = carts.find(cart => 
+            cart.storeId === targetStoreId && cart.storeCategory === targetCategory
+          )
+          
+          if (!cartToClear) {
+            console.log(`[CART] No cart found for ${targetStoreId} (${targetCategory})`)
+            return
+          }
+          
+          const currentTotalItems = cartToClear.items.reduce((total, item) => total + item.quantity, 0)
+          const maxItemsReached = verifierStore.maxItemsReached
+          
+          console.log(`[CART] Clearing cart for ${cartToClear.storeName}: ${currentTotalItems} items`)
           
           const itemsBeforeClear = Math.max(currentTotalItems, maxItemsReached)
-          console.log(`[CART] Recording clear info with ${itemsBeforeClear} items before clear`)
+          verifierStore.recordClearInfo(itemsBeforeClear)
+          verifierStore.resetMaxItemsReached()
+          verifierStore.resetVerifierConsumed()
+          
+          // Remove the cart from carts array
+          const updatedCarts = carts.filter(cart => 
+            !(cart.storeId === targetStoreId && cart.storeCategory === targetCategory)
+          )
           
           set({
-            items: [],
-            currentStoreId: null,
-            currentRestaurantId: null,
-            totalCartValue: 0,
-            lastClearInfo: { itemsBeforeClear, timestamp: Date.now() },
-            maxItemsReached: 0,
-            verifierConsumed: false, // Reset verifier consumption on any cart change
+            carts: updatedCarts,
+            totalCartValue: updatedCarts.length === 0 ? 0 : get().totalCartValue,
           })
+        },
+
+        // Clear all carts
+        clearAllCarts: () => {
+          const { carts } = get()
+          const verifierStore = useVerifierStore.getState()
+          
+          const totalItems = carts.reduce((total, cart) => 
+            total + cart.items.reduce((sum, item) => sum + item.quantity, 0), 0
+          )
+          
+          console.log(`[CART] Clearing all ${carts.length} carts: ${totalItems} items`)
+          
+          const maxItemsReached = verifierStore.maxItemsReached
+          const itemsBeforeClear = Math.max(totalItems, maxItemsReached)
+          verifierStore.recordClearInfo(itemsBeforeClear)
+          verifierStore.resetMaxItemsReached()
+          verifierStore.resetVerifierConsumed()
+          
+          set({
+            carts: [],
+            totalCartValue: 0,
+          })
+        },
+
+        // Set selected card for a cart
+        setSelectedCard: (storeId, storeCategory, card) => {
+          const { carts } = get()
+          const updatedCarts = carts.map((cart) => {
+            if (cart.storeId === storeId && cart.storeCategory === storeCategory) {
+              return { ...cart, selectedCard: card }
+            }
+            return cart
+          })
+          set({ carts: updatedCarts })
         },
 
         // Start a group order and return the group order ID
@@ -559,152 +602,77 @@ export const useCartStore = create<CartStore>()(
           })
         },
 
-        // Get total items count
-        getTotalItems: () => {
-          return get().items.reduce((total, item) => total + item.quantity, 0)
+        // Get total items count for specific cart or all carts
+        getTotalItems: (storeId?, category?) => {
+          const { carts, findCart } = get()
+          
+          // If storeId and category provided, calculate for specific cart
+          if (storeId && category) {
+            const cart = findCart(storeId, category)
+            if (!cart) return 0
+            return cart.items.reduce((sum, item) => sum + item.quantity, 0)
+          }
+          
+          // Otherwise calculate across all carts
+          return carts.reduce((total, cart) => 
+            total + cart.items.reduce((sum, item) => sum + item.quantity, 0), 0
+          )
         },
 
-        // Calculate subtotal
-        getSubtotal: () => {
-          return get().items.reduce((sum, item) => {
-            const price =
-              typeof item.price === "number"
-                ? item.price
-                : Number.parseFloat(item.price.toString().replace(/[^0-9.]/g, ""))
-            return sum + price * item.quantity
-          }, 0)
+        // Calculate subtotal for specific cart or all carts
+        getSubtotal: (storeId?, category?) => {
+          const { carts, findCart } = get()
+          
+          // If storeId and category provided, calculate for specific cart
+          if (storeId && category) {
+            const cart = findCart(storeId, category)
+            if (!cart) return 0
+            return cart.items.reduce((sum, item) => {
+              const price =
+                typeof item.price === "number"
+                  ? item.price
+                  : Number.parseFloat(item.price.toString().replace(/[^0-9.]/g, ""))
+              return sum + price * item.quantity
+            }, 0)
+          }
+          
+          // Otherwise calculate across all carts
+          return carts.reduce((cartTotal, cart) => 
+            cartTotal + cart.items.reduce((sum, item) => {
+              const price =
+                typeof item.price === "number"
+                  ? item.price
+                  : Number.parseFloat(item.price.toString().replace(/[^0-9.]/g, ""))
+              return sum + price * item.quantity
+            }, 0), 0
+          )
         },
 
-        // Calculate service fee
-        getServiceFee: () => {
+        // Calculate service fee for specific cart or all carts
+        getServiceFee: (storeId?, category?) => {
           const { getSubtotal, getConfig } = get()
           const config = getConfig()
-          return Math.max(getSubtotal() * config.serviceFeePercentage, config.minServiceFee)
+          const subtotal = getSubtotal(storeId, category)
+          return Math.max(subtotal * config.serviceFeePercentage, config.minServiceFee)
         },
 
-        // Calculate delivery fee
-        getDeliveryFee: () => {
+        // Calculate delivery fee for specific cart or all carts
+        getDeliveryFee: (storeId?, category?) => {
           const { getSubtotal, getConfig } = get()
           const config = getConfig()
-          return getSubtotal() >= config.freeDeliveryThreshold ? 0 : config.defaultDeliveryFee
+          const subtotal = getSubtotal(storeId, category)
+          return subtotal >= config.freeDeliveryThreshold ? 0 : config.defaultDeliveryFee
         },
 
-        // Calculate total (includes all fees - for checkout)
-        getTotal: () => {
+        // Calculate total (includes all fees - for checkout) for specific cart or all carts
+        getTotal: (storeId?, category?) => {
           const { getSubtotal, getServiceFee, getDeliveryFee } = get()
-          return getSubtotal() + getServiceFee() + getDeliveryFee()
+          return getSubtotal(storeId, category) + getServiceFee(storeId, category) + getDeliveryFee(storeId, category)
         },
 
-        // Get formatted total price (for cart display - only subtotal, no fees)
-        getTotalPrice: () => {
-          return `$${get().getSubtotal().toFixed(2)}`
-        },
-
-        // Check if item is from a different store
-        hasDifferentStore: (storeId: string) => {
-          const { currentStoreId } = get()
-          return currentStoreId !== null && currentStoreId !== storeId
-        },
-
-        // Check if item is from a different restaurant
-        hasDifferentRestaurant: (restaurantId: string) => {
-          const { currentRestaurantId } = get()
-          return currentRestaurantId !== null && currentRestaurantId !== restaurantId
-        },
-
-        // Conflict detection methods
-        checkConflict: (item, category) => {
-          const { currentCategory, currentStoreId, currentRestaurantId, items } = get()
-
-          // If cart is empty, no conflict
-          if (items.length === 0) {
-            return { hasConflict: false, conflictType: null }
-          }
-
-          const itemCategory = category || currentCategory
-          let hasConflict = false
-          let conflictType: "restaurant" | "store" | null = null
-
-          // Check for category conflicts first
-          const existingCategories = [...new Set(items.map((cartItem) => cartItem.category))]
-
-          // If we have items from different categories, that's a conflict
-          if (existingCategories.length > 0 && !existingCategories.includes(itemCategory)) {
-            hasConflict = true
-            // Determine conflict type based on what's in the cart vs what we're adding
-            if (existingCategories.includes("restaurant") || itemCategory === "restaurant") {
-              conflictType = "restaurant"
-            } else {
-              conflictType = "store"
-            }
-          }
-
-          // Check for restaurant conflict (within restaurant category)
-          if (
-            itemCategory === "restaurant" &&
-            item.restaurantId &&
-            currentRestaurantId &&
-            item.restaurantId !== currentRestaurantId
-          ) {
-            hasConflict = true
-            conflictType = "restaurant"
-          }
-
-          // Check for store conflict (within non-restaurant categories)
-          if (itemCategory !== "restaurant" && item.storeId && currentStoreId && item.storeId !== currentStoreId) {
-            hasConflict = true
-            conflictType = "store"
-          }
-
-          return { hasConflict, conflictType }
-        },
-
-        replaceCartWithItem: (item, category, storeName) => {
-          const itemCategory = category || get().currentCategory
-
-          // Handle backward compatibility with 'name' property
-          const itemName = item.itemName || "Unknown Item"
-
-          // Determine store name based on available information
-          let resolvedStoreName = storeName
-
-          if (!resolvedStoreName) {
-            if (item.restaurantId) {
-              resolvedStoreName = getStoreNameFromRestaurantId(item.restaurantId)
-            } else if (item.storeId) {
-              resolvedStoreName = getStoreNameFromStoreId(item.storeId, itemCategory)
-            } else {
-              resolvedStoreName = "Unknown Store"
-            }
-          }
-
-          set({
-            items: [
-              {
-                ...item,
-                itemName, // Use the determined itemName
-                storeName: resolvedStoreName, // Use resolved storeName
-                quantity: 1,
-                category: itemCategory,
-              },
-            ],
-            currentCategory: itemCategory,
-            currentStoreId: item.storeId || null,
-            currentRestaurantId: item.restaurantId || null,
-          })
-
-          // Update total cart value
-          setTimeout(() => get().updateTotalCartValue(), 0)
-        },
-
-        // Update search results
-        updateSearchResults: (results: SearchResult[]) => {
-          set({ searchResults: results })
-        },
-
-        // Clear search results
-        clearSearchResults: () => {
-          set({ searchResults: [] })
+        // Get formatted total price (for cart display - only subtotal, no fees) for specific cart or all carts
+        getTotalPrice: (storeId?, category?) => {
+          return `$${get().getSubtotal(storeId, category).toFixed(2)}`
         },
 
         // Update total cart value
@@ -712,249 +680,57 @@ export const useCartStore = create<CartStore>()(
           const total = get().getTotal()
           set({ totalCartValue: total })
         },
-        // Set current store object
-        setCurrentStore: (store: Record<string, any>) => {
-          console.log(`[STORE] Setting current store: ${store.name}`)
-          
-          const { visitedStores, currentCategory } = get()
-          
-          // Add store to visitedStores if it has an id
-          if (store.id) {
-            // Check if store is already in visitedStores to avoid duplicates
-            const existingStoreIndex = visitedStores.findIndex(visitedStoreId => 
-              visitedStoreId === store.id
-            )
-            
-            let newVisitedStores
-            if (existingStoreIndex >= 0) {
-              // Move existing store to the beginning of the array
-              newVisitedStores = [
-                store.id,
-                ...visitedStores.filter((_, index) => index !== existingStoreIndex)
-              ]
-            } else {
-              // Add new store to the beginning of the array
-              newVisitedStores = [store.id, ...visitedStores]
-            }
-            
-            console.log(`[STORE] Added to visited stores: ${store.id}`)
-            
-            // Check if this might be navigation from search results
-            const { lastSearchInfo } = get()
-            if (lastSearchInfo && !lastSearchInfo.navigatedFromSearch) {
-              console.log(`[STORE] Navigation from search detected`)
-              set({ 
-                currentStore: store,
-                visitedStores: newVisitedStores,
-                lastSearchInfo: { ...lastSearchInfo, navigatedFromSearch: true },
-                searchVerifierConsumed: false, // Reset search verifier consumption on new navigation
-              })
-            } else {
-              set({ 
-                currentStore: store,
-                visitedStores: newVisitedStores,
-                searchVerifierConsumed: false, // Reset search verifier consumption on store change
-              })
-            }
-          } else {
-            // If store doesn't have required fields, just set currentStore without updating visitedStores
-            const { lastSearchInfo } = get()
-            if (lastSearchInfo && !lastSearchInfo.navigatedFromSearch) {
-              console.log(`[STORE] Navigation from search detected`)
-              set({ 
-                currentStore: store,
-                lastSearchInfo: { ...lastSearchInfo, navigatedFromSearch: true },
-                searchVerifierConsumed: false, // Reset search verifier consumption on new navigation
-              })
-            } else {
-              set({ 
-                currentStore: store,
-                searchVerifierConsumed: false, // Reset search verifier consumption on store change
-              })
-            }
-          }
-        },
-
-        // Clear current store object
-        clearCurrentStore: () => {
-          set({ currentStore: {} })
-        },
-
-        // Verifier consumption tracking
-        markVerifierConsumed: () => {
-          set({ verifierConsumed: true })
-        },
-
-        // Search tracking methods
-        recordSearch: (searchTerm: string) => {
-          console.log(`[SEARCH] Recording search for: ${searchTerm}`)
-          set({ 
-            lastSearchInfo: { 
-              searchTerm, 
-              timestamp: Date.now(), 
-              navigatedFromSearch: false 
-            },
-            searchVerifierConsumed: false, // Reset consumption on new search
-          })
-        },
-        recordNavigationFromSearch: () => {
-          const { lastSearchInfo } = get()
-          if (lastSearchInfo) {
-            console.log(`[SEARCH] Recording navigation from search for: ${lastSearchInfo.searchTerm}`)
-            set({ 
-              lastSearchInfo: { 
-                ...lastSearchInfo, 
-                navigatedFromSearch: true 
-              } 
-            })
-          }
-        },
-        markSearchVerifierConsumed: () => {
-          set({ searchVerifierConsumed: true })
-        },
-        
-        // Removal tracking methods
-        markRemovalVerifierConsumed: () => {
-          set({ removalVerifierConsumed: true })
-        },
-        
-        // Quantity change tracking methods
-        markQuantityVerifierConsumed: () => {
-          set({ quantityVerifierConsumed: true })
-        },
-
-        // Order completion tracking methods
-        recordOrderCompletion: (orderInfo: {
-          orderId: string
-          tipAmount: number
-          orderTotal: number
-          storeName: string
-          category: string
-          items: CartItem[]
-        }) => {
-          console.log(`[ORDER] Recording order completion:`, orderInfo)
-          set({
-            lastOrderInfo: {
-              ...orderInfo,
-              timestamp: Date.now(),
-              isCompleted: true,
-            },
-            // Reset orderVerifierConsumed for new orders so the verifier can be tested again
-            orderVerifierConsumed: false,
-          })
-        },
-        markOrderVerifierConsumed: () => {
-          set({ orderVerifierConsumed: true })
-        },
-
-        // Checkout tracking methods
-        recordCheckoutNavigation: () => {
-          console.log('[CHECKOUT] Recording checkout navigation')
-          set({
-            lastCheckoutInfo: {
-              timestamp: Date.now(),
-              tipAmount: 0, // Default tip amount, will be updated when tip is selected
-              navigatedToCheckout: true,
-            },
-            checkoutVerifierConsumed: false,
-          })
-        },
-        recordTipSelection: (tipAmount: number) => {
-          console.log(`[CHECKOUT] Recording tip selection: $${tipAmount}`)
-          const { lastCheckoutInfo } = get()
-          set({
-            lastCheckoutInfo: {
-              timestamp: lastCheckoutInfo?.timestamp || Date.now(),
-              tipAmount,
-              navigatedToCheckout: lastCheckoutInfo?.navigatedToCheckout || true,
-              deliveryTime: lastCheckoutInfo?.deliveryTime,
-            }
-          })
-        },
-        recordDeliveryTimeSelection: (deliveryTime: string) => {
-          console.log(`[CHECKOUT] Recording delivery time selection: ${deliveryTime}`)
-          const { lastCheckoutInfo } = get()
-          set({
-            lastCheckoutInfo: {
-              timestamp: lastCheckoutInfo?.timestamp || Date.now(),
-              tipAmount: lastCheckoutInfo?.tipAmount || 0,
-              navigatedToCheckout: lastCheckoutInfo?.navigatedToCheckout || true,
-              deliveryTime,
-            }
-          })
-        },
-        markCheckoutVerifierConsumed: () => {
-          set({ checkoutVerifierConsumed: true })
-        },
       }),
       {
-        name: "multicategory-cart",
+        name: "carts",
         partialize: (state) => ({
-          // Persist all state fields
-          items: state.items,
-          currentCategory: state.currentCategory,
-          currentStoreId: state.currentStoreId,
-          currentRestaurantId: state.currentRestaurantId,
+          carts: state.carts,
           isGroupOrder: state.isGroupOrder,
           groupOrderId: state.groupOrderId,
-          searchResults: state.searchResults,
           totalCartValue: state.totalCartValue,
-          currentStore: state.currentStore,
-          visitedStores: state.visitedStores,
-          lastClearInfo: state.lastClearInfo,
-          maxItemsReached: state.maxItemsReached,
-          verifierConsumed: state.verifierConsumed,
-          lastSearchInfo: state.lastSearchInfo,
-          searchVerifierConsumed: state.searchVerifierConsumed,
-          lastRemovalInfo: state.lastRemovalInfo,
-          removalVerifierConsumed: state.removalVerifierConsumed,
-          lastQuantityChangeInfo: state.lastQuantityChangeInfo,
-          quantityVerifierConsumed: state.quantityVerifierConsumed,
-          lastOrderInfo: state.lastOrderInfo,
-          orderVerifierConsumed: state.orderVerifierConsumed,
-          lastCheckoutInfo: state.lastCheckoutInfo,
-          checkoutVerifierConsumed: state.checkoutVerifierConsumed,
         }),
         merge: (persistedState: any, currentState) => {
-          // Handle migration of old cart items
-          const migratedItems =
-            persistedState.items?.map((item: any) => {
-              const migratedItem = { ...item }
-
-              // Fix storeName if it's "Unknown Store" and we have restaurantId or storeId
-              if ((!item.storeName || item.storeName === "Unknown Store") && (item.restaurantId || item.storeId)) {
-                if (item.restaurantId) {
-                  migratedItem.storeName = getStoreNameFromRestaurantId(item.restaurantId)
-                } else if (item.storeId) {
-                  migratedItem.storeName = getStoreNameFromStoreId(item.storeId, item.category)
-                }
-              }
-
-              // Remove the name property if it exists
-              if (migratedItem.name) {
-                delete migratedItem.name
-              }
-
-              return migratedItem
-            }) || []
+          let carts: Cart[] = []
+          
+          // Migration from old single cart structure (cart field)
+          if (persistedState.cart && typeof persistedState.cart === 'object' && persistedState.cart.items) {
+            console.log('[CART] Migrating from single cart to multiple carts')
+            carts = [persistedState.cart]
+          }
+          // Migration from old items-based structure
+          else if (persistedState.items && Array.isArray(persistedState.items) && persistedState.items.length > 0) {
+            console.log('[CART] Migrating old items array to new Cart format')
+            
+            // Extract store info from first item (old structure had storeId/restaurantId on items)
+            const firstItem = persistedState.items[0]
+            const storeId = firstItem.restaurantId || firstItem.storeId || 'unknown'
+            const category = firstItem.category || 'grocery'
+            const storeName = firstItem.storeName || getStoreNameFromStoreId(storeId, category)
+            
+            // Create new Cart structure with cleaned items (remove vendor info from items)
+            carts = [{
+              storeId,
+              storeName,
+              storeCategory: category,
+              items: persistedState.items.map((item: any) => ({
+                id: item.id,
+                itemName: item.itemName || item.name,
+                price: item.price,
+                image: item.image,
+                quantity: item.quantity,
+                customizations: item.customizations,
+              }))
+            }]
+          }
+          // Use existing carts if available
+          else if (persistedState.carts && Array.isArray(persistedState.carts)) {
+            carts = persistedState.carts
+          }
 
           return {
             ...currentState,
             ...persistedState,
-            items: migratedItems,
-            currentStore: persistedState.currentStore || {},
-            visitedStores: persistedState.visitedStores || [],
-            lastClearInfo: persistedState.lastClearInfo || null,
-            maxItemsReached: persistedState.maxItemsReached || 0,
-            verifierConsumed: persistedState.verifierConsumed || false,
-            lastSearchInfo: persistedState.lastSearchInfo || null,
-            searchVerifierConsumed: persistedState.searchVerifierConsumed || false,
-            lastRemovalInfo: persistedState.lastRemovalInfo || null,
-            removalVerifierConsumed: persistedState.removalVerifierConsumed || false,
-            lastQuantityChangeInfo: persistedState.lastQuantityChangeInfo || null,
-            quantityVerifierConsumed: persistedState.quantityVerifierConsumed || false,
-            lastOrderInfo: persistedState.lastOrderInfo || null,
-            orderVerifierConsumed: persistedState.orderVerifierConsumed || false,
+            carts,
           }
         },
       },
@@ -977,29 +753,16 @@ export function addProductToCart(
   // Set the category first to ensure correct behavior
   cartStore.setCategory(category)
 
-  if (category === "restaurant") {
-    cartStore.addItem(
-      {
-        id: product.id,
-        itemName: product.name, // This maps product.name to itemName, which is fine
-        price: product.price,
-        image: product.image,
-        restaurantId: storeOrRestaurantId,
-      },
-      category,
-      product.storeName, // Pass storeName to addItem (will be resolved if not provided)
-    )
-  } else {
-    cartStore.addItem(
-      {
-        id: product.id,
-        itemName: product.name, // This maps product.name to itemName, which is fine
-        price: product.price,
-        image: product.image,
-        storeId: storeOrRestaurantId,
-      },
-      category,
-      product.storeName, // Pass storeName to addItem (will be resolved if not provided)
-    )
-  }
+  // Add item with storeId (no need to distinguish between restaurant and store)
+  cartStore.addItem(
+    {
+      id: product.id,
+      itemName: product.name,
+      price: product.price,
+      image: product.image,
+    },
+    category,
+    product.storeName, // Pass storeName
+    storeOrRestaurantId, // Pass storeId
+  )
 }

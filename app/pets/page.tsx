@@ -4,20 +4,14 @@ import { useState, useEffect } from "react"
 import StoreGrid from "@/components/store/store-grid"
 import ProductDisplay from "@/components/product/product-display"
 import AllStores from "@/components/all-stores"
-import { CartProvider } from "@/context/cart-context"
 import CartSidebar from "@/components/cart-sidebar"
 import { useCartStore } from "@/store/cart-store"
+import { useAppStore } from "@/store/app-store"
 import {
-  getFilterOptions,
   getAllPetStores,
   getPetUiConfig,
   getFeaturedPetStores,
-  getFeaturedPetDealsStore,
-  getFeaturedPetDeals,
   getPetProductSections,
-  getEnrichedPetProducts,
-  getPetCategories,
-  filterProductsByCategory
 } from "@/app/pets/data/pet-response-mapper"
 import { allPetStores } from "@/data/pet-data"
 import { getDefaultRating } from "@/utils/rating-utils"
@@ -27,7 +21,7 @@ export default function Pets() {
   const [isCartOpen, setIsCartOpen] = useState(false)
   const [currentStoreData, setCurrentStoreData] = useState<any>(null)
   const cartStore = useCartStore();
-  const { setCurrentStore, clearCurrentStore } = useCartStore()
+  const { clearCurrentStore } = useAppStore()
   
   // Set the category to pets when component mounts
   useEffect(() => {
@@ -106,10 +100,8 @@ export default function Pets() {
     }));
 
   return (
-    <CartProvider category="pets">
+    <>
       <div className="max-w-[1200px] mx-auto px-4 pt-16">
-
-
         {/* All Stores Section */}
         {filteredStores.length > 0 ? (
           <AllStores 
@@ -176,7 +168,7 @@ export default function Pets() {
       />
       
       {/* Floating Cart Button */}
-      {cartStore.items.length > 0 && !isCartOpen && (
+      {/* {cartStore.carts.length > 0 && !isCartOpen && (
         <button 
           onClick={() => setIsCartOpen(true)}
           className="fixed bottom-6 right-6 bg-red-600 text-white rounded-full px-6 py-3 flex items-center shadow-lg z-40"
@@ -184,7 +176,7 @@ export default function Pets() {
           <span className="font-medium mr-2">View Cart • {cartStore.getTotalItems()} items</span>
           <span>{cartStore.getTotalPrice()}</span>
         </button>
-      )}
-    </CartProvider>
+      )} */}
+    </>
   )
 }

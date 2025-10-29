@@ -77,7 +77,6 @@ export type Store = GroceryStore | RetailStore | ConvenienceStore | RestaurantSt
 
 // Helper type for store configuration
 export interface StoreConfig {
-  categoryFilters?: string[];
   productSections?: string[];
   showRating?: boolean;
   showPricing?: boolean;

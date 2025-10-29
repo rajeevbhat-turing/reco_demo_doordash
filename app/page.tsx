@@ -10,8 +10,8 @@ import PromoBanners from "@/components/promo-banners"
 import RestaurantSection from "@/components/restaurant-section"
 import { restaurants } from "@/constants/restaurants"
 import type { Restaurant } from "@/constants/restaurants"
-import { CartProvider } from "@/context/cart-context"
 import { useCartStore } from "@/store/cart-store"
+import { useAppStore } from "@/store/app-store"
 import { getDefaultRating } from "@/utils/rating-utils"
 import { filterRestaurantsWithMenuItems } from "@/utils/restaurant-utils"
 
@@ -26,7 +26,7 @@ export default function Home() {
   const [allFilteredRestaurants, setAllFilteredRestaurants] = useState<Restaurant[]>([])
   const filterOptionsRef = useRef<FilterOptionsRef>(null)
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
-  const { updateSearchResults, clearSearchResults } = useCartStore()
+  const { updateSearchResults, clearSearchResults } = useAppStore()
 
   // Get cart store to set category
   const cartStore = useCartStore()
@@ -258,8 +258,7 @@ export default function Home() {
   }
 
   return (
-    <CartProvider category="restaurant">
-      <div className="w-full max-w-[1200px] mx-auto px-4">
+    <div className="w-full max-w-[1200px] mx-auto px-4">
         <div className="pt-16">
           <FoodCategories selectedCategory={selectedCategory} onCategorySelect={handleCategorySelect} />
         </div>
@@ -408,6 +407,5 @@ export default function Home() {
           )}
         </div>
       </div>
-    </CartProvider>
   )
 }

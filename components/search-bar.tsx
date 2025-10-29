@@ -12,7 +12,8 @@ import { getAllPetStores, getEnrichedPetProducts } from "@/app/pets/data/pet-res
 import { convenienceData } from "@/data/convenience-data"
 import { stores as retailStores } from "@/constants/store"
 import { filterRestaurantsWithMenuItems } from "@/utils/restaurant-utils"
-import { useCartStore } from "@/store/cart-store"
+import { useAppStore } from "@/store/app-store"
+import { useVerifierStore } from "@/store/verifier-store"
 
 interface SearchResult {
   id: string
@@ -36,7 +37,8 @@ const SearchBar = () => {
   const searchInputRef = useRef<HTMLInputElement>(null)
   const searchContainerRef = useRef<HTMLDivElement>(null)
   const router = useRouter()
-  const { updateSearchResults, clearSearchResults, recordSearch } = useCartStore()
+  const { updateSearchResults, clearSearchResults } = useAppStore()
+  const { recordSearch } = useVerifierStore()
 
   // Load recent searches from localStorage on component mount
   useEffect(() => {
