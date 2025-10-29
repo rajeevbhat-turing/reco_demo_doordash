@@ -2,45 +2,13 @@
 
 import { create } from "zustand";
 import { persist, devtools } from "zustand/middleware";
-import { User } from '@/lib/types/user-types';
-
-export interface PaymentMethod {
-  id: string;
-  type: string;
-  cardNumber: string;
-  lastFour: string;
-  cvc: string;
-  expiry: string;
-  zipCode: string;
-}
-
-export interface Address {
-  id: string;
-  street: string;
-  city: string;
-  state: string;
-  zipCode: string;
-  addressType: "house" | "apartment" | "hotel" | "office" | "other";
-  gateCode?: string;
-  deliveryPreference?: "door" | "location";
-  meetLocation?: "door" | "outside";
-  deliveryInstructions?: string;
-  personalLabel?: string;
-}
-
-export interface PhoneNumber {
-  countryCode: string;
-  number: string;
-}
+import { User, PaymentMethod, Address } from '@/lib/types/user-types';
 
 interface UserStore {
   // State
   users: User[];
   currentUser: User | null;
   changePasswordPhoneVerified: boolean;
-  paymentMethods: PaymentMethod[];
-  addresses: Address[];
-  phoneNumber: PhoneNumber;
 
   // Actions
   setCurrentUser: (user: User | null) => void;
@@ -62,10 +30,6 @@ interface UserStore {
   removeAddress: (id: string) => void;
   updateAddress: (id: string, updates: Partial<Omit<Address, 'id'>>) => void;
   getAddresses: () => Address[];
-  
-  // Phone Number Actions
-  setPhoneNumber: (phoneNumber: PhoneNumber) => void;
-  getPhoneNumber: () => PhoneNumber;
 }
 
 export const useUserStore = create<UserStore>()(
@@ -86,35 +50,31 @@ export const useUserStore = create<UserStore>()(
           },
           userCountry: 'United States',
           avatar: null,
+          paymentMethods: [],
+          addresses: [
+            {
+              id: "default-address",
+              street: "548 Market Street",
+              city: "San Francisco",
+              state: "CA",
+              zipCode: "94104",
+              addressType: "house",
+              gateCode: "111",
+              deliveryPreference: "door",
+              deliveryInstructions: "Please ring the bell and drop off at the door, thank you. Its around the corner on the ground floor"
+            },
+            {
+              id: "address-2",
+              street: "47 West 13th Street",
+              city: "New York",
+              state: "NY",
+              zipCode: "10011",
+              addressType: "house"
+            }
+          ],
         }],
         currentUser: null,
         changePasswordPhoneVerified: false,
-        paymentMethods: [],
-        addresses: [
-          {
-            id: "default-address",
-            street: "548 Market Street",
-            city: "San Francisco",
-            state: "CA",
-            zipCode: "94104",
-            addressType: "house",
-            gateCode: "111",
-            deliveryPreference: "door",
-            deliveryInstructions: "Please ring the bell and drop off at the door, thank you. Its around the corner on the ground floor"
-          },
-          {
-            id: "address-2",
-            street: "47 West 13th Street",
-            city: "New York",
-            state: "NY",
-            zipCode: "10011",
-            addressType: "house"
-          }
-        ],
-        phoneNumber: {
-          countryCode: "+1 (US)",
-          number: "7450946351"
-        },
 
         // Actions
         setCurrentUser: (user: User | null) => {
@@ -184,6 +144,10 @@ export const useUserStore = create<UserStore>()(
 
         // Payment Method Actions
         addPaymentMethod: (method) => {
+          const state = get();
+          if (!state.currentUser) {
+            throw new Error('No current user');
+          }
           const id = Math.random().toString(36).substring(2, 15);
           const lastFour = method.cardNumber.replace(/\s/g, '').slice(-4);
           const newMethod: PaymentMethod = {
@@ -192,60 +156,102 @@ export const useUserStore = create<UserStore>()(
             type: "MasterCard",
             lastFour,
           };
-          set((state) => ({
-            paymentMethods: [...state.paymentMethods, newMethod],
-          }));
+          const updatedUser = {
+            ...state.currentUser,
+            paymentMethods: [...(state.currentUser?.paymentMethods || []), newMethod],
+          };
+          set({
+            currentUser: updatedUser,
+            users: state.users.map(user =>
+              user.id === state.currentUser!.id ? updatedUser : user
+            ),
+          });
           return newMethod;
         },
 
         removePaymentMethod: (id) => {
-          set((state) => ({
-            paymentMethods: state.paymentMethods.filter((method) => method.id !== id),
-          }));
+          const state = get();
+          if (!state.currentUser) {
+            return;
+          }
+          const updatedUser = {
+            ...state.currentUser,
+            paymentMethods: state.currentUser.paymentMethods.filter((method) => method.id !== id),
+          };
+          set({
+            currentUser: updatedUser,
+            users: state.users.map(user =>
+              user.id === state.currentUser!.id ? updatedUser : user
+            ),
+          });
         },
 
         getPaymentMethods: () => {
-          return get().paymentMethods;
+          return get().currentUser?.paymentMethods || [];
         },
         
         // Address Actions
         addAddress: (address) => {
+          const state = get();
+          if (!state.currentUser) {
+            throw new Error('No current user');
+          }
           const id = Math.random().toString(36).substring(2, 15);
           const newAddress: Address = {
             ...address,
             id,
           };
-          set((state) => ({
-            addresses: [...state.addresses, newAddress],
-          }));
+          const updatedUser = {
+            ...state.currentUser,
+            addresses: [...state.currentUser.addresses, newAddress],
+          };
+          set({
+            currentUser: updatedUser,
+            users: state.users.map(user =>
+              user.id === state.currentUser!.id ? updatedUser : user
+            ),
+          });
           return newAddress;
         },
 
         removeAddress: (id) => {
-          set((state) => ({
-            addresses: state.addresses.filter((address) => address.id !== id),
-          }));
+          const state = get();
+          if (!state.currentUser) {
+            return;
+          }
+          const updatedUser = {
+            ...state.currentUser,
+            addresses: state.currentUser.addresses.filter((address) => address.id !== id),
+          };
+          set({
+            currentUser: updatedUser,
+            users: state.users.map(user =>
+              user.id === state.currentUser!.id ? updatedUser : user
+            ),
+          });
         },
 
         updateAddress: (id, updates) => {
-          set((state) => ({
-            addresses: state.addresses.map((address) =>
+          const state = get();
+          if (!state.currentUser) {
+            return;
+          }
+          const updatedUser = {
+            ...state.currentUser,
+            addresses: state.currentUser.addresses.map((address) =>
               address.id === id ? { ...address, ...updates } : address
             ),
-          }));
+          };
+          set({
+            currentUser: updatedUser,
+            users: state.users.map(user =>
+              user.id === state.currentUser!.id ? updatedUser : user
+            ),
+          });
         },
 
         getAddresses: () => {
-          return get().addresses;
-        },
-        
-        // Phone Number Actions
-        setPhoneNumber: (phoneNumber: PhoneNumber) => {
-          set({ phoneNumber });
-        },
-
-        getPhoneNumber: () => {
-          return get().phoneNumber;
+          return get().currentUser?.addresses || [];
         },
       }),
       {
@@ -254,7 +260,6 @@ export const useUserStore = create<UserStore>()(
           users: state.users,
           currentUser: state.currentUser,
           changePasswordPhoneVerified: state.changePasswordPhoneVerified,
-          paymentMethods: state.paymentMethods,
         }),
       }
     ),

@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { X, Search, Plus, Edit2 } from "lucide-react"
-import { Address } from "@/store/user-store"
+import { Address } from "@/lib/types/user-types"
 
 interface AddressesModalProps {
   isOpen: boolean

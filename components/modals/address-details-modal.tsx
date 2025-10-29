@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { X, ChevronDown } from "lucide-react"
-import { Address } from "@/store/user-store"
+import { Address } from "@/lib/types/user-types"
 
 interface AddressDetailsModalProps {
   isOpen: boolean

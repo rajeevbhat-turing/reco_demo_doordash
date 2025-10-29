@@ -31,15 +31,18 @@ export default function CheckoutPage() {
   const { findCart, getSubtotal, getServiceFee, getDeliveryFee, getTotal, getTotalItems, setSelectedCard } = useCartStore()
   const { recordCheckoutNavigation, recordTipSelection, recordDeliveryTimeSelection } = useVerifierStore()
   const { 
-    paymentMethods: savedPaymentMethods, 
+    currentUser,
+    getPaymentMethods,
     addPaymentMethod, 
     removePaymentMethod,
-    addresses,
-    phoneNumber,
-    setPhoneNumber,
-    updateAddress
+    getAddresses,
+    updateAddress,
+    updateUser
   } = useUserStore()
   const { addOrder } = useOrdersStore()
+  
+  const savedPaymentMethods = getPaymentMethods()
+  const addresses = getAddresses()
   
   // Find the cart using query params
   const currentCart = categoryParam && storeIdParam ? findCart(storeIdParam, categoryParam) : null
@@ -160,7 +163,13 @@ export default function CheckoutPage() {
       },
       
       // Additional order details
-      phoneNumber: phoneNumber,
+      phoneNumber: currentUser ? {
+        countryCode: `${currentUser.country.dialCode} (${currentUser.country.code})`,
+        number: currentUser.phoneNumber
+      } : {
+        countryCode: "+1 (US)",
+        number: ""
+      },
       tipAmount: selectedTip,
       subtotal: subtotal,
       serviceFee: serviceFee,
@@ -367,7 +376,27 @@ export default function CheckoutPage() {
   
   // Handle save phone number
   const handleSavePhoneNumber = (phoneData: { countryCode: string; number: string }) => {
-    setPhoneNumber(phoneData)
+    if (currentUser) {
+      // Extract dial code and country code from the countryCode string (format: "+1 (US)")
+      const match = phoneData.countryCode.match(/^(\+\d+)\s*\(([A-Z]{2})\)$/)
+      if (match) {
+        const dialCode = match[1]
+        const countryCode = match[2]
+        updateUser(currentUser.id, {
+          phoneNumber: phoneData.number,
+          country: {
+            dialCode,
+            code: countryCode,
+            name: currentUser.country.name, // Keep existing name
+          }
+        })
+      } else {
+        // Fallback: just update the phone number
+        updateUser(currentUser.id, {
+          phoneNumber: phoneData.number
+        })
+      }
+    }
   }
   
   // Handle address selection
@@ -559,7 +588,7 @@ export default function CheckoutPage() {
 
                   {/* Address */}
                   <div>
-                    {selectedAddress && (
+                    {selectedAddress ? (
                       <div 
                         className="flex items-center justify-between py-4 px-3 cursor-pointer hover:bg-gray-100 border-b border-gray-200"
                         onClick={() => setShowAddressesModal(true)}
@@ -575,22 +604,40 @@ export default function CheckoutPage() {
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
                         </svg>
                       </div>
+                    ) : (
+                      <div 
+                        className="flex items-center justify-between py-4 px-3 cursor-pointer hover:bg-gray-100 border-b border-gray-200"
+                        onClick={() => setShowAddressesModal(true)}
+                      >
+                        <div className="flex items-center flex-1">
+                          <Home className="w-5 h-5 text-gray-600 mr-3 flex-shrink-0" />
+                          <div>
+                            <p className="font-medium text-sm">No address selected</p>
+                          </div>
+                        </div>
+                        <svg className="w-5 h-5 text-gray-400 flex-shrink-0 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+                        </svg>
+                      </div>
                     )}
 
-                    <div 
-                      className="flex items-center justify-between py-4 px-3 cursor-pointer hover:bg-gray-100 border-b border-gray-200"
-                      onClick={() => setShowAddressDetailsModal(true)}
-                    >
-                      <div className="flex items-center flex-1">
-                        <Package className="w-5 h-5 text-gray-600 mr-3 flex-shrink-0" />
-                  <div>
-                          <p className="font-medium text-sm">Leave it at my door</p>
-                          <p className="text-xs text-gray-600">Please ring the bell and drop off at the door, thank you. Its around the corner on the ground floor</p>
-                  </div>
+                    {selectedAddress && (
+                      <div 
+                        className="flex items-center justify-between py-4 px-3 cursor-pointer hover:bg-gray-100 border-b border-gray-200"
+                        onClick={() => setShowAddressDetailsModal(true)}
+                      >
+                        <div className="flex items-center flex-1">
+                          <Package className="w-5 h-5 text-gray-600 mr-3 flex-shrink-0" />
+                          <div>
+                            <p className="font-medium text-sm">Leave it at my door</p>
+                            <p className="text-xs text-gray-600">Please ring the bell and drop off at the door, thank you. Its around the corner on the ground floor</p>
+                          </div>
+                        </div>
+                        <svg className="w-5 h-5 text-gray-400 flex-shrink-0 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+                        </svg>
                       </div>
-                      <svg className="w-5 h-5 text-gray-400 flex-shrink-0 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
-                      </svg>
+                    )}
                 </div>
 
                     <div 
@@ -600,7 +647,7 @@ export default function CheckoutPage() {
                       <div className="flex items-center flex-1">
                         <Phone className="w-5 h-5 text-gray-600 mr-3 flex-shrink-0" />
                         <div>
-                          <p className="font-medium text-sm">{phoneNumber.number}</p>
+                          <p className="font-medium text-sm">{currentUser?.phoneNumber || ''}</p>
                         </div>
                       </div>
                       <svg className="w-5 h-5 text-gray-400 flex-shrink-0 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -608,7 +655,6 @@ export default function CheckoutPage() {
                       </svg>
                   </div>
                 </div>
-              </div>
               )}
             </div>
 
@@ -884,8 +930,8 @@ export default function CheckoutPage() {
         isOpen={showEditPhoneModal}
         onClose={() => setShowEditPhoneModal(false)}
         onSave={handleSavePhoneNumber}
-        initialCountryCode={phoneNumber.countryCode}
-        initialNumber={phoneNumber.number}
+        initialCountryCode={currentUser ? `${currentUser.country.dialCode} (${currentUser.country.code})` : "+1 (US)"}
+        initialNumber={currentUser?.phoneNumber || ''}
       />
 
       {/* Addresses Modal */}

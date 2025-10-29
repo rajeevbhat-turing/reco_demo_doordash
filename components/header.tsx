@@ -10,6 +10,7 @@ import SearchBar from "@/components/search-bar"
 import CartSidebar from "@/components/cart-sidebar"
 import { Button } from "@/components/ui/button"
 import AuthenticationModal from "./modals/authentication-modal"
+import AddressesModal from "./modals/addresses-modal"
 import { DashDoorLogoMark, DashDoorWordMark } from "./common/Icons"
 
 export default function Header() {
@@ -17,6 +18,30 @@ export default function Header() {
   const [isCartOpen, setIsCartOpen] = useState(false)
   const [authModalMode, setAuthModalMode] = useState<"signin" | "signup" | null>(null)
   const [cartItemCount, setCartItemCount] = useState(0)
+  const [showAddressesModal, setShowAddressesModal] = useState(false)
+  const [selectedAddressId, setSelectedAddressId] = useState<string>("")
+
+  const { getAddresses } = useUserStore()
+  const addresses = getAddresses()
+  
+  // Initialize selected address with first address
+  useEffect(() => {
+    if (addresses.length > 0) {
+      // If selected address doesn't exist anymore, or no address selected, use first address
+      if (!selectedAddressId || !addresses.find(a => a.id === selectedAddressId)) {
+        setSelectedAddressId(addresses[0].id)
+      }
+    } else {
+      setSelectedAddressId("")
+    }
+  }, [addresses, selectedAddressId])
+
+  const selectedAddress = addresses.find(a => a.id === selectedAddressId)
+  const displayAddress = selectedAddress 
+    ? selectedAddress.street.length > 20 
+      ? `${selectedAddress.street.substring(0, 17)}...`
+      : selectedAddress.street
+    : null
 
   // Update cart count whenever the cart or current store changes
   useEffect(() => {
@@ -69,6 +94,11 @@ export default function Header() {
     setIsCartOpen(!isCartOpen);
   };
 
+  const handleSelectAddress = (addressId: string) => {
+    setSelectedAddressId(addressId)
+    setShowAddressesModal(false)
+  }
+
   return (
     <>
       <header className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-200">
@@ -93,11 +123,16 @@ export default function Header() {
 
           <div className="flex">
             {/* Location */}
-            <div className="flex items-center mr-4 bg-[#f1f1f1] rounded-full px-5 h-8">
+            <button 
+              onClick={() => setShowAddressesModal(true)}
+              className="flex items-center mr-4 bg-[#f1f1f1] rounded-full px-5 h-8 hover:bg-gray-200 transition-colors cursor-pointer"
+            >
               <MapPin className="h-5 w-5 text-gray-700 mr-1" />
-              <span className="text-sm font-medium mr-1">548 Market st</span>
+              <span className="text-sm font-medium mr-1">
+                {displayAddress || "No address selected"}
+              </span>
               <ChevronDown className="h-4 w-4 text-gray-700" />
-            </div>
+            </button>
 
             {/* Delivery/Pickup - Hide in account flow */}
             {!isAccountFlow && (
@@ -148,6 +183,15 @@ export default function Header() {
       {authModalMode && (
         <AuthenticationModal onClose={() => setAuthModalMode(null)} defaultMode={authModalMode} />
       )}
+
+      {/* Addresses Modal */}
+      <AddressesModal
+        isOpen={showAddressesModal}
+        onClose={() => setShowAddressesModal(false)}
+        addresses={addresses}
+        selectedAddressId={selectedAddressId}
+        onSelectAddress={handleSelectAddress}
+      />
     </>
   );
 }
