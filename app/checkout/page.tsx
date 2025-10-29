@@ -7,6 +7,7 @@ import { ChevronLeft, ChevronRight, X, Trash2, Home, Package, Phone } from "luci
 import { useCartStore, type CartCategory } from "@/store/cart-store"
 import { useVerifierStore } from "@/store/verifier-store"
 import { useUserStore } from "@/store/user-store"
+import { useOrdersStore } from "@/store/orders-store"
 import OrderConfirmationModal from "@/components/modals/order-confirmation-modal"
 import AddCardModal from "@/components/modals/add-card-modal"
 import EditPhoneModal from "@/components/modals/edit-phone-modal"
@@ -38,6 +39,7 @@ export default function CheckoutPage() {
     setPhoneNumber,
     updateAddress
   } = useUserStore()
+  const { addOrder } = useOrdersStore()
   
   // Find the cart using query params
   const currentCart = categoryParam && storeIdParam ? findCart(storeIdParam, categoryParam) : null
@@ -116,6 +118,69 @@ export default function CheckoutPage() {
 
   const handlePlaceOrder = () => {
     const newOrderId = generateOrderId()
+    
+    // Prepare order data
+    const orderData = {
+      // 1. Order ID
+      id: newOrderId,
+      
+      // 2. Cart fields extracted to root level (without card details)
+      storeId: currentCart?.storeId,
+      storeName: currentCart?.storeName,
+      storeCategory: currentCart?.storeCategory,
+      items: currentCart?.items?.map(item => ({
+        id: item.id.toString(),
+        name: item.itemName,
+        quantity: item.quantity,
+        price: typeof item.price === 'number' 
+          ? item.price 
+          : parseFloat(item.price.toString().replace(/[^0-9.]/g, ""))
+      })),
+      
+      // 3. Payment card as object
+      paymentCard: {
+        type: selectedPaymentMethodObj?.type,
+        cardNumber: selectedPaymentMethodObj?.cardNumber,
+        lastFour: selectedPaymentMethodObj?.lastFour,
+        expiry: selectedPaymentMethodObj?.expiry,
+        cvc: selectedPaymentMethodObj?.cvc,
+        zipCode: selectedPaymentMethodObj?.zipCode,
+      },
+      
+      // 4. Address
+      deliveryAddress: selectedAddress,
+      
+      // 5. Delivery option and related info
+      deliveryOption: {
+        type: selectedDeliveryOption,
+        deliveryTime: deliveryTime,
+        extraFee: extraDeliveryFee,
+        scheduledDate: scheduledDate,
+        scheduledTimeSlot: scheduledTimeSlot,
+      },
+      
+      // Additional order details
+      phoneNumber: phoneNumber,
+      tipAmount: selectedTip,
+      subtotal: subtotal,
+      serviceFee: serviceFee,
+      deliveryFee: deliveryFee + extraDeliveryFee,
+      total: getTotal(currentStoreId || undefined, currentCategory || undefined) + selectedTip + extraDeliveryFee,
+      
+      // Order metadata
+      orderDate: new Date().toLocaleDateString('en-US', { 
+        weekday: 'short', 
+        month: 'short', 
+        day: 'numeric' 
+      }),
+      status: 'Confirmed',
+    }
+    
+    console.log('ORDER DATA:', orderData)
+    
+    // Save order to store
+    addOrder(orderData)
+    
     setOrderId(newOrderId)
     setShowOrderConfirmation(true)
   }
@@ -675,7 +740,12 @@ export default function CheckoutPage() {
             {/* Place Order Button */}
             <button 
               onClick={handlePlaceOrder}
-              className="w-full bg-red-600 hover:bg-red-700 text-white font-medium py-4 rounded-lg text-lg"
+              disabled={!selectedPaymentMethodObj}
+              className={`w-full font-medium py-4 rounded-lg text-lg ${
+                selectedPaymentMethodObj
+                  ? 'bg-red-600 hover:bg-red-700 text-white cursor-pointer'
+                  : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+              }`}
             >
               {isClient ? `Place Order • $${getTotalWithExtras().toFixed(2)}` : 'Place Order'}
             </button>
@@ -712,10 +782,6 @@ export default function CheckoutPage() {
                   <div className="flex justify-between">
                     <span>Service Fee</span>
                     <span>${serviceFee.toFixed(2)}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Estimated Tax</span>
-                    <span>$0.67</span>
                   </div>
                 </div>
               </div>

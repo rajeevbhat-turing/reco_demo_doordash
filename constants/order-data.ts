@@ -5,22 +5,63 @@ export interface OrderItem {
   price: number;
 }
 
-export interface Order {
-  id: string;
-  restaurantId: string;
-  restaurantName: string;
-  orderDate: string;
-  totalAmount: number;
-  items: OrderItem[];
-  status: string;
-  orderType: 'Personal' | 'Business';
-  rating?: number;
-  tags?: string[];
-  isDashPass?: boolean;
-  isGroupOrder?: boolean;
+export interface PaymentCard {
+  type?: string;
+  cardNumber?: string;
+  lastFour?: string;
+  expiry?: string;
+  cvc?: string;
+  zipCode?: string;
 }
 
-export const orderData: Order[] = [
+export interface DeliveryOption {
+  type: string;
+  deliveryTime: string;
+  extraFee: number;
+  scheduledDate?: Date | null;
+  scheduledTimeSlot?: string;
+}
+
+export interface PhoneNumber {
+  countryCode: string;
+  number: string;
+}
+
+export interface DeliveryAddress {
+  id: string;
+  street: string;
+  city: string;
+  state: string;
+  zipCode: string;
+  addressType: "house" | "apartment" | "hotel" | "office" | "other";
+  gateCode?: string;
+  deliveryPreference?: "door" | "location";
+  meetLocation?: "door" | "outside";
+  deliveryInstructions?: string;
+  personalLabel?: string;
+}
+
+export interface Order {
+  id: string;
+  storeId?: string;
+  storeName?: string;
+  storeCategory?: string;
+  items?: OrderItem[];
+  paymentCard: PaymentCard;
+  deliveryAddress?: DeliveryAddress;
+  deliveryOption: DeliveryOption;
+  phoneNumber: PhoneNumber;
+  tipAmount: number;
+  subtotal: number;
+  serviceFee: number;
+  deliveryFee: number;
+  total: number;
+  orderDate: string;
+  status: string;
+}
+
+// Commented out dummy data - now using real orders from the store
+/* export const orderData: Order[] = [
   {
     id: 'order-1',
     restaurantId: 'Starbucks',
@@ -321,4 +362,4 @@ export const orderData: Order[] = [
     isDashPass: true,
     tags: ['Fragile Items']
   },
-]; 
+]; */ 

@@ -3,9 +3,8 @@
 import { useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { X, CheckCircle } from "lucide-react"
-import { useCartStore } from "@/store/cart-store"
+import { useCartStore, type CartCategory } from "@/store/cart-store"
 import { useVerifierStore } from "@/store/verifier-store"
-import { useOrdersStore } from "@/store/orders-store"
 
 interface OrderConfirmationModalProps {
   isOpen: boolean
@@ -17,7 +16,7 @@ interface OrderConfirmationModalProps {
   deliveryTime?: string
   storeName?: string
   storeId?: string
-  category?: string
+  category?: CartCategory
 }
 
 export default function OrderConfirmationModal({ 
@@ -33,9 +32,12 @@ export default function OrderConfirmationModal({
   category
 }: OrderConfirmationModalProps) {
   const router = useRouter()
-  const { items, clearCart, currentCategory, currentStoreId, currentRestaurantId } = useCartStore()
+  const { findCart, clearCart } = useCartStore()
   const { recordOrderCompletion } = useVerifierStore()
-  const { addOrder } = useOrdersStore()
+  
+  // Get the current cart using the provided storeId and category
+  const currentCart = storeId && category ? findCart(storeId, category) : null
+  const items = currentCart?.items || []
 
   useEffect(() => {
     if (isOpen) {
@@ -55,40 +57,29 @@ export default function OrderConfirmationModal({
       tipAmount,
       total,
       storeName: storeName || "Store",
-      category: category || currentCategory,
+      category: category,
       itemsCount: items.length,
       items: items.map(item => item.itemName)
     })
 
     // Record order completion in cart store for verifiers
-    recordOrderCompletion({
-      orderId,
-      tipAmount,
-      orderTotal: total,
-      storeName: storeName || "Store",
-      category: category || currentCategory,
-      items
-    })
-    console.log('[ORDER] ✅ Recorded order completion in cart store')
+    if (category) {
+      recordOrderCompletion({
+        orderId,
+        tipAmount,
+        orderTotal: total,
+        storeName: storeName || "Store",
+        category: category,
+        items
+      })
+      console.log('[ORDER] ✅ Recorded order completion in cart store')
+    }
 
-    // Add order to orders store
-    const orderData = {
-      orderId,
-      storeName: storeName || "Store",
-      storeId: storeId || currentStoreId || currentRestaurantId || "unknown",
-      category: category || currentCategory,
-      items,
-      total,
-      deliveryTime,
-      scheduledTime
-    };
-    console.log('[ORDER] 📦 Adding order to orders store with data:', orderData);
-    addOrder(orderData);
-    console.log('[ORDER] ✅ Added order to orders store')
-
-    // Clear the cart
-    clearCart()
-    console.log('[ORDER] ✅ Cart cleared')
+    // Clear the specific cart
+    if (storeId && category) {
+      clearCart(storeId, category)
+      console.log('[ORDER] ✅ Cart cleared for:', storeId, category)
+    }
 
     // Close modal
     onClose()
