@@ -1,8 +1,9 @@
 "use client"
 
-import { useState } from "react"
-import { X, Search, Plus, Edit2 } from "lucide-react"
+import { useState, useMemo } from "react"
+import { X, Search, Plus, Edit2, ChevronRight } from "lucide-react"
 import { Address } from "@/lib/types/user-types"
+import addressesData from "@/data/addresses.json"
 
 interface AddressesModalProps {
   isOpen: boolean
@@ -11,6 +12,8 @@ interface AddressesModalProps {
   selectedAddressId?: string
   onSelectAddress: (addressId: string) => void
   onEditAddress?: (addressId: string) => void
+  onSelectSearchAddress?: (address: Address) => void
+  onManualEntry?: () => void
 }
 
 export default function AddressesModal({ 
@@ -19,16 +22,27 @@ export default function AddressesModal({
   addresses,
   selectedAddressId,
   onSelectAddress,
-  onEditAddress
+  onEditAddress,
+  onSelectSearchAddress,
+  onManualEntry
 }: AddressesModalProps) {
   const [searchQuery, setSearchQuery] = useState("")
 
-  if (!isOpen) return null
+  // Filter searchable addresses from JSON data (API simulation) - for dropdown
+  const filteredSearchAddresses = useMemo(() => {
+    if (!searchQuery.trim()) {
+      return []
+    }
+    const query = searchQuery.toLowerCase()
+    return (addressesData as Address[]).filter((address) => {
+      const fullAddress = `${address.street} ${address.city} ${address.state} ${address.zipCode}`.toLowerCase()
+      return fullAddress.includes(query)
+    })
+  }, [searchQuery])
 
-  const filteredAddresses = addresses.filter(address => {
-    const fullAddress = `${address.street} ${address.city} ${address.state} ${address.zipCode}`.toLowerCase()
-    return fullAddress.includes(searchQuery.toLowerCase())
-  })
+  const hasSearchResults = searchQuery.trim().length > 0 && filteredSearchAddresses.length > 0
+
+  if (!isOpen) return null
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
@@ -58,6 +72,41 @@ export default function AddressesModal({
               placeholder="Enter Your Address"
               className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 bg-gray-50"
             />
+            
+            {/* Dropdown with search results */}
+            {searchQuery.trim().length > 0 && (
+              <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-64 overflow-y-auto z-10">
+                {filteredSearchAddresses.map((address) => (
+                  <div
+                    key={address.id}
+                    className="flex items-center justify-between p-3 hover:bg-gray-100 cursor-pointer transition-colors"
+                    onClick={() => {
+                      onSelectSearchAddress?.(address as Address)
+                      setSearchQuery("")
+                    }}
+                  >
+                    <div className="flex-1 mr-2">
+                      <p className="text-gray-900 text-sm">
+                        {address.street}, {address.city} {address.state} {address.zipCode}
+                      </p>
+                    </div>
+                    <ChevronRight className="w-5 h-5 text-gray-400 flex-shrink-0" />
+                  </div>
+                ))}
+                {onManualEntry && (
+                  <div
+                    className="flex items-center justify-between p-3 hover:bg-gray-100 cursor-pointer transition-colors border-t border-gray-200"
+                    onClick={() => {
+                      onManualEntry()
+                      setSearchQuery("")
+                    }}
+                  >
+                    <p className="text-gray-900 text-sm">Enter address manually</p>
+                    <ChevronRight className="w-5 h-5 text-gray-400 flex-shrink-0" />
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Add Label Button */}
@@ -66,52 +115,55 @@ export default function AddressesModal({
             <span className="font-medium">Add label</span>
           </button>
         </div>
-        {/* Address List */}
+        {/* Address List - Shows all user's saved addresses */}
         <div>
-          {filteredAddresses.map((address, index) => (
-            <div 
-              key={address.id}
-              className={`flex items-start p-4 hover:bg-gray-100 cursor-pointer transition-colors ${
-                index === filteredAddresses.length - 1 ? 'rounded-b-2xl' : ''
-              }`}
-              onClick={() => onSelectAddress(address.id)}
-            >
-              {/* Radio Button */}
-              <div className="flex items-center justify-center mt-1 mr-3 flex-shrink-0">
-                <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
-                  selectedAddressId === address.id 
-                    ? "border-red-500" 
-                    : "border-gray-300"
-                }`}>
-                  {selectedAddressId === address.id && (
-                    <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-                  )}
-                </div>
-              </div>
-
-              {/* Address Content */}
-              <div className="flex-1">
-                <p className="font-medium text-gray-900">{address.street}</p>
-                <p className="text-sm text-gray-600">{address.city}, {address.state} {address.zipCode}</p>
-              </div>
-
-              {/* Edit Icon */}
-              <button 
-                className="flex-shrink-0 p-2 hover:bg-gray-200 rounded-full transition-colors ml-2"
-                onClick={(e) => {
-                  e.stopPropagation()
-                  if (onEditAddress) {
-                    onEditAddress(address.id)
-                  }
-                }}
+          {addresses.map((address, index) => {
+            const isLastAddress = index === addresses.length - 1
+            return (
+              <div 
+                key={address.id}
+                className={`flex items-start p-4 hover:bg-gray-100 cursor-pointer transition-colors ${
+                  isLastAddress ? 'rounded-b-2xl' : ''
+                }`}
+                onClick={() => onSelectAddress(address.id)}
               >
-                <Edit2 className="w-5 h-5 text-gray-600" />
-              </button>
-            </div>
-          ))}
+                {/* Radio Button */}
+                <div className="flex items-center justify-center mt-1 mr-3 flex-shrink-0">
+                  <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                    selectedAddressId === address.id 
+                      ? "border-red-500" 
+                      : "border-gray-300"
+                  }`}>
+                    {selectedAddressId === address.id && (
+                      <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Address Content */}
+                <div className="flex-1">
+                  <p className="font-medium text-gray-900">{address.street}</p>
+                  <p className="text-sm text-gray-600">{address.city}, {address.state} {address.zipCode}</p>
+                </div>
+
+                {/* Edit Icon */}
+                <button 
+                  className="flex-shrink-0 p-2 hover:bg-gray-200 rounded-full transition-colors ml-2"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    if (onEditAddress) {
+                      onEditAddress(address.id)
+                    }
+                  }}
+                >
+                  <Edit2 className="w-5 h-5 text-gray-600" />
+                </button>
+              </div>
+            )
+          })}
         </div>
 
-        {filteredAddresses.length === 0 && (
+        {addresses.length === 0 && (
           <p className="text-center text-gray-500 py-8">No addresses found</p>
         )}
       </div>

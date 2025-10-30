@@ -3,16 +3,20 @@
 import { useState, useEffect, useCallback } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import Image from "next/image"
-import { ChevronLeft, ChevronRight, X, Trash2, Home, Package, Phone } from "lucide-react"
+import { ChevronLeft, ChevronRight, X, Trash2, Home, Package, Phone, ShoppingCart, Plus, Minus, ChevronDown, ChevronUp } from "lucide-react"
 import { useCartStore, type CartCategory } from "@/store/cart-store"
 import { useVerifierStore } from "@/store/verifier-store"
 import { useUserStore } from "@/store/user-store"
 import { useOrdersStore } from "@/store/orders-store"
+import { Address } from "@/lib/types/user-types"
 import OrderConfirmationModal from "@/components/modals/order-confirmation-modal"
 import AddCardModal from "@/components/modals/add-card-modal"
 import EditPhoneModal from "@/components/modals/edit-phone-modal"
 import AddressesModal from "@/components/modals/addresses-modal"
 import AddressDetailsModal from "@/components/modals/address-details-modal"
+import AddAddressModal from "@/components/modals/add-address-modal"
+import AddressReviewErrorModal from "@/components/modals/address-review-error-modal"
+import AddressTypeModal from "@/components/modals/address-type-modal"
 import ScheduleDeliveryModal from "@/components/modals/schedule-delivery-modal"
 import { getRestaurantById } from "@/constants/restaurants"
 import { stores } from "@/data/store-data"
@@ -28,7 +32,7 @@ export default function CheckoutPage() {
   const categoryParam = searchParams.get('category') as CartCategory | null
   const storeIdParam = searchParams.get('storeId')
   
-  const { findCart, getSubtotal, getServiceFee, getDeliveryFee, getTotal, getTotalItems, setSelectedCard } = useCartStore()
+  const { findCart, getSubtotal, getServiceFee, getDeliveryFee, getTotal, getTotalItems, setSelectedCard, removeItem, updateQuantity } = useCartStore()
   const { recordCheckoutNavigation, recordTipSelection, recordDeliveryTimeSelection } = useVerifierStore()
   const { 
     currentUser,
@@ -37,7 +41,8 @@ export default function CheckoutPage() {
     removePaymentMethod,
     getAddresses,
     updateAddress,
-    updateUser
+    updateUser,
+    addAddress
   } = useUserStore()
   const { addOrder } = useOrdersStore()
   
@@ -74,7 +79,11 @@ export default function CheckoutPage() {
   
   // Payment details
   const [showExpandedPayment, setShowExpandedPayment] = useState(false)
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(savedPaymentMethods[0]?.id || "")
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(() => {
+    // Find default payment method or use first payment method
+    const defaultPaymentMethod = savedPaymentMethods.find(pm => pm.default)
+    return defaultPaymentMethod?.id || savedPaymentMethods[0]?.id || ""
+  })
   
   // Shipping details edit state
   const [showExpandedShipping, setShowExpandedShipping] = useState(true)
@@ -87,10 +96,26 @@ export default function CheckoutPage() {
   
   // Addresses modal state
   const [showAddressesModal, setShowAddressesModal] = useState(false)
-  const [selectedAddressId, setSelectedAddressId] = useState(addresses[0]?.id || "")
+  const [selectedAddressId, setSelectedAddressId] = useState(() => {
+    // Find default address or use first address
+    const defaultAddress = addresses.find(a => a.default)
+    return defaultAddress?.id || addresses[0]?.id || ""
+  })
   
   // Address details modal state
   const [showAddressDetailsModal, setShowAddressDetailsModal] = useState(false)
+  
+  // Add address modal state
+  const [showAddAddressModal, setShowAddAddressModal] = useState(false)
+  const [showReviewErrorModal, setShowReviewErrorModal] = useState(false)
+  const [pendingAddressData, setPendingAddressData] = useState<Omit<Address, 'id'> | null>(null)
+  
+  // Address type modal state
+  const [showAddressTypeModal, setShowAddressTypeModal] = useState(false)
+  const [tempAddressData, setTempAddressData] = useState<Omit<Address, 'id'> | null>(null)
+  
+  // Order summary accordion state
+  const [showOrderSummary, setShowOrderSummary] = useState(false)
 
   // Fix hydration by ensuring client-side only rendering
   useEffect(() => {
@@ -99,10 +124,26 @@ export default function CheckoutPage() {
     recordCheckoutNavigation()
   }, [recordCheckoutNavigation])
   
+  // Always sync with default address when addresses change
+  useEffect(() => {
+    if (addresses.length > 0) {
+      // Find default address
+      const defaultAddress = addresses.find(a => a.default)
+      const defaultAddressId = defaultAddress?.id || addresses[0].id
+      
+      // If there's a default address and it's different from current selection, update it
+      if (defaultAddressId !== selectedAddressId) {
+        setSelectedAddressId(defaultAddressId)
+      }
+    }
+  }, [addresses])
+  
   // Update selected payment method when payment methods change
   useEffect(() => {
     if (savedPaymentMethods.length > 0 && !selectedPaymentMethod) {
-      updateSelectedPaymentMethod(savedPaymentMethods[0].id)
+      // Find default payment method or use first payment method
+      const defaultPaymentMethod = savedPaymentMethods.find(pm => pm.default)
+      updateSelectedPaymentMethod(defaultPaymentMethod?.id || savedPaymentMethods[0].id)
     }
   }, [savedPaymentMethods, selectedPaymentMethod])
   
@@ -230,6 +271,15 @@ export default function CheckoutPage() {
       return store?.name || 'Store'
     }
     return currentCategory === 'restaurant' ? 'Restaurant' : 'Store'
+  }
+
+  // Navigate back to store page
+  const handleBackToStore = () => {
+    if (currentStoreId && currentCategory) {
+      router.push(`/store/${currentStoreId}?category=${currentCategory}`)
+    } else {
+      router.back()
+    }
   }
 
   // Generate schedule times for the rest of the day
@@ -405,6 +455,64 @@ export default function CheckoutPage() {
     setShowAddressesModal(false)
   }
 
+  // Handle select address from search results
+  const handleSelectSearchAddress = (address: Address) => {
+    // Store the search result temporarily (without id)
+    const { id, ...addressWithoutId } = address
+    setTempAddressData(addressWithoutId)
+    setShowAddressesModal(false)
+    setShowAddressTypeModal(true)
+  }
+
+  // Handle address type selection
+  const handleAddressTypeNext = (addressType: Address['addressType']) => {
+    if (tempAddressData) {
+      const addressWithType = { ...tempAddressData, addressType }
+      setTempAddressData(addressWithType)
+      setShowAddressTypeModal(false)
+      setShowAddressDetailsModal(true)
+    }
+  }
+
+  // Handle manual address entry
+  const handleManualEntry = () => {
+    setShowAddressesModal(false)
+    setShowAddAddressModal(true)
+  }
+
+  // Handle adding new address - show review error modal
+  const handleAddAddress = (addressData: Omit<Address, 'id'>) => {
+    setPendingAddressData(addressData)
+    setShowAddAddressModal(false)
+    setShowReviewErrorModal(true)
+  }
+
+  // Handle review address - go back to add address modal with pre-filled data
+  const handleReviewAddress = () => {
+    setShowReviewErrorModal(false)
+    if (pendingAddressData) {
+      // Extract apartment/suite from street if it exists
+      const streetParts = pendingAddressData.street.split(',').map(s => s.trim())
+      const initialData = {
+        street: pendingAddressData.street,
+        apartmentSuite: streetParts[1] || "",
+        city: pendingAddressData.city,
+        state: pendingAddressData.state,
+        zipCode: pendingAddressData.zipCode,
+      }
+      // Store in a state that AddAddressModal can use
+      setShowAddAddressModal(true)
+      // The initialData will be passed via the modal's initialData prop
+    }
+  }
+
+  // Handle enter new address - open add address modal with empty state
+  const handleEnterNewAddress = () => {
+    setPendingAddressData(null)
+    setShowReviewErrorModal(false)
+    setShowAddAddressModal(true)
+  }
+
   // Handle edit address from addresses modal
   const handleEditAddress = (addressId: string) => {
     setSelectedAddressId(addressId)
@@ -414,16 +522,22 @@ export default function CheckoutPage() {
 
   // Handle saving address details
   const handleSaveAddressDetails = (addressData: any) => {
-    if (selectedAddress) {
+    if (tempAddressData) {
+      // This is from search results - save as new address
+      const newAddress = addAddress({
+        ...tempAddressData,
+        ...addressData,
+        addressType: addressData.addressType || tempAddressData.addressType || 'house',
+      })
+      setSelectedAddressId(newAddress.id)
+      setTempAddressData(null)
+    } else if (selectedAddress) {
+      // This is editing an existing address
       updateAddress(selectedAddress.id, {
-        addressType: addressData.addressType,
-        gateCode: addressData.gateCode,
-        deliveryPreference: addressData.deliveryPreference,
-        meetLocation: addressData.meetLocation,
-        deliveryInstructions: addressData.deliveryInstructions,
-        personalLabel: addressData.personalLabel,
+        ...addressData
       })
     }
+    setShowAddressDetailsModal(false)
   }
 
   // Calculate total with extra delivery fee and tip
@@ -466,18 +580,7 @@ export default function CheckoutPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 py-6">
-        {/* Header */}
-        <div className="flex items-center mb-6">
-          <button 
-            onClick={() => router.back()}
-            className="flex items-center text-gray-600 hover:text-gray-800"
-          >
-            <ChevronLeft className="h-5 w-5 mr-1" />
-            Back to Store
-          </button>
-        </div>
-
+      <div className="max-w-7xl mx-auto px-4 py-6 pt-20 pr-[450px]">
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Left Column - Checkout Form */}
           <div className="flex-1 space-y-6">
@@ -798,92 +901,172 @@ export default function CheckoutPage() {
           </div>
 
           {/* Right Column - Order Summary */}
-          <div className="lg:w-96">
-            <div className="bg-white rounded-lg p-6 shadow-sm sticky top-6">
-              {/* Cart Header */}
-              <div className="flex items-center justify-between mb-6">
+          <div className="fixed top-16 right-0 w-[434px] h-[calc(100vh-4rem)] overflow-y-auto border-l border-gray-200">
+            <div className="bg-white h-full flex flex-col">
+              {/* Store Header - Clickable */}
+              <button 
+                onClick={handleBackToStore}
+                className="w-full flex items-center justify-between p-4 border-b border-gray-200 hover:bg-gray-50 transition-colors"
+              >
                 <div className="flex items-center">
-                  <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center mr-3">
-                    <span className="text-sm font-medium">MV</span>
+                  <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mr-3">
+                    <span className="text-purple-600 font-bold text-lg">
+                      {getStoreName().charAt(0)}
+                    </span>
                   </div>
-                  <div>
-                    <p className="text-sm text-gray-600">Your cart from</p>
-                    <p className="font-medium">{getStoreName()}</p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Order Summary */}
-              <div className="mb-6">
-                <h3 className="font-medium mb-2">Order Summary ({totalItems} items)</h3>
-                <div className="space-y-2 text-sm">
-                  <div className="flex justify-between">
-                    <span>Subtotal</span>
-                    <span>${subtotal.toFixed(2)}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Delivery Fee</span>
-                    <span>${(deliveryFee + extraDeliveryFee).toFixed(2)}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Service Fee</span>
-                    <span>${serviceFee.toFixed(2)}</span>
+                  <div className="text-left">
+                    <p className="text-xs text-gray-600">Your cart from</p>
+                    <p className="font-semibold text-gray-900">{getStoreName()}</p>
                   </div>
                 </div>
+                <ChevronRight className="w-5 h-5 text-gray-400" />
+              </button>
+
+              {/* Place Order Button */}
+              <div className="px-4 pt-4">
+                <button 
+                  onClick={handlePlaceOrder}
+                  className="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-3 rounded-full transition-colors"
+                >
+                  Place Order
+                </button>
               </div>
 
-              {/* Dasher Tip */}
-              <div className="mb-6">
-                <h3 className="font-medium mb-3">Dasher Tip</h3>
-                <div className="grid grid-cols-4 gap-2">
-                  {tipOptions.map((tip) => (
-                    <button 
-                      key={tip}
-                      onClick={() => handleTipSelect(tip)}
-                      className={`border rounded py-2 text-sm ${
-                        selectedTip === tip 
-                          ? "border-black bg-black text-white" 
-                          : "border-gray-200"
-                      }`}
-                    >
-                      ${tip.toFixed(2)}
-                    </button>
-                  ))}
-                </div>
-                <p className="text-xs text-gray-500 mt-2">
-                  The recommended Dasher tip is based on the delivery distance and effort. 100% of the tip goes to your Dasher.
-                </p>
-              </div>
+              {/* Order Summary Accordion */}
+              <div className="border-b border-gray-200">
+                <button
+                  onClick={() => setShowOrderSummary(!showOrderSummary)}
+                  className="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-colors"
+                >
+                  <div className="flex items-center">
+                    <ShoppingCart className="w-5 h-5 mr-2 text-gray-700" />
+                    <span className="font-medium text-gray-900">Order Summary ({totalItems} Items)</span>
+                  </div>
+                  {showOrderSummary ? (
+                    <ChevronUp className="w-5 h-5 text-gray-600" />
+                  ) : (
+                    <ChevronDown className="w-5 h-5 text-gray-600" />
+                  )}
+                </button>
 
-              {/* Cart Items */}
-              <div className="space-y-4">
-                {items.map((item) => (
-                  <div key={item.id} className="flex items-center">
-                    <div className="relative w-12 h-12 mr-3 flex-shrink-0">
-                      <Image
-                        src={item.image || "/placeholder.svg"}
-                        alt={item.itemName}
-                        fill
-                        className="object-cover rounded"
-                      />
-                    </div>
-                    <div className="flex-1">
-                      <h4 className="font-medium text-sm">{item.itemName}</h4>
-                      {item.customizations && (
-                        <p className="text-xs text-gray-600">{item.customizations}</p>
-                      )}
-                    </div>
-                    <div className="flex items-center">
-                      <button className="w-6 h-6 bg-red-600 text-white rounded-full flex items-center justify-center text-xs mr-2">
-                        🗑
-                      </button>
-                      <span className="text-sm mr-2">{item.quantity}×</span>
-                      <button className="w-6 h-6 bg-gray-100 rounded-full flex items-center justify-center text-sm">
-                        +
+                {showOrderSummary && (
+                  <div className="px-4 pb-4">
+                    {/* Items Header with Add More Button */}
+                    <div className="flex items-center justify-between mb-4">
+                      <span className="font-medium text-gray-900">Items</span>
+                      <button 
+                        onClick={handleBackToStore}
+                        className="flex items-center text-sm text-gray-700 hover:text-gray-900 bg-gray-200 hover:bg-gray-300 rounded-full px-2 py-1"
+                      >
+                        <Plus className="w-4 h-4 mr-1" />
+                        Add more items
                       </button>
                     </div>
+
+                    {/* Cart Items */}
+                    <div className="space-y-4 mb-4">
+                      {items.map((item) => (
+                        <div key={item.id} className="flex gap-3">
+                          <div className="relative w-16 h-16 flex-shrink-0 rounded-lg overflow-hidden bg-gray-100">
+                            <Image
+                              src={item.image || "/placeholder.svg"}
+                              alt={item.itemName}
+                              fill
+                              className="object-cover"
+                            />
+                          </div>
+                          <div className="flex min-w-0 gap-2">
+                            <div className="flex flex-col justify-between">
+                              <h4 className="font-medium text-sm text-gray-900 mb-1">{item.itemName}</h4>
+                              {item.customizations && (
+                                <p className="text-xs text-gray-600 mb-2">{item.customizations}</p>
+                              )}
+                              <div className="text-sm font-medium text-gray-900 flex-shrink-0">
+                                ${(getItemPrice(item) * item.quantity).toFixed(2)}
+                              </div>
+                            </div>
+                            
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center bg-gray-100 rounded-full">
+                                {item.quantity <= 1 ? (
+                                  <button
+                                    className="p-1.5 bg-white rounded-full shadow-sm hover:bg-gray-50"
+                                    onClick={() => removeItem(item.id)}
+                                    aria-label="Remove item"
+                                  >
+                                    <Trash2 className="h-3.5 w-3.5 text-gray-600" />
+                                  </button>
+                                ) : (
+                                  <button
+                                    className="p-1.5 bg-white rounded-full shadow-sm hover:bg-gray-50"
+                                    onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                                    aria-label="Decrease quantity"
+                                  >
+                                    <Minus className="h-3.5 w-3.5 text-gray-600" />
+                                  </button>
+                                )}
+                                <span className="mx-3 text-sm font-medium">{item.quantity}×</span>
+                                <button
+                                  className="p-1.5 bg-white rounded-full shadow-sm hover:bg-gray-50"
+                                  onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                                  aria-label="Increase quantity"
+                                >
+                                  <Plus className="h-3.5 w-3.5 text-gray-600" />
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                          
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                ))}
+                )}
+              </div>
+
+              {/* Deals & Gift Cards - Commented Out */}
+              {/* <div className="border-b border-gray-200">
+                <button className="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-colors">
+                  <div className="flex items-center">
+                    <svg className="w-5 h-5 mr-2 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                    </svg>
+                    <span className="font-medium text-gray-900">Deals & gift cards</span>
+                  </div>
+                  <ChevronRight className="w-5 h-5 text-gray-400" />
+                </button>
+              </div> */}
+
+              {/* Pricing Summary */}
+              <div className="p-4 space-y-3 border-t border-gray-200">
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-700">Subtotal</span>
+                  <span className="text-gray-900 font-medium">${subtotal.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <div className="flex items-center">
+                    <span className="text-gray-700">Delivery Fee</span>
+                    <svg className="w-4 h-4 ml-1 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <circle cx="12" cy="12" r="10" strokeWidth="2"/>
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 16v-4m0-4h.01"/>
+                    </svg>
+                  </div>
+                  <span className="text-gray-900 font-medium">${(deliveryFee + extraDeliveryFee).toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between text-sm pb-3 border-b border-gray-200">
+                  <div className="flex items-center">
+                    <span className="text-gray-700">Fees & Estimated Tax</span>
+                    <svg className="w-4 h-4 ml-1 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <circle cx="12" cy="12" r="10" strokeWidth="2"/>
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 16v-4m0-4h.01"/>
+                    </svg>
+                  </div>
+                  <span className="text-gray-900 font-medium">${serviceFee.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between pt-1">
+                  <span className="text-gray-900 font-semibold">Total</span>
+                  <span className="text-gray-900 font-bold text-lg">${getTotalWithExtras().toFixed(2)}</span>
+                </div>
               </div>
             </div>
           </div>
@@ -942,14 +1125,87 @@ export default function CheckoutPage() {
         selectedAddressId={selectedAddressId}
         onSelectAddress={handleSelectAddress}
         onEditAddress={handleEditAddress}
+        onManualEntry={handleManualEntry}
+        onSelectSearchAddress={handleSelectSearchAddress}
+      />
+
+      {/* Add Address Modal */}
+      <AddAddressModal
+        isOpen={showAddAddressModal}
+        onClose={() => {
+          setShowAddAddressModal(false)
+          setPendingAddressData(null)
+        }}
+        onContinue={handleAddAddress}
+        onBack={() => {
+          setShowAddAddressModal(false)
+          setShowAddressesModal(true)
+          setPendingAddressData(null)
+        }}
+        initialData={pendingAddressData ? (() => {
+          // Extract apartment/suite from street if it exists
+          const streetParts = pendingAddressData.street.split(',').map(s => s.trim())
+          return {
+            street: pendingAddressData.street,
+            apartmentSuite: streetParts[1] || "",
+            city: pendingAddressData.city,
+            state: pendingAddressData.state,
+            zipCode: pendingAddressData.zipCode,
+          }
+        })() : undefined}
+      />
+
+      {/* Address Review Error Modal */}
+      <AddressReviewErrorModal
+        isOpen={showReviewErrorModal}
+        onClose={() => {
+          setShowReviewErrorModal(false)
+          setPendingAddressData(null)
+        }}
+        onReviewAddress={handleReviewAddress}
+        onEnterNewAddress={handleEnterNewAddress}
+      />
+
+      {/* Address Type Modal */}
+      <AddressTypeModal
+        isOpen={showAddressTypeModal}
+        onClose={() => {
+          setShowAddressTypeModal(false)
+          setTempAddressData(null)
+        }}
+        addressData={tempAddressData || {
+          street: '',
+          city: '',
+          state: '',
+          zipCode: '',
+          addressType: 'house'
+        }}
+        onNext={handleAddressTypeNext}
+        onBack={() => {
+          setShowAddressTypeModal(false)
+          setShowAddressesModal(true)
+        }}
       />
 
       {/* Address Details Modal */}
       <AddressDetailsModal
         isOpen={showAddressDetailsModal}
-        onClose={() => setShowAddressDetailsModal(false)}
-        address={selectedAddress}
+        onClose={() => {
+          setShowAddressDetailsModal(false)
+          if (!tempAddressData) {
+            // If not from search, just close
+            return
+          }
+          // If from search, clear temp data
+          setTempAddressData(null)
+        }}
+        address={(tempAddressData || selectedAddress) as Address | Omit<Address, 'id'> | undefined}
         onSave={handleSaveAddressDetails}
+        hideAddressType={!!tempAddressData} // Hide type dropdown when coming from search flow
+        onBack={tempAddressData ? () => {
+          setShowAddressDetailsModal(false)
+          setShowAddressTypeModal(true)
+        } : undefined}
       />
     </div>
   )

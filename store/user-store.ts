@@ -230,10 +230,16 @@ export const useUserStore = create<UserStore>()(
           const newAddress: Address = {
             ...address,
             id,
+            default: true, // Set new address as default
           };
+          // Set default: false for all existing addresses
+          const updatedAddresses = state.currentUser.addresses.map(addr => ({
+            ...addr,
+            default: false
+          }));
           const updatedUser = {
             ...state.currentUser,
-            addresses: [...state.currentUser.addresses, newAddress],
+            addresses: [...updatedAddresses, newAddress],
           };
           set({
             currentUser: updatedUser,
