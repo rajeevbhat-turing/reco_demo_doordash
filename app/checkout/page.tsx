@@ -33,7 +33,7 @@ export default function CheckoutPage() {
   const storeIdParam = searchParams.get('storeId')
   
   const { findCart, getSubtotal, getServiceFee, getDeliveryFee, getTotal, getTotalItems, setSelectedCard, removeItem, updateQuantity } = useCartStore()
-  const { recordCheckoutNavigation, recordTipSelection, recordDeliveryTimeSelection } = useVerifierStore()
+  const { recordCheckoutNavigation, recordDeliveryTimeSelection } = useVerifierStore()
   const { 
     currentUser,
     getPaymentMethods,
@@ -73,9 +73,6 @@ export default function CheckoutPage() {
   const [selectedDeliveryOption, setSelectedDeliveryOption] = useState("standard")
   const [deliveryTime, setDeliveryTime] = useState("45-60 min")
   const [extraDeliveryFee, setExtraDeliveryFee] = useState(0)
-  
-  // Dasher tip
-  const [selectedTip, setSelectedTip] = useState(3.00)
   
   // Payment details
   const [showExpandedPayment, setShowExpandedPayment] = useState(false)
@@ -211,11 +208,11 @@ export default function CheckoutPage() {
         countryCode: "+1 (US)",
         number: ""
       },
-      tipAmount: selectedTip,
+      tipAmount: 0,
       subtotal: subtotal,
       serviceFee: serviceFee,
       deliveryFee: deliveryFee + extraDeliveryFee,
-      total: getTotal(currentStoreId || undefined, currentCategory || undefined) + selectedTip + extraDeliveryFee,
+      total: getTotal(currentStoreId || undefined, currentCategory || undefined) + extraDeliveryFee,
       
       // Order metadata
       orderDate: new Date().toLocaleDateString('en-US', { 
@@ -368,11 +365,6 @@ export default function CheckoutPage() {
     setShowScheduleModal(false)
   }
 
-  const handleTipSelect = (amount: number) => {
-    setSelectedTip(amount)
-    // Record tip selection for verifiers
-    recordTipSelection(amount)
-  }
   
   // Helper to update selected payment method and cart store
   const updateSelectedPaymentMethod = (paymentMethodId: string) => {
@@ -540,10 +532,10 @@ export default function CheckoutPage() {
     setShowAddressDetailsModal(false)
   }
 
-  // Calculate total with extra delivery fee and tip
+  // Calculate total with extra delivery fee
   const getTotalWithExtras = () => {
     const total = getTotal(currentStoreId || undefined, currentCategory || undefined)
-    return total + extraDeliveryFee + selectedTip
+    return total + extraDeliveryFee
   }
 
   const deliveryOptions = [
@@ -569,8 +561,6 @@ export default function CheckoutPage() {
       price: 0,
     }
   ]
-
-  const tipOptions = [1.00, 3.00, 5.00, 6.00]
   
   // Get the selected payment method object
   const selectedPaymentMethodObj = savedPaymentMethods.find(m => m.id === selectedPaymentMethod)
@@ -600,7 +590,12 @@ export default function CheckoutPage() {
                   <div className="flex items-center justify-between">
                     <h2 className="text-lg font-semibold">2. Shipping details</h2>
                     <div className="flex items-center gap-4">
-                      <span className="text-gray-600 text-sm">47 West 13th Street, New ...</span>
+                      <span className="text-gray-600 text-sm">
+                        {selectedAddress 
+                          ? `${selectedAddress.street.substring(0, 20)}${selectedAddress.street.length > 20 ? '...' : ''}`
+                          : 'No address selected'
+                        }
+                      </span>
                       <button 
                         onClick={handleShippingEdit}
                         className="text-blue-600 font-medium text-lg"
@@ -896,7 +891,7 @@ export default function CheckoutPage() {
                   : 'bg-gray-300 text-gray-500 cursor-not-allowed'
               }`}
             >
-              {isClient ? `Place Order • $${getTotalWithExtras().toFixed(2)}` : 'Place Order'}
+              Place Order
             </button>
           </div>
 
@@ -926,7 +921,12 @@ export default function CheckoutPage() {
               <div className="px-4 pt-4">
                 <button 
                   onClick={handlePlaceOrder}
-                  className="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-3 rounded-full transition-colors"
+                  disabled={!selectedPaymentMethodObj}
+                  className={`w-full font-semibold py-3 rounded-full transition-colors ${
+                    selectedPaymentMethodObj
+                      ? 'bg-red-600 hover:bg-red-700 text-white cursor-pointer'
+                      : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                  }`}
                 >
                   Place Order
                 </button>
@@ -975,8 +975,8 @@ export default function CheckoutPage() {
                               className="object-cover"
                             />
                           </div>
-                          <div className="flex min-w-0 gap-2">
-                            <div className="flex flex-col justify-between">
+                          <div className="flex w-full gap-2 justify-between">
+                            <div className="flex flex-col">
                               <h4 className="font-medium text-sm text-gray-900 mb-1">{item.itemName}</h4>
                               {item.customizations && (
                                 <p className="text-xs text-gray-600 mb-2">{item.customizations}</p>
@@ -1093,7 +1093,7 @@ export default function CheckoutPage() {
         onClose={() => setShowOrderConfirmation(false)}
         orderId={orderId}
         total={getTotalWithExtras()}
-        tipAmount={selectedTip}
+        tipAmount={0}
         scheduledTime={selectedDeliveryOption === "schedule" ? selectedScheduleTime : undefined}
         deliveryTime={deliveryTime}
         storeName={getStoreName()}
