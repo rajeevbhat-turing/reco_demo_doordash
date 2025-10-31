@@ -1,8 +1,8 @@
 "use client"
-import { useEffect, useState, useSyncExternalStore } from "react"
+import { useEffect, useState, useSyncExternalStore, useMemo } from "react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
-import { MapPin, ChevronDown, ShoppingCart } from "lucide-react"
+import { MapPin, ChevronDown, ShoppingCart, ChevronRight, Plus } from "lucide-react"
 import { useCartStore } from "@/store/cart-store"
 import { useAppStore } from "@/store/app-store"
 import { useUserStore } from "@/store/user-store"
@@ -17,6 +17,7 @@ import AddressReviewErrorModal from "./modals/address-review-error-modal"
 import AddressTypeModal from "./modals/address-type-modal"
 import AddressDetailsModal from "./modals/address-details-modal"
 import { DashDoorLogoMark, DashDoorWordMark } from "./common/Icons"
+import addressesData from "@/data/addresses.json"
 
 export default function Header() {
   const pathname = usePathname()
@@ -33,9 +34,26 @@ export default function Header() {
   const [showAddressTypeModal, setShowAddressTypeModal] = useState(false)
   const [showAddressDetailsModal, setShowAddressDetailsModal] = useState(false)
   const [tempAddressData, setTempAddressData] = useState<Omit<Address, 'id'> | null>(null)
+  const [showAddressPopover, setShowAddressPopover] = useState(false)
+  const [addressSearchQuery, setAddressSearchQuery] = useState("")
+  const [selectedPopoverAddress, setSelectedPopoverAddress] = useState<Address | null>(null)
+  const [apartmentSuite, setApartmentSuite] = useState("")
+  const [dropOffOption, setDropOffOption] = useState<"hand" | "door">("door")
+  const [deliveryInstructions, setDeliveryInstructions] = useState("")
 
-  const { getAddresses, addAddress, updateAddress } = useUserStore()
+  const { getAddresses, addAddress, updateAddress, setTempAddress, getTempAddress } = useUserStore()
   const addresses = getAddresses()
+  const tempAddress = useSyncExternalStore(
+    useUserStore.subscribe,
+    () => useUserStore.getState().getTempAddress(),
+    () => null // fallback for SSR
+  )
+
+  const isAuthenticated = useSyncExternalStore(
+    useUserStore.subscribe,
+    () => useUserStore.getState().isAuthenticated(),
+    () => false // fallback for SSR
+  )
   
   // Always sync with default address when addresses change
   useEffect(() => {
@@ -53,12 +71,23 @@ export default function Header() {
     }
   }, [addresses, selectedAddressId]);
 
-  const selectedAddress = addresses.find(a => a.id === selectedAddressId);
-  const displayAddress = selectedAddress
-    ? selectedAddress.street.length > 20
-      ? `${selectedAddress.street.substring(0, 17)}...`
-      : selectedAddress.street
-    : null;
+  const selectedAddress = addresses.find(a => a.id === selectedAddressId)
+  
+  // Display logic: show temp address for non-authenticated users, otherwise show selected address
+  const displayAddress = useMemo(() => {
+    if (!isAuthenticated && tempAddress) {
+      // Show temp address for non-authenticated users
+      const street = tempAddress.street
+      return street.length > 20 ? `${street.substring(0, 17)}...` : street
+    }
+    // Show selected address for authenticated users
+    if (selectedAddress) {
+      return selectedAddress.street.length > 20 
+        ? `${selectedAddress.street.substring(0, 17)}...`
+        : selectedAddress.street
+    }
+    return null
+  }, [isAuthenticated, tempAddress, selectedAddress])
 
   // Update cart count whenever the cart or current store changes
   useEffect(() => {
@@ -97,12 +126,6 @@ export default function Header() {
       unsubscribeFromApp();
     };
   }, []);
-
-  const isAuthenticated = useSyncExternalStore(
-    useUserStore.subscribe,
-    () => useUserStore.getState().isAuthenticated(),
-    () => false // fallback for SSR
-  );
 
   // Check if current path is in account flow
   const isAccountFlow = pathname.startsWith("/consumer") || pathname.startsWith("/password-reset");
@@ -159,6 +182,19 @@ export default function Header() {
     setShowAddressDetailsModal(false)
   }
 
+  // Filter addresses based on search query
+  const filteredAddresses = useMemo(() => {
+    if (!addressSearchQuery.trim()) return []
+    
+    const query = addressSearchQuery.toLowerCase()
+    return addressesData.filter(address => 
+      address.street.toLowerCase().includes(query) ||
+      address.city.toLowerCase().includes(query) ||
+      address.state.toLowerCase().includes(query) ||
+      address.zipCode.includes(query)
+    ).slice(0, 5) // Limit to 5 results
+  }, [addressSearchQuery])
+
   const handleManualEntry = () => {
     setShowAddressesModal(false)
     setShowAddAddressModal(true)
@@ -190,6 +226,44 @@ export default function Header() {
 
   const handleBackToStore = () => {
     router.back()
+  }
+
+  // Handle address selection from popover
+  const handlePopoverAddressSelect = (address: any) => {
+    setSelectedPopoverAddress(address as Address)
+    setAddressSearchQuery("")
+  }
+
+  // Handle save from popover address details
+  const handleSavePopoverAddress = () => {
+    if (selectedPopoverAddress) {
+      const tempAddressData: Address = {
+        id: 'temp-address',
+        street: selectedPopoverAddress.street,
+        city: selectedPopoverAddress.city,
+        state: selectedPopoverAddress.state,
+        zipCode: selectedPopoverAddress.zipCode,
+        addressType: "house", // default type for popover
+        apartmentSuite: apartmentSuite,
+        deliveryPreference: dropOffOption === "door" ? "door" : "location",
+        meetLocation: dropOffOption === "door" ? "" : "door",
+        deliveryInstructions: deliveryInstructions,
+      }
+      setTempAddress(tempAddressData)
+      setShowAddressPopover(false)
+      setSelectedPopoverAddress(null)
+      setApartmentSuite("")
+      setDropOffOption("door")
+      setDeliveryInstructions("")
+    }
+  }
+
+  // Handle cancel from popover address details
+  const handleCancelPopoverAddress = () => {
+    setSelectedPopoverAddress(null)
+    setApartmentSuite("")
+    setDropOffOption("door")
+    setDeliveryInstructions("")
   }
 
   return (
@@ -240,65 +314,294 @@ export default function Header() {
                 </Link>
 
                 {/* Search - grows to take remaining space */}
-                {!isStoreOrReviews && (
-                  <div className="flex-grow">
-                    <SearchBar />
-                  </div>
-                )}
+                <div className="flex-grow">
+                  <SearchBar />
+                </div>
               </div>
 
               <div className="flex">
                 {/* Location */}
-                <button 
-                  onClick={() => setShowAddressesModal(true)}
-                  className="flex items-center mr-4 bg-[#f1f1f1] rounded-full px-5 h-8 hover:bg-gray-200 transition-colors cursor-pointer"
-                >
-                  <MapPin className="h-5 w-5 text-gray-700 mr-1" />
-                  <span className="text-sm font-medium mr-1">
-                    {displayAddress || "No address selected"}
-                  </span>
-                  <ChevronDown className="h-4 w-4 text-gray-700" />
-                </button>
-
-                {/* Delivery/Pickup - Hide in account flow */}
-                {!isAccountFlow && !isStoreOrReviews && (
-                  <div className="flex items-center space-x-2 mr-3">
-                    <button className="bg-gray-900 text-white px-4 h-8 rounded-full text-sm font-medium">
-                      Delivery
-                    </button>
-                    {/* <button className="text-gray-900 px-4 bg-[#f1f1f1] py-2 rounded-full text-sm font-medium">Pickup</button> */}
-                  </div>
-                )}
-
-                {/* Cart */}
-                <div className="ml-4">
-                  <button
-                    className="relative h-8 w-14 rounded-full bg-[#2563EB] text-white text-sm font-semibold flex items-center justify-center"
-                    onClick={toggleCart}
+                <div className="relative">
+                  <button 
+                    onClick={() => {
+                      if (isAuthenticated) {
+                        setShowAddressesModal(true)
+                      } else {
+                        setShowAddressPopover(!showAddressPopover)
+                      }
+                    }}
+                    className="flex items-center mr-4 bg-[#f1f1f1] rounded-full px-5 h-8 hover:bg-gray-200 transition-colors cursor-pointer"
                   >
-                    <ShoppingCart className="h-4 w-4 text-white mr-1" />
-                    <span className="font-medium">{cartItemCount}</span>
+                    {displayAddress && <MapPin className="h-5 w-5 text-gray-700 mr-1" />}
+                    <span className="text-sm font-medium mr-1">
+                      {displayAddress ? displayAddress : (
+                        <>
+                          + Your address
+                          <ChevronDown className="h-4 w-4 text-gray-700 inline-block ml-1" />
+                        </>
+                      )}
+                    </span>
+                    {displayAddress && <ChevronDown className="h-4 w-4 text-gray-700" />}
                   </button>
-                </div>
 
-                {/* Sign In and Sign Up */}
-                {!isAuthenticated && (
-                  <div className="flex items-center space-x-2 ml-4">
-                    <Button
-                      onClick={() => setAuthModalMode('signin')}
-                      className="bg-transparent text-gray-900 hover:bg-gray-100 rounded-full px-4 h-8 text-sm font-semibold"
-                    >
-                      Sign In
-                    </Button>
-                    <Button
-                      onClick={() => setAuthModalMode('signup')}
-                      className="bg-gray-300 text-gray-900 hover:bg-gray-300 rounded-full px-4 h-8 text-sm font-semibold"
-                    >
-                      Sign Up
-                    </Button>
-                  </div>
-                )}
+                  {/* Address Popover for non-authenticated users */}
+                  {showAddressPopover && !isAuthenticated && (
+                    <>
+                      {/* Backdrop */}
+                      <div 
+                        className="fixed inset-0 z-40"
+                        onClick={() => setShowAddressPopover(false)}
+                      />
+                      
+                      {/* Popover */}
+                      <div className="absolute top-full left-0 mt-2 w-[400px] bg-white rounded-lg shadow-lg border border-gray-200 z-50">
+                        {!selectedPopoverAddress ? (
+                          <>
+                            {/* Initial view - address search */}
+                            <div className="p-4 pb-3">
+                              <h3 className="text-lg font-bold text-gray-900 mb-4">Enter Your Address</h3>
+                              
+                              {/* Address Input */}
+                              <div className="flex items-center border border-gray-300 rounded-lg px-4 py-3 hover:border-gray-400 transition-colors">
+                                <MapPin className="h-5 w-5 text-gray-500 mr-2" />
+                                <input
+                                  type="text"
+                                  placeholder="Address"
+                                  value={addressSearchQuery}
+                                  onChange={(e) => setAddressSearchQuery(e.target.value)}
+                                  className="flex-1 outline-none text-sm text-gray-900 placeholder-gray-500"
+                                />
+                              </div>
+                              {/* Address Search Results Section - shown when there's input */}
+                              {addressSearchQuery.trim() && (
+                                <div className="border border-gray-300 w-full mt-2 rounded-lg">
+                                  <div className="max-h-80 overflow-y-auto">
+                                    {filteredAddresses.map((address, index) => (
+                                      <div key={address.id} className="w-full">
+                                        <div 
+                                          onClick={() => handlePopoverAddressSelect(address)}
+                                          className="flex items-center justify-between px-4 py-3 hover:bg-gray-50 cursor-pointer transition-colors w-full"
+                                        >
+                                          <div className="flex-1 min-w-0">
+                                            <p className="text-sm font-medium text-gray-900">{address.street}</p>
+                                            <p className="text-xs text-gray-500 mt-0.5">
+                                              {address.city} {address.state} {address.zipCode}, Australia
+                                            </p>
+                                          </div>
+                                          <ChevronRight className="w-5 h-5 text-gray-400 flex-shrink-0 ml-2" />
+                                        </div>
+                                        {index < filteredAddresses.length - 1 && (
+                                          <div className="border-t border-gray-300" />
+                                        )}
+                                      </div>
+                                    ))}
+                                    
+                                    {/* Separator before manual entry */}
+                                    {filteredAddresses.length > 0 && (
+                                      <div className="border-t border-gray-100" />
+                                    )}
+                                    
+                                    {/* Enter address manually option */}
+                                    <div className="flex items-center justify-between px-4 py-3 hover:bg-gray-50 cursor-pointer transition-colors w-full">
+                                      <div className="flex items-center min-w-0 flex-1">
+                                        <div className="w-8 h-8 bg-black rounded-full flex items-center justify-center mr-3 flex-shrink-0">
+                                          <Plus className="w-4 h-4 text-white" />
+                                        </div>
+                                        <div className="min-w-0">
+                                          <p className="text-sm font-medium text-gray-900">Add a new address</p>
+                                          <p className="text-xs text-gray-500">Enter address manually</p>
+                                        </div>
+                                      </div>
+                                      <ChevronRight className="w-5 h-5 text-gray-400 flex-shrink-0 ml-2" />
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+
+
+                            {/* Sign in button - always show at bottom */}
+                            <div className="p-4 pt-3">
+                              <button
+                                onClick={() => {
+                                  setShowAddressPopover(false)
+                                  setAuthModalMode('signin')
+                                }}
+                                className="w-auto flex items-center py-1.5 px-3 text-xs font-medium text-black bg-gray-100 hover:bg-gray-200 rounded-full transition-colors border border-gray-200"
+                              >
+                                <svg className="w-4 h-4 mr-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                </svg>
+                                <span>Sign in for saved address</span>
+                              </button>
+                            </div>
+                          </>
+                        ) : (
+                          <>
+                            {/* Address details view */}
+                            <div className="p-4">
+                              <h3 className="text-lg font-bold text-gray-900 mb-2">{selectedPopoverAddress.street}</h3>
+                              <p className="text-sm text-gray-600 mb-4">
+                                {selectedPopoverAddress.city} {selectedPopoverAddress.state} {selectedPopoverAddress.zipCode}, Australia
+                              </p>
+
+                              {/* Map */}
+                              <div className="mb-4">
+                                <div className="relative h-32 bg-gray-100 rounded-lg overflow-hidden">
+                                  {/* Map Placeholder */}
+                                  <div className="absolute inset-0 bg-gradient-to-br from-gray-200 to-gray-300">
+                                    {/* Pin Icon */}
+                                    <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-full">
+                                      <svg className="w-8 h-8" viewBox="0 0 24 24" fill="black">
+                                        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                                      </svg>
+                                    </div>
+                                  </div>
+                                  {/* Adjust Pin Button */}
+                                  <div className="absolute bottom-3 right-3">
+                                    <button className="bg-white px-4 py-1.5 rounded-full shadow-md text-sm font-medium">
+                                      Adjust Pin
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+
+                              {/* Apartment Number or Suite */}
+                              <div className="mb-4">
+                                <label className="block text-sm font-semibold text-gray-900 mb-2">
+                                  Apartment Number or Suite
+                                </label>
+                                <input
+                                  type="text"
+                                  value={apartmentSuite}
+                                  onChange={(e) => setApartmentSuite(e.target.value)}
+                                  placeholder="Apartment Number or Suite"
+                                  className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 text-sm"
+                                />
+                              </div>
+
+                              {/* Drop-off Options */}
+                              <div className="mb-4">
+                                <label className="block text-sm font-semibold text-gray-900 mb-3">
+                                  Drop-off Options
+                                </label>
+                                <div className="space-y-3">
+                                  <label className="flex items-center cursor-pointer">
+                                    <div className="relative">
+                                      <input
+                                        type="radio"
+                                        name="dropoff"
+                                        value="hand"
+                                        checked={dropOffOption === "hand"}
+                                        onChange={() => setDropOffOption("hand")}
+                                        className="sr-only"
+                                      />
+                                      <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                                        dropOffOption === "hand" ? "border-black" : "border-gray-300"
+                                      }`}>
+                                        {dropOffOption === "hand" && (
+                                          <div className="w-3 h-3 bg-black rounded-full"></div>
+                                        )}
+                                      </div>
+                                    </div>
+                                    <span className="ml-3 text-sm font-medium text-gray-900">Hand it to me</span>
+                                  </label>
+                                  <label className="flex items-center cursor-pointer">
+                                    <div className="relative">
+                                      <input
+                                        type="radio"
+                                        name="dropoff"
+                                        value="door"
+                                        checked={dropOffOption === "door"}
+                                        onChange={() => setDropOffOption("door")}
+                                        className="sr-only"
+                                      />
+                                      <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                                        dropOffOption === "door" ? "border-black" : "border-gray-300"
+                                      }`}>
+                                        {dropOffOption === "door" && (
+                                          <div className="w-3 h-3 bg-black rounded-full"></div>
+                                        )}
+                                      </div>
+                                    </div>
+                                    <span className="ml-3 text-sm font-medium text-gray-900">Leave it at my door</span>
+                                  </label>
+                                </div>
+                              </div>
+
+                              {/* Delivery Instructions */}
+                              <div className="mb-4">
+                                <textarea
+                                  value={deliveryInstructions}
+                                  placeholder="e.g. ring the bell after dropoff, leave next to the porch, call upon arrival, etc."
+                                  onChange={(e) => setDeliveryInstructions(e.target.value)}
+                                  rows={3}
+                                  className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 resize-none text-sm"
+                                />
+                              </div>
+
+                              {/* Action Buttons */}
+                              <div className="flex gap-3">
+                                <button
+                                  onClick={handleCancelPopoverAddress}
+                                  className="flex-1 py-3 px-6 text-gray-900 font-medium hover:bg-gray-100 rounded-full transition-colors border border-gray-300"
+                                >
+                                  Cancel
+                                </button>
+                                <button
+                                  onClick={handleSavePopoverAddress}
+                                  className="flex-1 py-3 px-6 bg-red-600 text-white rounded-full font-medium hover:bg-red-700 transition-colors"
+                                >
+                                  Save
+                                </button>
+                              </div>
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    </>
+                  )}
+            </div>
+
+            {/* Delivery/Pickup - Hide in account flow */}
+            {!isAccountFlow && (
+              <div className="flex items-center space-x-2 mr-3">
+                <button className="bg-gray-900 text-white px-4 h-8 rounded-full text-sm font-medium">
+                  Delivery
+                </button>
+                {/* <button className="text-gray-900 px-4 bg-[#f1f1f1] py-2 rounded-full text-sm font-medium">Pickup</button> */}
               </div>
+            )}
+
+            {/* Cart */}
+            <div className="ml-4">
+              <button
+                className="relative h-8 w-14 rounded-full bg-[#2563EB] text-white text-sm font-semibold flex items-center justify-center"
+                onClick={toggleCart}
+              >
+                <ShoppingCart className="h-4 w-4 text-white mr-1" />
+                <span className="font-medium">{cartItemCount}</span>
+              </button>
+            </div>
+
+            {/* Sign In and Sign Up */}
+            {!isAuthenticated && (
+              <div className="flex items-center space-x-2 ml-4">
+                <Button
+                  onClick={() => setAuthModalMode('signin')}
+                  className="bg-transparent text-gray-900 hover:bg-gray-100 rounded-full px-4 h-8 text-sm font-semibold"
+                >
+                  Sign In
+                </Button>
+                <Button
+                  onClick={() => setAuthModalMode('signup')}
+                  className="bg-gray-300 text-gray-900 hover:bg-gray-300 rounded-full px-4 h-8 text-sm font-semibold"
+                >
+                  Sign Up
+                </Button>
+              </div>
+            )}
+          </div>
             </>
           )}
         </div>

@@ -10,6 +10,9 @@ interface UserStore {
   users: User[];
   currentUser: User | null;
   changePasswordPhoneVerified: boolean;
+  // Temporary address for non-authenticated users
+  // This stores the address entered by users who are not signed in
+  tempAddress: Address | null;
 
   // Actions
   getUser: (userId: string) => User | null;
@@ -37,6 +40,8 @@ interface UserStore {
   removeAddress: (id: string) => void;
   updateAddress: (id: string, updates: Partial<Omit<Address, 'id'>>) => void;
   getAddresses: () => Address[];
+  setTempAddress: (address: Address | null) => void;
+  getTempAddress: () => Address | null;
 }
 
 export const useUserStore = create<UserStore>()(
@@ -47,6 +52,7 @@ export const useUserStore = create<UserStore>()(
         users: initialUsersData,
         currentUser: null,
         changePasswordPhoneVerified: false,
+        tempAddress: null,
 
         // Actions
         getUser: (userId: string) => {
@@ -289,6 +295,14 @@ export const useUserStore = create<UserStore>()(
         getAddresses: () => {
           return get().currentUser?.addresses || [];
         },
+
+        setTempAddress: (address) => {
+          set({ tempAddress: address });
+        },
+
+        getTempAddress: () => {
+          return get().tempAddress;
+        },
       }),
       {
         name: "user-store",
@@ -296,6 +310,7 @@ export const useUserStore = create<UserStore>()(
           users: state.users,
           currentUser: state.currentUser,
           changePasswordPhoneVerified: state.changePasswordPhoneVerified,
+          tempAddress: state.tempAddress,
         }),
       }
     ),
