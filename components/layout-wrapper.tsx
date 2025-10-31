@@ -2,6 +2,7 @@
 
 import { usePathname } from 'next/navigation'
 import Sidebar from '@/components/sidebar'
+import Footer from '@/components/footer'
 import { useUserStore } from '@/store/user-store'
 
 export default function LayoutWrapper({ children }: { children: React.ReactNode }) {
@@ -22,16 +23,19 @@ export default function LayoutWrapper({ children }: { children: React.ReactNode 
     : tempAddress !== null
 
   return (
-    <div className="flex flex-1 relative">
-      {!isCheckoutPage && <Sidebar />}
-      <div className={`flex-1 w-0 min-w-0 ${!isCheckoutPage ? 'md:ml-[220px]' : ''}`}>
-        {shouldShowContent ? (
-          <main className="flex-1">{children}</main>
-        ) : (
-          <main className="flex-1"></main>
-        )}
+    <>
+      <div className="flex flex-1 relative">
+        {!isCheckoutPage && <Sidebar />}
+        <div className={`flex-1 w-0 min-w-0 ${!isCheckoutPage ? 'md:ml-[220px]' : ''}`}>
+          {shouldShowContent ? (
+            <main className="flex-1">{children}</main>
+          ) : (
+            <main className="flex-1"></main>
+          )}
+        </div>
       </div>
-    </div>
+      {!isCheckoutPage && <Footer />}
+    </>
   )
 }
 

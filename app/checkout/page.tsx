@@ -18,6 +18,8 @@ import AddAddressModal from "@/components/modals/add-address-modal"
 import AddressReviewErrorModal from "@/components/modals/address-review-error-modal"
 import AddressTypeModal from "@/components/modals/address-type-modal"
 import ScheduleDeliveryModal from "@/components/modals/schedule-delivery-modal"
+import SignIn from "@/components/authentication/sign-in"
+import SignUp from "@/components/authentication/sign-up"
 import { getRestaurantById } from "@/constants/restaurants"
 import { stores } from "@/data/store-data"
 import { stores as retailStores } from "@/constants/store"
@@ -42,12 +44,19 @@ export default function CheckoutPage() {
     getAddresses,
     updateAddress,
     updateUser,
-    addAddress
+    addAddress,
+    getTempAddress,
+    isAuthenticated
   } = useUserStore()
   const { addOrder } = useOrdersStore()
   
   const savedPaymentMethods = getPaymentMethods()
   const addresses = getAddresses()
+  const tempAddress = getTempAddress()
+  const userIsAuthenticated = isAuthenticated()
+  
+  // Auth state for non-authenticated users
+  const [authMode, setAuthMode] = useState<'signin' | 'signup'>('signin')
   
   // Find the cart using query params
   const currentCart = categoryParam && storeIdParam ? findCart(storeIdParam, categoryParam) : null
@@ -568,40 +577,121 @@ export default function CheckoutPage() {
   // Get the selected address object
   const selectedAddress = addresses.find(a => a.id === selectedAddressId)
 
+  // Handler for successful authentication
+  const handleAuthSuccess = () => {
+    // After successful authentication, the user will be set in the store
+    // Component will re-render with authenticated state
+  }
+  
+  // Handler for changing auth mode
+  const handleSetMode = (mode: 'signin' | 'signup' | 'forgot-password') => {
+    if (mode !== 'forgot-password') {
+      setAuthMode(mode)
+    }
+  }
+  
+  // Handler for showing OTP during sign up
+  const handleShowOTP = (user: any) => {
+    // For now, just set the user as authenticated
+    // In a full implementation, this would show an OTP verification modal
+    console.log('OTP flow triggered for user:', user)
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 py-6 pt-20 pr-[450px]">
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Left Column - Checkout Form */}
           <div className="flex-1 space-y-6">
-            {/* Account Details */}
-            <div className="bg-white rounded-lg p-6 shadow-sm">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-semibold">1. Account details</h2>
-                <span className="text-gray-600">abc@xyz.com</span>
+            {/* Sign In / Sign Up Section - Only for non-authenticated users */}
+            {!userIsAuthenticated && (
+              <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-300">
+                <h2 className="text-lg font-semibold mb-4">1. Sign in or sign up to place order</h2>
+                
+                {/* Info banner */}
+                <div className="bg-cyan-50 border border-cyan-200 rounded-lg p-3 mb-4 flex items-center">
+                  <svg className="w-5 h-5 text-cyan-600 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                  </svg>
+                  <span className="text-sm text-gray-900">Sign in to access your credits and discounts</span>
+                </div>
+
+                {/* Sign In / Sign Up Tabs */}
+                <div className="flex justify-center mb-6">
+                  <div className="inline-flex bg-gray-100 rounded-full p-1">
+                    <button
+                      onClick={() => setAuthMode('signin')}
+                      className={`px-6 py-2 rounded-full text-sm font-semibold transition-colors ${
+                        authMode === 'signin'
+                          ? 'bg-gray-900 text-white'
+                          : 'text-gray-700 hover:text-gray-900'
+                      }`}
+                    >
+                      Sign In
+                    </button>
+                    <button
+                      onClick={() => setAuthMode('signup')}
+                      className={`px-6 py-2 rounded-full text-sm font-semibold transition-colors ${
+                        authMode === 'signup'
+                          ? 'bg-gray-900 text-white'
+                          : 'text-gray-700 hover:text-gray-900'
+                      }`}
+                    >
+                      Sign Up
+                    </button>
+                  </div>
+                </div>
+
+                {/* Authentication Forms */}
+                {authMode === 'signin' ? (
+                  <SignIn onSuccess={handleAuthSuccess} setMode={handleSetMode} />
+                ) : (
+                  <SignUp
+                    onShowOTP={handleShowOTP}
+                    selectedCountry={{ code: 'US', dialCode: '+1', name: 'United States' }}
+                    setShowCountryDropdown={() => {}}
+                  />
+                )}
               </div>
-            </div>
+            )}
+
+            {/* Account Details - Only for authenticated users */}
+            {userIsAuthenticated && (
+              <div className="bg-white rounded-lg p-6 shadow-sm">
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-lg font-semibold">1. Account details</h2>
+                  <span className="text-gray-600">{currentUser?.email || 'abc@xyz.com'}</span>
+                </div>
+              </div>
+            )}
 
             {/* Shipping Details */}
             <div className="bg-white rounded-lg shadow-sm border border-gray-300">
-              {!showExpandedShipping ? (
-                // Collapsed View
+              {!userIsAuthenticated || !showExpandedShipping ? (
+                // Collapsed View (always for non-authenticated users)
                 <div className="p-6">
                   <div className="flex items-center justify-between">
                     <h2 className="text-lg font-semibold">2. Shipping details</h2>
                     <div className="flex items-center gap-4">
                       <span className="text-gray-600 text-sm">
-                        {selectedAddress 
-                          ? `${selectedAddress.street.substring(0, 20)}${selectedAddress.street.length > 20 ? '...' : ''}`
-                          : 'No address selected'
-                        }
+                        {userIsAuthenticated ? (
+                          selectedAddress 
+                            ? `${selectedAddress.street.substring(0, 23)}${selectedAddress.street.length > 23 ? '...' : ''}`
+                            : 'No address selected'
+                        ) : (
+                          tempAddress
+                            ? `${tempAddress.street.substring(0, 23)}${tempAddress.street.length > 23 ? '...' : ''}`
+                            : 'No address selected'
+                        )}
                       </span>
-                      <button 
-                        onClick={handleShippingEdit}
-                        className="text-blue-600 font-medium text-lg"
-                      >
-                        Edit
-                      </button>
+                      {userIsAuthenticated && (
+                        <button 
+                          onClick={handleShippingEdit}
+                          className="text-blue-600 font-medium text-lg"
+                        >
+                          Edit
+                        </button>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -758,8 +848,19 @@ export default function CheckoutPage() {
 
             {/* Payment Details */}
             <div className="bg-white rounded-lg shadow-sm border border-gray-300">
-              {!showExpandedPayment && savedPaymentMethods.length > 0 ? (
-                // Collapsed View
+              {!userIsAuthenticated ? (
+                // Simple view for non-authenticated users
+                <div className="p-6">
+                  <h2 className="text-lg font-semibold mb-2">3. Payment details</h2>
+                  <svg className="w-8 h-6 ml-5" viewBox="0 0 48 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="48" height="32" rx="4" fill="#E5E7EB"/>
+                    <rect x="4" y="4" width="40" height="6" rx="2" fill="#9CA3AF"/>
+                    <rect x="4" y="14" width="16" height="4" rx="2" fill="#9CA3AF"/>
+                    <rect x="4" y="22" width="12" height="4" rx="2" fill="#9CA3AF"/>
+                  </svg>
+                </div>
+              ) : !showExpandedPayment && savedPaymentMethods.length > 0 ? (
+                // Collapsed View for authenticated users
                 <div className="p-6">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-lg font-semibold">3. Payment details</h2>
