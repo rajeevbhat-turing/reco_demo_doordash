@@ -5,6 +5,7 @@ import './globals.css';
 import Header from '@/components/header';
 import LayoutWrapper from '@/components/layout-wrapper';
 import LocalStorageSync from '@/components/LocalStorageSync';
+import Footer from '@/components/footer';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -25,6 +26,7 @@ export default function RootLayout({
         <div className="flex flex-col min-h-screen">
           <Header />
           <LayoutWrapper>{children}</LayoutWrapper>
+          <Footer />
         </div>
 
         {/* Global Functions Script */}
