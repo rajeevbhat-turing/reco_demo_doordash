@@ -40,6 +40,16 @@ export default function Header() {
   const [apartmentSuite, setApartmentSuite] = useState("")
   const [dropOffOption, setDropOffOption] = useState<"hand" | "door">("door")
   const [deliveryInstructions, setDeliveryInstructions] = useState("")
+  const [showManualEntry, setShowManualEntry] = useState(false)
+  const [showManualEntryError, setShowManualEntryError] = useState(false)
+  
+  // Manual entry form states
+  const [manualCountry, setManualCountry] = useState("United States")
+  const [manualStreet, setManualStreet] = useState("")
+  const [manualApartment, setManualApartment] = useState("")
+  const [manualCity, setManualCity] = useState("")
+  const [manualState, setManualState] = useState("Alabama")
+  const [manualZipCode, setManualZipCode] = useState("")
 
   const { getAddresses, addAddress, updateAddress, setTempAddress, getTempAddress } = useUserStore()
   const addresses = getAddresses()
@@ -266,6 +276,47 @@ export default function Header() {
     setDeliveryInstructions("")
   }
 
+  // Handle manual entry click
+  const handleManualEntryClick = () => {
+    setShowManualEntry(true)
+    setAddressSearchQuery("")
+  }
+
+  // Handle back from manual entry
+  const handleBackFromManualEntry = () => {
+    setShowManualEntry(false)
+    setManualStreet("")
+    setManualApartment("")
+    setManualCity("")
+    setManualState("Alabama")
+    setManualZipCode("")
+  }
+
+  // Handle continue from manual entry - show error view
+  const handleManualEntryContinue = () => {
+    setShowManualEntry(false)
+    setShowManualEntryError(true)
+  }
+
+  // Handle review address - go back to manual entry with populated fields
+  const handleReviewManualAddress = () => {
+    setShowManualEntryError(false)
+    setShowManualEntry(true)
+    // Fields remain populated
+  }
+
+  // Handle enter new address - go back to manual entry with cleared fields
+  const handleEnterNewManualAddress = () => {
+    setShowManualEntryError(false)
+    setShowManualEntry(true)
+    // Clear all fields
+    setManualStreet("")
+    setManualApartment("")
+    setManualCity("")
+    setManualState("Alabama")
+    setManualZipCode("")
+  }
+
   return (
     <>
       <header className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-200">
@@ -350,12 +401,203 @@ export default function Header() {
                       {/* Backdrop */}
                       <div 
                         className="fixed inset-0 z-40"
-                        onClick={() => setShowAddressPopover(false)}
+                        onClick={() => {
+                          setShowAddressPopover(false)
+                          setShowManualEntry(false)
+                          setShowManualEntryError(false)
+                          setSelectedPopoverAddress(null)
+                        }}
                       />
                       
                       {/* Popover */}
                       <div className="absolute top-full left-0 mt-2 w-[400px] bg-white rounded-lg shadow-lg border border-gray-200 z-50">
-                        {!selectedPopoverAddress ? (
+                        {showManualEntryError ? (
+                          <>
+                            {/* Address review error view */}
+                            <div className="p-6">
+                              <h2 className="text-2xl font-bold text-gray-900 mb-4">
+                                We can't add this address at the moment
+                              </h2>
+                              
+                              <p className="text-gray-900 mb-8">
+                                We're currently reviewing the address. Please check for any typos and re-enter your address.
+                              </p>
+
+                              <div className="space-y-3">
+                                <button
+                                  onClick={handleReviewManualAddress}
+                                  className="w-full py-3 px-6 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 transition-colors"
+                                >
+                                  Review address
+                                </button>
+                                <button
+                                  onClick={handleEnterNewManualAddress}
+                                  className="w-full py-3 px-6 bg-gray-300 text-gray-900 rounded-lg font-medium hover:bg-gray-400 transition-colors"
+                                >
+                                  Enter new address
+                                </button>
+                              </div>
+                            </div>
+                          </>
+                        ) : showManualEntry ? (
+                          <>
+                            {/* Manual entry form view */}
+                            <div className="p-4">
+                              <h3 className="text-lg font-bold text-gray-900 mb-4">Add new address</h3>
+                              
+                              {/* Country */}
+                              <div className="mb-4">
+                                <label className="block text-sm font-semibold text-gray-900 mb-2">
+                                  Country
+                                </label>
+                                <div className="relative">
+                                  <select
+                                    value={manualCountry}
+                                    onChange={(e) => setManualCountry(e.target.value)}
+                                    className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-red-500 text-sm"
+                                  >
+                                    <option value="United States">United States</option>
+                                  </select>
+                                  <ChevronDown className="absolute right-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-600 pointer-events-none" />
+                                </div>
+                              </div>
+
+                              {/* Street Address */}
+                              <div className="mb-4">
+                                <label className="block text-sm font-semibold text-gray-900 mb-2">
+                                  Street Address
+                                </label>
+                                <input
+                                  type="text"
+                                  value={manualStreet}
+                                  onChange={(e) => setManualStreet(e.target.value)}
+                                  className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 text-sm"
+                                />
+                              </div>
+
+                              {/* Apartment/Suite and City */}
+                              <div className="grid grid-cols-2 gap-3 mb-4">
+                                <div>
+                                  <label className="block text-sm font-semibold text-gray-900 mb-2">
+                                    Apartment/Suite
+                                  </label>
+                                  <input
+                                    type="text"
+                                    value={manualApartment}
+                                    onChange={(e) => setManualApartment(e.target.value)}
+                                    className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 text-sm"
+                                  />
+                                </div>
+                                <div>
+                                  <label className="block text-sm font-semibold text-gray-900 mb-2">
+                                    City
+                                  </label>
+                                  <input
+                                    type="text"
+                                    value={manualCity}
+                                    onChange={(e) => setManualCity(e.target.value)}
+                                    className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 text-sm"
+                                  />
+                                </div>
+                              </div>
+
+                              {/* State and Zip code */}
+                              <div className="grid grid-cols-2 gap-3 mb-6">
+                                <div>
+                                  <label className="block text-sm font-semibold text-gray-900 mb-2">
+                                    State
+                                  </label>
+                                  <div className="relative">
+                                    <select
+                                      value={manualState}
+                                      onChange={(e) => setManualState(e.target.value)}
+                                      className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-red-500 text-sm"
+                                    >
+                                      <option value="Alabama">Alabama</option>
+                                      <option value="Alaska">Alaska</option>
+                                      <option value="Arizona">Arizona</option>
+                                      <option value="Arkansas">Arkansas</option>
+                                      <option value="California">California</option>
+                                      <option value="Colorado">Colorado</option>
+                                      <option value="Connecticut">Connecticut</option>
+                                      <option value="Delaware">Delaware</option>
+                                      <option value="Florida">Florida</option>
+                                      <option value="Georgia">Georgia</option>
+                                      <option value="Hawaii">Hawaii</option>
+                                      <option value="Idaho">Idaho</option>
+                                      <option value="Illinois">Illinois</option>
+                                      <option value="Indiana">Indiana</option>
+                                      <option value="Iowa">Iowa</option>
+                                      <option value="Kansas">Kansas</option>
+                                      <option value="Kentucky">Kentucky</option>
+                                      <option value="Louisiana">Louisiana</option>
+                                      <option value="Maine">Maine</option>
+                                      <option value="Maryland">Maryland</option>
+                                      <option value="Massachusetts">Massachusetts</option>
+                                      <option value="Michigan">Michigan</option>
+                                      <option value="Minnesota">Minnesota</option>
+                                      <option value="Mississippi">Mississippi</option>
+                                      <option value="Missouri">Missouri</option>
+                                      <option value="Montana">Montana</option>
+                                      <option value="Nebraska">Nebraska</option>
+                                      <option value="Nevada">Nevada</option>
+                                      <option value="New Hampshire">New Hampshire</option>
+                                      <option value="New Jersey">New Jersey</option>
+                                      <option value="New Mexico">New Mexico</option>
+                                      <option value="New York">New York</option>
+                                      <option value="North Carolina">North Carolina</option>
+                                      <option value="North Dakota">North Dakota</option>
+                                      <option value="Ohio">Ohio</option>
+                                      <option value="Oklahoma">Oklahoma</option>
+                                      <option value="Oregon">Oregon</option>
+                                      <option value="Pennsylvania">Pennsylvania</option>
+                                      <option value="Rhode Island">Rhode Island</option>
+                                      <option value="South Carolina">South Carolina</option>
+                                      <option value="South Dakota">South Dakota</option>
+                                      <option value="Tennessee">Tennessee</option>
+                                      <option value="Texas">Texas</option>
+                                      <option value="Utah">Utah</option>
+                                      <option value="Vermont">Vermont</option>
+                                      <option value="Virginia">Virginia</option>
+                                      <option value="Washington">Washington</option>
+                                      <option value="West Virginia">West Virginia</option>
+                                      <option value="Wisconsin">Wisconsin</option>
+                                      <option value="Wyoming">Wyoming</option>
+                                    </select>
+                                    <ChevronDown className="absolute right-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-600 pointer-events-none" />
+                                  </div>
+                                </div>
+                                <div>
+                                  <label className="block text-sm font-semibold text-gray-900 mb-2">
+                                    Zip code
+                                  </label>
+                                  <input
+                                    type="text"
+                                    value={manualZipCode}
+                                    onChange={(e) => setManualZipCode(e.target.value)}
+                                    className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 text-sm"
+                                  />
+                                </div>
+                              </div>
+
+                              {/* Continue Button */}
+                              <button
+                                onClick={handleManualEntryContinue}
+                                className="w-full py-3 px-6 bg-red-600 text-white rounded-full font-semibold hover:bg-red-700 transition-colors mb-3"
+                              >
+                                Continue
+                              </button>
+
+                              {/* Back Button */}
+                              <button
+                                onClick={handleBackFromManualEntry}
+                                className="w-full py-3 px-6 text-gray-900 font-medium hover:bg-gray-100 rounded-full transition-colors"
+                              >
+                                Back
+                              </button>
+                            </div>
+                          </>
+                        ) : !selectedPopoverAddress ? (
                           <>
                             {/* Initial view - address search */}
                             <div className="p-4 pb-3">
@@ -402,7 +644,10 @@ export default function Header() {
                                     )}
                                     
                                     {/* Enter address manually option */}
-                                    <div className="flex items-center justify-between px-4 py-3 hover:bg-gray-50 cursor-pointer transition-colors w-full">
+                                    <div 
+                                      onClick={handleManualEntryClick}
+                                      className="flex items-center justify-between px-4 py-3 hover:bg-gray-50 cursor-pointer transition-colors w-full"
+                                    >
                                       <div className="flex items-center min-w-0 flex-1">
                                         <div className="w-8 h-8 bg-black rounded-full flex items-center justify-center mr-3 flex-shrink-0">
                                           <Plus className="w-4 h-4 text-white" />
