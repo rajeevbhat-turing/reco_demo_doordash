@@ -22,40 +22,34 @@ export const initialReviewData: UserReview[] = [
     content: 'Perfect coffee! The barista was very friendly and the drink was made exactly as ordered. Love the vibe here.',
     timestamp: '2024-01-14T15:45:00Z',
     photos: ['/food.png'],
-    helpfulCount: 1,
+    ratedHelpfulBy: ['user-1'],
     orderId: 'order-philz-2',
-    orderDetails: {
-      orderId: 'DD-PHILZ-002',
-      orderDate: '2024-01-14T14:30:00Z',
-      items: [
-        {
-          id: 'mint-mojito-iced-coffee',
-          name: 'Mint Mojito Iced Coffee',
-          restaurantId: 'philz-coffee',
-          image: 'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=60/media/photosV2/9c048348-5c38-49ec-828e-b1aa4b6217ae-retina-large.jpeg'
-        },
-        {
-          id: 'honey-haze',
-          name: 'Honey Haze',
-          restaurantId: 'philz-coffee',
-          image: 'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=60/media/photosV2/67d3e3c1-386e-4c66-b380-e8e5d18394db-retina-large.jpeg'
-        },
-        {
-          id: 'iced-nutty-caramel-nirvana',
-          name: 'Iced Nutty Caramel Nirvana',
-          restaurantId: 'philz-coffee',
-          image: 'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=60/media/photosV2/26d96f96-554d-4703-b453-eadb749d6ffe-retina-large.jpeg'
-        },
-        {
-          id: 'philtered-soul-cold-brew',
-          name: 'Philtered Soul Cold Brew',
-          restaurantId: 'philz-coffee',
-          image: 'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=60/media/photosV2/b9d03bd5-adb4-4edb-9169-92522070267d-retina-large.jpeg'
-        },
-      ],
-      totalAmount: 26.99,
-      liked: true
-    },
+    likedItems: [
+      {
+        id: 'mint-mojito-iced-coffee',
+        name: 'Mint Mojito Iced Coffee',
+        restaurantId: 'philz-coffee',
+        image: 'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=60/media/photosV2/9c048348-5c38-49ec-828e-b1aa4b6217ae-retina-large.jpeg'
+      },
+      {
+        id: 'honey-haze',
+        name: 'Honey Haze',
+        restaurantId: 'philz-coffee',
+        image: 'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=60/media/photosV2/67d3e3c1-386e-4c66-b380-e8e5d18394db-retina-large.jpeg'
+      },
+      {
+        id: 'iced-nutty-caramel-nirvana',
+        name: 'Iced Nutty Caramel Nirvana',
+        restaurantId: 'philz-coffee',
+        image: 'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=60/media/photosV2/26d96f96-554d-4703-b453-eadb749d6ffe-retina-large.jpeg'
+      },
+      {
+        id: 'philtered-soul-cold-brew',
+        name: 'Philtered Soul Cold Brew',
+        restaurantId: 'philz-coffee',
+        image: 'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=60/media/photosV2/b9d03bd5-adb4-4edb-9169-92522070267d-retina-large.jpeg'
+      }
+    ],
     approvalStatus: 'approved'
   },
   {
@@ -71,7 +65,8 @@ export const initialReviewData: UserReview[] = [
     content: 'Amazing coffee and pastries! The staff is incredibly friendly and the atmosphere is perfect for a morning start.',
     timestamp: '2024-01-13T10:20:00Z',
     photos: [],
-    helpfulCount: 0,
+    ratedHelpfulBy: [],
+    likedItems: [],
     approvalStatus: 'approved'
   },
   {
@@ -87,7 +82,8 @@ export const initialReviewData: UserReview[] = [
     content: 'Great selection of coffee blends! Quick service and consistent quality. The baristas really know their craft.',
     timestamp: '2024-01-12T08:15:00Z',
     photos: ['/food.png'],
-    helpfulCount: 1,
+    ratedHelpfulBy: ['user-3'],
+    likedItems: [],
     approvalStatus: 'approved'
   },
   {
@@ -103,28 +99,22 @@ export const initialReviewData: UserReview[] = [
     content: 'Good coffee but a bit expensive. Service was quick though and the atmosphere is nice.',
     timestamp: '2024-01-13T12:20:00Z',
     photos: ['https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=60/media/photosV2/f890ea82-463c-4387-9415-149baa6813da-retina-large.jpeg'],
-    helpfulCount: 0,
+    ratedHelpfulBy: [],
     orderId: 'order-philz-3',
-    orderDetails: {
-      orderId: 'DD-PHILZ-003',
-      orderDate: '2024-01-13T11:00:00Z',
-      items: [
-        {
-          id: 'tesora',
-          name: 'Tesora',
-          restaurantId: 'philz-coffee',
-          image: 'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=60/media/photosV2/f890ea82-463c-4387-9415-149baa6813da-retina-large.jpeg'
-        },
-        {
-          id: 'philtered-soul',
-          name: 'Philtered Soul',
-          restaurantId: 'philz-coffee',
-          image: 'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=60/media/photosV2/f890ea82-463c-4387-9415-149baa6813da-retina-large.jpeg'
-        }
-      ],
-      totalAmount: 11.88,
-      liked: false
-    },
+    likedItems: [
+      {
+        id: 'tesora',
+        name: 'Tesora',
+        restaurantId: 'philz-coffee',
+        image: 'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=60/media/photosV2/f890ea82-463c-4387-9415-149baa6813da-retina-large.jpeg'
+      },
+      {
+        id: 'philtered-soul',
+        name: 'Philtered Soul',
+        restaurantId: 'philz-coffee',
+        image: 'https://img.cdn4dd.com/p/fit=cover,width=1200,height=1200,format=auto,quality=60/media/photosV2/f890ea82-463c-4387-9415-149baa6813da-retina-large.jpeg'
+      }
+    ],
     approvalStatus: 'approved'
   },
   {
@@ -139,9 +129,9 @@ export const initialReviewData: UserReview[] = [
     rating: 4,
     content: 'Amazing atmosphere and great staff! I visit this location regularly and always have a wonderful experience.',
     timestamp: '2024-01-12T14:20:00Z',
-    photos: ['/food.png', '/food.png', '/food.png'],
-    helpfulCount: 2,
-    // No orderId or orderDetails - general restaurant experience review
+    photos: ['/food.png', '/food.png', '/food.png', '/food.png', '/food.png', '/food.png'],
+    ratedHelpfulBy: ['user-1', 'user-5'],
+    likedItems: [],
     approvalStatus: 'approved'
   },
   {
@@ -157,8 +147,8 @@ export const initialReviewData: UserReview[] = [
     content: 'Great food and fast delivery! The burger was fresh and tasty. Always consistent quality.',
     timestamp: '2024-01-11T10:30:00Z',
     photos: ['/food.png'],
-    helpfulCount: 0,
-    // No orderId or orderDetails - general restaurant experience review (no menu items available)
+    ratedHelpfulBy: [],
+    likedItems: [],
     approvalStatus: 'approved'
   },
   {
@@ -174,8 +164,8 @@ export const initialReviewData: UserReview[] = [
     content: 'Excellent service! Food arrived hot and on time. Highly recommended.',
     timestamp: '2024-01-10T15:45:00Z',
     photos: ['/food.png'],
-    helpfulCount: 0,
-    // No orderId or orderDetails - general restaurant experience review (no menu items available)
+    ratedHelpfulBy: [],
+    likedItems: [],
     approvalStatus: 'approved'
   },
   {
@@ -191,8 +181,8 @@ export const initialReviewData: UserReview[] = [
     content: 'Food was okay but delivery was a bit slow. Could be better.',
     timestamp: '2024-01-09T12:20:00Z',
     photos: [],
-    helpfulCount: 0,
-    // No orderId or orderDetails - general restaurant experience review (no menu items available)
+    ratedHelpfulBy: [],
+    likedItems: [],
     approvalStatus: 'approved'
   },
   {
@@ -208,8 +198,8 @@ export const initialReviewData: UserReview[] = [
     content: 'Perfect coffee! The barista was very friendly and the drink was made exactly as ordered. Love the seasonal drinks.',
     timestamp: '2024-01-08T08:15:00Z',
     photos: [],
-    helpfulCount: 0,
-    // No orderId or orderDetails - general restaurant experience review (no menu items available)
+    ratedHelpfulBy: [],
+    likedItems: [],
     approvalStatus: 'approved'
   },
   {
@@ -225,8 +215,8 @@ export const initialReviewData: UserReview[] = [
     content: 'Good coffee but a bit expensive. Service was quick though and the atmosphere is nice for working.',
     timestamp: '2024-01-07T16:30:00Z',
     photos: [],
-    helpfulCount: 0,
-    // No orderId or orderDetails - general restaurant experience review (no menu items available)
+    ratedHelpfulBy: [],
+    likedItems: [],
     approvalStatus: 'approved'
   },
   {
@@ -242,8 +232,8 @@ export const initialReviewData: UserReview[] = [
     content: 'Amazing selection and great customer service! The staff helped me find the perfect foundation shade.',
     timestamp: '2024-01-06T14:20:00Z',
     photos: [],
-    helpfulCount: 0,
-    // No orderId or orderDetails - general restaurant experience review (no menu items available)
+    ratedHelpfulBy: [],
+    likedItems: [],
     approvalStatus: 'approved'
   },
   {
@@ -259,8 +249,8 @@ export const initialReviewData: UserReview[] = [
     content: 'Great products and fast delivery! The packaging was excellent and everything arrived in perfect condition.',
     timestamp: '2024-01-05T11:30:00Z',
     photos: [],
-    helpfulCount: 0,
-    // No orderId or orderDetails - general restaurant experience review (no menu items available)
+    ratedHelpfulBy: [],
+    likedItems: [],
     approvalStatus: 'approved'
   },
 ];

@@ -4,7 +4,7 @@ import { User } from '@/lib/types/user-types';
 // Compatible with User type from user-store.ts
 export const initialUsersData: User[] = [
   {
-    id: '1',
+    id: 'user-1',
     name: 'John Doe',
     email: 'john.doe@example.com',
     phoneNumber: '9999999999',

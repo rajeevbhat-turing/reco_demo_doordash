@@ -1,103 +1,109 @@
-"use client"
-import { useEffect, useState, useSyncExternalStore } from "react"
-import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { MapPin, ChevronDown, ShoppingCart } from "lucide-react"
-import { useCartStore } from "@/store/cart-store"
-import { useAppStore } from "@/store/app-store"
-import { useUserStore } from "@/store/user-store"
-import SearchBar from "@/components/search-bar"
-import CartSidebar from "@/components/cart-sidebar"
-import { Button } from "@/components/ui/button"
-import AuthenticationModal from "./modals/authentication-modal"
-import AddressesModal from "./modals/addresses-modal"
-import { DashDoorLogoMark, DashDoorWordMark } from "./common/Icons"
+'use client';
+import { useEffect, useState, useSyncExternalStore } from 'react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { MapPin, ChevronDown, ShoppingCart } from 'lucide-react';
+import { useCartStore } from '@/store/cart-store';
+import { useAppStore } from '@/store/app-store';
+import { useUserStore } from '@/store/user-store';
+import SearchBar from '@/components/search-bar';
+import CartSidebar from '@/components/cart-sidebar';
+import { Button } from '@/components/ui/button';
+import AuthenticationModal from './modals/authentication-modal';
+import AddressesModal from './modals/addresses-modal';
+import { DashDoorLogoMark, DashDoorWordMark } from './common/Icons';
 
 export default function Header() {
-  const pathname = usePathname()
-  const [isCartOpen, setIsCartOpen] = useState(false)
-  const [authModalMode, setAuthModalMode] = useState<"signin" | "signup" | null>(null)
-  const [cartItemCount, setCartItemCount] = useState(0)
-  const [showAddressesModal, setShowAddressesModal] = useState(false)
-  const [selectedAddressId, setSelectedAddressId] = useState<string>("")
+  const pathname = usePathname();
+  const [isCartOpen, setIsCartOpen] = useState(false);
+  const [authModalMode, setAuthModalMode] = useState<'signin' | 'signup' | null>(null);
+  const [cartItemCount, setCartItemCount] = useState(0);
+  const [showAddressesModal, setShowAddressesModal] = useState(false);
+  const [selectedAddressId, setSelectedAddressId] = useState<string>('');
 
-  const { getAddresses } = useUserStore()
-  const addresses = getAddresses()
-  
+  const { getAddresses } = useUserStore();
+  const addresses = getAddresses();
+
   // Initialize selected address with first address
   useEffect(() => {
     if (addresses.length > 0) {
       // If selected address doesn't exist anymore, or no address selected, use first address
       if (!selectedAddressId || !addresses.find(a => a.id === selectedAddressId)) {
-        setSelectedAddressId(addresses[0].id)
+        setSelectedAddressId(addresses[0].id);
       }
     } else {
-      setSelectedAddressId("")
+      setSelectedAddressId('');
     }
-  }, [addresses, selectedAddressId])
+  }, [addresses, selectedAddressId]);
 
-  const selectedAddress = addresses.find(a => a.id === selectedAddressId)
-  const displayAddress = selectedAddress 
-    ? selectedAddress.street.length > 20 
+  const selectedAddress = addresses.find(a => a.id === selectedAddressId);
+  const displayAddress = selectedAddress
+    ? selectedAddress.street.length > 20
       ? `${selectedAddress.street.substring(0, 17)}...`
       : selectedAddress.street
-    : null
+    : null;
 
   // Update cart count whenever the cart or current store changes
   useEffect(() => {
     const updateCartCount = () => {
-      const cartState = useCartStore.getState()
-      const appState = useAppStore.getState()
-      
+      const cartState = useCartStore.getState();
+      const appState = useAppStore.getState();
+
       // If no current store is set, show number of carts
       if (!appState.currentStore?.id) {
-        setCartItemCount(cartState.carts.length)
-        return
+        setCartItemCount(cartState.carts.length);
+        return;
       }
-      
+
       // If current store is set, show items in that store's cart
-      const currentStoreId = appState.currentStore.id
-      const currentCategory = appState.currentCategory || "grocery"
-      const currentCart = cartState.findCart(currentStoreId, currentCategory)
-      
+      const currentStoreId = appState.currentStore.id;
+      const currentCategory = appState.currentCategory || 'grocery';
+      const currentCart = cartState.findCart(currentStoreId, currentCategory);
+
       if (currentCart) {
-        const itemCount = currentCart.items.reduce((total, item) => total + item.quantity, 0)
-        setCartItemCount(itemCount)
+        const itemCount = currentCart.items.reduce((total, item) => total + item.quantity, 0);
+        setCartItemCount(itemCount);
       } else {
-        setCartItemCount(0)
+        setCartItemCount(0);
       }
-    }
+    };
 
     // Initial cart count
-    updateCartCount()
+    updateCartCount();
 
     // Subscribe to both cart and app store changes
-    const unsubscribeFromCart = useCartStore.subscribe(updateCartCount)
-    const unsubscribeFromApp = useAppStore.subscribe(updateCartCount)
+    const unsubscribeFromCart = useCartStore.subscribe(updateCartCount);
+    const unsubscribeFromApp = useAppStore.subscribe(updateCartCount);
 
     return () => {
-      unsubscribeFromCart()
-      unsubscribeFromApp()
-    }
-  }, [])
+      unsubscribeFromCart();
+      unsubscribeFromApp();
+    };
+  }, []);
 
   const isAuthenticated = useSyncExternalStore(
     useUserStore.subscribe,
     () => useUserStore.getState().isAuthenticated(),
     () => false // fallback for SSR
-  )
+  );
 
   // Check if current path is in account flow
-  const isAccountFlow = pathname.startsWith("/consumer") || pathname.startsWith("/password-reset")
+  const isAccountFlow = pathname.startsWith('/consumer') || pathname.startsWith('/password-reset');
+
+  // Check if current path is store or reviews
+  const isStoreOrReviews =
+    pathname.startsWith('/store') ||
+    pathname.startsWith('/reviews') ||
+    pathname.startsWith('/consumer/profile');
 
   const toggleCart = () => {
     setIsCartOpen(!isCartOpen);
   };
 
   const handleSelectAddress = (addressId: string) => {
-    setSelectedAddressId(addressId)
-    setShowAddressesModal(false)
-  }
+    setSelectedAddressId(addressId);
+    setShowAddressesModal(false);
+  };
 
   return (
     <>
@@ -116,26 +122,28 @@ export default function Header() {
             </Link>
 
             {/* Search - grows to take remaining space */}
-            <div className="flex-grow">
-              <SearchBar />
-            </div>
+            {!isStoreOrReviews && (
+              <div className="flex-grow">
+                <SearchBar />
+              </div>
+            )}
           </div>
 
           <div className="flex">
             {/* Location */}
-            <button 
+            <button
               onClick={() => setShowAddressesModal(true)}
               className="flex items-center mr-4 bg-[#f1f1f1] rounded-full px-5 h-8 hover:bg-gray-200 transition-colors cursor-pointer"
             >
               <MapPin className="h-5 w-5 text-gray-700 mr-1" />
               <span className="text-sm font-medium mr-1">
-                {displayAddress || "No address selected"}
+                {displayAddress || 'No address selected'}
               </span>
               <ChevronDown className="h-4 w-4 text-gray-700" />
             </button>
 
             {/* Delivery/Pickup - Hide in account flow */}
-            {!isAccountFlow && (
+            {!isAccountFlow && !isStoreOrReviews && (
               <div className="flex items-center space-x-2 mr-3">
                 <button className="bg-gray-900 text-white px-4 h-8 rounded-full text-sm font-medium">
                   Delivery

@@ -5,13 +5,14 @@ import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Star, ChevronLeft, ChevronRight, Info } from 'lucide-react';
 import { format } from 'date-fns';
-import Image from 'next/image';
 import ReviewDialog from '@/components/review-dialog';
 import ReviewsInfoModal from '@/components/modals/reviews-info-modal';
 import PhotoViewerModal from '@/components/modals/photo-viewer-modal';
 import OrderItemsScrollable from '@/components/reviews/order-items-scrollable';
 import CustomerPhotosScrollable from '@/components/reviews/customer-photos-scrollable';
+import ReviewPhotosScrollable from '@/components/reviews/review-photos-scrollable';
 import { useReviewStore } from '@/store/review-store';
+import { useUserStore } from '@/store/user-store';
 import { generateAvatarColor } from '@/lib/utils/helperFunctions';
 import { LightbulbIcon } from '@/lib/utils/icons';
 
@@ -28,8 +29,14 @@ export default function StoreReviewsPage() {
     timestamp: string;
   } | null>(null);
 
-  const { getVendorReviews, getApprovedReviews, getUserReviewCount, calculateAverageRating } =
-    useReviewStore();
+  const {
+    getVendorReviews,
+    getApprovedReviews,
+    getUserReviewCount,
+    calculateAverageRating,
+    toggleHelpfulRating,
+  } = useReviewStore();
+  const currentUser = useUserStore(state => state.currentUser);
   const vendorReviews = getVendorReviews(storeId);
   const approvedReviews = getApprovedReviews(storeId);
 
@@ -132,12 +139,14 @@ export default function StoreReviewsPage() {
               </div>
 
               {/* Add Review Button */}
-              <button
-                className="px-3 py-1.5 bg-[#f1f1f1] rounded-[28px] text-sm font-bold text-[#191919ff] hover:bg-gray-200"
-                onClick={handleStartReview}
-              >
-                Add a Review
-              </button>
+              {currentUser && (
+                <button
+                  className="px-3 py-1.5 bg-[#f1f1f1] rounded-[28px] text-sm font-bold text-[#191919ff] hover:bg-gray-200"
+                  onClick={handleStartReview}
+                >
+                  Add a Review
+                </button>
+              )}
             </div>
           </div>
 
@@ -209,50 +218,48 @@ export default function StoreReviewsPage() {
                       {review.content}
                     </p>
 
-                    {/* Order Details */}
-                    {review.orderDetails && review.orderDetails.items.length > 0 && (
+                    {/* Liked Items */}
+                    {review.likedItems && review.likedItems.length > 0 && (
                       <OrderItemsScrollable
-                        items={review.orderDetails.items}
-                        liked={review.orderDetails.liked}
+                        items={review.likedItems}
+                        liked={true}
                         restaurantId={storeId}
                       />
                     )}
 
                     {/* Review Photos - Only show if review has photos */}
                     {review.photos && review.photos.length > 0 && (
-                      <div className="mb-4">
-                        <div className="flex gap-2 flex-wrap">
-                          {review.photos.map((photo, index) => (
-                            <div
-                              key={`review-photo-${index}`}
-                              className="w-[103px] h-[103px] relative rounded-lg overflow-hidden cursor-pointer"
-                              onClick={() => {
-                                handlePhotoClick({
-                                  photo,
-                                  userName: review.userName,
-                                  timestamp: review.timestamp,
-                                });
-                              }}
-                            >
-                              <Image
-                                src={photo}
-                                alt={`Review photo ${index + 1}`}
-                                fill
-                                className="object-cover"
-                              />
-                            </div>
-                          ))}
-                        </div>
-                      </div>
+                      <ReviewPhotosScrollable
+                        photos={review.photos}
+                        userName={review.userName}
+                        timestamp={review.timestamp}
+                        onPhotoClick={handlePhotoClick}
+                      />
                     )}
 
                     {/* Helpful Count */}
                     <button
-                      className="px-3 py-1.5 bg-[#f1f1f1] rounded-[28px] text-sm font-bold text-[#191919ff] 
-                    hover:bg-gray-200 flex items-center gap-2"
+                      onClick={() => {
+                        if (currentUser) {
+                          toggleHelpfulRating(review.id, currentUser.id);
+                        }
+                      }}
+                      disabled={!currentUser}
+                      className={`px-3 py-1.5 rounded-[28px] text-sm font-bold flex items-center gap-2 transition-colors ${
+                        currentUser && review.ratedHelpfulBy.includes(currentUser.id)
+                          ? 'bg-[#191919ff] text-white hover:bg-[#2a2a2a]'
+                          : currentUser
+                          ? 'bg-[#f1f1f1] text-[#191919ff] hover:bg-gray-200'
+                          : 'bg-[#f1f1f1] text-[#191919ff] cursor-not-allowed'
+                      } ${!currentUser ? 'pointer-events-none' : ''}`}
                     >
                       <LightbulbIcon />
-                      <span>Helpful ({review.helpfulCount})</span>
+                      <span>
+                        Helpful{' '}
+                        {review.ratedHelpfulBy.length > 0
+                          ? `(${review.ratedHelpfulBy.length})`
+                          : ''}
+                      </span>
                     </button>
                   </div>
                 );
@@ -267,6 +274,8 @@ export default function StoreReviewsPage() {
         isOpen={reviewDialogOpen}
         onClose={() => setReviewDialogOpen(false)}
         restaurantName={vendorName}
+        vendorId={storeId}
+        vendorLogo={vendorReviews[0]?.vendorLogo}
       />
 
       {/* Reviews Info Modal */}

@@ -8,7 +8,7 @@ import { UserReview } from '@/types/review-types';
 interface ReviewStore {
   // State
   reviews: UserReview[];
-  
+
   // Actions
   addReview: (review: Omit<UserReview, 'id' | 'timestamp' | 'approvalStatus'>) => void;
   updateReviewApproval: (reviewId: string, status: 'approved' | 'rejected') => void;
@@ -21,6 +21,8 @@ interface ReviewStore {
   getUserReviewCount: (userId: string) => number;
   getReview: (reviewId: string) => UserReview | null;
   getReviewsByVendor: (vendorId: string) => UserReview[];
+  getUserReviewForVendor: (vendorId: string, userId: string) => UserReview | null;
+  toggleHelpfulRating: (reviewId: string, userId: string) => void;
 }
 
 export const useReviewStore = create<ReviewStore>()(
@@ -109,6 +111,32 @@ export const useReviewStore = create<ReviewStore>()(
         getReviewsByVendor: (vendorId: string) => {
           const state = get();
           return state.reviews.filter(review => review.vendorId === vendorId);
+        },
+
+        // Get a user's review for a specific vendor
+        getUserReviewForVendor: (vendorId: string, userId: string) => {
+          const state = get();
+          return state.reviews.find(
+            review => review.vendorId === vendorId && review.userId === userId
+          ) || null;
+        },
+
+        // Toggle helpful rating for a review
+        toggleHelpfulRating: (reviewId: string, userId: string) => {
+          set((state) => ({
+            reviews: state.reviews.map(review => {
+              if (review.id === reviewId) {
+                const isRatedHelpful = review.ratedHelpfulBy.includes(userId);
+                return {
+                  ...review,
+                  ratedHelpfulBy: isRatedHelpful
+                    ? review.ratedHelpfulBy.filter(id => id !== userId)
+                    : [...review.ratedHelpfulBy, userId]
+                };
+              }
+              return review;
+            })
+          }));
         },
       }),
       {

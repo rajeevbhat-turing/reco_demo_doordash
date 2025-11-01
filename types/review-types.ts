@@ -19,14 +19,8 @@ export interface UserReview {
   content: string;
   timestamp: string; // ISO string
   photos: string[]; // Array of photo URLs
-  helpfulCount: number; // Count of users who found this helpful
+  ratedHelpfulBy: string[]; // Array of user IDs who rated this review as helpful
   orderId?: string; // Optional - may not be tied to a specific order
-  orderDetails?: {
-    orderId: string;
-    orderDate: string;
-    items: OrderItem[]; 
-    totalAmount: number;
-    liked?: boolean; // Whether user liked the order
-  };
+  likedItems: OrderItem[]; // Array of items that were liked by the reviewer
   approvalStatus: 'approved' | 'rejected' | 'pending';
 }

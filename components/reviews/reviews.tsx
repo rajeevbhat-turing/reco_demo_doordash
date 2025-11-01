@@ -2,11 +2,12 @@
 
 import { useState, useRef, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import { ChevronRight, ChevronLeft, ArrowRight } from 'lucide-react';
+import { ChevronRight, ChevronLeft, ArrowRight, Star } from 'lucide-react';
 import OverallRating from './overall-rating';
 import ReviewCard from './review-card';
 import ReviewDialog from '@/components/review-dialog';
 import { useReviewStore } from '@/store/review-store';
+import { useUserStore } from '@/store/user-store';
 
 interface ReviewsProps {
   vendorId: string;
@@ -15,7 +16,8 @@ interface ReviewsProps {
 
 export default function Reviews({ vendorId, vendorName }: ReviewsProps) {
   const router = useRouter();
-  const { getVendorReviews, getApprovedReviews } = useReviewStore();
+  const { getVendorReviews, getApprovedReviews, getUserReviewForVendor } = useReviewStore();
+  const currentUser = useUserStore(state => state.currentUser);
   const [reviewDialogOpen, setReviewDialogOpen] = useState(false);
   const [selectedRating, setSelectedRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
@@ -26,6 +28,9 @@ export default function Reviews({ vendorId, vendorName }: ReviewsProps) {
   // Get reviews for this vendor
   const vendorReviews = getVendorReviews(vendorId);
   const approvedReviews = getApprovedReviews(vendorId);
+
+  // Get current user's review for this vendor (if exists)
+  const userReview = currentUser ? getUserReviewForVendor(vendorId, currentUser.id) : null;
 
   // Calculate average rating and total reviews from approved reviews
   const averageRating = useMemo(() => {
@@ -101,38 +106,56 @@ export default function Reviews({ vendorId, vendorName }: ReviewsProps) {
 
   // If no reviews exist, show empty state
   if (vendorReviews.length === 0 || approvedReviews.length === 0) {
+    // If no reviews exist and no user is logged in, show nothing
+    if (!currentUser) return null;
+
+    // Check if user has a pending review
+    const hasPendingReview = userReview && userReview.approvalStatus === 'pending';
+
+    const displayRating = hoverRating || selectedRating;
+
     return (
-      <div className="mt-8">
-        <h2 className="text-xl font-bold mb-4">Reviews</h2>
-        <div className="bg-gray-50 rounded-lg p-6">
-          <h3 className="text-lg font-medium mb-4">Be the first to review</h3>
-          <div className="flex mb-4">
-            {[1, 2, 3, 4, 5].map(star => (
-              <svg
-                key={star}
-                className={`h-8 w-8 cursor-pointer ${
-                  star <= (hoverRating || selectedRating)
-                    ? 'fill-gray-700 text-gray-700'
-                    : 'text-gray-300'
-                }`}
-                fill="currentColor"
-                viewBox="0 0 20 20"
-                onMouseEnter={() => handleStarHover(star)}
-                onMouseLeave={handleStarLeave}
-                onClick={() => handleStarClick(star)}
-              >
-                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-              </svg>
-            ))}
+      <>
+        {!hasPendingReview && (
+          <div className="mt-8">
+            <h2 className="text-xl font-bold mb-4 text-[#191919ff]">Reviews</h2>
+            <div className="bg-gray-50 rounded-lg p-4 max-w-[400px]">
+              <h3 className="text-base font-medium mb-4">Be the first to review</h3>
+              <div className="flex mb-4 items-center">
+                {[1, 2, 3, 4, 5].map(star => (
+                  <Star
+                    key={star}
+                    className={`w-8 h-8 cursor-pointer ${
+                      star <= displayRating ? 'fill-[#191919ff] text-[#191919ff]' : 'text-gray-300'
+                    }`}
+                    onMouseEnter={() => handleStarHover(star)}
+                    onMouseLeave={handleStarLeave}
+                    onClick={() => handleStarClick(star)}
+                  />
+                ))}
+
+                <button
+                  className="text-[#606060ff] font-medium text-sm hover:text-[#191919ff] ml-6"
+                  onClick={handleStartReview}
+                >
+                  Start your review
+                </button>
+              </div>
+            </div>
           </div>
-          <button
-            className="text-gray-600 font-medium hover:text-gray-800"
-            onClick={handleStartReview}
-          >
-            Start your review
-          </button>
-        </div>
-      </div>
+        )}
+        {/* Review Dialog */}
+        {reviewDialogOpen && (
+          <ReviewDialog
+            isOpen={reviewDialogOpen}
+            onClose={() => setReviewDialogOpen(false)}
+            restaurantName={vendorName}
+            vendorId={vendorId}
+            vendorLogo={vendorReviews[0]?.vendorLogo}
+            defaultRating={selectedRating}
+          />
+        )}
+      </>
     );
   }
 
@@ -145,18 +168,20 @@ export default function Reviews({ vendorId, vendorName }: ReviewsProps) {
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h2 className="text-xl font-bold text=[#191919ff]">Reviews</h2>
+          <h2 className="text-xl font-bold text-[#191919ff]">Reviews</h2>
           <p className="text-sm text-[#606060ff] font-medium">
             {totalReviews}+ ratings • {approvedReviews.length}+ public reviews
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <button
-            className="px-3 py-1.5 bg-[#f1f1f1] rounded-[28px] text-sm font-bold text-[#191919ff] hover:bg-gray-300"
-            onClick={handleStartReview}
-          >
-            Add Review
-          </button>
+          {currentUser && (
+            <button
+              className="px-3 py-1.5 bg-[#f1f1f1] rounded-[28px] text-sm font-bold text-[#191919ff] hover:bg-gray-300"
+              onClick={handleStartReview}
+            >
+              Add Review
+            </button>
+          )}
           <div className="flex gap-1">
             <button
               onClick={handlePrevious}
@@ -210,6 +235,8 @@ export default function Reviews({ vendorId, vendorName }: ReviewsProps) {
         isOpen={reviewDialogOpen}
         onClose={() => setReviewDialogOpen(false)}
         restaurantName={vendorName}
+        vendorId={vendorId}
+        vendorLogo={vendorReviews[0]?.vendorLogo}
       />
     </div>
   );
