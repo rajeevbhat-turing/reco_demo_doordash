@@ -20,13 +20,13 @@ import {
 import { getMenuCategoriesByRestaurantId } from "@/lib/utils";
 import { getDealsByRestaurantId } from "@/constants/deals";
 import { useCartStore } from "@/store/cart-store";
-import { useReplaceCart } from "@/context/replace-cart-context-with-sqlite";
+import { useAppStore } from "@/store/app-store";
+import { useVerifierStore } from "@/store/verifier-store";
 import MenuItemDialog from "@/components/menu-item-dialog";
 import GroupOrderDialog from "@/components/group-order-dialog";
 import StoreDetailsDialog from "@/components/store-details-dialog";
 import { Reviews } from "@/components/reviews";
 import ServiceFeesInfo from "@/components/service-fees-info";
-import { CartProvider } from "@/context/cart-context";
 import { getDefaultRating } from "@/utils/rating-utils";
 
 const menuTypes = [
@@ -95,9 +95,14 @@ export default function RestaurantPage() {
   const sectionRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
   // Get both setCategory and addItem from the cart store
   const cartStore = useCartStore();
-  const { addItemWithConflictCheck } = useReplaceCart();
+  const { addItem } = useCartStore();
   const ticking = useRef(false);
   const featuredItemsRef = useRef<HTMLDivElement>(null);
+
+  // Set the category to restaurant when the page loads
+  useEffect(() => {
+    cartStore.setCategory("restaurant");
+  }, []);
   const dealsRef = useRef<HTMLDivElement>(null);
   const menuDropdownRef = useRef<HTMLDivElement>(null);
 
@@ -114,7 +119,8 @@ export default function RestaurantPage() {
   const [isSaved, setIsSaved] = useState(false);
   const [selectedMenuType, setSelectedMenuType] = useState("Regular Menu");
 
-  const { setCurrentStore, clearCurrentStore } = useCartStore()
+  const { setCurrentStore, clearCurrentStore } = useAppStore()
+  const { recordNavigationFromSearch } = useVerifierStore()
 
   // Check if user came from search and record navigation
   useEffect(() => {
@@ -124,11 +130,11 @@ export default function RestaurantPage() {
         console.log('[NAVIGATION] User came from search page, recording navigation')
         // Small delay to ensure search info is set before navigation
         setTimeout(() => {
-          useCartStore.getState().recordNavigationFromSearch()
+          recordNavigationFromSearch()
         }, 100)
       }
     }
-  }, [])
+  }, [recordNavigationFromSearch])
 
   // Set the cart category to restaurant when the component mounts
   useEffect(() => {
@@ -150,7 +156,7 @@ export default function RestaurantPage() {
       const beefItemsData = getMenuItemsByCategory(id, "Beef");
 
       if (restaurantData) {
-        setCurrentStore(restaurantData)
+        setCurrentStore(restaurantData, "restaurant")
       }
       setRestaurant(restaurantData);
       setFeaturedItems(featuredItemsData);
@@ -220,16 +226,16 @@ export default function RestaurantPage() {
   }
 
   const handleAddToCart = (item: any) => {
-    // Use conflict detection system for restaurant items
+    // Add to cart - will automatically find or create restaurant cart
     const cartItem = {
       id: `${item.id}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`, // Generate unique ID
-      restaurantId: item.restaurantId || id,
       itemName: item.name, // Use itemName instead of name
       price: item.price,
       image: item.image,
     };
     
-    addItemWithConflictCheck(cartItem, "restaurant");
+    const restaurantId = item.restaurantId || id;
+    addItem(cartItem, "restaurant", restaurant?.name, restaurantId);
   };
 
   const scrollContainer = (
@@ -280,8 +286,7 @@ export default function RestaurantPage() {
   );
 
   return (
-    <CartProvider category="restaurant">
-      <div className="px-8 py-16">
+    <div className="px-8 py-16">
         {/* Banner Image */}
         <div className="relative w-full h-[220px] rounded-bl-xl rounded-br-xl overflow-hidden">
           <Image
@@ -862,6 +867,5 @@ export default function RestaurantPage() {
           onClose={() => setServiceFeesInfoOpen(false)}
         />
       </div>
-    </CartProvider>
   );
 }

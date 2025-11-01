@@ -1,8 +1,8 @@
 "use client"
 
 import { useParams, useRouter, useSearchParams } from "next/navigation"
-import { CartProvider } from "@/context/cart-context"
 import { useState, useEffect } from "react"
+import { useCartStore } from "@/store/cart-store"
 import type { ProductSection } from "@/types/store"
 import RetailStorePage from "@/components/store/retail-store-page"
 import PetStorePage from "@/components/store/pet-store-page"
@@ -102,6 +102,7 @@ export default function ConvenienceStorePage() {
   
   const [storeData, setStoreData] = useState<any>(null)
   const [productData, setProductData] = useState<ProductSection[]>([])
+  const { setCategory } = useCartStore()
 
   useEffect(() => {
     if (storeId) {
@@ -133,6 +134,12 @@ export default function ConvenienceStorePage() {
           data: foundStore,
           type: sourceType
         })
+        // Set the category based on store type
+        setCategory(sourceType as any)
+        
+        // Also set in app-store
+        const { setCurrentStore } = require("@/store/app-store").useAppStore.getState()
+        setCurrentStore(foundStore, sourceType as any)
       } else {
         // If store not found, redirect to main convenience page
         router.push("/convenience")
@@ -145,7 +152,7 @@ export default function ConvenienceStorePage() {
   }
 
   return (
-    <CartProvider category={storeData.type as "grocery" | "retail" | "pets" | "convenience"}>
+    <>
       {storeData.type === 'convenience' ? (
         <RetailStorePage 
           onBackClick={() => router.push("/convenience")} 
@@ -170,6 +177,6 @@ export default function ConvenienceStorePage() {
           productData={productData}
         />
       )}
-    </CartProvider>
+    </>
   )
 }

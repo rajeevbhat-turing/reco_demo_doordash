@@ -6,7 +6,6 @@ import GrocerySchedule from "@/components/grocery-schedule"
 import StoreGrid from "@/components/store/store-grid"
 import LocalGrocers from "@/components/local-grocers"
 import ProductDisplay from "@/components/product/product-display"
-import { CartProvider } from "@/context/cart-context"
 import { useCartStore } from "@/store/cart-store"
 import { convenienceStores } from "@/data/convenience-store-data"
 import {
@@ -132,8 +131,7 @@ export default function Convenience() {
   }, [])
   
   return (
-    <CartProvider category="convenience">
-      <div className="max-w-[1200px] mx-auto px-4 pt-16">
+    <div className="max-w-[1200px] mx-auto px-4 pt-16">
         {/* Filter Options Bar */}
         <FilterOptions 
           ref={filterOptionsRef}
@@ -207,6 +205,5 @@ export default function Convenience() {
 
 
       </div>
-    </CartProvider>
   )
 } 

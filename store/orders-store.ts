@@ -1,20 +1,10 @@
 import { create } from "zustand"
 import { devtools, persist } from "zustand/middleware"
-import { orderData, Order, OrderItem } from "@/constants/order-data"
-import { CartItem } from "./cart-store"
+import { Order } from "@/constants/order-data"
 
 interface OrdersStore {
   orders: Order[]
-  addOrder: (orderData: {
-    orderId: string
-    storeName: string
-    storeId: string
-    category: string
-    items: CartItem[]
-    total: number
-    deliveryTime?: string
-    scheduledTime?: string
-  }) => void
+  addOrder: (order: Order) => void
   getOrders: () => Order[]
 }
 
@@ -22,35 +12,13 @@ export const useOrdersStore = create<OrdersStore>()(
   devtools(
     persist(
       (set, get) => ({
-        orders: orderData, // Initialize with existing order data
+        orders: [], // Initialize with empty array - no dummy data
 
-        addOrder: (orderInfo) => {
-          console.log('[ORDERS STORE] Adding new order:', orderInfo.orderId, orderInfo.storeName)
-          const newOrder: Order = {
-            id: orderInfo.orderId,
-            restaurantId: orderInfo.storeId,
-            restaurantName: orderInfo.storeName,
-            orderDate: new Date().toLocaleDateString('en-US', { 
-              weekday: 'short', 
-              month: 'short', 
-              day: 'numeric' 
-            }),
-            totalAmount: orderInfo.total,
-            items: orderInfo.items.map(item => ({
-              id: item.id.toString(),
-              name: item.itemName,
-              quantity: item.quantity,
-              price: typeof item.price === 'number' 
-                ? item.price 
-                : parseFloat(item.price.toString().replace(/[^0-9.]/g, ""))
-            })),
-            status: 'Delivered',
-            orderType: 'Personal',
-            isDashPass: false
-          }
-
+        addOrder: (order) => {
+          console.log('[ORDERS STORE] Adding new order:', order.id, order.storeName)
+          
           set(state => {
-            const newOrders = [newOrder, ...state.orders]
+            const newOrders = [order, ...state.orders]
             console.log('[ORDERS STORE] Total orders after add:', newOrders.length)
             return { orders: newOrders }
           })
@@ -60,7 +28,6 @@ export const useOrdersStore = create<OrdersStore>()(
       }),
       {
         name: "orders-store",
-        enabled: true,
       }
     ),
     {

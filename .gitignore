@@ -36,3 +36,6 @@ next-env.d.ts
 *.db-shm
 *.db-wal
 poc-database.sqlite
+
+# macOS .DS_Store
+.DS_Store

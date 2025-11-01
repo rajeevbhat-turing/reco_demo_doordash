@@ -1,3 +1,8 @@
+// Email validation
+export const isValidEmail = (email: string) => {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+};
+
 // Generate a consistent color based on the name
 export const generateAvatarColor = (name: string) => {
   const colors = [

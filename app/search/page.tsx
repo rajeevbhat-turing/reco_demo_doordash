@@ -15,10 +15,11 @@ import { stores as retailStores } from "@/constants/store"
 import { groceryData, storeSpecificData } from "@/data/grocery-data"
 import FilterOptions, { FilterState, FilterOptionsRef } from "@/components/filter-options"
 import type { Restaurant } from "@/constants/restaurants"
-import { useCartStore } from "@/store/cart-store"
 import { getDefaultRating } from "@/utils/rating-utils"
 import { filterRestaurantsWithMenuItems } from "@/utils/restaurant-utils"
-import { useReplaceCart } from "@/context/replace-cart-context-with-sqlite"
+import { useCartStore } from "@/store/cart-store"
+import { useVerifierStore } from "@/store/verifier-store"
+import { useAppStore } from "@/store/app-store"
 
 // Force dynamic rendering
 export const dynamic = 'force-dynamic'
@@ -36,7 +37,7 @@ export default function SearchPage() {
   console.log('🚀 SearchPage rendered with query:', query)
   const [searchResults, setSearchResults] = useState<SearchResultRestaurant[]>([])
   const [isLoading, setIsLoading] = useState(true)
-  const { addItemWithConflictCheck } = useReplaceCart()
+  const { addItem } = useCartStore()
   const [activeFilters, setActiveFilters] = useState<FilterState>({
     underThirtyMins: false,
     deals: false,
@@ -44,7 +45,8 @@ export default function SearchPage() {
     price: null,
     dashPass: false,
   })
-  const { updateSearchResults, clearSearchResults, recordSearch } = useCartStore()
+  const { updateSearchResults, clearSearchResults } = useAppStore()
+  const { recordSearch } = useVerifierStore()
 
   // Handle filter changes
   const handleFilterChange = (filters: FilterState) => {
@@ -891,19 +893,17 @@ export default function SearchPage() {
                             ? parseFloat(product.priceRange.replace(/[^0-9.]/g, '')) || 0
                             : product.priceRange || 0
                           
-                          const newItem = {
-                            id: product.id,
-                            itemName: product.name,
-                            price: price,
-                            image: product.logo || product.banner || '/placeholder.svg',
-                            storeId: storeId,
-                            storeName: product.cuisine, // Pass the store name
-                          }
-                          
-                          // Use the replace cart context to handle conflicts automatically
-                          addItemWithConflictCheck(newItem, category)
-                          
-                          console.log('Added to cart:', product.name, 'from', product.cuisine)
+                        const newItem = {
+                          id: product.id,
+                          itemName: product.name,
+                          price: price,
+                          image: product.logo || product.banner || '/placeholder.svg',
+                        }
+                        
+                        // Add to cart - will automatically find or create cart for this store
+                        addItem(newItem, category, product.cuisine, storeId)
+                        
+                        console.log('Added to cart:', product.name, 'from', product.cuisine)
                         }}
                         className="mt-auto w-full py-2 px-3 bg-orange-500 hover:bg-orange-600 text-white rounded-md text-sm font-medium transition-colors shadow-sm flex items-center justify-center gap-1.5"
                       >

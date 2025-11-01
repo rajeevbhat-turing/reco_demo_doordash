@@ -45,16 +45,24 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: `Prompt '${prompt_id}' not found` }, { status: 404 });
     }
 
-    // Get stored data from database for this run
-    const storedData = await dbPOC.bulkGet(runId, ['multicategory-cart']);
+    // Get stored data from database for this run (now from multiple stores)
+    const storedData = await dbPOC.bulkGet(runId, ['multicategory-cart', 'app-state', 'verifier-state']);
 
     if (!storedData.items || storedData.items.length === 0) {
       return NextResponse.json({ error: 'No data found for this run' }, { status: 404 });
     }
 
-    // Find the cart data in stored items
+    // Find the data from all stores
     const cartData = storedData.items.find(
       (item: { key: string; value: any }) => item.key === 'multicategory-cart'
+    );
+    
+    const appData = storedData.items.find(
+      (item: { key: string; value: any }) => item.key === 'app-state'
+    );
+    
+    const verifierData = storedData.items.find(
+      (item: { key: string; value: any }) => item.key === 'verifier-state'
     );
 
     if (!cartData) {
@@ -63,11 +71,32 @@ export async function GET(request: NextRequest) {
 
     const startTime = performance.now();
 
-    // Parse the stored cart data
+    // Parse the stored data from all stores
     let finalCartState: CartState;
     try {
-      const parsedData = JSON.parse(cartData.v);
-      finalCartState = parsedData.state || parsedData;
+      const parsedCartData = JSON.parse(cartData.v);
+      const cartState = parsedCartData.state || parsedCartData;
+      
+      // Parse app store data (if exists)
+      let appState: any = {};
+      if (appData) {
+        const parsedAppData = JSON.parse(appData.v);
+        appState = parsedAppData.state || parsedAppData;
+      }
+      
+      // Parse verifier store data (if exists)
+      let verifierState: any = {};
+      if (verifierData) {
+        const parsedVerifierData = JSON.parse(verifierData.v);
+        verifierState = parsedVerifierData.state || parsedVerifierData;
+      }
+      
+      // Merge all states into one (for backward compatibility with existing verifiers)
+      finalCartState = {
+        ...cartState,
+        ...appState,
+        ...verifierState,
+      };
     } catch (e) {
       finalCartState = getDefaultCartState();
     }
@@ -77,6 +106,12 @@ export async function GET(request: NextRequest) {
         if (key === 'multicategory-cart') {
           // Return the complete stored data as JSON string
           return JSON.stringify(cartData.value);
+        }
+        if (key === 'app-state' && appData) {
+          return JSON.stringify(appData.value);
+        }
+        if (key === 'verifier-state' && verifierData) {
+          return JSON.stringify(verifierData.value);
         }
         // Check other stored keys
         const otherData = storedData.items.find(
