@@ -2,16 +2,13 @@
 
 import { useEffect, useState, useRef, useCallback } from "react";
 import Image from "next/image";
-import Link from "next/link";
 import { useParams } from "next/navigation";
 import {
   ChevronDown,
   Info,
   ChevronLeft,
   ChevronRight,
-  ExternalLink,
   Heart,
-  Star,
   Search,
   X,
 } from "lucide-react";
@@ -26,8 +23,8 @@ import { useCartStore } from "@/store/cart-store";
 import { useReplaceCart } from "@/context/replace-cart-context-with-sqlite";
 import MenuItemDialog from "@/components/menu-item-dialog";
 import GroupOrderDialog from "@/components/group-order-dialog";
-import ReviewDialog from "@/components/review-dialog";
 import StoreDetailsDialog from "@/components/store-details-dialog";
+import { Reviews } from "@/components/reviews";
 import ServiceFeesInfo from "@/components/service-fees-info";
 import { CartProvider } from "@/context/cart-context";
 import { getDefaultRating } from "@/utils/rating-utils";
@@ -108,7 +105,6 @@ export default function RestaurantPage() {
   const [menuItemDialogOpen, setMenuItemDialogOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<any>(null);
   const [groupOrderDialogOpen, setGroupOrderDialogOpen] = useState(false);
-  const [reviewDialogOpen, setReviewDialogOpen] = useState(false);
   const [storeDetailsDialogOpen, setStoreDetailsDialogOpen] = useState(false);
   const [serviceFeesInfoOpen, setServiceFeesInfoOpen] = useState(false);
   const [menuDropdownOpen, setMenuDropdownOpen] = useState(false);
@@ -116,8 +112,6 @@ export default function RestaurantPage() {
   const [isSearching, setIsSearching] = useState(false);
 
   const [isSaved, setIsSaved] = useState(false);
-  const [hoverRating, setHoverRating] = useState(0);
-  const [selectedRating, setSelectedRating] = useState(0);
   const [selectedMenuType, setSelectedMenuType] = useState("Regular Menu");
 
   const { setCurrentStore, clearCurrentStore } = useCartStore()
@@ -270,22 +264,6 @@ export default function RestaurantPage() {
     setGroupOrderDialogOpen(true);
   };
 
-  const handleStarHover = (rating: number) => {
-    setHoverRating(rating);
-  };
-
-  const handleStarLeave = () => {
-    setHoverRating(0);
-  };
-
-  const handleStarClick = (rating: number) => {
-    setSelectedRating(rating);
-    setReviewDialogOpen(true);
-  };
-
-  const handleStartReview = () => {
-    setReviewDialogOpen(true);
-  };
 
   const toggleMenuDropdown = () => {
     setMenuDropdownOpen(!menuDropdownOpen);
@@ -736,35 +714,7 @@ export default function RestaurantPage() {
                   </div>
     
                   {/* Reviews Section */}
-                  <div className="mt-8">
-                    <h2 className="text-xl font-bold mb-4">Reviews</h2>
-                    <div className="bg-gray-50 rounded-lg p-6">
-                      <h3 className="text-lg font-medium mb-4">
-                        Be the first to review
-                      </h3>
-                      <div className="flex mb-4">
-                        {[1, 2, 3, 4, 5].map((star) => (
-                          <Star
-                            key={star}
-                            className={`h-8 w-8 cursor-pointer ${
-                              star <= (hoverRating || selectedRating)
-                                ? "fill-gray-700 text-gray-700"
-                                : "text-gray-300"
-                            }`}
-                            onMouseEnter={() => handleStarHover(star)}
-                            onMouseLeave={handleStarLeave}
-                            onClick={() => handleStarClick(star)}
-                          />
-                        ))}
-                      </div>
-                      <button
-                        className="text-gray-600 font-medium hover:text-gray-800"
-                        onClick={handleStartReview}
-                      >
-                        Start your review
-                      </button>
-                    </div>
-                  </div>
+                  <Reviews vendorId={restaurant.id} vendorName={restaurant.name} />
                 </>
               )}
 
@@ -899,12 +849,6 @@ export default function RestaurantPage() {
         <GroupOrderDialog
           isOpen={groupOrderDialogOpen}
           onClose={() => setGroupOrderDialogOpen(false)}
-        />
-        {/* Review Dialog */}
-        <ReviewDialog
-          isOpen={reviewDialogOpen}
-          onClose={() => setReviewDialogOpen(false)}
-          restaurantName={restaurant.name}
         />
         {/* Store Details Dialog */}
         <StoreDetailsDialog 
