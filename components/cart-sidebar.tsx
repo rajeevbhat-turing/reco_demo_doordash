@@ -457,7 +457,7 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
                 <div className="relative h-14 w-14 mr-4 flex-shrink-0">
                   <Image
                     src={item.image?.trim() || "/placeholder.svg"}
-                    alt={item.itemName}
+                    alt={item.itemName || 'Item Image'}
                     width={96}
                     height={96}
                     className="object-cover rounded-md"
@@ -529,7 +529,7 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
                     <div className="relative w-20 h-20 mb-2">
                       <Image
                         src={item.image || "/placeholder.svg"}
-                        alt={item.itemName}
+                        alt={item.itemName || 'Item Image'}
                         fill
                         className="object-cover rounded-lg"
                       />
