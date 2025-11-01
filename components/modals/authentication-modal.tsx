@@ -144,6 +144,10 @@ export default function AuthenticationModal({
       country: user.country,
       userCountry: user.userCountry,
       avatar: null,
+      paymentMethods: [],
+      addresses: [],
+      is_restricted: false,
+      reviews: [],
     };
 
     addUser(newUser);

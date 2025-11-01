@@ -182,81 +182,88 @@ export default function UserRatingsModal({
 
         {/* Scrollable Content */}
         <div className="flex-1 overflow-y-auto">
-          <div>
-            {sortedVendors.map(vendor => {
-              const fullStars = Math.floor(vendor.avgRating);
-              const hasHalfStar = vendor.avgRating % 1 >= 0.5;
+          {sortedVendors.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-12">
+              <p className="text-base font-bold text-[#191919ff] mb-3">No ratings</p>
+              <p className="text-base font-medium text-[#191919ff]">Nothing to see here</p>
+            </div>
+          ) : (
+            <div>
+              {sortedVendors.map(vendor => {
+                const fullStars = Math.floor(vendor.avgRating);
+                const hasHalfStar = vendor.avgRating % 1 >= 0.5;
 
-              return (
-                <Link
-                  key={vendor.vendorId}
-                  href={`/store/${vendor.vendorId}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-4 px-6 py-4 border-b border-[#e5e5e5]"
-                >
-                  {/* Vendor Logo */}
-                  <div className="w-10 h-10 rounded-full overflow-hidden bg-white flex-shrink-0 border border-[#e5e5e5]">
-                    {vendor.vendorLogo ? (
-                      <Image
-                        src={vendor.vendorLogo}
-                        alt={vendor.vendorName}
-                        width={48}
-                        height={48}
-                        className="w-full h-full object-contain"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center bg-gray-200">
-                        <span className="text-xs font-medium text-gray-500">
-                          {vendor.vendorName.charAt(0).toUpperCase()}
-                        </span>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Vendor Name */}
-                  <div className="flex-1 min-w-0 flex flex-col gap-1">
-                    <p className="text-base font-medium text-[#191919ff] truncate">
-                      {vendor.vendorName}
-                    </p>
-                    {/* Star Rating */}
-                    <div className="flex items-center gap-1">
-                      {[1, 2, 3, 4, 5].map(star => {
-                        if (star <= fullStars) {
-                          return (
-                            <Star
-                              key={star}
-                              className="w-4 h-4 fill-[#191919ff] text-[#191919ff]"
-                            />
-                          );
-                        } else if (star === fullStars + 1 && hasHalfStar) {
-                          return (
-                            <div key={star} className="relative w-4 h-4">
-                              <Star
-                                className="w-4 h-4 absolute fill-none text-gray-300 stroke-gray-300"
-                                strokeWidth={1}
-                              />
-                              <div className="absolute left-0 top-0 w-2 h-4 overflow-hidden">
-                                <Star className="w-4 h-4 fill-[#191919ff] text-[#191919ff]" />
-                              </div>
-                            </div>
-                          );
-                        } else {
-                          return (
-                            <Star
-                              key={star}
-                              className="w-4 h-4 text-[#191919ff] fill-none stroke-[#191919ff]"
-                              strokeWidth={2}
-                            />
-                          );
-                        }
-                      })}
+                return (
+                  <Link
+                    key={vendor.vendorId}
+                    href={`/store/${vendor.vendorId}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-4 px-6 py-4 border-b border-[#e5e5e5]"
+                  >
+                    {/* Vendor Logo */}
+                    <div className="w-10 h-10 rounded-full overflow-hidden bg-white flex-shrink-0 border border-[#e5e5e5]">
+                      {vendor.vendorLogo ? (
+                        <Image
+                          src={vendor.vendorLogo}
+                          alt={vendor.vendorName}
+                          width={48}
+                          height={48}
+                          className="w-full h-full object-contain"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center bg-gray-200">
+                          <span className="text-xs font-medium text-gray-500">
+                            {vendor.vendorName.charAt(0).toUpperCase()}
+                          </span>
+                        </div>
+                      )}
                     </div>
-                  </div>
-                </Link>
-              );
-            })}
-          </div>
+
+                    {/* Vendor Name */}
+                    <div className="flex-1 min-w-0 flex flex-col gap-1">
+                      <p className="text-base font-medium text-[#191919ff] truncate">
+                        {vendor.vendorName}
+                      </p>
+                      {/* Star Rating */}
+                      <div className="flex items-center gap-1">
+                        {[1, 2, 3, 4, 5].map(star => {
+                          if (star <= fullStars) {
+                            return (
+                              <Star
+                                key={star}
+                                className="w-4 h-4 fill-[#191919ff] text-[#191919ff]"
+                              />
+                            );
+                          } else if (star === fullStars + 1 && hasHalfStar) {
+                            return (
+                              <div key={star} className="relative w-4 h-4">
+                                <Star
+                                  className="w-4 h-4 absolute fill-none text-gray-300 stroke-gray-300"
+                                  strokeWidth={1}
+                                />
+                                <div className="absolute left-0 top-0 w-2 h-4 overflow-hidden">
+                                  <Star className="w-4 h-4 fill-[#191919ff] text-[#191919ff]" />
+                                </div>
+                              </div>
+                            );
+                          } else {
+                            return (
+                              <Star
+                                key={star}
+                                className="w-4 h-4 text-[#191919ff] fill-none stroke-[#191919ff]"
+                                strokeWidth={2}
+                              />
+                            );
+                          }
+                        })}
+                      </div>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+          )}
         </div>
       </div>
     </div>

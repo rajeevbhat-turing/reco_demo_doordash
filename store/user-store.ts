@@ -3,6 +3,7 @@
 import { create } from "zustand";
 import { persist, devtools } from "zustand/middleware";
 import { User, PaymentMethod, Address } from '@/lib/types/user-types';
+import { initialUsersData } from '@/constants/users-data';
 
 interface UserStore {
   // State
@@ -11,20 +12,26 @@ interface UserStore {
   changePasswordPhoneVerified: boolean;
 
   // Actions
+  getUser: (userId: string) => User | null;
+  getAllUsers: () => User[];
   setCurrentUser: (user: User | null) => void;
   addUser: (user: User) => void;
   updateUser: (id: string, updatedUser: Partial<User>) => void;
   deleteUser: (id: string) => void;
+  restrictUser: (userId: string) => void;
+  unrestrictUser: (userId: string) => void;
+  addReviewToUser: (userId: string, reviewId: string) => void;
+  removeReviewFromUser: (userId: string, reviewId: string) => void;
   isAuthenticated: () => boolean;
   clearUsers: () => void;
   setChangePasswordPhoneVerified: (verified: boolean) => void;
   changePassword: (oldPassword: string, newPassword: string) => boolean;
-  
+
   // Payment Method Actions
   addPaymentMethod: (method: Omit<PaymentMethod, 'id' | 'type' | 'lastFour'>) => PaymentMethod;
   removePaymentMethod: (id: string) => void;
   getPaymentMethods: () => PaymentMethod[];
-  
+
   // Address Actions
   addAddress: (address: Omit<Address, 'id'>) => Address;
   removeAddress: (id: string) => void;
@@ -37,48 +44,23 @@ export const useUserStore = create<UserStore>()(
     persist(
       (set, get) => ({
         // State
-        users: [{
-          id: '1',
-          name: 'John Doe',
-          email: 'john.doe@example.com',
-          phoneNumber: '9999999999',
-          password: 'password@12345',
-          country: {
-            dialCode: '+1',
-            code: 'US',
-            name: 'United States',
-          },
-          userCountry: 'United States',
-          avatar: null,
-          paymentMethods: [],
-          addresses: [
-            {
-              id: "default-address",
-              street: "548 Market Street",
-              city: "San Francisco",
-              state: "CA",
-              zipCode: "94104",
-              addressType: "house",
-              gateCode: "111",
-              deliveryPreference: "door",
-              deliveryInstructions: "Please ring the bell and drop off at the door, thank you. Its around the corner on the ground floor"
-            },
-            {
-              id: "address-2",
-              street: "47 West 13th Street",
-              city: "New York",
-              state: "NY",
-              zipCode: "10011",
-              addressType: "house"
-            }
-          ],
-        }],
+        users: initialUsersData,
         currentUser: null,
         changePasswordPhoneVerified: false,
 
         // Actions
+        getUser: (userId: string) => {
+          const state = get();
+          return state.users.find(user => user.id === userId) || null;
+        },
+
+        getAllUsers: () => {
+          const state = get();
+          return state.users;
+        },
+
         setCurrentUser: (user: User | null) => {
-          set({ 
+          set({
             currentUser: user,
             changePasswordPhoneVerified: user === null ? false : get().changePasswordPhoneVerified,
           });
@@ -108,6 +90,54 @@ export const useUserStore = create<UserStore>()(
           }));
         },
 
+        restrictUser: (userId: string) => {
+          set((state) => ({
+            users: state.users.map(user =>
+              user.id === userId ? { ...user, is_restricted: true } : user
+            ),
+            currentUser: state.currentUser?.id === userId
+              ? { ...state.currentUser, is_restricted: true }
+              : state.currentUser
+          }));
+        },
+
+        unrestrictUser: (userId: string) => {
+          set((state) => ({
+            users: state.users.map(user =>
+              user.id === userId ? { ...user, is_restricted: false } : user
+            ),
+            currentUser: state.currentUser?.id === userId
+              ? { ...state.currentUser, is_restricted: false }
+              : state.currentUser
+          }));
+        },
+
+        addReviewToUser: (userId: string, reviewId: string) => {
+          set((state) => ({
+            users: state.users.map(user =>
+              user.id === userId && !user.reviews.includes(reviewId)
+                ? { ...user, reviews: [...user.reviews, reviewId] }
+                : user
+            ),
+            currentUser: state.currentUser?.id === userId && !state.currentUser.reviews.includes(reviewId)
+              ? { ...state.currentUser, reviews: [...state.currentUser.reviews, reviewId] }
+              : state.currentUser
+          }));
+        },
+
+        removeReviewFromUser: (userId: string, reviewId: string) => {
+          set((state) => ({
+            users: state.users.map(user =>
+              user.id === userId
+                ? { ...user, reviews: user.reviews.filter(id => id !== reviewId) }
+                : user
+            ),
+            currentUser: state.currentUser?.id === userId
+              ? { ...state.currentUser, reviews: state.currentUser.reviews.filter(id => id !== reviewId) }
+              : state.currentUser
+          }));
+        },
+
         isAuthenticated: () => {
           return get().currentUser !== null;
         },
@@ -123,22 +153,22 @@ export const useUserStore = create<UserStore>()(
         changePassword: (oldPassword: string, newPassword: string) => {
           const state = get();
           if (!state.currentUser) return false;
-          
+
           // Check if old password is correct
           if (state.currentUser.password !== oldPassword) {
             return false;
           }
-          
+
           // Update password
           const updatedUser = { ...state.currentUser, password: newPassword };
-          set({ 
+          set({
             currentUser: updatedUser,
-            users: state.users.map(user => 
+            users: state.users.map(user =>
               user.id === state.currentUser!.id ? updatedUser : user
             ),
             changePasswordPhoneVerified: false // Reset after password change
           });
-          
+
           return true;
         },
 
@@ -189,7 +219,7 @@ export const useUserStore = create<UserStore>()(
         getPaymentMethods: () => {
           return get().currentUser?.paymentMethods || [];
         },
-        
+
         // Address Actions
         addAddress: (address) => {
           const state = get();

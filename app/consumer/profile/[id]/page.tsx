@@ -7,11 +7,18 @@ import { Star, ChevronRight, ArrowRight } from 'lucide-react';
 import { format } from 'date-fns';
 import Image from 'next/image';
 import UserRatingsModal from '@/components/modals/user-ratings-modal';
-import { useUsersStore } from '@/store/users-store';
+import { useUserStore } from '@/store/user-store';
 import { useReviewStore } from '@/store/review-store';
 import { generateAvatarColor } from '@/lib/utils/helperFunctions';
 import { getRestaurantById } from '@/constants/restaurants';
-import { LockIcon } from '@/lib/utils/icons';
+import {
+  LockIcon,
+  VerificationIcon,
+  SupportHistoryIcon,
+  MedalIcon,
+  GiftIcon,
+  OfferIcon,
+} from '@/lib/utils/icons';
 
 export default function UserProfilePage() {
   const params = useParams();
@@ -19,7 +26,7 @@ export default function UserProfilePage() {
   const userId = params.id as string;
   const [ratingsModalOpen, setRatingsModalOpen] = useState(false);
 
-  const { getUser } = useUsersStore();
+  const { getUser } = useUserStore();
   const { getUserReviewCount } = useReviewStore();
 
   const user = getUser(userId);
@@ -204,27 +211,16 @@ export default function UserProfilePage() {
                       href={`/store/${review.vendorId}`}
                       className="flex items-center gap-3 pl-1 pr-3 py-3 bg-[#f7f7f7] rounded-lg hover:bg-gray-100 transition-colors"
                     >
-                      <div className="w-8 h-8 rounded-full overflow-hidden bg-white flex-shrink-0">
-                        {review.vendorLogo ? (
-                          <Image
-                            src={review.vendorLogo}
-                            alt={review.vendorName}
-                            width={32}
-                            height={32}
-                            className="w-full h-full object-contain"
-                          />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center bg-gray-200">
-                            <span className="text-xs font-medium text-gray-500">
-                              {review.vendorName.charAt(0).toUpperCase()}
-                            </span>
-                          </div>
-                        )}
-                      </div>
                       <div className="flex-1 min-w-0">
-                        <p className="font-bold text-sm text-[#191919ff] truncate">
-                          {review.vendorName}
-                        </p>
+                        <div className="flex items-center gap-2 mb-1.5">
+                          <div className="text-[#00838a]">
+                            <OfferIcon width={20} height={20} />
+                          </div>
+
+                          <p className="font-bold text-sm text-[#191919ff] truncate">
+                            {review.vendorName}
+                          </p>
+                        </div>
                         {restaurant && (
                           <p className="text-sm text-[#191919ff] font-medium flex items-center gap-1">
                             <span className="font-bold">

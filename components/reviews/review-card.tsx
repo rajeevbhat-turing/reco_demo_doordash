@@ -2,6 +2,7 @@
 
 import { format } from 'date-fns';
 import { ChevronRight } from 'lucide-react';
+import Link from 'next/link';
 import { UserReview } from '@/types/review-types';
 import { generateAvatarColor } from '@/lib/utils/helperFunctions';
 import { useReviewStore } from '@/store/review-store';
@@ -12,7 +13,7 @@ interface ReviewCardProps {
 
 export default function ReviewCard({ review }: ReviewCardProps) {
   const { getUserReviewCount } = useReviewStore();
-  
+
   // Get actual contribution count for this user
   const contributions = getUserReviewCount(review.userId);
 
@@ -20,25 +21,28 @@ export default function ReviewCard({ review }: ReviewCardProps) {
     <div className="max-w-[308px] bg-[#f7f7f7] rounded-lg p-3 flex-shrink-0">
       {/* User Info */}
       <div className="flex items-center mb-3">
-        <div 
+        <div
           className="w-[38px] h-[38px] rounded-full flex items-center justify-center text-white font-medium text-[18px] mr-3"
           style={{ backgroundColor: generateAvatarColor(review.userName) }}
         >
           {review.userName.charAt(0).toUpperCase()}
         </div>
-        <div className="flex-1">
+        <Link
+          href={`/consumer/profile/${review.userId}?source=reviews_list`}
+          className="flex-1 hover:opacity-80 transition-opacity"
+        >
           <div className="flex items-center">
             <span className="font-medium text-[16px] text-[#191919ff]">{review.userName}</span>
             <ChevronRight className="w-4 h-4 ml-3 text-[#191919ff]" strokeWidth={3} />
           </div>
           <p className="text-xs text-[#606060ff] font-bold">{contributions} contributions</p>
-        </div>
+        </Link>
       </div>
 
       {/* Rating and Date */}
       <div className="flex items-center mb-3">
         <div className="flex items-center mr-3">
-          {[1, 2, 3, 4, 5].map((star) => (
+          {[1, 2, 3, 4, 5].map(star => (
             <svg
               key={star}
               className={`w-4 h-4 ${
@@ -59,10 +63,7 @@ export default function ReviewCard({ review }: ReviewCardProps) {
 
       {/* Review Content */}
       <div className="text-sm font-medium text-[#191919ff] leading-relaxed">
-        {review.content.length > 120 
-          ? `${review.content.substring(0, 120)}...` 
-          : review.content
-        }
+        {review.content.length > 120 ? `${review.content.substring(0, 120)}...` : review.content}
       </div>
     </div>
   );

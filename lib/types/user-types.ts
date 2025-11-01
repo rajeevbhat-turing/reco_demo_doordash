@@ -40,4 +40,6 @@ export interface User {
   avatar: string | null;
   paymentMethods: PaymentMethod[];
   addresses: Address[];
+  is_restricted: boolean;
+  reviews: string[];
 }
