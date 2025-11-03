@@ -44,7 +44,7 @@ interface SharedState {
   deliveryPreference: "door" | "location"
   meetLocation: string
   deliveryInstructions: string
-  personalLabel: string
+  personalLabel?: string
 }
 
 export default function AddressDetailsModal({ 
@@ -101,11 +101,10 @@ export default function AddressDetailsModal({
     deliveryPreference: "door",
     meetLocation: getDefaultMeetLocation(address?.addressType || "house"),
     deliveryInstructions: "",
-    personalLabel: "none"
   })
 
   // Custom label text state
-  const standardLabels = ['none', 'home', 'work']
+  const standardLabels = ['home', 'work']
   const isCustomLabel = (label: string) => label && !standardLabels.includes(label.toLowerCase())
   const [customLabelText, setCustomLabelText] = useState("")
 
@@ -145,7 +144,7 @@ export default function AddressDetailsModal({
       
       // Initialize shared state with defaults
       const defaultMeetLocation = getDefaultMeetLocation(address.addressType || "house")
-      const addressLabel = address.personalLabel || "none"
+      const addressLabel = address.personalLabel || ""
       const isCustom = isCustomLabel(addressLabel)
       
       setSharedState({
@@ -303,7 +302,7 @@ export default function AddressDetailsModal({
       if (sharedState.personalLabel === "custom") {
         baseData.personalLabel = customLabelText
       } else {
-        baseData.personalLabel = sharedState.personalLabel.toLowerCase()
+        baseData.personalLabel = sharedState.personalLabel?.toLowerCase()
       }
 
       // Add type-specific fields

@@ -18,7 +18,7 @@ interface UserStore {
   getUser: (userId: string) => User | null;
   getAllUsers: () => User[];
   setCurrentUser: (user: User | null) => void;
-  addUser: (user: User) => void;
+  addUser: (user: Omit<User, 'paymentMethods' | 'addresses'> & { paymentMethods?: PaymentMethod[]; addresses?: Address[] }, setAsCurrent: boolean) => void;
   updateUser: (id: string, updatedUser: Partial<User>) => void;
   deleteUser: (id: string) => void;
   restrictUser: (userId: string) => void;
@@ -66,15 +66,43 @@ export const useUserStore = create<UserStore>()(
         },
 
         setCurrentUser: (user: User | null) => {
-          set({
+          
+          // Clear tempAddress when signing in (existing user)
+          set({ 
             currentUser: user,
             changePasswordPhoneVerified: user === null ? false : get().changePasswordPhoneVerified,
+            tempAddress: null, // Clear temp address when signing in
           });
         },
 
-        addUser: (user: User) => {
+        addUser: (user: Omit<User, 'paymentMethods' | 'addresses'> & { paymentMethods?: PaymentMethod[]; addresses?: Address[] }, setAsCurrent: boolean) => {
+          const state = get();
+          const tempAddress = state.tempAddress;
+          
+          // Initialize addresses array
+          let addresses: Address[] = [];
+          
+          // If tempAddress exists, add it to the new user's addresses with default flag
+          if (tempAddress) {
+            const addressWithId: Address = {
+              ...tempAddress,
+              id: Math.random().toString(36).substring(2, 15),
+              default: true, // Set as default
+            };
+            addresses = [addressWithId];
+          }
+          
+          // Create user with addresses
+          const newUser: User = {
+            ...user,
+            addresses: addresses,
+            paymentMethods: user.paymentMethods || [],
+          };
+          
           set((state) => ({
-            users: [...state.users, user]
+            users: [...state.users, newUser],
+            tempAddress: null, // Clear temp address after adding it to the user,
+            currentUser: setAsCurrent ? newUser : state.currentUser,
           }));
         },
 
@@ -233,11 +261,19 @@ export const useUserStore = create<UserStore>()(
             throw new Error('No current user');
           }
           const id = Math.random().toString(36).substring(2, 15);
-          const newAddress: Address = {
+          
+          // Prepare new address
+          let newAddress: Address = {
             ...address,
             id,
             default: true, // Set new address as default
           };
+          
+          // If personalLabel is 'none', remove it entirely
+          if (newAddress.personalLabel && newAddress.personalLabel.toLowerCase() === 'none') {
+            const { personalLabel, ...addressWithoutLabel } = newAddress;
+            newAddress = addressWithoutLabel as Address;
+          }
           
           // Set default: false for all existing addresses
           // Also, if the new address has a label other than 'none', remove it from other addresses
@@ -292,11 +328,29 @@ export const useUserStore = create<UserStore>()(
             return;
           }
           
-          // If updating personalLabel, remove it from other addresses
-          let updatedAddresses = state.currentUser.addresses.map((address) =>
-            address.id === id ? { ...address, ...updates } : address
-          );
+          // If personalLabel is being set to 'none', remove the field entirely
+          let processedUpdates = { ...updates };
+          if (updates.personalLabel && updates.personalLabel.toLowerCase() === 'none') {
+            // Remove personalLabel from updates
+            const { personalLabel, ...updatesWithoutLabel } = processedUpdates;
+            processedUpdates = updatesWithoutLabel;
+          }
           
+          // Apply updates to the target address
+          let updatedAddresses = state.currentUser.addresses.map((address) => {
+            if (address.id === id) {
+              const updatedAddress = { ...address, ...processedUpdates };
+              // If personalLabel was set to 'none', remove it from the address
+              if (updates.personalLabel && updates.personalLabel.toLowerCase() === 'none') {
+                const { personalLabel, ...addressWithoutLabel } = updatedAddress;
+                return addressWithoutLabel as Address;
+              }
+              return updatedAddress;
+            }
+            return address;
+          });
+          
+          // If updating personalLabel (and it's not 'none'), remove it from other addresses
           if (updates.personalLabel && updates.personalLabel.toLowerCase() !== 'none') {
             // Remove the same label from all other addresses (case-insensitive comparison)
             updatedAddresses = updatedAddresses.map((address) => {
