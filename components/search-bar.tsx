@@ -2,8 +2,8 @@
 
 import React, { useState, useRef, useEffect } from "react"
 import Image from "next/image"
-import { Search, X, ArrowLeft } from "lucide-react"
-import { useRouter } from "next/navigation"
+import { Search, X, ArrowLeft, ChevronRight } from "lucide-react"
+import { useRouter, usePathname } from "next/navigation"
 import { restaurants } from "@/constants/restaurants"
 import { menuItems } from "@/constants/menu-items"
 import { getAllStores } from "@/app/grocery/data/retail-response-mapper"
@@ -37,6 +37,7 @@ const SearchBar = () => {
   const searchInputRef = useRef<HTMLInputElement>(null)
   const searchContainerRef = useRef<HTMLDivElement>(null)
   const router = useRouter()
+  const pathname = usePathname()
   const { updateSearchResults, clearSearchResults } = useAppStore()
   const { recordSearch } = useVerifierStore()
 
@@ -505,8 +506,16 @@ const SearchBar = () => {
     setSearchTerm("")
     setSearchResults([])
     setSearchSuggestions([])
+    setIsSearchActive(false)
+    clearSearchResults()
+    
+    // If we're on the search page, navigate to home page
+    if (pathname === "/search") {
+      router.push("/")
+    }
+    
     if (searchInputRef.current) {
-      searchInputRef.current.focus()
+      searchInputRef.current.blur() // Remove focus instead of focusing
     }
   }
 
@@ -661,6 +670,32 @@ const SearchBar = () => {
             recentSearches.length === 0 && (
               <div className="p-4 text-center text-gray-500">No results found for {searchTerm}</div>
             )}
+
+          {/* View all results with filters - Show when there's a search term */}
+          {searchTerm && (
+            <div className="border-t border-gray-200">
+              <div
+                className="p-3 hover:bg-gray-50 cursor-pointer flex items-center justify-between"
+                onClick={() => {
+                  saveRecentSearch(searchTerm)
+                  recordSearch(searchTerm)
+                  router.push(`/search?q=${encodeURIComponent(searchTerm)}`)
+                  setIsSearchActive(false)
+                }}
+              >
+                <div className="flex items-center">
+                  <Search className="h-5 w-5 text-gray-400 mr-3" />
+                  <span className="text-sm font-medium text-gray-900">
+                    View all results for "{searchTerm}"
+                  </span>
+                </div>
+                <ChevronRight className="h-5 w-5 text-gray-400" />
+              </div>
+              <div className="px-3 pb-3">
+                <p className="text-xs text-gray-500">Apply filters (Location, Cuisine, Dietary, etc.) on the results page</p>
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>

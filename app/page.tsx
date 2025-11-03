@@ -14,14 +14,20 @@ import { useCartStore } from "@/store/cart-store"
 import { useAppStore } from "@/store/app-store"
 import { getDefaultRating } from "@/utils/rating-utils"
 import { filterRestaurantsWithMenuItems } from "@/utils/restaurant-utils"
+import { restaurantHasItemsInPriceRange } from "@/utils/price-filter-utils"
 
 export default function Home() {
   const [filters, setFilters] = useState<FilterState>({
     underThirtyMins: false,
     deals: false,
     overRating: null,
-    price: null,
+    price: null, // DEPRECATED
+    minPrice: null,
+    maxPrice: null,
     dashPass: false,
+    location: null,
+    cuisine: null,
+    dietaryPreferences: null,
   })
   const [allFilteredRestaurants, setAllFilteredRestaurants] = useState<Restaurant[]>([])
   const filterOptionsRef = useRef<FilterOptionsRef>(null)
@@ -151,14 +157,65 @@ export default function Home() {
         filtered = filtered.filter((restaurant) => restaurant.dashPass)
       }
 
+      // Filter by price (old priceRange filter - DEPRECATED but kept for backward compatibility)
       if (filters.price && filters.price.length > 0) {
         filtered = filtered.filter((restaurant) => filters.price!.includes(restaurant.priceRange))
+      }
+
+      // Filter by min/max price (new implementation)
+      if (filters.minPrice !== null && filters.minPrice !== undefined || filters.maxPrice !== null && filters.maxPrice !== undefined) {
+        filtered = filtered.filter((restaurant) => {
+          return restaurantHasItemsInPriceRange(restaurant.id, filters.minPrice || null, filters.maxPrice || null)
+        })
       }
 
       // For demo purposes, we'll just simulate these filters
       if (filters.deals) {
         // Filter restaurants that have deals
         filtered = filtered.filter((restaurant) => restaurant.discount)
+      }
+
+      // Filter by location (distance)
+      if (filters.location) {
+        filtered = filtered.filter((restaurant) => {
+          const distanceStr = restaurant.distance || "";
+          
+          // Parse distance: "700 ft" -> 700/5280 = 0.13 mi, "2.5 mi" -> 2.5 mi
+          const ftMatch = distanceStr.match(/(\d+)\s*ft/);
+          const miMatch = distanceStr.match(/(\d+\.?\d*)\s*mi/);
+          
+          let distanceInMiles = 999; // Default to far away
+          if (ftMatch) {
+            distanceInMiles = parseFloat(ftMatch[1]) / 5280; // Convert feet to miles
+          } else if (miMatch) {
+            distanceInMiles = parseFloat(miMatch[1]);
+          }
+
+          const maxDistance = filters.location === "under-1mi" ? 1 
+                            : filters.location === "under-3mi" ? 3 
+                            : filters.location === "under-5mi" ? 5 
+                            : 999;
+          
+          return distanceInMiles <= maxDistance;
+        });
+      }
+
+      // Filter by cuisine
+      if (filters.cuisine && filters.cuisine.length > 0) {
+        filtered = filtered.filter((restaurant) => {
+          return filters.cuisine!.includes(restaurant.cuisine);
+        });
+      }
+
+      // Filter by dietary preferences
+      if (filters.dietaryPreferences && filters.dietaryPreferences.length > 0) {
+        filtered = filtered.filter((restaurant) => {
+          // Check if restaurant has dietaryPreferences field and matches any selected preference
+          const restaurantDietary = (restaurant as any).dietaryPreferences || [];
+          return filters.dietaryPreferences!.some(pref =>
+            restaurantDietary.includes(pref)
+          );
+        });
       }
 
       return filtered
@@ -236,8 +293,13 @@ export default function Home() {
       underThirtyMins: false,
       deals: false,
       overRating: null,
-      price: null,
+      price: null, // DEPRECATED
+      minPrice: null,
+      maxPrice: null,
       dashPass: false,
+      location: null,
+      cuisine: null,
+      dietaryPreferences: null,
     }
 
     // Update the state with the reset filters
@@ -252,8 +314,13 @@ export default function Home() {
       filters.underThirtyMins ||
       filters.deals ||
       filters.overRating !== null ||
-      (filters.price !== null && filters.price.length > 0) ||
-      filters.dashPass
+      (filters.price !== null && filters.price.length > 0) || // DEPRECATED
+      (filters.minPrice !== null && filters.minPrice !== undefined) ||
+      (filters.maxPrice !== null && filters.maxPrice !== undefined) ||
+      filters.dashPass ||
+      filters.location !== null ||
+      (filters.cuisine !== null && filters.cuisine !== undefined && filters.cuisine.length > 0) ||
+      (filters.dietaryPreferences !== null && filters.dietaryPreferences !== undefined && filters.dietaryPreferences.length > 0)
     )
   }
 

@@ -16,8 +16,10 @@ export interface Address {
   city: string;
   state: string;
   zipCode: string;
-  addressType: "house" | "apartment" | "hotel" | "office" | "other";
+  addressType: "none" | "house" | "apartment" | "hotel" | "office" | "other";
+  apartmentSuite?: string;
   gateCode?: string;
+  buildingName?: string;
   deliveryPreference?: "door" | "location";
   meetLocation?: "door" | "outside";
   deliveryInstructions?: string;

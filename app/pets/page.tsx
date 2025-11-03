@@ -1,6 +1,7 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
+import FilterOptions, { FilterState, FilterOptionsRef } from "@/components/filter-options"
 import StoreGrid from "@/components/store/store-grid"
 import ProductDisplay from "@/components/product/product-display"
 import AllStores from "@/components/all-stores"
@@ -15,8 +16,25 @@ import {
 } from "@/app/pets/data/pet-response-mapper"
 import { allPetStores } from "@/data/pet-data"
 import { getDefaultRating } from "@/utils/rating-utils"
+import { extractPrice } from "@/utils/price-filter-utils"
 
 export default function Pets() {
+  // Filter state
+  const [activeFilters, setActiveFilters] = useState<FilterState>({
+    underThirtyMins: false,
+    deals: false,
+    overRating: null,
+    price: null, // DEPRECATED
+    minPrice: null,
+    maxPrice: null,
+    dashPass: false,
+    location: null,
+    cuisine: null,
+    dietaryPreferences: null,
+  })
+  
+  const filterOptionsRef = useRef<FilterOptionsRef>(null)
+  
   // Cart state
   const [isCartOpen, setIsCartOpen] = useState(false)
   const [currentStoreData, setCurrentStoreData] = useState<any>(null)
@@ -48,13 +66,141 @@ export default function Pets() {
   const allPetStores = getAllPetStores();
   const uiConfig = getPetUiConfig();
   const featuredPetStoreIds = getFeaturedPetStores();
-  const productSections = getPetProductSections();
+  const allProductSections = getPetProductSections();
   
-  // Use all stores (no filtering)
-  const filteredStores = allPetStores;
+  // Filter products in product sections based on price filter
+  const filteredProductSections = allProductSections.map(section => {
+    let filteredProducts = section.products || []
+    
+    // Apply price filter to products if min/max price is set
+    if (activeFilters.minPrice !== null && activeFilters.minPrice !== undefined || 
+        activeFilters.maxPrice !== null && activeFilters.maxPrice !== undefined) {
+      filteredProducts = (section.products || []).filter(product => {
+        const productPrice = extractPrice(product.price)
+        const minPrice = activeFilters.minPrice ?? null
+        const maxPrice = activeFilters.maxPrice ?? null
+        
+        // Check if product price falls within range
+        if (minPrice !== null && maxPrice !== null) {
+          return productPrice >= minPrice && productPrice <= maxPrice
+        } else if (minPrice !== null) {
+          return productPrice >= minPrice
+        } else if (maxPrice !== null) {
+          return productPrice <= maxPrice
+        }
+        
+        return true
+      })
+    }
+    
+    return {
+      ...section,
+      products: filteredProducts
+    }
+  }).filter(section => section.products && section.products.length > 0) // Only show sections with products after filtering
+  
+  const productSections = filteredProductSections
+  
+  // Handle filter changes
+  const handleFilterChange = (filters: FilterState) => {
+    setActiveFilters(filters)
+  }
+
+  // Handle reset
+  const handleReset = () => {
+    const resetFilters: FilterState = {
+      underThirtyMins: false,
+      deals: false,
+      overRating: null,
+      price: null, // DEPRECATED
+      minPrice: null,
+      maxPrice: null,
+      dashPass: false,
+      location: null,
+      cuisine: null,
+      dietaryPreferences: null,
+    }
+    setActiveFilters(resetFilters)
+    if (filterOptionsRef.current) {
+      filterOptionsRef.current.resetFilters()
+    }
+  }
+
+  // Filter stores based on active filters
+  const filterStores = (storeList: any[]) => {
+    return storeList.filter(store => {
+      // Filter by under 30 min
+      if (activeFilters.underThirtyMins) {
+        const timeString = store.time || "";
+        const minutes = parseInt(timeString.match(/\d+/)?.[0] || "100");
+        if (minutes >= 30) return false;
+      }
+      
+      // Filter by rating
+      if (activeFilters.overRating && store.rating) {
+        const rating = getDefaultRating(store.rating)
+        if (rating < activeFilters.overRating) return false;
+      }
+      
+      // Filter by DashPass
+      if (activeFilters.dashPass && !store.isDashPass) {
+        return false;
+      }
+
+      // Filter by location (distance)
+      if (activeFilters.location) {
+        const distanceStr = store.distance || "";
+        
+        const ftMatch = distanceStr.match(/(\d+)\s*ft/);
+        const miMatch = distanceStr.match(/(\d+\.?\d*)\s*mi/);
+        
+        let distanceInMiles = 999;
+        if (ftMatch) {
+          distanceInMiles = parseFloat(ftMatch[1]) / 5280;
+        } else if (miMatch) {
+          distanceInMiles = parseFloat(miMatch[1]);
+        }
+
+        const maxDistance = activeFilters.location === "under-1mi" ? 1 
+                          : activeFilters.location === "under-3mi" ? 3 
+                          : activeFilters.location === "under-5mi" ? 5 
+                          : 999;
+        
+        if (distanceInMiles > maxDistance) return false;
+      }
+
+      // Filter by cuisine (pet stores don't have cuisine)
+      if (activeFilters.cuisine && activeFilters.cuisine.length > 0) {
+        // Pet stores don't have cuisine, so skip this filter
+      }
+
+      // Filter by dietary preferences
+      if (activeFilters.dietaryPreferences && activeFilters.dietaryPreferences.length > 0) {
+        const storeDietary = (store as any).dietaryPreferences || [];
+        const matchesDietary = activeFilters.dietaryPreferences!.some(pref =>
+          storeDietary.includes(pref)
+        );
+        if (!matchesDietary) return false;
+      }
+
+      // Filter by min/max price (new implementation)
+      // Note: For stores, we need product data to properly filter by price
+      // For now, stores pass through this filter until product data is available
+      if (activeFilters.minPrice !== null && activeFilters.minPrice !== undefined || activeFilters.maxPrice !== null && activeFilters.maxPrice !== undefined) {
+        // TODO: Implement product-based price filtering for pet stores
+        // For now, return true (don't filter) until product data is available
+        // This ensures the filter UI works but doesn't break functionality
+      }
+      
+      return true;
+    });
+  };
+  
+  // Apply filters to stores
+  const filteredStores = filterStores(allPetStores);
   
   // Filter featured stores with valid images and convert to proper format
-  const featuredStores = allPetStores
+  const featuredStores = filterStores(allPetStores)
     .filter(store => hasValidImage(store.image))
     .slice(0, 8)
     .map(store => ({
@@ -75,7 +221,7 @@ export default function Pets() {
     }));
   
   // Filter fastest stores with valid images (delivery time under 25 min)
-  const fastestStores = allPetStores
+  const fastestStores = filterStores(allPetStores)
     .filter(store => {
       const timeString = store.time || "";
       const minutes = parseInt(timeString.match(/\d+/)?.[0] || "100");
@@ -102,6 +248,18 @@ export default function Pets() {
   return (
     <>
       <div className="max-w-[1200px] mx-auto px-4 pt-16">
+        {/* Filter Options Bar */}
+        <FilterOptions 
+          ref={filterOptionsRef}
+          isGrocery={false} 
+          onFilterChange={handleFilterChange}
+          onReset={handleReset}
+          filters={activeFilters}
+          showPriceFilter={true}
+          hideCuisineFilter={true}
+          hideDietaryFilter={true}
+        />
+
         {/* All Stores Section */}
         {filteredStores.length > 0 ? (
           <AllStores 

@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react"
 import { useSearchParams } from "next/navigation"
 import Image from "next/image"
 import Link from "next/link"
@@ -20,6 +20,7 @@ import { filterRestaurantsWithMenuItems } from "@/utils/restaurant-utils"
 import { useCartStore } from "@/store/cart-store"
 import { useVerifierStore } from "@/store/verifier-store"
 import { useAppStore } from "@/store/app-store"
+import { restaurantHasItemsInPriceRange, storeHasProductsInPriceRange, extractPrice } from "@/utils/price-filter-utils"
 
 // Force dynamic rendering
 export const dynamic = 'force-dynamic'
@@ -37,13 +38,20 @@ export default function SearchPage() {
   console.log('🚀 SearchPage rendered with query:', query)
   const [searchResults, setSearchResults] = useState<SearchResultRestaurant[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const [hideCuisineFilter, setHideCuisineFilter] = useState(false)
+  const [hideDietaryFilter, setHideDietaryFilter] = useState(false)
   const { addItem } = useCartStore()
   const [activeFilters, setActiveFilters] = useState<FilterState>({
     underThirtyMins: false,
     deals: false,
     overRating: null,
-    price: null,
+    price: null, // DEPRECATED
+    minPrice: null,
+    maxPrice: null,
     dashPass: false,
+    location: null,
+    cuisine: null,
+    dietaryPreferences: null,
   })
   const { updateSearchResults, clearSearchResults } = useAppStore()
   const { recordSearch } = useVerifierStore()
@@ -92,7 +100,18 @@ export default function SearchPage() {
     }))
   }
 
+  // Track previous query to detect query changes
+  const prevQueryRef = useRef<string>("")
+
   useEffect(() => {
+    // Reset filter visibility only when query changes (not when filters change)
+    const queryChanged = prevQueryRef.current !== query
+    if (queryChanged) {
+      setHideCuisineFilter(false)
+      setHideDietaryFilter(false)
+      prevQueryRef.current = query
+    }
+    
     // Simulate loading
     setIsLoading(true)
 
@@ -666,7 +685,7 @@ export default function SearchPage() {
         console.log(`[SEARCH] After DashPass filter: ${filteredResults.length} results`);
       }
       
-      // Filter by price
+      // Filter by price (old priceRange filter - DEPRECATED but kept for backward compatibility)
       if (activeFilters.price && activeFilters.price.length > 0) {
         filteredResults = filteredResults.filter(restaurant => {
           const restaurantPrice = restaurant.priceRange;
@@ -675,6 +694,56 @@ export default function SearchPage() {
           return isInSelectedPriceRange;
         });
         console.log(`[SEARCH] After price filter: ${filteredResults.length} results`);
+      }
+
+      // Filter by min/max price (new implementation)
+      if (activeFilters.minPrice !== null && activeFilters.minPrice !== undefined || activeFilters.maxPrice !== null && activeFilters.maxPrice !== undefined) {
+        filteredResults = filteredResults.filter(result => {
+          const minPrice = activeFilters.minPrice ?? null
+          const maxPrice = activeFilters.maxPrice ?? null
+          
+          // Check if it's a product (pet-product, convenience-product, retail-product, grocery-product)
+          // Products have IDs like "pet-product-123", "convenience-product-456", etc.
+          const isProduct = result.id.includes("-product-")
+          
+          if (isProduct) {
+            // It's a product - extract price from priceRange and filter
+            // For products, priceRange contains the actual product price (stored as number or string)
+            const productPrice = extractPrice(result.priceRange || 0)
+            
+            console.log(`[SEARCH] Product ${result.name}: price ${productPrice}, min ${minPrice}, max ${maxPrice}`)
+            
+            // Check if price is within range
+            if (minPrice !== null && maxPrice !== null) {
+              const inRange = productPrice >= minPrice && productPrice <= maxPrice
+              console.log(`[SEARCH] Product ${result.name}: ${inRange ? 'IN' : 'OUT'} of range`)
+              return inRange
+            } else if (minPrice !== null) {
+              return productPrice >= minPrice
+            } else if (maxPrice !== null) {
+              return productPrice <= maxPrice
+            }
+            
+            return true
+          }
+          
+          // Check if it's a restaurant (restaurant match type, or menu-item but not a product)
+          // Products are already handled above, so menu-item here refers to restaurant menu items
+          const isRestaurant = !result.storeType || 
+                              result.matchType === "restaurant" || 
+                              (result.matchType === "menu-item" && !isProduct)
+          
+          if (isRestaurant) {
+            // It's a restaurant - check if it has menu items within price range
+            return restaurantHasItemsInPriceRange(result.id, minPrice, maxPrice)
+          }
+          
+          // It's a store (grocery, pets, retail, convenience) without specific products
+          // For stores, we don't have product data in search results, so pass through
+          // Note: Individual products are already filtered above
+          return true
+        });
+        console.log(`[SEARCH] After min/max price filter: ${filteredResults.length} results`);
       }
       
       // Filter by deals
@@ -686,13 +755,142 @@ export default function SearchPage() {
         });
         console.log(`[SEARCH] After deals filter: ${filteredResults.length} results`);
       }
-      
 
-      
+      // Filter by location (distance)
+      if (activeFilters.location) {
+        filteredResults = filteredResults.filter(restaurant => {
+          const distanceStr = restaurant.distance || "";
+          
+          // Parse distance: "700 ft" -> 700/5280 = 0.13 mi, "2.5 mi" -> 2.5 mi
+          const ftMatch = distanceStr.match(/(\d+)\s*ft/);
+          const miMatch = distanceStr.match(/(\d+\.?\d*)\s*mi/);
+          
+          let distanceInMiles = 999; // Default to far away
+          if (ftMatch) {
+            distanceInMiles = parseFloat(ftMatch[1]) / 5280; // Convert feet to miles
+          } else if (miMatch) {
+            distanceInMiles = parseFloat(miMatch[1]);
+          }
+
+          let meetsLocation = false;
+          const maxDistance = activeFilters.location === "under-1mi" ? 1 
+                            : activeFilters.location === "under-3mi" ? 3 
+                            : activeFilters.location === "under-5mi" ? 5 
+                            : 999;
+          
+          meetsLocation = distanceInMiles <= maxDistance;
+          
+          console.log(`[SEARCH] ${restaurant.name}: distance ${distanceStr} (${distanceInMiles.toFixed(2)} mi) <= ${maxDistance} mi: ${meetsLocation}`);
+          return meetsLocation;
+        });
+        console.log(`[SEARCH] After location filter: ${filteredResults.length} results`);
+      }
+
+      // Filter by cuisine
+      if (activeFilters.cuisine && activeFilters.cuisine.length > 0) {
+        filteredResults = filteredResults.filter(restaurant => {
+          const matchesCuisine = activeFilters.cuisine!.includes(restaurant.cuisine);
+          console.log(`[SEARCH] ${restaurant.name}: cuisine ${restaurant.cuisine} in selected: ${matchesCuisine}`);
+          return matchesCuisine;
+        });
+        console.log(`[SEARCH] After cuisine filter: ${filteredResults.length} results`);
+      }
+
+      // Filter by dietary preferences
+      if (activeFilters.dietaryPreferences && activeFilters.dietaryPreferences.length > 0) {
+        filteredResults = filteredResults.filter(restaurant => {
+          // Check if restaurant has dietaryPreferences field and matches any selected preference
+          const restaurantDietary = (restaurant as any).dietaryPreferences || [];
+          const matchesDietary = activeFilters.dietaryPreferences!.some(pref =>
+            restaurantDietary.includes(pref)
+          );
+          console.log(`[SEARCH] ${restaurant.name}: dietary ${JSON.stringify(restaurantDietary)} matches selected: ${matchesDietary}`);
+          return matchesDietary;
+        });
+        console.log(`[SEARCH] After dietary preferences filter: ${filteredResults.length} results`);
+      }
+
       console.log(`[SEARCH] Final filtered results: ${filteredResults.length}`);
       console.log('[SEARCH] Results details:', filteredResults.map(r => r.name));
+      
+      // Determine search context based on ORIGINAL results (before filtering) to hide irrelevant filters
+      // This ensures context doesn't change when filters are applied
+      const determineSearchContext = (results: SearchResultRestaurant[]) => {
+        if (results.length === 0) {
+          return { hideCuisine: false, hideDietary: false }
+        }
+        
+        let petsCount = 0
+        let groceryCount = 0
+        let retailCount = 0
+        let restaurantCount = 0
+        let convenienceCount = 0
+        
+        results.forEach(result => {
+          const storeType = result.storeType
+          const matchType = result.matchType
+          
+          // Count by store type
+          if (storeType === "pets" || storeType === "pet-product") {
+            petsCount++
+          } else if (storeType === "grocery") {
+            groceryCount++
+          } else if (storeType === "retail") {
+            retailCount++
+          } else if (storeType === "convenience") {
+            convenienceCount++
+          } else if (matchType === "restaurant" || matchType === "menu-item" || !storeType) {
+            restaurantCount++
+          }
+        })
+        
+        const total = results.length
+        const petsRatio = petsCount / total
+        const groceryRatio = groceryCount / total
+        const retailRatio = retailCount / total
+        
+        // If more than 50% are pets → hide Cuisine & Dietary
+        // If more than 50% are grocery → hide Cuisine only
+        // If more than 50% are retail → hide Cuisine & Dietary
+        
+        let hideCuisine = false
+        let hideDietary = false
+        
+        if (petsRatio > 0.5) {
+          hideCuisine = true
+          hideDietary = true
+        } else if (groceryRatio > 0.5) {
+          hideCuisine = true
+          hideDietary = false
+        } else if (retailRatio > 0.5) {
+          hideCuisine = true
+          hideDietary = true
+        }
+        
+        console.log(`[SEARCH] Context detection (from original results):`, {
+          pets: petsCount,
+          grocery: groceryCount,
+          retail: retailCount,
+          restaurants: restaurantCount,
+          convenience: convenienceCount,
+          hideCuisine,
+          hideDietary
+        })
+        
+        return { hideCuisine, hideDietary }
+      }
+      
+      // Detect context from ORIGINAL combinedResults (before filtering), not filteredResults
+      // This ensures context persists when filters are applied
+      const searchContext = determineSearchContext(combinedResults)
+      
       setSearchResults(filteredResults)
       setIsLoading(false)
+      
+      // Store search context for FilterOptions
+      // Always use the context detected from original results to ensure consistency
+      setHideCuisineFilter(searchContext.hideCuisine)
+      setHideDietaryFilter(searchContext.hideDietary)
       
       // Convert results to SearchResult format for cart store
       const cartSearchResults = filteredResults.map(restaurant => ({
@@ -730,7 +928,9 @@ export default function SearchPage() {
     console.log(`[SEARCH] Immediate update with ${immediateCartSearchResults.length} results`);
     updateSearchResults(immediateCartSearchResults)
 
-    return () => clearTimeout(timer)
+    return () => {
+      clearTimeout(timer)
+    }
   }, [query, activeFilters])
 
   useEffect(() => {
@@ -1011,6 +1211,8 @@ export default function SearchPage() {
           isGrocery={false} 
           onFilterChange={handleFilterChange}
           filters={activeFilters}
+          hideCuisineFilter={hideCuisineFilter}
+          hideDietaryFilter={hideDietaryFilter}
         />
       </div>
 

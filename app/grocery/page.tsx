@@ -17,6 +17,7 @@ import {
 } from "@/app/grocery/data/retail-response-mapper"
 import AllStores from "@/components/all-stores"
 import { getDefaultRating } from "@/utils/rating-utils"
+import { extractPrice } from "@/utils/price-filter-utils"
 
 export default function Grocery() {
   // Filter state
@@ -24,8 +25,13 @@ export default function Grocery() {
     underThirtyMins: false,
     deals: false,
     overRating: null,
-    price: null, // Keep this but won't be used
+    price: null, // DEPRECATED
+    minPrice: null,
+    maxPrice: null,
     dashPass: false,
+    location: null,
+    cuisine: null,
+    dietaryPreferences: null,
   });
   
   const filterOptionsRef = useRef<FilterOptionsRef>(null);
@@ -51,6 +57,26 @@ export default function Grocery() {
   const handleFilterChange = (filters: FilterState) => {
     setActiveFilters(filters);
   };
+
+  // Handle reset
+  const handleReset = () => {
+    const resetFilters: FilterState = {
+      underThirtyMins: false,
+      deals: false,
+      overRating: null,
+      price: null, // DEPRECATED
+      minPrice: null,
+      maxPrice: null,
+      dashPass: false,
+      location: null,
+      cuisine: null,
+      dietaryPreferences: null,
+    }
+    setActiveFilters(resetFilters)
+    if (filterOptionsRef.current) {
+      filterOptionsRef.current.resetFilters()
+    }
+  };
   
   // Filter stores based on active filters
   const filterStores = (storeList: any[]) => {
@@ -72,6 +98,56 @@ export default function Grocery() {
       if (activeFilters.dashPass && !store.isDashPass) {
         return false;
       }
+
+      // Filter by location (distance)
+      if (activeFilters.location) {
+        const distanceStr = store.distance || "";
+        
+        // Parse distance: "700 ft" -> 700/5280 = 0.13 mi, "2.5 mi" -> 2.5 mi
+        const ftMatch = distanceStr.match(/(\d+)\s*ft/);
+        const miMatch = distanceStr.match(/(\d+\.?\d*)\s*mi/);
+        
+        let distanceInMiles = 999; // Default to far away
+        if (ftMatch) {
+          distanceInMiles = parseFloat(ftMatch[1]) / 5280; // Convert feet to miles
+        } else if (miMatch) {
+          distanceInMiles = parseFloat(miMatch[1]);
+        }
+
+        const maxDistance = activeFilters.location === "under-1mi" ? 1 
+                          : activeFilters.location === "under-3mi" ? 3 
+                          : activeFilters.location === "under-5mi" ? 5 
+                          : 999;
+        
+        if (distanceInMiles > maxDistance) return false;
+      }
+
+      // Filter by cuisine (for grocery stores, this might be store category/type)
+      // Since grocery stores don't have cuisine, we can skip this filter for grocery page
+      // But we'll keep the structure for consistency
+      if (activeFilters.cuisine && activeFilters.cuisine.length > 0) {
+        // Grocery stores don't have cuisine, so skip this filter
+        // This filter won't affect grocery stores
+      }
+
+      // Filter by dietary preferences
+      if (activeFilters.dietaryPreferences && activeFilters.dietaryPreferences.length > 0) {
+        // Check if store has dietaryPreferences field
+        const storeDietary = (store as any).dietaryPreferences || [];
+        const matchesDietary = activeFilters.dietaryPreferences!.some(pref =>
+          storeDietary.includes(pref)
+        );
+        if (!matchesDietary) return false;
+      }
+
+      // Filter by min/max price (new implementation)
+      // Note: For stores, we need product data to properly filter by price
+      // For now, stores pass through this filter until product data is available
+      if (activeFilters.minPrice !== null && activeFilters.minPrice !== undefined || activeFilters.maxPrice !== null && activeFilters.maxPrice !== undefined) {
+        // TODO: Implement product-based price filtering for grocery stores
+        // For now, return true (don't filter) until product data is available
+        // This ensures the filter UI works but doesn't break functionality
+      }
       
       return true;
     });
@@ -82,8 +158,36 @@ export default function Grocery() {
   const favoriteStores = filterStores(allFavoriteStores);
   const fastestStores = filterStores(allFastestStores);
   
-  // Use all product carousels (no price filtering)
-  const productCarousels = allProductCarousels;
+  // Filter products in product carousels based on price filter
+  const productCarousels = allProductCarousels.map(carousel => {
+    let filteredProducts = carousel.products || []
+    
+    // Apply price filter to products if min/max price is set
+    if (activeFilters.minPrice !== null && activeFilters.minPrice !== undefined || 
+        activeFilters.maxPrice !== null && activeFilters.maxPrice !== undefined) {
+      filteredProducts = (carousel.products || []).filter(product => {
+        const productPrice = extractPrice(product.price)
+        const minPrice = activeFilters.minPrice ?? null
+        const maxPrice = activeFilters.maxPrice ?? null
+        
+        // Check if product price falls within range
+        if (minPrice !== null && maxPrice !== null) {
+          return productPrice >= minPrice && productPrice <= maxPrice
+        } else if (minPrice !== null) {
+          return productPrice >= minPrice
+        } else if (maxPrice !== null) {
+          return productPrice <= maxPrice
+        }
+        
+        return true
+      })
+    }
+    
+    return {
+      ...carousel,
+      products: filteredProducts
+    }
+  }).filter(carousel => carousel.products && carousel.products.length > 0) // Only show carousels with products after filtering
 
   // Set category explicitly
   useEffect(() => {
@@ -96,11 +200,13 @@ export default function Grocery() {
         {/* Filter Options Bar */}
       <FilterOptions 
         ref={filterOptionsRef}
-        isGrocery={true} 
+        isGrocery={false} 
         onFilterChange={handleFilterChange}
+        onReset={handleReset}
         filters={activeFilters}
-        filterData={filterOptions}
-        showPriceFilter={false}
+        showPriceFilter={true}
+        hideCuisineFilter={true}
+        hideDietaryFilter={false}
       />
 
       {/* Promotional Banners */}
