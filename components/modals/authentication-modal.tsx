@@ -136,7 +136,7 @@ export default function AuthenticationModal({
   // Handle user creation
   const handleUserCreation = (user: User) => {
     const newUser = {
-      id: Date.now().toString(),
+      id: `user-${Date.now().toString()}`,
       name: user.name,
       email: user.email,
       phoneNumber: user.phoneNumber,
@@ -144,6 +144,10 @@ export default function AuthenticationModal({
       country: user.country,
       userCountry: user.userCountry,
       avatar: null,
+      paymentMethods: [],
+      addresses: [],
+      is_restricted: false,
+      reviews: [],
     };
 
     addUser(newUser);
