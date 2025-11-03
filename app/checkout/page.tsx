@@ -22,6 +22,8 @@ import ChooseAddressLabelModal from "@/components/modals/choose-address-label-mo
 import ChooseLabelModal from "@/components/modals/choose-label-modal"
 import SignIn from "@/components/authentication/sign-in"
 import SignUp from "@/components/authentication/sign-up"
+import OTPVerificationModal from "@/components/modals/otp-verification-modal"
+import CountryCodeDropdown from "@/components/modals/country-code-dropdown"
 import { getRestaurantById } from "@/constants/restaurants"
 import { stores } from "@/data/store-data"
 import { stores as retailStores } from "@/constants/store"
@@ -59,6 +61,13 @@ export default function CheckoutPage() {
   
   // Auth state for non-authenticated users
   const [authMode, setAuthMode] = useState<'signin' | 'signup'>('signin')
+  
+  // OTP state for sign up
+  const [showOtpModal, setShowOtpModal] = useState(false)
+  const [generatedOtp, setGeneratedOtp] = useState('')
+  const [signUpUser, setSignUpUser] = useState<any>(null)
+  const [selectedCountry, setSelectedCountry] = useState({ code: 'US', dial_code: '+1', name: 'United States', emoji: '🇺🇸' })
+  const [showCountryDropdown, setShowCountryDropdown] = useState(false)
   
   // Find the cart using query params
   const currentCart = categoryParam && storeIdParam ? findCart(storeIdParam, categoryParam) : null
@@ -595,11 +604,63 @@ export default function CheckoutPage() {
     }
   }
   
+  // Generate OTP
+  const generateOTP = () => {
+    const newOtp = Math.floor(100000 + Math.random() * 900000).toString()
+    setGeneratedOtp(newOtp)
+    console.log('Generated OTP:', newOtp)
+    return newOtp
+  }
+
   // Handler for showing OTP during sign up
   const handleShowOTP = (user: any) => {
-    // For now, just set the user as authenticated
-    // In a full implementation, this would show an OTP verification modal
-    console.log('OTP flow triggered for user:', user)
+    setSignUpUser(user)
+    generateOTP()
+    setShowOtpModal(true)
+  }
+
+  // Handler for OTP verification
+  const handleOTPVerification = (
+    enteredOtp: string,
+    generatedOtp: string,
+    setOtpError: (error: string) => void,
+    setAttemptsLeft: (attempts: number) => void,
+    attemptsLeft: number,
+    setShowTooManyAttempts: (show: boolean) => void
+  ) => {
+    if (enteredOtp === generatedOtp) {
+      // OTP is correct - create user
+      if (signUpUser) {
+        const { addUser } = useUserStore.getState()
+        const newUser = {
+          id: `user-${Date.now().toString()}`,
+          name: signUpUser.name,
+          email: signUpUser.email,
+          phoneNumber: signUpUser.phoneNumber,
+          password: signUpUser.password,
+          country: signUpUser.country,
+          userCountry: signUpUser.userCountry,
+          avatar: null,
+          paymentMethods: [],
+          addresses: [],
+          is_restricted: false,
+          reviews: [],
+        }
+        addUser(newUser, true)
+        setShowOtpModal(false)
+        setSignUpUser(null)
+        // Stay on checkout page - component will re-render with authenticated state
+      }
+    } else {
+      // OTP is incorrect
+      const newAttemptsLeft = attemptsLeft - 1
+      setAttemptsLeft(newAttemptsLeft)
+      setOtpError('Invalid or incorrect code')
+      
+      if (newAttemptsLeft <= 0) {
+        setShowTooManyAttempts(true)
+      }
+    }
   }
 
   return (
@@ -653,8 +714,8 @@ export default function CheckoutPage() {
                 ) : (
                   <SignUp
                     onShowOTP={handleShowOTP}
-                    selectedCountry={{ code: 'US', dialCode: '+1', name: 'United States' }}
-                    setShowCountryDropdown={() => {}}
+                    selectedCountry={selectedCountry}
+                    setShowCountryDropdown={setShowCountryDropdown}
                   />
                 )}
               </div>
@@ -1363,6 +1424,28 @@ export default function CheckoutPage() {
           setShowAddressDetailsModal(false)
           setShowAddressTypeModal(true)
         } : undefined}
+      />
+
+      {/* OTP Verification Modal */}
+      <OTPVerificationModal
+        isOpen={showOtpModal}
+        onClose={() => {
+          setShowOtpModal(false)
+          setSignUpUser(null)
+        }}
+        onVerify={handleOTPVerification}
+        phoneNumber={signUpUser?.phoneNumber || ''}
+        countryCode={selectedCountry.dial_code}
+        generatedOTP={generatedOtp}
+      />
+
+      {/* Country Code Dropdown */}
+      <CountryCodeDropdown
+        isOpen={showCountryDropdown}
+        onClose={() => setShowCountryDropdown(false)}
+        onSelect={setSelectedCountry}
+        selectedCountry={selectedCountry}
+        userCountry={selectedCountry}
       />
     </div>
   )
