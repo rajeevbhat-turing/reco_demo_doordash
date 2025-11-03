@@ -18,6 +18,8 @@ import AddAddressModal from "@/components/modals/add-address-modal"
 import AddressReviewErrorModal from "@/components/modals/address-review-error-modal"
 import AddressTypeModal from "@/components/modals/address-type-modal"
 import ScheduleDeliveryModal from "@/components/modals/schedule-delivery-modal"
+import ChooseAddressLabelModal from "@/components/modals/choose-address-label-modal"
+import ChooseLabelModal from "@/components/modals/choose-label-modal"
 import SignIn from "@/components/authentication/sign-in"
 import SignUp from "@/components/authentication/sign-up"
 import { getRestaurantById } from "@/constants/restaurants"
@@ -102,6 +104,9 @@ export default function CheckoutPage() {
   
   // Addresses modal state
   const [showAddressesModal, setShowAddressesModal] = useState(false)
+  const [showLabelModal, setShowLabelModal] = useState(false)
+  const [showChooseLabelModal, setShowChooseLabelModal] = useState(false)
+  const [addressToLabel, setAddressToLabel] = useState<string>("")
   const [selectedAddressId, setSelectedAddressId] = useState(() => {
     // Find default address or use first address
     const defaultAddress = addresses.find(a => a.default)
@@ -784,8 +789,21 @@ export default function CheckoutPage() {
                         <div className="flex items-center flex-1">
                           <Home className="w-5 h-5 text-gray-600 mr-3 flex-shrink-0" />
                           <div>
-                            <p className="font-medium text-sm">{selectedAddress.street}</p>
-                            <p className="text-xs text-gray-600">{selectedAddress.city}, {selectedAddress.state} {selectedAddress.zipCode}</p>
+                            {selectedAddress.personalLabel ? (
+                              <>
+                                <p className="font-medium text-sm">
+                                  {selectedAddress.personalLabel.charAt(0).toUpperCase() + selectedAddress.personalLabel.slice(1)}
+                                </p>
+                                <p className="text-xs text-gray-600">
+                                  {selectedAddress.street}, {selectedAddress.city}, {selectedAddress.state} {selectedAddress.zipCode}
+                                </p>
+                              </>
+                            ) : (
+                              <>
+                                <p className="font-medium text-sm">{selectedAddress.street}</p>
+                                <p className="text-xs text-gray-600">{selectedAddress.city}, {selectedAddress.state} {selectedAddress.zipCode}</p>
+                              </>
+                            )}
                   </div>
                 </div>
                         <svg className="w-5 h-5 text-gray-400 flex-shrink-0 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1228,6 +1246,44 @@ export default function CheckoutPage() {
         onEditAddress={handleEditAddress}
         onManualEntry={handleManualEntry}
         onSelectSearchAddress={handleSelectSearchAddress}
+        onAddLabel={() => setShowLabelModal(true)}
+      />
+
+      {/* Choose Address to Label Modal */}
+      <ChooseAddressLabelModal
+        isOpen={showLabelModal}
+        onClose={() => setShowLabelModal(false)}
+        addresses={addresses}
+        onSelectAddress={(addressId) => {
+          setAddressToLabel(addressId)
+          setShowLabelModal(false)
+          setShowChooseLabelModal(true)
+        }}
+        onSelectSearchAddress={(address) => {
+          // Store the search result temporarily (without id)
+          const { id, ...addressWithoutId } = address
+          setTempAddressData(addressWithoutId)
+          setShowLabelModal(false)
+          setShowAddressTypeModal(true)
+        }}
+        onManualEntry={() => {
+          setShowLabelModal(false)
+          setShowAddAddressModal(true)
+        }}
+      />
+
+      {/* Choose Label Modal */}
+      <ChooseLabelModal
+        isOpen={showChooseLabelModal}
+        onClose={() => setShowChooseLabelModal(false)}
+        currentLabel={addresses.find(a => a.id === addressToLabel)?.personalLabel}
+        onSave={(label) => {
+          if (addressToLabel) {
+            updateAddress(addressToLabel, { personalLabel: label })
+          }
+          setShowChooseLabelModal(false)
+          setAddressToLabel("")
+        }}
       />
 
       {/* Add Address Modal */}

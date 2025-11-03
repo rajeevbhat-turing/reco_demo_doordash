@@ -104,6 +104,11 @@ export default function AddressDetailsModal({
     personalLabel: "none"
   })
 
+  // Custom label text state
+  const standardLabels = ['none', 'home', 'work']
+  const isCustomLabel = (label: string) => label && !standardLabels.includes(label.toLowerCase())
+  const [customLabelText, setCustomLabelText] = useState("")
+
   // Initialize state from address prop
   useEffect(() => {
     if (address) {
@@ -140,12 +145,22 @@ export default function AddressDetailsModal({
       
       // Initialize shared state with defaults
       const defaultMeetLocation = getDefaultMeetLocation(address.addressType || "house")
+      const addressLabel = address.personalLabel || "none"
+      const isCustom = isCustomLabel(addressLabel)
+      
       setSharedState({
         deliveryPreference: address.deliveryPreference || "door",
         meetLocation: address.meetLocation || defaultMeetLocation,
         deliveryInstructions: address.deliveryInstructions || "",
-        personalLabel: address.personalLabel || "none"
+        personalLabel: isCustom ? "custom" : addressLabel
       })
+      
+      // Set custom label text if it's a custom label
+      if (isCustom) {
+        setCustomLabelText(addressLabel)
+      } else {
+        setCustomLabelText("")
+      }
     }
   }, [address])
 
@@ -281,6 +296,14 @@ export default function AddressDetailsModal({
       const baseData: any = {
         addressType,
         ...sharedState
+      }
+
+      // If custom label is selected, use the custom text (maintaining case)
+      // Otherwise use lowercase for standard labels
+      if (sharedState.personalLabel === "custom") {
+        baseData.personalLabel = customLabelText
+      } else {
+        baseData.personalLabel = sharedState.personalLabel.toLowerCase()
       }
 
       // Add type-specific fields
@@ -645,6 +668,20 @@ Do not add order changes or requests here.`}
               ))}
             </div>
             <p className="text-xs text-gray-500 mt-3">Only you can see this</p>
+            
+            {/* Custom Label Input - Only shown when Custom is selected */}
+            {sharedState.personalLabel === "custom" && (
+              <div className="mt-4">
+                <input
+                  type="text"
+                  value={customLabelText}
+                  onChange={(e) => setCustomLabelText(e.target.value)}
+                  placeholder="Enter custom label"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 bg-white"
+                  autoFocus
+                />
+              </div>
+            )}
           </div>
         </div>
 

@@ -238,11 +238,24 @@ export const useUserStore = create<UserStore>()(
             id,
             default: true, // Set new address as default
           };
+          
           // Set default: false for all existing addresses
-          const updatedAddresses = state.currentUser.addresses.map(addr => ({
-            ...addr,
-            default: false
-          }));
+          // Also, if the new address has a label other than 'none', remove it from other addresses
+          const updatedAddresses = state.currentUser.addresses.map(addr => {
+            const updatedAddr = { ...addr, default: false };
+            
+            // Remove matching label from other addresses (case-insensitive comparison)
+            if (newAddress.personalLabel && 
+                newAddress.personalLabel.toLowerCase() !== 'none' && 
+                addr.personalLabel &&
+                addr.personalLabel.toLowerCase() === newAddress.personalLabel.toLowerCase()) {
+              // Remove the personalLabel key entirely
+              delete updatedAddr.personalLabel;
+            }
+            
+            return updatedAddr;
+          });
+          
           const updatedUser = {
             ...state.currentUser,
             addresses: [...updatedAddresses, newAddress],
@@ -278,12 +291,31 @@ export const useUserStore = create<UserStore>()(
           if (!state.currentUser) {
             return;
           }
+          
+          // If updating personalLabel, remove it from other addresses
+          let updatedAddresses = state.currentUser.addresses.map((address) =>
+            address.id === id ? { ...address, ...updates } : address
+          );
+          
+          if (updates.personalLabel && updates.personalLabel.toLowerCase() !== 'none') {
+            // Remove the same label from all other addresses (case-insensitive comparison)
+            updatedAddresses = updatedAddresses.map((address) => {
+              if (address.id !== id && 
+                  address.personalLabel && 
+                  address.personalLabel.toLowerCase() === updates.personalLabel!.toLowerCase()) {
+                // Remove the personalLabel key entirely
+                const { personalLabel, ...addressWithoutLabel } = address;
+                return addressWithoutLabel as Address;
+              }
+              return address;
+            });
+          }
+          
           const updatedUser = {
             ...state.currentUser,
-            addresses: state.currentUser.addresses.map((address) =>
-              address.id === id ? { ...address, ...updates } : address
-            ),
+            addresses: updatedAddresses,
           };
+          
           set({
             currentUser: updatedUser,
             users: state.users.map(user =>

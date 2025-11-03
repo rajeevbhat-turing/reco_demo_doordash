@@ -16,6 +16,8 @@ import AddAddressModal from "./modals/add-address-modal"
 import AddressReviewErrorModal from "./modals/address-review-error-modal"
 import AddressTypeModal from "./modals/address-type-modal"
 import AddressDetailsModal from "./modals/address-details-modal"
+import ChooseAddressLabelModal from "./modals/choose-address-label-modal"
+import ChooseLabelModal from "./modals/choose-label-modal"
 import { DashDoorLogoMark, DashDoorWordMark } from "./common/Icons"
 import addressesData from "@/data/addresses.json"
 
@@ -25,6 +27,9 @@ export default function Header() {
   const [authModalMode, setAuthModalMode] = useState<"signin" | "signup" | null>(null)
   const [cartItemCount, setCartItemCount] = useState(0)
   const [showAddressesModal, setShowAddressesModal] = useState(false)
+  const [showLabelModal, setShowLabelModal] = useState(false)
+  const [showChooseLabelModal, setShowChooseLabelModal] = useState(false)
+  const [addressToLabel, setAddressToLabel] = useState<string>("")
   const [selectedAddressId, setSelectedAddressId] = useState<string>("")
   const [showAddAddressModal, setShowAddAddressModal] = useState(false)
   const [showReviewErrorModal, setShowReviewErrorModal] = useState(false)
@@ -188,6 +193,9 @@ export default function Header() {
       })
       setSelectedAddressId(newAddress.id)
       setTempAddressData(null)
+    } else if (selectedAddressId) {
+      // This is editing an existing address
+      updateAddress(selectedAddressId, addressData)
     }
     setShowAddressDetailsModal(false)
   }
@@ -208,6 +216,13 @@ export default function Header() {
   const handleManualEntry = () => {
     setShowAddressesModal(false)
     setShowAddAddressModal(true)
+  }
+
+  // Handle edit address from addresses modal
+  const handleEditAddress = (addressId: string) => {
+    setSelectedAddressId(addressId)
+    setShowAddressesModal(false)
+    setShowAddressDetailsModal(true)
   }
 
   // Handle adding new address - show review error modal
@@ -867,8 +882,47 @@ export default function Header() {
         addresses={addresses}
         selectedAddressId={selectedAddressId}
         onSelectAddress={handleSelectAddress}
+        onEditAddress={handleEditAddress}
         onManualEntry={handleManualEntry}
         onSelectSearchAddress={handleSelectSearchAddress}
+        onAddLabel={() => setShowLabelModal(true)}
+      />
+
+      {/* Choose Address to Label Modal */}
+      <ChooseAddressLabelModal
+        isOpen={showLabelModal}
+        onClose={() => setShowLabelModal(false)}
+        addresses={addresses}
+        onSelectAddress={(addressId) => {
+          setAddressToLabel(addressId)
+          setShowLabelModal(false)
+          setShowChooseLabelModal(true)
+        }}
+        onSelectSearchAddress={(address) => {
+          // Store the search result temporarily (without id)
+          const { id, ...addressWithoutId } = address
+          setTempAddressData(addressWithoutId)
+          setShowLabelModal(false)
+          setShowAddressTypeModal(true)
+        }}
+        onManualEntry={() => {
+          setShowLabelModal(false)
+          setShowAddAddressModal(true)
+        }}
+      />
+
+      {/* Choose Label Modal */}
+      <ChooseLabelModal
+        isOpen={showChooseLabelModal}
+        onClose={() => setShowChooseLabelModal(false)}
+        currentLabel={addresses.find(a => a.id === addressToLabel)?.personalLabel}
+        onSave={(label) => {
+          if (addressToLabel) {
+            updateAddress(addressToLabel, { personalLabel: label })
+          }
+          setShowChooseLabelModal(false)
+          setAddressToLabel("")
+        }}
       />
 
       {/* Add Address Modal */}
@@ -936,7 +990,11 @@ export default function Header() {
           setShowAddressDetailsModal(false)
           setTempAddressData(null)
         }}
-        address={tempAddressData as Address | Omit<Address, 'id'> | undefined}
+        address={
+          tempAddressData 
+            ? (tempAddressData as Address | Omit<Address, 'id'> | undefined)
+            : addresses.find(a => a.id === selectedAddressId)
+        }
         onSave={handleSaveAddressDetails}
         hideAddressType={!!tempAddressData} // Hide type dropdown when coming from search flow
         onBack={tempAddressData ? () => {
