@@ -47,6 +47,7 @@ export default function CheckoutPage() {
     removePaymentMethod,
     getAddresses,
     updateAddress,
+    setDefaultAddress,
     updateUser,
     addAddress,
     getTempAddress,
@@ -467,6 +468,7 @@ export default function CheckoutPage() {
   // Handle address selection
   const handleSelectAddress = (addressId: string) => {
     setSelectedAddressId(addressId)
+    setDefaultAddress(addressId) // Set as default address
     setShowAddressesModal(false)
   }
 

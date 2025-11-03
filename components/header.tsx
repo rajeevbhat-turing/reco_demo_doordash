@@ -56,7 +56,7 @@ export default function Header() {
   const [manualState, setManualState] = useState("Alabama")
   const [manualZipCode, setManualZipCode] = useState("")
 
-  const { getAddresses, addAddress, updateAddress, setTempAddress, getTempAddress } = useUserStore()
+  const { getAddresses, addAddress, updateAddress, setDefaultAddress, setTempAddress, getTempAddress } = useUserStore()
   const addresses = getAddresses()
   const tempAddress = useSyncExternalStore(
     useUserStore.subscribe,
@@ -84,7 +84,7 @@ export default function Header() {
     } else {
       setSelectedAddressId('');
     }
-  }, [addresses, selectedAddressId]);
+  }, [addresses]);
 
   const selectedAddress = addresses.find(a => a.id === selectedAddressId)
   
@@ -160,6 +160,7 @@ export default function Header() {
 
   const handleSelectAddress = (addressId: string) => {
     setSelectedAddressId(addressId);
+    setDefaultAddress(addressId); // Set as default address
     setShowAddressesModal(false);
   };
 

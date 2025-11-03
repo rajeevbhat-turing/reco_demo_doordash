@@ -39,6 +39,7 @@ interface UserStore {
   addAddress: (address: Omit<Address, 'id'>) => Address;
   removeAddress: (id: string) => void;
   updateAddress: (id: string, updates: Partial<Omit<Address, 'id'>>) => void;
+  setDefaultAddress: (id: string) => void;
   getAddresses: () => Address[];
   setTempAddress: (address: Address | null) => void;
   getTempAddress: () => Address | null;
@@ -364,6 +365,31 @@ export const useUserStore = create<UserStore>()(
               return address;
             });
           }
+          
+          const updatedUser = {
+            ...state.currentUser,
+            addresses: updatedAddresses,
+          };
+          
+          set({
+            currentUser: updatedUser,
+            users: state.users.map(user =>
+              user.id === state.currentUser!.id ? updatedUser : user
+            ),
+          });
+        },
+
+        setDefaultAddress: (id) => {
+          const state = get();
+          if (!state.currentUser) {
+            return;
+          }
+          
+          // Set all addresses to default: false, except the selected one
+          const updatedAddresses = state.currentUser.addresses.map((address) => ({
+            ...address,
+            default: address.id === id,
+          }));
           
           const updatedUser = {
             ...state.currentUser,
