@@ -1,33 +1,27 @@
 "use client"
 
 import { useState, useMemo } from "react"
-import { X, Search, Plus, Edit2, ChevronRight } from "lucide-react"
+import { X, Search, ChevronRight } from "lucide-react"
 import { Address } from "@/lib/types/user-types"
 import addressesData from "@/data/addresses.json"
 
-interface AddressesModalProps {
+interface ChooseAddressLabelModalProps {
   isOpen: boolean
   onClose: () => void
   addresses: Address[]
-  selectedAddressId?: string
   onSelectAddress: (addressId: string) => void
-  onEditAddress?: (addressId: string) => void
   onSelectSearchAddress?: (address: Address) => void
   onManualEntry?: () => void
-  onAddLabel?: () => void
 }
 
-export default function AddressesModal({ 
+export default function ChooseAddressLabelModal({ 
   isOpen, 
   onClose, 
   addresses,
-  selectedAddressId,
   onSelectAddress,
-  onEditAddress,
   onSelectSearchAddress,
-  onManualEntry,
-  onAddLabel
-}: AddressesModalProps) {
+  onManualEntry
+}: ChooseAddressLabelModalProps) {
   const [searchQuery, setSearchQuery] = useState("")
 
   // Filter searchable addresses from JSON data (API simulation) - for dropdown
@@ -42,14 +36,20 @@ export default function AddressesModal({
     })
   }, [searchQuery])
 
-  const hasSearchResults = searchQuery.trim().length > 0 && filteredSearchAddresses.length > 0
+  // Filter user's saved addresses for the list below
+  const filteredAddresses = addresses.filter((address) => {
+    if (!searchQuery.trim()) return true
+    const query = searchQuery.toLowerCase()
+    const fullAddress = `${address.street} ${address.city} ${address.state} ${address.zipCode}`.toLowerCase()
+    return fullAddress.includes(query)
+  })
 
   if (!isOpen) return null
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div ref={modalRef} className="relative bg-white rounded-2xl w-full max-w-md mx-4">
-        <div className="p-6 pb-0">
+      <div className="relative bg-white rounded-2xl w-full max-w-md mx-4">
+        <div className="p-6">
           {/* Close button */}
           <button 
             onClick={onClose}
@@ -61,11 +61,11 @@ export default function AddressesModal({
 
           {/* Title */}
           <h2 className="text-2xl font-bold text-gray-900 mb-6 mt-6">
-            Addresses
+            Choose address to label
           </h2>
 
           {/* Search Bar */}
-          <div className="relative mb-4">
+          <div className="relative mb-6">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
             <input
               type="text"
@@ -110,73 +110,20 @@ export default function AddressesModal({
               </div>
             )}
           </div>
-
-          {/* Label Pills and Add Label Button */}
-          <div className="flex flex-wrap gap-2 mb-4">
-            {/* Display all unique labels */}
-            {addresses
-              .filter(addr => addr.personalLabel)
-              .map(addr => ({
-                label: addr.personalLabel!,
-                addressId: addr.id,
-                isSelected: selectedAddressId === addr.id
-              }))
-              .filter((item, index, self) => 
-                // Keep only unique labels (first occurrence)
-                index === self.findIndex(t => t.label.toLowerCase() === item.label.toLowerCase())
-              )
-              .map(({ label, addressId, isSelected }) => (
-                <button
-                  key={addressId}
-                  onClick={() => onSelectAddress(addressId)}
-                  className={`px-3 py-2 rounded-full text-sm font-medium transition-colors ${
-                    isSelected
-                      ? 'bg-black text-white'
-                      : 'bg-gray-200 text-black hover:bg-gray-300'
-                  }`}
-                >
-                  {label.charAt(0).toUpperCase() + label.slice(1)}
-                </button>
-              ))}
-
-            {/* Add Label Button */}
-            <button 
-              onClick={() => {
-                onAddLabel?.()
-                onClose()
-              }}
-              className="flex items-center justify-center gap-2 px-3 py-2 border border-gray-300 rounded-full font text-black bg-gray-200 hover:bg-gray-300 transition-colors"
-            >
-              <Plus className="w-4 h-4" />
-              <span className="text-sm font-bold">Add label</span>
-            </button>
-          </div>
         </div>
-        {/* Address List - Shows all user's saved addresses */}
-        <div>
-          {addresses.map((address, index) => {
-            const isLastAddress = index === addresses.length - 1
+
+        {/* Address List */}
+        <div className="max-h-96 overflow-y-auto">
+          {filteredAddresses.map((address, index) => {
+            const isLastAddress = index === filteredAddresses.length - 1
             return (
               <div 
                 key={address.id}
-                className={`flex items-start p-4 hover:bg-gray-100 cursor-pointer transition-colors ${
+                className={`flex items-start justify-between p-4 hover:bg-gray-100 cursor-pointer transition-colors border-t border-gray-200 ${
                   isLastAddress ? 'rounded-b-2xl' : ''
                 }`}
                 onClick={() => onSelectAddress(address.id)}
               >
-                {/* Radio Button */}
-                <div className="flex items-center justify-center mt-1 mr-3 flex-shrink-0">
-                  <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
-                    selectedAddressId === address.id 
-                      ? "border-red-500" 
-                      : "border-gray-300"
-                  }`}>
-                    {selectedAddressId === address.id && (
-                      <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-                    )}
-                  </div>
-                </div>
-
                 {/* Address Content */}
                 <div className="flex-1">
                   {address.personalLabel ? (
@@ -196,24 +143,14 @@ export default function AddressesModal({
                   )}
                 </div>
 
-                {/* Edit Icon */}
-                <button 
-                  className="flex-shrink-0 p-2 hover:bg-gray-200 rounded-full transition-colors ml-2"
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    if (onEditAddress) {
-                      onEditAddress(address.id)
-                    }
-                  }}
-                >
-                  <Edit2 className="w-5 h-5 text-gray-600" />
-                </button>
+                {/* Right Arrow Icon */}
+                <ChevronRight className="w-5 h-5 text-gray-400 flex-shrink-0 ml-2" />
               </div>
             )
           })}
         </div>
 
-        {addresses.length === 0 && (
+        {filteredAddresses.length === 0 && (
           <p className="text-center text-gray-500 py-8">No addresses found</p>
         )}
       </div>

@@ -19,22 +19,26 @@ export const initialUsersData: User[] = [
     paymentMethods: [],
     addresses: [
       {
-        id: "default-address",
+        id: "addr-1",
         street: "548 Market Street",
         city: "San Francisco",
         state: "CA",
         zipCode: "94104",
+        lat: 37.7897,
+        lng: -122.4011,
         addressType: "house",
         gateCode: "111",
         deliveryPreference: "door",
         deliveryInstructions: "Please ring the bell and drop off at the door, thank you. Its around the corner on the ground floor"
       },
       {
-        id: "address-2",
+        id: "addr-2",
         street: "47 West 13th Street",
         city: "New York",
         state: "NY",
         zipCode: "10011",
+        lat: 40.7369,
+        lng: -73.9968,
         addressType: "house"
       }
     ],

@@ -21,7 +21,6 @@ export default function AuthenticationModal({
   defaultMode = 'signin',
 }: AuthenticationModalProps) {
   const addUser = useUserStore(state => state.addUser);
-  const setCurrentUser = useUserStore(state => state.setCurrentUser);
   const [mode, setMode] = useState<'signin' | 'signup' | 'forgot-password' | null>(defaultMode);
   const [forgotPasswordEmail, setForgotPasswordEmail] = useState<string>('');
   const [showCountryDropdown, setShowCountryDropdown] = useState(false);
@@ -150,8 +149,7 @@ export default function AuthenticationModal({
       reviews: [],
     };
 
-    addUser(newUser);
-    setCurrentUser(newUser);
+    addUser(newUser, true);
     setSignUpUser(null);
     handleClose();
   };

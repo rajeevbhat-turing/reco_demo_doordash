@@ -7,6 +7,7 @@ export interface PaymentMethod {
   cvc: string;
   expiry: string;
   zipCode: string;
+  default?: boolean;
 }
 
 // Address interface
@@ -16,12 +17,32 @@ export interface Address {
   city: string;
   state: string;
   zipCode: string;
-  addressType: "none" | "house" | "apartment" | "hotel" | "office" | "other";
-  apartmentSuite?: string;
+  lat: number;
+  lng: number;
+  addressType: "house" | "apartment" | "hotel" | "office" | "other";
+  default?: boolean;
+  
+  // House fields
   gateCode?: string;
+  
+  // Apartment fields
+  apartmentSuite?: string;
+  entryCode?: string;
+  
+  // Hotel fields
+  roomSuite?: string;
+  hotelName?: string;
+  
+  // Office fields
+  suiteFloor?: string;
+  businessName?: string;
+  
+  // Shared fields
   buildingName?: string;
+  
+  // Delivery preferences
   deliveryPreference?: "door" | "location";
-  meetLocation?: "door" | "outside";
+  meetLocation?: string;
   deliveryInstructions?: string;
   personalLabel?: string;
 }

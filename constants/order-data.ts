@@ -1,3 +1,5 @@
+import { PaymentMethod, Address } from "@/lib/types/user-types"
+
 export interface OrderItem {
   id: string;
   name: string;
@@ -5,14 +7,8 @@ export interface OrderItem {
   price: number;
 }
 
-export interface PaymentCard {
-  type?: string;
-  cardNumber?: string;
-  lastFour?: string;
-  expiry?: string;
-  cvc?: string;
-  zipCode?: string;
-}
+// Reuse PaymentMethod from user-types with all fields optional for orders
+export type PaymentCard = Partial<PaymentMethod>
 
 export interface DeliveryOption {
   type: string;
@@ -27,19 +23,8 @@ export interface PhoneNumber {
   number: string;
 }
 
-export interface DeliveryAddress {
-  id: string;
-  street: string;
-  city: string;
-  state: string;
-  zipCode: string;
-  addressType: "house" | "apartment" | "hotel" | "office" | "other";
-  gateCode?: string;
-  deliveryPreference?: "door" | "location";
-  meetLocation?: "door" | "outside";
-  deliveryInstructions?: string;
-  personalLabel?: string;
-}
+// Reuse Address from user-types as DeliveryAddress
+export type DeliveryAddress = Address
 
 export interface Order {
   id: string;
