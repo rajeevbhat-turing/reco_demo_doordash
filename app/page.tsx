@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useMemo, useRef } from "react"
+import { useState, useEffect, useMemo, useRef, useSyncExternalStore } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { Heart } from "lucide-react"
@@ -12,8 +12,10 @@ import { restaurants } from "@/constants/restaurants"
 import type { Restaurant } from "@/constants/restaurants"
 import { useCartStore } from "@/store/cart-store"
 import { useAppStore } from "@/store/app-store"
+import { useUserStore } from "@/store/user-store"
 import { getDefaultRating } from "@/utils/rating-utils"
 import { filterRestaurantsWithMenuItems } from "@/utils/restaurant-utils"
+import { filterRestaurantsByLocation } from "@/lib/utils/location-filter-utils"
 
 export default function Home() {
   const [filters, setFilters] = useState<FilterState>({
@@ -30,6 +32,25 @@ export default function Home() {
 
   // Get cart store to set category
   const cartStore = useCartStore()
+
+  // Get address from user store for location filtering
+  const { getAddresses, getTempAddress, isAuthenticated } = useUserStore()
+  const addresses = getAddresses()
+  const tempAddress = useSyncExternalStore(
+    useUserStore.subscribe,
+    () => useUserStore.getState().getTempAddress(),
+    () => null
+  )
+  const userIsAuthenticated = isAuthenticated()
+  
+  // Get active address (selected address for authenticated users, temp address for non-authenticated)
+  const selectedAddress = useMemo(() => {
+    if (userIsAuthenticated && addresses.length > 0) {
+      // Find default address or use first address
+      return addresses.find(a => a.default) || addresses[0] || null
+    }
+    return null
+  }, [userIsAuthenticated, addresses])
 
   // Set the category to restaurant when component mounts
   useEffect(() => {
@@ -65,9 +86,18 @@ export default function Home() {
   }
 
   // Get only actual restaurants (filter out stores like Target, flower shops) and those with menu items
+  // Then apply location filtering based on selected address
   const actualRestaurants = useMemo(() => {
-    return withDefaultRatings(filterRestaurantsWithMenuItems(filterOnlyRestaurants(restaurants)));
-  }, []);
+    const filteredRestaurants = withDefaultRatings(filterRestaurantsWithMenuItems(filterOnlyRestaurants(restaurants)));
+    
+    // Apply location filtering FIRST (before other filters)
+    return filterRestaurantsByLocation(
+      filteredRestaurants,
+      selectedAddress,
+      tempAddress,
+      3 // 3 miles radius
+    );
+  }, [selectedAddress, tempAddress]);
 
   // Memoize the original restaurant sections to prevent recreating them on every render
   const nationalFavorites = useMemo(() => {
@@ -188,8 +218,8 @@ export default function Home() {
   const handleFilterChange = (newFilters: FilterState) => {
     setFilters(newFilters)
 
-    // Apply filters to restaurants
-    let filteredRestaurants = [...restaurants]
+    // Start with location-filtered restaurants (actualRestaurants already has location filtering applied)
+    let filteredRestaurants = [...actualRestaurants]
 
     // Filter by category if selected
     if (selectedCategory) {

@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useMemo, useSyncExternalStore } from "react"
 import { useSearchParams } from "next/navigation"
 import Image from "next/image"
 import Link from "next/link"
@@ -20,14 +20,23 @@ import { filterRestaurantsWithMenuItems } from "@/utils/restaurant-utils"
 import { useCartStore } from "@/store/cart-store"
 import { useVerifierStore } from "@/store/verifier-store"
 import { useAppStore } from "@/store/app-store"
+import { useUserStore } from "@/store/user-store"
+import { filterRestaurantsByLocation } from "@/lib/utils/location-filter-utils"
 
 // Force dynamic rendering
 export const dynamic = 'force-dynamic'
 
-interface SearchResultRestaurant extends Restaurant {
+interface SearchResultRestaurant extends Omit<Restaurant, 'street' | 'city' | 'state' | 'zipCode' | 'lat' | 'lng'> {
   matchType: "restaurant" | "menu-item" | "grocery" | "pets" | "pet-product" | "convenience" | "retail"
   matchedItems?: string[]
   storeType?: "grocery" | "pets" | "pet-product" | "convenience" | "retail"
+  street?: string
+  city?: string
+  state?: string
+  zipCode?: string
+  lat?: number
+  lng?: number
+  address?: string
 }
 
 export default function SearchPage() {
@@ -47,6 +56,25 @@ export default function SearchPage() {
   })
   const { updateSearchResults, clearSearchResults } = useAppStore()
   const { recordSearch } = useVerifierStore()
+
+  // Get address from user store for location filtering
+  const { getAddresses, getTempAddress, isAuthenticated } = useUserStore()
+  const addresses = getAddresses()
+  const tempAddress = useSyncExternalStore(
+    useUserStore.subscribe,
+    () => useUserStore.getState().getTempAddress(),
+    () => null
+  )
+  const userIsAuthenticated = isAuthenticated()
+  
+  // Get active address (selected address for authenticated users, temp address for non-authenticated)
+  const selectedAddress = useMemo(() => {
+    if (userIsAuthenticated && addresses.length > 0) {
+      // Find default address or use first address
+      return addresses.find(a => a.default) || addresses[0] || null
+    }
+    return null
+  }, [userIsAuthenticated, addresses])
 
   // Handle filter changes
   const handleFilterChange = (filters: FilterState) => {
@@ -97,7 +125,7 @@ export default function SearchPage() {
     setIsLoading(true)
 
     // Search restaurants by name, cuisine, and categories - only include restaurants with menu items
-    const restaurantResults = filterRestaurantsWithMenuItems(restaurants)
+    const searchedRestaurants = filterRestaurantsWithMenuItems(restaurants)
       .filter((restaurant) => {
         const queryLower = query.toLowerCase();
         
@@ -123,10 +151,19 @@ export default function SearchPage() {
         
         return nameMatch || cuisineMatch || categoryMatch;
       })
-      .map((restaurant) => ({
-        ...restaurant,
-        matchType: "restaurant" as const,
-      }))
+    
+    // Apply location filtering FIRST (before other filters)
+    const locationFilteredRestaurants = filterRestaurantsByLocation(
+      searchedRestaurants,
+      selectedAddress,
+      tempAddress,
+      3 // 3 miles radius
+    )
+    
+    const restaurantResults = locationFilteredRestaurants.map((restaurant) => ({
+      ...restaurant,
+      matchType: "restaurant" as const,
+    }))
 
     // Search grocery stores by name
     const groceryStores = getAllStores()
@@ -731,7 +768,7 @@ export default function SearchPage() {
     updateSearchResults(immediateCartSearchResults)
 
     return () => clearTimeout(timer)
-  }, [query, activeFilters])
+  }, [query, activeFilters, selectedAddress, tempAddress])
 
   useEffect(() => {
     return () => {

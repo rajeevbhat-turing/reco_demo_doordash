@@ -1,6 +1,7 @@
 "use client"
 
 import { useRouter, useSearchParams } from "next/navigation"
+import { useMemo, useSyncExternalStore, Suspense } from "react"
 import VerticalListPage from "@/components/vertical-list-page"
 import { restaurants } from "@/constants/restaurants"
 import { 
@@ -9,9 +10,10 @@ import {
   getFastestNearYou 
 } from "@/app/grocery/data/retail-response-mapper"
 import { convenienceStores } from "@/data/convenience-store-data"
-import { Suspense } from "react"
 import { getDefaultRating } from "@/utils/rating-utils"
 import { filterRestaurantsWithMenuItems } from "@/utils/restaurant-utils"
+import { useUserStore } from "@/store/user-store"
+import { filterRestaurantsByLocation } from "@/lib/utils/location-filter-utils"
 
 // Inner component that uses searchParams
 function AllItemsContent() {
@@ -22,6 +24,25 @@ function AllItemsContent() {
   const title = decodeURIComponent(searchParams.get('title') || "All Items")
   const type = searchParams.get('type') || "restaurant"
   const section = searchParams.get('section') ? decodeURIComponent(searchParams.get('section') || "") : ""
+  
+  // Get address from user store for location filtering
+  const { getAddresses, getTempAddress, isAuthenticated } = useUserStore()
+  const addresses = getAddresses()
+  const tempAddress = useSyncExternalStore(
+    useUserStore.subscribe,
+    () => useUserStore.getState().getTempAddress(),
+    () => null
+  )
+  const userIsAuthenticated = isAuthenticated()
+  
+  // Get active address (selected address for authenticated users, temp address for non-authenticated)
+  const selectedAddress = useMemo(() => {
+    if (userIsAuthenticated && addresses.length > 0) {
+      // Find default address or use first address
+      return addresses.find(a => a.default) || addresses[0] || null
+    }
+    return null
+  }, [userIsAuthenticated, addresses])
   
   // Function to check if an image URL is valid (not placeholder/empty)
   const hasValidLogo = (logoUrl: string | undefined): boolean => {
@@ -37,7 +58,15 @@ function AllItemsContent() {
     if (type === 'restaurant') {
       let filteredRestaurants: any[] = []
       // First filter restaurants to only include those with menu items
-      const restaurantsWithMenus = filterRestaurantsWithMenuItems(restaurants);
+      let restaurantsWithMenus = filterRestaurantsWithMenuItems(restaurants);
+      
+      // Apply location filtering FIRST (before section filtering)
+      restaurantsWithMenus = filterRestaurantsByLocation(
+        restaurantsWithMenus,
+        selectedAddress,
+        tempAddress,
+        3 // 3 miles radius
+      );
       
       switch (section) {
         case 'national-favourites':

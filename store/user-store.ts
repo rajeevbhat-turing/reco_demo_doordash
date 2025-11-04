@@ -278,7 +278,8 @@ export const useUserStore = create<UserStore>()(
           
           // Set default: false for all existing addresses
           // Also, if the new address has a label other than 'none', remove it from other addresses
-          const updatedAddresses = state.currentUser.addresses.map(addr => {
+          const existingAddresses = state.currentUser.addresses || [];
+          const updatedAddresses = existingAddresses.map(addr => {
             const updatedAddr = { ...addr, default: false };
             
             // Remove matching label from other addresses (case-insensitive comparison)
