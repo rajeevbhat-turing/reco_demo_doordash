@@ -1,23 +1,27 @@
-export const DashDoorLogoMark = () => (
-  <svg 
-    aria-hidden="true" 
-    width="32" 
-    height="18" 
-    viewBox="0 0 99.5 56.5" 
-    fill="#2563EB"
-  >
+export const DashDoorLogoMark = ({
+  color = '#2563EB',
+  width = 32,
+  height = 18,
+}: {
+  color?: string;
+  width?: number;
+  height?: number;
+}) => (
+  <svg aria-hidden="true" width={width} height={height} viewBox="0 0 99.5 56.5" fill={color}>
     <path d="M95.64,13.38A25.24,25.24,0,0,0,73.27,0H2.43A2.44,2.44,0,0,0,.72,4.16L16.15,19.68a7.26,7.26,0,0,0,5.15,2.14H71.24a6.44,6.44,0,1,1,.13,12.88H36.94a2.44,2.44,0,0,0-1.72,4.16L50.66,54.39a7.25,7.25,0,0,0,5.15,2.14H71.38c20.26,0,35.58-21.66,24.26-43.16" />
   </svg>
-)
+);
 
-export const DashDoorWordMark = () => (
-  <svg 
-    aria-hidden="true" 
-    width="112" 
-    height="13" 
-    viewBox="0 0 400 42" 
-    fill="#2563EB"
-  >
+export const DashDoorWordMark = ({
+  color = '#2563EB',
+  width = 112,
+  height = 13,
+}: {
+  color?: string;
+  width?: number;
+  height?: number;
+}) => (
+  <svg aria-hidden="true" width={width} height={height} viewBox="0 0 400 42" fill={color}>
     {/* D */}
     <path d="M8.62,8.66V33.38h6.32A12.21,12.21,0,0,0,27,21,12,12,0,0,0,14.94,8.66ZM14.94.91C26.72.91,35.63,9.81,35.63,21S26.72,41.14,14.94,41.14H1a1,1,0,0,1-1-1V1.95a1,1,0,0,1,1-1Z" />
     {/* A */}
@@ -35,4 +39,4 @@ export const DashDoorWordMark = () => (
     {/* R */}
     <path d="M348.75,8.66h-8.91V19.3h8.91a5.22,5.22,0,0,0,5.46-5.17,5.28,5.28,0,0,0-5.46-5.46M331.22,1.95a1,1,0,0,1,1-1H349c8,0,13.79,5.86,13.79,13.22a13,13,0,0,1-7.18,11.78l7.74,13.68a1,1,0,0,1-.91,1.56h-6.79a1,1,0,0,1-.91-.54l-7.46-13.54h-7.47v13a1,1,0,0,1-1,1h-6.54a1,1,0,0,1-1-1Z" />
   </svg>
-) 
+);
