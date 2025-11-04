@@ -17,6 +17,8 @@ export interface Address {
   city: string;
   state: string;
   zipCode: string;
+  lat: number;
+  lng: number;
   addressType: "house" | "apartment" | "hotel" | "office" | "other";
   default?: boolean;
   
