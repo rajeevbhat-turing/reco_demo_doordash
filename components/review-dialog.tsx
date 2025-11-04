@@ -1,123 +1,331 @@
-"use client"
+'use client';
 
-import type React from "react"
+import type React from 'react';
 
-import { useState, useRef, useEffect } from "react"
-import { X, Star, Info } from "lucide-react"
+import { useState, useRef, useEffect } from 'react';
+import { X, Star, Info } from 'lucide-react';
+import { useUserStore } from '@/store/user-store';
+import { useReviewStore } from '@/store/review-store';
+import { FilledLightbulbIcon } from '@/lib/utils/icons';
+import Image from 'next/image';
 
 interface ReviewDialogProps {
-  isOpen: boolean
-  onClose: () => void
-  restaurantName: string
+  isOpen: boolean;
+  onClose: () => void;
+  restaurantName: string;
+  vendorId?: string;
+  vendorLogo?: string;
+  defaultRating?: number;
 }
 
-export default function ReviewDialog({ isOpen, onClose, restaurantName }: ReviewDialogProps) {
-  const [rating, setRating] = useState<number>(0)
-  const [reviewText, setReviewText] = useState<string>("")
-  const textareaRef = useRef<HTMLTextAreaElement>(null)
-  const dialogRef = useRef<HTMLDivElement>(null)
+export default function ReviewDialog({
+  isOpen,
+  onClose,
+  restaurantName,
+  vendorId,
+  vendorLogo,
+  defaultRating,
+}: ReviewDialogProps) {
+  const currentUser = useUserStore(state => state.currentUser);
+  const { addReview } = useReviewStore();
+  const [rating, setRating] = useState<number>(defaultRating || 0);
+  const [hoverRating, setHoverRating] = useState<number>(0);
+  const [reviewText, setReviewText] = useState<string>('');
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const [error, setError] = useState<{ type: string | null; message: string | null }>({
+    type: null,
+    message: null,
+  });
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [submittedRating, setSubmittedRating] = useState<number>(0);
+  const [submittedText, setSubmittedText] = useState<string>('');
+
+  // Format user name: FirstName L. (first name + first letter of last name)
+  const getUserDisplayName = () => {
+    if (!currentUser?.name) return 'User';
+    const nameParts = currentUser.name.trim().split(/\s+/);
+    if (nameParts.length === 1) return nameParts[0];
+    const firstName = nameParts[0];
+    const lastInitial = nameParts[nameParts.length - 1].charAt(0).toUpperCase();
+    return `${firstName} ${lastInitial}.`;
+  };
 
   useEffect(() => {
     if (isOpen) {
-      document.body.style.overflow = "hidden"
+      document.body.style.overflow = 'hidden';
 
       // Add event listener for Escape key
       const handleEscapeKey = (event: KeyboardEvent) => {
-        if (event.key === "Escape") {
-          onClose()
+        if (event.key === 'Escape') {
+          onClose();
         }
-      }
+      };
 
-      document.addEventListener("keydown", handleEscapeKey)
+      document.addEventListener('keydown', handleEscapeKey);
 
-      // Focus the textarea when the dialog opens
-      if (textareaRef.current) {
+      // Focus the textarea when the dialog opens (if not showing success)
+      if (textareaRef.current && !showSuccess) {
         setTimeout(() => {
-          textareaRef.current?.focus()
-        }, 100)
+          textareaRef.current?.focus();
+        }, 100);
       }
 
       return () => {
-        document.body.style.overflow = "auto"
-        document.removeEventListener("keydown", handleEscapeKey)
-      }
+        document.body.style.overflow = 'auto';
+        document.removeEventListener('keydown', handleEscapeKey);
+      };
     }
-  }, [isOpen, onClose])
+  }, [isOpen, onClose]);
 
-  if (!isOpen) return null
+  if (!isOpen) return null;
+
+  // Highlights stars on hover for better UX
+  const handleStarHover = (starRating: number) => {
+    setHoverRating(starRating);
+  };
+
+  // Removes star highlight when mouse leaves
+  const handleStarLeave = () => {
+    setHoverRating(0);
+  };
 
   const handleRatingChange = (newRating: number) => {
-    setRating(newRating)
-  }
+    setRating(newRating);
+    setHoverRating(0); // Clear hover when rating is selected
+    // Clear rating error if rating is selected
+    if (newRating > 0 && error.type === 'rating') {
+      setError({ type: null, message: null });
+    }
+  };
 
   const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setReviewText(e.target.value)
-  }
+    setReviewText(e.target.value);
+    // Clear input error if text is valid
+    if (e.target.value.length >= 10 && error.type === 'input') {
+      setError({ type: null, message: null });
+    }
+  };
 
-  const handleSubmit = () => {
-    // Here you would typically send the review to your backend
-    console.log("Submitting review:", { rating, reviewText })
-    onClose()
-  }
+  const handleSubmit = (e: React.FormEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
 
-  const isSubmitDisabled = reviewText.length < 10 || rating === 0
+    // Validate rating
+    if (rating === 0) {
+      setError({ type: 'rating', message: 'Rating required' });
+      return;
+    }
+
+    // Validate review text
+    if (reviewText.trim().length < 10) {
+      setError({ type: 'input', message: 'Min characters: 10' });
+      return;
+    }
+
+    // Clear any errors if validation passes
+    setError({ type: null, message: null });
+
+    // Add review to store if vendorId is provided
+    if (vendorId && currentUser) {
+      addReview({
+        vendorId: vendorId,
+        vendorName: restaurantName,
+        vendorLogo: vendorLogo,
+        userId: currentUser.id,
+        userName: currentUser.name,
+        userEmail: currentUser.email,
+        userAvatar: currentUser.avatar,
+        rating: rating,
+        content: reviewText.trim(),
+        photos: [],
+        ratedHelpfulBy: [],
+        likedItems: [],
+      });
+    }
+
+    // Store submitted data for success message
+    setSubmittedRating(rating);
+    setSubmittedText(reviewText.trim());
+    setShowSuccess(true);
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div ref={dialogRef} className="relative bg-white rounded-lg w-full max-w-2xl max-h-[90vh] overflow-auto">
-        <div className="p-6">
-          <button onClick={onClose} className="absolute top-6 left-6" aria-label="Close dialog">
-            <X className="h-6 w-6 text-gray-500" />
+      <div
+        ref={dialogRef}
+        className="relative bg-white rounded-lg w-full max-w-xl max-h-[90vh] overflow-auto"
+      >
+        <div className="pt-6 pb-4">
+          <button
+            onClick={onClose}
+            className={`absolute top-6 ${showSuccess ? 'left-4' : 'left-6'}`}
+            aria-label="Close dialog"
+          >
+            <X className="h-6 w-6 text-[#191919ff]" />
           </button>
 
-          <h2 className="text-3xl font-bold text-center mb-4 mt-6">Add a Public Review</h2>
-          <h3 className="text-xl text-gray-600 mb-6">{restaurantName}</h3>
+          {showSuccess ? (
+            // Success Message View
+            <>
+              <h2 className="text-3xl font-bold mb-6 mt-8 text-[#191919ff] px-4">
+                Thanks for leaving a review!
+              </h2>
 
-          <div className="bg-gray-50 p-6 rounded-lg mb-6">
-            <div className="flex justify-between items-center mb-4">
-              <div className="text-lg font-medium">Prajjwal S.</div>
-              <div className="flex items-center bg-gray-200 rounded-lg px-3 py-1">
-                <span className="mr-1">Everyone</span>
-                <Info className="h-5 w-5 text-gray-500" />
+              {/* Review Preview Card */}
+              <div
+                className="mx-auto mb-6 max-w-[400px] bg-white rounded-lg px-4 py-6"
+                style={{ boxShadow: 'rgba(0, 0, 0, 0.2) 0px 1px 4px' }}
+              >
+                {/* User Info and Status */}
+                <div className="mb-3">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="font-bold text-[16px] text-[#191919ff]">
+                      {getUserDisplayName()}
+                    </span>
+                    {/* Pending Badge */}
+                    <div className="flex items-center gap-1 p-1 bg-[#e7e7e7] rounded-md flex-shrink-0">
+                      <Info className="h-4 w-4 text-[#191919ff]" />
+                      <span className="text-xs font-bold text-[#191919ff]">Pending</span>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="flex items-center">
+                      {[1, 2, 3, 4, 5].map(star => (
+                        <Star
+                          key={star}
+                          className={`w-4 h-4 ${
+                            star <= submittedRating
+                              ? 'fill-[#494949] text-[#494949]'
+                              : 'text-[#494949]'
+                          }`}
+                        />
+                      ))}
+                    </div>
+                    <span className="text-sm text-[#191919ff] font-medium">
+                      today • Reviewed on{' '}
+                      <Image
+                        src="/dashpass-icon.svg"
+                        alt="DoorDash"
+                        width={24}
+                        height={24}
+                        className="inline-block ml-1"
+                      />
+                    </span>
+                  </div>
+                </div>
+
+                {/* Review Content */}
+                <div className="text-sm font-medium text-[#191919ff] leading-relaxed">
+                  {submittedText}
+                </div>
               </div>
-            </div>
 
-            <div className="flex mb-6">
-              {[1, 2, 3, 4, 5].map((star) => (
-                <Star
-                  key={star}
-                  className={`h-8 w-8 cursor-pointer ${
-                    star <= rating ? "fill-gray-700 text-gray-700" : "text-gray-300"
+              {/* Information Text */}
+              <p className="text-base font-medium text-[#191919ff] mb-2 px-4">
+                Your review has been submitted. We'll check your store review to ensure it meets our{' '}
+                <span className="text-red-600">Review Guidelines</span>. You'll receive an email
+                when your store review is approved and added to this store's page.
+              </p>
+
+              {/* Done Button */}
+              <div className="flex justify-end px-4 border-t border-gray-200 pt-4">
+                <button
+                  onClick={onClose}
+                  className="px-3 py-2 rounded-full text-white font-bold text-base bg-red-500 hover:bg-red-600"
+                >
+                  Done
+                </button>
+              </div>
+            </>
+          ) : (
+            // Review Form View
+            <>
+              <h2 className="text-3xl font-bold mb-4 mt-8 text-[#191919ff] px-6">
+                Add a Public Review
+              </h2>
+              <h3 className="text-base font-medium text-[#494949] mb-4 px-6">{restaurantName}</h3>
+
+              <div className="bg-gray-50 rounded-md mb-2 mx-6">
+                <div
+                  className={
+                    error?.type === 'rating'
+                      ? 'border-2 border-red-700 rounded-lg bg-[#fef0ed]'
+                      : ''
+                  }
+                >
+                  <div className="flex justify-between items-center mb-2 pt-5 px-5">
+                    <div className="text-base font-bold text-[#191919ff]">
+                      {getUserDisplayName()}
+                    </div>
+                    <div className="flex items-center bg-gray-200 rounded-md px-1 py-2">
+                      <span className="mr-1 text-sm font-medium text-[#191919ff]">Everyone</span>
+                      <Info className="h-5 w-5 text-[#191919ff]" />
+                    </div>
+                  </div>
+
+                  <div className="flex mb-6 px-5">
+                    {[1, 2, 3, 4, 5].map(star => {
+                      const displayRating = hoverRating || rating;
+                      return (
+                        <Star
+                          key={star}
+                          className={`h-8 w-8 cursor-pointer ${
+                            star <= displayRating
+                              ? 'fill-[#191919ff] text-[#191919ff]'
+                              : 'text-[#b2b2b2]'
+                          }`}
+                          onMouseEnter={() => handleStarHover(star)}
+                          onMouseLeave={handleStarLeave}
+                          onClick={() => handleRatingChange(star)}
+                        />
+                      );
+                    })}
+                  </div>
+                </div>
+
+                <textarea
+                  ref={textareaRef}
+                  value={reviewText}
+                  onChange={handleTextChange}
+                  placeholder="Write a review, it's helpful to include details about taste, quality, and portions."
+                  className={`w-full p-4 border-2 bg-[#f7f7f7] border-[#f7f7f7] rounded-lg focus:border-[#191919ff] 
+                  focus:ring-0 focus:outline-none min-h-[120px] ${
+                    error?.type === 'input' ? 'border-red-700 bg-[#fef0ed]' : ''
                   }`}
-                  onClick={() => handleRatingChange(star)}
                 />
-              ))}
-            </div>
+              </div>
 
-            <textarea
-              ref={textareaRef}
-              value={reviewText}
-              onChange={handleTextChange}
-              placeholder="Write a review, it's helpful to include details about taste, quality, and portions."
-              className="w-full p-4 border border-gray-300 rounded-lg focus:border-gray-500 focus:ring-0 focus:outline-none min-h-[150px]"
-            />
+              {error?.message ? (
+                <div className="flex items-center gap-2 px-6">
+                  <div className="h-4 w-4 flex-shrink-0 rounded-full flex items-center justify-center bg-[#b71000ff]">
+                    <span className="text-white text-xs font-bold">!</span>
+                  </div>
+                  <div className="text-[#b71000ff] text-sm font-medium">{error.message}</div>
+                </div>
+              ) : reviewText.length >= 10 ? (
+                <div className="flex items-center gap-2 px-6 text-[#00838a]">
+                  <FilledLightbulbIcon />
+                  <div className="text-[#00838a] text-sm font-medium">
+                    Adding more details helps out fellow customers
+                  </div>
+                </div>
+              ) : (
+                <div className="text-[#767676] text-sm font-medium px-6">Min characters: 10</div>
+              )}
 
-            <div className="text-gray-500 mt-2">Min characters: 10</div>
-          </div>
-
-          <div className="flex justify-end">
-            <button
-              onClick={handleSubmit}
-              disabled={isSubmitDisabled}
-              className={`px-8 py-3 rounded-full text-white font-medium ${
-                isSubmitDisabled ? "bg-gray-300" : "bg-red-600 hover:bg-red-700"
-              }`}
-            >
-              Submit
-            </button>
-          </div>
+              <div className="flex justify-end border-t border-gray-200 pt-4 mt-4 px-6">
+                <button
+                  onClick={handleSubmit}
+                  className="px-3 py-2 rounded-full text-white font-bold text-base bg-red-500 hover:bg-red-600"
+                >
+                  Submit
+                </button>
+              </div>
+            </>
+          )}
         </div>
       </div>
     </div>
-  )
+  );
 }

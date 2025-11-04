@@ -2,8 +2,8 @@
 
 import { usePathname } from 'next/navigation';
 import Header from '@/components/header';
-import Sidebar from '@/components/sidebar';
 import LandingPageFooter from '@/components/landing-page-footer';
+import LayoutWrapper from '@/components/layout-wrapper';
 
 export default function MainLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -20,12 +20,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
-      <div className="flex flex-1 relative">
-        <Sidebar />
-        <div className="flex-1 w-0 min-w-0 md:ml-[220px]">
-          <main className="flex-1">{children}</main>
-        </div>
-      </div>
+      <LayoutWrapper>{children}</LayoutWrapper>
     </div>
   );
 }

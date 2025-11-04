@@ -153,6 +153,10 @@ export default function SignUp({
         },
         userCountry: selectedCountry.name,
         avatar: null,
+        is_restricted: false,
+        reviews: [],
+        paymentMethods: [],
+        addresses: [],
       };
       
       onShowOTP(userObject);

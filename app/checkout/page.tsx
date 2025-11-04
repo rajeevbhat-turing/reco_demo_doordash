@@ -3,17 +3,27 @@
 import { useState, useEffect, useCallback } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import Image from "next/image"
-import { ChevronLeft, ChevronRight, X, Trash2, Home, Package, Phone } from "lucide-react"
+import { ChevronLeft, ChevronRight, X, Trash2, Home, Package, Phone, ShoppingCart, Plus, Minus, ChevronDown, ChevronUp } from "lucide-react"
 import { useCartStore, type CartCategory } from "@/store/cart-store"
 import { useVerifierStore } from "@/store/verifier-store"
 import { useUserStore } from "@/store/user-store"
 import { useOrdersStore } from "@/store/orders-store"
+import { Address } from "@/lib/types/user-types"
 import OrderConfirmationModal from "@/components/modals/order-confirmation-modal"
 import AddCardModal from "@/components/modals/add-card-modal"
 import EditPhoneModal from "@/components/modals/edit-phone-modal"
 import AddressesModal from "@/components/modals/addresses-modal"
 import AddressDetailsModal from "@/components/modals/address-details-modal"
+import AddAddressModal from "@/components/modals/add-address-modal"
+import AddressReviewErrorModal from "@/components/modals/address-review-error-modal"
+import AddressTypeModal from "@/components/modals/address-type-modal"
 import ScheduleDeliveryModal from "@/components/modals/schedule-delivery-modal"
+import ChooseAddressLabelModal from "@/components/modals/choose-address-label-modal"
+import ChooseLabelModal from "@/components/modals/choose-label-modal"
+import SignIn from "@/components/authentication/sign-in"
+import SignUp from "@/components/authentication/sign-up"
+import OTPVerificationModal from "@/components/modals/otp-verification-modal"
+import CountryCodeDropdown from "@/components/modals/country-code-dropdown"
 import { getRestaurantById } from "@/constants/restaurants"
 import { stores } from "@/data/store-data"
 import { stores as retailStores } from "@/constants/store"
@@ -28,8 +38,8 @@ export default function CheckoutPage() {
   const categoryParam = searchParams.get('category') as CartCategory | null
   const storeIdParam = searchParams.get('storeId')
   
-  const { findCart, getSubtotal, getServiceFee, getDeliveryFee, getTotal, getTotalItems, setSelectedCard } = useCartStore()
-  const { recordCheckoutNavigation, recordTipSelection, recordDeliveryTimeSelection } = useVerifierStore()
+  const { findCart, getSubtotal, getServiceFee, getDeliveryFee, getTotal, getTotalItems, setSelectedCard, removeItem, updateQuantity } = useCartStore()
+  const { recordCheckoutNavigation, recordDeliveryTimeSelection } = useVerifierStore()
   const { 
     currentUser,
     getPaymentMethods,
@@ -37,12 +47,28 @@ export default function CheckoutPage() {
     removePaymentMethod,
     getAddresses,
     updateAddress,
-    updateUser
+    setDefaultAddress,
+    updateUser,
+    addAddress,
+    getTempAddress,
+    isAuthenticated
   } = useUserStore()
   const { addOrder } = useOrdersStore()
   
   const savedPaymentMethods = getPaymentMethods()
   const addresses = getAddresses()
+  const tempAddress = getTempAddress()
+  const userIsAuthenticated = isAuthenticated()
+  
+  // Auth state for non-authenticated users
+  const [authMode, setAuthMode] = useState<'signin' | 'signup'>('signin')
+  
+  // OTP state for sign up
+  const [showOtpModal, setShowOtpModal] = useState(false)
+  const [generatedOtp, setGeneratedOtp] = useState('')
+  const [signUpUser, setSignUpUser] = useState<any>(null)
+  const [selectedCountry, setSelectedCountry] = useState({ code: 'US', dial_code: '+1', name: 'United States', emoji: '🇺🇸' })
+  const [showCountryDropdown, setShowCountryDropdown] = useState(false)
   
   // Find the cart using query params
   const currentCart = categoryParam && storeIdParam ? findCart(storeIdParam, categoryParam) : null
@@ -69,12 +95,13 @@ export default function CheckoutPage() {
   const [deliveryTime, setDeliveryTime] = useState("45-60 min")
   const [extraDeliveryFee, setExtraDeliveryFee] = useState(0)
   
-  // Dasher tip
-  const [selectedTip, setSelectedTip] = useState(3.00)
-  
   // Payment details
   const [showExpandedPayment, setShowExpandedPayment] = useState(false)
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(savedPaymentMethods[0]?.id || "")
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(() => {
+    // Find default payment method or use first payment method
+    const defaultPaymentMethod = savedPaymentMethods.find(pm => pm.default)
+    return defaultPaymentMethod?.id || savedPaymentMethods[0]?.id || ""
+  })
   
   // Shipping details edit state
   const [showExpandedShipping, setShowExpandedShipping] = useState(true)
@@ -87,10 +114,29 @@ export default function CheckoutPage() {
   
   // Addresses modal state
   const [showAddressesModal, setShowAddressesModal] = useState(false)
-  const [selectedAddressId, setSelectedAddressId] = useState(addresses[0]?.id || "")
+  const [showLabelModal, setShowLabelModal] = useState(false)
+  const [showChooseLabelModal, setShowChooseLabelModal] = useState(false)
+  const [addressToLabel, setAddressToLabel] = useState<string>("")
+  const [selectedAddressId, setSelectedAddressId] = useState(() => {
+    // Find default address or use first address
+    const defaultAddress = addresses.find(a => a.default)
+    return defaultAddress?.id || addresses[0]?.id || ""
+  })
   
   // Address details modal state
   const [showAddressDetailsModal, setShowAddressDetailsModal] = useState(false)
+  
+  // Add address modal state
+  const [showAddAddressModal, setShowAddAddressModal] = useState(false)
+  const [showReviewErrorModal, setShowReviewErrorModal] = useState(false)
+  const [pendingAddressData, setPendingAddressData] = useState<Omit<Address, 'id'> | null>(null)
+  
+  // Address type modal state
+  const [showAddressTypeModal, setShowAddressTypeModal] = useState(false)
+  const [tempAddressData, setTempAddressData] = useState<Omit<Address, 'id'> | null>(null)
+  
+  // Order summary accordion state
+  const [showOrderSummary, setShowOrderSummary] = useState(false)
 
   // Fix hydration by ensuring client-side only rendering
   useEffect(() => {
@@ -99,10 +145,26 @@ export default function CheckoutPage() {
     recordCheckoutNavigation()
   }, [recordCheckoutNavigation])
   
+  // Always sync with default address when addresses change
+  useEffect(() => {
+    if (addresses.length > 0) {
+      // Find default address
+      const defaultAddress = addresses.find(a => a.default)
+      const defaultAddressId = defaultAddress?.id || addresses[0].id
+      
+      // If there's a default address and it's different from current selection, update it
+      if (defaultAddressId !== selectedAddressId) {
+        setSelectedAddressId(defaultAddressId)
+      }
+    }
+  }, [addresses])
+  
   // Update selected payment method when payment methods change
   useEffect(() => {
     if (savedPaymentMethods.length > 0 && !selectedPaymentMethod) {
-      updateSelectedPaymentMethod(savedPaymentMethods[0].id)
+      // Find default payment method or use first payment method
+      const defaultPaymentMethod = savedPaymentMethods.find(pm => pm.default)
+      updateSelectedPaymentMethod(defaultPaymentMethod?.id || savedPaymentMethods[0].id)
     }
   }, [savedPaymentMethods, selectedPaymentMethod])
   
@@ -170,11 +232,11 @@ export default function CheckoutPage() {
         countryCode: "+1 (US)",
         number: ""
       },
-      tipAmount: selectedTip,
+      tipAmount: 0,
       subtotal: subtotal,
       serviceFee: serviceFee,
       deliveryFee: deliveryFee + extraDeliveryFee,
-      total: getTotal(currentStoreId || undefined, currentCategory || undefined) + selectedTip + extraDeliveryFee,
+      total: getTotal(currentStoreId || undefined, currentCategory || undefined) + extraDeliveryFee,
       
       // Order metadata
       orderDate: new Date().toLocaleDateString('en-US', { 
@@ -230,6 +292,15 @@ export default function CheckoutPage() {
       return store?.name || 'Store'
     }
     return currentCategory === 'restaurant' ? 'Restaurant' : 'Store'
+  }
+
+  // Navigate back to store page
+  const handleBackToStore = () => {
+    if (currentStoreId && currentCategory) {
+      router.push(`/store/${currentStoreId}?category=${currentCategory}`)
+    } else {
+      router.back()
+    }
   }
 
   // Generate schedule times for the rest of the day
@@ -318,11 +389,6 @@ export default function CheckoutPage() {
     setShowScheduleModal(false)
   }
 
-  const handleTipSelect = (amount: number) => {
-    setSelectedTip(amount)
-    // Record tip selection for verifiers
-    recordTipSelection(amount)
-  }
   
   // Helper to update selected payment method and cart store
   const updateSelectedPaymentMethod = (paymentMethodId: string) => {
@@ -402,7 +468,66 @@ export default function CheckoutPage() {
   // Handle address selection
   const handleSelectAddress = (addressId: string) => {
     setSelectedAddressId(addressId)
+    setDefaultAddress(addressId) // Set as default address
     setShowAddressesModal(false)
+  }
+
+  // Handle select address from search results
+  const handleSelectSearchAddress = (address: Address) => {
+    // Store the search result temporarily (without id)
+    const { id, ...addressWithoutId } = address
+    setTempAddressData(addressWithoutId)
+    setShowAddressesModal(false)
+    setShowAddressTypeModal(true)
+  }
+
+  // Handle address type selection
+  const handleAddressTypeNext = (addressType: Address['addressType']) => {
+    if (tempAddressData) {
+      const addressWithType = { ...tempAddressData, addressType }
+      setTempAddressData(addressWithType)
+      setShowAddressTypeModal(false)
+      setShowAddressDetailsModal(true)
+    }
+  }
+
+  // Handle manual address entry
+  const handleManualEntry = () => {
+    setShowAddressesModal(false)
+    setShowAddAddressModal(true)
+  }
+
+  // Handle adding new address - show review error modal
+  const handleAddAddress = (addressData: Omit<Address, 'id'>) => {
+    setPendingAddressData(addressData)
+    setShowAddAddressModal(false)
+    setShowReviewErrorModal(true)
+  }
+
+  // Handle review address - go back to add address modal with pre-filled data
+  const handleReviewAddress = () => {
+    setShowReviewErrorModal(false)
+    if (pendingAddressData) {
+      // Extract apartment/suite from street if it exists
+      const streetParts = pendingAddressData.street.split(',').map(s => s.trim())
+      const initialData = {
+        street: pendingAddressData.street,
+        apartmentSuite: streetParts[1] || "",
+        city: pendingAddressData.city,
+        state: pendingAddressData.state,
+        zipCode: pendingAddressData.zipCode,
+      }
+      // Store in a state that AddAddressModal can use
+      setShowAddAddressModal(true)
+      // The initialData will be passed via the modal's initialData prop
+    }
+  }
+
+  // Handle enter new address - open add address modal with empty state
+  const handleEnterNewAddress = () => {
+    setPendingAddressData(null)
+    setShowReviewErrorModal(false)
+    setShowAddAddressModal(true)
   }
 
   // Handle edit address from addresses modal
@@ -414,22 +539,28 @@ export default function CheckoutPage() {
 
   // Handle saving address details
   const handleSaveAddressDetails = (addressData: any) => {
-    if (selectedAddress) {
+    if (tempAddressData) {
+      // This is from search results - save as new address
+      const newAddress = addAddress({
+        ...tempAddressData,
+        ...addressData,
+        addressType: addressData.addressType || tempAddressData.addressType || 'house',
+      })
+      setSelectedAddressId(newAddress.id)
+      setTempAddressData(null)
+    } else if (selectedAddress) {
+      // This is editing an existing address
       updateAddress(selectedAddress.id, {
-        addressType: addressData.addressType,
-        gateCode: addressData.gateCode,
-        deliveryPreference: addressData.deliveryPreference,
-        meetLocation: addressData.meetLocation,
-        deliveryInstructions: addressData.deliveryInstructions,
-        personalLabel: addressData.personalLabel,
+        ...addressData
       })
     }
+    setShowAddressDetailsModal(false)
   }
 
-  // Calculate total with extra delivery fee and tip
+  // Calculate total with extra delivery fee
   const getTotalWithExtras = () => {
     const total = getTotal(currentStoreId || undefined, currentCategory || undefined)
-    return total + extraDeliveryFee + selectedTip
+    return total + extraDeliveryFee
   }
 
   const deliveryOptions = [
@@ -455,8 +586,6 @@ export default function CheckoutPage() {
       price: 0,
     }
   ]
-
-  const tipOptions = [1.00, 3.00, 5.00, 6.00]
   
   // Get the selected payment method object
   const selectedPaymentMethodObj = savedPaymentMethods.find(m => m.id === selectedPaymentMethod)
@@ -464,46 +593,173 @@ export default function CheckoutPage() {
   // Get the selected address object
   const selectedAddress = addresses.find(a => a.id === selectedAddressId)
 
+  // Handler for successful authentication
+  const handleAuthSuccess = () => {
+    // After successful authentication, the user will be set in the store
+    // Component will re-render with authenticated state
+  }
+  
+  // Handler for changing auth mode
+  const handleSetMode = (mode: 'signin' | 'signup' | 'forgot-password') => {
+    if (mode !== 'forgot-password') {
+      setAuthMode(mode)
+    }
+  }
+  
+  // Generate OTP
+  const generateOTP = () => {
+    const newOtp = Math.floor(100000 + Math.random() * 900000).toString()
+    setGeneratedOtp(newOtp)
+    console.log('Generated OTP:', newOtp)
+    return newOtp
+  }
+
+  // Handler for showing OTP during sign up
+  const handleShowOTP = (user: any) => {
+    setSignUpUser(user)
+    generateOTP()
+    setShowOtpModal(true)
+  }
+
+  // Handler for OTP verification
+  const handleOTPVerification = (
+    enteredOtp: string,
+    generatedOtp: string,
+    setOtpError: (error: string) => void,
+    setAttemptsLeft: (attempts: number) => void,
+    attemptsLeft: number,
+    setShowTooManyAttempts: (show: boolean) => void
+  ) => {
+    if (enteredOtp === generatedOtp) {
+      // OTP is correct - create user
+      if (signUpUser) {
+        const { addUser } = useUserStore.getState()
+        const newUser = {
+          id: `user-${Date.now().toString()}`,
+          name: signUpUser.name,
+          email: signUpUser.email,
+          phoneNumber: signUpUser.phoneNumber,
+          password: signUpUser.password,
+          country: signUpUser.country,
+          userCountry: signUpUser.userCountry,
+          avatar: null,
+          paymentMethods: [],
+          addresses: [],
+          is_restricted: false,
+          reviews: [],
+        }
+        addUser(newUser, true)
+        setShowOtpModal(false)
+        setSignUpUser(null)
+        // Stay on checkout page - component will re-render with authenticated state
+      }
+    } else {
+      // OTP is incorrect
+      const newAttemptsLeft = attemptsLeft - 1
+      setAttemptsLeft(newAttemptsLeft)
+      setOtpError('Invalid or incorrect code')
+      
+      if (newAttemptsLeft <= 0) {
+        setShowTooManyAttempts(true)
+      }
+    }
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 py-6">
-        {/* Header */}
-        <div className="flex items-center mb-6">
-          <button 
-            onClick={() => router.back()}
-            className="flex items-center text-gray-600 hover:text-gray-800"
-          >
-            <ChevronLeft className="h-5 w-5 mr-1" />
-            Back to Store
-          </button>
-        </div>
-
+      <div className="max-w-7xl mx-auto px-4 py-6 pt-20 pr-[450px]">
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Left Column - Checkout Form */}
           <div className="flex-1 space-y-6">
-            {/* Account Details */}
-            <div className="bg-white rounded-lg p-6 shadow-sm">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-semibold">1. Account details</h2>
-                <span className="text-gray-600">abc@xyz.com</span>
+            {/* Sign In / Sign Up Section - Only for non-authenticated users */}
+            {!userIsAuthenticated && (
+              <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-300">
+                <h2 className="text-lg font-semibold mb-4">1. Sign in or sign up to place order</h2>
+                
+                {/* Info banner */}
+                <div className="bg-cyan-50 border border-cyan-200 rounded-lg p-3 mb-4 flex items-center">
+                  <svg className="w-5 h-5 text-cyan-600 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                  </svg>
+                  <span className="text-sm text-gray-900">Sign in to access your credits and discounts</span>
+                </div>
+
+                {/* Sign In / Sign Up Tabs */}
+                <div className="flex justify-center mb-6">
+                  <div className="inline-flex bg-gray-100 rounded-full p-1">
+                    <button
+                      onClick={() => setAuthMode('signin')}
+                      className={`px-6 py-2 rounded-full text-sm font-semibold transition-colors ${
+                        authMode === 'signin'
+                          ? 'bg-gray-900 text-white'
+                          : 'text-gray-700 hover:text-gray-900'
+                      }`}
+                    >
+                      Sign In
+                    </button>
+                    <button
+                      onClick={() => setAuthMode('signup')}
+                      className={`px-6 py-2 rounded-full text-sm font-semibold transition-colors ${
+                        authMode === 'signup'
+                          ? 'bg-gray-900 text-white'
+                          : 'text-gray-700 hover:text-gray-900'
+                      }`}
+                    >
+                      Sign Up
+                    </button>
+                  </div>
+                </div>
+
+                {/* Authentication Forms */}
+                {authMode === 'signin' ? (
+                  <SignIn onSuccess={handleAuthSuccess} setMode={handleSetMode} />
+                ) : (
+                  <SignUp
+                    onShowOTP={handleShowOTP}
+                    selectedCountry={selectedCountry}
+                    setShowCountryDropdown={setShowCountryDropdown}
+                  />
+                )}
               </div>
-            </div>
+            )}
+
+            {/* Account Details - Only for authenticated users */}
+            {userIsAuthenticated && (
+              <div className="bg-white rounded-lg p-6 shadow-sm">
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-lg font-semibold">1. Account details</h2>
+                  <span className="text-gray-600">{currentUser?.email || 'abc@xyz.com'}</span>
+                </div>
+              </div>
+            )}
 
             {/* Shipping Details */}
             <div className="bg-white rounded-lg shadow-sm border border-gray-300">
-              {!showExpandedShipping ? (
-                // Collapsed View
+              {!userIsAuthenticated || !showExpandedShipping ? (
+                // Collapsed View (always for non-authenticated users)
                 <div className="p-6">
                   <div className="flex items-center justify-between">
                     <h2 className="text-lg font-semibold">2. Shipping details</h2>
                     <div className="flex items-center gap-4">
-                      <span className="text-gray-600 text-sm">47 West 13th Street, New ...</span>
-                      <button 
-                        onClick={handleShippingEdit}
-                        className="text-blue-600 font-medium text-lg"
-                      >
-                        Edit
-                      </button>
+                      <span className="text-gray-600 text-sm">
+                        {userIsAuthenticated ? (
+                          selectedAddress 
+                            ? `${selectedAddress.street.substring(0, 23)}${selectedAddress.street.length > 23 ? '...' : ''}`
+                            : 'No address selected'
+                        ) : (
+                          tempAddress
+                            ? `${tempAddress.street.substring(0, 23)}${tempAddress.street.length > 23 ? '...' : ''}`
+                            : 'No address selected'
+                        )}
+                      </span>
+                      {userIsAuthenticated && (
+                        <button 
+                          onClick={handleShippingEdit}
+                          className="text-blue-600 font-medium text-lg"
+                        >
+                          Edit
+                        </button>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -596,8 +852,21 @@ export default function CheckoutPage() {
                         <div className="flex items-center flex-1">
                           <Home className="w-5 h-5 text-gray-600 mr-3 flex-shrink-0" />
                           <div>
-                            <p className="font-medium text-sm">{selectedAddress.street}</p>
-                            <p className="text-xs text-gray-600">{selectedAddress.city}, {selectedAddress.state} {selectedAddress.zipCode}</p>
+                            {selectedAddress.personalLabel ? (
+                              <>
+                                <p className="font-medium text-sm">
+                                  {selectedAddress.personalLabel.charAt(0).toUpperCase() + selectedAddress.personalLabel.slice(1)}
+                                </p>
+                                <p className="text-xs text-gray-600">
+                                  {selectedAddress.street}, {selectedAddress.city}, {selectedAddress.state} {selectedAddress.zipCode}
+                                </p>
+                              </>
+                            ) : (
+                              <>
+                                <p className="font-medium text-sm">{selectedAddress.street}</p>
+                                <p className="text-xs text-gray-600">{selectedAddress.city}, {selectedAddress.state} {selectedAddress.zipCode}</p>
+                              </>
+                            )}
                   </div>
                 </div>
                         <svg className="w-5 h-5 text-gray-400 flex-shrink-0 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -660,8 +929,19 @@ export default function CheckoutPage() {
 
             {/* Payment Details */}
             <div className="bg-white rounded-lg shadow-sm border border-gray-300">
-              {!showExpandedPayment && savedPaymentMethods.length > 0 ? (
-                // Collapsed View
+              {!userIsAuthenticated ? (
+                // Simple view for non-authenticated users
+                <div className="p-6">
+                  <h2 className="text-lg font-semibold mb-2">3. Payment details</h2>
+                  <svg className="w-8 h-6 ml-5" viewBox="0 0 48 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="48" height="32" rx="4" fill="#E5E7EB"/>
+                    <rect x="4" y="4" width="40" height="6" rx="2" fill="#9CA3AF"/>
+                    <rect x="4" y="14" width="16" height="4" rx="2" fill="#9CA3AF"/>
+                    <rect x="4" y="22" width="12" height="4" rx="2" fill="#9CA3AF"/>
+                  </svg>
+                </div>
+              ) : !showExpandedPayment && savedPaymentMethods.length > 0 ? (
+                // Collapsed View for authenticated users
                 <div className="p-6">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-lg font-semibold">3. Payment details</h2>
@@ -793,97 +1073,182 @@ export default function CheckoutPage() {
                   : 'bg-gray-300 text-gray-500 cursor-not-allowed'
               }`}
             >
-              {isClient ? `Place Order • $${getTotalWithExtras().toFixed(2)}` : 'Place Order'}
+              Place Order
             </button>
           </div>
 
           {/* Right Column - Order Summary */}
-          <div className="lg:w-96">
-            <div className="bg-white rounded-lg p-6 shadow-sm sticky top-6">
-              {/* Cart Header */}
-              <div className="flex items-center justify-between mb-6">
+          <div className="fixed top-16 right-0 w-[434px] h-[calc(100vh-4rem)] overflow-y-auto border-l border-gray-200">
+            <div className="bg-white h-full flex flex-col">
+              {/* Store Header - Clickable */}
+              <button 
+                onClick={handleBackToStore}
+                className="w-full flex items-center justify-between p-4 border-b border-gray-200 hover:bg-gray-50 transition-colors"
+              >
                 <div className="flex items-center">
-                  <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center mr-3">
-                    <span className="text-sm font-medium">MV</span>
+                  <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mr-3">
+                    <span className="text-purple-600 font-bold text-lg">
+                      {getStoreName().charAt(0)}
+                    </span>
                   </div>
-                  <div>
-                    <p className="text-sm text-gray-600">Your cart from</p>
-                    <p className="font-medium">{getStoreName()}</p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Order Summary */}
-              <div className="mb-6">
-                <h3 className="font-medium mb-2">Order Summary ({totalItems} items)</h3>
-                <div className="space-y-2 text-sm">
-                  <div className="flex justify-between">
-                    <span>Subtotal</span>
-                    <span>${subtotal.toFixed(2)}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Delivery Fee</span>
-                    <span>${(deliveryFee + extraDeliveryFee).toFixed(2)}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Service Fee</span>
-                    <span>${serviceFee.toFixed(2)}</span>
+                  <div className="text-left">
+                    <p className="text-xs text-gray-600">Your cart from</p>
+                    <p className="font-semibold text-gray-900">{getStoreName()}</p>
                   </div>
                 </div>
+                <ChevronRight className="w-5 h-5 text-gray-400" />
+              </button>
+
+              {/* Place Order Button */}
+              <div className="px-4 pt-4">
+                <button 
+                  onClick={handlePlaceOrder}
+                  disabled={!selectedPaymentMethodObj}
+                  className={`w-full font-semibold py-3 rounded-full transition-colors ${
+                    selectedPaymentMethodObj
+                      ? 'bg-red-600 hover:bg-red-700 text-white cursor-pointer'
+                      : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                  }`}
+                >
+                  Place Order
+                </button>
               </div>
 
-              {/* Dasher Tip */}
-              <div className="mb-6">
-                <h3 className="font-medium mb-3">Dasher Tip</h3>
-                <div className="grid grid-cols-4 gap-2">
-                  {tipOptions.map((tip) => (
-                    <button 
-                      key={tip}
-                      onClick={() => handleTipSelect(tip)}
-                      className={`border rounded py-2 text-sm ${
-                        selectedTip === tip 
-                          ? "border-black bg-black text-white" 
-                          : "border-gray-200"
-                      }`}
-                    >
-                      ${tip.toFixed(2)}
-                    </button>
-                  ))}
-                </div>
-                <p className="text-xs text-gray-500 mt-2">
-                  The recommended Dasher tip is based on the delivery distance and effort. 100% of the tip goes to your Dasher.
-                </p>
-              </div>
+              {/* Order Summary Accordion */}
+              <div className="border-b border-gray-200">
+                <button
+                  onClick={() => setShowOrderSummary(!showOrderSummary)}
+                  className="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-colors"
+                >
+                  <div className="flex items-center">
+                    <ShoppingCart className="w-5 h-5 mr-2 text-gray-700" />
+                    <span className="font-medium text-gray-900">Order Summary ({totalItems} Items)</span>
+                  </div>
+                  {showOrderSummary ? (
+                    <ChevronUp className="w-5 h-5 text-gray-600" />
+                  ) : (
+                    <ChevronDown className="w-5 h-5 text-gray-600" />
+                  )}
+                </button>
 
-              {/* Cart Items */}
-              <div className="space-y-4">
-                {items.map((item) => (
-                  <div key={item.id} className="flex items-center">
-                    <div className="relative w-12 h-12 mr-3 flex-shrink-0">
-                      <Image
-                        src={item.image || "/placeholder.svg"}
-                        alt={item.itemName}
-                        fill
-                        className="object-cover rounded"
-                      />
-                    </div>
-                    <div className="flex-1">
-                      <h4 className="font-medium text-sm">{item.itemName}</h4>
-                      {item.customizations && (
-                        <p className="text-xs text-gray-600">{item.customizations}</p>
-                      )}
-                    </div>
-                    <div className="flex items-center">
-                      <button className="w-6 h-6 bg-red-600 text-white rounded-full flex items-center justify-center text-xs mr-2">
-                        🗑
-                      </button>
-                      <span className="text-sm mr-2">{item.quantity}×</span>
-                      <button className="w-6 h-6 bg-gray-100 rounded-full flex items-center justify-center text-sm">
-                        +
+                {showOrderSummary && (
+                  <div className="px-4 pb-4">
+                    {/* Items Header with Add More Button */}
+                    <div className="flex items-center justify-between mb-4">
+                      <span className="font-medium text-gray-900">Items</span>
+                      <button 
+                        onClick={handleBackToStore}
+                        className="flex items-center text-sm text-gray-700 hover:text-gray-900 bg-gray-200 hover:bg-gray-300 rounded-full px-2 py-1"
+                      >
+                        <Plus className="w-4 h-4 mr-1" />
+                        Add more items
                       </button>
                     </div>
+
+                    {/* Cart Items */}
+                    <div className="space-y-4 mb-4">
+                      {items.map((item) => (
+                        <div key={item.id} className="flex gap-3">
+                          <div className="relative w-16 h-16 flex-shrink-0 rounded-lg overflow-hidden bg-gray-100">
+                            <Image
+                              src={item.image || "/placeholder.svg"}
+                              alt={item.itemName}
+                              fill
+                              className="object-cover"
+                            />
+                          </div>
+                          <div className="flex w-full gap-2 justify-between">
+                            <div className="flex flex-col">
+                              <h4 className="font-medium text-sm text-gray-900 mb-1">{item.itemName}</h4>
+                              {item.customizations && (
+                                <p className="text-xs text-gray-600 mb-2">{item.customizations}</p>
+                              )}
+                              <div className="text-sm font-medium text-gray-900 flex-shrink-0">
+                                ${(getItemPrice(item) * item.quantity).toFixed(2)}
+                              </div>
+                            </div>
+                            
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center bg-gray-100 rounded-full">
+                                {item.quantity <= 1 ? (
+                                  <button
+                                    className="p-1.5 bg-white rounded-full shadow-sm hover:bg-gray-50"
+                                    onClick={() => removeItem(item.id)}
+                                    aria-label="Remove item"
+                                  >
+                                    <Trash2 className="h-3.5 w-3.5 text-gray-600" />
+                                  </button>
+                                ) : (
+                                  <button
+                                    className="p-1.5 bg-white rounded-full shadow-sm hover:bg-gray-50"
+                                    onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                                    aria-label="Decrease quantity"
+                                  >
+                                    <Minus className="h-3.5 w-3.5 text-gray-600" />
+                                  </button>
+                                )}
+                                <span className="mx-3 text-sm font-medium">{item.quantity}×</span>
+                                <button
+                                  className="p-1.5 bg-white rounded-full shadow-sm hover:bg-gray-50"
+                                  onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                                  aria-label="Increase quantity"
+                                >
+                                  <Plus className="h-3.5 w-3.5 text-gray-600" />
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                          
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                ))}
+                )}
+              </div>
+
+              {/* Deals & Gift Cards - Commented Out */}
+              {/* <div className="border-b border-gray-200">
+                <button className="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-colors">
+                  <div className="flex items-center">
+                    <svg className="w-5 h-5 mr-2 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                    </svg>
+                    <span className="font-medium text-gray-900">Deals & gift cards</span>
+                  </div>
+                  <ChevronRight className="w-5 h-5 text-gray-400" />
+                </button>
+              </div> */}
+
+              {/* Pricing Summary */}
+              <div className="p-4 space-y-3 border-t border-gray-200">
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-700">Subtotal</span>
+                  <span className="text-gray-900 font-medium">${subtotal.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <div className="flex items-center">
+                    <span className="text-gray-700">Delivery Fee</span>
+                    <svg className="w-4 h-4 ml-1 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <circle cx="12" cy="12" r="10" strokeWidth="2"/>
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 16v-4m0-4h.01"/>
+                    </svg>
+                  </div>
+                  <span className="text-gray-900 font-medium">${(deliveryFee + extraDeliveryFee).toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between text-sm pb-3 border-b border-gray-200">
+                  <div className="flex items-center">
+                    <span className="text-gray-700">Fees & Estimated Tax</span>
+                    <svg className="w-4 h-4 ml-1 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <circle cx="12" cy="12" r="10" strokeWidth="2"/>
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 16v-4m0-4h.01"/>
+                    </svg>
+                  </div>
+                  <span className="text-gray-900 font-medium">${serviceFee.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between pt-1">
+                  <span className="text-gray-900 font-semibold">Total</span>
+                  <span className="text-gray-900 font-bold text-lg">${getTotalWithExtras().toFixed(2)}</span>
+                </div>
               </div>
             </div>
           </div>
@@ -910,7 +1275,7 @@ export default function CheckoutPage() {
         onClose={() => setShowOrderConfirmation(false)}
         orderId={orderId}
         total={getTotalWithExtras()}
-        tipAmount={selectedTip}
+        tipAmount={0}
         scheduledTime={selectedDeliveryOption === "schedule" ? selectedScheduleTime : undefined}
         deliveryTime={deliveryTime}
         storeName={getStoreName()}
@@ -942,14 +1307,147 @@ export default function CheckoutPage() {
         selectedAddressId={selectedAddressId}
         onSelectAddress={handleSelectAddress}
         onEditAddress={handleEditAddress}
+        onManualEntry={handleManualEntry}
+        onSelectSearchAddress={handleSelectSearchAddress}
+        onAddLabel={() => setShowLabelModal(true)}
+      />
+
+      {/* Choose Address to Label Modal */}
+      <ChooseAddressLabelModal
+        isOpen={showLabelModal}
+        onClose={() => setShowLabelModal(false)}
+        addresses={addresses}
+        onSelectAddress={(addressId) => {
+          setAddressToLabel(addressId)
+          setShowLabelModal(false)
+          setShowChooseLabelModal(true)
+        }}
+        onSelectSearchAddress={(address) => {
+          // Store the search result temporarily (without id)
+          const { id, ...addressWithoutId } = address
+          setTempAddressData(addressWithoutId)
+          setShowLabelModal(false)
+          setShowAddressTypeModal(true)
+        }}
+        onManualEntry={() => {
+          setShowLabelModal(false)
+          setShowAddAddressModal(true)
+        }}
+      />
+
+      {/* Choose Label Modal */}
+      <ChooseLabelModal
+        isOpen={showChooseLabelModal}
+        onClose={() => setShowChooseLabelModal(false)}
+        currentLabel={addresses.find(a => a.id === addressToLabel)?.personalLabel}
+        onSave={(label) => {
+          if (addressToLabel) {
+            updateAddress(addressToLabel, { personalLabel: label })
+          }
+          setShowChooseLabelModal(false)
+          setAddressToLabel("")
+        }}
+      />
+
+      {/* Add Address Modal */}
+      <AddAddressModal
+        isOpen={showAddAddressModal}
+        onClose={() => {
+          setShowAddAddressModal(false)
+          setPendingAddressData(null)
+        }}
+        onContinue={handleAddAddress}
+        onBack={() => {
+          setShowAddAddressModal(false)
+          setShowAddressesModal(true)
+          setPendingAddressData(null)
+        }}
+        initialData={pendingAddressData ? (() => {
+          // Extract apartment/suite from street if it exists
+          const streetParts = pendingAddressData.street.split(',').map(s => s.trim())
+          return {
+            street: pendingAddressData.street,
+            apartmentSuite: streetParts[1] || "",
+            city: pendingAddressData.city,
+            state: pendingAddressData.state,
+            zipCode: pendingAddressData.zipCode,
+          }
+        })() : undefined}
+      />
+
+      {/* Address Review Error Modal */}
+      <AddressReviewErrorModal
+        isOpen={showReviewErrorModal}
+        onClose={() => {
+          setShowReviewErrorModal(false)
+          setPendingAddressData(null)
+        }}
+        onReviewAddress={handleReviewAddress}
+        onEnterNewAddress={handleEnterNewAddress}
+      />
+
+      {/* Address Type Modal */}
+      <AddressTypeModal
+        isOpen={showAddressTypeModal}
+        onClose={() => {
+          setShowAddressTypeModal(false)
+          setTempAddressData(null)
+        }}
+        addressData={tempAddressData || {
+          street: '',
+          city: '',
+          state: '',
+          zipCode: '',
+          addressType: 'house'
+        }}
+        onNext={handleAddressTypeNext}
+        onBack={() => {
+          setShowAddressTypeModal(false)
+          setShowAddressesModal(true)
+        }}
       />
 
       {/* Address Details Modal */}
       <AddressDetailsModal
         isOpen={showAddressDetailsModal}
-        onClose={() => setShowAddressDetailsModal(false)}
-        address={selectedAddress}
+        onClose={() => {
+          setShowAddressDetailsModal(false)
+          if (!tempAddressData) {
+            // If not from search, just close
+            return
+          }
+          // If from search, clear temp data
+          setTempAddressData(null)
+        }}
+        address={(tempAddressData || selectedAddress) as Address | Omit<Address, 'id'> | undefined}
         onSave={handleSaveAddressDetails}
+        hideAddressType={!!tempAddressData} // Hide type dropdown when coming from search flow
+        onBack={tempAddressData ? () => {
+          setShowAddressDetailsModal(false)
+          setShowAddressTypeModal(true)
+        } : undefined}
+      />
+
+      {/* OTP Verification Modal */}
+      <OTPVerificationModal
+        isOpen={showOtpModal}
+        onClose={() => {
+          setShowOtpModal(false)
+          setSignUpUser(null)
+        }}
+        onVerify={handleOTPVerification}
+        phoneNumber={signUpUser?.phoneNumber || ''}
+        countryCode={selectedCountry.dial_code}
+        generatedOTP={generatedOtp}
+      />
+
+      {/* Country Code Dropdown */}
+      <CountryCodeDropdown
+        isOpen={showCountryDropdown}
+        onClose={() => setShowCountryDropdown(false)}
+        onSelect={setSelectedCountry}
+        selectedCountry={selectedCountry}
+        userCountry={selectedCountry}
       />
     </div>
   )
