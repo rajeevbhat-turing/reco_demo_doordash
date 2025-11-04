@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
 import Header from '@/components/header';
-import Sidebar from '@/components/sidebar';
+import LayoutWrapper from '@/components/layout-wrapper';
 import LocalStorageSync from '@/components/LocalStorageSync';
 
 const inter = Inter({ subsets: ['latin'] });
@@ -24,12 +24,7 @@ export default function RootLayout({
         <LocalStorageSync />
         <div className="flex flex-col min-h-screen">
           <Header />
-          <div className="flex flex-1 relative">
-            <Sidebar />
-            <div className="flex-1 w-0 min-w-0 md:ml-[220px]">
-              <main className="flex-1">{children}</main>
-            </div>
-          </div>
+          <LayoutWrapper>{children}</LayoutWrapper>
         </div>
 
         {/* Global Functions Script */}
