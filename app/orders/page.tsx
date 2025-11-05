@@ -8,13 +8,15 @@ import { ChevronRight, ShoppingCart, Receipt, Star } from "lucide-react"
 import { useCartStore } from "@/store/cart-store"
 import { prepareOrderForReorder } from "@/lib/reorder-utils"
 import { useRouter } from "next/navigation"
+import ReviewDialog from "@/components/review-dialog"
 
 export default function Orders() {
   const router = useRouter()
-  const { orders } = useOrdersStore()
+  const { orders, updateOrderReview } = useOrdersStore()
   const { startReorderMode } = useCartStore()
   const [activeTab, setActiveTab] = useState<'Personal' | 'Business'>('Personal')
   const [mounted, setMounted] = useState(false)
+  const [reviewingOrder, setReviewingOrder] = useState<Order | null>(null)
 
   // Fix hydration by only rendering orders on client side
   useEffect(() => {
@@ -211,7 +213,12 @@ export default function Orders() {
                             • <span className="font-semibold">Reviewed on {order.reviewDate}</span>
                           </span>
                         ) : (
-                          <span className="text-gray-600 text-sm ml-1">• Leave a review</span>
+                          <button
+                            className="text-gray-600 text-sm ml-1 underline underline-offset-2"
+                            onClick={(e) => { e.stopPropagation(); setReviewingOrder(order) }}
+                          >
+                            • Leave a review
+                          </button>
                         )}
                       </div>
 
@@ -242,6 +249,13 @@ export default function Orders() {
                     </div>
                     </div>
 
+                    {/* Inline review text (if any) */}
+                    {order.reviewText && (
+                      <p className="text-sm text-gray-700 mt-2 italic">
+                        "{order.reviewText}"
+                      </p>
+                    )}
+
                     {/* Tags */}
                     {order.tags && order.tags.length > 0 && (
                       <div className="flex gap-2 mt-3">
@@ -262,6 +276,18 @@ export default function Orders() {
           </div>
         )}
       </div>
+
+      {/* Review Dialog for inline order review */}
+      {reviewingOrder && (
+        <ReviewDialog
+          isOpen={true}
+          onClose={() => setReviewingOrder(null)}
+          restaurantName={getStoreName(reviewingOrder)}
+          onSubmit={(rating, text) => {
+            updateOrderReview(reviewingOrder.id, rating, text)
+          }}
+        />
+      )}
     </div>
   )
 }

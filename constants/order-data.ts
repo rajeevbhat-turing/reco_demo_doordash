@@ -62,6 +62,7 @@ export interface Order {
   // Optional features
   rating?: number;
   reviewDate?: string;
+  reviewText?: string;
   tags?: string[];
   isDashPass?: boolean;
   isGroupOrder?: boolean;
