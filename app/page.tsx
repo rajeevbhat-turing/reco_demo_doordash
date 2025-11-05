@@ -1,20 +1,47 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import Image from 'next/image';
-import { ArrowRight, ChevronDown, ChevronUp, Star, Search } from 'lucide-react';
+import {
+  ArrowRight,
+  ChevronDown,
+  ChevronUp,
+  Star,
+  Search,
+  MapPin,
+  ChevronRight,
+  Plus,
+  Navigation,
+} from 'lucide-react';
 import AuthenticationModal from '@/components/modals/authentication-modal';
+import AddNewAddressModal from '@/components/modals/landing-page/add-new-address-modal';
+import AddressReviewErrorModal from '@/components/modals/landing-page/address-review-error-modal';
+import AddressSearchModal from '@/components/modals/landing-page/address-search-modal';
 import { DashDoorLogoMark, DashDoorWordMark } from '@/components/common/Icons';
+import { useIsMobile } from '@/lib/hooks/use-mobile';
 import { topCities } from '@/constants/top-cities';
 import { topCuisines } from '@/constants/top-cuisines';
 import { topChains } from '@/constants/top-chains';
+import addressesData from '@/data/addresses.json';
+import { useUserStore } from '@/store/user-store';
+import { Address } from '@/lib/types/user-types';
+import { PersonIcon } from '@/lib/utils/icons';
 
 export default function LandingPage() {
-  const [authModalMode, setAuthModalMode] = useState<'signin' | 'signup' | null>(null);
+  const [authModalMode, setAuthModalMode] = useState<'signin' | 'signup' | null>('signin');
   const [isScrolled, setIsScrolled] = useState(false);
   const [activeTab, setActiveTab] = useState<'cities' | 'cuisines' | 'chains'>('cities');
   const [showAllCities, setShowAllCities] = useState(false);
   const [imageOffset, setImageOffset] = useState(0);
+  const [addressSearchQuery, setAddressSearchQuery] = useState('');
+  const [showAddressDropdown, setShowAddressDropdown] = useState(false);
+  const [showAddAddressModal, setShowAddAddressModal] = useState(false);
+  const [showReviewErrorModal, setShowReviewErrorModal] = useState(false);
+  const [pendingAddressData, setPendingAddressData] = useState<Omit<Address, 'id'> | null>(null);
+  const [showAddressSearchModal, setShowAddressSearchModal] = useState(false);
+
+  const { setTempAddress } = useUserStore();
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     let ticking = false;
@@ -22,9 +49,8 @@ export default function LandingPage() {
     // Handles scroll events to toggle header visibility based on scroll position
     const handleScroll = () => {
       if (!ticking) {
-        const vw = window.innerWidth;
         window.requestAnimationFrame(() => {
-          setIsScrolled(vw < 768 ? window.scrollY > 150 : window.scrollY > 50);
+          setIsScrolled(isMobile ? window.scrollY > 150 : window.scrollY > 50);
           ticking = false;
         });
         ticking = true;
@@ -35,7 +61,7 @@ export default function LandingPage() {
     const calculateOffset = () => {
       const vw = window.innerWidth;
       // As viewport gets smaller, increase the offset (move images further out)
-      const offset = Math.max(0, (1920 - vw) * (vw < 768 ? 0.25 : 0.3));
+      const offset = Math.max(0, (1920 - vw) * (isMobile ? 0.25 : 0.3));
       setImageOffset(offset);
     };
 
@@ -47,7 +73,126 @@ export default function LandingPage() {
       window.removeEventListener('scroll', handleScroll);
       window.removeEventListener('resize', calculateOffset);
     };
-  }, []);
+  }, [isMobile]);
+
+  // Filter addresses based on search query
+  const filteredAddresses = useMemo(() => {
+    if (!addressSearchQuery.trim()) return [];
+
+    const query = addressSearchQuery.toLowerCase();
+    return addressesData
+      .filter(
+        address =>
+          address.street.toLowerCase().includes(query) ||
+          address.city.toLowerCase().includes(query) ||
+          address.state.toLowerCase().includes(query) ||
+          address.zipCode.includes(query)
+      )
+      .slice(0, 5); // Limit to 5 results
+  }, [addressSearchQuery]);
+
+  // Handle address selection
+  const handleSelectAddress = (address: (typeof addressesData)[0]) => {
+    const tempAddress: Address = {
+      id: 'temp-address',
+      street: address.street,
+      city: address.city,
+      state: address.state,
+      zipCode: address.zipCode,
+      lat: address.lat,
+      lng: address.lng,
+      addressType: 'house', // default type
+    };
+    setTempAddress(tempAddress);
+    setAddressSearchQuery('');
+    setShowAddressDropdown(false);
+  };
+
+  // Handle input change
+  const handleAddressInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setAddressSearchQuery(e.target.value);
+    setShowAddressDropdown(true);
+  };
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      if (!target.closest('[data-address-input]')) {
+        setShowAddressDropdown(false);
+      }
+    };
+
+    if (showAddressDropdown) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => {
+        document.removeEventListener('mousedown', handleClickOutside);
+      };
+    }
+  }, [showAddressDropdown]);
+
+  // Display Add Address Modal
+  const handleDisplayAddAddressModal = () => {
+    // On small screens, show address search modal instead
+    if (isMobile) {
+      setShowAddressDropdown(false);
+      setShowAddressSearchModal(true);
+    } else {
+      setShowAddAddressModal(true);
+      setShowAddressDropdown(false);
+    }
+  };
+
+  // Handle address form submission
+  const handleAddAddressContinue = (addressData: Omit<Address, 'id'>) => {
+    // Show review error modal instead of setting temp address directly
+    setPendingAddressData(addressData);
+    setShowAddAddressModal(false);
+    setShowReviewErrorModal(true);
+  };
+
+  // Handle address selection from search modal
+  const handleSearchModalSelectAddress = (address: Address) => {
+    const tempAddress: Address = {
+      id: 'temp-address',
+      street: address.street,
+      city: address.city,
+      state: address.state,
+      zipCode: address.zipCode,
+      lat: address.lat || 0,
+      lng: address.lng || 0,
+      addressType: address.addressType || 'house',
+    };
+    setTempAddress(tempAddress);
+    setShowAddressSearchModal(false);
+  };
+
+  // Handle add new address from search modal
+  const handleSearchModalAddNewAddress = () => {
+    setShowAddressSearchModal(false);
+    setShowAddAddressModal(true);
+  };
+
+  // Handle review error modal close
+  const handleReviewErrorModalClose = () => {
+    setShowReviewErrorModal(false);
+    setPendingAddressData(null);
+  };
+
+  // Handle review address - go back to add address modal with pre-filled data
+  const handleReviewAddress = () => {
+    setShowReviewErrorModal(false);
+    if (pendingAddressData) {
+      setShowAddAddressModal(true);
+    }
+  };
+
+  // Handle enter new address - open add address modal with empty state
+  const handleEnterNewAddress = () => {
+    setPendingAddressData(null);
+    setShowReviewErrorModal(false);
+    setShowAddAddressModal(true);
+  };
 
   return (
     <div className="bg-white">
@@ -159,7 +304,10 @@ export default function LandingPage() {
         <div className="flex-1 flex md:hidden px-2">
           <div className="w-full rounded-full px-3.5 py-1.5 flex items-center gap-3 border border-gray-200">
             <Search className="w-5 h-6 text-[#191919ff] flex-shrink-0" />
-            <span className="text-base font-medium text-[#606060ff] flex-1 text-left cursor-text">
+            <span
+              className="text-base font-medium text-[#606060ff] flex-1 text-left cursor-text"
+              onClick={() => setShowAddressSearchModal(true)}
+            >
               Enter delivery address
             </span>
             <div className="w-10 h-10 bg-[#eb1700ff] rounded-full flex items-center justify-center flex-shrink-0">
@@ -222,15 +370,126 @@ export default function LandingPage() {
           />
         </div>
 
-        <div className="flex flex-col items-center justify-center max-w-[320px] mx-auto md:max-w-none text-center">
+        <div className="flex flex-col items-center justify-center max-w-[320px] mx-auto md:max-w-[550px] text-center relative z-10">
           <div className="flex items-center justify-center gap-2 mb-4 md:hidden">
             <DashDoorLogoMark width={32} height={18} color="#fff" />
             <DashDoorWordMark width={112} height={15} color="#fff" />
           </div>
-          <h1 className="text-white text-3xl md:text-[40px] font-black">
+          <h1 className="text-white text-3xl md:text-[40px] font-black mb-2">
             $0 DELIVERY FEE ON FIRST ORDER
           </h1>
-          <span className="text-white text-xs font-semibold">Other fees may apply</span>
+          <span className="text-white text-xs font-semibold mb-4">Other fees may apply</span>
+
+          {/* Address Input Field */}
+          <div
+            className="w-full max-w-[280px] md:max-w-[400px] mx-auto relative mb-4"
+            data-address-input
+          >
+            <div
+              className="relative flex items-center bg-white rounded-[32px] shadow-md border-2 border-transparent pl-3 md:pl-4 pr-1.5 
+            py-1.5 focus-within:border-[#191919ff]"
+            >
+              <MapPin className="h-6 w-6 text-[#191919ff] flex-shrink-0 hidden md:block" />
+              <Search className="h-6 w-5 text-[#191919ff] flex-shrink-0 block md:hidden" />
+              <input
+                type="text"
+                placeholder="Enter delivery address"
+                value={addressSearchQuery}
+                onChange={handleAddressInputChange}
+                contentEditable={!isMobile}
+                onFocus={e => (isMobile ? e.target.blur() : {})}
+                onClick={e => {
+                  // On small screens, show modal instead of dropdown
+                  if (isMobile) {
+                    e.preventDefault();
+                    setShowAddressSearchModal(true);
+                  }
+                }}
+                className="flex-1 px-2 md:px-4 outline-none text-base font-medium text-[#191919ff] placeholder-[#606060ff] 
+                max-w-[195px] md:max-w-none"
+              />
+              <button
+                className="bg-[#eb1700ff] text-white rounded-full w-10 h-10 flex items-center justify-center  
+              flex-shrink-0 hover:bg-red-600 transition-colors"
+              >
+                <ArrowRight className="w-5 h-5" strokeWidth={3} />
+              </button>
+            </div>
+
+            {/* Address Dropdown */}
+            {showAddressDropdown && addressSearchQuery.trim() && (
+              <div
+                className="absolute top-full left-0 right-0 mt-2 bg-white rounded-sm shadow-lg border border-gray-200 
+              max-h-[260px] overflow-y-auto z-50"
+              >
+                {filteredAddresses?.slice(0, 3)?.map((address, index) => (
+                  <div
+                    onClick={() => handleSelectAddress(address)}
+                    key={`address-dropdown-item-${address.id}`}
+                    className="flex items-center justify-between py-2 pl-3 pr-3.5 hover:bg-gray-100 cursor-pointer transition-colors 
+                    border-b border-gray-200"
+                  >
+                    <div className="flex flex-col min-w-0 text-left">
+                      <p className="text-base font-medium text-[#191919ff]">{address.street}</p>
+                      <p className="text-sm font-medium text-[#606060ff]">
+                        {address.city}, {address.state} {address.zipCode}
+                      </p>
+                    </div>
+                    <ChevronRight className="w-6 h-6 text-[#191919ff] flex-shrink-0 ml-2" />
+                  </div>
+                ))}
+
+                {/* Add a new address option */}
+                <div
+                  onClick={handleDisplayAddAddressModal}
+                  className="px-3 py-1.5 cursor-pointer transition-colors"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center min-w-0 flex-1">
+                      <div className="w-[20px] h-[20px] bg-black rounded-full flex items-center justify-center mr-3 flex-shrink-0">
+                        <Plus className="w-3.5 h-3.5 text-white" strokeWidth={3} />
+                      </div>
+                      <div className="min-w-0 text-left">
+                        <p className="text-base font-medium text-[#191919ff]">Add a new address</p>
+                        <p className="text-sm text-[#606060ff] font-normal">
+                          Enter address manually
+                        </p>
+                      </div>
+                    </div>
+                    <ChevronRight className="w-5 h-5 text-gray-400 flex-shrink-0 ml-2" />
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
+          <div className="flex items-center gap-2 w-full max-w-[280px] md:max-w-none mx-auto justify-between md:justify-center">
+            {/* Sign in for saved address button */}
+            <button
+              onClick={() => {
+                // Do nothing for now
+              }}
+              className="bg-white text-[#191919ff] rounded-[28px] shadow-lg px-3 py-1.5 flex items-center 
+            justify-center gap-1 hover:bg-gray-50 transition-colors"
+            >
+              <PersonIcon />
+              <span className="text-sm font-bold hidden lg:block">Sign in for saved address</span>
+              <span className="text-sm font-bold hidden md:block lg:hidden">Sign In</span>
+              <span className="text-sm font-bold block md:hidden">Log In</span>
+            </button>
+
+            {/* Use current location */}
+            <button
+              onClick={() => {
+                // Do nothing for now
+              }}
+              className="bg-white text-[#191919ff] rounded-[28px] shadow-lg px-3 py-1.5 flex items-center 
+            justify-center gap-1 hover:bg-gray-50 transition-colors md:hidden"
+            >
+              <Navigation className="h-4 w-4 text-[#191919ff] flex-shrink-0 fill-current" />
+              <span className="text-sm font-bold">Use current location</span>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -833,6 +1092,39 @@ export default function LandingPage() {
       {authModalMode && (
         <AuthenticationModal onClose={() => setAuthModalMode(null)} defaultMode={authModalMode} />
       )}
+
+      {/* Add Address Modal */}
+      <AddNewAddressModal
+        isOpen={showAddAddressModal}
+        onClose={() => setShowAddAddressModal(false)}
+        onContinue={handleAddAddressContinue}
+        initialData={
+          pendingAddressData
+            ? {
+                street: pendingAddressData.street,
+                city: pendingAddressData.city,
+                state: pendingAddressData.state,
+                zipCode: pendingAddressData.zipCode,
+              }
+            : undefined
+        }
+      />
+
+      {/* Address Review Error Modal */}
+      <AddressReviewErrorModal
+        isOpen={showReviewErrorModal}
+        onClose={handleReviewErrorModalClose}
+        onReviewAddress={handleReviewAddress}
+        onEnterNewAddress={handleEnterNewAddress}
+      />
+
+      {/* Address Search Modal - Mobile Only */}
+      <AddressSearchModal
+        isOpen={showAddressSearchModal}
+        onClose={() => setShowAddressSearchModal(false)}
+        onSelectAddress={handleSearchModalSelectAddress}
+        onAddNewAddress={handleSearchModalAddNewAddress}
+      />
     </div>
   );
 }

@@ -381,3 +381,27 @@ export const InstagramIcon = ({ width = 24, height = 24 }: { width?: number; hei
     ></path>
   </svg>
 );
+
+export const PersonIcon = ({ width = 16, height = 16 }: { width?: number; height?: number }) => (
+  <svg
+    width={width}
+    height={height}
+    viewBox="0 0 16 16"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    aria-hidden="true"
+  >
+    <path
+      fillRule="evenodd"
+      clipRule="evenodd"
+      d="M7.99902 8C9.56712 8 11.0485 8.39452 12.3545 9.09277C13.4915 9.7007 14 10.9054 14 12.0176V14.333C14 15.2535 13.2535 16 12.333 16H3.66699C2.74652 16 2 15.2535 2 14.333V12.0166C2 10.9041 2.50887 9.69953 3.64648 9.0918C4.95186 8.39444 6.43201 8 7.99902 8ZM7.99902 10C6.77189 10 5.61417 10.3078 4.58887 10.8555C4.25122 11.0358 4 11.4565 4 12.0166V14H12V12.0176C12 11.4577 11.7486 11.0369 11.4111 10.8564C10.3854 10.3081 9.22692 10 7.99902 10Z"
+      fill="currentColor"
+    ></path>
+    <path
+      fillRule="evenodd"
+      clipRule="evenodd"
+      d="M8 0C9.93302 0 11.5 1.56701 11.5 3.5C11.5 5.43302 9.93302 7 8 7C6.06701 7 4.5 5.43302 4.5 3.5C4.5 1.567 6.067 4.02659e-08 8 0ZM8 2C7.17157 2 6.5 2.67157 6.5 3.5C6.5 4.32844 7.17157 5 8 5C8.82845 5 9.5 4.32845 9.5 3.5C9.5 2.67157 8.82844 2 8 2Z"
+      fill="currentColor"
+    ></path>
+  </svg>
+);
