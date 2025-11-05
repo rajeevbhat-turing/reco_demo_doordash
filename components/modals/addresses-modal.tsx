@@ -48,7 +48,7 @@ export default function AddressesModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div ref={modalRef} className="relative bg-white rounded-2xl w-full max-w-md mx-4">
+      <div className="relative bg-white rounded-2xl w-full max-w-md mx-4">
         <div className="p-6 pb-0">
           {/* Close button */}
           <button 
