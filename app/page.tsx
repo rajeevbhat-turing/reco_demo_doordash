@@ -26,12 +26,15 @@ import addressesData from '@/data/addresses.json';
 import { useUserStore } from '@/store/user-store';
 import { Address } from '@/lib/types/user-types';
 import { PersonIcon } from '@/lib/utils/icons';
+import { isValidEmail } from '@/lib/utils/helperFunctions';
 
 export default function LandingPage() {
   const [authModalMode, setAuthModalMode] = useState<'signin' | 'signup' | null>('signin');
   const [isScrolled, setIsScrolled] = useState(false);
   const [activeTab, setActiveTab] = useState<'cities' | 'cuisines' | 'chains'>('cities');
   const [showAllCities, setShowAllCities] = useState(false);
+  const [showAllCuisines, setShowAllCuisines] = useState(false);
+  const [showAllChains, setShowAllChains] = useState(false);
   const [imageOffset, setImageOffset] = useState(0);
   const [addressSearchQuery, setAddressSearchQuery] = useState('');
   const [showAddressDropdown, setShowAddressDropdown] = useState(false);
@@ -39,6 +42,9 @@ export default function LandingPage() {
   const [showReviewErrorModal, setShowReviewErrorModal] = useState(false);
   const [pendingAddressData, setPendingAddressData] = useState<Omit<Address, 'id'> | null>(null);
   const [showAddressSearchModal, setShowAddressSearchModal] = useState(false);
+  const [showSignInUI, setShowSignInUI] = useState(false);
+  const [signInEmail, setSignInEmail] = useState('');
+  const [signInEmailError, setSignInEmailError] = useState('');
 
   const { setTempAddress } = useUserStore();
   const isMobile = useIsMobile();
@@ -192,6 +198,35 @@ export default function LandingPage() {
     setPendingAddressData(null);
     setShowReviewErrorModal(false);
     setShowAddAddressModal(true);
+  };
+
+  // Handle sign in UI button click
+  const handleSignInForSavedAddress = () => {
+    setShowSignInUI(true);
+  };
+
+  // Handle sign-in email continue
+  const handleSignInEmailContinue = () => {
+    // Validate email
+    if (!signInEmail.trim()) {
+      setSignInEmailError('Email is required');
+      return;
+    }
+    if (!isValidEmail(signInEmail)) {
+      setSignInEmailError('Email format is invalid');
+      return;
+    }
+
+    // Clear error and open auth modal with prefilled email
+    setSignInEmailError('');
+    setAuthModalMode('signin');
+  };
+
+  // Handle search nearby link
+  const handleSearchNearby = () => {
+    setShowSignInUI(false);
+    setSignInEmail('');
+    setSignInEmailError('');
   };
 
   return (
@@ -370,126 +405,209 @@ export default function LandingPage() {
           />
         </div>
 
-        <div className="flex flex-col items-center justify-center max-w-[320px] mx-auto md:max-w-[550px] text-center relative z-10">
-          <div className="flex items-center justify-center gap-2 mb-4 md:hidden">
-            <DashDoorLogoMark width={32} height={18} color="#fff" />
-            <DashDoorWordMark width={112} height={15} color="#fff" />
-          </div>
-          <h1 className="text-white text-3xl md:text-[40px] font-black mb-2">
-            $0 DELIVERY FEE ON FIRST ORDER
-          </h1>
-          <span className="text-white text-xs font-semibold mb-4">Other fees may apply</span>
-
-          {/* Address Input Field */}
-          <div
-            className="w-full max-w-[280px] md:max-w-[400px] mx-auto relative mb-4"
-            data-address-input
-          >
-            <div
-              className="relative flex items-center bg-white rounded-[32px] shadow-md border-2 border-transparent pl-3 md:pl-4 pr-1.5 
-            py-1.5 focus-within:border-[#191919ff]"
-            >
-              <MapPin className="h-6 w-6 text-[#191919ff] flex-shrink-0 hidden md:block" />
-              <Search className="h-6 w-5 text-[#191919ff] flex-shrink-0 block md:hidden" />
-              <input
-                type="text"
-                placeholder="Enter delivery address"
-                value={addressSearchQuery}
-                onChange={handleAddressInputChange}
-                contentEditable={!isMobile}
-                onFocus={e => (isMobile ? e.target.blur() : {})}
-                onClick={e => {
-                  // On small screens, show modal instead of dropdown
-                  if (isMobile) {
-                    e.preventDefault();
-                    setShowAddressSearchModal(true);
-                  }
-                }}
-                className="flex-1 px-2 md:px-4 outline-none text-base font-medium text-[#191919ff] placeholder-[#606060ff] 
-                max-w-[195px] md:max-w-none"
-              />
-              <button
-                className="bg-[#eb1700ff] text-white rounded-full w-10 h-10 flex items-center justify-center  
-              flex-shrink-0 hover:bg-red-600 transition-colors"
-              >
-                <ArrowRight className="w-5 h-5" strokeWidth={3} />
-              </button>
+        <div className="flex flex-col items-center justify-center text-center relative z-10">
+          <div className="max-w-[320px] mx-auto md:max-w-[550px] lg:max-w-none mb-5 flex-grow-1">
+            <div className="flex items-center justify-center gap-2 mb-4 md:hidden">
+              <DashDoorLogoMark width={32} height={18} color="#fff" />
+              <DashDoorWordMark width={112} height={15} color="#fff" />
             </div>
+            <h1 className="text-white text-3xl md:text-[40px] font-black mb-2">
+              $0 DELIVERY FEE ON FIRST ORDER
+            </h1>
+            <span className="text-white text-xs font-semibold mb-4">Other fees may apply</span>
+          </div>
 
-            {/* Address Dropdown */}
-            {showAddressDropdown && addressSearchQuery.trim() && (
-              <div
-                className="absolute top-full left-0 right-0 mt-2 bg-white rounded-sm shadow-lg border border-gray-200 
-              max-h-[260px] overflow-y-auto z-50"
-              >
-                {filteredAddresses?.slice(0, 3)?.map((address, index) => (
-                  <div
-                    onClick={() => handleSelectAddress(address)}
-                    key={`address-dropdown-item-${address.id}`}
-                    className="flex items-center justify-between py-2 pl-3 pr-3.5 hover:bg-gray-100 cursor-pointer transition-colors 
-                    border-b border-gray-200"
-                  >
-                    <div className="flex flex-col min-w-0 text-left">
-                      <p className="text-base font-medium text-[#191919ff]">{address.street}</p>
-                      <p className="text-sm font-medium text-[#606060ff]">
-                        {address.city}, {address.state} {address.zipCode}
-                      </p>
+          {/* Sign In UI or Address Input Field */}
+          {showSignInUI ? (
+            <div className="w-[470px] max-w-[90vw] mx-auto mb-4">
+              {/* Sign In Card */}
+              <div className="bg-white rounded-3xl shadow-xl p-6">
+                {/* Email Input */}
+                <div className="mb-4">
+                  <input
+                    type="email"
+                    placeholder="Enter email to get started"
+                    value={signInEmail}
+                    onChange={e => {
+                      setSignInEmail(e.target.value);
+                      if (signInEmailError) setSignInEmailError('');
+                    }}
+                    className={`w-full px-4 py-2 lg:py-3 rounded-[28px] text-base font-medium text-[#191919ff] placeholder-[#606060ff] 
+                      focus:outline-none focus:ring-2 focus:ring-[#191919ff] focus:ring-offset-0 shadow-lg
+                      ${signInEmailError ? 'bg-[#fef0ed]' : 'bg-[#f7f7f7]'}`}
+                    autoFocus
+                  />
+                  {signInEmailError && (
+                    <div className="mt-2 flex items-center gap-1 ml-0.5">
+                      <div className="h-4 w-4 mr-2 flex-shrink-0 rounded-full flex items-center justify-center border-2 border-[#b71000ff]">
+                        <span className="text-[#b71000ff] text-xs font-bold">!</span>
+                      </div>
+                      <p className="text-sm font-medium text-[#b71000ff]">{signInEmailError}</p>
                     </div>
-                    <ChevronRight className="w-6 h-6 text-[#191919ff] flex-shrink-0 ml-2" />
-                  </div>
-                ))}
+                  )}
+                </div>
 
-                {/* Add a new address option */}
-                <div
-                  onClick={handleDisplayAddAddressModal}
-                  className="px-3 py-1.5 cursor-pointer transition-colors"
+                {/* Legal Disclaimer */}
+                <p className="text-xs text-[#606060ff] mb-4 leading-relaxed font-bold">
+                  By clicking on any "Continue" button, you agree to DoorDash's{' '}
+                  <a href="" className="text-[#1700ee] underline hover:text-blue-700">
+                    Terms and Conditions
+                  </a>{' '}
+                  and{' '}
+                  <a href="" className="text-[#1700ee] underline hover:text-blue-700">
+                    Privacy Policy
+                  </a>
+                  .
+                </p>
+
+                {/* Continue Button */}
+                <button
+                  onClick={handleSignInEmailContinue}
+                  className="w-full py-2 lg:py-3 px-6 bg-[#eb1700ff] text-white rounded-[28px] text-base font-bold hover:bg-red-700 
+                  transition-colors mb-4"
                 >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center min-w-0 flex-1">
-                      <div className="w-[20px] h-[20px] bg-black rounded-full flex items-center justify-center mr-3 flex-shrink-0">
-                        <Plus className="w-3.5 h-3.5 text-white" strokeWidth={3} />
-                      </div>
-                      <div className="min-w-0 text-left">
-                        <p className="text-base font-medium text-[#191919ff]">Add a new address</p>
-                        <p className="text-sm text-[#606060ff] font-normal">
-                          Enter address manually
-                        </p>
-                      </div>
-                    </div>
-                    <ChevronRight className="w-5 h-5 text-gray-400 flex-shrink-0 ml-2" />
+                  Continue
+                </button>
+
+                {/* Separator */}
+                <div className="relative mb-4">
+                  <div className="absolute inset-0 flex items-center">
+                    <div className="w-full border-t border-gray-400"></div>
+                  </div>
+                  <div className="relative flex justify-center">
+                    <span className="px-4 bg-white text-[#b2b2b2ff] text-base font-medium -mt-1">
+                      or
+                    </span>
                   </div>
                 </div>
+
+                {/* Search nearby link */}
+                <div className="text-center">
+                  <button
+                    onClick={handleSearchNearby}
+                    className="text-[#191919ff] underline text-sm font-bold"
+                  >
+                    Search nearby
+                  </button>
+                </div>
               </div>
-            )}
-          </div>
+            </div>
+          ) : (
+            <>
+              {/* Address Input Field */}
+              <div
+                className="w-full max-w-[280px] md:max-w-[400px] lg:max-w-[450px] mx-auto relative mb-4"
+                data-address-input
+              >
+                <div
+                  className="relative flex items-center bg-white rounded-[32px] shadow-md border-2 border-transparent pl-3 md:pl-4 pr-1.5 
+            py-1.5 focus-within:border-[#191919ff]"
+                >
+                  <MapPin className="h-6 w-6 text-[#191919ff] flex-shrink-0 hidden md:block" />
+                  <Search className="h-6 w-5 text-[#191919ff] flex-shrink-0 block md:hidden" />
+                  <input
+                    type="text"
+                    placeholder="Enter delivery address"
+                    value={addressSearchQuery}
+                    onChange={handleAddressInputChange}
+                    contentEditable={!isMobile}
+                    onFocus={e => (isMobile ? e.target.blur() : {})}
+                    onClick={e => {
+                      // On small screens, show modal instead of dropdown
+                      if (isMobile) {
+                        e.preventDefault();
+                        setShowAddressSearchModal(true);
+                      }
+                    }}
+                    className="flex-1 px-2 md:px-4 outline-none text-base font-medium text-[#191919ff] placeholder-[#606060ff] 
+                max-w-[195px] md:max-w-none"
+                  />
+                  <button
+                    className="bg-[#eb1700ff] text-white rounded-full w-10 h-10 flex items-center justify-center  
+              flex-shrink-0 hover:bg-red-600 transition-colors"
+                  >
+                    <ArrowRight className="w-5 h-5" strokeWidth={3} />
+                  </button>
+                </div>
 
-          <div className="flex items-center gap-2 w-full max-w-[280px] md:max-w-none mx-auto justify-between md:justify-center">
-            {/* Sign in for saved address button */}
-            <button
-              onClick={() => {
-                // Do nothing for now
-              }}
-              className="bg-white text-[#191919ff] rounded-[28px] shadow-lg px-3 py-1.5 flex items-center 
-            justify-center gap-1 hover:bg-gray-50 transition-colors"
-            >
-              <PersonIcon />
-              <span className="text-sm font-bold hidden lg:block">Sign in for saved address</span>
-              <span className="text-sm font-bold hidden md:block lg:hidden">Sign In</span>
-              <span className="text-sm font-bold block md:hidden">Log In</span>
-            </button>
+                {/* Address Dropdown */}
+                {showAddressDropdown && addressSearchQuery.trim() && (
+                  <div
+                    className="absolute top-full left-0 right-0 mt-2 bg-white rounded-sm shadow-lg border border-gray-200 
+              max-h-[260px] overflow-y-auto z-50"
+                  >
+                    {filteredAddresses?.slice(0, 3)?.map((address, index) => (
+                      <div
+                        onClick={() => handleSelectAddress(address)}
+                        key={`address-dropdown-item-${address.id}`}
+                        className="flex items-center justify-between py-2 pl-3 pr-3.5 hover:bg-gray-100 cursor-pointer transition-colors 
+                    border-b border-gray-200"
+                      >
+                        <div className="flex flex-col min-w-0 text-left">
+                          <p className="text-base font-medium text-[#191919ff]">{address.street}</p>
+                          <p className="text-sm font-medium text-[#606060ff]">
+                            {address.city}, {address.state} {address.zipCode}
+                          </p>
+                        </div>
+                        <ChevronRight className="w-6 h-6 text-[#191919ff] flex-shrink-0 ml-2" />
+                      </div>
+                    ))}
 
-            {/* Use current location */}
-            <button
-              onClick={() => {
-                // Do nothing for now
-              }}
-              className="bg-white text-[#191919ff] rounded-[28px] shadow-lg px-3 py-1.5 flex items-center 
+                    {/* Add a new address option */}
+                    <div
+                      onClick={handleDisplayAddAddressModal}
+                      className="px-3 py-1.5 cursor-pointer transition-colors"
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center min-w-0 flex-1">
+                          <div className="w-[20px] h-[20px] bg-black rounded-full flex items-center justify-center mr-3 flex-shrink-0">
+                            <Plus className="w-3.5 h-3.5 text-white" strokeWidth={3} />
+                          </div>
+                          <div className="min-w-0 text-left">
+                            <p className="text-base font-medium text-[#191919ff]">
+                              Add a new address
+                            </p>
+                            <p className="text-sm text-[#606060ff] font-normal">
+                              Enter address manually
+                            </p>
+                          </div>
+                        </div>
+                        <ChevronRight className="w-5 h-5 text-gray-400 flex-shrink-0 ml-2" />
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <div className="flex items-center gap-2 w-full max-w-[280px] md:max-w-none mx-auto justify-between md:justify-center">
+                {/* Sign in for saved address button */}
+                <button
+                  onClick={handleSignInForSavedAddress}
+                  className="bg-white text-[#191919ff] rounded-[28px] shadow-lg px-3 py-1.5 flex items-center 
+                justify-center gap-1 hover:bg-gray-50 transition-colors"
+                >
+                  <PersonIcon />
+                  <span className="text-sm font-bold hidden lg:block">
+                    Sign in for saved address
+                  </span>
+                  <span className="text-sm font-bold hidden md:block lg:hidden">Sign In</span>
+                  <span className="text-sm font-bold block md:hidden">Log In</span>
+                </button>
+
+                {/* Use current location */}
+                <button
+                  onClick={() => {
+                    // Do nothing for now
+                  }}
+                  className="bg-white text-[#191919ff] rounded-[28px] shadow-lg px-3 py-1.5 flex items-center 
             justify-center gap-1 hover:bg-gray-50 transition-colors md:hidden"
-            >
-              <Navigation className="h-4 w-4 text-[#191919ff] flex-shrink-0 fill-current" />
-              <span className="text-sm font-bold">Use current location</span>
-            </button>
-          </div>
+                >
+                  <Navigation className="h-4 w-4 text-[#191919ff] flex-shrink-0 fill-current" />
+                  <span className="text-sm font-bold">Use current location</span>
+                </button>
+              </div>
+            </>
+          )}
         </div>
       </div>
 
@@ -1060,28 +1178,96 @@ export default function LandingPage() {
             )}
 
             {activeTab === 'cuisines' && (
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                {topCuisines.map((cuisine, index) => (
-                  <div
-                    key={`cuisine-${index}`}
-                    className="text-base font-medium text-[#191919ff] hover:underline"
-                  >
-                    {cuisine}
+              <div>
+                <div
+                  className={`grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 ${
+                    !showAllCuisines ? 'mb-6' : ''
+                  }`}
+                >
+                  {(showAllCuisines ? topCuisines : topCuisines.slice(0, 15)).map(
+                    (cuisine, index) => (
+                      <div
+                        key={`cuisine-${index}`}
+                        className="text-base font-medium text-[#191919ff] hover:underline"
+                      >
+                        {cuisine}
+                      </div>
+                    )
+                  )}
+                </div>
+                {topCuisines.length > 15 && (
+                  <div className="flex justify-center mt-6">
+                    <div className="flex items-center gap-2 text-[#191919ff]">
+                      {showAllCuisines ? (
+                        <>
+                          <span className="font-bold text-xl">See less</span>
+                          <button
+                            className="flex items-center justify-center p-2.5 rounded-full bg-[#f1f1f1] hover:bg-gray-200"
+                            onClick={() => setShowAllCuisines(false)}
+                          >
+                            <ChevronUp className="h-5 w-5" strokeWidth={2} />
+                          </button>
+                        </>
+                      ) : (
+                        <>
+                          <span className="font-bold text-xl">See more</span>
+                          <button
+                            className="flex items-center justify-center p-2.5 rounded-full bg-[#f1f1f1] hover:bg-gray-200"
+                            onClick={() => setShowAllCuisines(true)}
+                          >
+                            <ChevronDown className="h-5 w-5" strokeWidth={2} />
+                          </button>
+                        </>
+                      )}
+                    </div>
                   </div>
-                ))}
+                )}
               </div>
             )}
 
             {activeTab === 'chains' && (
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                {topChains.map((chain, index) => (
-                  <div
-                    key={`chain-${index}`}
-                    className="text-base font-medium text-[#191919ff] hover:underline"
-                  >
-                    {chain}
+              <div>
+                <div
+                  className={`grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 ${
+                    !showAllChains ? 'mb-6' : ''
+                  }`}
+                >
+                  {(showAllChains ? topChains : topChains.slice(0, 15)).map((chain, index) => (
+                    <div
+                      key={`chain-${index}`}
+                      className="text-base font-medium text-[#191919ff] hover:underline"
+                    >
+                      {chain}
+                    </div>
+                  ))}
+                </div>
+                {topChains.length > 15 && (
+                  <div className="flex justify-center mt-6">
+                    <div className="flex items-center gap-2 text-[#191919ff]">
+                      {showAllChains ? (
+                        <>
+                          <span className="font-bold text-xl">See less</span>
+                          <button
+                            className="flex items-center justify-center p-2.5 rounded-full bg-[#f1f1f1] hover:bg-gray-200"
+                            onClick={() => setShowAllChains(false)}
+                          >
+                            <ChevronUp className="h-5 w-5" strokeWidth={2} />
+                          </button>
+                        </>
+                      ) : (
+                        <>
+                          <span className="font-bold text-xl">See more</span>
+                          <button
+                            className="flex items-center justify-center p-2.5 rounded-full bg-[#f1f1f1] hover:bg-gray-200"
+                            onClick={() => setShowAllChains(true)}
+                          >
+                            <ChevronDown className="h-5 w-5" strokeWidth={2} />
+                          </button>
+                        </>
+                      )}
+                    </div>
                   </div>
-                ))}
+                )}
               </div>
             )}
           </div>
@@ -1090,7 +1276,11 @@ export default function LandingPage() {
 
       {/* Authentication Modal */}
       {authModalMode && (
-        <AuthenticationModal onClose={() => setAuthModalMode(null)} defaultMode={authModalMode} />
+        <AuthenticationModal
+          onClose={() => setAuthModalMode(null)}
+          defaultMode={authModalMode}
+          initialEmail={signInEmail}
+        />
       )}
 
       {/* Add Address Modal */}
