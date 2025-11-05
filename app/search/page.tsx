@@ -40,6 +40,8 @@ export default function SearchPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [hideCuisineFilter, setHideCuisineFilter] = useState(false)
   const [hideDietaryFilter, setHideDietaryFilter] = useState(false)
+  const [originalHasProducts, setOriginalHasProducts] = useState(false)
+  const [originalHasRestaurants, setOriginalHasRestaurants] = useState(false)
   const { addItem } = useCartStore()
   const [activeFilters, setActiveFilters] = useState<FilterState>({
     underThirtyMins: false,
@@ -697,10 +699,10 @@ export default function SearchPage() {
       }
 
       // Filter by min/max price (new implementation)
-      if (activeFilters.minPrice !== null && activeFilters.minPrice !== undefined || activeFilters.maxPrice !== null && activeFilters.maxPrice !== undefined) {
+      if (activeFilters.minPrice != null || activeFilters.maxPrice != null) {
         filteredResults = filteredResults.filter(result => {
-          const minPrice = activeFilters.minPrice ?? null
-          const maxPrice = activeFilters.maxPrice ?? null
+          const minPrice = activeFilters.minPrice != null ? activeFilters.minPrice : null
+          const maxPrice = activeFilters.maxPrice != null ? activeFilters.maxPrice : null
           
           // Check if it's a product (pet-product, convenience-product, retail-product, grocery-product)
           // Products have IDs like "pet-product-123", "convenience-product-456", etc.
@@ -812,6 +814,12 @@ export default function SearchPage() {
 
       console.log(`[SEARCH] Final filtered results: ${filteredResults.length}`);
       console.log('[SEARCH] Results details:', filteredResults.map(r => r.name));
+      
+      // Check if original results had products or restaurants (for empty state messages)
+      const hasProducts = combinedResults.some(r => r.id.includes("-product-"))
+      const hasRestaurants = combinedResults.some(r => !r.id.includes("-product-") && (r.matchType === "restaurant" || !r.storeType))
+      setOriginalHasProducts(hasProducts)
+      setOriginalHasRestaurants(hasRestaurants)
       
       // Determine search context based on ORIGINAL results (before filtering) to hide irrelevant filters
       // This ensures context doesn't change when filters are applied
@@ -1242,10 +1250,30 @@ export default function SearchPage() {
               />
             </svg>
           </div>
-          <h3 className="text-lg font-medium text-gray-700">No results found</h3>
-          <p className="text-gray-500 mt-2">
-            Try searching for something else or browse our categories to discover great restaurants
-          </p>
+          {/* Check if price filter is active and show appropriate message */}
+          {(activeFilters.minPrice != null || activeFilters.maxPrice != null) ? (
+            <>
+              {(() => {
+                if (originalHasProducts && !originalHasRestaurants) {
+                  return <h3 className="text-lg font-medium text-gray-700">No products match your price</h3>
+                } else if (originalHasRestaurants && !originalHasProducts) {
+                  return <h3 className="text-lg font-medium text-gray-700">No restaurants match your price</h3>
+                } else {
+                  return <h3 className="text-lg font-medium text-gray-700">No results match your price</h3>
+                }
+              })()}
+              <p className="text-gray-500 mt-2">
+                Try adjusting your price range or browse other options
+              </p>
+            </>
+          ) : (
+            <>
+              <h3 className="text-lg font-medium text-gray-700">No results found</h3>
+              <p className="text-gray-500 mt-2">
+                Try searching for something else or browse our categories to discover great restaurants
+              </p>
+            </>
+          )}
           <div className="mt-4">
             <Link
               href="/"

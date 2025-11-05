@@ -137,6 +137,16 @@ export function useFilterOptions({
   const [minPriceInput, setMinPriceInput] = useState<string>("")
   const [maxPriceInput, setMaxPriceInput] = useState<string>("")
 
+  // Dropdown state declarations (must be before useEffects that use them)
+  const [ratingDropdownOpen, setRatingDropdownOpen] = useState(false)
+  const [priceDropdownOpen, setPriceDropdownOpen] = useState(false)
+  const [locationDropdownOpen, setLocationDropdownOpen] = useState(false)
+  const [cuisineDropdownOpen, setCuisineDropdownOpen] = useState(false)
+  const [dietaryDropdownOpen, setDietaryDropdownOpen] = useState(false)
+
+  // Ref to track previous dropdown state to detect transitions
+  const prevPriceDropdownOpenRef = useRef(false)
+
   // Update internal state when external filters change
   useEffect(() => {
     if (externalFilters) {
@@ -146,17 +156,58 @@ export function useFilterOptions({
       setSelectedLocation(externalFilters.location || null)
       setSelectedCuisines(externalFilters.cuisine || [])
       setSelectedDietaryPreferences(externalFilters.dietaryPreferences || [])
-      // Update min/max price inputs from external filters
-      setMinPriceInput(externalFilters.minPrice !== null && externalFilters.minPrice !== undefined ? externalFilters.minPrice.toString() : "")
-      setMaxPriceInput(externalFilters.maxPrice !== null && externalFilters.maxPrice !== undefined ? externalFilters.maxPrice.toString() : "")
+      // Only update min/max price inputs from external filters if dropdown is closed
+      // This prevents clearing values when dropdown is open
+      if (!priceDropdownOpen) {
+        // Use EXACT same logic for both minPrice and maxPrice
+        // MaxPrice works, so replicate that exact logic for minPrice
+        // Process both values using identical logic and order
+        const minPriceValue = externalFilters.minPrice != null ? externalFilters.minPrice : null
+        const maxPriceValue = externalFilters.maxPrice != null ? externalFilters.maxPrice : null
+        
+        // Convert both to strings using identical logic
+        const minPriceStr = minPriceValue != null ? minPriceValue.toString() : ""
+        const maxPriceStr = maxPriceValue != null ? maxPriceValue.toString() : ""
+        
+        // Set both values - use exact same pattern
+        setMinPriceInput(minPriceStr)
+        setMaxPriceInput(maxPriceStr)
+      }
     }
-  }, [externalFilters])
+  }, [externalFilters, priceDropdownOpen])
 
-  const [ratingDropdownOpen, setRatingDropdownOpen] = useState(false)
-  const [priceDropdownOpen, setPriceDropdownOpen] = useState(false)
-  const [locationDropdownOpen, setLocationDropdownOpen] = useState(false)
-  const [cuisineDropdownOpen, setCuisineDropdownOpen] = useState(false)
-  const [dietaryDropdownOpen, setDietaryDropdownOpen] = useState(false)
+  // Sync price input values when dropdown opens (to ensure they persist)
+  // This runs when dropdown transitions from closed to open
+  // Replicate the exact logic that works for maxPrice for minPrice
+  useEffect(() => {
+    const wasOpen = prevPriceDropdownOpenRef.current
+    const isOpen = priceDropdownOpen
+    
+    // Only sync when transitioning from closed to open
+    if (!wasOpen && isOpen) {
+      // Always prefer externalFilters (source of truth from parent) over internal filters state
+      // externalFilters is what the parent component maintains and is the authoritative source
+      // If externalFilters exists, use it; otherwise use filters state
+      const sourceFilters = externalFilters || filters
+      
+      // Use EXACT same logic for both minPrice and maxPrice
+      // MaxPrice works, so replicate that exact logic for minPrice
+      // Process both values using identical logic
+      const minPriceValue = sourceFilters?.minPrice != null ? sourceFilters.minPrice : null
+      const maxPriceValue = sourceFilters?.maxPrice != null ? sourceFilters.maxPrice : null
+      
+      // Convert both to strings using identical logic
+      const minPriceStr = minPriceValue != null ? minPriceValue.toString() : ""
+      const maxPriceStr = maxPriceValue != null ? maxPriceValue.toString() : ""
+      
+      // Set both values - use exact same pattern that works for maxPrice
+      setMinPriceInput(minPriceStr)
+      setMaxPriceInput(maxPriceStr)
+    }
+    
+    // Update ref for next render
+    prevPriceDropdownOpenRef.current = isOpen
+  }, [priceDropdownOpen, externalFilters, filters])
   const [categoryDropdownOpen, setCategoryDropdownOpen] = useState(false)
   const [isTimeOptionsExpanded, setIsTimeOptionsExpanded] = useState(false)
   const [selectedRating, setSelectedRating] = useState<number | null>(null)
@@ -385,6 +436,35 @@ export function useFilterOptions({
         return
       }
 
+      // FIX: Check if this is horizontal scrolling (carousel/banner) vs vertical scrolling (page)
+      // Only close dropdowns on vertical page scrolling, not horizontal carousel scrolling
+      if (target instanceof HTMLElement) {
+        // Check if the element has overflow-x (horizontal scroll) - likely a carousel/banner
+        const style = window.getComputedStyle(target)
+        const isHorizontalScroll = style.overflowX === 'auto' || style.overflowX === 'scroll'
+        
+        // If it's a horizontal scroll container, don't close dropdowns
+        if (isHorizontalScroll) {
+          return
+        }
+        
+        // Check if scrolling is within a carousel/banner container by checking for common classes/attributes
+        let currentElement: HTMLElement | null = target
+        while (currentElement && currentElement !== document.body) {
+          // Check for common carousel/banner class names or data attributes
+          if (
+            currentElement.classList.contains('promo-card') ||
+            currentElement.classList.contains('carousel') ||
+            currentElement.classList.contains('banner') ||
+            currentElement.closest('.promo-card, .carousel, .banner')
+          ) {
+            // This is a carousel/banner scroll - don't close dropdowns
+            return
+          }
+          currentElement = currentElement.parentElement
+        }
+      }
+
       // Otherwise, it's page scroll - close dropdowns
       closeAllDropdowns()
     }
@@ -579,8 +659,15 @@ export function useFilterOptions({
     setMinPriceInput("")
     setMaxPriceInput("")
     toggleFilter("price", null) // DEPRECATED
-    toggleFilter("minPrice", null)
-    toggleFilter("maxPrice", null)
+    const resetFilters = {
+      ...filters,
+      minPrice: null,
+      maxPrice: null,
+    }
+    setFilters(resetFilters)
+    if (onFilterChange) {
+      onFilterChange(resetFilters)
+    }
     setPriceDropdownOpen(false)
   }
 
@@ -600,8 +687,17 @@ export function useFilterOptions({
       return
     }
 
-    toggleFilter("minPrice", minPrice)
-    toggleFilter("maxPrice", maxPrice)
+    // FIX: Update both values in a single operation to avoid race condition
+    // This ensures both minPrice and maxPrice are sent to parent together
+    const newFilters = {
+      ...filters,
+      minPrice: minPrice,
+      maxPrice: maxPrice,
+    }
+    setFilters(newFilters)
+    if (onFilterChange) {
+      onFilterChange(newFilters)
+    }
     setPriceDropdownOpen(false)
     window.scrollTo({ top: 0, behavior: "smooth" })
   }

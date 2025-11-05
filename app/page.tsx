@@ -163,9 +163,9 @@ export default function Home() {
       }
 
       // Filter by min/max price (new implementation)
-      if (filters.minPrice !== null && filters.minPrice !== undefined || filters.maxPrice !== null && filters.maxPrice !== undefined) {
+      if (filters.minPrice != null || filters.maxPrice != null) {
         filtered = filtered.filter((restaurant) => {
-          return restaurantHasItemsInPriceRange(restaurant.id, filters.minPrice || null, filters.maxPrice || null)
+          return restaurantHasItemsInPriceRange(restaurant.id, filters.minPrice != null ? filters.minPrice : null, filters.maxPrice != null ? filters.maxPrice : null)
         })
       }
 
@@ -432,8 +432,18 @@ export default function Home() {
                 </div>
               ) : (
                 <div className="mt-10 py-16 text-center bg-gray-50 rounded-lg">
-                  <h3 className="text-lg font-medium text-gray-700">No restaurants match your filters</h3>
-                  <p className="text-gray-500 mt-2">Try adjusting your filters to see more options</p>
+                  {/* Check if price filter is active */}
+                  {(filters.minPrice != null || filters.maxPrice != null) ? (
+                    <>
+                      <h3 className="text-lg font-medium text-gray-700">No restaurants match your price</h3>
+                      <p className="text-gray-500 mt-2">Try adjusting your price range or browse other options</p>
+                    </>
+                  ) : (
+                    <>
+                      <h3 className="text-lg font-medium text-gray-700">No restaurants match your filters</h3>
+                      <p className="text-gray-500 mt-2">Try adjusting your filters to see more options</p>
+                    </>
+                  )}
                   <button
                     onClick={handleReset}
                     className="mt-4 bg-red-600 text-white px-6 py-2 rounded-full text-sm font-medium"
@@ -471,6 +481,32 @@ export default function Home() {
                 restaurants={allStores}
               />
             </>
+          )}
+
+          {/* Show "No products match your price" message when price filter is active (Home page doesn't have products) */}
+          {(filters.minPrice != null || filters.maxPrice != null) && (
+            <div className="text-center py-12 bg-gray-50 rounded-lg mt-8">
+              <div className="mb-4">
+                <svg
+                  className="mx-auto h-12 w-12 text-gray-400"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  aria-hidden="true"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
+                </svg>
+              </div>
+              <h3 className="text-lg font-medium text-gray-700">No products match your price</h3>
+              <p className="text-gray-500 mt-2">
+                Try adjusting your price range or browse other products
+              </p>
+            </div>
           )}
         </div>
       </div>

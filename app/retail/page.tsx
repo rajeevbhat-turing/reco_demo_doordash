@@ -164,7 +164,7 @@ export default function Retail() {
     // Filter by min/max price (new implementation)
     // Note: For stores, we need product data to properly filter by price
     // For now, stores pass through this filter until product data is available
-    if (activeFilters.minPrice !== null && activeFilters.minPrice !== undefined || activeFilters.maxPrice !== null && activeFilters.maxPrice !== undefined) {
+    if (activeFilters.minPrice != null || activeFilters.maxPrice != null) {
       // TODO: Implement product-based price filtering for retail stores
       // For now, return true (don't filter) until product data is available
       // This ensures the filter UI works but doesn't break functionality
@@ -305,6 +305,32 @@ export default function Retail() {
             <StoreCard key={store.id} {...store} storeType="retail" />
           ))}
         </div>
+
+        {/* Show "No products match your price" message when price filter is active (Retail page doesn't have products) */}
+        {(activeFilters.minPrice != null || activeFilters.maxPrice != null) && (
+          <div className="text-center py-12 bg-gray-50 rounded-lg mt-8">
+            <div className="mb-4">
+              <svg
+                className="mx-auto h-12 w-12 text-gray-400"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                aria-hidden="true"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                />
+              </svg>
+            </div>
+            <h3 className="text-lg font-medium text-gray-700">No products match your price</h3>
+            <p className="text-gray-500 mt-2">
+              Try adjusting your price range or browse other products
+            </p>
+          </div>
+        )}
       </main>
   )
 }
