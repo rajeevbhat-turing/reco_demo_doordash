@@ -57,6 +57,9 @@ export default function Header() {
   const [manualZipCode, setManualZipCode] = useState("")
 
   const { getAddresses, addAddress, updateAddress, setDefaultAddress, setTempAddress, getTempAddress } = useUserStore()
+  const shouldOpenCart = useCartStore((state) => state.shouldOpenCart)
+  const resetOpenCartTrigger = useCartStore((state) => state.resetOpenCartTrigger)
+  const getTotalItems = useCartStore((state) => state.getTotalItems)
   const addresses = getAddresses()
   const tempAddress = useSyncExternalStore(
     useUserStore.subscribe,
@@ -142,6 +145,15 @@ export default function Header() {
     };
   }, []);
 
+  // Listen for cart open trigger (for reorder functionality)
+  useEffect(() => {
+    if (shouldOpenCart) {
+      console.log('[HEADER] Opening cart sidebar due to trigger')
+      setIsCartOpen(true)
+      resetOpenCartTrigger()
+    }
+  }, [shouldOpenCart, resetOpenCartTrigger])
+
   // Check if current path is in account flow
   const isAccountFlow = pathname.startsWith("/consumer") || pathname.startsWith("/password-reset");
   
@@ -155,8 +167,14 @@ export default function Header() {
   const isCheckoutPage = pathname === "/checkout"
 
   const toggleCart = () => {
+    console.log('[HEADER] Toggling cart, current state:', isCartOpen)
     setIsCartOpen(!isCartOpen);
   };
+
+  const handleCloseCart = () => {
+    console.log('[HEADER] Closing cart')
+    setIsCartOpen(false)
+  }
 
   const handleSelectAddress = (addressId: string) => {
     setSelectedAddressId(addressId);
@@ -869,7 +887,7 @@ export default function Header() {
       </header>
 
       {/* Cart Sidebar */}
-      <CartSidebar isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
+      <CartSidebar isOpen={isCartOpen} onClose={handleCloseCart} />
 
       {/* Authentication Modal */}
       {authModalMode && (

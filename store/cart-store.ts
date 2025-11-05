@@ -156,6 +156,13 @@ interface CartStore {
   groupOrderId: string | null
   totalCartValue: number
 
+  // Reorder mode tracking
+  isReorderMode: boolean
+  reorderOriginalCarts: Cart[] | null
+  
+  // Cart sidebar control
+  shouldOpenCart: boolean
+
   // Helper methods to get current state from app-store
   getCurrentCategory: () => CartCategory
   getCurrentStoreId: () => string | null
@@ -191,6 +198,15 @@ interface CartStore {
 
   // Update total cart value
   updateTotalCartValue: () => void
+
+  // Reorder methods
+  startReorderMode: (orderId: string, items: CartItem[], category: CartCategory, storeId: string, storeName: string) => void
+  confirmReorder: () => void
+  cancelReorder: () => void
+  
+  // Cart sidebar control methods
+  triggerOpenCart: () => void
+  resetOpenCartTrigger: () => void
 }
 
 export const useCartStore = create<CartStore>()(
@@ -202,6 +218,9 @@ export const useCartStore = create<CartStore>()(
         isGroupOrder: false,
         groupOrderId: null,
         totalCartValue: 0,
+        isReorderMode: false,
+        reorderOriginalCarts: null,
+        shouldOpenCart: false,
 
         // Get current category from app-store
         getCurrentCategory: () => {
@@ -680,6 +699,74 @@ export const useCartStore = create<CartStore>()(
           const total = get().getTotal()
           set({ totalCartValue: total })
         },
+
+        // Reorder methods
+        startReorderMode: (orderId: string, items: CartItem[], category: CartCategory, storeId: string, storeName: string) => {
+          const currentState = get()
+          
+          console.log(`[REORDER] Starting reorder mode for order: ${orderId}`)
+          console.log(`[REORDER] Backing up current carts (${currentState.carts.length} carts)`)
+          
+          // Backup current carts
+          const backup = [...currentState.carts]
+          
+          // Create a new cart for the reorder
+          const reorderCart: Cart = {
+            storeId: storeId,
+            storeName: storeName,
+            storeCategory: category,
+            items: items,
+            selectedCard: null,
+          }
+          
+          // Clear all carts and add the reorder cart
+          set({
+            isReorderMode: true,
+            reorderOriginalCarts: backup,
+            carts: [reorderCart],
+            shouldOpenCart: true, // Trigger cart to open
+          })
+          
+          console.log(`[REORDER] Reorder mode activated with ${items.length} items from ${storeName}`)
+        },
+
+        confirmReorder: () => {
+          console.log(`[REORDER] Confirming reorder - discarding original carts`)
+          set({
+            isReorderMode: false,
+            reorderOriginalCarts: null,
+          })
+        },
+
+        cancelReorder: () => {
+          const { reorderOriginalCarts } = get()
+          
+          if (reorderOriginalCarts) {
+            console.log(`[REORDER] Canceling reorder - restoring original carts (${reorderOriginalCarts.length} carts)`)
+            set({
+              isReorderMode: false,
+              carts: reorderOriginalCarts,
+              reorderOriginalCarts: null,
+            })
+          } else {
+            console.log(`[REORDER] Canceling reorder - no backup found, clearing carts`)
+            set({
+              isReorderMode: false,
+              carts: [],
+              reorderOriginalCarts: null,
+            })
+          }
+        },
+
+        // Cart sidebar control methods
+        triggerOpenCart: () => {
+          console.log('[CART] Triggering cart open')
+          set({ shouldOpenCart: true })
+        },
+
+        resetOpenCartTrigger: () => {
+          set({ shouldOpenCart: false })
+        },
       }),
       {
         name: "carts",
@@ -688,6 +775,8 @@ export const useCartStore = create<CartStore>()(
           isGroupOrder: state.isGroupOrder,
           groupOrderId: state.groupOrderId,
           totalCartValue: state.totalCartValue,
+          isReorderMode: state.isReorderMode,
+          reorderOriginalCarts: state.reorderOriginalCarts,
         }),
         merge: (persistedState: any, currentState) => {
           let carts: Cart[] = []
