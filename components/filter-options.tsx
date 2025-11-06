@@ -65,8 +65,6 @@ const FilterOptions = forwardRef<FilterOptionsRef, FilterOptionsProps>(
       selectedLocation,
       selectedCuisines,
       selectedDietaryPreferences,
-      minPriceInput,
-      maxPriceInput,
       
       // Refs
       ratingButtonRef,
@@ -91,8 +89,6 @@ const FilterOptions = forwardRef<FilterOptionsRef, FilterOptionsProps>(
       toggleFilter,
       handleRatingSelect,
       handlePriceToggle,
-      handleMinPriceInput,
-      handleMaxPriceInput,
       resetRatingFilter,
       resetPriceFilter,
       applyPriceFilter,
@@ -281,10 +277,10 @@ const FilterOptions = forwardRef<FilterOptionsRef, FilterOptionsProps>(
               >
                 <h3 className="text-xl font-bold mb-6">Ratings</h3>
                 <div className="mb-6">
-                  <div className="font-medium mb-4">{selectedRating ? `Over ${selectedRating}` : "Over 3"}</div>
+                  <div className="font-medium mb-4">{selectedRating ? `Over ${selectedRating}` : "Over 4.5"}</div>
                   <div className="relative flex items-center justify-between mb-2">
                     <div className="absolute w-full h-[2px] bg-gray-300"></div>
-                    {[3, 3.5, 4, 4.5, 4.9].map((rating) => (
+                    {[4.5, 4.6, 4.7, 4.8, 4.9].map((rating) => (
                       <button
                         key={rating}
                         className={`relative z-10 w-6 h-6 rounded-full ${
@@ -297,10 +293,10 @@ const FilterOptions = forwardRef<FilterOptionsRef, FilterOptionsProps>(
                     ))}
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span>3</span>
-                    <span>3.5</span>
-                    <span>4</span>
                     <span>4.5</span>
+                    <span>4.6</span>
+                    <span>4.7</span>
+                    <span>4.8</span>
                     <span>4.9</span>
                   </div>
                 </div>
@@ -539,9 +535,7 @@ const FilterOptions = forwardRef<FilterOptionsRef, FilterOptionsProps>(
               <button
                 ref={priceButtonRef}
                 className={`rounded-full h-9 px-4 text-xs font-semibold ${
-                  (filters.minPrice !== null && filters.minPrice !== undefined) || 
-                  (filters.maxPrice !== null && filters.maxPrice !== undefined) ||
-                  (filters.price && filters.price.length > 0)
+                  filters.price && filters.price.length > 0
                     ? "bg-gray-900 text-white"
                     : "bg-gray-100 hover:bg-gray-200 text-gray-900"
                 } flex items-center gap-1`}
@@ -559,28 +553,21 @@ const FilterOptions = forwardRef<FilterOptionsRef, FilterOptionsProps>(
                   ref={priceDropdownPositionedRef}
                   className="fixed z-50 w-[400px] bg-white rounded-lg shadow-lg p-6"
                 >
-                  <h3 className="text-xl font-bold mb-6">Price Range</h3>
-                  <div className="space-y-4 mb-6">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Min Price ($)</label>
-                      <input
-                        type="text"
-                        value={minPriceInput}
-                        onChange={(e) => handleMinPriceInput(e.target.value)}
-                        placeholder="0.00"
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-transparent"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Max Price ($)</label>
-                      <input
-                        type="text"
-                        value={maxPriceInput}
-                        onChange={(e) => handleMaxPriceInput(e.target.value)}
-                        placeholder="100.00"
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-transparent"
-                      />
-                    </div>
+                  <h3 className="text-xl font-bold mb-6">Price</h3>
+                  <div className="flex gap-3 mb-6">
+                    {["$", "$$", "$$$", "$$$$"].map((price) => (
+                      <button
+                        key={price}
+                        className={`px-6 py-2 rounded-full text-sm font-medium ${
+                          selectedPrices.includes(price)
+                            ? "bg-black text-white"
+                            : "bg-gray-100 text-gray-900 hover:bg-gray-200"
+                        }`}
+                        onClick={() => handlePriceToggle(price)}
+                      >
+                        {price}
+                      </button>
+                    ))}
                   </div>
                   <div className="flex justify-between">
                     <button className="text-gray-900 font-medium" onClick={resetPriceFilter}>

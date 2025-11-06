@@ -44,8 +44,6 @@ interface UseFilterOptionsReturn {
   selectedLocation: string | null
   selectedCuisines: string[]
   selectedDietaryPreferences: string[]
-  minPriceInput: string
-  maxPriceInput: string
   visibleTimeOptions: TimeOption[]
   selectedDay: string
   selectedTime: string
@@ -76,8 +74,6 @@ interface UseFilterOptionsReturn {
   handleRatingSelect: (rating: number) => void
   expandTimeOptions: () => void
   handlePriceToggle: (price: string) => void
-  handleMinPriceInput: (value: string) => void
-  handleMaxPriceInput: (value: string) => void
   handleDaySelect: (day: string) => void
   handleTimeSelect: (time: string) => void
   resetRatingFilter: () => void
@@ -133,19 +129,12 @@ export function useFilterOptions({
     dietaryPreferences: null,
   })
 
-  // Local state for price inputs (for min/max price filter)
-  const [minPriceInput, setMinPriceInput] = useState<string>("")
-  const [maxPriceInput, setMaxPriceInput] = useState<string>("")
-
   // Dropdown state declarations (must be before useEffects that use them)
   const [ratingDropdownOpen, setRatingDropdownOpen] = useState(false)
   const [priceDropdownOpen, setPriceDropdownOpen] = useState(false)
   const [locationDropdownOpen, setLocationDropdownOpen] = useState(false)
   const [cuisineDropdownOpen, setCuisineDropdownOpen] = useState(false)
   const [dietaryDropdownOpen, setDietaryDropdownOpen] = useState(false)
-
-  // Ref to track previous dropdown state to detect transitions
-  const prevPriceDropdownOpenRef = useRef(false)
 
   // Update internal state when external filters change
   useEffect(() => {
@@ -156,58 +145,8 @@ export function useFilterOptions({
       setSelectedLocation(externalFilters.location || null)
       setSelectedCuisines(externalFilters.cuisine || [])
       setSelectedDietaryPreferences(externalFilters.dietaryPreferences || [])
-      // Only update min/max price inputs from external filters if dropdown is closed
-      // This prevents clearing values when dropdown is open
-      if (!priceDropdownOpen) {
-        // Use EXACT same logic for both minPrice and maxPrice
-        // MaxPrice works, so replicate that exact logic for minPrice
-        // Process both values using identical logic and order
-        const minPriceValue = externalFilters.minPrice != null ? externalFilters.minPrice : null
-        const maxPriceValue = externalFilters.maxPrice != null ? externalFilters.maxPrice : null
-        
-        // Convert both to strings using identical logic
-        const minPriceStr = minPriceValue != null ? minPriceValue.toString() : ""
-        const maxPriceStr = maxPriceValue != null ? maxPriceValue.toString() : ""
-        
-        // Set both values - use exact same pattern
-        setMinPriceInput(minPriceStr)
-        setMaxPriceInput(maxPriceStr)
-      }
     }
-  }, [externalFilters, priceDropdownOpen])
-
-  // Sync price input values when dropdown opens (to ensure they persist)
-  // This runs when dropdown transitions from closed to open
-  // Replicate the exact logic that works for maxPrice for minPrice
-  useEffect(() => {
-    const wasOpen = prevPriceDropdownOpenRef.current
-    const isOpen = priceDropdownOpen
-    
-    // Only sync when transitioning from closed to open
-    if (!wasOpen && isOpen) {
-      // Always prefer externalFilters (source of truth from parent) over internal filters state
-      // externalFilters is what the parent component maintains and is the authoritative source
-      // If externalFilters exists, use it; otherwise use filters state
-      const sourceFilters = externalFilters || filters
-      
-      // Use EXACT same logic for both minPrice and maxPrice
-      // MaxPrice works, so replicate that exact logic for minPrice
-      // Process both values using identical logic
-      const minPriceValue = sourceFilters?.minPrice != null ? sourceFilters.minPrice : null
-      const maxPriceValue = sourceFilters?.maxPrice != null ? sourceFilters.maxPrice : null
-      
-      // Convert both to strings using identical logic
-      const minPriceStr = minPriceValue != null ? minPriceValue.toString() : ""
-      const maxPriceStr = maxPriceValue != null ? maxPriceValue.toString() : ""
-      
-      // Set both values - use exact same pattern that works for maxPrice
-      setMinPriceInput(minPriceStr)
-      setMaxPriceInput(maxPriceStr)
-    }
-    
-    // Update ref for next render
-    prevPriceDropdownOpenRef.current = isOpen
-  }, [priceDropdownOpen, externalFilters, filters])
+  }, [externalFilters])
   const [categoryDropdownOpen, setCategoryDropdownOpen] = useState(false)
   const [isTimeOptionsExpanded, setIsTimeOptionsExpanded] = useState(false)
   const [selectedRating, setSelectedRating] = useState<number | null>(null)
@@ -602,7 +541,6 @@ export function useFilterOptions({
     setVisibleTimeOptions(timeOptions)
   }
 
-  // DEPRECATED: Keeping for backward compatibility
   const handlePriceToggle = (price: string) => {
     let newPrices: string[]
 
@@ -613,26 +551,6 @@ export function useFilterOptions({
     }
 
     setSelectedPrices(newPrices)
-  }
-
-  // Handle min price input (numeric only)
-  const handleMinPriceInput = (value: string) => {
-    // Only allow numeric input (including decimals)
-    const numericValue = value.replace(/[^0-9.]/g, "")
-    // Prevent multiple decimal points
-    const parts = numericValue.split(".")
-    const formattedValue = parts.length > 2 ? parts[0] + "." + parts.slice(1).join("") : numericValue
-    setMinPriceInput(formattedValue)
-  }
-
-  // Handle max price input (numeric only)
-  const handleMaxPriceInput = (value: string) => {
-    // Only allow numeric input (including decimals)
-    const numericValue = value.replace(/[^0-9.]/g, "")
-    // Prevent multiple decimal points
-    const parts = numericValue.split(".")
-    const formattedValue = parts.length > 2 ? parts[0] + "." + parts.slice(1).join("") : numericValue
-    setMaxPriceInput(formattedValue)
   }
 
   const handleDaySelect = (day: string) => {
@@ -655,49 +573,14 @@ export function useFilterOptions({
   }
 
   const resetPriceFilter = () => {
-    setSelectedPrices([]) // DEPRECATED
-    setMinPriceInput("")
-    setMaxPriceInput("")
-    toggleFilter("price", null) // DEPRECATED
-    const resetFilters = {
-      ...filters,
-      minPrice: null,
-      maxPrice: null,
-    }
-    setFilters(resetFilters)
-    if (onFilterChange) {
-      onFilterChange(resetFilters)
-    }
+    setSelectedPrices([])
+    toggleFilter("price", null)
     setPriceDropdownOpen(false)
   }
 
   const applyPriceFilter = () => {
-    const minPrice = minPriceInput.trim() !== "" ? parseFloat(minPriceInput) : null
-    const maxPrice = maxPriceInput.trim() !== "" ? parseFloat(maxPriceInput) : null
-
-    // Validate: min should be <= max if both are provided
-    if (minPrice !== null && maxPrice !== null && minPrice > maxPrice) {
-      alert("Minimum price cannot be greater than maximum price")
-      return
-    }
-
-    // Validate: prices should be >= 0
-    if ((minPrice !== null && minPrice < 0) || (maxPrice !== null && maxPrice < 0)) {
-      alert("Price cannot be negative")
-      return
-    }
-
-    // FIX: Update both values in a single operation to avoid race condition
-    // This ensures both minPrice and maxPrice are sent to parent together
-    const newFilters = {
-      ...filters,
-      minPrice: minPrice,
-      maxPrice: maxPrice,
-    }
-    setFilters(newFilters)
-    if (onFilterChange) {
-      onFilterChange(newFilters)
-    }
+    // Apply the selected price ranges ($, $$, $$$, $$$$)
+    toggleFilter("price", selectedPrices.length > 0 ? selectedPrices : null)
     setPriceDropdownOpen(false)
     window.scrollTo({ top: 0, behavior: "smooth" })
   }
@@ -763,16 +646,6 @@ export function useFilterOptions({
   }
 
   const getPriceLabel = () => {
-    // Check for min/max price filter first (new implementation)
-    if (filters.minPrice !== null && filters.minPrice !== undefined && filters.maxPrice !== null && filters.maxPrice !== undefined) {
-      return `$${filters.minPrice} - $${filters.maxPrice}`
-    } else if (filters.minPrice !== null && filters.minPrice !== undefined) {
-      return `From $${filters.minPrice}`
-    } else if (filters.maxPrice !== null && filters.maxPrice !== undefined) {
-      return `Up to $${filters.maxPrice}`
-    }
-
-    // Fallback to old price filter (DEPRECATED)
     if (filters.price && filters.price.length > 0) {
       if (filters.price.length === 1) return filters.price[0]
       if (filters.price.length === 2) return `${filters.price[0]}, ${filters.price[1]}`
@@ -814,7 +687,7 @@ export function useFilterOptions({
     if (filters.overRating) {
       return `Over ${filters.overRating}★`
     }
-    return "Over 3★"
+    return "Over 4.5★"
   }
 
   // Complete reset function that resets all internal state
@@ -834,9 +707,7 @@ export function useFilterOptions({
 
     setFilters(resetState)
     setSelectedRating(null)
-    setSelectedPrices([]) // DEPRECATED
-    setMinPriceInput("")
-    setMaxPriceInput("")
+    setSelectedPrices([])
     setSelectedLocation(null)
     setSelectedCuisines([])
     setSelectedDietaryPreferences([])
@@ -1012,8 +883,6 @@ export function useFilterOptions({
     selectedLocation,
     selectedCuisines,
     selectedDietaryPreferences,
-    minPriceInput,
-    maxPriceInput,
     visibleTimeOptions,
     selectedDay,
     selectedTime,
@@ -1044,8 +913,6 @@ export function useFilterOptions({
     handleRatingSelect,
     expandTimeOptions,
     handlePriceToggle,
-    handleMinPriceInput,
-    handleMaxPriceInput,
     handleDaySelect,
     handleTimeSelect,
     resetRatingFilter,
