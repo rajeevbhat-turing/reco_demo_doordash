@@ -1,5 +1,6 @@
 "use client"
 
+import Link from "next/link"
 import { DashDoorLogoMark } from "./common/Icons"
 
 export default function Footer() {
@@ -43,7 +44,9 @@ export default function Footer() {
             <h3 className="font-bold text-gray-900 mb-4">Doing Business</h3>
             <ul className="space-y-3">
               <li><span className="text-gray-700 hover:text-gray-900 text-sm cursor-pointer">Become a Dasher</span></li>
-              <li><span className="text-gray-700 hover:text-gray-900 text-sm cursor-pointer">DoorDash Merchant</span></li>
+              <li>
+                <Link href="/merchant" className="text-gray-700 hover:text-gray-900 text-sm cursor-pointer">DoorDash Merchant</Link>
+              </li>
               <li><span className="text-gray-700 hover:text-gray-900 text-sm cursor-pointer">Get Dashers for Deliveries</span></li>
               <li><span className="text-gray-700 hover:text-gray-900 text-sm cursor-pointer">Get DoorDash for Business</span></li>
             </ul>
