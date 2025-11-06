@@ -2,12 +2,12 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { X, ChevronDown } from 'lucide-react';
-import { Address } from '@/lib/types/user-types';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Address } from '@/lib/types/user-types';
 import countriesData from '@/lib/utils/countries.json';
 
-interface AddAddressModalProps {
+interface AddNewAddressModalProps {
   isOpen: boolean;
   onClose: () => void;
   onContinue: (addressData: Omit<Address, 'id'>) => void;
@@ -24,13 +24,13 @@ interface AddAddressModalProps {
 // Filter countries to only show the 4 specified
 const AVAILABLE_COUNTRIES = ['United States', 'Canada', 'Australia', 'New Zealand'];
 
-export default function AddAddressModal({
+export default function AddNewAddressModal({
   isOpen,
   onClose,
   onContinue,
   onBack,
   initialData,
-}: AddAddressModalProps) {
+}: AddNewAddressModalProps) {
   const [country, setCountry] = useState('United States');
   const [streetAddress, setStreetAddress] = useState('');
   const [apartmentSuite, setApartmentSuite] = useState('');
@@ -78,7 +78,7 @@ export default function AddAddressModal({
   // Set default state when country changes
   useEffect(() => {
     if (states.length > 0 && !states.includes(state)) {
-      setState(states[0] || '');
+      setState(states[0]?.name || '');
     }
   }, [country, states, state]);
 
@@ -92,14 +92,14 @@ export default function AddAddressModal({
       setStreetAddress(streetParts[0] || '');
       setApartmentSuite(initialData.apartmentSuite || streetParts[1] || '');
       setCity(initialData.city || '');
-      setState(initialData.state || 'Alabama');
+      setState(initialData.state || '');
       setZipCode(initialData.zipCode || '');
     } else {
       // Reset to defaults if no initial data
       setStreetAddress('');
       setApartmentSuite('');
       setCity('');
-      setState(states[0] || 'Alabama');
+      setState(states[0]?.name || '');
       setZipCode('');
       setErrors({});
     }
@@ -177,20 +177,22 @@ export default function AddAddressModal({
   };
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black bg-opacity-50 p-4">
-      <div className="relative bg-white rounded-2xl w-full max-w-md mx-4">
-        <div className="p-6">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
+      <div className="relative bg-white rounded-xl w-full max-w-md md:max-w-xl mx-4">
+        <div className="py-6 px-8 md:px-4">
           {/* Close button */}
           <button
             onClick={onClose}
-            className="absolute top-5 left-5 p-1 hover:bg-gray-100 rounded-full transition-colors"
+            className="absolute top-5 left-3 p-1.5 hover:bg-gray-100 rounded-full transition-colors cursor-pointer"
             aria-label="Close modal"
           >
             <X className="h-6 w-6 text-gray-700" />
           </button>
 
           {/* Title */}
-          <h2 className="text-2xl font-bold text-gray-900 mb-6 mt-6">Add new address</h2>
+          <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3 md:mb-6 mt-12 md:mt-8">
+            Add new address
+          </h2>
 
           {/* Form */}
           <div className="space-y-4">
@@ -337,16 +339,16 @@ export default function AddAddressModal({
           </div>
 
           {/* Buttons */}
-          <div className="mt-8 space-y-3">
+          <div className="mt-8 space-y-2">
             <button
               onClick={handleContinue}
-              className="w-full py-3 px-6 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 transition-colors"
+              className="w-full py-2 px-6 bg-[#eb1700ff] text-white rounded-[28px] text-base font-bold hover:bg-red-700 transition-colors"
             >
               Continue
             </button>
             <button
               onClick={handleBack}
-              className="w-full py-3 px-6 text-gray-900 font-medium hover:bg-gray-100 rounded-lg transition-colors"
+              className="w-full py-2 px-6 text-[#191919ff] font-bold hover:bg-gray-100 rounded-[28px] text-base transition-colors"
             >
               Back
             </button>

@@ -16,6 +16,7 @@ export default function PasswordResetPage() {
     setChangePasswordPhoneVerified,
     changePassword,
     setCurrentUser,
+    setTempAddress,
   } = useUserStore();
 
   const [formData, setFormData] = useState({
@@ -109,6 +110,7 @@ export default function PasswordResetPage() {
       if (success) {
         // Logout user and navigate to home
         setCurrentUser(null);
+        setTempAddress(null); // Clear temp address on logout
         router.push('/');
       } else {
         setPasswordError('Old password is not correct.');
@@ -147,6 +149,7 @@ export default function PasswordResetPage() {
       if (success) {
         // Logout user and navigate to home
         setCurrentUser(null);
+        setTempAddress(null); // Clear temp address on logout
         router.push('/');
       }
     }
@@ -307,7 +310,9 @@ export default function PasswordResetPage() {
         isOpen={showTwoStepModal}
         onClose={handleCloseTwoStepModal}
         onSuccess={handleTwoStepSuccess}
-        phoneNumber={`${currentUser?.country?.dialCode} ******${currentUser?.phoneNumber?.slice(-4)}`}
+        phoneNumber={`${currentUser?.country?.dialCode} ******${currentUser?.phoneNumber?.slice(
+          -4
+        )}`}
       />
     </div>
   );
