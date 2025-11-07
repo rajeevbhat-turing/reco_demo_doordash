@@ -1,10 +1,15 @@
 "use client"
 
+import { useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
-import { Heart, Star, ShoppingCart } from "lucide-react"
+import { Heart, Star } from "lucide-react"
 import type { SearchResultRestaurant } from "@/lib/utils/search-utils"
 import { useCartStore } from "@/store/cart-store"
+import { stores as groceryStores } from "@/data/store-data"
+import { convenienceStores } from "@/data/convenience-store-data"
+import { getAllPetStores } from "@/app/pets/data/pet-response-mapper"
+import { stores as retailStores } from "@/constants/store"
 
 interface SearchResultsRendererProps {
   results: SearchResultRestaurant[]
@@ -12,10 +17,120 @@ interface SearchResultsRendererProps {
 
 export default function SearchResultsRenderer({ results }: SearchResultsRendererProps) {
   const { addItem } = useCartStore()
+  const [favoritedStores, setFavoritedStores] = useState<Set<string>>(new Set())
+
+  // Toggle favorite state for a store
+  const toggleFavorite = (storeName: string) => {
+    setFavoritedStores(prev => {
+      const newSet = new Set(prev)
+      if (newSet.has(storeName)) {
+        newSet.delete(storeName)
+      } else {
+        newSet.add(storeName)
+      }
+      return newSet
+    })
+  }
+
+  // Helper function to get store information by store name and category
+  const getStoreInfo = (storeName: string, storeType?: string) => {
+    if (!storeName) return null
+    
+    // Try to find store by name in each category
+    if (storeType === "grocery" || !storeType) {
+      const groceryStore = Object.values(groceryStores).find(store => store.name === storeName)
+      if (groceryStore) {
+        return {
+          ...groceryStore,
+          category: "grocery" as const,
+          deliveryFee: "$0 delivery fee",
+          time: groceryStore.deliveryTime || groceryStore.expressTime || "30-45 min"
+        }
+      }
+    }
+    
+    if (storeType === "convenience" || !storeType) {
+      const convenienceStore = Object.values(convenienceStores).find(store => store.name === storeName)
+      if (convenienceStore) {
+        return {
+          ...convenienceStore,
+          category: "convenience" as const,
+          deliveryFee: "$0 delivery fee",
+          time: convenienceStore.deliveryTime || convenienceStore.expressTime || "30-45 min",
+          isOpen: convenienceStore.open !== false
+        }
+      }
+    }
+    
+    if (storeType === "pets" || !storeType) {
+      const allPetStores = getAllPetStores()
+      const petStore = allPetStores.find((store: any) => store.name === storeName)
+      if (petStore) {
+        return {
+          ...petStore,
+          category: "pets" as const,
+          deliveryFee: "$0 delivery fee",
+          time: "30-45 min"
+        }
+      }
+    }
+    
+    if (storeType === "retail" || !storeType) {
+      const retailStore = retailStores.find(store => store.name === storeName)
+      if (retailStore) {
+        return {
+          ...retailStore,
+          category: "retail" as const,
+          deliveryFee: "$0 delivery fee",
+          time: "30-45 min"
+        }
+      }
+    }
+    
+    return null
+  }
+
+  // Helper function to calculate delivery estimate
+  const getDeliveryEstimate = (timeString: string): string => {
+    if (!timeString) return "Get it by 8:00 AM"
+    
+    // Extract minutes from time string (e.g., "10-25 min" or "30-45 min")
+    const match = timeString.match(/(\d+)-(\d+)\s*min/)
+    if (match) {
+      const avgMinutes = Math.round((parseInt(match[1]) + parseInt(match[2])) / 2)
+      const now = new Date()
+      const deliveryTime = new Date(now.getTime() + avgMinutes * 60000)
+      const hours = deliveryTime.getHours()
+      const minutes = deliveryTime.getMinutes()
+      const period = hours >= 12 ? "PM" : "AM"
+      const displayHours = hours % 12 === 0 ? 12 : hours % 12
+      const displayMinutes = minutes.toString().padStart(2, "0")
+      return `Get it by ${displayHours}:${displayMinutes} ${period}`
+    }
+    return "Get it by 8:00 AM"
+  }
+
+  // Helper function to format opening time
+  const formatOpeningTime = (openingHours: string | undefined): string => {
+    if (!openingHours) return "Opens Thu at 7:00 AM"
+    
+    // Try to extract opening time from openingHours string
+    const match = openingHours.match(/(\d{1,2}):?(\d{2})?\s*(AM|PM)/i)
+    if (match) {
+      const hour = parseInt(match[1])
+      const minute = match[2] || "00"
+      const period = match[3].toUpperCase()
+      const dayMatch = openingHours.match(/(Mon|Tue|Wed|Thu|Fri|Sat|Sun)/i)
+      const day = dayMatch ? dayMatch[0] : "Thu"
+      return `Opens ${day} at ${hour}:${minute} ${period}`
+    }
+    return "Opens Thu at 7:00 AM"
+  }
 
   // Group products by store and separate standalone stores
   const storeGroups: { [key: string]: SearchResultRestaurant[] } = {}
   const standaloneStores: SearchResultRestaurant[] = []
+  const restaurants: SearchResultRestaurant[] = []
   
   results.forEach((result) => {
     const isProduct = result.id.includes("-product-")
@@ -26,49 +141,114 @@ export default function SearchResultsRenderer({ results }: SearchResultsRenderer
       }
       storeGroups[storeName].push(result)
     } else {
-      standaloneStores.push(result)
+      // Check if it's a restaurant (no storeType or matchType is restaurant/menu-item)
+      const isRestaurant = !result.storeType || 
+                          result.matchType === "restaurant" || 
+                          result.matchType === "menu-item"
+      
+      if (isRestaurant) {
+        restaurants.push(result)
+      } else {
+        standaloneStores.push(result)
+      }
     }
   })
   
   return (
     <>
       {/* Render store groups with products */}
-      {Object.entries(storeGroups).map(([storeName, products]) => (
-        <div key={storeName} className="bg-white rounded-lg shadow-sm border">
+      {Object.entries(storeGroups).map(([storeName, products]) => {
+        // Get store type from first product
+        const firstProduct = products[0]
+        const storeType = firstProduct?.storeType || "grocery"
+        
+        // Get actual store information instead of product information
+        const storeInfo: any = getStoreInfo(storeName, storeType)
+        
+        // Use store-level data if available, otherwise fallback to product data
+        const isOpen = storeInfo?.isOpen !== undefined ? storeInfo.isOpen : (firstProduct?.isOpen !== false)
+        const rating = storeInfo?.rating ?? firstProduct?.rating ?? null
+        const reviewCount = storeInfo?.reviewCount
+        const reviews = reviewCount !== undefined && reviewCount !== null
+          ? `${reviewCount}+` 
+          : (firstProduct?.reviews || null)
+        const deliveryFee = storeInfo?.deliveryFee || firstProduct?.deliveryFee || "CA$0 delivery fee"
+        const time = storeInfo?.time || firstProduct?.time || "30-45 min"
+        const discount = storeInfo?.discount || firstProduct?.discount
+        const openingHours = storeInfo?.openTime || firstProduct?.openingHours
+        
+        return (
+        <div key={storeName} className="mb-8">
           {/* Store Header */}
-          <div className="p-4 border-b">
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-xl font-semibold">{storeName}</h2>
-                <div className="flex items-center text-sm text-gray-600 mt-1">
-                  <span>{products[0]?.time || "30-45 min"}</span>
-                  {products[0]?.discount && (
-                    <>
-                      <span className="mx-2">•</span>
-                      <span className="text-red-600">{products[0].discount}</span>
-                    </>
-                  )}
+          <div className="pb-4 mb-4">
+            <div className="flex items-start justify-between mb-2">
+              <div className="flex-1">
+                <h2 className="text-2xl font-bold mb-2">{storeName}</h2>
+                
+                {/* Rating and Reviews */}
+                {rating && (
+                  <div className="flex items-center text-sm mb-2">
+                    <Star className="w-4 h-4 text-yellow-400 fill-current mr-1" />
+                    <span className="font-semibold text-gray-900 mr-1">{rating}</span>
+                    {reviews && (
+                      <span className="text-gray-600">({reviews})</span>
+                    )}
+                  </div>
+                )}
+                
+                {/* Delivery Estimate */}
+                <div className="text-sm text-gray-600 mb-1">
+                  {getDeliveryEstimate(time)}
                 </div>
+                
+                {/* Delivery Fee */}
+                <div className="text-sm text-gray-600 mb-1">
+                  {deliveryFee}
+                </div>
+                
+                {/* Status */}
+                {!isOpen && (
+                  <div className="text-sm text-gray-600 mb-1">
+                    <span className="text-gray-500">Closed</span>
+                    <span className="ml-2">{formatOpeningTime(openingHours)}</span>
+                  </div>
+                )}
+                
+                {/* Promotional Offer */}
+                {discount && (
+                  <div className="mt-2">
+                    <span className="text-sm font-semibold text-red-600 bg-red-50 px-2 py-1 rounded">
+                      {discount}
+                    </span>
+                  </div>
+                )}
               </div>
-              <button className="p-2">
-                <Heart className="w-6 h-6 text-gray-400" />
+              <button 
+                className="p-2 ml-4"
+                onClick={(e) => {
+                  e.preventDefault()
+                  e.stopPropagation()
+                  toggleFavorite(storeName)
+                }}
+              >
+                <Heart 
+                  className={`w-6 h-6 transition-colors ${
+                    favoritedStores.has(storeName) 
+                      ? "text-blue-600 fill-blue-600" 
+                      : "text-gray-400"
+                  }`} 
+                />
               </button>
             </div>
-            {products[0]?.isOpen === false && (
-              <div className="mt-2">
-                <span className="text-sm text-gray-500">Closed</span>
-                <span className="text-sm text-gray-600 ml-2">Opens Thu at 6:00 AM</span>
-              </div>
-            )}
           </div>
           
-          {/* Products Grid */}
-          <div className="p-4">
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
+          {/* Products - Horizontal Scrollable */}
+          <div>
+            <div className="flex gap-6 overflow-x-auto pb-2 scrollbar-hide">
               {products.map((product) => (
-                <div key={product.id} className="flex flex-col">
+                <div key={product.id} className="flex flex-col min-w-[160px] max-w-[160px] flex-shrink-0">
                   {/* Product Image */}
-                  <div className="relative aspect-square bg-gray-100 rounded-lg overflow-hidden mb-2">
+                  <div className="relative aspect-square bg-gray-100 rounded-lg overflow-hidden mb-3 shadow-sm">
                     <Image
                       src={product.banner || product.logo || `/placeholder.svg?height=150&width=150&query=${product.name}`}
                       alt={product.name}
@@ -82,33 +262,8 @@ export default function SearchResultsRenderer({ results }: SearchResultsRenderer
                     )}
                   </div>
                   
-                  {/* Product Info */}
-                  <div className="flex-1 flex flex-col">
-                    <h3 className="font-medium text-sm leading-tight mb-1 line-clamp-2">{product.name}</h3>
-                    {product.matchedItems && product.matchedItems.length > 0 && (
-                      <p className="text-xs text-gray-500 mb-1">Many in stock</p>
-                    )}
-                    
-                    {/* Price Display */}
-                    {(product.priceRange !== undefined && product.priceRange !== null && 
-                      (typeof product.priceRange === 'string' ? product.priceRange !== '0' && product.priceRange !== '' : product.priceRange !== 0)) && (
-                      <div className="mb-2">
-                        <span className="text-sm font-semibold text-gray-900">
-                          {typeof product.priceRange === 'string' 
-                            ? product.priceRange.startsWith('$') 
-                              ? product.priceRange 
-                              : product.priceRange === '0' || product.priceRange === ''
-                                ? 'Free'
-                                : `$${product.priceRange}`
-                            : product.priceRange === 0 
-                              ? 'Free'
-                              : `$${(product.priceRange as number).toFixed(2)}`
-                          }
-                        </span>
-                      </div>
-                    )}
-                    
-                    {/* Add to Cart Button - More Prominent */}
+                  {/* Add Button - Positioned below image, right-aligned */}
+                  <div className="flex justify-end mb-3">
                     <button
                       onClick={(e) => {
                         e.preventDefault()
@@ -149,18 +304,129 @@ export default function SearchResultsRenderer({ results }: SearchResultsRenderer
                       
                       console.log('Added to cart:', product.name, 'from', product.cuisine)
                       }}
-                      className="mt-auto w-full py-2 px-3 bg-orange-500 hover:bg-orange-600 text-white rounded-md text-sm font-medium transition-colors shadow-sm flex items-center justify-center gap-1.5"
+                      className="bg-white text-gray-900 rounded-full px-4 py-1.5 text-sm font-semibold shadow-md hover:shadow-lg transition-shadow"
                     >
-                      <ShoppingCart className="w-4 h-4" />
                       Add
                     </button>
+                  </div>
+                  
+                  {/* Product Info */}
+                  <div className="flex-1 flex flex-col">
+                    <h3 className="font-medium text-sm leading-tight mb-1.5 line-clamp-2 text-gray-900">{product.name}</h3>
+                    {product.matchedItems && product.matchedItems.length > 0 && (
+                      <p className="text-xs text-green-600 mb-2">Many in stock</p>
+                    )}
+                    
+                    {/* Price Display */}
+                    {(product.priceRange !== undefined && product.priceRange !== null && 
+                      (typeof product.priceRange === 'string' ? product.priceRange !== '0' && product.priceRange !== '' : product.priceRange !== 0)) && (
+                      <div className="mb-1">
+                        <span className="text-base font-bold text-gray-900">
+                          {typeof product.priceRange === 'string' 
+                            ? product.priceRange.startsWith('$') 
+                              ? product.priceRange 
+                              : product.priceRange === '0' || product.priceRange === ''
+                                ? 'Free'
+                                : `$${product.priceRange}`
+                            : product.priceRange === 0 
+                              ? 'Free'
+                              : `$${(product.priceRange as number).toFixed(2)}`
+                          }
+                        </span>
+                      </div>
+                    )}
                   </div>
                 </div>
               ))}
             </div>
           </div>
         </div>
-      ))}
+        )
+      })}
+      
+      {/* Render restaurants with heading */}
+      {restaurants.length > 0 && (
+        <div className="mb-8">
+          <h2 className="text-2xl font-bold mb-4">Restaurants</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {restaurants.map((restaurant) => (
+              <Link 
+                key={restaurant.id}
+                href={`/store/${restaurant.id}`}
+                className="block"
+              >
+                <div className="restaurant-card">
+                  <div className="relative h-[200px] bg-gray-100 rounded-t-lg overflow-hidden">
+                    <Image
+                      src={
+                        restaurant.banner ||
+                        `/placeholder.svg?height=200&width=400&query=${restaurant.name || "/placeholder.svg"} restaurant`
+                      }
+                      alt={restaurant.name}
+                      fill
+                      className="object-cover"
+                    />
+                    {restaurant.new && (
+                      <div className="absolute top-3 left-3 bg-black text-white text-xs font-bold px-2 py-1 rounded">
+                        NEW
+                      </div>
+                    )}
+                  </div>
+                  <div className="p-4 bg-white rounded-b-lg shadow-sm">
+                    <div className="flex items-start justify-between mb-2">
+                      <div className="flex-1">
+                        <h3 className="font-semibold text-lg leading-tight mb-1">{restaurant.name}</h3>
+                        <p className="text-sm text-gray-600 mb-1">{restaurant.cuisine}</p>
+                      </div>
+                      <button 
+                        className="ml-2 p-1"
+                        onClick={(e) => {
+                          e.preventDefault()
+                          e.stopPropagation()
+                          toggleFavorite(restaurant.name)
+                        }}
+                      >
+                        <Heart 
+                          className={`w-5 h-5 transition-colors ${
+                            favoritedStores.has(restaurant.name) 
+                              ? "text-blue-600 fill-blue-600" 
+                              : "text-gray-400"
+                          }`} 
+                        />
+                      </button>
+                    </div>
+                    
+                    <div className="flex items-center text-sm text-gray-600 mb-2">
+                      <Star className="w-4 h-4 text-yellow-400 fill-current mr-1" />
+                      <span className="mr-2">{restaurant.rating}</span>
+                      <span className="mr-2">({restaurant.reviews})</span>
+                      <span className="mr-2">•</span>
+                      <span className="mr-2">{restaurant.time}</span>
+                      <span className="mr-2">•</span>
+                      <span>{restaurant.distance}</span>
+                    </div>
+                    
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center text-sm">
+                        <span className="text-gray-600">{restaurant.deliveryFee}</span>
+                        {restaurant.dashPass && (
+                          <div className="ml-2 px-2 py-1 bg-black text-white text-xs rounded">
+                            DashPass
+                          </div>
+                        )}
+
+                      </div>
+                      <div className="text-sm font-medium text-gray-900">
+                        {restaurant.priceRange}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
       
       {/* Render standalone stores */}
       {standaloneStores.length > 0 && (
@@ -201,8 +467,21 @@ export default function SearchResultsRenderer({ results }: SearchResultsRenderer
                       <h3 className="font-semibold text-lg leading-tight mb-1">{restaurant.name}</h3>
                       <p className="text-sm text-gray-600 mb-1">{restaurant.cuisine}</p>
                     </div>
-                    <button className="ml-2 p-1">
-                      <Heart className="w-5 h-5 text-gray-400" />
+                    <button 
+                      className="ml-2 p-1"
+                      onClick={(e) => {
+                        e.preventDefault()
+                        e.stopPropagation()
+                        toggleFavorite(restaurant.name)
+                      }}
+                    >
+                      <Heart 
+                        className={`w-5 h-5 transition-colors ${
+                          favoritedStores.has(restaurant.name) 
+                            ? "text-blue-600 fill-blue-600" 
+                            : "text-gray-400"
+                        }`} 
+                      />
                     </button>
                   </div>
                   

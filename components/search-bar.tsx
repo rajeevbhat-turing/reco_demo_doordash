@@ -34,6 +34,7 @@ const SearchBar = () => {
   const [searchResults, setSearchResults] = useState<SearchResult[]>([])
   const [searchSuggestions, setSearchSuggestions] = useState<string[]>([])
   const [recentSearches, setRecentSearches] = useState<string[]>([])
+  const [previousPathname, setPreviousPathname] = useState<string | null>(null)
   const searchInputRef = useRef<HTMLInputElement>(null)
   const searchContainerRef = useRef<HTMLDivElement>(null)
   const router = useRouter()
@@ -519,11 +520,20 @@ const SearchBar = () => {
     }
   }
 
-  // Go back (close search)
+  // Go back (close search and navigate to previous page)
   const goBack = () => {
     setIsSearchActive(false)
     setSearchTerm("")
     clearSearchResults()
+    
+    // If currently on search page, navigate to home page
+    if (pathname === "/search") {
+      router.push("/")
+    } 
+    // Otherwise, navigate back to the previous page if it exists and is different from current
+    else if (previousPathname && previousPathname !== pathname) {
+      router.push(previousPathname)
+    }
   }
 
   return (
@@ -531,14 +541,14 @@ const SearchBar = () => {
       <form onSubmit={handleSearchSubmit} className="relative">
         <div
           className={`flex items-center bg-gray-100 rounded-full transition-all h-8 ${
-            isSearchActive ? 'bg-white border border-gray-300' : ''
+            isSearchActive ? 'bg-white border border-black' : ''
           }`}
         >
           {isSearchActive ? (
             <button
               type="button"
               onClick={goBack}
-              className="pl-3 pr-1 text-gray-500 hover:text-gray-700 focus:outline-none"
+              className="pl-3 pr-1 text-black hover:text-gray-700 focus:outline-none"
             >
               <ArrowLeft className="h-5 w-5" />
             </button>
@@ -556,13 +566,19 @@ const SearchBar = () => {
             } text-sm focus:outline-none`}
             value={searchTerm}
             onChange={handleSearchChange}
-            onFocus={() => setIsSearchActive(true)}
+            onFocus={() => {
+              // Store the current pathname when search is activated
+              if (!isSearchActive) {
+                setPreviousPathname(pathname)
+              }
+              setIsSearchActive(true)
+            }}
           />
           {searchTerm && isSearchActive && (
             <button
               type="button"
               onClick={clearSearch}
-              className="absolute right-3 text-gray-500 hover:text-gray-700 focus:outline-none"
+              className="absolute right-3 text-black hover:text-gray-700 focus:outline-none"
             >
               <X className="h-5 w-5" />
             </button>

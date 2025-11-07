@@ -202,24 +202,6 @@ export default function SearchPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8 mt-14">
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold">Search results for "{query}"</h1>
-        <div className="text-sm text-gray-600">
-          {searchResults.length} {searchResults.length === 1 ? "result" : "results"} found
-        </div>
-      </div>
-
-      {/* Filter Options Bar */}
-      <div className="mb-6">
-        <FilterOptions 
-          isGrocery={false} 
-          onFilterChange={handleFilterChange}
-          filters={activeFilters}
-          hideCuisineFilter={hideCuisineFilter}
-          hideDietaryFilter={hideDietaryFilter}
-        />
-      </div>
-
       {/* Category Tabs - Only show if there are multiple categories */}
       {!isLoading && availableCategories.length > 1 && (
         <div className="mb-6 border-b border-gray-200">
@@ -240,6 +222,17 @@ export default function SearchPage() {
           </div>
         </div>
       )}
+
+      {/* Filter Options Bar */}
+      <div className="mb-6">
+        <FilterOptions 
+          isGrocery={false} 
+          onFilterChange={handleFilterChange}
+          filters={activeFilters}
+          hideCuisineFilter={hideCuisineFilter}
+          hideDietaryFilter={hideDietaryFilter}
+        />
+      </div>
 
       {isLoading ? (
         <div className="flex justify-center items-center py-12">
