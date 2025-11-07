@@ -5,6 +5,7 @@ import './globals.css';
 import MainLayout from './main-layout';
 import LocalStorageSync from '@/components/LocalStorageSync';
 import { GlobalContextProvider } from './global-context';
+import { QueryProvider } from '@/lib/providers/query-provider';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -21,10 +22,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <LocalStorageSync />
-        <GlobalContextProvider>
-          <MainLayout>{children}</MainLayout>
-        </GlobalContextProvider>
+        <QueryProvider>
+          <LocalStorageSync />
+          <GlobalContextProvider>
+            <MainLayout>{children}</MainLayout>
+          </GlobalContextProvider>
 
         {/* Global Functions Script */}
         <script
@@ -217,6 +219,7 @@ export default function RootLayout({
             `,
           }}
         />
+        </QueryProvider>
       </body>
     </html>
   );
