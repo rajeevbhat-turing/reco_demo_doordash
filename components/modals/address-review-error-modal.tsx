@@ -18,7 +18,7 @@ export default function AddressReviewErrorModal({
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black bg-opacity-50 p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
       <div className="relative bg-white rounded-2xl w-full max-w-md mx-4">
         <div className="p-6">
           {/* Close button */}

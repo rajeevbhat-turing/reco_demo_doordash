@@ -11,14 +11,13 @@ import { isValidEmail } from '@/lib/utils/helperFunctions';
 interface SignInProps {
   onSuccess: () => void;
   setMode: (mode: 'signin' | 'signup' | 'forgot-password', email?: string) => void;
-  initialEmail?: string;
 }
 
-export default function SignIn({ onSuccess, setMode, initialEmail }: SignInProps) {
+export default function SignIn({ onSuccess, setMode }: SignInProps) {
   const users = useUserStore(state => state.users);
   const setCurrentUser = useUserStore(state => state.setCurrentUser);
   const [formData, setFormData] = useState({
-    email: initialEmail || '',
+    email: '',
     otp: '',
     otpInputs: ['', '', '', '', '', ''],
     password: '',
@@ -30,13 +29,6 @@ export default function SignIn({ onSuccess, setMode, initialEmail }: SignInProps
   const [attemptsLeft, setAttemptsLeft] = useState(5);
   const [resendTimer, setResendTimer] = useState(0);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
-
-  // Updating the email field when the initialEmail prop changes
-  useEffect(() => {
-    if (initialEmail) {
-      setFormData(prev => ({ ...prev, email: initialEmail }));
-    }
-  }, [initialEmail]);
 
   // Clearing the interval when the component unmounts
   useEffect(

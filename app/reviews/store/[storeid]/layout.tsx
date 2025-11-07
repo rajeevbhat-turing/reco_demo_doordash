@@ -11,7 +11,7 @@ export default function StoreReviewsLayout({ children }: { children: ReactNode }
   useEffect(() => {
     // Redirect to home if not authenticated
     if (currentUser === null) {
-      router.push('/home');
+      router.push('/');
     }
   }, [currentUser, router]);
 
