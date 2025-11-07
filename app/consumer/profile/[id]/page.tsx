@@ -10,7 +10,8 @@ import UserRatingsModal from '@/components/modals/user-ratings-modal';
 import { useUserStore } from '@/store/user-store';
 import { useReviewStore } from '@/store/review-store';
 import { generateAvatarColor } from '@/lib/utils/helperFunctions';
-import { getRestaurantById } from '@/constants/restaurants';
+import { useRestaurants } from '@/lib/hooks/use-restaurants';
+import { getRestaurantById } from '@/lib/utils/restaurant-utils';
 import {
   LockIcon,
   VerificationIcon,
@@ -26,8 +27,16 @@ export default function UserProfilePage() {
   const userId = params.id as string;
   const [ratingsModalOpen, setRatingsModalOpen] = useState(false);
 
-  const { getUser } = useUserStore();
+  const { getUser, currentUser } = useUserStore();
   const { getUserReviewCount } = useReviewStore();
+
+  // Fetch restaurants near user's address
+  const defaultAddress = currentUser?.addresses.find(a => a.default);
+  const { data: restaurants } = useRestaurants(
+    defaultAddress?.lat,
+    defaultAddress?.lng,
+    10 // 10 mile radius
+  );
 
   const user = getUser(userId);
 
@@ -164,7 +173,7 @@ export default function UserProfilePage() {
             {/* User Reviews Section */}
             <div className="bg-white rounded-lg shadow-sm flex flex-col gap-6 mt-6">
               {allReviews.map(review => {
-                const restaurant = getRestaurantById(review.vendorId);
+                const restaurant = getRestaurantById(restaurants, review.vendorId);
                 return (
                   <div key={review.id} className="border border-[#e5e5e5] rounded-2xl px-3.5 py-4">
                     {/* Review Header */}

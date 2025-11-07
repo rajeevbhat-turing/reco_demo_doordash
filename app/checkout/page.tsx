@@ -39,7 +39,8 @@ import SignUp from '@/components/authentication/sign-up';
 import OTPVerificationModal from '@/components/modals/otp-verification-modal';
 import CountryCodeDropdown from '@/components/modals/country-code-dropdown';
 import PromoCodeModal from '@/components/modals/promocode-modal';
-import { getRestaurantById } from '@/constants/restaurants';
+import { useRestaurants } from "@/lib/hooks/use-restaurants";
+import { getRestaurantById } from "@/lib/utils/restaurant-utils";
 import { stores } from '@/data/store-data';
 import { stores as retailStores } from '@/constants/store';
 import { allPetStores } from '@/data/pet-data';
@@ -82,6 +83,14 @@ export default function CheckoutPage() {
   } = useUserStore();
   const { addOrder } = useOrdersStore();
   const { getAppliedDeal, getFreeItemIds } = useDealsStore();
+
+  // Fetch restaurants near user's address
+  const defaultAddress = currentUser?.addresses.find(a => a.default)
+  const { data: restaurants } = useRestaurants(
+    defaultAddress?.lat,
+    defaultAddress?.lng,
+    10 // 10 mile radius
+  )
 
   const savedPaymentMethods = getPaymentMethods();
   const addresses = getAddresses();
@@ -407,7 +416,7 @@ export default function CheckoutPage() {
         day: 'numeric',
       }),
       status: 'Confirmed',
-      orderType: 'Personal', // Default to Personal
+      orderType: 'Personal' as const, // Default to Personal
     };
 
     console.log('ORDER DATA:', orderData);
@@ -482,8 +491,8 @@ export default function CheckoutPage() {
 
     // Fallback to looking up by ID if we have the params
     if (currentCategory === 'restaurant' && currentStoreId) {
-      const restaurant = getRestaurantById(currentStoreId);
-      return restaurant?.name || 'Restaurant';
+      const restaurant = getRestaurantById(restaurants, currentStoreId)
+      return restaurant?.name || 'Restaurant'
     } else if (currentCategory !== 'restaurant' && currentStoreId) {
       let store = null;
       switch (currentCategory) {

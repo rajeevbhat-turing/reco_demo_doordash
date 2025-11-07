@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation"
 import Link from "next/link"
 import FilterOptions, { FilterState, FilterOptionsRef } from "@/components/filter-options"
 import { useCartStore } from "@/store/cart-store"
+import { useUserStore } from "@/store/user-store"
 import { useVerifierStore } from "@/store/verifier-store"
 import { useAppStore } from "@/store/app-store"
 import { performSearch, isOnlySpecialCharacters, type SearchResultRestaurant } from "@/lib/utils/search-utils"
@@ -43,6 +44,10 @@ export default function SearchPage() {
   })
   const { updateSearchResults, clearSearchResults } = useAppStore()
   const { recordSearch } = useVerifierStore()
+
+  // Get user's address for location-based search
+  const currentUser = useUserStore(state => state.currentUser)
+  const defaultAddress = currentUser?.addresses.find(a => a.default)
 
   // Handle filter changes
   const handleFilterChange = (filters: FilterState) => {

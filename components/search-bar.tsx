@@ -4,14 +4,14 @@ import React, { useState, useRef, useEffect, useSyncExternalStore } from "react"
 import Image from "next/image"
 import { Search, X, ArrowLeft, ChevronRight, Clock } from "lucide-react"
 import { useRouter, usePathname } from "next/navigation"
-import { restaurants } from "@/constants/restaurants"
+import { useRestaurants } from "@/lib/hooks/use-restaurants"
 import { menuItems } from "@/constants/menu-items"
 import { getAllStores } from "@/app/grocery/data/retail-response-mapper"
 import { getAllStores as getConvenienceStores } from "@/app/convenience/data/convenience-response-mapper"
 import { getAllPetStores, getEnrichedPetProducts } from "@/app/pets/data/pet-response-mapper"
 import { convenienceData } from "@/data/convenience-data"
 import { stores as retailStores } from "@/constants/store"
-import { filterRestaurantsWithMenuItems } from "@/utils/restaurant-utils"
+import { useUserStore } from "@/store/user-store"
 import { useAppStore } from "@/store/app-store"
 import { useVerifierStore } from "@/store/verifier-store"
 import { useUserStore } from "@/store/user-store"
@@ -57,6 +57,17 @@ const SearchBar = () => {
     useUserStore.subscribe,
     () => useUserStore.getState().isAuthenticated(),
     () => false // fallback for SSR
+  )
+
+  // Get user's address for location-based search
+  const currentUser = useUserStore(state => state.currentUser)
+  const defaultAddress = currentUser?.addresses.find(a => a.default)
+
+  // Fetch restaurants near user's address
+  const { data: restaurants } = useRestaurants(
+    defaultAddress?.lat,
+    defaultAddress?.lng,
+    10 // 10 mile radius
   )
 
   // Load recent searches from localStorage on component mount
@@ -116,6 +127,8 @@ const SearchBar = () => {
 
   // Search for restaurants that serve specific menu items
   const searchByMenuItem = (searchTerm: string) => {
+    if (!restaurants) return [];
+
     const lowerSearchTerm = searchTerm.toLowerCase()
     const matchingItems = menuItems.filter(
       (item) =>
@@ -125,12 +138,9 @@ const SearchBar = () => {
     )
 
     const restaurantMatches = new Map<string, { restaurant: any; items: string[] }>()
-
-    // Only consider restaurants that have menu items
-    const restaurantsWithMenus = filterRestaurantsWithMenuItems(restaurants);
     
     matchingItems.forEach((item) => {
-      const restaurant = restaurantsWithMenus.find((r) => r.id === item.restaurantId)
+      const restaurant = restaurants.find((r) => r.id === item.restaurantId)
       if (restaurant) {
         if (!restaurantMatches.has(restaurant.id)) {
           restaurantMatches.set(restaurant.id, { restaurant, items: [] })
@@ -158,9 +168,9 @@ const SearchBar = () => {
     const value = e.target.value
     setSearchTerm(value)
 
-    if (value.trim()) {
-      // Search restaurants by name and cuisine - only include restaurants with menu items
-      const restaurantResults = filterRestaurantsWithMenuItems(restaurants)
+    if (value.trim() && restaurants) {
+      // Search restaurants by name and cuisine
+      const restaurantResults = restaurants
         .filter((restaurant) => {
           return (
             restaurant.name.toLowerCase().includes(value.toLowerCase()) ||

@@ -2,7 +2,8 @@
 
 import { useRouter, useSearchParams } from "next/navigation"
 import VerticalListPage from "@/components/vertical-list-page"
-import { restaurants } from "@/constants/restaurants"
+import { useRestaurants } from "@/lib/hooks/use-restaurants"
+import { useUserStore } from "@/store/user-store"
 import { 
   getAllStores, 
   getGroceryFavorites, 
@@ -11,12 +12,23 @@ import {
 import { convenienceStores } from "@/data/convenience-store-data"
 import { Suspense } from "react"
 import { getDefaultRating } from "@/utils/rating-utils"
-import { filterRestaurantsWithMenuItems } from "@/utils/restaurant-utils"
+import { RestaurantsSkeleton } from "@/components/skeletons/restaurant-skeleton"
 
 // Inner component that uses searchParams
 function AllItemsContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
+
+  // Get user's address for location-based filtering
+  const currentUser = useUserStore(state => state.currentUser)
+  const defaultAddress = currentUser?.addresses.find(a => a.default)
+
+  // Fetch restaurants near user's address
+  const { data: restaurants, isLoading } = useRestaurants(
+    defaultAddress?.lat,
+    defaultAddress?.lng,
+    10 // 10 mile radius
+  )
   
   // Get parameters from the URL
   const title = decodeURIComponent(searchParams.get('title') || "All Items")
@@ -35,30 +47,30 @@ function AllItemsContent() {
   const getItems = () => {
     // Restaurant items
     if (type === 'restaurant') {
+      if (!restaurants) return [];
+
       let filteredRestaurants: any[] = []
-      // First filter restaurants to only include those with menu items
-      const restaurantsWithMenus = filterRestaurantsWithMenuItems(restaurants);
       
       switch (section) {
         case 'national-favourites':
-          filteredRestaurants = restaurantsWithMenus.filter(r => r.featured === true && hasValidLogo(r.logo))
+          filteredRestaurants = restaurants.filter(r => r.featured === true && hasValidLogo(r.logo))
           break
         case 'fastest-near-you':
-          filteredRestaurants = restaurantsWithMenus.filter(r => {
+          filteredRestaurants = restaurants.filter(r => {
             const timeStr = r.time
             const minutes = parseInt(timeStr.match(/\d+/)?.[0] || "100")
             return minutes < 30 && hasValidLogo(r.logo)
           })
           break
         case 'deals-for-you':
-          filteredRestaurants = restaurantsWithMenus.filter(r => r.discount && hasValidLogo(r.logo))
+          filteredRestaurants = restaurants.filter(r => r.discount && hasValidLogo(r.logo))
           break
         case 'new-on-doordash':
-          filteredRestaurants = restaurantsWithMenus.filter(r => r.new && hasValidLogo(r.logo))
+          filteredRestaurants = restaurants.filter(r => r.new && hasValidLogo(r.logo))
           break
         case 'all-stores':
         default:
-          filteredRestaurants = restaurantsWithMenus // Filter "all-stores" section too
+          filteredRestaurants = restaurants // Filter "all-stores" section too
       }
       
       // Convert restaurants to ListItem format
@@ -188,6 +200,29 @@ function AllItemsContent() {
       default:
         return '/store'
     }
+  }
+
+  // Show loading skeleton while fetching restaurants
+  if (type === 'restaurant' && isLoading) {
+    return (
+      <div className="w-full max-w-[1200px] mx-auto px-4 py-8">
+        <RestaurantsSkeleton count={12} />
+      </div>
+    );
+  }
+
+  // Show address prompt if no address for restaurants
+  if (type === 'restaurant' && !defaultAddress) {
+    return (
+      <div className="w-full max-w-[1200px] mx-auto px-4 py-16">
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-8 text-center max-w-md mx-auto">
+          <h2 className="text-2xl font-bold mb-3">Add Your Delivery Address</h2>
+          <p className="text-gray-600 mb-4">
+            We need your address to show restaurants that deliver to you.
+          </p>
+        </div>
+      </div>
+    );
   }
 
   return (

@@ -8,12 +8,13 @@ import FoodCategories from "@/components/food-categories"
 import FilterOptions, { type FilterOptionsRef, type FilterState } from "@/components/filter-options"
 import PromoBanners from "@/components/promo-banners"
 import RestaurantSection from "@/components/restaurant-section"
-import { restaurants } from "@/constants/restaurants"
+import { useRestaurants } from "@/lib/hooks/use-restaurants"
 import type { Restaurant } from "@/constants/restaurants"
 import { useCartStore } from "@/store/cart-store"
+import { useUserStore } from "@/store/user-store"
 import { useAppStore } from "@/store/app-store"
 import { getDefaultRating } from "@/utils/rating-utils"
-import { filterRestaurantsWithMenuItems } from "@/utils/restaurant-utils"
+import { RestaurantsSkeleton } from "@/components/skeletons/restaurant-skeleton"
 
 export default function Home() {
   const [filters, setFilters] = useState<FilterState>({
@@ -30,6 +31,17 @@ export default function Home() {
 
   // Get cart store to set category
   const cartStore = useCartStore()
+
+  // Get user's address for location-based filtering
+  const currentUser = useUserStore(state => state.currentUser)
+  const defaultAddress = currentUser?.addresses.find(a => a.default)
+
+  // Fetch restaurants near user's address
+  const { data: restaurants, isLoading: isLoadingRestaurants, error: restaurantsError } = useRestaurants(
+    defaultAddress?.lat,
+    defaultAddress?.lng,
+    10 // 10 mile radius
+  )
 
   // Set the category to restaurant when component mounts
   useEffect(() => {
@@ -64,10 +76,11 @@ export default function Home() {
     window.scrollTo({ top: 0, behavior: "smooth" })
   }
 
-  // Get only actual restaurants (filter out stores like Target, flower shops) and those with menu items
+  // Get only actual restaurants (filter out stores like Target, flower shops)
   const actualRestaurants = useMemo(() => {
-    return withDefaultRatings(filterRestaurantsWithMenuItems(filterOnlyRestaurants(restaurants)));
-  }, []);
+    if (!restaurants) return [];
+    return withDefaultRatings(filterOnlyRestaurants(restaurants));
+  }, [restaurants]);
 
   // Memoize the original restaurant sections to prevent recreating them on every render
   const nationalFavorites = useMemo(() => {
@@ -188,6 +201,8 @@ export default function Home() {
   const handleFilterChange = (newFilters: FilterState) => {
     setFilters(newFilters)
 
+    if (!restaurants) return;
+
     // Apply filters to restaurants
     let filteredRestaurants = [...restaurants]
 
@@ -255,6 +270,55 @@ export default function Home() {
       (filters.price !== null && filters.price.length > 0) ||
       filters.dashPass
     )
+  }
+
+  // Show loading skeleton while fetching restaurants
+  if (isLoadingRestaurants) {
+    return (
+      <div className="w-full max-w-[1200px] mx-auto px-4">
+        <div className="pt-16">
+          <FoodCategories selectedCategory={selectedCategory} onCategorySelect={handleCategorySelect} />
+        </div>
+        <FilterOptions
+          ref={filterOptionsRef}
+          onFilterChange={handleFilterChange}
+          onReset={handleReset}
+          filters={filters}
+        />
+        <div className="mt-8">
+          <RestaurantsSkeleton count={12} />
+        </div>
+      </div>
+    );
+  }
+
+  // Show address prompt if no address
+  if (!defaultAddress) {
+    return (
+      <div className="w-full max-w-[1200px] mx-auto px-4 py-16">
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-8 text-center max-w-md mx-auto">
+          <h2 className="text-2xl font-bold mb-3">Add Your Delivery Address</h2>
+          <p className="text-gray-600 mb-4">
+            We need your address to show restaurants that deliver to you.
+          </p>
+          <button className="bg-red-600 text-white px-6 py-3 rounded-full font-medium hover:bg-red-700">
+            Add Address
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error if fetch failed
+  if (restaurantsError) {
+    return (
+      <div className="w-full max-w-[1200px] mx-auto px-4 py-16">
+        <div className="bg-red-50 border border-red-200 rounded-lg p-6">
+          <h2 className="text-xl font-bold text-red-800 mb-2">Failed to Load Restaurants</h2>
+          <p className="text-red-600">{restaurantsError.message}</p>
+        </div>
+      </div>
+    );
   }
 
   return (

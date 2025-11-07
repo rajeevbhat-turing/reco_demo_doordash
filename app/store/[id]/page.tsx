@@ -3,21 +3,34 @@
 import { useEffect, useState, useRef, useCallback, useMemo } from 'react';
 import Image from 'next/image';
 import { useParams } from 'next/navigation';
-import { ChevronDown, Info, ChevronLeft, ChevronRight, Heart, Search, X } from 'lucide-react';
-import { getRestaurantById } from '@/constants/restaurants';
-import { getMenuItemsByCategory } from '@/constants/menu-items';
-import { getMenuCategoriesByRestaurantId } from '@/lib/utils';
-import { useCartStore } from '@/store/cart-store';
-import { useAppStore } from '@/store/app-store';
-import { useVerifierStore } from '@/store/verifier-store';
-import MenuItemDialog from '@/components/menu-item-dialog';
-import GroupOrderDialog from '@/components/group-order-dialog';
-import StoreDetailsDialog from '@/components/store-details-dialog';
-import { Reviews } from '@/components/reviews';
+import {
+  ChevronDown,
+  Info,
+  ChevronLeft,
+  ChevronRight,
+  Heart,
+  Search,
+  X,
+} from 'lucide-react';
+import { useRestaurants } from "@/lib/hooks/use-restaurants";
+import { useUserStore } from "@/store/user-store";
+import { getRestaurantById } from "@/lib/utils/restaurant-utils";
+import {
+  getFeaturedMenuItemsByRestaurantId,
+  getMenuItemsByCategory,
+} from "@/constants/menu-items";
+import { getMenuCategoriesByRestaurantId } from "@/lib/utils";
+import { getDealsByRestaurantId, dashpassDeal, type Deal } from "@/constants/deals";
+import { useCartStore } from "@/store/cart-store";
+import { useAppStore } from "@/store/app-store";
+import { useVerifierStore } from "@/store/verifier-store";
+import MenuItemDialog from "@/components/menu-item-dialog";
+import GroupOrderDialog from "@/components/group-order-dialog";
+import StoreDetailsDialog from "@/components/store-details-dialog";
+import { Reviews } from "@/components/reviews";
 import { Deals } from '@/components/deals';
-import ServiceFeesInfo from '@/components/service-fees-info';
-import { getDefaultRating } from '@/utils/rating-utils';
-import { getDealsByRestaurantId, dashpassDeal, type Deal } from '@/constants/deals';
+import ServiceFeesInfo from "@/components/service-fees-info";
+import { getDefaultRating } from "@/utils/rating-utils";
 
 const menuTypes = [
   {
@@ -92,6 +105,15 @@ export default function RestaurantPage() {
   const ticking = useRef(false);
   const featuredItemsRef = useRef<HTMLDivElement>(null);
 
+  // Fetch restaurants near user's address
+  const currentUser = useUserStore(state => state.currentUser)
+  const defaultAddress = currentUser?.addresses.find(a => a.default)
+  const { data: restaurants } = useRestaurants(
+    defaultAddress?.lat,
+    defaultAddress?.lng,
+    10 // 10 mile radius
+  )
+
   // Set the category to restaurant when the page loads
   useEffect(() => {
     cartStore.setCategory('restaurant');
@@ -135,9 +157,9 @@ export default function RestaurantPage() {
   }, []);
 
   useEffect(() => {
-    if (id) {
-      const restaurantData = getRestaurantById(id);
-      const featuredItemsData = getMenuItemsByCategory(id, 'Featured Items');
+    if (id && restaurants) {
+      const restaurantData = getRestaurantById(restaurants, id);
+      const featuredItemsData = getMenuItemsByCategory(id, "Featured Items");
       const menuCategoriesData = getMenuCategoriesByRestaurantId(id);
       const mostOrderedItemsData = getMenuItemsByCategory(id, 'Most Ordered');
       const familySharingItemsData = getMenuItemsByCategory(id, 'Family & Sharing');
@@ -157,7 +179,7 @@ export default function RestaurantPage() {
     return () => {
       clearCurrentStore();
     };
-  }, [id]);
+  }, [id, restaurants]);
 
   // Save the initial position of the menu after the component mounts
   useEffect(() => {

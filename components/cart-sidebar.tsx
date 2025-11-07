@@ -6,7 +6,9 @@ import { useRouter } from "next/navigation"
 import { X, ChevronRight, ChevronLeft, Plus, Minus } from "lucide-react"
 import { useCartStore } from "@/store/cart-store"
 import { Users } from "lucide-react"
-import { getRestaurantById } from "@/constants/restaurants"
+import { useRestaurants } from "@/lib/hooks/use-restaurants"
+import { useUserStore } from "@/store/user-store"
+import { getRestaurantById } from "@/lib/utils/restaurant-utils"
 import { getMenuItemsByRestaurantId } from "@/constants/menu-items"
 import { stores } from "@/data/store-data"
 import { stores as retailStores } from "@/constants/store"
@@ -36,6 +38,17 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
     groupOrderId,
     getConfig
   } = useCartStore()
+
+  // Get user's address for fetching restaurants
+  const currentUser = useUserStore(state => state.currentUser)
+  const defaultAddress = currentUser?.addresses.find(a => a.default)
+
+  // Fetch restaurants near user's address
+  const { data: restaurants } = useRestaurants(
+    defaultAddress?.lat,
+    defaultAddress?.lng,
+    10 // 10 mile radius
+  )
   
   // Get current store info
   const currentCategory = getCurrentCategory()
@@ -104,7 +117,7 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
       }
 
       // Get restaurant data
-      const restaurantData = getRestaurantById(currentId)
+      const restaurantData = getRestaurantById(restaurants, currentId)
       setRestaurant(restaurantData)
 
       // Get menu items strictly from this restaurant
@@ -156,7 +169,7 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
 
       setComplementItems(shuffledItems)
     },
-    [], // Remove items dependency to make it stable
+    [restaurants], // Add restaurants dependency
   )
 
   // Fetch complement items when items change - no useEffect needed
