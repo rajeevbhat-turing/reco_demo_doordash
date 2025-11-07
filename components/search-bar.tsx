@@ -14,7 +14,6 @@ import { stores as retailStores } from "@/constants/store"
 import { useUserStore } from "@/store/user-store"
 import { useAppStore } from "@/store/app-store"
 import { useVerifierStore } from "@/store/verifier-store"
-import { useUserStore } from "@/store/user-store"
 
 interface SearchResult {
   id: string

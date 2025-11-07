@@ -13,13 +13,9 @@ import {
   X,
 } from 'lucide-react';
 import { useRestaurants } from "@/lib/hooks/use-restaurants";
+import { useRestaurantMenu } from "@/lib/hooks/use-restaurant-menu";
 import { useUserStore } from "@/store/user-store";
 import { getRestaurantById } from "@/lib/utils/restaurant-utils";
-import {
-  getFeaturedMenuItemsByRestaurantId,
-  getMenuItemsByCategory,
-} from "@/constants/menu-items";
-import { getMenuCategoriesByRestaurantId } from "@/lib/utils";
 import { getDealsByRestaurantId, dashpassDeal, type Deal } from "@/constants/deals";
 import { useCartStore } from "@/store/cart-store";
 import { useAppStore } from "@/store/app-store";
@@ -95,6 +91,7 @@ export default function RestaurantPage() {
   const [mostOrderedItems, setMostOrderedItems] = useState<any[]>([]);
   const [familySharingItems, setFamilySharingItems] = useState<any[]>([]);
   const [beefItems, setBeefItems] = useState<any[]>([]);
+  const [deals, setDeals] = useState<any[]>([]);
   const [menuTopPosition, setMenuTopPosition] = useState(0);
   const menuRef = useRef<HTMLDivElement>(null);
   const menuContainerRef = useRef<HTMLDivElement>(null);
@@ -104,6 +101,7 @@ export default function RestaurantPage() {
   const { addItem } = useCartStore();
   const ticking = useRef(false);
   const featuredItemsRef = useRef<HTMLDivElement>(null);
+  const dealsRef = useRef<HTMLDivElement>(null);
 
   // Fetch restaurants near user's address
   const currentUser = useUserStore(state => state.currentUser)
@@ -113,6 +111,9 @@ export default function RestaurantPage() {
     defaultAddress?.lng,
     10 // 10 mile radius
   )
+
+  // Fetch menu for this restaurant
+  const { data: menuData, isLoading: isLoadingMenu, error: menuError } = useRestaurantMenu(id);
 
   // Set the category to restaurant when the page loads
   useEffect(() => {
@@ -157,18 +158,43 @@ export default function RestaurantPage() {
   }, []);
 
   useEffect(() => {
-    if (id && restaurants) {
+    if (id && restaurants && menuData) {
       const restaurantData = getRestaurantById(restaurants, id);
-      const featuredItemsData = getMenuItemsByCategory(id, "Featured Items");
-      const menuCategoriesData = getMenuCategoriesByRestaurantId(id);
-      const mostOrderedItemsData = getMenuItemsByCategory(id, 'Most Ordered');
-      const familySharingItemsData = getMenuItemsByCategory(id, 'Family & Sharing');
-      const beefItemsData = getMenuItemsByCategory(id, 'Beef');
+      const dealsData = getDealsByRestaurantId(id);
 
       if (restaurantData) {
         setCurrentStore(restaurantData, 'restaurant');
       }
       setRestaurant(restaurantData);
+      setDeals(dealsData);
+
+      // Get featured items using the featured flag from database
+      const featuredItemsData = menuData.menuItems.filter(item => item.featured === true);
+      
+      // Get most ordered items - prioritize popular flag, then sort by rating_count
+      const mostOrderedItemsData = menuData.menuItems
+        .filter(item => item.popular === true || (item.ratingCount && item.ratingCount > 0))
+        .sort((a, b) => {
+          // First prioritize items with popular flag
+          if (a.popular && !b.popular) return -1;
+          if (!a.popular && b.popular) return 1;
+          // Then sort by rating count (descending)
+          const aCount = a.ratingCount || 0;
+          const bCount = b.ratingCount || 0;
+          return bCount - aCount;
+        })
+        .slice(0, 5); // Take top 5
+      
+      const familySharingItemsData = menuData.menuItems.filter(item => item.category === "Family & Sharing");
+      const beefItemsData = menuData.menuItems.filter(item => item.category === "Beef");
+
+      // Transform categories to match expected format
+      const menuCategoriesData = menuData.categories.map(cat => ({
+        id: cat.id,
+        name: cat.name,
+        description: cat.description,
+      }));
+
       setFeaturedItems(featuredItemsData);
       setMenuCategories(menuCategoriesData);
       setMostOrderedItems(mostOrderedItemsData);
@@ -179,7 +205,7 @@ export default function RestaurantPage() {
     return () => {
       clearCurrentStore();
     };
-  }, [id, restaurants]);
+  }, [id, restaurants, menuData]);
 
   // Save the initial position of the menu after the component mounts
   useEffect(() => {
@@ -309,6 +335,40 @@ export default function RestaurantPage() {
 
   // Find the selected menu type object
   const selectedMenuTypeObj = menuTypes.find(menu => menu.name === selectedMenuType);
+
+  // Show loading state
+  if (isLoadingMenu || !restaurant) {
+    return (
+      <div className="px-8 py-16">
+        <div className="max-w-7xl mx-auto">
+          <div className="animate-pulse">
+            <div className="h-[220px] bg-gray-200 rounded-xl mb-6"></div>
+            <div className="h-8 bg-gray-200 rounded w-1/3 mb-4"></div>
+            <div className="h-4 bg-gray-200 rounded w-1/2 mb-8"></div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {[1, 2, 3, 4].map(i => (
+                <div key={i} className="h-32 bg-gray-200 rounded"></div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state
+  if (menuError) {
+    return (
+      <div className="px-8 py-16">
+        <div className="max-w-7xl mx-auto">
+          <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
+            <h2 className="text-xl font-bold text-red-800 mb-2">Failed to Load Menu</h2>
+            <p className="text-red-600">{menuError.message}</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="px-8 py-16">
@@ -457,7 +517,7 @@ export default function RestaurantPage() {
                   {/* Menu Type Dropdown */}
                   {menuDropdownOpen && (
                     <div className="absolute left-0 top-full mt-1 w-[350px] bg-white rounded-lg shadow-lg z-20 py-2">
-                      {menuTypes.map(menuType => (
+                      {menuTypes.map((menuType) => (
                         <button
                           key={menuType.id}
                           className="w-full flex items-center px-4 py-3 hover:bg-gray-50"
@@ -466,8 +526,8 @@ export default function RestaurantPage() {
                           <div
                             className={`w-6 h-6 rounded-full border-2 flex items-center justify-center mr-4 ${
                               selectedMenuType === menuType.name
-                                ? 'border-black bg-black'
-                                : 'border-gray-300 bg-white'
+                                ? "border-black bg-black"
+                                : "border-gray-300 bg-white"
                             }`}
                           >
                             {selectedMenuType === menuType.name && (
@@ -476,7 +536,9 @@ export default function RestaurantPage() {
                           </div>
                           <div className="text-left">
                             <div className="font-medium">{menuType.name}</div>
-                            <div className="text-gray-500">{menuType.hours}</div>
+                            <div className="text-gray-500">
+                              {menuType.hours}
+                            </div>
                           </div>
                         </button>
                       ))}
@@ -485,11 +547,46 @@ export default function RestaurantPage() {
                 </div>
                 <div className="p-2 max-h-[calc(100vh-200px)] overflow-y-auto">
                   <ul className="space-y-1">
-                    {menuCategories.map(category => (
+                    {/* Featured Items section */}
+                    {featuredItems.length > 0 && (
+                      <li>
+                        <button
+                          className={`w-full text-left px-2 py-2 rounded-md ${
+                            activeCategory === "Featured Items"
+                              ? "bg-gray-100 font-medium"
+                              : ""
+                          }`}
+                          onClick={() => scrollToSection("Featured Items")}
+                        >
+                          Featured Items
+                        </button>
+                      </li>
+                    )}
+                    
+                    {/* Most Ordered section */}
+                    {mostOrderedItems.length > 0 && (
+                      <li>
+                        <button
+                          className={`w-full text-left px-2 py-2 rounded-md ${
+                            activeCategory === "Most Ordered"
+                              ? "bg-gray-100 font-medium"
+                              : ""
+                          }`}
+                          onClick={() => scrollToSection("Most Ordered")}
+                        >
+                          Most Ordered
+                        </button>
+                      </li>
+                    )}
+                    
+                    {/* Regular menu categories */}
+                    {menuCategories.map((category) => (
                       <li key={category.id}>
                         <button
                           className={`w-full text-left px-2 py-2 rounded-md ${
-                            activeCategory === category.name ? 'bg-gray-100 font-medium' : ''
+                            activeCategory === category.name
+                              ? "bg-gray-100 font-medium"
+                              : ""
                           }`}
                           onClick={() => scrollToSection(category.name)}
                         >
@@ -510,14 +607,10 @@ export default function RestaurantPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {/* Filter all menu items across categories */}
                   {(() => {
-                    const filteredItems = menuCategories.flatMap(category =>
-                      getMenuItemsByCategory(id, category.name).filter(
-                        item =>
-                          item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                          (item.description &&
-                            item.description.toLowerCase().includes(searchQuery.toLowerCase()))
-                      )
-                    );
+                    const filteredItems = menuData?.menuItems.filter(item => 
+                      item.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                      (item.description && item.description.toLowerCase().includes(searchQuery.toLowerCase()))
+                    ) || [];
 
                     return filteredItems.length > 0 ? (
                       filteredItems.map(item => (
@@ -739,7 +832,7 @@ export default function RestaurantPage() {
                     >
                       <h2 className="text-xl font-bold mb-4">{category.name}</h2>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {getMenuItemsByCategory(id, category.name).map(item => (
+                        {(menuData?.menuItems.filter(item => item.category === category.name) || []).map((item) => (
                           <div
                             key={item.id}
                             className="border border-gray-200 rounded-lg overflow-hidden cursor-pointer"
