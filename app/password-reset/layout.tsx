@@ -15,7 +15,7 @@ export default function PasswordResetLayout({
   useEffect(() => {
     // Redirect to home if not authenticated
     if (currentUser === null) {
-      router.push('/home');
+      router.push('/');
     }
   }, [currentUser, router]);
 

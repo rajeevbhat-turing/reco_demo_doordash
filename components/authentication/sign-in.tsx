@@ -5,58 +5,30 @@ import { X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { useAuth } from '@/lib/hooks/use-auth';
 import { useUserStore } from '@/store/user-store';
 import { isValidEmail } from '@/lib/utils/helperFunctions';
-import { User, Address } from '@/lib/types/user-types';
 
 interface SignInProps {
   onSuccess: () => void;
   setMode: (mode: 'signin' | 'signup' | 'forgot-password', email?: string) => void;
-  initialEmail?: string;
-  style?: any;
-  onFormStateChange?: (formState: {
-    currentForm: 'email' | 'password' | 'otp';
-    foundUser: any;
-  }) => void;
 }
 
-export default function SignIn({
-  onSuccess,
-  setMode,
-  initialEmail,
-  style,
-  onFormStateChange,
-}: SignInProps) {
-  const { login, generateOTP, isLoading, isGeneratingOTP } = useAuth();
-  const getTempAddress = useUserStore(state => state.getTempAddress);
+export default function SignIn({ onSuccess, setMode }: SignInProps) {
+  const users = useUserStore(state => state.users);
+  const setCurrentUser = useUserStore(state => state.setCurrentUser);
   const [formData, setFormData] = useState({
-    email: initialEmail || '',
+    email: '',
     otp: '',
     otpInputs: ['', '', '', '', '', ''],
     password: '',
     showPassword: false,
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [currentForm, setCurrentForm] = useState<'email' | 'password' | 'otp'>('email');
+  const [currentForm, setCurrentForm] = useState<'email' | 'otp' | 'password'>('email');
   const [foundUser, setFoundUser] = useState<any>(null);
   const [attemptsLeft, setAttemptsLeft] = useState(5);
   const [resendTimer, setResendTimer] = useState(0);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
-
-  // Updating the email field when the initialEmail prop changes
-  useEffect(() => {
-    if (initialEmail) {
-      setFormData(prev => ({ ...prev, email: initialEmail }));
-    }
-  }, [initialEmail]);
-
-  // Notify parent of form state changes
-  useEffect(() => {
-    if (onFormStateChange) {
-      onFormStateChange({ currentForm, foundUser });
-    }
-  }, [currentForm, foundUser, onFormStateChange]);
 
   // Clearing the interval when the component unmounts
   useEffect(
@@ -113,14 +85,12 @@ export default function SignIn({
   // Starts the resend timer countdown
   const startResendTimer = () => {
     setResendTimer(30);
-    if (intervalRef.current) {
-      clearInterval(intervalRef.current);
-    }
     intervalRef.current = setInterval(() => {
       setResendTimer(prev => {
         if (prev <= 1) {
           if (intervalRef.current) {
             clearInterval(intervalRef.current);
+            intervalRef.current = null;
           }
           return 0;
         }
@@ -129,67 +99,43 @@ export default function SignIn({
     }, 1000);
   };
 
-  // Handles resend OTP functionality
-  const handleResendOTP = async () => {
-    if (resendTimer > 0) return;
-
-    try {
-      const { otp, user } = await generateOTP({ email: formData.email });
-      // Print the OTP to the console
-      console.log('OTP:', otp);
-
-      // Save the OTP to the form data
-      handleFormDataChange('otp', otp);
-
-      setFoundUser(user);
-      startResendTimer();
-      setErrors({});
-    } catch (error: any) {
-      setErrors({
-        general: error.message || 'Failed to resend OTP. Please try again.',
-      });
-    }
+  // Generates a 6-digit OTP
+  const generateOTP = () => {
+    const newOtp = Math.floor(100000 + Math.random() * 900000).toString();
+    handleFormDataChange('otp', newOtp);
+    console.log('Generated OTP:', newOtp);
+    startResendTimer();
+    return newOtp;
   };
 
-  // Handles email form submission - checks if email exists and generates OTP
-  const handleSubmit = async (e: React.FormEvent) => {
+  // Handles form submission with validation and authentication logic
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!validateEmail()) {
-      return;
-    }
+    if (validateEmail()) {
+      // Check if email exists
+      const existingUser = users.find(user => user.email === formData.email);
 
-    try {
-      // Call generate OTP API
-      const { otp, user } = await generateOTP({ email: formData.email });
-
-      // Print the OTP to the console
-      console.log('OTP:', otp);
-
-      // Save the OTP to the form data
-      handleFormDataChange('otp', otp);
-
-      setFoundUser(user);
-      setCurrentForm('otp');
-      setErrors({});
-
-      // Start the resend timer
-      startResendTimer();
-    } catch (error: any) {
-      // Email not found or other error
-      setErrors({
-        general: error.message || 'Something went wrong. Please try again.',
-      });
+      if (existingUser) {
+        // Generate OTP and show OTP form
+        setFoundUser(existingUser);
+        generateOTP();
+        setCurrentForm('otp');
+      } else {
+        setErrors({
+          general:
+            "We couldn't find an account with the email you entered. Try a different email or sign up.",
+        });
+        return;
+      }
     }
   };
 
   // Handles OTP input change
   const handleOTPChange = (index: number, value: string) => {
-    // Only allow numbers
-    const numericValue = value.replace(/\D/g, '');
-    if (numericValue.length > 1) return; // Only allow single digit
+    if (value.length > 1) return; // Only allow single digit
 
     const newOtpInputs = [...formData.otpInputs];
-    newOtpInputs[index] = numericValue;
+    newOtpInputs[index] = value;
     handleFormDataChange('otpInputs', newOtpInputs);
 
     // Auto-focus next input
@@ -205,29 +151,8 @@ export default function SignIn({
     }
   };
 
-  // Handles OTP input keydown (for backspace and number validation)
+  // Handles OTP input keydown (for backspace)
   const handleOTPKeyDown = (index: number, e: React.KeyboardEvent) => {
-    // Allow: backspace, delete, tab, escape, enter, and arrow keys
-    if (
-      [
-        'Backspace',
-        'Delete',
-        'Tab',
-        'Escape',
-        'Enter',
-        'ArrowLeft',
-        'ArrowRight',
-        'ArrowUp',
-        'ArrowDown',
-      ].includes(e.key)
-    ) {
-      // Allow these keys
-    } else if (e.key.length === 1 && !/[0-9]/.test(e.key)) {
-      // Block non-numeric characters
-      e.preventDefault();
-      return;
-    }
-
     if (e.key === 'Backspace') {
       const newOtpInputs = [...formData.otpInputs];
 
@@ -252,89 +177,9 @@ export default function SignIn({
     e.preventDefault();
     const enteredOtp = formData.otpInputs.join('');
 
-    // Accept any 6-digit OTP for development/testing
-    if (enteredOtp.length === 6) {
+    if (enteredOtp === formData.otp) {
       // OTP is correct - sign in the user
-      if (!foundUser) {
-        setErrors({ general: 'User not found' });
-        return;
-      }
-
-      // Get temp address before processing
-      const tempAddress = getTempAddress();
-      const state = useUserStore.getState();
-
-      // If no tempAddress, just set currentUser without modifying users array
-      if (!tempAddress) {
-        useUserStore.setState({
-          currentUser: foundUser,
-          isInitialized: true,
-        });
-        setErrors({}); // Clear any existing errors
-        onSuccess();
-        return;
-      }
-
-      // Prepare updated user data with temp address handled
-      let updatedUserData: User = { ...foundUser };
-
-      // Check if temp address already exists in user's addresses
-      // Compare by street, city, state, and zipCode
-      const existingAddress = foundUser.addresses?.find(
-        (addr: Address) =>
-          addr.street === tempAddress.street &&
-          addr.city === tempAddress.city &&
-          addr.state === tempAddress.state &&
-          addr.zipCode === tempAddress.zipCode
-      );
-
-      if (existingAddress) {
-        // Address already exists, set it as default in the user data
-        updatedUserData = {
-          ...foundUser,
-          addresses:
-            foundUser.addresses?.map((addr: Address) => ({
-              ...addr,
-              default: addr.id === existingAddress.id,
-            })) || [],
-        };
-        console.log('✅ Temp address already exists, set as default');
-      } else {
-        // Address doesn't exist, add it and set as default
-        const { id, ...addressWithoutId } = tempAddress;
-        const newAddressId = Math.random().toString(36).substring(2, 15);
-        const newAddress: Address = {
-          ...addressWithoutId,
-          id: newAddressId,
-          default: true,
-        };
-
-        // Set all existing addresses to default: false, add new address
-        updatedUserData = {
-          ...foundUser,
-          addresses: [
-            ...(foundUser.addresses || []).map((addr: Address) => ({ ...addr, default: false })),
-            newAddress,
-          ],
-        };
-        console.log('✅ Temp address added to user and set as default');
-      }
-
-      // Update users array in store (only when tempAddress exists)
-      const userExists = state.users.some(u => u.id === updatedUserData.id);
-      const updatedUsers = userExists
-        ? state.users.map(user => (user.id === updatedUserData.id ? updatedUserData : user))
-        : [...state.users, updatedUserData];
-
-      // Set both users array and current user atomically
-      useUserStore.setState({
-        users: updatedUsers,
-        currentUser: updatedUserData,
-        tempAddress: null, // Clear temp address
-        changePasswordPhoneVerified: state.changePasswordPhoneVerified,
-        isInitialized: true,
-      });
-
+      setCurrentUser(foundUser);
       setErrors({}); // Clear any existing errors
       onSuccess();
     } else {
@@ -359,34 +204,43 @@ export default function SignIn({
   // Handles going back to email form
   const handleBackToEmail = () => {
     setCurrentForm('email');
+    setFoundUser(null);
+    handleFormDataChange('otp', '');
+    handleFormDataChange('otpInputs', ['', '', '', '', '', '']);
+    setAttemptsLeft(5);
+    setResendTimer(0);
     handleFormDataChange('password', '');
     handleFormDataChange('showPassword', false);
     setErrors({});
   };
 
-  // Handles password form submission with database authentication
-  const handlePasswordSubmit = async (e: React.FormEvent) => {
+  // Handles resend OTP
+  const handleResendOTP = () => {
+    if (resendTimer === 0) {
+      generateOTP();
+      handleFormDataChange('otpInputs', ['', '', '', '', '', '']);
+      setErrors({});
+      setAttemptsLeft(5);
+    }
+  };
+
+  // Handles password form submission
+  const handlePasswordSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.password.trim()) {
       setErrors({ password: 'Password is required' });
       return;
     }
 
-    try {
-      // Call database login
-      await login({
-        email: formData.email,
-        password: formData.password,
-      });
-
-      // Login successful - stored in user-store automatically
-      setErrors({});
+    // Check if password matches the user's password
+    if (formData.password === foundUser?.password) {
+      // Password is correct - sign in the user
+      setCurrentUser(foundUser);
+      setErrors({}); // Clear any existing errors
       onSuccess();
-    } catch (error: any) {
-      // Login failed - show error
-      setErrors({
-        general: error.message || 'Invalid email or password. Please try again.',
-      });
+    } else {
+      // Password is incorrect - show error message
+      setErrors({ general: 'Having trouble signing in?' });
     }
   };
 
@@ -455,7 +309,7 @@ export default function SignIn({
 
         {/* Password Instruction */}
         <p className="text-[13px] font-medium text-[#191919ff] mb-3 text-center">
-          Enter your password to finish logging into your account with {formData.email}{' '}
+          Enter your password to finish logging into your account with {foundUser?.email}{' '}
           <button
             type="button"
             onClick={handleBackToEmail}
@@ -479,9 +333,12 @@ export default function SignIn({
                 </svg>
               </div>
               <div>
-                <p className="text-[16px] font-bold text-[#191919ff]">{errors.general}</p>
-                <p className="text-[15px] font-medium text-[#191919ff] mt-1">
-                  Please check your password and try again, or reset your password.
+                <p className="text-[16px] font-bold text-[#191919ff] text-center">
+                  {errors.general}
+                </p>
+                <p className="text-[15px] font-medium text-[#191919ff]">
+                  Check {foundUser?.email} for a link that will let you sign in directly to your
+                  account.
                 </p>
               </div>
             </div>
@@ -491,10 +348,9 @@ export default function SignIn({
         {/* Sign In Button */}
         <Button
           type="submit"
-          disabled={isLoading}
-          className="w-full bg-red-600 hover:bg-red-700 text-white font-bold text-[15px] py-3 rounded-3xl mb-2 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full bg-red-600 hover:bg-red-700 text-white font-bold text-[15px] py-3 rounded-3xl mb-2"
         >
-          {isLoading ? 'Signing in...' : 'Sign In'}
+          Sign In
         </Button>
       </form>
     );
@@ -528,8 +384,6 @@ export default function SignIn({
               key={index}
               id={`otp-${index}`}
               type="text"
-              inputMode="numeric"
-              pattern="[0-9]*"
               maxLength={1}
               value={value}
               onChange={e => handleOTPChange(index, e.target.value)}
@@ -570,6 +424,12 @@ export default function SignIn({
               {resendTimer > 0 ? `Resend code (${resendTimer})` : 'Resend code'}
             </button>
             <div className="rounded-full bg-[#191919ff] w-[3px] h-[3px]"></div>
+            <button
+              type="button"
+              className="underline font-semibold text-sm text-[#191919ff] hover:text-gray-700"
+            >
+              Get phone call instead
+            </button>
           </div>
         </div>
 
@@ -667,18 +527,22 @@ export default function SignIn({
       {/* Continue to Sign In Button */}
       <Button
         type="submit"
-        disabled={isGeneratingOTP}
-        className={`w-full bg-red-600 hover:bg-red-700 text-white font-bold text-[15px] py-3 rounded-3xl mt-4 disabled:opacity-50 
-          disabled:cursor-not-allowed ${style?.continueButton ?? ''}`}
+        className="w-full bg-red-600 hover:bg-red-700 text-white font-bold text-[15px] py-3 rounded-3xl mt-4"
       >
         Continue to Sign In
       </Button>
 
       {/* Legal Text */}
       <p className="text-sm font-medium text-[#606060ff] mt-4 mb-4">
-        By tapping any "Continue" button, you agree to DashDoor's , including a waiver of your jury
-        trial right, and Privacy Policy. We may text you a verification code. Msg & data rates
-        apply.
+        By tapping any "Continue" button, you agree to DashDoor's{' '}
+        <a href="" className="text-[#1700ee] underline">
+          Terms
+        </a>
+        , including a waiver of your jury trial right, and{' '}
+        <a href="" className="text-[#1700ee] underline">
+          Privacy Policy
+        </a>
+        . We may text you a verification code. Msg & data rates apply.
       </p>
     </form>
   );

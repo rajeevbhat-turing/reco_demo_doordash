@@ -1,23 +1,23 @@
 'use client';
 
 import { useEffect, type ReactNode } from 'react';
-import { useRouter, usePathname } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useUserStore } from '@/store/user-store';
-import { useAppStore } from '@/store/app-store';
 
-export default function ConsumerLayout({ children }: { children: ReactNode }) {
+export default function ConsumerLayout({
+  children,
+}: {
+  children: ReactNode;
+}) {
   const router = useRouter();
-  const pathname = usePathname();
   const currentUser = useUserStore(state => state.currentUser);
-  const setRouteBeforeAuth = useAppStore(state => state.setRouteBeforeAuth);
 
   useEffect(() => {
-    // If not authenticated, save current path and redirect to auth page
+    // Redirect to home if not authenticated
     if (currentUser === null) {
-      setRouteBeforeAuth(pathname);
-      router.push('/auth');
+      router.push('/');
     }
-  }, [currentUser, router, pathname, setRouteBeforeAuth]);
+  }, [currentUser, router]);
 
   // Don't render children if not authenticated
   if (currentUser === null) {
@@ -26,3 +26,4 @@ export default function ConsumerLayout({ children }: { children: ReactNode }) {
 
   return <>{children}</>;
 }
+
