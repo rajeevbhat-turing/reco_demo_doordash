@@ -3,7 +3,7 @@
 import { useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
-import { Heart, Star } from "lucide-react"
+import { Heart, Star, Trash2, Plus, Minus } from "lucide-react"
 import type { SearchResultRestaurant } from "@/lib/utils/search-utils"
 import { useCartStore } from "@/store/cart-store"
 import { stores as groceryStores } from "@/data/store-data"
@@ -16,7 +16,7 @@ interface SearchResultsRendererProps {
 }
 
 export default function SearchResultsRenderer({ results }: SearchResultsRendererProps) {
-  const { addItem } = useCartStore()
+  const { addItem, findCart, updateQuantity, removeItem } = useCartStore()
   const [favoritedStores, setFavoritedStores] = useState<Set<string>>(new Set())
 
   // Toggle favorite state for a store
@@ -262,36 +262,37 @@ export default function SearchResultsRenderer({ results }: SearchResultsRenderer
                     )}
                   </div>
                   
-                  {/* Add Button - Positioned below image, right-aligned */}
+                  {/* Add Button / Quantity Selector - Positioned below image, right-aligned */}
                   <div className="flex justify-end mb-3">
-                    <button
-                      onClick={(e) => {
-                        e.preventDefault()
-                        e.stopPropagation()
+                    {(() => {
+                      // Determine store category and generate a proper store ID using the store name
+                      let category: "grocery" | "pets" | "convenience" | "retail" = "grocery"
+                      let storeId = ""
+                      
+                      if (product.storeType === "grocery") {
+                        category = "grocery"
+                        storeId = product.cuisine?.toLowerCase().replace(/\s+/g, '-') || "grocery-store"
+                      } else if (product.storeType === "pets" || product.storeType === "pet-product") {
+                        category = "pets"
+                        storeId = product.cuisine?.toLowerCase().replace(/\s+/g, '-') || "pet-store"
+                      } else if (product.storeType === "convenience") {
+                        category = "convenience"
+                        storeId = product.cuisine?.toLowerCase().replace(/\s+/g, '-') || "convenience-store"
+                      } else if (product.storeType === "retail") {
+                        category = "retail"
+                        storeId = product.cuisine?.toLowerCase().replace(/\s+/g, '-') || "retail-store"
+                      }
+                      
+                      // Get current cart and check quantity
+                      const currentCart = findCart(storeId, category)
+                      const cartItem = currentCart?.items.find((item) => item.id === product.id)
+                      const quantity = cartItem?.quantity || 0
+                      
+                      // Parse price
+                      const price = typeof product.priceRange === 'string' 
+                        ? parseFloat(product.priceRange.replace(/[^0-9.]/g, '')) || 0
+                        : product.priceRange || 0
                         
-                        // Determine store category and generate a proper store ID using the store name
-                        let category: "grocery" | "pets" | "convenience" | "retail" = "grocery"
-                        let storeId = ""
-                        
-                        if (product.storeType === "grocery") {
-                          category = "grocery"
-                          storeId = product.cuisine?.toLowerCase().replace(/\s+/g, '-') || "grocery-store"
-                        } else if (product.storeType === "pets" || product.storeType === "pet-product") {
-                          category = "pets"
-                          storeId = product.cuisine?.toLowerCase().replace(/\s+/g, '-') || "pet-store"
-                        } else if (product.storeType === "convenience") {
-                          category = "convenience"
-                          storeId = product.cuisine?.toLowerCase().replace(/\s+/g, '-') || "convenience-store"
-                        } else if (product.storeType === "retail") {
-                          category = "retail"
-                          storeId = product.cuisine?.toLowerCase().replace(/\s+/g, '-') || "retail-store"
-                        }
-                        
-                        // Parse price
-                        const price = typeof product.priceRange === 'string' 
-                          ? parseFloat(product.priceRange.replace(/[^0-9.]/g, '')) || 0
-                          : product.priceRange || 0
-                          
                       const newItem = {
                         id: product.id,
                         itemName: product.name,
@@ -299,15 +300,82 @@ export default function SearchResultsRenderer({ results }: SearchResultsRenderer
                         image: product.logo || product.banner || '/placeholder.svg',
                       }
                       
-                      // Add to cart - will automatically find or create cart for this store
-                      addItem(newItem, category, product.cuisine, storeId)
+                      // If quantity is 0, show "Add" button
+                      if (quantity === 0) {
+                        return (
+                          <button
+                            onClick={(e) => {
+                              e.preventDefault()
+                              e.stopPropagation()
+                              addItem(newItem, category, product.cuisine, storeId)
+                              console.log('Added to cart:', product.name, 'from', product.cuisine)
+                            }}
+                            className="bg-white text-gray-900 rounded-full px-4 py-1.5 text-sm font-semibold shadow-md hover:shadow-lg transition-shadow"
+                          >
+                            Add
+                          </button>
+                        )
+                      }
                       
-                      console.log('Added to cart:', product.name, 'from', product.cuisine)
-                      }}
-                      className="bg-white text-gray-900 rounded-full px-4 py-1.5 text-sm font-semibold shadow-md hover:shadow-lg transition-shadow"
-                    >
-                      Add
-                    </button>
+                      // If quantity > 0, show expanded quantity selector
+                      return (
+                        <div className="bg-white text-gray-900 rounded-full px-3 py-1.5 text-sm font-semibold shadow-md hover:shadow-lg transition-shadow flex items-center gap-2">
+                          {/* Trash icon - removes item */}
+                          <button
+                            onClick={(e) => {
+                              e.preventDefault()
+                              e.stopPropagation()
+                              removeItem(product.id)
+                              console.log('Removed from cart:', product.name)
+                            }}
+                            className="p-1 hover:bg-gray-100 rounded transition-colors"
+                            aria-label="Remove from cart"
+                          >
+                            <Trash2 className="w-4 h-4 text-black" />
+                          </button>
+                          
+                          {/* Minus icon - decrements quantity */}
+                          <button
+                            onClick={(e) => {
+                              e.preventDefault()
+                              e.stopPropagation()
+                              if (quantity > 1) {
+                                // If quantity is more than 1, just decrease it
+                                updateQuantity(product.id, quantity - 1)
+                                console.log('Decremented quantity:', product.name)
+                              } else {
+                                // If quantity is 1, remove the item completely
+                                removeItem(product.id)
+                                console.log('Removed from cart (quantity was 1):', product.name)
+                              }
+                            }}
+                            className="p-1 hover:bg-gray-100 rounded transition-colors"
+                            aria-label="Decrease quantity"
+                          >
+                            <Minus className="w-4 h-4 text-black" />
+                          </button>
+                          
+                          {/* Quantity display */}
+                          <span className="text-sm font-semibold text-gray-900 min-w-[2rem] text-center">
+                            {quantity}x
+                          </span>
+                          
+                          {/* Plus icon - adds more */}
+                          <button
+                            onClick={(e) => {
+                              e.preventDefault()
+                              e.stopPropagation()
+                              addItem(newItem, category, product.cuisine, storeId)
+                              console.log('Added more to cart:', product.name)
+                            }}
+                            className="p-1 hover:bg-gray-100 rounded transition-colors"
+                            aria-label="Add one more"
+                          >
+                            <Plus className="w-4 h-4 text-black" />
+                          </button>
+                        </div>
+                      )
+                    })()}
                   </div>
                   
                   {/* Product Info */}
