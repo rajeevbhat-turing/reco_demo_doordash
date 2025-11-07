@@ -15,6 +15,11 @@ COPY . .
 RUN npm run build
 
 FROM base AS runner
+
+# Persistent data directory for the database
+RUN mkdir -p /data && chown -R node:node /data
+ENV DB_PATH=/data/app.db
+
 WORKDIR /app
 
 ENV NODE_ENV=production
