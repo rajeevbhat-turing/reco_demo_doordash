@@ -247,62 +247,62 @@ export default function ReviewDialog({
               <h3 className="text-base font-medium text-[#494949] mb-4 px-6">{restaurantName}</h3>
 
               <div className="bg-gray-50 rounded-md mb-2 mx-6">
-                <div
-                  className={
+            <div
+              className={
                     error?.type === 'rating'
                       ? 'border-2 border-red-700 rounded-lg bg-[#fef0ed]'
                       : ''
-                  }
-                >
-                  <div className="flex justify-between items-center mb-2 pt-5 px-5">
+              }
+            >
+              <div className="flex justify-between items-center mb-2 pt-5 px-5">
                     <div className="text-base font-bold text-[#191919ff]">
                       {getUserDisplayName()}
                     </div>
-                    <div className="flex items-center bg-gray-200 rounded-md px-1 py-2">
-                      <span className="mr-1 text-sm font-medium text-[#191919ff]">Everyone</span>
-                      <Info className="h-5 w-5 text-[#191919ff]" />
-                    </div>
-                  </div>
+                <div className="flex items-center bg-gray-200 rounded-md px-1 py-2">
+                  <span className="mr-1 text-sm font-medium text-[#191919ff]">Everyone</span>
+                  <Info className="h-5 w-5 text-[#191919ff]" />
+                </div>
+              </div>
 
-                  <div className="flex mb-6 px-5">
+              <div className="flex mb-6 px-5">
                     {[1, 2, 3, 4, 5].map(star => {
                       const displayRating = hoverRating || rating;
                       return (
-                        <Star
-                          key={star}
-                          className={`h-8 w-8 cursor-pointer ${
+                  <Star
+                    key={star}
+                    className={`h-8 w-8 cursor-pointer ${
                             star <= displayRating
                               ? 'fill-[#191919ff] text-[#191919ff]'
                               : 'text-[#b2b2b2]'
-                          }`}
+                    }`}
                           onMouseEnter={() => handleStarHover(star)}
                           onMouseLeave={handleStarLeave}
-                          onClick={() => handleRatingChange(star)}
-                        />
+                    onClick={() => handleRatingChange(star)}
+                  />
                       );
                     })}
-                  </div>
-                </div>
-
-                <textarea
-                  ref={textareaRef}
-                  value={reviewText}
-                  onChange={handleTextChange}
-                  placeholder="Write a review, it's helpful to include details about taste, quality, and portions."
-                  className={`w-full p-4 border-2 bg-[#f7f7f7] border-[#f7f7f7] rounded-lg focus:border-[#191919ff] 
-                  focus:ring-0 focus:outline-none min-h-[120px] ${
-                    error?.type === 'input' ? 'border-red-700 bg-[#fef0ed]' : ''
-                  }`}
-                />
               </div>
+            </div>
 
-              {error?.message ? (
+            <textarea
+              ref={textareaRef}
+              value={reviewText}
+              onChange={handleTextChange}
+              placeholder="Write a review, it's helpful to include details about taste, quality, and portions."
+              className={`w-full p-4 border-2 bg-[#f7f7f7] border-[#f7f7f7] rounded-lg focus:border-[#191919ff] 
+              focus:ring-0 focus:outline-none min-h-[120px] ${
+                error?.type === 'input' ? 'border-red-700 bg-[#fef0ed]' : ''
+              }`}
+            />
+          </div>
+
+          {error?.message ? (
                 <div className="flex items-center gap-2 px-6">
                   <div className="h-4 w-4 flex-shrink-0 rounded-full flex items-center justify-center bg-[#b71000ff]">
-                    <span className="text-white text-xs font-bold">!</span>
-                  </div>
-                  <div className="text-[#b71000ff] text-sm font-medium">{error.message}</div>
-                </div>
+                <span className="text-white text-xs font-bold">!</span>
+              </div>
+              <div className="text-[#b71000ff] text-sm font-medium">{error.message}</div>
+            </div>
               ) : reviewText.length >= 10 ? (
                 <div className="flex items-center gap-2 px-6 text-[#00838a]">
                   <FilledLightbulbIcon />
@@ -312,16 +312,16 @@ export default function ReviewDialog({
                 </div>
               ) : (
                 <div className="text-[#767676] text-sm font-medium px-6">Min characters: 10</div>
-              )}
+          )}
 
               <div className="flex justify-end border-t border-gray-200 pt-4 mt-4 px-6">
-                <button
-                  onClick={handleSubmit}
-                  className="px-3 py-2 rounded-full text-white font-bold text-base bg-red-500 hover:bg-red-600"
-                >
-                  Submit
-                </button>
-              </div>
+            <button
+              onClick={handleSubmit}
+              className="px-3 py-2 rounded-full text-white font-bold text-base bg-red-500 hover:bg-red-600"
+            >
+              Submit
+            </button>
+          </div>
             </>
           )}
         </div>

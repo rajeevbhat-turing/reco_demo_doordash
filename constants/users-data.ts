@@ -29,7 +29,8 @@ export const initialUsersData: User[] = [
         addressType: "house",
         gateCode: "111",
         deliveryPreference: "door",
-        deliveryInstructions: "Please ring the bell and drop off at the door, thank you. Its around the corner on the ground floor"
+        deliveryInstructions: "Please ring the bell and drop off at the door, thank you. Its around the corner on the ground floor",
+        default: true,
       },
       {
         id: "addr-2",
