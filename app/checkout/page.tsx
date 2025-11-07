@@ -199,7 +199,20 @@ export default function CheckoutPage() {
         quantity: item.quantity,
         price: typeof item.price === 'number' 
           ? item.price 
-          : parseFloat(item.price.toString().replace(/[^0-9.]/g, ""))
+          : parseFloat(item.price.toString().replace(/[^0-9.]/g, "")),
+        modifications: item.appliedModifications?.map(appliedMod => ({
+          modificationId: appliedMod.modificationId,
+          modificationDescription: appliedMod.modificationDescription,
+          isRequired: false, // We don't have this info in cart, but it's historical so it's ok
+          options: appliedMod.appliedOptions.map(opt => ({
+            optionId: opt.optionId,
+            optionName: opt.optionName,
+            optionDescription: undefined,
+            price: opt.price,
+            quantity: opt.quantity,
+            isCounter: opt.quantity > 1, // Infer from quantity
+          }))
+        }))
       })),
       
       // 3. Payment card as object

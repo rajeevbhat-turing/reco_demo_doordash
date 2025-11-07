@@ -1,3 +1,5 @@
+import { Modification } from '@/types';
+
 export interface MenuItem {
   id: string;
   restaurantId: string;
@@ -11,6 +13,7 @@ export interface MenuItem {
   ratingCount?: number | null;
   popular?: boolean;
   featured?: boolean;
+  modifications?: Modification[];
 }
 
 export const menuItems: MenuItem[] = [
@@ -25,6 +28,318 @@ export const menuItems: MenuItem[] = [
     category: 'Featured Items',
     rating: null,
     ratingCount: null,
+    modifications: [
+      // Required: Size Selection (select exactly 1)
+      {
+        id: 'mod-mint-mojito-size',
+        description: 'Choose Size',
+        is_required: true,
+        select_up_to: 1,
+        select_at_least: 1,
+        options: [
+          {
+            id: 'opt-size-small',
+            name: 'Small',
+            description: '12 oz',
+            price: 0,
+            is_counter: false,
+            is_default: false,
+            sort_order: 1,
+          },
+          {
+            id: 'opt-size-medium',
+            name: 'Medium',
+            description: '16 oz',
+            price: 1.25,
+            is_counter: false,
+            is_default: false,
+            sort_order: 2,
+          },
+          {
+            id: 'opt-size-large',
+            name: 'Large',
+            description: '20 oz',
+            price: 2.50,
+            is_counter: false,
+            is_default: false,
+            sort_order: 3,
+          },
+        ],
+      },
+      // Required: Sweetness Level (select exactly 1, with default)
+      {
+        id: 'mod-mint-mojito-sweetness',
+        description: 'Sweetness Level',
+        is_required: true,
+        select_up_to: 1,
+        select_at_least: 1,
+        options: [
+          {
+            id: 'opt-sweet-none',
+            name: 'No Sugar',
+            description: 'Unsweetened',
+            price: 0,
+            is_counter: false,
+            is_default: false,
+            sort_order: 1,
+          },
+          {
+            id: 'opt-sweet-light',
+            name: 'Light Sweet',
+            description: '25% sweetness',
+            price: 0,
+            is_counter: false,
+            is_default: false,
+            sort_order: 2,
+          },
+          {
+            id: 'opt-sweet-regular',
+            name: 'Regular Sweet',
+            description: 'Standard sweetness',
+            price: 0,
+            is_counter: false,
+            is_default: true,
+            sort_order: 3,
+          },
+          {
+            id: 'opt-sweet-extra',
+            name: 'Extra Sweet',
+            description: 'Maximum sweetness',
+            price: 0,
+            is_counter: false,
+            is_default: false,
+            sort_order: 4,
+          },
+        ],
+      },
+      // Optional: Milk Type (select up to 1)
+      {
+        id: 'mod-mint-mojito-milk',
+        description: 'Milk Type',
+        is_required: false,
+        select_up_to: 1,
+        options: [
+          {
+            id: 'opt-milk-whole',
+            name: 'Whole Milk',
+            price: 0,
+            is_counter: false,
+            is_default: true,
+            sort_order: 1,
+          },
+          {
+            id: 'opt-milk-2percent',
+            name: '2% Milk',
+            price: 0,
+            is_counter: false,
+            is_default: false,
+            sort_order: 2,
+          },
+          {
+            id: 'opt-milk-nonfat',
+            name: 'Non-Fat Milk',
+            price: 0,
+            is_counter: false,
+            is_default: false,
+            sort_order: 3,
+          },
+          {
+            id: 'opt-milk-oat',
+            name: 'Oat Milk',
+            description: 'Plant-based',
+            price: 0.95,
+            is_counter: false,
+            is_default: false,
+            sort_order: 4,
+          },
+          {
+            id: 'opt-milk-almond',
+            name: 'Almond Milk',
+            description: 'Plant-based',
+            price: 0.95,
+            is_counter: false,
+            is_default: false,
+            sort_order: 5,
+          },
+          {
+            id: 'opt-milk-soy',
+            name: 'Soy Milk',
+            description: 'Plant-based',
+            price: 0.95,
+            is_counter: false,
+            is_default: false,
+            sort_order: 6,
+          },
+          {
+            id: 'opt-milk-coconut',
+            name: 'Coconut Milk',
+            description: 'Plant-based',
+            price: 0.95,
+            is_counter: false,
+            is_default: false,
+            sort_order: 7,
+          },
+        ],
+      },
+      // Conditional: Oat Milk Brand (only shows if Oat Milk is selected)
+      {
+        id: 'mod-mint-mojito-oat-brand',
+        description: 'Choose Oat Milk Brand',
+        is_required: true,
+        select_up_to: 1,
+        select_at_least: 1,
+        parent_option: 'opt-milk-oat',
+        options: [
+          {
+            id: 'opt-oat-oatly',
+            name: 'Oatly',
+            description: 'Original Oatly',
+            price: 0,
+            is_counter: false,
+            is_default: true,
+            sort_order: 1,
+          },
+          {
+            id: 'opt-oat-chobani',
+            name: 'Chobani',
+            description: 'Chobani Extra Creamy',
+            price: 0.25,
+            is_counter: false,
+            is_default: false,
+            sort_order: 2,
+          },
+          {
+            id: 'opt-oat-planet',
+            name: 'Planet Oat',
+            description: 'Original',
+            price: 0,
+            is_counter: false,
+            is_default: false,
+            sort_order: 3,
+          },
+        ],
+      },
+      // Optional Counter: Extra Espresso Shots
+      {
+        id: 'mod-mint-mojito-espresso',
+        description: 'Extra Espresso Shots',
+        is_required: false,
+        select_up_to: 1,
+        options: [
+          {
+            id: 'opt-espresso-shots',
+            name: 'Espresso Shots',
+            description: 'Add extra shots of espresso',
+            price: 0.85,
+            is_counter: true,
+            max_quantity: 5,
+            is_default: false,
+            sort_order: 1,
+          },
+        ],
+      },
+      // Optional: Add Toppings (select up to 3)
+      {
+        id: 'mod-mint-mojito-toppings',
+        description: 'Add Toppings',
+        is_required: false,
+        select_up_to: 3,
+        options: [
+          {
+            id: 'opt-topping-whipped',
+            name: 'Whipped Cream',
+            price: 0.75,
+            is_counter: false,
+            is_default: false,
+            sort_order: 1,
+          },
+          {
+            id: 'opt-topping-caramel',
+            name: 'Caramel Drizzle',
+            price: 0.50,
+            is_counter: false,
+            is_default: false,
+            sort_order: 2,
+          },
+          {
+            id: 'opt-topping-chocolate',
+            name: 'Chocolate Syrup',
+            price: 0.50,
+            is_counter: false,
+            is_default: false,
+            sort_order: 3,
+          },
+          {
+            id: 'opt-topping-vanilla',
+            name: 'Vanilla Syrup',
+            price: 0.50,
+            is_counter: false,
+            is_default: false,
+            sort_order: 4,
+          },
+          {
+            id: 'opt-topping-cinnamon',
+            name: 'Cinnamon Powder',
+            price: 0,
+            is_counter: false,
+            is_default: false,
+            sort_order: 5,
+          },
+          {
+            id: 'opt-topping-cocoa',
+            name: 'Cocoa Powder',
+            price: 0,
+            is_counter: false,
+            is_default: false,
+            sort_order: 6,
+          },
+        ],
+      },
+      // Optional: Ice Level (for iced drinks)
+      {
+        id: 'mod-mint-mojito-ice',
+        description: 'Ice Level',
+        is_required: false,
+        select_up_to: 1,
+        options: [
+          {
+            id: 'opt-ice-regular',
+            name: 'Regular Ice',
+            price: 0,
+            is_counter: false,
+            is_default: true,
+            sort_order: 1,
+          },
+          {
+            id: 'opt-ice-light',
+            name: 'Light Ice',
+            description: 'Less ice, more drink',
+            price: 0,
+            is_counter: false,
+            is_default: false,
+            sort_order: 2,
+          },
+          {
+            id: 'opt-ice-extra',
+            name: 'Extra Ice',
+            description: 'More ice',
+            price: 0,
+            is_counter: false,
+            is_default: false,
+            sort_order: 3,
+          },
+          {
+            id: 'opt-ice-none',
+            name: 'No Ice',
+            description: 'Skip the ice',
+            price: 0,
+            is_counter: false,
+            is_default: false,
+            sort_order: 4,
+          },
+        ],
+      },
+    ],
   },
   {
     id: 'philtered-soul-cold-brew',
