@@ -14,11 +14,13 @@ import ForgotPassword from '../authentication/forgot-password';
 interface AuthenticationModalProps {
   onClose: () => void;
   defaultMode?: 'signin' | 'signup' | 'forgot-password' | null;
+  initialEmail?: string;
 }
 
 export default function AuthenticationModal({
   onClose,
   defaultMode = 'signin',
+  initialEmail,
 }: AuthenticationModalProps) {
   const addUser = useUserStore(state => state.addUser);
   const [mode, setMode] = useState<'signin' | 'signup' | 'forgot-password' | null>(defaultMode);
@@ -332,7 +334,7 @@ export default function AuthenticationModal({
           {/* Authentication Forms */}
           <div className="pb-6">
             {mode === 'signin' ? (
-              <SignIn onSuccess={handleAuthSuccess} setMode={handleSetMode} />
+              <SignIn onSuccess={handleAuthSuccess} setMode={handleSetMode} initialEmail={initialEmail} />
             ) : mode === 'signup' ? (
               <SignUp
                 onShowOTP={handleShowOTP}
