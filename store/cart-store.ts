@@ -1,6 +1,6 @@
 import { create } from "zustand"
 import { persist, devtools } from "zustand/middleware"
-import type { Product } from "@/types"
+import type { Product, AppliedModification } from "@/types"
 import { restaurants } from "@/constants/restaurants"
 import { convenienceStores } from "@/data/convenience-store-data"
 import { useVerifierStore } from "./verifier-store"
@@ -17,6 +17,7 @@ export interface CartItem {
   image: string
   quantity: number
   customizations?: string
+  appliedModifications?: AppliedModification[]
 }
 
 // Cart interface - represents a cart for a single vendor/store
