@@ -94,8 +94,17 @@ export default function SearchPage() {
     // This ensures context doesn't change when filters are applied
     const searchContext = determineSearchContext(combinedResults)
     
+    // Check if all results are products from an exact match (single or multiple products with same name)
+    // If so, show only "All" tab to focus on the specific product(s) the user clicked
+    const allResultsAreProducts = combinedResults.length > 0 && combinedResults.every(r => r.id.includes("-product-"))
+    const isExactProductMatch = allResultsAreProducts && combinedResults.length <= 10 // Reasonable limit for exact matches
+    
+    // Also check if there's only a single product result - show only "All" tab for better UX
+    const isSingleProduct = combinedResults.length === 1 && combinedResults[0].id.includes("-product-")
+    
     // Detect available categories from combinedResults (before filtering)
-    const categories = detectAvailableCategories(combinedResults)
+    // If it's an exact product match OR a single product, only show "All" tab
+    const categories = (isExactProductMatch || isSingleProduct) ? ["All"] : detectAvailableCategories(combinedResults)
     setAvailableCategories(categories)
     
     // Store search context for FilterOptions

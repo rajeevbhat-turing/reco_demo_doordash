@@ -305,7 +305,7 @@ const SearchBar = () => {
                       description: `$${product.price} • Convenience Product`,
                       dashPass: false,
                       type: "convenience" as const,
-                      matchedItem: undefined,
+                      matchedItem: product.name,
                     })
                   }
                 })
@@ -336,8 +336,8 @@ const SearchBar = () => {
                       logo: product.image || '',
                       description: `${product.price} • Retail Product`,
                       dashPass: false,
-                      type: "convenience" as const,
-                      matchedItem: undefined,
+                      type: "retail" as const,
+                      matchedItem: product.name,
                     })
                   }
                 })
@@ -435,8 +435,30 @@ const SearchBar = () => {
 
   // Handle clicking on a search result
   const handleResultClick = (result: SearchResult) => {
-    saveRecentSearch(searchTerm)
-    recordSearch(searchTerm)
+    // Get the product name to display in search bar
+    const productName = result.matchedItem || result.name
+    
+    // Check for products FIRST (before checking type)
+    // Products have IDs like "convenience-product-XXX", "retail-product-XXX", "pet-product-XXX"
+    // This prevents products from being treated as stores
+    if (result.id.includes("-product-") || result.type === "pet-product") {
+      // For products, update search bar and navigate to search results page
+      setSearchTerm(productName) // Update search bar with product name
+      saveRecentSearch(productName)
+      recordSearch(productName)
+      router.push(`/search?q=${encodeURIComponent(productName)}`)
+      setIsSearchActive(false)
+      return // Important: return early to prevent other logic from running
+    }
+    
+    // Handle stores/restaurants (only if not a product)
+    // Get the restaurant/store name to display in search bar
+    const restaurantName = result.name
+    
+    // Update search bar with restaurant/store name
+    setSearchTerm(restaurantName)
+    saveRecentSearch(restaurantName)
+    recordSearch(restaurantName)
     
     if (result.type === "grocery") {
       // Extract the actual grocery store ID (remove "grocery-" prefix)
@@ -454,13 +476,8 @@ const SearchBar = () => {
       // Extract the actual retail store ID (remove "retail-" prefix)
       const actualId = result.id.replace("retail-", "")
       router.push(`/retail/store/${actualId}`)
-    } else if (result.type === "pet-product") {
-      // For pet products, navigate to the search results page
-      router.push(`/search?q=${encodeURIComponent(result.matchedItem || result.name)}`)
-    } else if (result.id.includes("-product-")) {
-      // For any other product types (convenience-product, retail-product, etc.), navigate to search results
-      router.push(`/search?q=${encodeURIComponent(result.matchedItem || result.name)}`)
     } else {
+      // Regular restaurants
       router.push(`/store/${result.id}`)
     }
     setIsSearchActive(false)

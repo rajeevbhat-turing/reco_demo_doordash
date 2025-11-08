@@ -8,8 +8,11 @@ import type { SearchResultRestaurant } from "@/lib/utils/search-utils"
 import { useCartStore } from "@/store/cart-store"
 import { stores as groceryStores } from "@/data/store-data"
 import { convenienceStores } from "@/data/convenience-store-data"
-import { getAllPetStores } from "@/app/pets/data/pet-response-mapper"
+import { getAllPetStores, getEnrichedPetProducts } from "@/app/pets/data/pet-response-mapper"
 import { stores as retailStores } from "@/constants/store"
+import { convenienceData } from "@/data/convenience-data"
+import ProductDetailModal from "@/components/modals/product-detail-modal"
+import type { Product } from "@/types"
 
 interface SearchResultsRendererProps {
   results: SearchResultRestaurant[]
@@ -18,6 +21,10 @@ interface SearchResultsRendererProps {
 export default function SearchResultsRenderer({ results }: SearchResultsRendererProps) {
   const { addItem, findCart, updateQuantity, removeItem } = useCartStore()
   const [favoritedStores, setFavoritedStores] = useState<Set<string>>(new Set())
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
+  const [selectedProductCategory, setSelectedProductCategory] = useState<"grocery" | "retail" | "convenience" | "pets" | "restaurant">("grocery")
+  const [selectedStoreId, setSelectedStoreId] = useState<string>("")
+  const [selectedStoreName, setSelectedStoreName] = useState<string>("")
 
   // Toggle favorite state for a store
   const toggleFavorite = (storeName: string) => {
@@ -30,6 +37,152 @@ export default function SearchResultsRenderer({ results }: SearchResultsRenderer
       }
       return newSet
     })
+  }
+
+  // Find product by ID from search result
+  const findProductById = (productId: string, storeType?: string, storeName?: string): Product | null => {
+    // Extract actual product ID from search result ID
+    // Format: "pet-product-{id}", "convenience-product-{id}", "retail-product-{id}"
+    let actualProductId: string | number = ""
+    let category: "grocery" | "retail" | "convenience" | "pets" = "grocery"
+    
+    if (productId.includes("pet-product-")) {
+      actualProductId = productId.replace("pet-product-", "")
+      category = "pets"
+    } else if (productId.includes("convenience-product-")) {
+      actualProductId = productId.replace("convenience-product-", "")
+      category = "convenience"
+    } else if (productId.includes("retail-product-")) {
+      actualProductId = productId.replace("retail-product-", "")
+      category = "retail"
+    } else {
+      return null
+    }
+
+    // Convert to number if possible
+    const numericId = typeof actualProductId === "string" && !isNaN(Number(actualProductId)) 
+      ? Number(actualProductId) 
+      : actualProductId
+
+    // Search pet products
+    if (category === "pets") {
+      try {
+        const petProducts = getEnrichedPetProducts()
+        for (const section of petProducts) {
+          for (const product of section.products) {
+            const productIdStr = String(product.id)
+            const searchIdStr = String(actualProductId)
+            if (productIdStr === searchIdStr || product.id === numericId) {
+              return {
+                id: product.id,
+                name: product.name,
+                price: product.price || 0,
+                image: product.image || "/placeholder.svg",
+                category: "pets"
+              }
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Error finding pet product:', error)
+      }
+    }
+
+    // Search convenience products
+    if (category === "convenience") {
+      try {
+        for (const [storeId, storeProducts] of Object.entries(convenienceData)) {
+          if (Array.isArray(storeProducts)) {
+            for (const section of storeProducts) {
+              if (section.products && Array.isArray(section.products)) {
+                for (const product of section.products) {
+                  const productIdStr = String(product.id)
+                  const searchIdStr = String(actualProductId)
+                  if (productIdStr === searchIdStr || product.id === numericId) {
+                    return {
+                      id: product.id,
+                      name: product.name,
+                      price: product.price || 0,
+                      image: product.image || "/placeholder.svg",
+                      category: "convenience"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Error finding convenience product:', error)
+      }
+    }
+
+    // Search retail products
+    if (category === "retail") {
+      try {
+        for (const store of retailStores) {
+          if (store.items && Array.isArray(store.items)) {
+            for (const section of store.items) {
+              if (section.products && Array.isArray(section.products)) {
+                for (const product of section.products) {
+                  const productIdStr = String(product.id)
+                  const searchIdStr = String(actualProductId)
+                  if (productIdStr === searchIdStr || product.id === numericId) {
+                    return {
+                      id: product.id,
+                      name: product.name,
+                      price: product.price || 0,
+                      image: product.image || "/placeholder.svg",
+                      category: "retail"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Error finding retail product:', error)
+      }
+    }
+
+    return null
+  }
+
+  // Handle product click to open modal
+  const handleProductClick = (product: SearchResultRestaurant) => {
+    const foundProduct = findProductById(product.id, product.storeType, product.cuisine)
+    if (foundProduct) {
+      // Determine category and store ID
+      let category: "grocery" | "retail" | "convenience" | "pets" | "restaurant" = "grocery"
+      let storeId = ""
+      
+      if (product.storeType === "grocery") {
+        category = "grocery"
+        storeId = product.cuisine?.toLowerCase().replace(/\s+/g, '-') || "grocery-store"
+      } else if (product.storeType === "pets" || product.storeType === "pet-product") {
+        category = "pets"
+        storeId = product.cuisine?.toLowerCase().replace(/\s+/g, '-') || "pet-store"
+      } else if (product.storeType === "convenience") {
+        category = "convenience"
+        storeId = product.cuisine?.toLowerCase().replace(/\s+/g, '-') || "convenience-store"
+      } else if (product.storeType === "retail") {
+        category = "retail"
+        storeId = product.cuisine?.toLowerCase().replace(/\s+/g, '-') || "retail-store"
+      }
+
+      setSelectedProduct(foundProduct)
+      setSelectedProductCategory(category)
+      setSelectedStoreId(storeId)
+      setSelectedStoreName(product.cuisine || "")
+    }
+  }
+
+  // Close modal
+  const handleCloseModal = () => {
+    setSelectedProduct(null)
+    setSelectedStoreId("")
+    setSelectedStoreName("")
   }
 
   // Helper function to get store information by store name and category
@@ -156,6 +309,15 @@ export default function SearchResultsRenderer({ results }: SearchResultsRenderer
   
   return (
     <>
+      {/* Product Detail Modal */}
+      <ProductDetailModal
+        product={selectedProduct}
+        onClose={handleCloseModal}
+        storeId={selectedStoreId}
+        category={selectedProductCategory}
+        storeName={selectedStoreName}
+      />
+      
       {/* Render store groups with products */}
       {Object.entries(storeGroups).map(([storeName, products]) => {
         // Get store type from first product
@@ -246,7 +408,11 @@ export default function SearchResultsRenderer({ results }: SearchResultsRenderer
           <div>
             <div className="flex gap-6 overflow-x-auto pb-2 scrollbar-hide">
               {products.map((product) => (
-                <div key={product.id} className="flex flex-col min-w-[160px] max-w-[160px] flex-shrink-0">
+                <div 
+                  key={product.id} 
+                  className="flex flex-col min-w-[160px] max-w-[160px] flex-shrink-0 cursor-pointer"
+                  onClick={() => handleProductClick(product)}
+                >
                   {/* Product Image */}
                   <div className="relative aspect-square bg-gray-100 rounded-lg overflow-hidden mb-3 shadow-sm">
                     <Image

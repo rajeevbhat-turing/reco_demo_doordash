@@ -47,6 +47,181 @@ export function productMatchesSearchTerm(productName: string, searchTerm: string
 }
 
 /**
+ * Find all exact product matches by product name (case-insensitive)
+ * Returns an array of all products with the exact same name
+ * This allows showing multiple products with the same name (e.g., from different stores)
+ */
+function findExactProductMatches(queryLower: string): SearchResultRestaurant[] {
+  const matches: SearchResultRestaurant[] = []
+  const addedProductIds = new Set<string>() // Track added products to avoid duplicates
+
+  // Search pet products
+  try {
+    const petProducts = getEnrichedPetProducts()
+    for (const section of petProducts) {
+      for (const product of section.products) {
+        // Clean the product name the same way as the query for accurate comparison
+        const productName = cleanQuery(product.name).toLowerCase().trim()
+        if (productName === queryLower) {
+          const productId = `pet-product-${product.id}`
+          if (!addedProductIds.has(productId)) {
+            const storeName = section.storeName || "Pet Store"
+            matches.push({
+              id: productId,
+              name: product.name,
+              logo: product.image,
+              banner: product.image,
+              detailsBanner: product.image,
+              cuisine: storeName,
+              priceRange: product.price || 0,
+              time: "15-30 min",
+              distance: "Nearby",
+              deliveryFee: "Free delivery",
+              rating: 4.5,
+              reviews: "50+",
+              dashPass: false,
+              new: false,
+              discount: undefined,
+              isOpen: true,
+              openingHours: "9:00 AM - 9:00 PM",
+              street: "Local Area",
+              city: "Local",
+              state: "CA",
+              zipCode: "00000",
+              lat: 0,
+              lng: 0,
+              phone: "(555) 123-4567",
+              categories: ["pet-product"],
+              matchType: "menu-item" as const,
+              storeType: "pet-product" as const,
+              matchedItems: [product.name],
+            })
+            addedProductIds.add(productId)
+          }
+        }
+      }
+    }
+  } catch (error) {
+    console.error('Error in exact pet product match:', error)
+  }
+
+  // Search convenience products
+  try {
+    for (const [storeId, storeProducts] of Object.entries(convenienceData)) {
+      if (Array.isArray(storeProducts)) {
+        for (const section of storeProducts) {
+          if (section.products && Array.isArray(section.products)) {
+            for (const product of section.products) {
+              // Clean the product name the same way as the query for accurate comparison
+              const productName = product.name ? cleanQuery(product.name).toLowerCase().trim() : ''
+              if (productName === queryLower) {
+                const productId = `convenience-product-${product.id}`
+                if (!addedProductIds.has(productId)) {
+                  const carouselData = getProductCarouselData()
+                  const matchingCarouselStore = carouselData.find(store => 
+                    store.products.some(p => p.id === product.id)
+                  )
+                  const storeName = matchingCarouselStore?.storeName || "Convenience Store"
+                  matches.push({
+                    id: productId,
+                    name: product.name,
+                    logo: product.image,
+                    banner: product.image,
+                    detailsBanner: product.image,
+                    cuisine: storeName,
+                    priceRange: product.price || 0,
+                    time: "10-25 min",
+                    distance: "Nearby",
+                    deliveryFee: "Free delivery",
+                    rating: 4.3,
+                    reviews: "100+",
+                    dashPass: false,
+                    new: false,
+                    discount: undefined,
+                    isOpen: true,
+                    openingHours: "24 hours",
+                    street: "Local Area",
+                    city: "Local",
+                    state: "CA",
+                    zipCode: "00000",
+                    lat: 0,
+                    lng: 0,
+                    phone: "(555) 123-4567",
+                    categories: ["convenience"],
+                    matchType: "menu-item" as const,
+                    storeType: "convenience" as const,
+                    matchedItems: [product.name],
+                  })
+                  addedProductIds.add(productId)
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  } catch (error) {
+    console.error('Error in exact convenience product match:', error)
+  }
+
+  // Search retail products
+  try {
+    for (const store of retailStores) {
+      if (store.items && Array.isArray(store.items)) {
+        for (const section of store.items) {
+          if (section.products && Array.isArray(section.products)) {
+            for (const product of section.products) {
+              // Clean the product name the same way as the query for accurate comparison
+              const productName = product.name ? cleanQuery(product.name).toLowerCase().trim() : ''
+              if (productName === queryLower) {
+                const productId = `retail-product-${product.id}`
+                if (!addedProductIds.has(productId)) {
+                  matches.push({
+                    id: productId,
+                    name: product.name,
+                    logo: product.image,
+                    banner: product.image,
+                    detailsBanner: product.image,
+                    cuisine: store.name,
+                    priceRange: product.price || 0,
+                    time: "30-45 min",
+                    distance: "Nearby",
+                    deliveryFee: "Free delivery",
+                    rating: 4.4,
+                    reviews: "200+",
+                    dashPass: false,
+                    new: false,
+                    discount: undefined,
+                    isOpen: true,
+                    openingHours: "9:00 AM - 9:00 PM",
+                    street: "Local Area",
+                    city: "Local",
+                    state: "CA",
+                    zipCode: "00000",
+                    lat: 0,
+                    lng: 0,
+                    phone: "(555) 123-4567",
+                    categories: ["retail"],
+                    matchType: "menu-item" as const,
+                    storeType: "retail" as const,
+                    matchedItems: [product.name],
+                  })
+                  addedProductIds.add(productId)
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  } catch (error) {
+    console.error('Error in exact retail product match:', error)
+  }
+
+  return matches
+}
+
+/**
  * Search for restaurants that serve specific menu items
  */
 export function searchByMenuItem(searchTerm: string): SearchResultRestaurant[] {
@@ -98,6 +273,14 @@ export function performSearch(query: string): SearchResultRestaurant[] {
   // Early return for empty or numeric-only queries
   if (queryLower.length === 0 || /^\d+$/.test(queryLower)) {
     return []
+  }
+
+  // First, try exact product name match - if query exactly matches a product name, return all products with that name
+  // This handles cases where user clicks on a product suggestion and we want to show only that product(s)
+  // If there are multiple products with the same name (e.g., from different stores), show all of them
+  const exactProductMatches = findExactProductMatches(queryLower)
+  if (exactProductMatches.length > 0) {
+    return exactProductMatches
   }
   
   // First, try exact match with full query
