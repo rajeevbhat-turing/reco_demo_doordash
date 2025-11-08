@@ -1,10 +1,12 @@
 import { PaymentMethod, Address } from "@/lib/types/user-types"
+import { OrderModification } from "@/types"
 
 export interface OrderItem {
   id: string;
   name: string;
   quantity: number;
   price: number;
+  modifications?: OrderModification[];
 }
 
 // Reuse PaymentMethod from user-types with all fields optional for orders
