@@ -26,7 +26,7 @@ export default function Orders() {
                     )}
                   </div>
                   <p className="text-gray-500 text-sm mt-1">
-                    {order.orderDate} • ${order.totalAmount.toFixed(2)} • {order.items.reduce((acc, item) => acc + item.quantity, 0)} items • Personal
+                    {order.orderDate} • ${order?.totalAmount?.toFixed(2)} • {order?.items?.reduce((acc, item) => acc + item.quantity, 0)} items • Personal
                   </p>
                   <p className="mt-2">
                     {order.items.map(item => `${item.name} × ${item.quantity}`).join(' • ')}

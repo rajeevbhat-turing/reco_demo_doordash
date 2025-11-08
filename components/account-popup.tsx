@@ -147,7 +147,7 @@ export default function AccountPopup({ isOpen, onClose, anchorElement }: Account
                   fill="#00838a"
                 ></path>
               </svg>
-              <span className="text-[15px] font-medium text-[#00666d]">Get A$0 delivery fees</span>
+              <span className="text-[15px] font-medium text-[#00666d]">Get $0 delivery fees</span>
             </div>
           </div>
 
