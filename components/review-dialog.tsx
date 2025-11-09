@@ -15,6 +15,7 @@ interface ReviewDialogProps {
   restaurantName: string;
   vendorId?: string;
   vendorLogo?: string;
+  onSubmit?: (rating: number, reviewText: string) => void;
   defaultRating?: number;
 }
 
@@ -25,6 +26,7 @@ export default function ReviewDialog({
   vendorId,
   vendorLogo,
   defaultRating,
+  onSubmit,
 }: ReviewDialogProps) {
   const currentUser = useUserStore(state => state.currentUser);
   const { addReview } = useReviewStore();
@@ -126,8 +128,11 @@ export default function ReviewDialog({
     // Clear any errors if validation passes
     setError({ type: null, message: null });
 
-    // Add review to store if vendorId is provided
-    if (vendorId && currentUser) {
+    // Prefer consumer callback if provided, fallback to adding to review store
+    if (onSubmit) {
+      onSubmit(rating, reviewText.trim())
+    } else if (vendorId && currentUser) {
+      // Legacy behavior: Add review to store if vendorId is provided
       addReview({
         vendorId: vendorId,
         vendorName: restaurantName,

@@ -38,7 +38,7 @@ export default function CheckoutPage() {
   const categoryParam = searchParams.get('category') as CartCategory | null
   const storeIdParam = searchParams.get('storeId')
   
-  const { findCart, getSubtotal, getServiceFee, getDeliveryFee, getTotal, getTotalItems, setSelectedCard, removeItem, updateQuantity } = useCartStore()
+  const { findCart, getSubtotal, getServiceFee, getDeliveryFee, getTotal, getTotalItems, setSelectedCard, removeItem, updateQuantity, isReorderMode, confirmReorder } = useCartStore()
   const { recordCheckoutNavigation, recordDeliveryTimeSelection } = useVerifierStore()
   const { 
     currentUser,
@@ -184,14 +184,23 @@ export default function CheckoutPage() {
   const handlePlaceOrder = () => {
     const newOrderId = generateOrderId()
     
+    // If in reorder mode, confirm the reorder (discard original cart backup silently)
+    if (isReorderMode) {
+      confirmReorder()
+    }
+    
     // Prepare order data
+    const totalAmount = getTotal(currentStoreId || undefined, currentCategory || undefined) + extraDeliveryFee
+    
     const orderData = {
       // 1. Order ID
       id: newOrderId,
       
-      // 2. Cart fields extracted to root level (without card details)
+      // 2. Cart fields extracted to root level (support both old and new field names)
       storeId: currentCart?.storeId,
       storeName: currentCart?.storeName,
+      restaurantId: currentCart?.storeId, // Old field name for backward compatibility
+      restaurantName: currentCart?.storeName, // Old field name for backward compatibility
       storeCategory: currentCart?.storeCategory,
       items: currentCart?.items?.map(item => ({
         id: item.id.toString(),
@@ -249,7 +258,8 @@ export default function CheckoutPage() {
       subtotal: subtotal,
       serviceFee: serviceFee,
       deliveryFee: deliveryFee + extraDeliveryFee,
-      total: getTotal(currentStoreId || undefined, currentCategory || undefined) + extraDeliveryFee,
+      total: totalAmount,
+      totalAmount: totalAmount, // Old field name for backward compatibility
       
       // Order metadata
       orderDate: new Date().toLocaleDateString('en-US', { 
@@ -258,6 +268,7 @@ export default function CheckoutPage() {
         day: 'numeric' 
       }),
       status: 'Confirmed',
+      orderType: 'Personal', // Default to Personal
     }
     
     console.log('ORDER DATA:', orderData)
