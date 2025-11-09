@@ -11,7 +11,7 @@ import { convenienceStores } from "@/data/convenience-store-data"
 import { getAllPetStores, getEnrichedPetProducts } from "@/app/pets/data/pet-response-mapper"
 import { stores as retailStores } from "@/constants/store"
 import { convenienceData } from "@/data/convenience-data"
-import ProductDetailModal from "@/components/modals/product-detail-modal"
+import MenuItemDialog from "@/components/menu-item-dialog"
 import type { Product } from "@/types"
 
 interface SearchResultsRendererProps {
@@ -309,13 +309,29 @@ export default function SearchResultsRenderer({ results }: SearchResultsRenderer
   
   return (
     <>
-      {/* Product Detail Modal */}
-      <ProductDetailModal
-        product={selectedProduct}
+      {/* Use MenuItemDialog instead of ProductDetailModal */}
+      <MenuItemDialog
+        isOpen={!!selectedProduct}
         onClose={handleCloseModal}
-        storeId={selectedStoreId}
-        category={selectedProductCategory}
-        storeName={selectedStoreName}
+        item={
+          selectedProduct
+            ? {
+                id: String(selectedProduct.id),
+                restaurantId:
+                  selectedStoreId ||
+                  (selectedStoreName ? selectedStoreName.toLowerCase().replace(/\s+/g, "-") : "store"),
+                name: selectedProduct.name,
+                price:
+                  typeof selectedProduct.price === "number"
+                    ? `$${selectedProduct.price.toFixed(2)}`
+                    : (() => {
+                        const p = String((selectedProduct as any).price ?? "")
+                        return p.startsWith("$") ? p : p ? `$${p}` : "$0.00"
+                      })(),
+                image: selectedProduct.image || "/placeholder.svg",
+              }
+            : null
+        }
       />
       
       {/* Render store groups with products */}
