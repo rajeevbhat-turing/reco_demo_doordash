@@ -1,14 +1,20 @@
 "use client"
 
-import { useState, useEffect, useRef, forwardRef, useImperativeHandle } from "react"
+import { forwardRef, useImperativeHandle } from "react"
 import { ChevronDown, Tag, DollarSign, Check } from "lucide-react"
+import { useFilterOptions } from "@/hooks/use-filter-options"
 
 export interface FilterState {
   underThirtyMins: boolean
   deals: boolean
   overRating: number | null
-  price: string[] | null
+  price: string[] | null // DEPRECATED: Keeping for backward compatibility during migration
+  minPrice?: number | null // Min price in dollars
+  maxPrice?: number | null // Max price in dollars
   dashPass: boolean
+  location?: string | null // "under-1mi", "under-3mi", "under-5mi"
+  cuisine?: string[] | null // Array of selected cuisines
+  dietaryPreferences?: string[] | null // Array of dietary preferences
 }
 
 export interface FilterOptionsRef {
@@ -28,6 +34,8 @@ interface FilterOptionsProps {
   filters?: FilterState
   filterData?: FilterOption[]
   showPriceFilter?: boolean
+  hideCuisineFilter?: boolean  // Hide cuisine filter (for Pets, Grocery, Retail)
+  hideDietaryFilter?: boolean   // Hide dietary filter (for Pets, Retail)
 }
 
 interface ScheduleOption {
@@ -42,327 +50,88 @@ interface TimeOption {
 }
 
 const FilterOptions = forwardRef<FilterOptionsRef, FilterOptionsProps>(
-  ({ isGrocery = false, onFilterChange, onReset, filters: externalFilters, filterData = [], showPriceFilter = true }, ref) => {
-    const [filters, setFilters] = useState<FilterState>({
-      underThirtyMins: false,
-      deals: false,
-      overRating: null,
-      price: null,
-      dashPass: false,
+  ({ isGrocery = false, onFilterChange, onReset, filters: externalFilters, filterData = [], showPriceFilter = true, hideCuisineFilter = false, hideDietaryFilter = false }, ref) => {
+    // Use the custom hook for all filter logic
+    const {
+      // State
+      filters,
+      ratingDropdownOpen,
+      priceDropdownOpen,
+      locationDropdownOpen,
+      cuisineDropdownOpen,
+      dietaryDropdownOpen,
+      selectedRating,
+      selectedPrices,
+      selectedLocation,
+      selectedCuisines,
+      selectedDietaryPreferences,
+      
+      // Refs
+      ratingButtonRef,
+      priceButtonRef,
+      locationButtonRef,
+      cuisineButtonRef,
+      dietaryButtonRef,
+      ratingDropdownRef,
+      priceDropdownRef,
+      locationDropdownRef,
+      cuisineDropdownRef,
+      dietaryDropdownRef,
+      
+      // Positioned refs (callback refs for immediate positioning)
+      ratingDropdownPositionedRef,
+      priceDropdownPositionedRef,
+      locationDropdownPositionedRef,
+      cuisineDropdownPositionedRef,
+      dietaryDropdownPositionedRef,
+      
+      // Handlers
+      toggleFilter,
+      handleRatingSelect,
+      handlePriceToggle,
+      resetRatingFilter,
+      resetPriceFilter,
+      applyPriceFilter,
+      handleLocationSelect,
+      resetLocationFilter,
+      applyLocationFilter,
+      handleCuisineToggle,
+      resetCuisineFilter,
+      applyCuisineFilter,
+      handleDietaryToggle,
+      resetDietaryFilter,
+      applyDietaryFilter,
+      applyRatingFilter,
+      resetAllFilters,
+      
+      // Setters
+      setRatingDropdownOpen,
+      setPriceDropdownOpen,
+      setLocationDropdownOpen,
+      setCuisineDropdownOpen,
+      setDietaryDropdownOpen,
+      
+      // Labels
+      getPriceLabel,
+      getLocationLabel,
+      getCuisineLabel,
+      getDietaryLabel,
+      getRatingLabel,
+    } = useFilterOptions({
+      isGrocery,
+      onFilterChange,
+      onReset,
+      externalFilters,
+      filterData,
+      showPriceFilter,
+      hideCuisineFilter,
+      hideDietaryFilter,
     })
-
-    // Update internal state when external filters change
-    useEffect(() => {
-      if (externalFilters) {
-        setFilters(externalFilters)
-        setSelectedRating(externalFilters.overRating)
-        setSelectedPrices(externalFilters.price || [])
-      }
-    }, [externalFilters])
-
-    const [ratingDropdownOpen, setRatingDropdownOpen] = useState(false)
-    const [priceDropdownOpen, setPriceDropdownOpen] = useState(false)
-    const [categoryDropdownOpen, setCategoryDropdownOpen] = useState(false)
-    const [isTimeOptionsExpanded, setIsTimeOptionsExpanded] = useState(false)
-    const [selectedRating, setSelectedRating] = useState<number | null>(null)
-    const [selectedPrices, setSelectedPrices] = useState<string[]>([])
-  
-    const [visibleTimeOptions, setVisibleTimeOptions] = useState<TimeOption[]>([])
-
-    // Schedule state - REMOVED
-    const [selectedDay, setSelectedDay] = useState<string>("Today")
-    const [selectedTime, setSelectedTime] = useState<string>("")
-    const [dateOptions, setDateOptions] = useState<ScheduleOption[]>([])
-    const [timeOptions, setTimeOptions] = useState<TimeOption[]>([])
-
-    const ratingButtonRef = useRef<HTMLButtonElement>(null)
-    const priceButtonRef = useRef<HTMLButtonElement>(null)
-  
-    const ratingDropdownRef = useRef<HTMLDivElement>(null)
-    const priceDropdownRef = useRef<HTMLDivElement>(null)
-  
-
-    // Generate date options (Today, Tomorrow, and next 3 days)
-    useEffect(() => {
-      const today = new Date()
-      const options: ScheduleOption[] = []
-
-      // Today
-      options.push({
-        day: "Today",
-        date: `May ${today.getDate()}`,
-        fullDate: new Date(today),
-      })
-
-      // Tomorrow
-      const tomorrow = new Date(today)
-      tomorrow.setDate(tomorrow.getDate() + 1)
-      options.push({
-        day: "Tomorrow",
-        date: `May ${tomorrow.getDate()}`,
-        fullDate: new Date(tomorrow),
-      })
-
-      // Next 3 days
-      for (let i = 2; i < 5; i++) {
-        const nextDay = new Date(today)
-        nextDay.setDate(nextDay.getDate() + i)
-
-        const dayName = nextDay.toLocaleDateString("en-US", { weekday: "long" })
-        options.push({
-          day: dayName,
-          date: `May ${nextDay.getDate()}`,
-          fullDate: new Date(nextDay),
-        })
-      }
-
-      setDateOptions(options)
-    }, [])
-
-    // Generate time options based on selected day
-    useEffect(() => {
-      const now = new Date()
-      const currentHour = now.getHours()
-      const currentMinute = now.getMinutes()
-
-      const times: TimeOption[] = []
-      const isToday = selectedDay === "Today"
-
-      // Start from current hour if today, otherwise start from restaurant opening time (e.g., 11 AM)
-      const startHour = isToday ? currentHour : 11
-      const endHour = 23 // Restaurant closing time (11 PM)
-
-      for (let hour = startHour; hour <= endHour; hour++) {
-        // For today, only show future times
-        const minuteIntervals = [0, 10, 20, 30, 40, 50]
-
-        for (const minute of minuteIntervals) {
-          if (isToday && hour === currentHour && minute <= currentMinute) {
-            continue // Skip past times for today
-          }
-
-          const formattedHour = hour % 12 === 0 ? 12 : hour % 12
-          const period = hour >= 12 ? "PM" : "AM"
-          const formattedMinute = minute.toString().padStart(2, "0")
-          const timeString = `${formattedHour}:${formattedMinute} ${period}`
-
-          times.push({
-            time: timeString,
-            selected: false,
-          })
-        }
-      }
-
-      // If no times available for today, show tomorrow's times
-      if (times.length === 0 && isToday) {
-        setSelectedDay("Tomorrow")
-        return
-      }
-
-      // Select the first available time by default
-      if (times.length > 0) {
-        times[0].selected = true
-        setSelectedTime(times[0].time)
-      }
-
-      setTimeOptions(times)
-      setVisibleTimeOptions(times.slice(0,6))
-    }, [selectedDay])
-
-    // Close dropdowns when clicking outside
-    useEffect(() => {
-      const handleClickOutside = (event: MouseEvent) => {
-        // For rating dropdown
-        if (
-          ratingDropdownOpen &&
-          ratingDropdownRef.current &&
-          !ratingDropdownRef.current.contains(event.target as Node) &&
-          ratingButtonRef.current &&
-          !ratingButtonRef.current.contains(event.target as Node)
-        ) {
-          setRatingDropdownOpen(false)
-        }
-
-        // For price dropdown
-        if (
-          priceDropdownOpen &&
-          priceDropdownRef.current &&
-          !priceDropdownRef.current.contains(event.target as Node) &&
-          priceButtonRef.current &&
-          !priceButtonRef.current.contains(event.target as Node)
-        ) {
-          setPriceDropdownOpen(false)
-        }
-      }
-
-      document.addEventListener("mousedown", handleClickOutside)
-      return () => {
-        document.removeEventListener("mousedown", handleClickOutside)
-      }
-    }, [ratingDropdownOpen, priceDropdownOpen])
-
-    const toggleFilter = (filterName: keyof FilterState, value?: any) => {
-      const newFilters = {
-        ...filters,
-        [filterName]: value !== undefined ? value : !filters[filterName],
-      }
-      setFilters(newFilters)
-      if (onFilterChange) {
-        onFilterChange(newFilters)
-      }
-
-      // Scroll to top when a filter is selected
-      window.scrollTo({ top: 0, behavior: "smooth" })
-    }
-
-    const handleRatingSelect = (rating: number) => {
-      setSelectedRating(rating)
-    }
-
-    const expandTimeOptions = () => {
-      setIsTimeOptionsExpanded(true);
-      setVisibleTimeOptions(timeOptions)
-    }
-
-    const handlePriceToggle = (price: string) => {
-      let newPrices: string[]
-
-      if (selectedPrices.includes(price)) {
-        newPrices = selectedPrices.filter((p) => p !== price)
-      } else {
-        newPrices = [...selectedPrices, price]
-      }
-
-      setSelectedPrices(newPrices)
-    }
-
-    const handleDaySelect = (day: string) => {
-      setSelectedDay(day)
-    }
-
-    const handleTimeSelect = (time: string) => {
-      setSelectedTime(time)
-      const updatedTimes = timeOptions.map((option) => ({
-        ...option,
-        selected: option.time === time,
-      }))
-      setTimeOptions(updatedTimes)
-    }
-
-    const resetRatingFilter = () => {
-      setSelectedRating(null)
-      toggleFilter("overRating", null)
-      setRatingDropdownOpen(false)
-    }
-
-    const resetPriceFilter = () => {
-      setSelectedPrices([])
-      toggleFilter("price", null)
-      setPriceDropdownOpen(false)
-    }
-
-    const getPriceLabel = () => {
-      if (filters.price && filters.price.length > 0) {
-        if (filters.price.length === 1) return filters.price[0]
-        if (filters.price.length === 2) return `${filters.price[0]}, ${filters.price[1]}`
-        return `${filters.price[0]}, ${filters.price[1]}...`
-      }
-      return "Price"
-    }
-
-    const getRatingLabel = () => {
-      if (filters.overRating) {
-        return `Over ${filters.overRating}★`
-      }
-      return "Over 4.5★"
-    }
-
-    // Complete reset function that resets all internal state
-    const resetAllFilters = () => {
-      const resetState = {
-        underThirtyMins: false,
-        deals: false,
-        overRating: null,
-        price: null,
-        dashPass: false,
-      }
-
-      setFilters(resetState)
-      setSelectedRating(null)
-      setSelectedPrices([])
-      setRatingDropdownOpen(false)
-      setPriceDropdownOpen(false)
-
-      // Don't call onFilterChange here - this was causing the infinite loop
-      // Instead, let the parent component handle its own state
-
-      if (onReset) {
-        onReset()
-      }
-    }
 
     // Expose the reset function to parent components
     useImperativeHandle(ref, () => ({
       resetFilters: resetAllFilters,
     }))
-
-    // Ensure dropdowns are visible within viewport
-    useEffect(() => {
-      const adjustDropdownPosition = () => {
-        if (ratingDropdownOpen && ratingDropdownRef.current && ratingButtonRef.current) {
-          const buttonRect = ratingButtonRef.current.getBoundingClientRect()
-          const dropdownRect = ratingDropdownRef.current.getBoundingClientRect()
-          const viewportHeight = window.innerHeight
-
-          // Check if dropdown would go off the bottom of the viewport
-          if (buttonRect.bottom + dropdownRect.height > viewportHeight) {
-            // Position above the button if it would go off screen
-            ratingDropdownRef.current.style.top = "auto"
-            ratingDropdownRef.current.style.bottom = "100%"
-            ratingDropdownRef.current.style.marginTop = "0"
-            ratingDropdownRef.current.style.marginBottom = "8px"
-          }
-        }
-
-        if (priceDropdownOpen && priceDropdownRef.current && priceButtonRef.current) {
-          const buttonRect = priceButtonRef.current.getBoundingClientRect()
-          const dropdownRect = priceDropdownRef.current.getBoundingClientRect()
-          const viewportHeight = window.innerHeight
-
-          // Check if dropdown would go off the bottom of the viewport
-          if (buttonRect.bottom + dropdownRect.height > viewportHeight) {
-            // Position above the button if it would go off screen
-            priceDropdownRef.current.style.top = "auto"
-            priceDropdownRef.current.style.bottom = "100%"
-            priceDropdownRef.current.style.marginTop = "0"
-            priceDropdownRef.current.style.marginBottom = "8px"
-          }
-        }
-      }
-
-      if (ratingDropdownOpen || priceDropdownOpen) {
-        adjustDropdownPosition()
-        window.addEventListener("resize", adjustDropdownPosition)
-      }
-
-      return () => {
-        window.removeEventListener("resize", adjustDropdownPosition)
-      }
-    }, [ratingDropdownOpen, priceDropdownOpen])
-
-    const applyRatingFilter = () => {
-      toggleFilter("overRating", selectedRating)
-      setRatingDropdownOpen(false)
-      window.scrollTo({ top: 0, behavior: "smooth" })
-    }
-
-    const applyPriceFilter = () => {
-      toggleFilter("price", selectedPrices)
-      setPriceDropdownOpen(false)
-      window.scrollTo({ top: 0, behavior: "smooth" })
-    }
-
-    
 
     return (
       <div className="sticky top-16 z-40 bg-white py-2 border-b border-gray-100">
@@ -406,9 +175,8 @@ const FilterOptions = forwardRef<FilterOptionsRef, FilterOptionsProps>(
                       {/* Price dropdown (reusing existing code) */}
                       {priceDropdownOpen && (
                         <div
-                          ref={priceDropdownRef}
-                          className="fixed z-50 mt-2 w-[400px] bg-white rounded-lg shadow-lg p-6"
-                          style={{ left: "50%", transform: "translateX(-50%)" }}
+                          ref={priceDropdownPositionedRef}
+                          className="fixed z-50 w-[400px] bg-white rounded-lg shadow-lg p-6"
                         >
                           <h3 className="text-xl font-bold mb-6">Price</h3>
                           <div className="flex gap-3 mb-6">
@@ -504,9 +272,8 @@ const FilterOptions = forwardRef<FilterOptionsRef, FilterOptionsProps>(
 
             {ratingDropdownOpen && (
               <div
-                ref={ratingDropdownRef}
-                className="fixed z-50 mt-2 w-[400px] bg-white rounded-lg shadow-lg p-6"
-                style={{ left: "50%", transform: "translateX(-50%)" }}
+                ref={ratingDropdownPositionedRef}
+                className="fixed z-50 w-[400px] bg-white rounded-lg shadow-lg p-6"
               >
                 <h3 className="text-xl font-bold mb-6">Ratings</h3>
                 <div className="mb-6">
@@ -548,6 +315,221 @@ const FilterOptions = forwardRef<FilterOptionsRef, FilterOptionsProps>(
             )}
           </div>
 
+          {/* Location Filter */}
+          {/* {!isGrocery && (
+            <div className="relative">
+              <button
+                ref={locationButtonRef}
+                className={`rounded-full h-9 px-4 text-xs font-semibold ${
+                  filters.location ? "bg-gray-900 text-white" : "bg-gray-100 hover:bg-gray-200 text-gray-900"
+                } flex items-center gap-1`}
+                onClick={(e) => {
+                  e.stopPropagation()
+                  setLocationDropdownOpen(!locationDropdownOpen)
+                  setRatingDropdownOpen(false)
+                  setPriceDropdownOpen(false)
+                  setCuisineDropdownOpen(false)
+                  setDietaryDropdownOpen(false)
+                }}
+              >
+                {getLocationLabel()}
+                <ChevronDown className="h-4 w-4 ml-1" />
+              </button>
+
+              {locationDropdownOpen && (
+                <div
+                  ref={locationDropdownPositionedRef}
+                  className="fixed z-50 w-[400px] bg-white rounded-lg shadow-lg p-6"
+                >
+                  <h3 className="text-xl font-bold mb-6">Location</h3>
+                  <div className="space-y-2 mb-6">
+                    {[
+                      { value: "under-1mi", label: "Under 1 mi" },
+                      { value: "under-3mi", label: "Under 3 mi" },
+                      { value: "under-5mi", label: "Under 5 mi" },
+                    ].map((option) => (
+                      <button
+                        key={option.value}
+                        className={`w-full px-4 py-3 rounded-lg text-left text-sm font-medium ${
+                          selectedLocation === option.value
+                            ? "bg-black text-white"
+                            : "bg-gray-100 text-gray-900 hover:bg-gray-200"
+                        }`}
+                        onClick={() => handleLocationSelect(option.value)}
+                      >
+                        {option.label}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="flex justify-between">
+                    <button className="text-gray-900 font-medium" onClick={resetLocationFilter}>
+                      Reset
+                    </button>
+                    <button
+                      className="bg-red-600 text-white px-4 py-2 rounded-full text-sm font-medium"
+                      onClick={applyLocationFilter}
+                    >
+                      View Results
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          )} */}
+
+          {/* Cuisine Filter */}
+          {!isGrocery && !hideCuisineFilter && (
+            <div className="relative">
+              <button
+                ref={cuisineButtonRef}
+                className={`rounded-full h-9 px-4 text-xs font-semibold ${
+                  filters.cuisine && filters.cuisine.length > 0
+                    ? "bg-gray-900 text-white"
+                    : "bg-gray-100 hover:bg-gray-200 text-gray-900"
+                } flex items-center gap-1`}
+                onClick={(e) => {
+                  e.stopPropagation()
+                  setCuisineDropdownOpen(!cuisineDropdownOpen)
+                  setRatingDropdownOpen(false)
+                  setPriceDropdownOpen(false)
+                  setLocationDropdownOpen(false)
+                  setDietaryDropdownOpen(false)
+                }}
+              >
+                {getCuisineLabel()}
+                <ChevronDown className="h-4 w-4 ml-1" />
+              </button>
+
+              {cuisineDropdownOpen && (
+                <div
+                  ref={cuisineDropdownPositionedRef}
+                  className="fixed z-50 w-[400px] bg-white rounded-lg shadow-lg p-6 max-h-[500px] overflow-y-auto"
+                >
+                  <h3 className="text-xl font-bold mb-6">Cuisine</h3>
+                  <div className="space-y-2 mb-6">
+                    {[
+                      "American",
+                      "Italian",
+                      "Asian",
+                      "Mexican",
+                      "Chinese",
+                      "Japanese",
+                      "Indian",
+                      "Thai",
+                      "Mediterranean",
+                      "French",
+                      "Greek",
+                      "Korean",
+                      "Vietnamese",
+                      "Middle Eastern",
+                      "Spanish",
+                      "Seafood",
+                      "Steakhouse",
+                      "Pizza",
+                      "Fast Food",
+                      "Barbecue",
+                    ].map((cuisine) => (
+                      <button
+                        key={cuisine}
+                        className={`w-full px-4 py-3 rounded-lg text-left text-sm font-medium flex items-center justify-between ${
+                          selectedCuisines.includes(cuisine)
+                            ? "bg-black text-white"
+                            : "bg-gray-100 text-gray-900 hover:bg-gray-200"
+                        }`}
+                        onClick={() => handleCuisineToggle(cuisine)}
+                      >
+                        <span>{cuisine}</span>
+                        {selectedCuisines.includes(cuisine) && <Check className="h-4 w-4" />}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="flex justify-between">
+                    <button className="text-gray-900 font-medium" onClick={resetCuisineFilter}>
+                      Reset
+                    </button>
+                    <button
+                      className="bg-red-600 text-white px-4 py-2 rounded-full text-sm font-medium"
+                      onClick={applyCuisineFilter}
+                    >
+                      View Results
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Dietary Preferences Filter */}
+          {!isGrocery && !hideDietaryFilter && (
+            <div className="relative">
+              <button
+                ref={dietaryButtonRef}
+                className={`rounded-full h-9 px-4 text-xs font-semibold ${
+                  filters.dietaryPreferences && filters.dietaryPreferences.length > 0
+                    ? "bg-gray-900 text-white"
+                    : "bg-gray-100 hover:bg-gray-200 text-gray-900"
+                } flex items-center gap-1`}
+                onClick={(e) => {
+                  e.stopPropagation()
+                  setDietaryDropdownOpen(!dietaryDropdownOpen)
+                  setRatingDropdownOpen(false)
+                  setPriceDropdownOpen(false)
+                  setLocationDropdownOpen(false)
+                  setCuisineDropdownOpen(false)
+                }}
+              >
+                {getDietaryLabel()}
+                <ChevronDown className="h-4 w-4 ml-1" />
+              </button>
+
+              {dietaryDropdownOpen && (
+                <div
+                  ref={dietaryDropdownPositionedRef}
+                  className="fixed z-50 w-[400px] bg-white rounded-lg shadow-lg p-6 max-h-[500px] overflow-y-auto"
+                >
+                  <h3 className="text-xl font-bold mb-6">Dietary Preferences</h3>
+                  <div className="space-y-2 mb-6">
+                    {[
+                      "Vegan",
+                      "Vegetarian",
+                      "Gluten-free",
+                      "Halal",
+                      "Kosher",
+                      "Dairy-free",
+                      "Nut-free",
+                      "Low-carb",
+                      "Keto-friendly",
+                    ].map((dietary) => (
+                      <button
+                        key={dietary}
+                        className={`w-full px-4 py-3 rounded-lg text-left text-sm font-medium flex items-center justify-between ${
+                          selectedDietaryPreferences.includes(dietary)
+                            ? "bg-black text-white"
+                            : "bg-gray-100 text-gray-900 hover:bg-gray-200"
+                        }`}
+                        onClick={() => handleDietaryToggle(dietary)}
+                      >
+                        <span>{dietary}</span>
+                        {selectedDietaryPreferences.includes(dietary) && <Check className="h-4 w-4" />}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="flex justify-between">
+                    <button className="text-gray-900 font-medium" onClick={resetDietaryFilter}>
+                      Reset
+                    </button>
+                    <button
+                      className="bg-red-600 text-white px-4 py-2 rounded-full text-sm font-medium"
+                      onClick={applyDietaryFilter}
+                    >
+                      View Results
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
           {showPriceFilter && (
             <div className="relative">
               <button
@@ -568,9 +550,8 @@ const FilterOptions = forwardRef<FilterOptionsRef, FilterOptionsProps>(
 
               {priceDropdownOpen && (
                 <div
-                  ref={priceDropdownRef}
-                  className="fixed z-50 mt-2 w-[400px] bg-white rounded-lg shadow-lg p-6"
-                  style={{ left: "50%", transform: "translateX(-50%)" }}
+                  ref={priceDropdownPositionedRef}
+                  className="fixed z-50 w-[400px] bg-white rounded-lg shadow-lg p-6"
                 >
                   <h3 className="text-xl font-bold mb-6">Price</h3>
                   <div className="flex gap-3 mb-6">

@@ -28,6 +28,7 @@ export interface Restaurant {
   new?: boolean;
   categories?: string[]; // Array of category IDs for filtering
   section?: string; // Section grouping for UI display
+  dietaryPreferences?: string[]; // Array of dietary preferences (e.g., "Vegan", "Vegetarian", "Gluten-free")
 }
 
 export const restaurants: Restaurant[] = [
