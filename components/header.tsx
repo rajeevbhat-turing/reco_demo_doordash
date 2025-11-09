@@ -34,7 +34,7 @@ export default function Header() {
   const [selectedAddressId, setSelectedAddressId] = useState<string>('');
   const [showAddAddressModal, setShowAddAddressModal] = useState(false);
   const [showReviewErrorModal, setShowReviewErrorModal] = useState(false);
-  const [pendingAddressData, setPendingAddressData] = useState<Omit<Address, 'id'> | null>(null);
+	const [pendingAddressData, setPendingAddressData] = useState<Omit<Address, 'id'> | null>(null);
 
   // Address type modal state
   const [showAddressTypeModal, setShowAddressTypeModal] = useState(false);
@@ -58,15 +58,11 @@ export default function Header() {
   const [manualState, setManualState] = useState('Alabama');
   const [manualZipCode, setManualZipCode] = useState('');
 
-  const {
-    getAddresses,
-    addAddress,
-    updateAddress,
-    setDefaultAddress,
-    setTempAddress,
-    getTempAddress,
-  } = useUserStore();
-  const addresses = getAddresses();
+	const { getAddresses, addAddress, updateAddress, setDefaultAddress, setTempAddress, getTempAddress } = useUserStore();
+	const shouldOpenCart = useCartStore((state) => state.shouldOpenCart);
+	const resetOpenCartTrigger = useCartStore((state) => state.resetOpenCartTrigger);
+	const getTotalItems = useCartStore((state) => state.getTotalItems);
+	const addresses = getAddresses();
   const tempAddress = useSyncExternalStore(
     useUserStore.subscribe,
     () => useUserStore.getState().getTempAddress(),
@@ -168,6 +164,15 @@ export default function Header() {
     };
   }, []);
 
+  // Listen for cart open trigger (for reorder functionality)
+  useEffect(() => {
+    if (shouldOpenCart) {
+      console.log('[HEADER] Opening cart sidebar due to trigger')
+      setIsCartOpen(true)
+      resetOpenCartTrigger()
+    }
+  }, [shouldOpenCart, resetOpenCartTrigger])
+
   // Check if current path is in account flow
   const isAccountFlow = pathname.startsWith('/consumer') || pathname.startsWith('/password-reset');
 
@@ -181,8 +186,14 @@ export default function Header() {
   const isCheckoutPage = pathname === '/checkout';
 
   const toggleCart = () => {
+    console.log('[HEADER] Toggling cart, current state:', isCartOpen)
     setIsCartOpen(!isCartOpen);
   };
+
+  const handleCloseCart = () => {
+    console.log('[HEADER] Closing cart')
+    setIsCartOpen(false)
+  }
 
   const handleSelectAddress = (addressId: string) => {
     setSelectedAddressId(addressId);
@@ -298,6 +309,8 @@ export default function Header() {
         city: selectedPopoverAddress.city,
         state: selectedPopoverAddress.state,
         zipCode: selectedPopoverAddress.zipCode,
+        lat: selectedPopoverAddress.lat || 0,
+        lng: selectedPopoverAddress.lng || 0,
         addressType: 'house', // default type for popover
         apartmentSuite: apartmentSuite,
         deliveryPreference: dropOffOption === 'door' ? 'door' : 'location',
@@ -386,7 +399,7 @@ export default function Header() {
               </button>
 
               {/* Centered Logo */}
-              <Link href="/home" className="absolute left-1/2 transform -translate-x-1/2">
+              <Link href={isAuthenticated ? "/home" : "/"} className="absolute left-1/2 transform -translate-x-1/2">
                 <div className="flex items-center">
                   <DashDoorLogoMark />
                   <div className="ml-1">
@@ -404,7 +417,7 @@ export default function Header() {
               {/* Normal Header Layout */}
               <div className="flex items-center flex-1 space-x-4">
                 {/* Logo */}
-                <Link href="/home" className="flex-shrink-0">
+                <Link href={isAuthenticated ? "/home" : "/"} className="flex-shrink-0">
                   <div className="flex items-center">
                     <DashDoorLogoMark />
                     <div className="ml-1">
@@ -941,7 +954,7 @@ export default function Header() {
       </header>
 
       {/* Cart Sidebar */}
-      <CartSidebar isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
+      <CartSidebar isOpen={isCartOpen} onClose={handleCloseCart} />
 
       {/* Authentication Modal */}
       {authModalMode && (
@@ -1056,6 +1069,8 @@ export default function Header() {
             city: '',
             state: '',
             zipCode: '',
+            lat: 0,
+            lng: 0,
             addressType: 'house',
           }
         }

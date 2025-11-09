@@ -6,6 +6,7 @@ interface OrdersStore {
   orders: Order[]
   addOrder: (order: Order) => void
   getOrders: () => Order[]
+  updateOrderReview: (orderId: string, rating: number, reviewText: string) => void
 }
 
 export const useOrdersStore = create<OrdersStore>()(
@@ -24,7 +25,14 @@ export const useOrdersStore = create<OrdersStore>()(
           })
         },
 
-        getOrders: () => get().orders
+        getOrders: () => get().orders,
+
+        updateOrderReview: (orderId, rating, reviewText) => {
+          const reviewDate = new Date().toLocaleDateString('en-US')
+          set(state => ({
+            orders: state.orders.map(o => o.id === orderId ? { ...o, rating, reviewDate, reviewText } : o)
+          }))
+        }
       }),
       {
         name: "orders-store",

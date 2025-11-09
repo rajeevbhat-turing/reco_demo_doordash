@@ -31,8 +31,13 @@ export function checkDealCriteria(
     // Check if at least one free item is in the cart
     const hasFreeItem = freeItemIds.some(freeId => {
       return cartItems.some(item => {
-        const itemId = typeof item.id === 'string' ? item.id : item.id.toString();
+        let itemId = typeof item.id === 'string' ? item.id : item.id.toString();
         const itemName = (item.itemName || '').toLowerCase().trim();
+
+        // If item ID starts with store ID, remove it before checking
+        if (deal.restaurantId && itemId.startsWith(deal.restaurantId + '-')) {
+          itemId = itemId.substring(deal.restaurantId.length + 1);
+        }
 
         // Check by ID
         // We need to check if the cart item ID starts with the free item ID followed by a dash or is exactly equal
@@ -62,8 +67,13 @@ export function checkDealCriteria(
     let subtotalExcludingFreeItems = 0;
 
     cartItems.forEach(item => {
-      const itemId = typeof item.id === 'string' ? item.id : item.id.toString();
+      let itemId = typeof item.id === 'string' ? item.id : item.id.toString();
       const itemName = (item.itemName || '').toLowerCase().trim();
+
+      // If item ID starts with store ID, remove it before checking
+      if (deal.restaurantId && itemId.startsWith(deal.restaurantId + '-')) {
+        itemId = itemId.substring(deal.restaurantId.length + 1);
+      }
 
       // Check if this item matches any free item
       let matchedFreeItemId: string | null = null;
@@ -90,7 +100,7 @@ export function checkDealCriteria(
         const priceStr = item.price.replace(/[^0-9.]/g, '');
         itemPrice = parseFloat(priceStr) || 0;
       }
-      
+
       // Get quantity, default to 1 if not provided
       const itemQuantity = item.quantity || 1;
 

@@ -63,6 +63,8 @@ export default function CheckoutPage() {
     setSelectedCard,
     removeItem,
     updateQuantity,
+    isReorderMode,
+    confirmReorder,
   } = useCartStore();
   const { recordCheckoutNavigation, recordDeliveryTimeSelection } = useVerifierStore();
   const {
@@ -125,8 +127,13 @@ export default function CheckoutPage() {
     let discount = 0;
 
     items.forEach(item => {
-      const itemId = typeof item.id === 'string' ? item.id : item.id.toString();
+      let itemId = typeof item.id === 'string' ? item.id : item.id.toString();
       const itemName = (item.itemName || '').toLowerCase().trim();
+
+      // If item ID starts with store ID, remove it before checking
+      if (appliedDeal.restaurantId && itemId.startsWith(appliedDeal.restaurantId + '-')) {
+        itemId = itemId.substring(appliedDeal.restaurantId.length + 1);
+      }
 
       // Check if this item matches any free item (by ID and name)
       let matchedFreeItemId: string | null = null;
@@ -279,36 +286,80 @@ export default function CheckoutPage() {
   const handlePlaceOrder = () => {
     const newOrderId = generateOrderId();
 
-    // Prepare order data
+    // If in reorder mode, confirm the reorder (discard original cart backup silently)
+    if (isReorderMode) {
+      confirmReorder();
+    }
+
     const orderData = {
       // 1. Order ID
       id: newOrderId,
 
-      // 2. Cart fields extracted to root level (without card details)
+      // 2. Cart fields extracted to root level (support both old and new field names)
       storeId: currentCart?.storeId,
       storeName: currentCart?.storeName,
+      restaurantId: currentCart?.storeId, // Old field name for backward compatibility
+      restaurantName: currentCart?.storeName, // Old field name for backward compatibility
       storeCategory: currentCart?.storeCategory,
-      items: currentCart?.items?.map(item => ({
-        id: item.id.toString(),
-        name: item.itemName,
-        quantity: item.quantity,
-        price: typeof item.price === 'number' 
-          ? item.price 
-          : parseFloat(item.price.toString().replace(/[^0-9.]/g, "")),
-        modifications: item.appliedModifications?.map(appliedMod => ({
-          modificationId: appliedMod.modificationId,
-          modificationDescription: appliedMod.modificationDescription,
-          isRequired: false, // We don't have this info in cart, but it's historical so it's ok
-          options: appliedMod.appliedOptions.map(opt => ({
-            optionId: opt.optionId,
-            optionName: opt.optionName,
-            optionDescription: undefined,
-            price: opt.price,
-            quantity: opt.quantity,
-            isCounter: opt.quantity > 1, // Infer from quantity
-          }))
-        }))
-      })),
+      items: (() => {
+        // Track if ANY free item from the deal has been applied (only one free item total)
+        let hasAppliedFreeItem = false;
+        const freeItemIds = cartId ? getFreeItemIds(cartId) : [];
+
+        return currentCart?.items?.map(item => {
+          const { isFreeItem, originalPrice, matchedFreeItemId } = getItemPricingInfo(
+            item,
+            cartId,
+            freeItemIds,
+            appliedDeal
+          );
+
+          // Check if this is the first free item from the deal
+          let isFirstFreeItem = false;
+          if (isFreeItem && matchedFreeItemId && !hasAppliedFreeItem) {
+            hasAppliedFreeItem = true;
+            isFirstFreeItem = true;
+          }
+
+          // Calculate final_price: price per item after free item discount
+          let finalPrice = originalPrice;
+          if (isFreeItem && isFirstFreeItem) {
+            // First free item from deal: one quantity is free
+            if (item.quantity > 1) {
+              // Total price for remaining quantities divided by total quantity
+              finalPrice = (originalPrice * (item.quantity - 1)) / item.quantity;
+            } else {
+              // Only one quantity, so it's completely free
+              finalPrice = 0;
+            }
+          }
+          // If it's another free item or not a free item, finalPrice = originalPrice
+
+          return {
+            id: item.id.toString(),
+            name: item.itemName,
+            quantity: item.quantity,
+            price:
+              typeof item.price === 'number'
+                ? item.price
+                : parseFloat(item.price.toString().replace(/[^0-9.]/g, '')),
+            final_price: finalPrice,
+            modifications: item.appliedModifications?.map(appliedMod => ({
+              modificationId: appliedMod.modificationId,
+              modificationDescription: appliedMod.modificationDescription,
+              isRequired: false, // We don't have this info in cart, but it's historical so it's ok
+              options: appliedMod.appliedOptions.map(opt => ({
+                optionId: opt.optionId,
+                optionName: opt.optionName,
+                optionDescription: undefined,
+                price: opt.price,
+                quantity: opt.quantity,
+                isCounter: opt.quantity > 1, // Infer from quantity
+              })),
+            })),
+          };
+        });
+      })(),
 
       // 3. Payment card as object
       paymentCard: {
@@ -346,8 +397,9 @@ export default function CheckoutPage() {
       subtotal: subtotal,
       serviceFee: serviceFee,
       deliveryFee: deliveryFee + extraDeliveryFee,
-      total: getTotal(currentStoreId || undefined, currentCategory || undefined) + extraDeliveryFee,
-
+      discount: discountAmount,
+      total: getTotalWithExtras(),
+      totalAmount: getTotalWithExtras(), // Old field name for backward compatibility
       // Order metadata
       orderDate: new Date().toLocaleDateString('en-US', {
         weekday: 'short',
@@ -355,6 +407,7 @@ export default function CheckoutPage() {
         day: 'numeric',
       }),
       status: 'Confirmed',
+      orderType: 'Personal', // Default to Personal
     };
 
     console.log('ORDER DATA:', orderData);
@@ -380,8 +433,13 @@ export default function CheckoutPage() {
     freeItemIds: string[],
     appliedDeal: any
   ) => {
-    const itemId = typeof item.id === 'string' ? item.id : item.id.toString();
+    let itemId = typeof item.id === 'string' ? item.id : item.id.toString();
     const itemName = (item.itemName || '').toLowerCase().trim();
+
+    // If item ID starts with store ID, remove it before checking
+    if (appliedDeal?.restaurantId && itemId.startsWith(appliedDeal.restaurantId + '-')) {
+      itemId = itemId.substring(appliedDeal.restaurantId.length + 1);
+    }
 
     // Check if this item matches any free item (by ID and name)
     let matchedFreeItemId: string | null = null;
@@ -725,7 +783,7 @@ export default function CheckoutPage() {
 
   // Calculate total with extra delivery fee
   // Calculate discount amount (for percentage/fixed discounts, not free items)
-  const calculateDiscount = () => {
+  const discountAmount = useMemo(() => {
     if (!appliedDeal || !cartId) return 0;
 
     // Free item discounts are already applied to subtotal
@@ -734,23 +792,21 @@ export default function CheckoutPage() {
     }
 
     if (appliedDeal.discountType === 'percentage' && appliedDeal.discountValue) {
-      const discountAmount = (baseSubtotal * appliedDeal.discountValue) / 100;
+      const discount = (baseSubtotal * appliedDeal.discountValue) / 100;
       if (appliedDeal.maximumDiscount) {
-        return Math.min(discountAmount, appliedDeal.maximumDiscount);
+        return Math.min(discount, appliedDeal.maximumDiscount);
       }
-      return discountAmount;
+      return discount;
     } else if (appliedDeal.discountType === 'fixed' && appliedDeal.discountValue) {
       return appliedDeal.discountValue;
     }
 
     return 0;
-  };
-
-  const discountAmount = calculateDiscount();
+  }, [appliedDeal, cartId, baseSubtotal]);
 
   const getTotalWithExtras = () => {
-    const total = getTotal(currentStoreId || undefined, currentCategory || undefined);
-    return total + extraDeliveryFee - discountAmount - freeItemDiscount;
+    // Use the adjusted subtotal (which already has freeItemDiscount subtracted
+    return subtotal + serviceFee + deliveryFee + extraDeliveryFee - discountAmount;
   };
 
   const deliveryOptions = [

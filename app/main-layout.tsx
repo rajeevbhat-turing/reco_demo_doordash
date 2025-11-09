@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useSyncExternalStore } from 'react';
+import { useEffect, useSyncExternalStore, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import Header from '@/components/header';
 import LandingPageFooter from '@/components/landing-page-footer';
@@ -19,6 +19,7 @@ const getTempAddress = () => useUserStore.getState().getTempAddress();
 export default function MainLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
+  const [isMounted, setIsMounted] = useState(false);
 
   // Get authentication status
   const isAuthenticated = useSyncExternalStore(
@@ -34,8 +35,16 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
     () => SERVER_SNAPSHOT_NULL
   );
 
-  // Handle redirects
+  // Track when component has mounted (client-side hydration complete)
   useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  // Handle redirects - only after component has mounted (hydration complete)
+  useEffect(() => {
+    // Don't redirect until the component has mounted and state is hydrated
+    if (!isMounted) return;
+
     if (pathname === '/') {
       // If user is logged in or has a temp address, redirect to /home
       if (isAuthenticated || tempAddress) {
@@ -43,11 +52,12 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
       }
     } else if (pathname === '/home') {
       // If user is not logged in and has no temp address, redirect to /
+      // Only redirect if we're certain (after hydration)
       if (!isAuthenticated && !tempAddress) {
         router.replace('/');
       }
     }
-  }, [pathname, isAuthenticated, tempAddress]);
+  }, [pathname, isAuthenticated, tempAddress, isMounted]);
 
   if (pathname === '/') {
     return (

@@ -121,10 +121,24 @@ export default function PromoCodeModal({
         const dealFreeItemIds = deal.freeItems.map(fi => fi.id);
         // Find matching cart items
         cartItems.forEach(item => {
-          const itemId = typeof item.id === 'string' ? item.id : item.id.toString();
+          let itemId = typeof item.id === 'string' ? item.id : item.id.toString();
+          const itemName = (item.itemName || '').toLowerCase().trim();
+
+          // If item ID starts with store ID, remove it before checking
+          if (deal.restaurantId && itemId.startsWith(deal.restaurantId + '-')) {
+            itemId = itemId.substring(deal.restaurantId.length + 1);
+          }
+
           dealFreeItemIds.forEach(freeId => {
-            // Check if cart item matches the free item ID
-            if (itemId.startsWith(freeId + '-') || itemId === freeId) {
+            // Check if cart item matches the free item ID (by ID and name)
+            const matchesById = itemId.startsWith(freeId + '-') || itemId === freeId;
+            const freeItemName = deal.freeItems
+              ?.find(fi => fi.id === freeId)
+              ?.name.toLowerCase()
+              .trim();
+            const matchesByName = freeItemName && itemName === freeItemName;
+
+            if (matchesById && matchesByName) {
               // Use the free item ID from the deal, not extracted from cart item
               if (!freeItemIds.includes(freeId)) {
                 freeItemIds.push(freeId);
@@ -171,8 +185,13 @@ export default function PromoCodeModal({
         cartItems.forEach(item => {
           if (foundFirstFreeItem) return; // Stop after finding first free item
 
-          const itemId = typeof item.id === 'string' ? item.id : item.id.toString();
+          let itemId = typeof item.id === 'string' ? item.id : item.id.toString();
           const itemName = (item.itemName || '').toLowerCase().trim();
+
+          // If item ID starts with store ID, remove it before checking
+          if (deal.restaurantId && itemId.startsWith(deal.restaurantId + '-')) {
+            itemId = itemId.substring(deal.restaurantId.length + 1);
+          }
 
           for (const freeId of dealFreeItemIds) {
             const matchesById = itemId.startsWith(freeId + '-') || itemId === freeId;

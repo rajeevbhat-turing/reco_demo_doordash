@@ -1,9 +1,9 @@
 "use client"
 
-import React, { useState, useRef, useEffect } from "react"
+import React, { useState, useRef, useEffect, useSyncExternalStore } from "react"
 import Image from "next/image"
-import { Search, X, ArrowLeft } from "lucide-react"
-import { useRouter } from "next/navigation"
+import { Search, X, ArrowLeft, ChevronRight, Clock } from "lucide-react"
+import { useRouter, usePathname } from "next/navigation"
 import { restaurants } from "@/constants/restaurants"
 import { menuItems } from "@/constants/menu-items"
 import { getAllStores } from "@/app/grocery/data/retail-response-mapper"
@@ -14,6 +14,7 @@ import { stores as retailStores } from "@/constants/store"
 import { filterRestaurantsWithMenuItems } from "@/utils/restaurant-utils"
 import { useAppStore } from "@/store/app-store"
 import { useVerifierStore } from "@/store/verifier-store"
+import { useUserStore } from "@/store/user-store"
 
 interface SearchResult {
   id: string
@@ -34,11 +35,29 @@ const SearchBar = () => {
   const [searchResults, setSearchResults] = useState<SearchResult[]>([])
   const [searchSuggestions, setSearchSuggestions] = useState<string[]>([])
   const [recentSearches, setRecentSearches] = useState<string[]>([])
+  const [previousPathname, setPreviousPathname] = useState<string | null>(null)
   const searchInputRef = useRef<HTMLInputElement>(null)
   const searchContainerRef = useRef<HTMLDivElement>(null)
   const router = useRouter()
+  const pathname = usePathname()
   const { updateSearchResults, clearSearchResults } = useAppStore()
   const { recordSearch } = useVerifierStore()
+  
+  // Placeholder texts for rotation
+  const placeholderTexts = [
+    "Search DashDoor",
+    "Search Presses Acai Bowls",
+    "Search Papa Pasta",
+    "Search Boichik Bagels"
+  ]
+  const [currentPlaceholderIndex, setCurrentPlaceholderIndex] = useState(0)
+  
+  // Get authentication status
+  const isAuthenticated = useSyncExternalStore(
+    useUserStore.subscribe,
+    () => useUserStore.getState().isAuthenticated(),
+    () => false // fallback for SSR
+  )
 
   // Load recent searches from localStorage on component mount
   useEffect(() => {
@@ -73,6 +92,25 @@ const SearchBar = () => {
     } catch (error) {
       console.error("Error saving recent search:", error)
       // Continue without saving if localStorage fails
+    }
+  }
+
+  // Remove a specific recent search
+  const removeRecentSearch = (term: string, e: React.MouseEvent) => {
+    e.stopPropagation() // Prevent triggering the search when clicking X
+
+    try {
+      if (typeof window !== "undefined") {
+        const updatedSearches = recentSearches.filter(
+          (search) => search.toLowerCase() !== term.toLowerCase()
+        )
+
+        setRecentSearches(updatedSearches)
+        localStorage.setItem("recentSearches", JSON.stringify(updatedSearches))
+      }
+    } catch (error) {
+      console.error("Error removing recent search:", error)
+      // Continue without removing if localStorage fails
     }
   }
 
@@ -267,7 +305,7 @@ const SearchBar = () => {
                       description: `$${product.price} • Convenience Product`,
                       dashPass: false,
                       type: "convenience" as const,
-                      matchedItem: undefined,
+                      matchedItem: product.name,
                     })
                   }
                 })
@@ -298,8 +336,8 @@ const SearchBar = () => {
                       logo: product.image || '',
                       description: `${product.price} • Retail Product`,
                       dashPass: false,
-                      type: "convenience" as const,
-                      matchedItem: undefined,
+                      type: "retail" as const,
+                      matchedItem: product.name,
                     })
                   }
                 })
@@ -341,7 +379,7 @@ const SearchBar = () => {
           logo: result.logo,
           description: result.description,
           dashPass: result.dashPass,
-          type: result.type === "grocery" || result.type === "pets" || result.type === "pet-product" || result.type === "convenience" ? "restaurant" as const : result.type,
+          type: result.type === "grocery" || result.type === "pets" || result.type === "pet-product" || result.type === "convenience" || result.type === "retail" ? "restaurant" as const : result.type,
           restaurantId: result.id,
           matchedItem: result.matchedItem
         }
@@ -378,52 +416,10 @@ const SearchBar = () => {
   }
 
   // Generate search suggestions based on search term
+  // Disabled: Auto-generated suggestions removed per user requirement
   const generateSearchSuggestions = (term: string) => {
-    const foodCategories = [
-      "burgers",
-      "pizza",
-      "coffee",
-      "sushi",
-      "chicken",
-      "salad",
-      "desserts",
-      "breakfast",
-      "lunch",
-      "dinner",
-      "healthy",
-      "fast food",
-      "asian",
-      "italian",
-    ]
-
-    const petCategories = [
-      "pet food",
-      "dog food",
-      "cat food",
-      "pet treats",
-      "dog treats",
-      "cat treats",
-      "pet toys",
-      "dog toys",
-      "cat toys",
-      "pet supplies",
-      "pet shampoo",
-      "pet medicine",
-    ]
-
-    const locationSuggestions = [`${term} near me`, `${term} delivery`, `${term} restaurant`, `${term} takeaway`]
-
-    const foodSuggestions = foodCategories
-      .filter((category) => category.includes(term.toLowerCase()) || term.toLowerCase().includes(category))
-      .map((category) => category)
-
-    const petSuggestions = petCategories
-      .filter((category) => category.includes(term.toLowerCase()) || term.toLowerCase().includes(category))
-      .map((category) => category)
-
-    const allSuggestions = [term, ...locationSuggestions, ...foodSuggestions, ...petSuggestions, `best ${term}`, `${term} deals`]
-
-    return allSuggestions.slice(0, 5)
+    // Return empty array - no auto-generated suggestions
+    return []
   }
 
   // Handle search submission
@@ -439,8 +435,30 @@ const SearchBar = () => {
 
   // Handle clicking on a search result
   const handleResultClick = (result: SearchResult) => {
-    saveRecentSearch(searchTerm)
-    recordSearch(searchTerm)
+    // Get the product name to display in search bar
+    const productName = result.matchedItem || result.name
+    
+    // Check for products FIRST (before checking type)
+    // Products have IDs like "convenience-product-XXX", "retail-product-XXX", "pet-product-XXX"
+    // This prevents products from being treated as stores
+    if (result.id.includes("-product-") || result.type === "pet-product") {
+      // For products, update search bar and navigate to search results page
+      setSearchTerm(productName) // Update search bar with product name
+      saveRecentSearch(productName)
+      recordSearch(productName)
+      router.push(`/search?q=${encodeURIComponent(productName)}`)
+      setIsSearchActive(false)
+      return // Important: return early to prevent other logic from running
+    }
+    
+    // Handle stores/restaurants (only if not a product)
+    // Get the restaurant/store name to display in search bar
+    const restaurantName = result.name
+    
+    // Update search bar with restaurant/store name
+    setSearchTerm(restaurantName)
+    saveRecentSearch(restaurantName)
+    recordSearch(restaurantName)
     
     if (result.type === "grocery") {
       // Extract the actual grocery store ID (remove "grocery-" prefix)
@@ -458,13 +476,8 @@ const SearchBar = () => {
       // Extract the actual retail store ID (remove "retail-" prefix)
       const actualId = result.id.replace("retail-", "")
       router.push(`/retail/store/${actualId}`)
-    } else if (result.type === "pet-product") {
-      // For pet products, navigate to the search results page
-      router.push(`/search?q=${encodeURIComponent(result.matchedItem || result.name)}`)
-    } else if (result.id.includes("-product-")) {
-      // For any other product types (convenience-product, retail-product, etc.), navigate to search results
-      router.push(`/search?q=${encodeURIComponent(result.matchedItem || result.name)}`)
     } else {
+      // Regular restaurants
       router.push(`/store/${result.id}`)
     }
     setIsSearchActive(false)
@@ -500,21 +513,50 @@ const SearchBar = () => {
     }
   }, [isSearchActive])
 
+  // Rotate placeholder texts every 2 seconds
+  // Only rotate when input is empty and search bar is not active
+  useEffect(() => {
+    // Don't rotate if user is typing or search bar is active
+    if (searchTerm.trim() || isSearchActive) {
+      return
+    }
+
+    const interval = setInterval(() => {
+      setCurrentPlaceholderIndex((prevIndex) => (prevIndex + 1) % placeholderTexts.length)
+    }, 2000) // 2 seconds
+
+    return () => clearInterval(interval)
+  }, [searchTerm, isSearchActive, placeholderTexts.length])
+
   // Clear search
   const clearSearch = () => {
     setSearchTerm("")
     setSearchResults([])
     setSearchSuggestions([])
+    setIsSearchActive(false)
+    clearSearchResults()
+    
     if (searchInputRef.current) {
-      searchInputRef.current.focus()
+      searchInputRef.current.blur() // Remove focus instead of focusing
     }
   }
 
-  // Go back (close search)
+  // Go back (close search and navigate to previous page)
   const goBack = () => {
     setIsSearchActive(false)
     setSearchTerm("")
     clearSearchResults()
+    
+    // If currently on search page, navigate to home page
+    if (pathname === "/search") {
+      router.push(isAuthenticated ? "/home" : "/")
+    } 
+    // Otherwise, navigate back to the previous page if it exists and is different from current
+    else if (previousPathname && previousPathname !== pathname) {
+      // If previous pathname is "/" and user is authenticated, navigate to "/home" instead
+      const targetPath = previousPathname === "/" && isAuthenticated ? "/home" : previousPathname
+      router.push(targetPath)
+    }
   }
 
   return (
@@ -522,42 +564,47 @@ const SearchBar = () => {
       <form onSubmit={handleSearchSubmit} className="relative">
         <div
           className={`flex items-center bg-gray-100 rounded-full transition-all h-8 ${
-            isSearchActive ? 'bg-white border border-gray-300' : ''
+            isSearchActive ? 'bg-white border border-black' : ''
           }`}
         >
           {isSearchActive ? (
             <button
               type="button"
               onClick={goBack}
-              className="pl-3 pr-1 text-gray-500 hover:text-gray-700 focus:outline-none"
+              className="pl-3 pr-1 text-black hover:text-gray-700 focus:outline-none"
             >
               <ArrowLeft className="h-5 w-5" />
             </button>
           ) : (
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Search className="h-5 w-5 text-gray-400" />
+              <Search className="h-4 w-4 text-black" />
             </div>
           )}
           <input
             ref={searchInputRef}
             type="text"
-            placeholder="Search DashDoor"
+            placeholder={placeholderTexts[currentPlaceholderIndex]}
             className={`block w-full bg-transparent ${
-              isSearchActive ? "pl-2 pr-10" : "pl-10 pr-3"
+              isSearchActive ? "pl-2 pr-10" : "pl-10 pr-10"
             } text-sm focus:outline-none`}
             value={searchTerm}
             onChange={handleSearchChange}
-            onFocus={() => setIsSearchActive(true)}
+            onFocus={() => {
+              // Store the current pathname when search is activated
+              if (!isSearchActive) {
+                setPreviousPathname(pathname)
+              }
+              setIsSearchActive(true)
+            }}
           />
-          {searchTerm && isSearchActive && (
-            <button
-              type="button"
-              onClick={clearSearch}
-              className="absolute right-3 text-gray-500 hover:text-gray-700 focus:outline-none"
-            >
-              <X className="h-5 w-5" />
-            </button>
-          )}
+          {/* Cross icon - always visible for better UX */}
+          <button
+            type="button"
+            onClick={clearSearch}
+            className="absolute right-3 text-black hover:text-gray-700 focus:outline-none"
+          >
+            <X className="h-3.5 w-3.5" />
+          </button>
         </div>
       </form>
 
@@ -618,42 +665,6 @@ const SearchBar = () => {
             </div>
           )}
 
-          {/* Search suggestions */}
-          {searchSuggestions.length > 0 && (
-            <div className="divide-y divide-gray-100">
-              {searchSuggestions.map((suggestion, index) => (
-                <div
-                  key={index}
-                  className="p-3 hover:bg-gray-50 cursor-pointer"
-                  onClick={() => handleSuggestionClick(suggestion)}
-                >
-                  <div className="flex items-center">
-                    <Search className="h-5 w-5 text-gray-400 mr-3" />
-                    <span className="text-sm text-gray-900">{suggestion}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-
-          {/* Recent searches */}
-          {!searchTerm && recentSearches.length > 0 && (
-            <div className="divide-y divide-gray-100">
-              {recentSearches.map((search, index) => (
-                <div
-                  key={index}
-                  className="p-3 hover:bg-gray-50 cursor-pointer"
-                  onClick={() => handleSuggestionClick(search)}
-                >
-                  <div className="flex items-center">
-                    <Search className="h-5 w-5 text-gray-400 mr-3" />
-                    <span className="text-sm text-gray-900">{search}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-
           {/* No results */}
           {searchTerm &&
             searchResults.length === 0 &&
@@ -661,6 +672,40 @@ const SearchBar = () => {
             recentSearches.length === 0 && (
               <div className="p-4 text-center text-gray-500">No results found for {searchTerm}</div>
             )}
+
+          {/* Recent searches - Show when search is active and there are recent searches */}
+          {recentSearches.length > 0 && (
+            <div className={searchTerm || searchResults.length > 0 ? "border-t border-gray-200" : ""}>
+              {/* Recent Searches Heading */}
+              <div className="px-3 pt-3 pb-2">
+                <h3 className="text-sm font-semibold text-gray-900">Recent Searches</h3>
+              </div>
+              <div className="divide-y divide-gray-100">
+                {recentSearches.map((search, index) => (
+                  <div
+                    key={index}
+                    className="p-3 hover:bg-gray-50 cursor-pointer"
+                    onClick={() => handleSuggestionClick(search)}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center flex-1 min-w-0">
+                        <Clock className="h-5 w-5 text-gray-900 mr-3 flex-shrink-0" />
+                        <span className="text-sm text-gray-900 truncate">{search}</span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={(e) => removeRecentSearch(search, e)}
+                        className="ml-3 p-1 hover:bg-gray-200 rounded flex-shrink-0"
+                        aria-label={`Remove ${search} from recent searches`}
+                      >
+                        <X className="h-4 w-4 text-gray-600" />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>
