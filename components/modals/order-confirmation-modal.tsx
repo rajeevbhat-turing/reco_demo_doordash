@@ -92,7 +92,7 @@ export default function OrderConfirmationModal({
     onClose();
 
     // Navigate to home page
-    router.push('/');
+    router.push('/home');
     console.log('[ORDER] ✅ Order completion finished - navigating home');
   };
 

@@ -267,7 +267,7 @@ export default function CheckoutPage() {
   useEffect(() => {
     if (isClient && !currentCart && categoryParam && storeIdParam) {
       // Cart was deleted or doesn't exist
-      router.push('/');
+      router.push('/home');
     }
   }, [isClient, currentCart, categoryParam, storeIdParam, router]);
 
