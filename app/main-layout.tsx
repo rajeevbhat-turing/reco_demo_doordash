@@ -5,6 +5,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import Header from '@/components/header';
 import LandingPageFooter from '@/components/landing-page-footer';
 import LayoutWrapper from '@/components/layout-wrapper';
+import Snackbar from '@/components/snackbar';
 import { useUserStore } from '@/store/user-store';
 
 // Cached server snapshots to avoid infinite loops
@@ -63,6 +64,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
       <div className="flex flex-col min-h-screen">
         <main className="flex-1">{children}</main>
         <LandingPageFooter />
+        <Snackbar />
       </div>
     );
   }
@@ -71,6 +73,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
     <div className="flex flex-col min-h-screen">
       <Header />
       <LayoutWrapper>{children}</LayoutWrapper>
+      <Snackbar />
     </div>
   );
 }
