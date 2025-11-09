@@ -108,7 +108,7 @@ export default function PasswordResetPage() {
     if (changePasswordPhoneVerified) {
       const success = changePassword(formData.oldPassword, formData.newPassword);
       if (success) {
-        // Logout user and navigate to home
+        // Logout user and navigate to landing page
         setCurrentUser(null);
         setTempAddress(null); // Clear temp address on logout
         router.push('/');
@@ -147,7 +147,7 @@ export default function PasswordResetPage() {
     if (!passwordError) {
       const success = changePassword(formData.oldPassword, formData.newPassword);
       if (success) {
-        // Logout user and navigate to home
+        // Logout user and navigate to landing page
         setCurrentUser(null);
         setTempAddress(null); // Clear temp address on logout
         router.push('/');

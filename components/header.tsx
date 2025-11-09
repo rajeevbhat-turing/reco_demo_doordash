@@ -386,7 +386,7 @@ export default function Header() {
               </button>
 
               {/* Centered Logo */}
-              <Link href="/" className="absolute left-1/2 transform -translate-x-1/2">
+              <Link href="/home" className="absolute left-1/2 transform -translate-x-1/2">
                 <div className="flex items-center">
                   <DashDoorLogoMark />
                   <div className="ml-1">
@@ -404,7 +404,7 @@ export default function Header() {
               {/* Normal Header Layout */}
               <div className="flex items-center flex-1 space-x-4">
                 {/* Logo */}
-                <Link href="/" className="flex-shrink-0">
+                <Link href="/home" className="flex-shrink-0">
                   <div className="flex items-center">
                     <DashDoorLogoMark />
                     <div className="ml-1">

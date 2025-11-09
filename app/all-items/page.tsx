@@ -153,7 +153,7 @@ function AllItemsContent() {
     // Redirect to the appropriate home page based on the type
     switch (type) {
       case 'restaurant':
-        router.push('/')
+        router.push('/home')
         break
       case 'grocery':
         router.push('/grocery')
@@ -168,7 +168,7 @@ function AllItemsContent() {
         router.push('/convenience')
         break
       default:
-        router.push('/')
+        router.push('/home')
     }
   }
   

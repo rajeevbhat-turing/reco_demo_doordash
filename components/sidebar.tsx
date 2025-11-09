@@ -50,9 +50,9 @@ export default function Sidebar() {
           <ul className="space-y-1">
             <li>
               <Link
-                href="/"
+                href="/home"
                 className={`flex items-center px-4 py-3 rounded-lg mx-2 ${
-                  pathname === '/'
+                  pathname === '/home'
                     ? 'bg-blue-50 text-blue-600 font-medium'
                     : 'text-gray-700 hover:bg-gray-100'
                 }`}
