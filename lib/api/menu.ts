@@ -7,25 +7,8 @@ export interface MenuCategory {
   displayOrder: number;
 }
 
-export interface ModificationOption {
-  id: string;
-  name: string;
-  additionalPrice: number;
-  default: boolean;
-}
-
-export interface Modification {
-  id: string;
-  description: string;
-  required: boolean;
-  selectUpTo: number;
-  selectAtLeast: number | null;
-  options: ModificationOption[];
-}
-
 export interface MenuData {
   menuItems: MenuItem[];
-  modifications: Record<string, Modification[]>;
   categories: MenuCategory[];
 }
 
