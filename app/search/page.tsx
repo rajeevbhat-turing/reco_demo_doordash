@@ -1,19 +1,20 @@
 "use client"
 
-import { useEffect, useState, useRef } from "react"
+import { useEffect, useState, useRef, useMemo, useSyncExternalStore } from "react"
 import { useSearchParams } from "next/navigation"
 import Link from "next/link"
 import FilterOptions, { FilterState, FilterOptionsRef } from "@/components/filter-options"
 import { useCartStore } from "@/store/cart-store"
 import { useVerifierStore } from "@/store/verifier-store"
 import { useAppStore } from "@/store/app-store"
+import { useUserStore } from "@/store/user-store"
+import { calculateDistance } from "@/lib/utils/distance-utils"
 import { performSearch, isOnlySpecialCharacters, type SearchResultRestaurant } from "@/lib/utils/search-utils"
 import { applySearchFilters, determineSearchContext, detectAvailableCategories, filterByCategory } from "@/lib/utils/search-filter-utils"
 import SearchResultsRenderer from "@/components/search/SearchResultsRenderer"
 
 // Force dynamic rendering
 export const dynamic = 'force-dynamic'
-
 export default function SearchPage() {
   const searchParams = useSearchParams()
   const query = searchParams.get("q") || ""
@@ -43,6 +44,25 @@ export default function SearchPage() {
   })
   const { updateSearchResults, clearSearchResults } = useAppStore()
   const { recordSearch } = useVerifierStore()
+
+  // Get address from user store for location filtering
+  const { getAddresses, getTempAddress, isAuthenticated } = useUserStore()
+  const addresses = getAddresses()
+  const tempAddress = useSyncExternalStore(
+    useUserStore.subscribe,
+    () => useUserStore.getState().getTempAddress(),
+    () => null
+  )
+  const userIsAuthenticated = isAuthenticated()
+  
+  // Get active address (selected address for authenticated users, temp address for non-authenticated)
+  const selectedAddress = useMemo(() => {
+    if (userIsAuthenticated && addresses.length > 0) {
+      // Find default address or use first address
+      return addresses.find(a => a.default) || addresses[0] || null
+    }
+    return null
+  }, [userIsAuthenticated, addresses])
 
   // Handle filter changes
   const handleFilterChange = (filters: FilterState) => {
@@ -82,7 +102,42 @@ export default function SearchPage() {
     }
     
     // Perform search
-    const combinedResults = performSearch(query)
+    let combinedResults = performSearch(query)
+    
+    // Apply location filtering to restaurant results (only restaurants, not products or stores)
+    // Separate restaurant results from other results
+    const restaurantResults = combinedResults.filter(r => r.matchType === "restaurant" && !r.storeType)
+    const nonRestaurantResults = combinedResults.filter(r => r.matchType !== "restaurant" || r.storeType !== undefined)
+    
+    // Apply location filtering to restaurant results if we have an address
+    if (restaurantResults.length > 0 && (selectedAddress || tempAddress)) {
+      // Convert SearchResultRestaurant to Restaurant format for location filtering
+      // We need to filter by lat/lng, so we'll manually filter here
+      const activeAddress = selectedAddress || tempAddress
+      
+      if (activeAddress && typeof activeAddress.lat === 'number' && typeof activeAddress.lng === 'number') {
+        const locationFilteredRestaurants = restaurantResults.filter((restaurant) => {
+          // Validate that restaurant has coordinates
+          if (typeof restaurant.lat !== 'number' || typeof restaurant.lng !== 'number') {
+            return false
+          }
+          
+          // Calculate distance using Haversine formula
+          const distance = calculateDistance(
+            activeAddress.lat,
+            activeAddress.lng,
+            restaurant.lat,
+            restaurant.lng
+          )
+          
+          // Return true if restaurant is within 3 miles radius
+          return distance <= 3
+        })
+        
+        // Combine filtered restaurants with non-restaurant results
+        combinedResults = [...locationFilteredRestaurants, ...nonRestaurantResults]
+      }
+    }
     
     // Check if original results had products or restaurants (for empty state messages)
     const hasProducts = combinedResults.some(r => r.id.includes("-product-"))
@@ -160,7 +215,7 @@ export default function SearchPage() {
     return () => {
       clearTimeout(timer)
     }
-  }, [query, activeFilters, updateSearchResults])
+  }, [query, activeFilters, updateSearchResults, selectedAddress, tempAddress])
 
   // Apply category filtering when selectedCategory or allFilteredResults changes
   useEffect(() => {
