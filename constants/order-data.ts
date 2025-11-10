@@ -1,10 +1,12 @@
 import { PaymentMethod, Address } from "@/lib/types/user-types"
+import { OrderModification } from "@/types"
 
 export interface OrderItem {
   id: string;
   name: string;
   quantity: number;
   price: number;
+  modifications?: OrderModification[];
 }
 
 // Reuse PaymentMethod from user-types with all fields optional for orders
@@ -28,28 +30,51 @@ export type DeliveryAddress = Address
 
 export interface Order {
   id: string;
+  // Store/Restaurant info (support both old and new field names)
   storeId?: string;
   storeName?: string;
+  restaurantId?: string;  // Old field name
+  restaurantName?: string; // Old field name
   storeCategory?: string;
+  
+  // Order items
   items?: OrderItem[];
-  paymentCard: PaymentCard;
+  
+  // Payment info
+  paymentCard?: PaymentCard;
+  
+  // Delivery info
   deliveryAddress?: DeliveryAddress;
-  deliveryOption: DeliveryOption;
-  phoneNumber: PhoneNumber;
-  tipAmount: number;
-  subtotal: number;
-  serviceFee: number;
-  deliveryFee: number;
-  total: number;
+  deliveryOption?: DeliveryOption;
+  phoneNumber?: PhoneNumber;
+  
+  // Pricing (support both old and new field names)
+  tipAmount?: number;
+  subtotal?: number;
+  serviceFee?: number;
+  deliveryFee?: number;
+  total?: number;
+  totalAmount?: number; // Old field name
+  
+  // Order metadata
   orderDate: string;
   status: string;
+  orderType?: 'Personal' | 'Business';
+  
+  // Optional features
+  rating?: number;
+  reviewDate?: string;
+  reviewText?: string;
+  tags?: string[];
+  isDashPass?: boolean;
+  isGroupOrder?: boolean;
 }
 
 // Commented out dummy data - now using real orders from the store
 /* export const orderData: Order[] = [
   {
     id: 'order-1',
-    restaurantId: 'Starbucks',
+    restaurantId: 'starbucks-(299-fremont-street)',
     restaurantName: 'Starbucks',
     orderDate: 'Wed, Apr 23',
     totalAmount: 71.38,

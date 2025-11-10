@@ -1,0 +1,55 @@
+@media print {
+  /* Hide everything except the receipt sidebar */
+  body * {
+    visibility: hidden;
+  }
+  
+  /* Hide the map, header, and navigation */
+  .no-print,
+  .no-print * {
+    display: none !important;
+    visibility: hidden !important;
+  }
+  
+  /* Show only the receipt sidebar */
+  #receipt-sidebar,
+  #receipt-sidebar * {
+    visibility: visible !important;
+  }
+  
+  /* Show the logo in print */
+  .print\:block {
+    display: block !important;
+  }
+  
+  /* Position the receipt sidebar for printing */
+  #receipt-sidebar {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    max-width: 100%;
+    border: none !important;
+    background: white;
+  }
+  
+  /* Set up page for printing */
+  @page {
+    margin: 0.5in;
+    size: letter portrait;
+  }
+  
+  html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    background: white;
+  }
+  
+  /* Remove any page breaks within sections */
+  #receipt-sidebar > div > div {
+    page-break-inside: avoid;
+  }
+}
+

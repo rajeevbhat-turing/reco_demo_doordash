@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { ChevronDown, ChevronUp, Minus, Plus } from "lucide-react"
 import Image from "next/image"
 import type { Product } from "@/types"
@@ -22,7 +22,31 @@ const fallbackDescription = "The price shown is an estimate. It will be updated 
 export default function ProductDetailModal({ product, onClose, storeId, category = "grocery", storeName }: ProductDetailModalProps) {
   const [quantity, setQuantity] = useState(1)
   const [isNutritionOpen, setIsNutritionOpen] = useState(false)
-  const { addItem } = useCartStore()
+  const { addItem, findCart } = useCartStore()
+
+  // Set quantity based on cart or reset to 1 when product changes
+  useEffect(() => {
+    if (!product) return
+    
+    // Check if product is already in cart
+    if (storeId && category) {
+      const cart = findCart(storeId, category)
+      const cartItem = cart?.items.find((item) => item.id === product.id)
+      
+      if (cartItem) {
+        // Use cart quantity if product exists in cart
+        setQuantity(cartItem.quantity)
+      } else {
+        // Reset to 1 if product is not in cart
+        setQuantity(1)
+      }
+    } else {
+      // Reset to 1 if store info is not available
+      setQuantity(1)
+    }
+    
+    setIsNutritionOpen(false) // Also reset nutrition panel
+  }, [product?.id, storeId, category, findCart])
 
   if (!product) return null
 
@@ -66,7 +90,7 @@ export default function ProductDetailModal({ product, onClose, storeId, category
         {/* Product details */}
         <div className="md:w-1/2">
           <h1 className="text-2xl font-bold mb-2">{product.name}</h1>
-          <p className="text-2xl font-bold mb-2">${parseCurrency(product.price)}/bch</p>
+          <p className="text-2xl font-bold mb-2">${parseCurrency(product.price).toFixed(2)}/bch</p>
           <p className="text-gray-600 mb-4">Approx 0.4 lb per bunch • ${(parseCurrency(product.price) * 2.5).toFixed(2)}/lb</p>
           <p className="text-gray-600 mb-4">
             {(product as any).description ?? fallbackDescription}
@@ -128,7 +152,7 @@ export default function ProductDetailModal({ product, onClose, storeId, category
           className="bg-red-600 hover:bg-red-700 text-white font-medium py-3 px-6 rounded-full"
           onClick={handleAddToCart}
         >
-          Add to cart - {"$"+parseCurrency(product.price) * quantity}
+          Add to cart - ${(parseCurrency(product.price) * quantity).toFixed(2)}
         </button>
       </div>
     </Modal>

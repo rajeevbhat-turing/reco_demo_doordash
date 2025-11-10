@@ -1,14 +1,15 @@
 "use client"
 
-import CategoryFilters from "@/components/category-filters"
+import FilterOptions, { FilterState, FilterOptionsRef } from "@/components/filter-options"
 import StoreCard from "@/components/storeCard"
 import GrocerySchedule from "@/components/grocery-schedule"
 import { stores } from "@/constants/store"
 import { ChevronRight } from "lucide-react"
 import Image from "next/image"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { useCartStore } from "@/store/cart-store"
 import { useAppStore } from "@/store/app-store"
+import { getDefaultRating } from "@/utils/rating-utils"
 
 // Retail-specific banner data
 const retailBanners = [
@@ -39,7 +40,20 @@ const retailBanners = [
 ];
 
 export default function Retail() {
-  const [activeFilters, setActiveFilters] = useState<string[]>([])
+  const [activeFilters, setActiveFilters] = useState<FilterState>({
+    underThirtyMins: false,
+    deals: false,
+    overRating: null,
+    price: null, // DEPRECATED
+    minPrice: null,
+    maxPrice: null,
+    dashPass: false,
+    location: null,
+    cuisine: null,
+    dietaryPreferences: null,
+  })
+  
+  const filterOptionsRef = useRef<FilterOptionsRef>(null)
   const { clearCurrentStore, updateSearchResults, clearSearchResults } = useAppStore()
 
   // Set category explicitly
@@ -49,62 +63,146 @@ export default function Retail() {
     clearCurrentStore();
   }, []);
 
-  const filteredStores = stores.filter(store => {
-    if (activeFilters.length === 0) return true
-    return activeFilters.every(filter => {
-      if (filter === "Over 4.5") {
-        return store.tags?.includes("Over 4.5")
-      }
-      if (filter === "Under 30 min") {
-        return store.tags?.includes("Under 30 min")
-      }
-      return store.tags?.includes(filter)
-    })
-  })
-
-  const handleFilterChange = (filter: string) => {
-    setActiveFilters(prev => {
-      if (prev.includes(filter)) {
-        return prev.filter(f => f !== filter)
-      }
-      return [...prev, filter]
-    })
+  // Handle filter changes
+  const handleFilterChange = (filters: FilterState) => {
+    setActiveFilters(filters)
   }
 
+  // Handle reset
   const handleReset = () => {
-    setActiveFilters([])
+    const resetFilters: FilterState = {
+      underThirtyMins: false,
+      deals: false,
+      overRating: null,
+      price: null, // DEPRECATED
+      minPrice: null,
+      maxPrice: null,
+      dashPass: false,
+      location: null,
+      cuisine: null,
+      dietaryPreferences: null,
+    }
+    setActiveFilters(resetFilters)
+    if (filterOptionsRef.current) {
+      filterOptionsRef.current.resetFilters()
+    }
     clearSearchResults();
   }
 
+  // Check if any filters are active
+  const hasActiveFilters = () => {
+    return (
+      activeFilters.underThirtyMins ||
+      activeFilters.deals ||
+      activeFilters.overRating !== null ||
+      (activeFilters.price !== null && activeFilters.price.length > 0) || // DEPRECATED
+      (activeFilters.minPrice !== null && activeFilters.minPrice !== undefined) ||
+      (activeFilters.maxPrice !== null && activeFilters.maxPrice !== undefined) ||
+      activeFilters.dashPass ||
+      activeFilters.location !== null ||
+      (activeFilters.cuisine !== null && activeFilters.cuisine !== undefined && activeFilters.cuisine.length > 0) ||
+      (activeFilters.dietaryPreferences !== null && activeFilters.dietaryPreferences !== undefined && activeFilters.dietaryPreferences.length > 0)
+    )
+  }
+
+  // Filter stores based on active filters
+  const filteredStores = stores.filter(store => {
+    // Filter by under 30 min
+    if (activeFilters.underThirtyMins) {
+      const timeString = store.deliveryTime || "";
+      const minutes = parseInt(timeString.match(/\d+/)?.[0] || "100");
+      if (minutes >= 30) return false;
+    }
+    
+    // Filter by rating (check tags for rating thresholds)
+    if (activeFilters.overRating && activeFilters.overRating > 0) {
+      // For retail stores, we check tags since they don't have direct rating field
+      // Check if store has the rating tag matching the selected threshold
+      const hasOverRatingTag = store.tags?.includes(`Over ${activeFilters.overRating}`) || 
+                               // Fallback: check for "Over 4.5" tag if rating is 4.5 or higher (for backward compatibility)
+                               (activeFilters.overRating >= 4.5 && store.tags?.includes("Over 4.5")) ||
+                               // Fallback: check for "Over 4" tag if rating is 4 or higher
+                               (activeFilters.overRating >= 4 && activeFilters.overRating < 4.5 && store.tags?.includes("Over 4")) ||
+                               // Fallback: check for "Over 3.5" tag if rating is 3.5 or higher
+                               (activeFilters.overRating >= 3.5 && activeFilters.overRating < 4 && store.tags?.includes("Over 3.5")) ||
+                               // Fallback: check for "Over 3" tag if rating is 3 or higher
+                               (activeFilters.overRating >= 3 && activeFilters.overRating < 3.5 && store.tags?.includes("Over 3"))
+      if (!hasOverRatingTag) return false;
+    }
+    
+    // Filter by DashPass
+    if (activeFilters.dashPass && !store.isDashPass) {
+      return false;
+    }
+
+    // Filter by deals (check if store has discount)
+    if (activeFilters.deals && !store.discount) {
+      return false;
+    }
+
+    // Filter by location (distance) - retail stores might not have distance field
+    // We'll skip this filter for retail stores as they don't have distance data
+    if (activeFilters.location) {
+      // Retail stores don't typically have distance field, so skip this filter
+      // or implement based on tags if available
+    }
+
+    // Filter by cuisine - retail stores don't have cuisine
+    if (activeFilters.cuisine && activeFilters.cuisine.length > 0) {
+      // Retail stores don't have cuisine, so skip this filter
+    }
+
+    // Filter by dietary preferences
+    if (activeFilters.dietaryPreferences && activeFilters.dietaryPreferences.length > 0) {
+      const storeDietary = (store as any).dietaryPreferences || [];
+      const matchesDietary = activeFilters.dietaryPreferences!.some(pref =>
+        storeDietary.includes(pref)
+      );
+      if (!matchesDietary) return false;
+    }
+
+    // Filter by min/max price (new implementation)
+    // Note: For stores, we need product data to properly filter by price
+    // For now, stores pass through this filter until product data is available
+    if (activeFilters.minPrice != null || activeFilters.maxPrice != null) {
+      // TODO: Implement product-based price filtering for retail stores
+      // For now, return true (don't filter) until product data is available
+      // This ensures the filter UI works but doesn't break functionality
+    }
+    
+    return true;
+  })
+
   const nearbyStores = filteredStores.filter(store => store.isNearYou)
-  const resultCount = filteredStores.length
 
   return (
     <main className="max-w-[1200px] mx-auto px-4 pt-16">
+        {/* Filter Options Bar */}
+        <FilterOptions 
+          ref={filterOptionsRef}
+          isGrocery={false} 
+          onFilterChange={handleFilterChange}
+          filters={activeFilters}
+          showPriceFilter={true}
+          hideCuisineFilter={true}
+          hideDietaryFilter={true}
+        />
+
         {/* Promotional Banners */}
         <GrocerySchedule promos={retailBanners} />
 
-        <CategoryFilters
-          categories={[
-            { name: "Flowers", href: "#" },
-            { name: "Retail", href: "#" },
-            { name: "Convenience", href: "#" },
-            { name: "Beauty", href: "#" },
-            { name: "Alcohol", href: "#" },
-          ]}
-          showRating={true}
-          showTime={true}
-          activeFilters={activeFilters}
-          onFilterChange={handleFilterChange}
-          onReset={handleReset}
-        />
-
-        {activeFilters.length > 0 && (
+        {hasActiveFilters() && (
           <div className="flex items-center justify-between mt-6 mb-2">
-            <p className="text-gray-900 font-medium">{resultCount} results</p>
+            <p className="text-gray-900 font-medium">{filteredStores.length} results</p>
+            <button
+              onClick={handleReset}
+              className="bg-gray-100 text-gray-900 font-medium text-sm rounded-full px-4 py-2"
+            >
+              Reset
+            </button>
           </div>
         )}
-        {activeFilters.length === 0 && (
+        {!hasActiveFilters() && (
           <>
             <h2 className="text-xl font-bold mt-8 mb-4">Stores Near You</h2>
 
@@ -207,6 +305,32 @@ export default function Retail() {
             <StoreCard key={store.id} {...store} storeType="retail" />
           ))}
         </div>
+
+        {/* Show "No products match your price" message when price filter is active (Retail page doesn't have products) */}
+        {(activeFilters.minPrice != null || activeFilters.maxPrice != null) && (
+          <div className="text-center py-12 bg-gray-50 rounded-lg mt-8">
+            <div className="mb-4">
+              <svg
+                className="mx-auto h-12 w-12 text-gray-400"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                aria-hidden="true"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                />
+              </svg>
+            </div>
+            <h3 className="text-lg font-medium text-gray-700">No products match your price</h3>
+            <p className="text-gray-500 mt-2">
+              Try adjusting your price range or browse other products
+            </p>
+          </div>
+        )}
       </main>
   )
 }

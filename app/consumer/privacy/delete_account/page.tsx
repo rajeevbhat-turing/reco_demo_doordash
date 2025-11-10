@@ -59,7 +59,7 @@ export default function DeleteAccountPage() {
       if (currentUser) {
         deleteUser(currentUser.id);
       }
-      // Navigate to home
+      // Navigate to landing page
       router.push('/');
     }, 3000);
   };

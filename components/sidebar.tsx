@@ -29,12 +29,6 @@ export default function Sidebar() {
   const [showAccountPopup, setShowAccountPopup] = useState(false);
   const [accountButtonRef, setAccountButtonRef] = useState<HTMLDivElement | null>(null);
 
-  const isActive = (path: string) => {
-    if (path === '/' && pathname === '/') return true;
-    if (path !== '/' && pathname.startsWith(path)) return true;
-    return false;
-  };
-
   const handleSignUpClick = () => {
     setAuthModalMode('signup');
   };
@@ -50,9 +44,9 @@ export default function Sidebar() {
           <ul className="space-y-1">
             <li>
               <Link
-                href="/"
+                href="/home"
                 className={`flex items-center px-4 py-3 rounded-lg mx-2 ${
-                  pathname === '/'
+                  pathname === '/' || pathname === '/home'
                     ? 'bg-blue-50 text-blue-600 font-medium'
                     : 'text-gray-700 hover:bg-gray-100'
                 }`}

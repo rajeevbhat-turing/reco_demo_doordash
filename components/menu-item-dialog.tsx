@@ -2,13 +2,12 @@
 
 import { useState, useEffect, useRef } from "react"
 import Image from "next/image"
-import { X, ThumbsUp, ChevronLeft, ChevronRight, ChevronRightIcon } from "lucide-react"
+import { X, ChevronDown, ChevronUp, Minus, Plus } from "lucide-react"
 import { useCartStore } from "@/store/cart-store"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
-import { Minus, Plus } from "lucide-react"
 import { MenuItem } from "@/constants/menu-items"
 import { getDefaultRating } from "@/utils/rating-utils"
+import { Modification, ModificationOption, AppliedModification, AppliedModificationOption } from "@/types"
+import { cn } from "@/lib/utils"
 
 // Types for the menu item options
 interface MenuItemOption {
@@ -19,24 +18,6 @@ interface MenuItemOption {
   price: string
   popular?: boolean
   popularity?: string
-}
-
-interface CustomizationOption {
-  id: string
-  name: string
-  calories?: string
-  price?: number // Changed to number for easier calculation
-  selected?: boolean
-}
-
-interface CustomizationSection {
-  id: string
-  title: string
-  type: "radio" | "checkbox"
-  required: boolean
-  maxSelections?: number
-  options: CustomizationOption[]
-  description?: string
 }
 
 interface MenuItemDialogProps {
@@ -57,14 +38,11 @@ interface MenuItemDialogProps {
 
 export default function MenuItemDialog({ isOpen, onClose, item }: MenuItemDialogProps) {
   const [selectedOption, setSelectedOption] = useState<string | null>(null)
-  const [selectedCustomizations, setSelectedCustomizations] = useState<Record<string, string[]>>({})
-  const [customizationPrices, setCustomizationPrices] = useState<Record<string, number>>({})
+  const [appliedModifications, setAppliedModifications] = useState<Map<string, AppliedModificationOption[]>>(new Map())
+  const [expandedModifications, setExpandedModifications] = useState<Set<string>>(new Set())
+  const [visibleModifications, setVisibleModifications] = useState<Modification[]>([])
   const dialogRef = useRef<HTMLDivElement>(null)
   const { addItem } = useCartStore()
-
-  // Track required selections
-  const [requiredSelectionsCount, setRequiredSelectionsCount] = useState(0)
-  const [requiredSectionsMet, setRequiredSectionsMet] = useState<Record<string, boolean>>({})
 
   useEffect(() => {
     if (isOpen) {
@@ -88,46 +66,77 @@ export default function MenuItemDialog({ isOpen, onClose, item }: MenuItemDialog
     }
   }, [isOpen, onClose])
 
+  // Initialize with default selections
   useEffect(() => {
-    // Initialize selected customizations
     if (isOpen && item) {
-      const initialCustomizations: Record<string, string[]> = {}
-      const initialPrices: Record<string, number> = {}
-      
-      customizationSections.forEach((section) => {
-        if (section.required && section.type === "radio") {
-          // Pre-select the first option for required radio sections
-          const defaultOption = section.options[0]?.id
-          if (defaultOption) {
-            initialCustomizations[section.id] = [defaultOption]
-            // Store the price if it exists
-            const option = section.options.find(opt => opt.id === defaultOption)
-            if (option?.price) {
-              initialPrices[defaultOption] = option.price
+      const defaultSelections = new Map<string, AppliedModificationOption[]>()
+      const initialExpanded = new Set<string>()
+
+      // Check if item is a MenuItem with modifications
+      const menuItem = item as MenuItem
+      if (menuItem.modifications) {
+        menuItem.modifications.forEach((mod) => {
+          if (!mod.parent_option) {
+            // Root level modifications start expanded
+            initialExpanded.add(mod.id)
+
+            // Set default selections
+            const defaults = mod.options
+              .filter((opt) => opt.is_default)
+              .map((opt) => ({
+                optionId: opt.id,
+                optionName: opt.name,
+                price: opt.price,
+                quantity: 1,
+              }))
+
+            if (defaults.length > 0) {
+              defaultSelections.set(mod.id, defaults)
             }
           }
-        } else {
-          initialCustomizations[section.id] = []
-        }
-      })
-      
-      setSelectedCustomizations(initialCustomizations)
-      setCustomizationPrices(initialPrices)
+        })
+      }
 
-      // Count required sections
-      const requiredCount = customizationSections.filter((section) => section.required).length
-      setRequiredSelectionsCount(requiredCount)
-
-      // Initialize required sections tracking
-      const initialRequiredSections: Record<string, boolean> = {}
-      customizationSections.forEach((section) => {
-        if (section.required) {
-          initialRequiredSections[section.id] = section.type === "radio" ? true : false
-        }
-      })
-      setRequiredSectionsMet(initialRequiredSections)
+      setAppliedModifications(defaultSelections)
+      setExpandedModifications(initialExpanded)
     }
   }, [isOpen, item])
+
+  // Update visible modifications based on parent_option selections
+  useEffect(() => {
+    if (!item) return
+    const menuItem = item as MenuItem
+    if (!menuItem.modifications) {
+      setVisibleModifications([])
+      return
+    }
+
+    const visible = menuItem.modifications.filter((mod) => {
+      if (!mod.parent_option) return true
+
+      // Check if parent option is selected
+      for (const [, options] of appliedModifications) {
+        if (options.some((opt) => opt.optionId === mod.parent_option)) {
+          return true
+        }
+      }
+      return false
+    })
+
+    setVisibleModifications(visible)
+
+    // Auto-expand child modifications when they become visible
+    setExpandedModifications((prevExpanded) => {
+      const newExpanded = new Set(prevExpanded)
+      visible.forEach((mod) => {
+        // If this is a child modification (has parent_option), expand it automatically
+        if (mod.parent_option) {
+          newExpanded.add(mod.id)
+        }
+      })
+      return newExpanded
+    })
+  }, [appliedModifications, item])
 
   if (!isOpen || !item) return null
 
@@ -147,10 +156,12 @@ export default function MenuItemDialog({ isOpen, onClose, item }: MenuItemDialog
       }
     }
   
-    // Add customization prices
-    Object.values(customizationPrices).forEach(price => {
-      total += price
-    })
+    // Add modification prices
+    for (const [, options] of appliedModifications) {
+      for (const opt of options) {
+        total += opt.price * opt.quantity
+      }
+    }
     
     return total.toFixed(2)
   }
@@ -174,220 +185,212 @@ export default function MenuItemDialog({ isOpen, onClose, item }: MenuItemDialog
     },
   ];
 
-  const customizationSections: CustomizationSection[] = [
-    {
-      id: "size",
-      title: "Choose Size",
-      type: "radio",
-      required: true,
-      options: [
-        { id: "small", name: "Small", price: 0 },
-        { id: "medium", name: "Medium", price: 1.0 },
-        { id: "large", name: "Large", price: 2.0 },
-      ],
-      description: "• Select 1",
-    },
-    {
-      id: "add-ons",
-      title: "Optional Add-ons",
-      type: "checkbox",
-      required: false,
-      maxSelections: 3,
-      options: [
-        { id: "extra-portion", name: "Extra Portion", price: 1.5 },
-        { id: "flavor-boost", name: "Flavor Boost", price: 0.5 },
-        { id: "garnish", name: "Garnish", price: 0.5 },
-        { id: "custom-topping", name: "Custom Topping", price: 1.0 },
-      ],
-      description: "(Optional) • Select up to 3",
-    },
-    {
-      id: "sides",
-      title: "Side Items",
-      type: "checkbox",
-      required: false,
-      maxSelections: 2,
-      options: [
-        { id: "snack", name: "Snack Item", price: 2.5 },
-        { id: "light-salad", name: "Light Salad", price: 3.0 },
-        { id: "fruit", name: "Fruit Portion", price: 3.0 },
-        { id: "bread-roll", name: "Bread Roll", price: 2.0 },
-      ],
-      description: "(Optional) • Select up to 2",
-    },
-    {
-      id: "drinks",
-      title: "Add a Beverage",
-      type: "radio",
-      required: false,
-      options: [
-        { id: "none", name: "No Drink", price: 0 },
-        { id: "soda", name: "Soda", price: 2.0 },
-        { id: "tea", name: "Tea", price: 2.0 },
-        { id: "coffee", name: "Coffee", price: 2.5 },
-        { id: "water", name: "Water", price: 1.5 },
-        { id: "juice", name: "Juice", price: 3.0 },
-      ],
-      description: "(Optional) • Select 1",
-    },
-    {
-      id: "preferences",
-      title: "Special Preferences",
-      type: "checkbox",
-      required: false,
-      options: [
-        { id: "low-sugar", name: "Low Sugar", price: 0 },
-        { id: "gluten-free", name: "Gluten-Free", price: 1.0 },
-        { id: "vegan", name: "Vegan Option", price: 0 },
-      ],
-      description: "(Optional)",
-    },
-  ];
+  const toggleModificationExpanded = (modId: string) => {
+    const newExpanded = new Set(expandedModifications)
+    if (newExpanded.has(modId)) {
+      newExpanded.delete(modId)
+    } else {
+      newExpanded.add(modId)
+    }
+    setExpandedModifications(newExpanded)
+  }
+
+  const handleModificationOptionSelect = (
+    modification: Modification,
+    option: ModificationOption,
+    selected: boolean
+  ) => {
+    const newApplied = new Map(appliedModifications)
+    const currentOptions = newApplied.get(modification.id) || []
+
+    if (selected) {
+      // For single selection (select_up_to === 1), replace existing
+      if (modification.select_up_to === 1) {
+        newApplied.set(modification.id, [
+          {
+            optionId: option.id,
+            optionName: option.name,
+            price: option.price,
+            quantity: 1,
+          },
+        ])
+      } else {
+        // For multiple selection, add if under limit
+        if (currentOptions.length < modification.select_up_to) {
+          newApplied.set(modification.id, [
+            ...currentOptions,
+            {
+              optionId: option.id,
+              optionName: option.name,
+              price: option.price,
+              quantity: 1,
+            },
+          ])
+        }
+      }
+    } else {
+      // Deselection logic
+      const filtered = currentOptions.filter((opt) => opt.optionId !== option.id)
+      
+      // For required modifications, prevent deselection if it would leave no selections
+      if (modification.is_required) {
+        const minRequired = modification.select_at_least || 1
+        // Only allow deselection if we'll still have at least the minimum required
+        if (filtered.length >= minRequired) {
+          newApplied.set(modification.id, filtered)
+        }
+        // Otherwise, do nothing (don't allow deselection)
+      } else {
+        // For optional modifications, always allow deselection
+        if (filtered.length > 0) {
+          newApplied.set(modification.id, filtered)
+        } else {
+          newApplied.delete(modification.id)
+        }
+      }
+    }
+
+    setAppliedModifications(newApplied)
+  }
+
+  const handleCounterChange = (
+    modification: Modification,
+    option: ModificationOption,
+    delta: number
+  ) => {
+    const newApplied = new Map(appliedModifications)
+    const currentOptions = newApplied.get(modification.id) || []
+    const existingOption = currentOptions.find((opt) => opt.optionId === option.id)
+
+    if (existingOption) {
+      const newQuantity = Math.max(0, existingOption.quantity + delta)
+      const maxQty = option.max_quantity || Infinity
+
+      if (newQuantity === 0) {
+        // Remove if quantity reaches 0
+        const filtered = currentOptions.filter((opt) => opt.optionId !== option.id)
+        if (filtered.length > 0) {
+          newApplied.set(modification.id, filtered)
+        } else {
+          newApplied.delete(modification.id)
+        }
+      } else if (newQuantity <= maxQty) {
+        const updated = currentOptions.map((opt) =>
+          opt.optionId === option.id ? { ...opt, quantity: newQuantity } : opt
+        )
+        newApplied.set(modification.id, updated)
+      }
+    } else if (delta > 0) {
+      // Add new counter option
+      newApplied.set(modification.id, [
+        ...currentOptions,
+        {
+          optionId: option.id,
+          optionName: option.name,
+          price: option.price,
+          quantity: 1,
+        },
+      ])
+    }
+
+    setAppliedModifications(newApplied)
+  }
+
+  const isModificationOptionSelected = (modId: string, optionId: string): boolean => {
+    const options = appliedModifications.get(modId) || []
+    return options.some((opt) => opt.optionId === optionId)
+  }
+
+  const getOptionQuantity = (modId: string, optionId: string): number => {
+    const options = appliedModifications.get(modId) || []
+    const option = options.find((opt) => opt.optionId === optionId)
+    return option?.quantity || 0
+  }
+
+  const canAddToCart = (): boolean => {
+    const menuItem = item as MenuItem
+    if (!menuItem.modifications) return true
+
+    // Check all required modifications are satisfied
+    for (const mod of visibleModifications) {
+      if (mod.is_required) {
+        const selected = appliedModifications.get(mod.id) || []
+        const minRequired = mod.select_at_least || 1
+        if (selected.length < minRequired) {
+          return false
+        }
+      }
+    }
+
+    return true
+  }
   
 
   const handleOptionSelect = (optionId: string) => {
     setSelectedOption(optionId === selectedOption ? null : optionId)
   }
 
-  const handleCustomizationSelect = (sectionId: string, optionId: string) => {
-    const section = customizationSections.find((s) => s.id === sectionId)
-  
-    if (!section) return
-  
-    setSelectedCustomizations((prev) => {
-      const updatedSelections = { ...prev }
-      const currentSelections = updatedSelections[sectionId] || []
-  
-      if (section.type === "radio") {
-        // Radio button logic remains the same
-        updatedSelections[sectionId] = [optionId]
-        
-        // Remove all prices from this section first
-        setCustomizationPrices((prevPrices) => {
-          const updatedPrices = { ...prevPrices }
-          section.options.forEach(opt => {
-            if (updatedPrices[opt.id]) {
-              delete updatedPrices[opt.id]
-            }
-          })
-  
-          // Add the new price if it exists
-          const selectedOption = section.options.find(opt => opt.id === optionId)
-          if (selectedOption?.price !== undefined) {
-            updatedPrices[optionId] = selectedOption.price
-          }
-          return updatedPrices
-        })
-  
-        // Mark this required section as met
-        if (section.required) {
-          setRequiredSectionsMet((prev) => ({
-            ...prev,
-            [sectionId]: true,
-          }))
-        }
-      } else {
-        // Checkbox logic - simplified
-        if (currentSelections.includes(optionId)) {
-          // Deselect
-          updatedSelections[sectionId] = currentSelections.filter(id => id !== optionId)
-        } else {
-          // Check max selections
-          if (section.maxSelections && currentSelections.length >= section.maxSelections) {
-            return prev // Don't make any changes if max selections reached
-          }
-          // Select
-          updatedSelections[sectionId] = [...currentSelections, optionId]
-        }
-  
-        // Update prices
-        setCustomizationPrices((prevPrices) => {
-          const updatedPrices = { ...prevPrices }
-          const selectedOption = section.options.find(opt => opt.id === optionId)
-          
-          if (currentSelections.includes(optionId)) {
-            // Remove price if deselected
-            delete updatedPrices[optionId]
-          } else if (selectedOption?.price !== undefined) {
-            // Add price if selected
-            updatedPrices[optionId] = selectedOption.price
-          }
-          return updatedPrices
-        })
-  
-        // For required checkbox sections
-        if (section.required) {
-          setRequiredSectionsMet((prev) => ({
-            ...prev,
-            [sectionId]: updatedSelections[sectionId].length > 0,
-          }))
-        }
-      }
-  
-      return updatedSelections
-    })
-  }
-
-  const isOptionSelected = (sectionId: string, optionId: string) => {
-    return selectedCustomizations[sectionId]?.includes(optionId) || false
-  }
-
-  const allRequiredSectionsMet = Object.values(requiredSectionsMet).every((met) => met)
-
   const handleAddToCart = () => {
-    if (!item || !allRequiredSectionsMet) return
+    if (!item || !canAddToCart()) return
   
-    // Get selected customizations for display
+    const menuItem = item as MenuItem
+    const totalPrice = parseFloat(calculateTotalPrice())
+  
+    // Format applied modifications for cart
+    const formattedModifications: AppliedModification[] = []
+    for (const [modId, options] of appliedModifications) {
+      const modification = menuItem.modifications?.find((m) => m.id === modId)
+      if (modification && options.length > 0) {
+        formattedModifications.push({
+          modificationId: modId,
+          modificationDescription: modification.description,
+          appliedOptions: options,
+        })
+      }
+    }
+  
+    // Build customization text for display
     const customizationText: string[] = []
-    let totalPrice = basePrice
-  
-    // Include selected recommended option if any
     if (selectedOption) {
       const option = recommendedOptions.find(opt => opt.id === selectedOption)
       if (option) {
         customizationText.push(option.title)
-        totalPrice = parseFloat(option.price.replace(/[^0-9.]/g, '')) || basePrice
       }
     }
   
-    // Add all selected customizations
-    customizationSections.forEach(section => {
-      const selectedIds = selectedCustomizations[section.id] || []
-      selectedIds.forEach(id => {
-        const option = section.options.find(opt => opt.id === id)
-        if (option) {
-          customizationText.push(option.name)
-          if (option.price) {
-            totalPrice += option.price
-          }
-        }
-      })
-    })
+    for (const mod of formattedModifications) {
+      for (const opt of mod.appliedOptions) {
+        const displayText = opt.quantity > 1 
+          ? `${opt.optionName} (x${opt.quantity})`
+          : opt.optionName
+        customizationText.push(displayText)
+      }
+    }
   
-    // Add the item to cart with customizations using conflict detection
+    // Add the item to cart
     const cartItem = {
-      id: `${item.id}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`, // Generate unique ID
-      itemName: item.name, // Use itemName instead of name
+      id: `${item.id}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      itemName: item.name,
       price: totalPrice.toFixed(2),
       image: item.image,
       customizations: customizationText.join(" · "),
+      appliedModifications: formattedModifications.length > 0 ? formattedModifications : undefined,
     }
     
-    // Add to cart - will automatically find or create restaurant cart
-    // Note: item should have restaurantId property for proper cart grouping
     addItem(cartItem, "restaurant", undefined, item.restaurantId)
-  
     onClose()
   }
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div ref={dialogRef} className="relative bg-white rounded-lg w-full max-w-xl max-h-[90vh] overflow-auto">
+      <div ref={dialogRef} className="relative bg-white rounded-lg w-full max-w-xl max-h-[90vh] flex flex-col">
         <button onClick={onClose} className="absolute top-4 left-4 z-10 p-1" aria-label="Close dialog">
           <X className="h-6 w-6" />
         </button>
 
-        <div className="p-6 pt-14 pb-20">
+        {/* Scrollable content area */}
+        <div className="flex-1 overflow-y-auto">
+          <div className="px-4 pt-14 pb-8">
           <h2 className="text-2xl font-bold">{item.name}</h2>
           {item.rating && item.ratingCount && (
             <div className="flex items-center text-sm text-gray-500 mb-3">
@@ -410,7 +413,7 @@ export default function MenuItemDialog({ isOpen, onClose, item }: MenuItemDialog
           </div>
 
           {/* Recommended Options */}
-          <div className="mt-6">
+          {/* <div className="mt-6">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-xl font-semibold">Your recommended options</h3>
               <div className="flex space-x-2">
@@ -453,75 +456,274 @@ export default function MenuItemDialog({ isOpen, onClose, item }: MenuItemDialog
                 </div>
               ))}
             </div>
+          </div> */}
+
+          
           </div>
 
-          {/* Customization Sections */}
-          {customizationSections.map((section) => (
-            <div key={section.id} className="mt-6">
-              <div className="flex items-center justify-between mb-2">
-                <h3 className="text-lg font-semibold">{section.title}</h3>
-                {section.description && (
-                  <div className="text-sm">
-                    {section.required && <span className="text-amber-500 mr-1">⚠</span>}
-                    <span className={section.required ? "text-amber-700" : "text-gray-500"}>{section.description}</span>
+        <div className="px-3 pb-4">
+          {/* Modification Sections */}
+          {visibleModifications.filter(mod => !mod.parent_option).map((modification) => {
+            // Find child modifications that depend on this modification's options
+            const childModifications = visibleModifications.filter(childMod => {
+              if (!childMod.parent_option) return false
+              // Check if parent_option matches any option in this modification
+              return modification.options.some(opt => opt.id === childMod.parent_option)
+            })
+            
+            const hasVisibleChildren = childModifications.length > 0
+
+            return (
+              <div key={modification.id} className="mt-4">
+                <div className="rounded-lg overflow-hidden bg-white">
+                  {/* Root level modification header - full width */}
+                  <button
+                    onClick={() => toggleModificationExpanded(modification.id)}
+                    className="w-full flex items-center justify-between py-4 px-2 hover:bg-gray-50 transition-colors"
+                  >
+                    <div className="flex-1 text-left">
+                      <h3 className="font-semibold text-base">{modification.description}</h3>
+                      <div className="flex items-center gap-1 mt-0.5">
+                        {modification.is_required ? (
+                          (() => {
+                            const selected = appliedModifications.get(modification.id) || []
+                            const minRequired = modification.select_at_least || 1
+                            const isSatisfied = selected.length >= minRequired
+                            
+                            return isSatisfied ? (
+                              <span className="text-green-600 text-sm font-medium flex items-center gap-0.5">
+                                <span>✓</span> Required
+                              </span>
+                            ) : (
+                              <span className="text-amber-600 text-sm font-medium flex items-center gap-0.5">
+                                <span className="text-base">⚠</span> Required
+                              </span>
+                            )
+                          })()
+                        ) : (
+                          <span className="text-gray-500 text-sm">(Optional)</span>
+                        )}
+                        <span className="text-gray-500 text-sm">
+                          • Select {modification.select_up_to === 1 ? '1' : `up to ${modification.select_up_to}`}
+                        </span>
+                      </div>
+                    </div>
+                    {expandedModifications.has(modification.id) ? (
+                      <ChevronUp className="h-5 w-5 text-gray-400 flex-shrink-0" />
+                    ) : (
+                      <ChevronDown className="h-5 w-5 text-gray-400 flex-shrink-0" />
+                    )}
+                  </button>
+
+                  {/* Options - displayed as rows inside the section */}
+                  {expandedModifications.has(modification.id) && (
+                    <div className="border-t border-gray-200">
+                      {modification.options.map((option) => (
+                        <ModificationOptionCard
+                          key={option.id}
+                          modification={modification}
+                          option={option}
+                          isSelected={isModificationOptionSelected(modification.id, option.id)}
+                          quantity={getOptionQuantity(modification.id, option.id)}
+                          onSelect={(selected) => handleModificationOptionSelect(modification, option, selected)}
+                          onCounterChange={(delta) => handleCounterChange(modification, option, delta)}
+                        />
+                      ))}
                   </div>
                 )}
               </div>
 
-              <div className="space-y-3">
-                {section.options.map((option) => (
-                  <div
-                    key={`${section.id}-${option.id}`}
-                    className="flex items-center justify-between py-2 cursor-pointer"
-                    onClick={() => handleCustomizationSelect(section.id, option.id)}
-                  >
-                    <div className="flex items-center">
-                      {section.type === "radio" ? (
-                        <div
-                          className={`w-5 h-5 rounded-full border flex items-center justify-center ${isOptionSelected(section.id, option.id) ? "border-red-500" : "border-gray-300"
-                            }`}
+                {/* Child modifications container with gray background */}
+                {hasVisibleChildren && expandedModifications.has(modification.id) && (
+                  <div className="bg-gray-100 rounded-lg p-6 mt-2 mx-[-12px]">
+                    {childModifications.map((childMod) => (
+                      <div key={childMod.id} className="mt-2 first:mt-0 rounded-lg overflow-hidden bg-white">
+                        {/* Child modification header */}
+                        <button
+                          onClick={() => toggleModificationExpanded(childMod.id)}
+                          className="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-colors"
                         >
-                          {isOptionSelected(section.id, option.id) && (
-                            <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+                          <div className="flex-1 text-left">
+                            <h3 className="font-semibold text-base">{childMod.description}</h3>
+                            <div className="flex items-center gap-1 mt-0.5">
+                              {childMod.is_required ? (
+                                (() => {
+                                  const selected = appliedModifications.get(childMod.id) || []
+                                  const minRequired = childMod.select_at_least || 1
+                                  const isSatisfied = selected.length >= minRequired
+                                  
+                                  return isSatisfied ? (
+                                    <span className="text-green-600 text-sm font-medium flex items-center gap-0.5">
+                                      <span>✓</span> Required
+                                    </span>
+                                  ) : (
+                                    <span className="text-amber-600 text-sm font-medium flex items-center gap-0.5">
+                                      <span className="text-base">⚠</span> Required
+                                    </span>
+                                  )
+                                })()
+                              ) : (
+                                <span className="text-gray-500 text-sm">(Optional)</span>
+                              )}
+                              <span className="text-gray-500 text-sm">
+                                • Select {childMod.select_up_to === 1 ? '1' : `up to ${childMod.select_up_to}`}
+                              </span>
+                            </div>
+                          </div>
+                          {expandedModifications.has(childMod.id) ? (
+                            <ChevronUp className="h-5 w-5 text-gray-400 flex-shrink-0" />
+                          ) : (
+                            <ChevronDown className="h-5 w-5 text-gray-400 flex-shrink-0" />
                           )}
-                        </div>
-                      ) : (
-                        <div
-                          className={`w-5 h-5 border flex items-center justify-center rounded ${
-                            isOptionSelected(section.id, option.id) ? "border-red-500 bg-red-500" : "border-gray-300"
-                          }`}
-                        >
-                          {isOptionSelected(section.id, option.id) && <div className="text-white text-xs">✓</div>}
+                        </button>
+
+                        {/* Child options */}
+                        {expandedModifications.has(childMod.id) && (
+                          <div className="border-t border-gray-200">
+                            {childMod.options.map((option) => (
+                              <ModificationOptionCard
+                                key={option.id}
+                                modification={childMod}
+                                option={option}
+                                isSelected={isModificationOptionSelected(childMod.id, option.id)}
+                                quantity={getOptionQuantity(childMod.id, option.id)}
+                                onSelect={(selected) => handleModificationOptionSelect(childMod, option, selected)}
+                                onCounterChange={(delta) => handleCounterChange(childMod, option, delta)}
+                              />
+                            ))}
                         </div>
                       )}
-                      <span className="ml-3">{option.name}</span>
                     </div>
-                    {option.price ? (
-                      <span className="text-gray-700">
-                        {option.price > 0 ? `+$${option.price.toFixed(2)}` : 'Included'}
-                      </span>
-                    ) : null}
+                    ))}
                   </div>
-                ))}
+                )}
               </div>
+            )
+          })}
             </div>
-          ))}
         </div>
+        {/* End of scrollable content */}
 
         {/* Fixed bottom button */}
-        <div className="fixed bottom-0 left-0 right-0 bg-white p-4 border-t border-gray-200 z-10 max-w-xl mx-auto">
+        <div className="flex-shrink-0 bg-white p-4 border-t border-gray-200">
           <button
-            className={`w-full py-3 ${allRequiredSectionsMet ? "bg-red-600" : "bg-gray-300"
+            className={`w-full py-3 ${canAddToCart() ? "bg-red-600" : "bg-gray-300"
               } text-white font-medium rounded-lg`}
-            disabled={!allRequiredSectionsMet}
+            disabled={!canAddToCart()}
             onClick={handleAddToCart}
           >
-            {allRequiredSectionsMet
-              ? `Add to cart - $${calculateTotalPrice()}`
-              : `Make ${requiredSelectionsCount} required selections - $${calculateTotalPrice()}`}
+            Add to cart - ${calculateTotalPrice()}
           </button>
         </div>
       </div>
     </div>
+  )
+}
+
+// ModificationOptionCard Component
+interface ModificationOptionCardProps {
+  modification: Modification
+  option: ModificationOption
+  isSelected: boolean
+  quantity: number
+  onSelect: (selected: boolean) => void
+  onCounterChange: (delta: number) => void
+}
+
+function ModificationOptionCard({
+  modification,
+  option,
+  isSelected,
+  quantity,
+  onSelect,
+  onCounterChange,
+}: ModificationOptionCardProps) {
+  const isSingleSelect = modification.select_up_to === 1
+
+  if (option.is_counter) {
+    // Counter-based option
+    return (
+      <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 last:border-b-0 hover:bg-gray-50">
+        <div className="flex-1">
+          <p className="text-base">{option.name}</p>
+          {option.description && <p className="text-sm text-gray-500 mt-0.5">{option.description}</p>}
+          {option.price > 0 && (
+            <p className="text-sm text-gray-600 mt-0.5">+${option.price.toFixed(2)} each</p>
+          )}
+        </div>
+        <div className="flex items-center gap-3">
+          <button
+            className="h-8 w-8 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-100"
+            onClick={() => onCounterChange(-1)}
+            disabled={quantity === 0}
+          >
+            <Minus className="h-4 w-4" />
+          </button>
+          <span className="text-base font-medium w-6 text-center">{quantity}</span>
+          <button
+            className="h-8 w-8 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-100"
+            onClick={() => onCounterChange(1)}
+            disabled={quantity >= (option.max_quantity || Infinity)}
+          >
+            <Plus className="h-4 w-4" />
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  // Regular option (radio or checkbox)
+  return (
+    <button
+      onClick={() => onSelect(!isSelected)}
+      className="w-full flex items-center gap-3 px-4 py-3 border-b border-gray-200 last:border-b-0 hover:bg-gray-50 transition-colors text-left"
+    >
+      {/* Radio or Checkbox */}
+      <div className="flex-shrink-0 mt-0.5 align-self-center">
+        {isSingleSelect ? (
+          <div
+            className={cn(
+              'h-5 w-5 rounded-full border-2 flex items-center justify-center transition-colors',
+              isSelected ? 'border-black bg-black' : 'border-gray-300'
+            )}
+          >
+            {isSelected && <div className="h-2 w-2 rounded-full bg-white" />}
+          </div>
+        ) : (
+          <div
+            className={cn(
+              'h-5 w-5 rounded border-2 flex items-center justify-center transition-colors',
+              isSelected ? 'border-black bg-black' : 'border-gray-300'
+            )}
+          >
+            {isSelected && (
+              <svg
+                className="h-3 w-3 text-white"
+                fill="none"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2.5"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path d="M5 13l4 4L19 7" />
+              </svg>
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* Option Details */}
+      <div className="flex-1 min-w-0">
+        <p className="text-base">{option.name}</p>
+        {option.description && <p className="text-sm text-gray-500 mt-0.5">{option.description}</p>}
+        {/* Price under description */}
+        {option.price !== 0 && (
+          <p className="text-sm text-gray-600 mt-0.5">
+            {option.price > 0 ? `+$${option.price.toFixed(2)}` : `-$${Math.abs(option.price).toFixed(2)}`}
+          </p>
+        )}
+      </div>
+    </button>
   )
 }

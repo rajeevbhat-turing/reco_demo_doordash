@@ -1,4 +1,4 @@
-FROM node:18-alpine AS base
+FROM node:20-alpine AS base
 
 FROM base AS deps
 RUN apk add --no-cache libc6-compat
@@ -15,6 +15,11 @@ COPY . .
 RUN npm run build
 
 FROM base AS runner
+
+# Persistent data directory for the database
+RUN mkdir -p /data && chown -R node:node /data
+ENV DB_PATH=/data/app.db
+
 WORKDIR /app
 
 ENV NODE_ENV=production

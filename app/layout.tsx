@@ -2,9 +2,9 @@ import type React from 'react';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
-import Header from '@/components/header';
-import LayoutWrapper from '@/components/layout-wrapper';
+import MainLayout from './main-layout';
 import LocalStorageSync from '@/components/LocalStorageSync';
+import { GlobalContextProvider } from './global-context';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -22,10 +22,9 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <LocalStorageSync />
-        <div className="flex flex-col min-h-screen">
-          <Header />
-          <LayoutWrapper>{children}</LayoutWrapper>
-        </div>
+        <GlobalContextProvider>
+          <MainLayout>{children}</MainLayout>
+        </GlobalContextProvider>
 
         {/* Global Functions Script */}
         <script
