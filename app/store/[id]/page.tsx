@@ -13,6 +13,7 @@ import {
   X,
 } from 'lucide-react';
 import { useRestaurants } from "@/lib/hooks/use-restaurants";
+import { useRestaurant } from "@/lib/hooks/use-restaurant";
 import { useRestaurantMenu } from "@/lib/hooks/use-restaurant-menu";
 import { useUserStore } from "@/store/user-store";
 import { getRestaurantById } from "@/lib/utils/restaurant-utils";
@@ -112,6 +113,14 @@ export default function RestaurantPage() {
     10 // 10 mile radius
   )
 
+  // Check if restaurant is in nearby results
+  const restaurantInNearby = restaurants ? getRestaurantById(restaurants, id) : null;
+  
+  // If not in nearby results, fetch this specific restaurant
+  const { data: specificRestaurant, isLoading: isLoadingRestaurant } = useRestaurant(
+    !restaurantInNearby && id ? id : undefined
+  );
+
   // Fetch menu for this restaurant
   const { data: menuData, isLoading: isLoadingMenu, error: menuError } = useRestaurantMenu(id);
 
@@ -158,8 +167,9 @@ export default function RestaurantPage() {
   }, []);
 
   useEffect(() => {
-    if (id && restaurants && menuData) {
-      const restaurantData = getRestaurantById(restaurants, id);
+    if (id && menuData) {
+      // Use restaurant from nearby results if available, otherwise use specifically fetched one
+      const restaurantData = restaurantInNearby || specificRestaurant;
       const dealsData = getDealsByRestaurantId(id);
 
       if (restaurantData) {
@@ -205,7 +215,7 @@ export default function RestaurantPage() {
     return () => {
       clearCurrentStore();
     };
-  }, [id, restaurants, menuData]);
+  }, [id, restaurantInNearby, specificRestaurant, menuData]);
 
   // Save the initial position of the menu after the component mounts
   useEffect(() => {
@@ -285,7 +295,7 @@ export default function RestaurantPage() {
   const handleAddToCart = (item: any) => {
     // Add to cart - will automatically find or create restaurant cart
     const cartItem = {
-      id: `${item.id}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`, // Generate unique ID
+      id: item.id, // Use database ID directly
       itemName: item.name, // Use itemName instead of name
       price: item.price,
       image: item.image,
@@ -337,7 +347,7 @@ export default function RestaurantPage() {
   const selectedMenuTypeObj = menuTypes.find(menu => menu.name === selectedMenuType);
 
   // Show loading state
-  if (isLoadingMenu || !restaurant) {
+  if (isLoadingMenu || isLoadingRestaurant || !restaurant) {
     return (
       <div className="px-8 py-16">
         <div className="max-w-7xl mx-auto">

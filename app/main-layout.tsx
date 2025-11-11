@@ -7,6 +7,7 @@ import LandingPageFooter from '@/components/landing-page-footer';
 import LayoutWrapper from '@/components/layout-wrapper';
 import Snackbar from '@/components/snackbar';
 import { useUserStore } from '@/store/user-store';
+import { useCarts } from '@/lib/hooks/use-carts';
 
 // Cached server snapshots to avoid infinite loops
 const SERVER_SNAPSHOT_FALSE = false;
@@ -34,6 +35,9 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
     getTempAddress,
     () => SERVER_SNAPSHOT_NULL
   );
+
+  // Load user's carts from database
+  useCarts();
 
   // Track when component has mounted (client-side hydration complete)
   useEffect(() => {

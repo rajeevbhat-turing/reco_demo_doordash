@@ -156,7 +156,6 @@ interface CartStore {
   carts: Cart[] // Multiple carts - one per vendor
   isGroupOrder: boolean
   groupOrderId: string | null
-  totalCartValue: number
 
   // Reorder mode tracking
   isReorderMode: boolean
@@ -198,9 +197,6 @@ interface CartStore {
   getTotal: (storeId?: string, category?: CartCategory) => number
   getTotalPrice: (storeId?: string, category?: CartCategory) => string
 
-  // Update total cart value
-  updateTotalCartValue: () => void
-
   // Reorder methods
   startReorderMode: (orderId: string, items: CartItem[], category: CartCategory, storeId: string, storeName: string) => void
   confirmReorder: () => void
@@ -209,6 +205,9 @@ interface CartStore {
   // Cart sidebar control methods
   triggerOpenCart: () => void
   resetOpenCartTrigger: () => void
+
+  // Initialize carts from database
+  initializeCartsFromDB: (carts: Cart[]) => void
 }
 
 export const useCartStore = create<CartStore>()(
@@ -219,7 +218,6 @@ export const useCartStore = create<CartStore>()(
         carts: [], // Multiple carts - one per vendor
         isGroupOrder: false,
         groupOrderId: null,
-        totalCartValue: 0,
         isReorderMode: false,
         reorderOriginalCarts: null,
         shouldOpenCart: false,
@@ -324,7 +322,6 @@ export const useCartStore = create<CartStore>()(
 
             set({ carts: [...carts, newCart] })
             verifierStore.resetVerifierConsumed()
-            setTimeout(() => get().updateTotalCartValue(), 0)
             return
           }
 
@@ -366,7 +363,6 @@ export const useCartStore = create<CartStore>()(
 
           set({ carts: updatedCarts })
           verifierStore.resetVerifierConsumed()
-          setTimeout(() => get().updateTotalCartValue(), 0)
         },
 
         // Remove item from cart
@@ -458,9 +454,6 @@ export const useCartStore = create<CartStore>()(
 
           // Reset verifier consumption on any cart change
           verifierStore.resetVerifierConsumed()
-
-          // After removing the item, update the total cart value
-          setTimeout(() => get().updateTotalCartValue(), 0)
         },
 
         // Update item quantity
@@ -561,9 +554,6 @@ export const useCartStore = create<CartStore>()(
 
           // Reset verifier consumption on any cart change
           verifierStore.resetVerifierConsumed()
-
-          // After updating quantity, update the total cart value
-          setTimeout(() => get().updateTotalCartValue(), 0)
         },
 
         // Clear a specific cart or current cart
@@ -605,10 +595,7 @@ export const useCartStore = create<CartStore>()(
             !(cart.storeId === targetStoreId && cart.storeCategory === targetCategory)
           )
 
-          set({
-            carts: updatedCarts,
-            totalCartValue: updatedCarts.length === 0 ? 0 : get().totalCartValue,
-          })
+          set({ carts: updatedCarts })
         },
 
         // Clear all carts
@@ -628,10 +615,7 @@ export const useCartStore = create<CartStore>()(
           verifierStore.resetMaxItemsReached()
           verifierStore.resetVerifierConsumed()
 
-          set({
-            carts: [],
-            totalCartValue: 0,
-          })
+          set({ carts: [] })
         },
 
         // Set selected card for a cart
@@ -750,12 +734,6 @@ export const useCartStore = create<CartStore>()(
           return `$${get().getSubtotal(storeId, category).toFixed(2)}`
         },
 
-        // Update total cart value
-        updateTotalCartValue: () => {
-          const total = get().getTotal()
-          set({ totalCartValue: total })
-        },
-
         // Reorder methods
         startReorderMode: (orderId: string, items: CartItem[], category: CartCategory, storeId: string, storeName: string) => {
           const currentState = get()
@@ -823,6 +801,12 @@ export const useCartStore = create<CartStore>()(
         resetOpenCartTrigger: () => {
           set({ shouldOpenCart: false })
         },
+
+        // Initialize carts from database
+        initializeCartsFromDB: (carts: Cart[]) => {
+          console.log(`[CART] Initializing ${carts.length} carts from database`)
+          set({ carts })
+        },
       }),
       {
         name: "carts",
@@ -830,7 +814,6 @@ export const useCartStore = create<CartStore>()(
           carts: state.carts,
           isGroupOrder: state.isGroupOrder,
           groupOrderId: state.groupOrderId,
-          totalCartValue: state.totalCartValue,
           isReorderMode: state.isReorderMode,
           reorderOriginalCarts: state.reorderOriginalCarts,
         }),

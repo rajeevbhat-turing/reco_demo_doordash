@@ -753,7 +753,6 @@ doordash-1/
 │  │    isGroupOrder: boolean                                              │  │
 │  │    groupOrderId: string | null                                        │  │
 │  │    searchResults: SearchResult[]                                      │  │
-│  │    totalCartValue: number                                             │  │
 │  │    currentStore: Store | null                                         │  │
 │  │    visitedStores: string[]                                            │  │
 │  │  }                                                                     │  │

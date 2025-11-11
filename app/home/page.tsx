@@ -82,7 +82,29 @@ export default function Home() {
     return withDefaultRatings(filterOnlyRestaurants(restaurants));
   }, [restaurants]);
 
-  // Memoize the original restaurant sections to prevent recreating them on every render
+  // Group restaurants by their section field from the database
+  const restaurantsBySection = useMemo(() => {
+    const sections: { [key: string]: Restaurant[] } = {}
+    
+    actualRestaurants.forEach((restaurant) => {
+      const section = restaurant.section || 'Other'
+      if (!sections[section]) {
+        sections[section] = []
+      }
+      if (hasValidLogo(restaurant.logo)) {
+        sections[section].push(restaurant)
+      }
+    })
+    
+    // Limit each section to 8 restaurants
+    Object.keys(sections).forEach(key => {
+      sections[key] = sections[key].slice(0, 8)
+    })
+    
+    return sections
+  }, [actualRestaurants])
+
+  // Legacy sections for backward compatibility and filtering
   const nationalFavorites = useMemo(() => {
     return actualRestaurants.filter((restaurant) => restaurant.featured && hasValidLogo(restaurant.logo)).slice(0, 8)
   }, [actualRestaurants])
@@ -441,32 +463,25 @@ export default function Home() {
               )}
             </div>
           ) : (
-            // Show original sections when no filters are active
+            // Show dynamic sections from database
             <>
-              <RestaurantSection
-                title="National favourites"
-                restaurants={nationalFavorites}
-              />
+              {Object.entries(restaurantsBySection)
+                .filter(([_, restaurants]) => restaurants.length > 0)
+                .map(([sectionName, restaurants]) => (
+                  <RestaurantSection
+                    key={sectionName}
+                    title={sectionName}
+                    restaurants={restaurants}
+                  />
+                ))}
 
-              <RestaurantSection
-                title="Fastest near you"
-                restaurants={fastestNearYou}
-              />
-
-              <RestaurantSection
-                title="Deals for you"
-                restaurants={dealsForYou}
-              />
-
-              <RestaurantSection
-                title="New on DoorDash"
-                restaurants={newOnDoorDash}
-              />
-
-              <RestaurantSection
-                title="All stores"
-                restaurants={allStores}
-              />
+              {/* Fallback: Show all stores if no sections exist */}
+              {Object.keys(restaurantsBySection).length === 0 && (
+                <RestaurantSection
+                  title="All stores"
+                  restaurants={allStores}
+                />
+              )}
             </>
           )}
         </div>
