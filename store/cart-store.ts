@@ -156,6 +156,7 @@ interface CartStore {
   carts: Cart[] // Multiple carts - one per vendor
   isGroupOrder: boolean
   groupOrderId: string | null
+  isInitialized: boolean // Track if store has been initialized from DB
 
   // Reorder mode tracking
   isReorderMode: boolean
@@ -218,6 +219,7 @@ export const useCartStore = create<CartStore>()(
         carts: [], // Multiple carts - one per vendor
         isGroupOrder: false,
         groupOrderId: null,
+        isInitialized: false,
         isReorderMode: false,
         reorderOriginalCarts: null,
         shouldOpenCart: false,
@@ -805,7 +807,7 @@ export const useCartStore = create<CartStore>()(
         // Initialize carts from database
         initializeCartsFromDB: (carts: Cart[]) => {
           console.log(`[CART] Initializing ${carts.length} carts from database`)
-          set({ carts })
+          set({ carts, isInitialized: true })
         },
       }),
       {
@@ -814,6 +816,7 @@ export const useCartStore = create<CartStore>()(
           carts: state.carts,
           isGroupOrder: state.isGroupOrder,
           groupOrderId: state.groupOrderId,
+          isInitialized: state.isInitialized,
           isReorderMode: state.isReorderMode,
           reorderOriginalCarts: state.reorderOriginalCarts,
         }),

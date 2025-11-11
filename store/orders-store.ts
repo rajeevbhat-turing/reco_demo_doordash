@@ -4,6 +4,7 @@ import { Order } from "@/constants/order-data"
 
 interface OrdersStore {
   orders: Order[]
+  isInitialized: boolean // Track if store has been initialized from DB
   addOrder: (order: Order) => void
   getOrders: () => Order[]
   updateOrderReview: (orderId: string, rating: number, reviewText: string) => void
@@ -15,6 +16,7 @@ export const useOrdersStore = create<OrdersStore>()(
     persist(
       (set, get) => ({
         orders: [], // Initialize with empty array - no dummy data
+        isInitialized: false,
 
         addOrder: (order) => {
           console.log('[ORDERS STORE] Adding new order:', order.id, order.storeName)
@@ -37,7 +39,7 @@ export const useOrdersStore = create<OrdersStore>()(
 
         initializeOrdersFromDB: (orders) => {
           console.log(`[ORDERS STORE] Initializing ${orders.length} orders from database`)
-          set({ orders })
+          set({ orders, isInitialized: true })
         }
       }),
       {
