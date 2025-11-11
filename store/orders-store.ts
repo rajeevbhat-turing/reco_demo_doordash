@@ -7,6 +7,7 @@ interface OrdersStore {
   addOrder: (order: Order) => void
   getOrders: () => Order[]
   updateOrderReview: (orderId: string, rating: number, reviewText: string) => void
+  initializeOrdersFromDB: (orders: Order[]) => void
 }
 
 export const useOrdersStore = create<OrdersStore>()(
@@ -32,6 +33,11 @@ export const useOrdersStore = create<OrdersStore>()(
           set(state => ({
             orders: state.orders.map(o => o.id === orderId ? { ...o, rating, reviewDate, reviewText } : o)
           }))
+        },
+
+        initializeOrdersFromDB: (orders) => {
+          console.log(`[ORDERS STORE] Initializing ${orders.length} orders from database`)
+          set({ orders })
         }
       }),
       {

@@ -8,6 +8,7 @@ import LayoutWrapper from '@/components/layout-wrapper';
 import Snackbar from '@/components/snackbar';
 import { useUserStore } from '@/store/user-store';
 import { useCarts } from '@/lib/hooks/use-carts';
+import { useOrders } from '@/lib/hooks/use-orders';
 
 // Cached server snapshots to avoid infinite loops
 const SERVER_SNAPSHOT_FALSE = false;
@@ -38,6 +39,9 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
 
   // Load user's carts from database
   useCarts();
+
+  // Load user's orders from database
+  useOrders();
 
   // Track when component has mounted (client-side hydration complete)
   useEffect(() => {
