@@ -2,29 +2,30 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 
 /**
- * POST /api/auth/login
+ * POST /api/auth/generate-otp
  * 
- * Authenticates a user with email and password
- * Returns user data with addresses and payment methods
+ * Generates OTP for user authentication
+ * Checks if email exists in database, generates OTP if found
+ * Returns OTP and user data (without password)
  */
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { email, password, deletedUserIds = [] } = body;
+    const { email, deletedUserIds = [] } = body;
 
     // Validate input
-    if (!email || !password) {
+    if (!email) {
       return NextResponse.json(
         { 
           success: false, 
-          error: 'Email and password are required' 
+          error: 'Email is required' 
         },
         { status: 400 }
       );
     }
 
-    // Query user from database
-    const user = await db.queryOne<any>(
+    // Query user from database by email only
+    const user = db.queryOne<any>(
       `SELECT 
         u.id,
         u.name,
@@ -38,17 +39,17 @@ export async function POST(request: NextRequest) {
         c.dial_code as country_dial_code
       FROM users u
       LEFT JOIN countries c ON u.country_id = c.id
-      WHERE u.email = ? AND u.password = ?`,
-      [email, password]
+      WHERE u.email = ?`,
+      [email]
     );
 
     if (!user) {
       return NextResponse.json(
         { 
           success: false, 
-          error: 'Invalid email or password' 
+          error: "We couldn't find an account with the email you entered. Try a different email or sign up." 
         },
-        { status: 401 }
+        { status: 404 }
       );
     }
 
@@ -58,14 +59,14 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { 
           success: false, 
-          error: 'Invalid email or password' 
+          error: "We couldn't find an account with the email you entered. Try a different email or sign up." 
         },
-        { status: 401 }
+        { status: 404 }
       );
     }
 
     // Fetch user's addresses
-    const addresses = await db.query<any>(
+    const addresses = db.query<any>(
       `SELECT 
         id,
         street,
@@ -94,7 +95,7 @@ export async function POST(request: NextRequest) {
     );
 
     // Fetch user's payment methods
-    const paymentMethods = await db.query<any>(
+    const paymentMethods = db.query<any>(
       `SELECT 
         id,
         type,
@@ -109,7 +110,10 @@ export async function POST(request: NextRequest) {
       [user.id]
     );
 
-    // Transform data to match User interface
+    // Generate 6-digit OTP
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+
+    // Transform data to match User interface (same structure as login API)
     const userData = {
       id: String(user.id),
       name: user.name,
@@ -159,19 +163,22 @@ export async function POST(request: NextRequest) {
       })),
     };
 
-    console.log(`✅ User logged in: ${userData.email} (ID: ${userData.id})`);
+    console.log(`✅ OTP generated for user: ${userData.email} (ID: ${userData.id})`);
 
     return NextResponse.json({
       success: true,
-      data: userData,
+      data: {
+        otp,
+        user: userData,
+      },
     });
 
   } catch (error) {
-    console.error('❌ Login error:', error);
+    console.error('❌ Generate OTP error:', error);
     return NextResponse.json(
       { 
         success: false, 
-        error: 'An error occurred during login' 
+        error: 'An error occurred while generating OTP' 
       },
       { status: 500 }
     );

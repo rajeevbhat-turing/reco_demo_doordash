@@ -1,7 +1,7 @@
 'use client';
 
 import { useMutation } from '@tanstack/react-query';
-import { loginUser } from '@/lib/api/auth';
+import { loginUser, generateOTP } from '@/lib/api/auth';
 import { useUserStore } from '@/store/user-store';
 import { User } from '@/lib/types/user-types';
 
@@ -10,7 +10,7 @@ import { User } from '@/lib/types/user-types';
  * 
  * Usage:
  * ```tsx
- * const { login, isLoading, error } = useAuth();
+ * const { login, generateOTP, isLoading, error } = useAuth();
  * 
  * const handleLogin = async () => {
  *   try {
@@ -18,6 +18,15 @@ import { User } from '@/lib/types/user-types';
  *     // User is now logged in and stored in user-store
  *   } catch (err) {
  *     console.error('Login failed:', err);
+ *   }
+ * };
+ * 
+ * const handleGenerateOTP = async () => {
+ *   try {
+ *     const { otp, user } = await generateOTP({ email: 'user@example.com' });
+ *     // OTP generated, user data returned
+ *   } catch (err) {
+ *     console.error('Generate OTP failed:', err);
  *   }
  * };
  * ```
@@ -38,11 +47,20 @@ export function useAuth() {
     },
   });
 
+  const generateOTPMutation = useMutation({
+    mutationFn: generateOTP,
+    onError: (error: Error) => {
+      console.error('❌ Generate OTP failed:', error.message);
+    },
+  });
+
   return {
     login: loginMutation.mutateAsync,
-    isLoading: loginMutation.isPending,
-    error: loginMutation.error,
+    generateOTP: generateOTPMutation.mutateAsync,
+    isLoading: loginMutation.isPending || generateOTPMutation.isPending,
+    error: loginMutation.error || generateOTPMutation.error,
     isSuccess: loginMutation.isSuccess,
+    isGeneratingOTP: generateOTPMutation.isPending,
   };
 }
 

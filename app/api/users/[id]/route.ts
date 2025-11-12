@@ -2,29 +2,30 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 
 /**
- * POST /api/auth/login
+ * GET /api/users/[id]
  * 
- * Authenticates a user with email and password
+ * Fetches a user by ID from the database
  * Returns user data with addresses and payment methods
  */
-export async function POST(request: NextRequest) {
+export async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
-    const body = await request.json();
-    const { email, password, deletedUserIds = [] } = body;
+    const { id } = await params;
 
-    // Validate input
-    if (!email || !password) {
+    if (!id) {
       return NextResponse.json(
         { 
           success: false, 
-          error: 'Email and password are required' 
+          error: 'User ID is required' 
         },
         { status: 400 }
       );
     }
 
     // Query user from database
-    const user = await db.queryOne<any>(
+    const user = db.queryOne<any>(
       `SELECT 
         u.id,
         u.name,
@@ -38,34 +39,22 @@ export async function POST(request: NextRequest) {
         c.dial_code as country_dial_code
       FROM users u
       LEFT JOIN countries c ON u.country_id = c.id
-      WHERE u.email = ? AND u.password = ?`,
-      [email, password]
+      WHERE u.id = ?`,
+      [id]
     );
 
     if (!user) {
       return NextResponse.json(
         { 
           success: false, 
-          error: 'Invalid email or password' 
+          error: 'User not found' 
         },
-        { status: 401 }
-      );
-    }
-
-    // Check if user is in deletedUserIds
-    const deletedIdsSet = new Set(deletedUserIds.map((id: string) => String(id)));
-    if (deletedIdsSet.has(String(user.id))) {
-      return NextResponse.json(
-        { 
-          success: false, 
-          error: 'Invalid email or password' 
-        },
-        { status: 401 }
+        { status: 404 }
       );
     }
 
     // Fetch user's addresses
-    const addresses = await db.query<any>(
+    const addresses = db.query<any>(
       `SELECT 
         id,
         street,
@@ -94,7 +83,7 @@ export async function POST(request: NextRequest) {
     );
 
     // Fetch user's payment methods
-    const paymentMethods = await db.query<any>(
+    const paymentMethods = db.query<any>(
       `SELECT 
         id,
         type,
@@ -159,7 +148,7 @@ export async function POST(request: NextRequest) {
       })),
     };
 
-    console.log(`✅ User logged in: ${userData.email} (ID: ${userData.id})`);
+    console.log(`✅ User fetched: ${userData.email} (ID: ${userData.id})`);
 
     return NextResponse.json({
       success: true,
@@ -167,11 +156,11 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('❌ Login error:', error);
+    console.error('❌ Fetch user error:', error);
     return NextResponse.json(
       { 
         success: false, 
-        error: 'An error occurred during login' 
+        error: 'An error occurred while fetching user' 
       },
       { status: 500 }
     );
