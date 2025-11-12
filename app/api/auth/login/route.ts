@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Query user from database
-    const user = db.queryOne<any>(
+    const user = await db.queryOne<any>(
       `SELECT 
         u.id,
         u.name,
@@ -53,7 +53,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Fetch user's addresses
-    const addresses = db.query<any>(
+    const addresses = await db.query<any>(
       `SELECT 
         id,
         street,
@@ -82,7 +82,7 @@ export async function POST(request: NextRequest) {
     );
 
     // Fetch user's payment methods
-    const paymentMethods = db.query<any>(
+    const paymentMethods = await db.query<any>(
       `SELECT 
         id,
         type,

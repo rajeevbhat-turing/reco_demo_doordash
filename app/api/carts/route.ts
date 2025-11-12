@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Fetch all carts for the user
-    const cartsRaw = db.query<any>(
+    const cartsRaw = await db.query<any>(
       `SELECT 
         c.id,
         c.user_id,
@@ -35,7 +35,7 @@ export async function GET(request: NextRequest) {
     const cartIds = cartsRaw.map(c => c.id);
 
     // Fetch all cart items for these carts
-    const cartItemsRaw = db.query<any>(
+    const cartItemsRaw = await db.query<any>(
       `SELECT 
         ci.id,
         ci.cart_id,
@@ -51,7 +51,7 @@ export async function GET(request: NextRequest) {
     const menuItemIds = [...new Set(cartItemsRaw.map(ci => ci.menu_item_id))];
 
     // Fetch menu items with their restaurant info
-    const menuItemsRaw = menuItemIds.length > 0 ? db.query<any>(
+    const menuItemsRaw = menuItemIds.length > 0 ? await db.query<any>(
       `SELECT 
         mi.id,
         mi.restaurant_id,
@@ -75,7 +75,7 @@ export async function GET(request: NextRequest) {
     const restaurantIds = [...new Set(cartsRaw.map(c => c.store_id).filter(id => id))];
 
     // Fetch restaurant details
-    const restaurantsRaw = restaurantIds.length > 0 ? db.query<any>(
+    const restaurantsRaw = restaurantIds.length > 0 ? await db.query<any>(
       `SELECT 
         id,
         name,
@@ -89,7 +89,7 @@ export async function GET(request: NextRequest) {
 
     // Fetch applied modifications for cart items
     const cartItemIds = cartItemsRaw.map(ci => ci.id);
-    const appliedModsRaw = cartItemIds.length > 0 ? db.query<any>(
+    const appliedModsRaw = cartItemIds.length > 0 ? await db.query<any>(
       `SELECT 
         ciam.id,
         ciam.cart_item_id,
@@ -102,7 +102,7 @@ export async function GET(request: NextRequest) {
 
     // Fetch applied options for modifications
     const appliedModIds = appliedModsRaw.map(mod => mod.id);
-    const appliedOptionsRaw = appliedModIds.length > 0 ? db.query<any>(
+    const appliedOptionsRaw = appliedModIds.length > 0 ? await db.query<any>(
       `SELECT 
         ciao.id,
         ciao.cart_item_applied_mod_id,

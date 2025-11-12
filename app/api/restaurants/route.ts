@@ -43,7 +43,7 @@ export async function GET(request: NextRequest) {
 
     // Query restaurants with distance calculation using Haversine formula
     // Wrap in subquery to filter by calculated distance
-    const restaurants = db.query<any>(
+    const restaurants = await db.query<any>(
       `SELECT * FROM (
         SELECT 
           r.id,

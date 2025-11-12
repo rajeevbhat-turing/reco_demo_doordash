@@ -16,7 +16,7 @@ export async function GET(
     }
 
     // Fetch menu items with their categories
-    const menuItemsRaw = db.query<any>(
+    const menuItemsRaw = await db.query<any>(
       `SELECT 
         mi.id,
         mi.restaurant_id,
@@ -41,7 +41,7 @@ export async function GET(
     );
 
     // Fetch modifications for all menu items
-    const modificationsRaw = db.query<any>(
+    const modificationsRaw = await db.query<any>(
       `SELECT 
         mod.id,
         mod.menu_item_id,
@@ -59,7 +59,7 @@ export async function GET(
     );
 
     // Fetch modification options
-    const modificationOptionsRaw = db.query<any>(
+    const modificationOptionsRaw = await db.query<any>(
       `SELECT 
         mo.id,
         mo.modification_id,
@@ -81,7 +81,7 @@ export async function GET(
     );
 
     // Fetch menu categories
-    const categoriesRaw = db.query<any>(
+    const categoriesRaw = await db.query<any>(
       `SELECT 
         id,
         name,

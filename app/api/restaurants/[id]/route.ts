@@ -120,7 +120,7 @@ export async function GET(
       ? [lat, lng, lat, restaurantId]
       : [restaurantId];
 
-    const restaurantRaw = db.queryOne<any>(restaurantQuery, params_array);
+    const restaurantRaw = await db.queryOne<any>(restaurantQuery, params_array);
 
     if (!restaurantRaw) {
       return NextResponse.json(
