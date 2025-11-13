@@ -16,6 +16,15 @@ interface RestaurantsResponse {
 }
 
 /**
+ * API Response type for a single restaurant
+ */
+interface RestaurantResponse {
+  success: boolean;
+  data?: Restaurant;
+  message?: string;
+}
+
+/**
  * Parameters for fetching restaurants
  */
 interface FetchRestaurantsParams {
@@ -54,5 +63,38 @@ export async function fetchRestaurants(params: FetchRestaurantsParams): Promise<
   return result.data;
 }
 
+/**
+ * Fetch a specific restaurant by ID
+ * 
+ * @param restaurantId - The restaurant ID to fetch
+ * @param lat - Optional user latitude for distance calculation
+ * @param lng - Optional user longitude for distance calculation
+ * @returns Restaurant object with details
+ */
+export async function fetchRestaurantById(
+  restaurantId: string,
+  lat?: number,
+  lng?: number
+): Promise<Restaurant> {
+  const params = new URLSearchParams();
+  if (lat && lng) {
+    params.append('lat', lat.toString());
+    params.append('lng', lng.toString());
+  }
+  
+  const url = `/api/restaurants/${restaurantId}${params.toString() ? `?${params.toString()}` : ''}`;
+  const response = await fetch(url);
+  
+  const result: RestaurantResponse = await response.json();
 
+  if (!response.ok || !result.success) {
+    throw new Error(result.message || 'Failed to fetch restaurant');
+  }
+
+  if (!result.data) {
+    throw new Error('Restaurant not found');
+  }
+
+  return result.data;
+}
 

@@ -4,9 +4,11 @@ import { Order } from "@/constants/order-data"
 
 interface OrdersStore {
   orders: Order[]
+  isInitialized: boolean // Track if store has been initialized from DB
   addOrder: (order: Order) => void
   getOrders: () => Order[]
   updateOrderReview: (orderId: string, rating: number, reviewText: string) => void
+  initializeOrdersFromDB: (orders: Order[]) => void
 }
 
 export const useOrdersStore = create<OrdersStore>()(
@@ -14,6 +16,7 @@ export const useOrdersStore = create<OrdersStore>()(
     persist(
       (set, get) => ({
         orders: [], // Initialize with empty array - no dummy data
+        isInitialized: false,
 
         addOrder: (order) => {
           console.log('[ORDERS STORE] Adding new order:', order.id, order.storeName)
@@ -32,6 +35,11 @@ export const useOrdersStore = create<OrdersStore>()(
           set(state => ({
             orders: state.orders.map(o => o.id === orderId ? { ...o, rating, reviewDate, reviewText } : o)
           }))
+        },
+
+        initializeOrdersFromDB: (orders) => {
+          console.log(`[ORDERS STORE] Initializing ${orders.length} orders from database`)
+          set({ orders, isInitialized: true })
         }
       }),
       {

@@ -73,7 +73,7 @@ export default function DealModal({ isOpen, onClose, deal }: DealModalProps) {
     if (!deal) return;
 
     const cartItem = {
-      id: `${item.id}-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
+      id: item.id, // Use database ID directly
       itemName: item.name,
       price: item.price,
       image: item.image || '',

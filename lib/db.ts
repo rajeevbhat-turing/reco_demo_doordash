@@ -1,42 +1,37 @@
-import Database from 'better-sqlite3';
-import path from 'path';
+import { createClient, Client } from '@libsql/client';
+import { getRequiredEnv } from '@/lib/env';
 
 /**
  * Database Connection Layer
  * 
- * Provides read-only access to the doordash.db SQLite database.
- * This class manages the connection to the static catalog data.
+ * Provides access to the libsql database server.
+ * This class manages the connection to the remote database.
  */
 class DatabaseConnection {
-  private db: Database.Database | null = null;
+  private client: Client | null = null;
   private initialized: boolean = false;
 
   /**
    * Initialize the database connection
-   * Uses the doordash.db file in the project root
+   * Uses the LIBSQL_URL from environment variables
    */
-  private init(): Database.Database {
-    if (this.db) return this.db;
+  private init(): Client {
+    if (this.client) return this.client;
 
     try {
-      // Path to the doordash.db file in project root
-      const dbPath = path.join(process.cwd(), 'doordash.db');
+      const url = getRequiredEnv('LIBSQL_URL');
       
-      console.log(`📂 Connecting to database: ${dbPath}`);
+      console.log(`📂 Connecting to libsql server: ${url}`);
       
-      // Open database in read-only mode for safety
-      this.db = new Database(dbPath, { 
-        readonly: false, // We need write for WAL mode
-        fileMustExist: true 
+      // Create libsql client
+      this.client = createClient({
+        url: url,
       });
       
-      // Enable WAL mode for better concurrent reads
-      this.db.pragma('journal_mode = WAL');
-      
       this.initialized = true;
-      console.log('✅ Database connection established (doordash.db)');
+      console.log('✅ Database connection established (libsql)');
       
-      return this.db;
+      return this.client;
     } catch (error) {
       console.error('❌ Failed to initialize database:', error);
       throw new Error(`Database initialization failed: ${error}`);
@@ -47,15 +42,18 @@ class DatabaseConnection {
    * Execute a SELECT query that returns multiple rows
    * @param sql - SQL query string
    * @param params - Query parameters
-   * @returns Array of rows
+   * @returns Promise of array of rows
    */
-  query<T = any>(sql: string, params: any[] = []): T[] {
-    const db = this.init();
+  async query<T = any>(sql: string, params: any[] = []): Promise<T[]> {
+    const client = this.init();
     
     try {
-      const stmt = db.prepare(sql);
-      const rows = stmt.all(...params) as T[];
-      return rows;
+      const result = await client.execute({
+        sql: sql,
+        args: params,
+      });
+      
+      return result.rows as T[];
     } catch (error) {
       console.error('❌ Query error:', error);
       console.error('SQL:', sql);
@@ -68,15 +66,18 @@ class DatabaseConnection {
    * Execute a SELECT query that returns a single row
    * @param sql - SQL query string
    * @param params - Query parameters
-   * @returns Single row or undefined
+   * @returns Promise of single row or undefined
    */
-  queryOne<T = any>(sql: string, params: any[] = []): T | undefined {
-    const db = this.init();
+  async queryOne<T = any>(sql: string, params: any[] = []): Promise<T | undefined> {
+    const client = this.init();
     
     try {
-      const stmt = db.prepare(sql);
-      const row = stmt.get(...params) as T | undefined;
-      return row;
+      const result = await client.execute({
+        sql: sql,
+        args: params,
+      });
+      
+      return result.rows[0] as T | undefined;
     } catch (error) {
       console.error('❌ Query error:', error);
       console.error('SQL:', sql);
@@ -97,9 +98,9 @@ class DatabaseConnection {
    * (Usually not needed, but available for cleanup)
    */
   close(): void {
-    if (this.db) {
-      this.db.close();
-      this.db = null;
+    if (this.client) {
+      this.client.close();
+      this.client = null;
       this.initialized = false;
       console.log('🔒 Database connection closed');
     }

@@ -28,6 +28,7 @@ export interface Cart {
   storeCategory: CartCategory // Type of store
   items: CartItem[] // Items in this cart
   selectedCard?: any // Selected payment method for this cart
+  isReorder?: boolean // Flag to indicate if this cart is a reorder
 }
 
 // Category-specific configurations
@@ -156,11 +157,7 @@ interface CartStore {
   carts: Cart[] // Multiple carts - one per vendor
   isGroupOrder: boolean
   groupOrderId: string | null
-  totalCartValue: number
-
-  // Reorder mode tracking
-  isReorderMode: boolean
-  reorderOriginalCarts: Cart[] | null
+  isInitialized: boolean // Track if store has been initialized from DB
   
   // Cart sidebar control
   shouldOpenCart: boolean
@@ -198,17 +195,15 @@ interface CartStore {
   getTotal: (storeId?: string, category?: CartCategory) => number
   getTotalPrice: (storeId?: string, category?: CartCategory) => string
 
-  // Update total cart value
-  updateTotalCartValue: () => void
-
   // Reorder methods
-  startReorderMode: (orderId: string, items: CartItem[], category: CartCategory, storeId: string, storeName: string) => void
-  confirmReorder: () => void
-  cancelReorder: () => void
+  startReorder: (items: CartItem[], category: CartCategory, storeId: string, storeName: string) => void
   
   // Cart sidebar control methods
   triggerOpenCart: () => void
   resetOpenCartTrigger: () => void
+
+  // Initialize carts from database
+  initializeCartsFromDB: (carts: Cart[]) => void
 }
 
 export const useCartStore = create<CartStore>()(
@@ -219,9 +214,7 @@ export const useCartStore = create<CartStore>()(
         carts: [], // Multiple carts - one per vendor
         isGroupOrder: false,
         groupOrderId: null,
-        totalCartValue: 0,
-        isReorderMode: false,
-        reorderOriginalCarts: null,
+        isInitialized: false,
         shouldOpenCart: false,
 
         // Get current category from app-store
@@ -324,7 +317,6 @@ export const useCartStore = create<CartStore>()(
 
             set({ carts: [...carts, newCart] })
             verifierStore.resetVerifierConsumed()
-            setTimeout(() => get().updateTotalCartValue(), 0)
             return
           }
 
@@ -366,7 +358,6 @@ export const useCartStore = create<CartStore>()(
 
           set({ carts: updatedCarts })
           verifierStore.resetVerifierConsumed()
-          setTimeout(() => get().updateTotalCartValue(), 0)
         },
 
         // Remove item from cart
@@ -458,9 +449,6 @@ export const useCartStore = create<CartStore>()(
 
           // Reset verifier consumption on any cart change
           verifierStore.resetVerifierConsumed()
-
-          // After removing the item, update the total cart value
-          setTimeout(() => get().updateTotalCartValue(), 0)
         },
 
         // Update item quantity
@@ -561,9 +549,6 @@ export const useCartStore = create<CartStore>()(
 
           // Reset verifier consumption on any cart change
           verifierStore.resetVerifierConsumed()
-
-          // After updating quantity, update the total cart value
-          setTimeout(() => get().updateTotalCartValue(), 0)
         },
 
         // Clear a specific cart or current cart
@@ -605,10 +590,7 @@ export const useCartStore = create<CartStore>()(
             !(cart.storeId === targetStoreId && cart.storeCategory === targetCategory)
           )
 
-          set({
-            carts: updatedCarts,
-            totalCartValue: updatedCarts.length === 0 ? 0 : get().totalCartValue,
-          })
+          set({ carts: updatedCarts })
         },
 
         // Clear all carts
@@ -628,10 +610,7 @@ export const useCartStore = create<CartStore>()(
           verifierStore.resetMaxItemsReached()
           verifierStore.resetVerifierConsumed()
 
-          set({
-            carts: [],
-            totalCartValue: 0,
-          })
+          set({ carts: [] })
         },
 
         // Set selected card for a cart
@@ -750,21 +729,11 @@ export const useCartStore = create<CartStore>()(
           return `$${get().getSubtotal(storeId, category).toFixed(2)}`
         },
 
-        // Update total cart value
-        updateTotalCartValue: () => {
-          const total = get().getTotal()
-          set({ totalCartValue: total })
-        },
-
         // Reorder methods
-        startReorderMode: (orderId: string, items: CartItem[], category: CartCategory, storeId: string, storeName: string) => {
-          const currentState = get()
+        startReorder: (items: CartItem[], category: CartCategory, storeId: string, storeName: string) => {
+          const { carts } = get()
           
-          console.log(`[REORDER] Starting reorder mode for order: ${orderId}`)
-          console.log(`[REORDER] Backing up current carts (${currentState.carts.length} carts)`)
-          
-          // Backup current carts
-          const backup = [...currentState.carts]
+          console.log(`[REORDER] Starting reorder with ${items.length} items from ${storeName}`)
           
           // Create a new cart for the reorder
           const reorderCart: Cart = {
@@ -772,46 +741,17 @@ export const useCartStore = create<CartStore>()(
             storeName: storeName,
             storeCategory: category,
             items: items,
-            selectedCard: null,
+            selectedCard: undefined,
+            isReorder: true, // Mark this cart as a reorder
           }
           
-          // Clear all carts and add the reorder cart
+          // Add the reorder cart to existing carts
           set({
-            isReorderMode: true,
-            reorderOriginalCarts: backup,
-            carts: [reorderCart],
+            carts: [...carts, reorderCart],
             shouldOpenCart: true, // Trigger cart to open
           })
           
-          console.log(`[REORDER] Reorder mode activated with ${items.length} items from ${storeName}`)
-        },
-
-        confirmReorder: () => {
-          console.log(`[REORDER] Confirming reorder - discarding original carts`)
-          set({
-            isReorderMode: false,
-            reorderOriginalCarts: null,
-          })
-        },
-
-        cancelReorder: () => {
-          const { reorderOriginalCarts } = get()
-          
-          if (reorderOriginalCarts) {
-            console.log(`[REORDER] Canceling reorder - restoring original carts (${reorderOriginalCarts.length} carts)`)
-            set({
-              isReorderMode: false,
-              carts: reorderOriginalCarts,
-              reorderOriginalCarts: null,
-            })
-          } else {
-            console.log(`[REORDER] Canceling reorder - no backup found, clearing carts`)
-            set({
-              isReorderMode: false,
-              carts: [],
-              reorderOriginalCarts: null,
-            })
-          }
+          console.log(`[REORDER] Reorder cart added with isReorder flag`)
         },
 
         // Cart sidebar control methods
@@ -823,6 +763,12 @@ export const useCartStore = create<CartStore>()(
         resetOpenCartTrigger: () => {
           set({ shouldOpenCart: false })
         },
+
+        // Initialize carts from database
+        initializeCartsFromDB: (carts: Cart[]) => {
+          console.log(`[CART] Initializing ${carts.length} carts from database`)
+          set({ carts, isInitialized: true })
+        },
       }),
       {
         name: "carts",
@@ -830,9 +776,7 @@ export const useCartStore = create<CartStore>()(
           carts: state.carts,
           isGroupOrder: state.isGroupOrder,
           groupOrderId: state.groupOrderId,
-          totalCartValue: state.totalCartValue,
-          isReorderMode: state.isReorderMode,
-          reorderOriginalCarts: state.reorderOriginalCarts,
+          isInitialized: state.isInitialized,
         }),
         merge: (persistedState: any, currentState) => {
           let carts: Cart[] = []

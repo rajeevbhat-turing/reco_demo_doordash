@@ -13,6 +13,7 @@ interface UserStore {
   // Temporary address for non-authenticated users
   // This stores the address entered by users who are not signed in
   tempAddress: Address | null;
+  isInitialized: boolean; // Track if store has been initialized from DB
 
   // Actions
   getUser: (userId: string) => User | null;
@@ -54,6 +55,7 @@ export const useUserStore = create<UserStore>()(
         currentUser: null,
         changePasswordPhoneVerified: false,
         tempAddress: null,
+        isInitialized: false,
 
         // Actions
         getUser: (userId: string) => {
@@ -73,6 +75,7 @@ export const useUserStore = create<UserStore>()(
             currentUser: user,
             changePasswordPhoneVerified: user === null ? false : get().changePasswordPhoneVerified,
             tempAddress: null, // Clear temp address when signing in
+            isInitialized: user !== null ? true : get().isInitialized, // Mark as initialized when user logs in
           });
         },
 
@@ -423,6 +426,7 @@ export const useUserStore = create<UserStore>()(
           currentUser: state.currentUser,
           changePasswordPhoneVerified: state.changePasswordPhoneVerified,
           tempAddress: state.tempAddress,
+          isInitialized: state.isInitialized,
         }),
       }
     ),
