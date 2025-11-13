@@ -667,6 +667,17 @@ function ModificationOptionCard({
           >
             <Plus className="h-4 w-4" />
           </button>
+          {option.image && (
+            <div className="ml-2 flex-shrink-0">
+              <Image
+                src={option.image}
+                alt={option.name}
+                width={48}
+                height={48}
+                className="rounded-lg object-cover min-h-[48px]"
+              />
+            </div>
+          )}
         </div>
       </div>
     )
@@ -724,6 +735,19 @@ function ModificationOptionCard({
           </p>
         )}
       </div>
+
+      {/* Optional Image on the far right */}
+      {option.image && (
+        <div className="flex-shrink-0">
+          <Image
+            src={option.image}
+            alt={option.name}
+            width={48}
+            height={48}
+            className="rounded-lg object-cover"
+          />
+        </div>
+      )}
     </button>
   )
 }

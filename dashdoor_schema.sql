@@ -102,6 +102,7 @@ CREATE TABLE modification_options (
   max_quantity    INTEGER,
   is_default      INTEGER NOT NULL CHECK (is_default IN (0,1)),
   sort_order      INTEGER NOT NULL,
+  image           TEXT,
   FOREIGN KEY (modification_id) REFERENCES modifications(id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 

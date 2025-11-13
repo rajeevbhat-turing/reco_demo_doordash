@@ -69,7 +69,8 @@ export async function GET(
         mo.is_counter,
         mo.max_quantity,
         mo.is_default,
-        mo.sort_order
+        mo.sort_order,
+        mo.image
       FROM modification_options mo
       WHERE mo.modification_id IN (
         SELECT mod.id FROM modifications mod
@@ -108,6 +109,7 @@ export async function GET(
         max_quantity: option.max_quantity,
         is_default: option.is_default === 1,
         sort_order: option.sort_order,
+        image: option.image || undefined,
       });
     });
 

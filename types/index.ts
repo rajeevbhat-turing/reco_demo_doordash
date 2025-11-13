@@ -50,6 +50,7 @@ export interface ModificationOption {
   max_quantity?: number; // only relevant if is_counter is true, defines maximum quantity (e.g., max 5 shots)
   is_default: boolean; // whether this option is pre-selected
   sort_order: number; // controls display order of options
+  image?: string; // optional image URL for the option
 }
 
 // ========================================
