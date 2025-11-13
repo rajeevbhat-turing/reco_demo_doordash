@@ -20,13 +20,12 @@ import AddressSearchModal from '@/components/modals/landing-page/address-search-
 import { DashDoorLogoMark, DashDoorWordMark } from '@/components/common/Icons';
 import { useIsMobile } from '@/lib/hooks/use-mobile';
 import { topCities } from '@/constants/top-cities';
-import { topCuisines } from '@/constants/top-cuisines';
-import { topChains } from '@/constants/top-chains';
 import addressesData from '@/data/addresses.json';
 import { useUserStore } from '@/store/user-store';
 import { Address } from '@/lib/types/user-types';
 import { PersonIcon } from '@/lib/utils/icons';
 import { isValidEmail } from '@/lib/utils/helperFunctions';
+import { useTopChains, useTopCuisines } from '@/lib/hooks/use-top-chains';
 
 export default function LandingPage() {
   const [authModalMode, setAuthModalMode] = useState<'signin' | 'signup' | null>('signin');
@@ -48,6 +47,12 @@ export default function LandingPage() {
 
   const { setTempAddress } = useUserStore();
   const isMobile = useIsMobile();
+
+  // Fetch top chains from API (restaurants with rating > 4.5)
+  const { data: topChains = [] } = useTopChains();
+
+  // Derive top cuisines from top chains (cuisines of restaurants with rating > 4.5)
+  const topCuisines = useTopCuisines();
 
   useEffect(() => {
     let ticking = false;
@@ -1092,10 +1097,10 @@ export default function LandingPage() {
                   {(showAllCuisines ? topCuisines : topCuisines.slice(0, 15)).map(
                     (cuisine, index) => (
                       <div
-                        key={`cuisine-${index}`}
+                        key={`cuisine-${cuisine.name}-${index}`}
                         className="text-base font-medium text-[#191919ff] hover:underline"
                       >
-                        {cuisine}
+                        {cuisine.name}
                       </div>
                     )
                   )}
@@ -1139,10 +1144,10 @@ export default function LandingPage() {
                 >
                   {(showAllChains ? topChains : topChains.slice(0, 15)).map((chain, index) => (
                     <div
-                      key={`chain-${index}`}
+                      key={`chain-${chain.id}-${index}`}
                       className="text-base font-medium text-[#191919ff] hover:underline"
                     >
-                      {chain}
+                      {chain.name}
                     </div>
                   ))}
                 </div>
