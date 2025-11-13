@@ -21,7 +21,7 @@ export async function GET(
     }
 
     // Fetch review with user and store information
-    const review = db.queryOne<any>(
+    const review = await db.queryOne<any>(
       `SELECT 
         ur.id,
         ur.store_id,
@@ -52,7 +52,7 @@ export async function GET(
     }
 
     // Fetch photos for this review
-    const photos = db.query<any>(
+    const photos = await db.query<any>(
       `SELECT url, sort_order
        FROM review_photos
        WHERE review_id = ?
@@ -61,7 +61,7 @@ export async function GET(
     );
 
     // Fetch helpful ratings for this review
-    const helpfulRatings = db.query<any>(
+    const helpfulRatings = await db.query<any>(
       `SELECT user_id
        FROM review_helpful
        WHERE review_id = ?`,
@@ -69,7 +69,7 @@ export async function GET(
     );
 
     // Fetch liked items for this review
-    const likedItems = db.query<any>(
+    const likedItems = await db.query<any>(
       `SELECT 
         rli.order_item_id,
         oi.id AS order_item_id,

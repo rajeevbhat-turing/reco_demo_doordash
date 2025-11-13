@@ -37,7 +37,7 @@ export async function GET(
     const whereClause = `WHERE ${conditions.join(' AND ')}`;
 
     // Fetch reviews with user and store information
-    const reviews = db.query<any>(
+    const reviews = await db.query<any>(
       `SELECT 
         ur.id,
         ur.store_id,
@@ -76,7 +76,7 @@ export async function GET(
     const reviewIds = reviews.map((r: any) => r.id);
 
     // Fetch photos for all reviews
-    const photos = db.query<any>(
+    const photos = await db.query<any>(
       `SELECT review_id, url, sort_order
        FROM review_photos
        WHERE review_id IN (${reviewIds.map(() => '?').join(',')})
@@ -85,7 +85,7 @@ export async function GET(
     );
 
     // Fetch helpful ratings for all reviews
-    const helpfulRatings = db.query<any>(
+    const helpfulRatings = await db.query<any>(
       `SELECT review_id, user_id
        FROM review_helpful
        WHERE review_id IN (${reviewIds.map(() => '?').join(',')})`,
@@ -93,7 +93,7 @@ export async function GET(
     );
 
     // Fetch liked items for all reviews
-    const likedItems = db.query<any>(
+    const likedItems = await db.query<any>(
       `SELECT 
         rli.review_id,
         rli.order_item_id,

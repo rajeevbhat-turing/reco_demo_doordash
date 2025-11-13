@@ -10,7 +10,7 @@ import { db } from '@/lib/db';
 export async function GET(request: NextRequest) {
   try {
     // Get restaurants with average rating > 4.5
-    const restaurants = db.query<any>(
+    const restaurants = await db.query<any>(
       `SELECT 
         r.id,
         r.name,

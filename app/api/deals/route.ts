@@ -37,7 +37,7 @@ export async function GET(request: NextRequest) {
     const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
 
     // Fetch deals
-    const deals = db.query<any>(
+    const deals = await db.query<any>(
       `SELECT 
         id,
         restaurant_id,
@@ -70,7 +70,7 @@ export async function GET(request: NextRequest) {
     const dealIds = deals.map((d: any) => d.id);
 
     // Fetch free items for all deals
-    const freeItems = db.query<any>(
+    const freeItems = await db.query<any>(
       `SELECT 
         deal_id,
         item_id,
