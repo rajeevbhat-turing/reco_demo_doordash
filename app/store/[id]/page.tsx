@@ -17,7 +17,6 @@ import { useRestaurant } from "@/lib/hooks/use-restaurant";
 import { useRestaurantMenu } from "@/lib/hooks/use-restaurant-menu";
 import { useUserStore } from "@/store/user-store";
 import { getRestaurantById } from "@/lib/utils/restaurant-utils";
-import { getDealsByRestaurantId, dashpassDeal, type Deal } from "@/constants/deals";
 import { useCartStore } from "@/store/cart-store";
 import { useAppStore } from "@/store/app-store";
 import { useVerifierStore } from "@/store/verifier-store";
@@ -25,9 +24,11 @@ import MenuItemDialog from "@/components/menu-item-dialog";
 import GroupOrderDialog from "@/components/group-order-dialog";
 import StoreDetailsDialog from "@/components/store-details-dialog";
 import { Reviews } from "@/components/reviews";
+import { type Deal } from '@/types/deal-types';
+import { useDealsByRestaurantId } from '@/lib/hooks/use-deals';
 import { Deals } from '@/components/deals';
-import ServiceFeesInfo from "@/components/service-fees-info";
-import { getDefaultRating } from "@/utils/rating-utils";
+import ServiceFeesInfo from '@/components/service-fees-info';
+import { getDefaultRating } from '@/utils/rating-utils';
 
 const menuTypes = [
   {
@@ -92,7 +93,6 @@ export default function RestaurantPage() {
   const [mostOrderedItems, setMostOrderedItems] = useState<any[]>([]);
   const [familySharingItems, setFamilySharingItems] = useState<any[]>([]);
   const [beefItems, setBeefItems] = useState<any[]>([]);
-  const [deals, setDeals] = useState<any[]>([]);
   const [menuTopPosition, setMenuTopPosition] = useState(0);
   const menuRef = useRef<HTMLDivElement>(null);
   const menuContainerRef = useRef<HTMLDivElement>(null);
@@ -105,13 +105,13 @@ export default function RestaurantPage() {
   const dealsRef = useRef<HTMLDivElement>(null);
 
   // Fetch restaurants near user's address
-  const currentUser = useUserStore(state => state.currentUser)
-  const defaultAddress = currentUser?.addresses.find(a => a.default)
+  const currentUser = useUserStore(state => state.currentUser);
+  const defaultAddress = currentUser?.addresses.find(a => a.default);
   const { data: restaurants } = useRestaurants(
     defaultAddress?.lat,
     defaultAddress?.lng,
     10 // 10 mile radius
-  )
+  );
 
   // Check if restaurant is in nearby results
   const restaurantInNearby = restaurants ? getRestaurantById(restaurants, id) : null;
@@ -170,17 +170,15 @@ export default function RestaurantPage() {
     if (id && menuData) {
       // Use restaurant from nearby results if available, otherwise use specifically fetched one
       const restaurantData = restaurantInNearby || specificRestaurant;
-      const dealsData = getDealsByRestaurantId(id);
 
       if (restaurantData) {
         setCurrentStore(restaurantData, 'restaurant');
       }
       setRestaurant(restaurantData);
-      setDeals(dealsData);
 
       // Get featured items using the featured flag from database
       const featuredItemsData = menuData.menuItems.filter(item => item.featured === true);
-      
+
       // Get most ordered items - prioritize popular flag, then sort by rating_count
       const mostOrderedItemsData = menuData.menuItems
         .filter(item => item.popular === true || (item.ratingCount && item.ratingCount > 0))
@@ -194,9 +192,11 @@ export default function RestaurantPage() {
           return bCount - aCount;
         })
         .slice(0, 5); // Take top 5
-      
-      const familySharingItemsData = menuData.menuItems.filter(item => item.category === "Family & Sharing");
-      const beefItemsData = menuData.menuItems.filter(item => item.category === "Beef");
+
+      const familySharingItemsData = menuData.menuItems.filter(
+        item => item.category === 'Family & Sharing'
+      );
+      const beefItemsData = menuData.menuItems.filter(item => item.category === 'Beef');
 
       // Transform categories to match expected format
       const menuCategoriesData = menuData.categories.map(cat => ({
@@ -264,26 +264,34 @@ export default function RestaurantPage() {
     }
   };
 
+  // Get deals from API
+  const { restaurantDeals } = useDealsByRestaurantId(id || '');
+
   // Get first deal (excluding dashpass)
   const firstDeal = useMemo(() => {
-    if (!id) return null;
-    const allDeals = getDealsByRestaurantId(id);
-    const restaurantDeals = allDeals.filter(deal => deal.id !== dashpassDeal.id);
     return restaurantDeals.length > 0 ? restaurantDeals[0] : null;
-  }, [id]);
+  }, [restaurantDeals]);
 
   // Format deal banner text
   const getDealBannerText = (deal: Deal) => {
-    if (deal.discountType === 'percentage' && deal.minimumPurchase && deal.discountValue && deal.maximumDiscount) {
+    if (
+      deal.discountType === 'percentage' &&
+      deal.minimumPurchase &&
+      deal.discountValue &&
+      deal.maximumDiscount
+    ) {
       return `Spend $${deal.minimumPurchase}, get ${deal.discountValue}% off up to $${deal.maximumDiscount}`;
     } else if (deal.discountType === 'percentage' && deal.minimumPurchase && deal.discountValue) {
       return `Spend $${deal.minimumPurchase}, get ${deal.discountValue}% off`;
     } else if (deal.discountType === 'fixed' && deal.minimumPurchase && deal.discountValue) {
       return `Spend $${deal.minimumPurchase}, get $${deal.discountValue} off`;
     } else if (deal.freeItems && deal.freeItems.length > 0 && deal.minimumPurchase) {
-      return `Spend $${deal.minimumPurchase}, get free item`;
-    } else if (deal.freeItemName && deal.minimumPurchase) {
-      return `Spend $${deal.minimumPurchase}, get ${deal.freeItemName} free`;
+      // If single free item, show its name; otherwise show "free items"
+      if (deal.freeItems.length === 1) {
+        return `Spend $${deal.minimumPurchase}, get ${deal.freeItems[0].name} free`;
+      } else {
+        return `Spend $${deal.minimumPurchase}, get free items`;
+      }
     }
     return deal.title;
   };
@@ -350,7 +358,7 @@ export default function RestaurantPage() {
   if (isLoadingMenu || isLoadingRestaurant || !restaurant) {
     return (
       <div className="px-8 py-16">
-        <div className="max-w-7xl mx-auto">
+        <div className="max-w-7xl mx-auto min-h-screen">
           <div className="animate-pulse">
             <div className="h-[220px] bg-gray-200 rounded-xl mb-6"></div>
             <div className="h-8 bg-gray-200 rounded w-1/3 mb-4"></div>
@@ -527,7 +535,7 @@ export default function RestaurantPage() {
                   {/* Menu Type Dropdown */}
                   {menuDropdownOpen && (
                     <div className="absolute left-0 top-full mt-1 w-[350px] bg-white rounded-lg shadow-lg z-20 py-2">
-                      {menuTypes.map((menuType) => (
+                      {menuTypes.map(menuType => (
                         <button
                           key={menuType.id}
                           className="w-full flex items-center px-4 py-3 hover:bg-gray-50"
@@ -536,8 +544,8 @@ export default function RestaurantPage() {
                           <div
                             className={`w-6 h-6 rounded-full border-2 flex items-center justify-center mr-4 ${
                               selectedMenuType === menuType.name
-                                ? "border-black bg-black"
-                                : "border-gray-300 bg-white"
+                                ? 'border-black bg-black'
+                                : 'border-gray-300 bg-white'
                             }`}
                           >
                             {selectedMenuType === menuType.name && (
@@ -546,9 +554,7 @@ export default function RestaurantPage() {
                           </div>
                           <div className="text-left">
                             <div className="font-medium">{menuType.name}</div>
-                            <div className="text-gray-500">
-                              {menuType.hours}
-                            </div>
+                            <div className="text-gray-500">{menuType.hours}</div>
                           </div>
                         </button>
                       ))}
@@ -562,41 +568,35 @@ export default function RestaurantPage() {
                       <li>
                         <button
                           className={`w-full text-left px-2 py-2 rounded-md ${
-                            activeCategory === "Featured Items"
-                              ? "bg-gray-100 font-medium"
-                              : ""
+                            activeCategory === 'Featured Items' ? 'bg-gray-100 font-medium' : ''
                           }`}
-                          onClick={() => scrollToSection("Featured Items")}
+                          onClick={() => scrollToSection('Featured Items')}
                         >
                           Featured Items
                         </button>
                       </li>
                     )}
-                    
+
                     {/* Most Ordered section */}
                     {mostOrderedItems.length > 0 && (
                       <li>
                         <button
                           className={`w-full text-left px-2 py-2 rounded-md ${
-                            activeCategory === "Most Ordered"
-                              ? "bg-gray-100 font-medium"
-                              : ""
+                            activeCategory === 'Most Ordered' ? 'bg-gray-100 font-medium' : ''
                           }`}
-                          onClick={() => scrollToSection("Most Ordered")}
+                          onClick={() => scrollToSection('Most Ordered')}
                         >
                           Most Ordered
                         </button>
                       </li>
                     )}
-                    
+
                     {/* Regular menu categories */}
-                    {menuCategories.map((category) => (
+                    {menuCategories.map(category => (
                       <li key={category.id}>
                         <button
                           className={`w-full text-left px-2 py-2 rounded-md ${
-                            activeCategory === category.name
-                              ? "bg-gray-100 font-medium"
-                              : ""
+                            activeCategory === category.name ? 'bg-gray-100 font-medium' : ''
                           }`}
                           onClick={() => scrollToSection(category.name)}
                         >
@@ -617,10 +617,13 @@ export default function RestaurantPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {/* Filter all menu items across categories */}
                   {(() => {
-                    const filteredItems = menuData?.menuItems.filter(item => 
-                      item.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                      (item.description && item.description.toLowerCase().includes(searchQuery.toLowerCase()))
-                    ) || [];
+                    const filteredItems =
+                      menuData?.menuItems.filter(
+                        item =>
+                          item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                          (item.description &&
+                            item.description.toLowerCase().includes(searchQuery.toLowerCase()))
+                      ) || [];
 
                     return filteredItems.length > 0 ? (
                       filteredItems.map(item => (
@@ -842,7 +845,9 @@ export default function RestaurantPage() {
                     >
                       <h2 className="text-xl font-bold mb-4">{category.name}</h2>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {(menuData?.menuItems.filter(item => item.category === category.name) || []).map((item) => (
+                        {(
+                          menuData?.menuItems.filter(item => item.category === category.name) || []
+                        ).map(item => (
                           <div
                             key={item.id}
                             className="border border-gray-200 rounded-lg overflow-hidden cursor-pointer"
@@ -903,23 +908,23 @@ export default function RestaurantPage() {
       />
       {/* Service Fees Info Dialog */}
       <ServiceFeesInfo isOpen={serviceFeesInfoOpen} onClose={() => setServiceFeesInfoOpen(false)} />
-      
+
       {/* Deal Banner */}
       {firstDeal && (
-        <div className="fixed bottom-0 left-0 md:left-[220px] right-0 bg-[#fef0ed] px-4 py-2 flex items-center justify-center gap-3 z-40 
-        border-t border-gray-200">
+        <div
+          className="fixed bottom-0 left-0 md:left-[220px] right-0 bg-[#fef0ed] px-4 py-2 flex items-center justify-center gap-3 z-40 
+        border-t border-gray-200"
+        >
           <div className="flex items-center gap-3">
-            {firstDeal.icon && (
-              <div className="flex-shrink-0">
-                <Image
-                  src={firstDeal.icon}
-                  alt="Deal"
-                  width={24}
-                  height={24}
-                  className="object-contain"
-                />
-              </div>
-            )}
+            <div className="flex-shrink-0">
+              <Image
+                src="/offer-icon.svg"
+                alt="Deal"
+                width={24}
+                height={24}
+                className="object-contain"
+              />
+            </div>
             <span className="text-base font-bold text-[#eb1700ff]">
               {getDealBannerText(firstDeal)}
             </span>

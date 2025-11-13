@@ -4,9 +4,9 @@ import { useEffect, useRef, useState } from 'react';
 import { X, ExternalLink, ChevronRight } from 'lucide-react';
 import Image from 'next/image';
 import DealModal from './deal-modal';
-import { type Deal } from '@/constants/deals';
+import { type Deal } from '@/types/deal-types';
 import { DashDoorLogoMark } from '../common/Icons';
-import { useDealsStore } from '@/store/deals-store';
+import { useDealsByRestaurantId } from '@/lib/hooks/use-deals';
 
 interface DealsModalProps {
   isOpen: boolean;
@@ -19,13 +19,8 @@ export default function DealsModal({ isOpen, onClose, restaurantId }: DealsModal
   const [isDealModalOpen, setIsDealModalOpen] = useState(false);
   const [selectedDeal, setSelectedDeal] = useState<Deal | null>(null);
 
-  const { getDealsByRestaurantId, getDashpassDeal } = useDealsStore();
-
-  // Get all deals for this restaurant
-  const dashpassDeal = getDashpassDeal();
-  const allDeals = getDealsByRestaurantId(restaurantId);
-  // Filter out DashPass deal to show it separately in "More ways to save"
-  const restaurantDeals = allDeals.filter(deal => deal.id !== dashpassDeal.id);
+  // Get all deals for this restaurant from API
+  const { dashpassDeal, restaurantDeals, isLoading } = useDealsByRestaurantId(restaurantId);
 
   // Handle deal card click
   const handleDealCardClick = (deal: Deal) => {
@@ -105,7 +100,11 @@ export default function DealsModal({ isOpen, onClose, restaurantId }: DealsModal
 
           {/* Deals Section */}
           <div className="mb-6">
-            {restaurantDeals.length > 0 ? (
+            {isLoading ? (
+              <div className="text-center">
+                <p className="text-[#8b8b8bff] text-base font-bold">Loading deals...</p>
+              </div>
+            ) : restaurantDeals.length > 0 ? (
               <div className="space-y-4">
                 {restaurantDeals.map(deal => (
                   <DealCard
@@ -124,14 +123,16 @@ export default function DealsModal({ isOpen, onClose, restaurantId }: DealsModal
           </div>
 
           {/* More Ways to Save Section */}
-          <div className="mb-1">
-            <h3 className="text-xl font-bold text-[#191919ff] mb-2">More ways to save</h3>
-            <DealCard
-              deal={dashpassDeal}
-              onDealClick={handleDealCardClick}
-              onSeeItemsClick={handleSeeItemsClick}
-            />
-          </div>
+          {dashpassDeal && (
+            <div className="mb-1">
+              <h3 className="text-xl font-bold text-[#191919ff] mb-2">More ways to save</h3>
+              <DealCard
+                deal={dashpassDeal}
+                onDealClick={handleDealCardClick}
+                onSeeItemsClick={handleSeeItemsClick}
+              />
+            </div>
+          )}
         </div>
 
         {/* Footer with Close Button */}
@@ -185,21 +186,25 @@ function DealCard({
     >
       {/* Icon */}
       <div className="flex-shrink-0">
-        {deal.icon ? (
-          <div className="w-12 h-12 flex items-center justify-center">
+        <div className="w-12 h-12 flex items-center justify-center">
+          {deal.id === 'dashpass-delivery-fee' ? (
             <Image
-              src={deal.icon}
+              src="/dashpass-icon-green.svg"
               alt={deal.title}
               width={30}
               height={30}
               className="object-contain"
             />
-          </div>
-        ) : (
-          <div className="w-12 h-12 rounded-full flex items-center justify-center">
-            <DashDoorLogoMark color="#00838aff" width={25} height={20} />
-          </div>
-        )}
+          ) : (
+            <Image
+              src="/offer-icon.svg"
+              alt={deal.title}
+              width={30}
+              height={30}
+              className="object-contain"
+            />
+          )}
+        </div>
       </div>
 
       {/* Text Content */}

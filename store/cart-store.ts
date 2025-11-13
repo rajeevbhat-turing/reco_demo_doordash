@@ -4,7 +4,7 @@ import type { Product, AppliedModification } from "@/types"
 import { restaurants } from "@/constants/restaurants"
 import { useVerifierStore } from "./verifier-store"
 import { useAppStore } from "./app-store"
-import { checkDealCriteriaBoolean } from "@/lib/utils/deal-utils"
+import { checkDealCriteriaBoolean, fetchDealById } from "@/lib/utils/deal-utils"
 
 // Define supported cart categories
 export type CartCategory = "restaurant"
@@ -332,30 +332,56 @@ export const useCartStore = create<CartStore>()(
 
           set({ carts: updatedCarts })
 
-          // Check if deal criteria are still met after removing item
-          if (targetCart && newItems.length > 0) {
+          // Check if deal should be removed after removing item
+          if (targetCart) {
             const cartId = `${targetCart.storeId}-${targetCart.storeCategory}`
             // Dynamically import to avoid circular dependency
-            import('@/store/deals-store').then(({ useDealsStore }) => {
+            import('@/store/deals-store').then(async ({ useDealsStore }) => {
               const dealsStore = useDealsStore.getState()
-              const appliedDeal = dealsStore.getAppliedDeal(cartId)
+              const appliedDealId = dealsStore.getAppliedDealId(cartId)
 
-              if (appliedDeal) {
-                // Check if deal criteria are still met
-                const criteriaMet = checkDealCriteriaBoolean(appliedDeal, newItems, get().getSubtotal(targetCart.storeId, targetCart.storeCategory))
+              if (appliedDealId) {
+                // Check if the removed item is a free item from the deal
+                const freeItemIds = dealsStore.getFreeItemIds(cartId)
+                let removedItemId = typeof removedItem.id === 'string' ? removedItem.id : removedItem.id.toString()
 
-                if (!criteriaMet) {
-                  // Criteria no longer met - remove the deal
+                // If item ID starts with store ID, remove it before checking
+                if (targetCart.storeId && removedItemId.startsWith(targetCart.storeId + '-')) {
+                  removedItemId = removedItemId.substring(targetCart.storeId.length + 1)
+                }
+
+                // Check if removed item matches any free item ID
+                const isRemovedItemFree = freeItemIds.some(freeId => {
+                  // Check if the removed item ID starts with the free item ID or matches exactly
+                  return removedItemId === freeId || removedItemId.startsWith(freeId + '-')
+                })
+
+                if (isRemovedItemFree) {
+                  // Removed item is a free item - automatically remove the deal
+                  console.log(`[CART] Removed free item from deal, removing deal from cart`)
                   dealsStore.removeDeal(cartId)
+                  return
+                }
+
+                // If cart is empty, remove the deal
+                if (newItems.length === 0) {
+                  dealsStore.removeDeal(cartId)
+                  return
+                }
+
+                // Fetch the full deal object from API to check criteria
+                const appliedDeal = await fetchDealById(appliedDealId, targetCart.storeId)
+
+                if (appliedDeal) {
+                  // Check if deal criteria are still met
+                  const criteriaMet = checkDealCriteriaBoolean(appliedDeal, newItems, get().getSubtotal(targetCart.storeId, targetCart.storeCategory))
+
+                  if (!criteriaMet) {
+                    // Criteria no longer met - remove the deal
+                    dealsStore.removeDeal(cartId)
+                  }
                 }
               }
-            })
-          } else if (targetCart && newItems.length === 0) {
-            // Cart is empty - remove any applied deal
-            const cartId = `${targetCart.storeId}-${targetCart.storeCategory}`
-            import('@/store/deals-store').then(({ useDealsStore }) => {
-              const dealsStore = useDealsStore.getState()
-              dealsStore.removeDeal(cartId)
             })
           }
 
@@ -436,17 +462,22 @@ export const useCartStore = create<CartStore>()(
           if (targetCart && newItems.length > 0) {
             const cartId = `${targetCart.storeId}-${targetCart.storeCategory}`
             // Dynamically import to avoid circular dependency
-            import('@/store/deals-store').then(({ useDealsStore }) => {
+            import('@/store/deals-store').then(async ({ useDealsStore }) => {
               const dealsStore = useDealsStore.getState()
-              const appliedDeal = dealsStore.getAppliedDeal(cartId)
+              const appliedDealId = dealsStore.getAppliedDealId(cartId)
 
-              if (appliedDeal) {
-                // Check if deal criteria are still met
-                const criteriaMet = checkDealCriteriaBoolean(appliedDeal, newItems, get().getSubtotal(targetCart.storeId, targetCart.storeCategory))
+              if (appliedDealId) {
+                // Fetch the full deal object from API
+                const appliedDeal = await fetchDealById(appliedDealId, targetCart.storeId)
 
-                if (!criteriaMet) {
-                  // Criteria no longer met - remove the deal
-                  dealsStore.removeDeal(cartId)
+                if (appliedDeal) {
+                  // Check if deal criteria are still met
+                  const criteriaMet = checkDealCriteriaBoolean(appliedDeal, newItems, get().getSubtotal(targetCart.storeId, targetCart.storeCategory))
+
+                  if (!criteriaMet) {
+                    // Criteria no longer met - remove the deal
+                    dealsStore.removeDeal(cartId)
+                  }
                 }
               }
             })

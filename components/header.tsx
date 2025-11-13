@@ -34,7 +34,7 @@ export default function Header() {
   const [selectedAddressId, setSelectedAddressId] = useState<string>('');
   const [showAddAddressModal, setShowAddAddressModal] = useState(false);
   const [showReviewErrorModal, setShowReviewErrorModal] = useState(false);
-	const [pendingAddressData, setPendingAddressData] = useState<Omit<Address, 'id'> | null>(null);
+  const [pendingAddressData, setPendingAddressData] = useState<Omit<Address, 'id'> | null>(null);
 
   // Address type modal state
   const [showAddressTypeModal, setShowAddressTypeModal] = useState(false);
@@ -58,11 +58,12 @@ export default function Header() {
   const [manualState, setManualState] = useState('Alabama');
   const [manualZipCode, setManualZipCode] = useState('');
 
-	const { getAddresses, addAddress, updateAddress, setDefaultAddress, setTempAddress, getTempAddress } = useUserStore();
-	const shouldOpenCart = useCartStore((state) => state.shouldOpenCart);
-	const resetOpenCartTrigger = useCartStore((state) => state.resetOpenCartTrigger);
-	const getTotalItems = useCartStore((state) => state.getTotalItems);
-	const addresses = getAddresses();
+  const { getAddresses, addAddress, updateAddress, setDefaultAddress, setTempAddress } =
+    useUserStore();
+  const shouldOpenCart = useCartStore(state => state.shouldOpenCart);
+  const resetOpenCartTrigger = useCartStore(state => state.resetOpenCartTrigger);
+  const getTotalItems = useCartStore(state => state.getTotalItems);
+  const addresses = getAddresses();
   const tempAddress = useSyncExternalStore(
     useUserStore.subscribe,
     () => useUserStore.getState().getTempAddress(),
@@ -167,11 +168,11 @@ export default function Header() {
   // Listen for cart open trigger (for reorder functionality)
   useEffect(() => {
     if (shouldOpenCart) {
-      console.log('[HEADER] Opening cart sidebar due to trigger')
-      setIsCartOpen(true)
-      resetOpenCartTrigger()
+      console.log('[HEADER] Opening cart sidebar due to trigger');
+      setIsCartOpen(true);
+      resetOpenCartTrigger();
     }
-  }, [shouldOpenCart, resetOpenCartTrigger])
+  }, [shouldOpenCart, resetOpenCartTrigger]);
 
   // Check if current path is in account flow
   const isAccountFlow = pathname.startsWith('/consumer') || pathname.startsWith('/password-reset');
@@ -186,14 +187,14 @@ export default function Header() {
   const isCheckoutPage = pathname === '/checkout';
 
   const toggleCart = () => {
-    console.log('[HEADER] Toggling cart, current state:', isCartOpen)
+    console.log('[HEADER] Toggling cart, current state:', isCartOpen);
     setIsCartOpen(!isCartOpen);
   };
 
   const handleCloseCart = () => {
-    console.log('[HEADER] Closing cart')
-    setIsCartOpen(false)
-  }
+    console.log('[HEADER] Closing cart');
+    setIsCartOpen(false);
+  };
 
   const handleSelectAddress = (addressId: string) => {
     setSelectedAddressId(addressId);
@@ -399,7 +400,10 @@ export default function Header() {
               </button>
 
               {/* Centered Logo */}
-              <Link href={isAuthenticated ? "/home" : "/"} className="absolute left-1/2 transform -translate-x-1/2">
+              <Link
+                href={isAuthenticated ? '/home' : '/'}
+                className="absolute left-1/2 transform -translate-x-1/2"
+              >
                 <div className="flex items-center">
                   <DashDoorLogoMark />
                   <div className="ml-1">
@@ -417,7 +421,7 @@ export default function Header() {
               {/* Normal Header Layout */}
               <div className="flex items-center flex-1 space-x-4">
                 {/* Logo */}
-                <Link href={isAuthenticated ? "/home" : "/"} className="flex-shrink-0">
+                <Link href={isAuthenticated ? '/home' : '/'} className="flex-shrink-0">
                   <div className="flex items-center">
                     <DashDoorLogoMark />
                     <div className="ml-1">
@@ -428,9 +432,11 @@ export default function Header() {
                 </Link>
 
                 {/* Search - grows to take remaining space */}
-                <div className="flex-grow">
-                  <SearchBar />
-                </div>
+                {!isStoreOrReviews && (
+                  <div className="flex-grow">
+                    <SearchBar />
+                  </div>
+                )}
               </div>
 
               <div className="flex">
@@ -699,8 +705,7 @@ export default function Header() {
                                               {address.street}
                                             </p>
                                             <p className="text-xs text-gray-500 mt-0.5">
-                                              {address.city} {address.state} {address.zipCode},
-                                              Australia
+                                              {address.city} {address.state} {address.zipCode}
                                             </p>
                                           </div>
                                           <ChevronRight className="w-5 h-5 text-gray-400 flex-shrink-0 ml-2" />
@@ -776,7 +781,7 @@ export default function Header() {
                               </h3>
                               <p className="text-sm text-gray-600 mb-4">
                                 {selectedPopoverAddress.city} {selectedPopoverAddress.state}{' '}
-                                {selectedPopoverAddress.zipCode}, Australia
+                                {selectedPopoverAddress.zipCode}
                               </p>
 
                               {/* Map */}
@@ -910,7 +915,7 @@ export default function Header() {
                 </div>
 
                 {/* Delivery/Pickup - Hide in account flow */}
-                {!isAccountFlow && (
+                {!isAccountFlow && !isStoreOrReviews && (
                   <div className="flex items-center space-x-2 mr-3">
                     <button className="bg-gray-900 text-white px-4 h-8 rounded-full text-sm font-medium">
                       Delivery

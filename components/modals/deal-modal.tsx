@@ -3,11 +3,14 @@
 import { useEffect, useRef, useMemo } from 'react';
 import { X, Plus, ThumbsUp } from 'lucide-react';
 import Image from 'next/image';
-import { type Deal } from '@/constants/deals';
-import { menuItems, type MenuItem } from '@/constants/menu-items';
+import { type Deal } from '@/types/deal-types';
+import { type MenuItem } from '@/constants/menu-items';
 import { useCartStore } from '@/store/cart-store';
-import { getRestaurantById } from '@/constants/restaurants';
+import { getRestaurantById } from '@/lib/utils/restaurant-utils';
 import { useGlobalContext } from '@/app/global-context';
+import { useRestaurantMenu } from '@/lib/hooks/use-restaurant-menu';
+import { useRestaurants } from '@/lib/hooks/use-restaurants';
+import { useUserStore } from '@/store/user-store';
 
 interface DealModalProps {
   isOpen: boolean;
@@ -49,24 +52,44 @@ export default function DealModal({ isOpen, onClose, deal }: DealModalProps) {
     }
   };
 
+  // Fetch menu items from API if restaurantId is available
+  const { data: menuData } = useRestaurantMenu(
+    deal?.restaurantId || undefined,
+    !!deal?.restaurantId
+  );
+
   // Get free items menu data
   const freeItemsMenuData = useMemo(() => {
     if (!deal?.freeItems || deal.freeItems.length === 0) return [];
+    if (!menuData?.menuItems) return [];
+    
     return deal.freeItems
       .map(freeItem => {
-        const menuItem = menuItems.find(
-          item => item.id === freeItem.id && item.restaurantId === deal.restaurantId
+        // Match by ID (both are strings)
+        const menuItem = menuData.menuItems.find(
+          item => item.id === freeItem.id
         );
         return menuItem ? { ...menuItem, freeItemId: freeItem.id } : null;
       })
       .filter((item): item is MenuItem & { freeItemId: string } => item !== null);
-  }, [deal?.freeItems, deal?.restaurantId]);
+  }, [deal?.freeItems, menuData?.menuItems]);
+
+  // Get user's address for fetching restaurants
+  const currentUser = useUserStore(state => state.currentUser);
+  const defaultAddress = currentUser?.addresses.find(a => a.default);
+
+  // Fetch restaurants from API
+  const { data: restaurants } = useRestaurants(
+    defaultAddress?.lat,
+    defaultAddress?.lng,
+    10 // 10 mile radius
+  );
 
   // Get restaurant name
   const restaurant = useMemo(() => {
-    if (!deal?.restaurantId) return null;
-    return getRestaurantById(deal.restaurantId);
-  }, [deal?.restaurantId]);
+    if (!deal?.restaurantId || !restaurants) return null;
+    return getRestaurantById(restaurants, deal.restaurantId);
+  }, [deal?.restaurantId, restaurants]);
 
   // Handle add to cart
   const handleAddToCart = (item: MenuItem) => {
@@ -80,7 +103,7 @@ export default function DealModal({ isOpen, onClose, deal }: DealModalProps) {
     };
 
     const restaurantId = item.restaurantId || deal.restaurantId;
-    addItem(cartItem, 'restaurant', restaurant?.name, restaurantId);
+    addItem(cartItem, 'restaurant', restaurant?.name, restaurantId || undefined);
 
     // Display snackbar
     setSnackbar({

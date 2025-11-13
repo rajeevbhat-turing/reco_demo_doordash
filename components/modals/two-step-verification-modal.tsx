@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { VerificationIcon } from '@/lib/utils/icons';
@@ -21,7 +21,7 @@ export default function TwoStepVerificationModal({
   const [code, setCode] = useState('');
   const [codeError, setCodeError] = useState('');
   const [resendTimer, setResendTimer] = useState(0);
-  const [generatedCode, setGeneratedCode] = useState('');
+  const generatedCode = useRef<string>('');
   const [attemptsLeft, setAttemptsLeft] = useState(5);
   const [showTooManyAttempts, setShowTooManyAttempts] = useState(false);
 
@@ -50,7 +50,7 @@ export default function TwoStepVerificationModal({
   // Generates a 6-digit verification code
   const generateCode = () => {
     const newCode = Math.floor(100000 + Math.random() * 900000).toString();
-    setGeneratedCode(newCode);
+    generatedCode.current = newCode;
     console.log('Generated verification code:', newCode);
     return newCode;
   };
@@ -74,7 +74,7 @@ export default function TwoStepVerificationModal({
     e.preventDefault();
 
     // Verify the entered code against generated code
-    if (code !== generatedCode) {
+    if (code !== generatedCode.current) {
       const newAttemptsLeft = attemptsLeft - 1;
       setAttemptsLeft(newAttemptsLeft);
 
@@ -131,12 +131,13 @@ export default function TwoStepVerificationModal({
     if (isOpen) {
       setCode('');
       setCodeError('');
-      setResendTimer(0);
       setAttemptsLeft(5);
       setShowTooManyAttempts(false);
       // Generate initial code and start timer
-      generateCode();
-      startResendTimer();
+      if (!generatedCode.current) {
+        generateCode();
+        startResendTimer();
+      }
     }
   }, [isOpen]);
 

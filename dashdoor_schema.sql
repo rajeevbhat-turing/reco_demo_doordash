@@ -329,3 +329,32 @@ CREATE TABLE review_liked_items (
   FOREIGN KEY (review_id)     REFERENCES user_reviews(id) ON DELETE CASCADE ON UPDATE CASCADE,
   FOREIGN KEY (order_item_id) REFERENCES order_items(id)  ON DELETE CASCADE ON UPDATE CASCADE
 );
+
+-- ===========================================
+-- DEALS
+-- ===========================================
+CREATE TABLE deals (
+  id                TEXT PRIMARY KEY,
+  restaurant_id     INTEGER,  -- NULL for all restaurants, otherwise foreign key to restaurants(id)
+  title             TEXT NOT NULL,
+  description       TEXT NOT NULL,
+  button_text       TEXT,
+  button_link       TEXT,
+  minimum_purchase  INTEGER CHECK (minimum_purchase IS NULL OR minimum_purchase >= 0),
+  discount_type     TEXT CHECK (discount_type IS NULL OR discount_type IN ('percentage', 'fixed')),
+  discount_value    INTEGER CHECK (discount_value IS NULL OR discount_value >= 0),
+  maximum_discount  INTEGER CHECK (maximum_discount IS NULL OR maximum_discount >= 0),
+  promocode         TEXT,
+  FOREIGN KEY (restaurant_id) REFERENCES restaurants(id) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+-- Free items associated with a deal
+CREATE TABLE deal_free_items (
+  deal_id    TEXT NOT NULL,
+  item_id    INTEGER NOT NULL,
+  item_name  TEXT NOT NULL,
+  sort_order INTEGER,
+  PRIMARY KEY (deal_id, item_id),
+  FOREIGN KEY (deal_id) REFERENCES deals(id) ON DELETE CASCADE ON UPDATE CASCADE,
+  FOREIGN KEY (item_id) REFERENCES menu_items(id) ON DELETE CASCADE ON UPDATE CASCADE
+);

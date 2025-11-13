@@ -39,8 +39,11 @@ import SignUp from '@/components/authentication/sign-up';
 import OTPVerificationModal from '@/components/modals/otp-verification-modal';
 import CountryCodeDropdown from '@/components/modals/country-code-dropdown';
 import PromoCodeModal from '@/components/modals/promocode-modal';
-import { useRestaurants } from "@/lib/hooks/use-restaurants";
-import { getRestaurantById } from "@/lib/utils/restaurant-utils";
+import { useRestaurants } from '@/lib/hooks/use-restaurants';
+import { getRestaurantById } from '@/lib/utils/restaurant-utils';
+import { useDeals } from '@/lib/hooks/use-deals';
+import { Deal } from '@/types/deal-types';
+import { stores } from '@/data/store-data';
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -76,15 +79,15 @@ export default function CheckoutPage() {
     isAuthenticated,
   } = useUserStore();
   const { addOrder } = useOrdersStore();
-  const { getAppliedDeal, getFreeItemIds } = useDealsStore();
+  const { getAppliedDealId, getFreeItemIds } = useDealsStore();
 
   // Fetch restaurants near user's address
-  const defaultAddress = currentUser?.addresses.find(a => a.default)
+  const defaultAddress = currentUser?.addresses.find(a => a.default);
   const { data: restaurants } = useRestaurants(
     defaultAddress?.lat,
     defaultAddress?.lng,
     10 // 10 mile radius
-  )
+  );
 
   const savedPaymentMethods = getPaymentMethods();
   const addresses = getAddresses();
@@ -114,7 +117,15 @@ export default function CheckoutPage() {
 
   // Get applied deal for this cart
   const cartId = currentStoreId && currentCategory ? `${currentStoreId}-${currentCategory}` : null;
-  const appliedDeal = cartId ? getAppliedDeal(cartId) : null;
+  const appliedDealId = cartId ? getAppliedDealId(cartId) : null;
+
+  // Fetch deals to get the full deal object (includes restaurant-specific + common deals if restaurantId provided)
+  const { data: allDeals } = useDeals(currentStoreId || undefined);
+
+  // Find the applied deal by ID
+  const appliedDeal: Deal | null = appliedDealId
+    ? allDeals.find(deal => deal.id === appliedDealId) || null
+    : null;
 
   // Calculate values for this specific cart
   const baseSubtotal = getSubtotal(currentStoreId || undefined, currentCategory || undefined);
@@ -480,26 +491,10 @@ export default function CheckoutPage() {
 
     // Fallback to looking up by ID if we have the params
     if (currentCategory === 'restaurant' && currentStoreId) {
-      const restaurant = getRestaurantById(restaurants, currentStoreId)
-      return restaurant?.name || 'Restaurant'
-    } else if (currentCategory !== 'restaurant' && currentStoreId) {
-      let store = null;
-      switch (currentCategory) {
-        case 'grocery':
-          store = stores[currentStoreId];
-          break;
-        case 'retail':
-          store = retailStores.find(s => s.id === currentStoreId);
-          break;
-        case 'pets':
-          store = allPetStores.find(s => s.id === currentStoreId);
-          break;
-        case 'convenience':
-          store = convenienceStores[currentStoreId];
-          break;
-      }
-      return store?.name || 'Store';
+      const restaurant = getRestaurantById(restaurants, currentStoreId);
+      return restaurant?.name || 'Restaurant';
     }
+
     return currentCategory === 'restaurant' ? 'Restaurant' : 'Store';
   };
 
@@ -1771,7 +1766,7 @@ export default function CheckoutPage() {
         deliveryTime={deliveryTime}
         storeName={getStoreName()}
         storeId={currentStoreId || 'unknown'}
-        category={currentCategory || 'grocery'}
+        category={currentCategory || undefined}
       />
 
       {/* Add Card Modal */}

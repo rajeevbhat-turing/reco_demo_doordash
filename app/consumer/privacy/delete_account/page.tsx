@@ -35,7 +35,7 @@ export default function DeleteAccountPage() {
   const handleDeleteAccount = () => {
     setShowDeletionPage(true);
 
-    // Delete user from local storage immediately
+    // Delete user from local storage immediately if exists and add the user id to the deletedUserIds array
     const userStore = localStorage.getItem('user-store');
     if (userStore) {
       const parsedUserStore = JSON.parse(userStore);
@@ -45,6 +45,7 @@ export default function DeleteAccountPage() {
           ...parsedUserStore.state,
           users: parsedUserStore.state.users.filter((user: User) => user.id !== currentUser?.id),
           currentUser: null,
+          deletedUserIds: [...parsedUserStore.state.deletedUserIds, currentUser?.id],
         },
       }
 

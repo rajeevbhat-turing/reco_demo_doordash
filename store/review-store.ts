@@ -2,27 +2,33 @@
 
 import { create } from "zustand";
 import { persist, devtools } from "zustand/middleware";
-import { initialReviewData } from '@/constants/review-data';
 import { UserReview } from '@/types/review-types';
 
+/**
+ * Review Store - Tracks only session-specific changes
+ * - New reviews created in this session
+ * - Helpful rating toggles (which users rated which reviews as helpful)
+ * - Approval status changes (if any)
+ * - Deleted review IDs
+ */
 interface ReviewStore {
-  // State
-  reviews: UserReview[];
+  newReviews: UserReview[]; // New reviews created in this session
+  helpfulChanges: Record<string, string[]>; // reviewId -> userIds who toggled helpful
+  approvalChanges: Record<string, 'approved' | 'rejected' | 'pending'>; // reviewId -> new approval status
+  deletedReviewIds: string[]; // Review IDs that have been deleted in this session
 
   // Actions
   addReview: (review: Omit<UserReview, 'id' | 'timestamp' | 'approvalStatus'>) => void;
-  updateReviewApproval: (reviewId: string, status: 'approved' | 'rejected') => void;
-  getVendorReviews: (vendorId: string) => UserReview[];
-  getApprovedReviews: (vendorId: string) => UserReview[];
-  getPendingReviews: (vendorId: string) => UserReview[];
-  calculateAverageRating: (vendorId: string) => number;
-  deleteReview: (reviewId: string) => void;
-  clearAllReviews: () => void;
-  getUserReviewCount: (userId: string) => number;
-  getReview: (reviewId: string) => UserReview | null;
-  getReviewsByVendor: (vendorId: string) => UserReview[];
-  getUserReviewForVendor: (vendorId: string, userId: string) => UserReview | null;
-  toggleHelpfulRating: (reviewId: string, userId: string) => void;
+  toggleHelpfulRating: (reviewId: string, userId: string, currentHelpfulBy?: string[]) => void;
+  updateReviewApproval: (reviewId: string, status: 'approved' | 'rejected' | 'pending') => void;
+  deleteReview: (reviewId: string) => void; // Delete a review (adds to deletedReviewIds)
+  clearAllChanges: () => void; // Clear all session changes
+
+  // Helper methods to check for changes
+  hasHelpfulChange: (reviewId: string, userId: string) => boolean;
+  getNewReview: (reviewId: string) => UserReview | null;
+  getNewReviewForVendor: (vendorId: string, userId: string) => UserReview | null;
+  isReviewDeleted: (reviewId: string) => boolean; // Check if a review is deleted
 }
 
 export const useReviewStore = create<ReviewStore>()(
@@ -30,119 +36,116 @@ export const useReviewStore = create<ReviewStore>()(
     persist(
       (set, get) => ({
         // State
-        reviews: initialReviewData,
+        newReviews: [],
+        helpfulChanges: {},
+        approvalChanges: {},
+        deletedReviewIds: [],
 
-        // Actions
+        // Add a new review
         addReview: (review: Omit<UserReview, 'id' | 'timestamp' | 'approvalStatus'>) => {
           const newReview: UserReview = {
             ...review,
-            id: `review-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+            id: `review-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
             timestamp: new Date().toISOString(),
             approvalStatus: 'pending'
           };
 
           set((state) => ({
-            reviews: [...state.reviews, newReview]
+            newReviews: [...state.newReviews, newReview]
           }));
         },
 
-        updateReviewApproval: (reviewId: string, status: 'approved' | 'rejected') => {
+        // Toggle helpful rating
+        toggleHelpfulRating: (reviewId: string, userId: string, currentHelpfulBy?: string[]) => {
+          set((state) => {
+            // Use provided current state or get from store changes
+            const baseHelpful = currentHelpfulBy || state.helpfulChanges[reviewId] || [];
+            const isRatedHelpful = baseHelpful.includes(userId);
+
+            const newHelpfulChanges = {
+              ...state.helpfulChanges,
+              [reviewId]: isRatedHelpful
+                ? baseHelpful.filter(id => id !== userId)
+                : [...baseHelpful, userId]
+            };
+
+            return {
+              helpfulChanges: newHelpfulChanges
+            };
+          });
+        },
+
+        // Update review approval status
+        updateReviewApproval: (reviewId: string, status: 'approved' | 'rejected' | 'pending') => {
           set((state) => ({
-            reviews: state.reviews.map(review =>
-              review.id === reviewId ? { ...review, approvalStatus: status } : review
-            )
+            approvalChanges: {
+              ...state.approvalChanges,
+              [reviewId]: status
+            }
           }));
         },
 
-        getVendorReviews: (vendorId: string) => {
-          const state = get();
-          return state.reviews.filter(review => review.vendorId === vendorId);
-        },
-
-        getApprovedReviews: (vendorId: string) => {
-          const state = get();
-          return state.reviews.filter(
-            review => review.vendorId === vendorId && review.approvalStatus === 'approved'
-          );
-        },
-
-        getPendingReviews: (vendorId: string) => {
-          const state = get();
-          return state.reviews.filter(
-            review => review.vendorId === vendorId && review.approvalStatus === 'pending'
-          );
-        },
-
-        calculateAverageRating: (vendorId: string) => {
-          const state = get();
-          const approvedReviews = state.reviews.filter(
-            review => review.vendorId === vendorId && review.approvalStatus === 'approved'
-          );
-
-          if (approvedReviews.length === 0) return 0;
-
-          const average = approvedReviews.reduce((sum, review) => sum + review.rating, 0) / approvedReviews.length;
-          return Math.round(average * 10) / 10; // Round to 1 decimal place
-        },
-
+        // Delete a review (can be from API or newly created)
         deleteReview: (reviewId: string) => {
-          set((state) => ({
-            reviews: state.reviews.filter(review => review.id !== reviewId)
-          }));
+          set((state) => {
+            // Remove from newReviews if it's a newly created review
+            const updatedNewReviews = state.newReviews.filter(review => review.id !== reviewId);
+            
+            // Add to deletedReviewIds if not already there
+            const updatedDeletedIds = state.deletedReviewIds.includes(reviewId)
+              ? state.deletedReviewIds
+              : [...state.deletedReviewIds, reviewId];
+
+            return {
+              newReviews: updatedNewReviews,
+              deletedReviewIds: updatedDeletedIds
+            };
+          });
         },
 
-        clearAllReviews: () => {
-          set({ reviews: [] });
+        // Clear all session changes
+        clearAllChanges: () => {
+          set({
+            newReviews: [],
+            helpfulChanges: {},
+            approvalChanges: {},
+            deletedReviewIds: []
+          });
         },
 
-        // Counts total reviews by a specific user across all vendors
-        getUserReviewCount: (userId: string) => {
+        // Check if a user has toggled helpful for a review
+        hasHelpfulChange: (reviewId: string, userId: string) => {
           const state = get();
-          return state.reviews.filter(review => review.userId === userId).length;
+          return state.helpfulChanges[reviewId]?.includes(userId) || false;
         },
 
-        // Get a single review by ID
-        getReview: (reviewId: string) => {
+        // Get a new review by ID
+        getNewReview: (reviewId: string) => {
           const state = get();
-          return state.reviews.find(review => review.id === reviewId) || null;
+          return state.newReviews.find(review => review.id === reviewId) || null;
         },
 
-        // Get all reviews for a vendor (approved and pending)
-        getReviewsByVendor: (vendorId: string) => {
+        // Get a user's new review for a specific vendor
+        getNewReviewForVendor: (vendorId: string, userId: string) => {
           const state = get();
-          return state.reviews.filter(review => review.vendorId === vendorId);
-        },
-
-        // Get a user's review for a specific vendor
-        getUserReviewForVendor: (vendorId: string, userId: string) => {
-          const state = get();
-          return state.reviews.find(
+          return state.newReviews.find(
             review => review.vendorId === vendorId && review.userId === userId
           ) || null;
         },
 
-        // Toggle helpful rating for a review
-        toggleHelpfulRating: (reviewId: string, userId: string) => {
-          set((state) => ({
-            reviews: state.reviews.map(review => {
-              if (review.id === reviewId) {
-                const isRatedHelpful = review.ratedHelpfulBy.includes(userId);
-                return {
-                  ...review,
-                  ratedHelpfulBy: isRatedHelpful
-                    ? review.ratedHelpfulBy.filter(id => id !== userId)
-                    : [...review.ratedHelpfulBy, userId]
-                };
-              }
-              return review;
-            })
-          }));
+        // Check if a review is deleted
+        isReviewDeleted: (reviewId: string) => {
+          const state = get();
+          return state.deletedReviewIds.includes(reviewId);
         },
       }),
       {
         name: "review-store",
         partialize: (state) => ({
-          reviews: state.reviews,
+          newReviews: state.newReviews,
+          helpfulChanges: state.helpfulChanges,
+          approvalChanges: state.approvalChanges,
+          deletedReviewIds: state.deletedReviewIds,
         }),
       }
     ),
