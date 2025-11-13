@@ -1,15 +1,11 @@
 import { restaurants } from "@/constants/restaurants"
-import { stores as groceryStores } from "@/data/store-data"
-import { stores as retailStores } from "@/constants/store"
-import { allPetStores } from "@/data/pet-data"
-import { convenienceStores } from "@/data/convenience-store-data"
 import { CartCategory, CartItem } from "@/store/cart-store"
 import { Order, OrderItem } from "@/constants/order-data"
 import { getMenuItemsByRestaurantId } from "@/constants/menu-items"
 
 /**
- * Detects the category (restaurant, grocery, retail, pets, convenience) from a restaurantId or storeId
- * Supports backward compatibility with both field names
+ * Detects the category from a restaurantId or storeId
+ * Only restaurants are supported now
  */
 export function detectCategoryFromRestaurantId(id: string): CartCategory {
   // Check if it's a restaurant
@@ -18,31 +14,7 @@ export function detectCategoryFromRestaurantId(id: string): CartCategory {
     return 'restaurant'
   }
 
-  // Check if it's a grocery store
-  const isGrocery = Object.values(groceryStores).some(store => store.id === id)
-  if (isGrocery) {
-    return 'grocery'
-  }
-
-  // Check if it's a pet store
-  const isPetStore = allPetStores.some(store => store.id === id)
-  if (isPetStore) {
-    return 'pets'
-  }
-
-  // Check if it's a convenience store
-  const isConvenience = Object.values(convenienceStores).some(store => store.id === id)
-  if (isConvenience) {
-    return 'convenience'
-  }
-
-  // Check if it's a retail store
-  const isRetail = retailStores.some(store => store.id === id)
-  if (isRetail) {
-    return 'retail'
-  }
-
-  // Default to restaurant if not found (for backward compatibility)
+  // Default to restaurant if not found
   console.warn(`[REORDER] Could not detect category for id: ${id}, defaulting to 'restaurant'`)
   return 'restaurant'
 }

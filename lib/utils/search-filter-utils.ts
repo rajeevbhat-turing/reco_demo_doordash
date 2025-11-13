@@ -1,6 +1,6 @@
 import type { FilterState } from "@/components/filter-options"
 import { getDefaultRating } from "@/utils/rating-utils"
-import { restaurantHasItemsInPriceRange, extractPrice } from "@/utils/price-filter-utils"
+import { restaurantHasItemsInPriceRange } from "@/utils/price-filter-utils"
 import type { SearchResultRestaurant } from "./search-utils"
 
 /**
@@ -51,7 +51,7 @@ export function applySearchFilters(
     console.log(`[SEARCH] After DashPass filter: ${filteredResults.length} results`);
   }
   
-  // Filter by price (old priceRange filter - DEPRECATED but kept for backward compatibility)
+  // Filter by price (old priceRange filter)
   if (filters.price && filters.price.length > 0) {
     filteredResults = filteredResults.filter(restaurant => {
       const restaurantPrice = restaurant.priceRange;
@@ -68,46 +68,8 @@ export function applySearchFilters(
       const minPrice = filters.minPrice != null ? filters.minPrice : null
       const maxPrice = filters.maxPrice != null ? filters.maxPrice : null
       
-      // Check if it's a product (pet-product, convenience-product, retail-product, grocery-product)
-      // Products have IDs like "pet-product-123", "convenience-product-456", etc.
-      const isProduct = result.id.includes("-product-")
-      
-      if (isProduct) {
-        // It's a product - extract price from priceRange and filter
-        // For products, priceRange contains the actual product price (stored as number or string)
-        const productPrice = extractPrice(result.priceRange || 0)
-        
-        console.log(`[SEARCH] Product ${result.name}: price ${productPrice}, min ${minPrice}, max ${maxPrice}`)
-        
-        // Check if price is within range
-        if (minPrice !== null && maxPrice !== null) {
-          const inRange = productPrice >= minPrice && productPrice <= maxPrice
-          console.log(`[SEARCH] Product ${result.name}: ${inRange ? 'IN' : 'OUT'} of range`)
-          return inRange
-        } else if (minPrice !== null) {
-          return productPrice >= minPrice
-        } else if (maxPrice !== null) {
-          return productPrice <= maxPrice
-        }
-        
-        return true
-      }
-      
-      // Check if it's a restaurant (restaurant match type, or menu-item but not a product)
-      // Products are already handled above, so menu-item here refers to restaurant menu items
-      const isRestaurant = !result.storeType || 
-                          result.matchType === "restaurant" || 
-                          (result.matchType === "menu-item" && !isProduct)
-      
-      if (isRestaurant) {
-        // It's a restaurant - check if it has menu items within price range
-        return restaurantHasItemsInPriceRange(result.id, minPrice, maxPrice)
-      }
-      
-      // It's a store (grocery, pets, retail, convenience) without specific products
-      // For stores, we don't have product data in search results, so pass through
-      // Note: Individual products are already filtered above
-      return true
+      // Check if it's a restaurant - check if it has menu items within price range
+      return restaurantHasItemsInPriceRange(result.id, minPrice, maxPrice)
     });
     console.log(`[SEARCH] After min/max price filter: ${filteredResults.length} results`);
   }
@@ -186,68 +148,8 @@ export function applySearchFilters(
  * Determine search context based on results to hide irrelevant filters
  */
 export function determineSearchContext(results: SearchResultRestaurant[]): { hideCuisine: boolean; hideDietary: boolean } {
-  if (results.length === 0) {
-    return { hideCuisine: false, hideDietary: false }
-  }
-  
-  let petsCount = 0
-  let groceryCount = 0
-  let retailCount = 0
-  let restaurantCount = 0
-  let convenienceCount = 0
-  
-  results.forEach(result => {
-    const storeType = result.storeType
-    const matchType = result.matchType
-    
-    // Count by store type
-    if (storeType === "pets" || storeType === "pet-product") {
-      petsCount++
-    } else if (storeType === "grocery") {
-      groceryCount++
-    } else if (storeType === "retail") {
-      retailCount++
-    } else if (storeType === "convenience") {
-      convenienceCount++
-    } else if (matchType === "restaurant" || matchType === "menu-item" || !storeType) {
-      restaurantCount++
-    }
-  })
-  
-  const total = results.length
-  const petsRatio = petsCount / total
-  const groceryRatio = groceryCount / total
-  const retailRatio = retailCount / total
-  
-  // If more than 50% are pets → hide Cuisine & Dietary
-  // If more than 50% are grocery → hide Cuisine only
-  // If more than 50% are retail → hide Cuisine & Dietary
-  
-  let hideCuisine = false
-  let hideDietary = false
-  
-  if (petsRatio > 0.5) {
-    hideCuisine = true
-    hideDietary = true
-  } else if (groceryRatio > 0.5) {
-    hideCuisine = true
-    hideDietary = false
-  } else if (retailRatio > 0.5) {
-    hideCuisine = true
-    hideDietary = true
-  }
-  
-  console.log(`[SEARCH] Context detection (from original results):`, {
-    pets: petsCount,
-    grocery: groceryCount,
-    retail: retailCount,
-    restaurants: restaurantCount,
-    convenience: convenienceCount,
-    hideCuisine,
-    hideDietary
-  })
-  
-  return { hideCuisine, hideDietary }
+  // For restaurants only, we never hide cuisine or dietary filters
+  return { hideCuisine: false, hideDietary: false }
 }
 
 /**
@@ -256,52 +158,9 @@ export function determineSearchContext(results: SearchResultRestaurant[]): { hid
 export function detectAvailableCategories(results: SearchResultRestaurant[]): string[] {
   const categories: string[] = ["All"] // "All" is always available
   
-  let hasRestaurants = false
-  let hasGrocery = false
-  let hasPets = false
-  let hasRetail = false
-  let hasConvenience = false
-  
-  results.forEach(result => {
-    const isProduct = result.id.includes("-product-")
-    const storeType = result.storeType
-    const matchType = result.matchType
-    
-    // Check for restaurants
-    if (!hasRestaurants && (
-      matchType === "restaurant" || 
-      (matchType === "menu-item" && !isProduct) ||
-      (!storeType && !isProduct)
-    )) {
-      hasRestaurants = true
-    }
-    
-    // Check for grocery
-    if (!hasGrocery && storeType === "grocery") {
-      hasGrocery = true
-    }
-    
-    // Check for pets
-    if (!hasPets && (storeType === "pets" || storeType === "pet-product")) {
-      hasPets = true
-    }
-    
-    // Check for retail
-    if (!hasRetail && storeType === "retail") {
-      hasRetail = true
-    }
-    
-    // Check for convenience
-    if (!hasConvenience && storeType === "convenience") {
-      hasConvenience = true
-    }
-  })
-  
-  if (hasRestaurants) categories.push("Restaurants")
-  if (hasGrocery) categories.push("Grocery")
-  if (hasPets) categories.push("Pet stores")
-  if (hasRetail) categories.push("Retail")
-  if (hasConvenience) categories.push("Convenience")
+  if (results.length > 0) {
+    categories.push("Restaurants")
+  }
   
   return categories
 }
@@ -313,42 +172,6 @@ export function filterByCategory(
   results: SearchResultRestaurant[],
   category: string
 ): SearchResultRestaurant[] {
-  if (category === "All") {
-    return results
-  }
-  
-  return results.filter(result => {
-    const isProduct = result.id.includes("-product-")
-    const storeType = result.storeType
-    const matchType = result.matchType
-    
-    switch (category) {
-      case "Restaurants":
-        // Include restaurants that match the search query:
-        // 1. Restaurants with query in their name (matchType === "restaurant")
-        // 2. Restaurants with query in their menu items (matchType === "menu-item" && !isProduct)
-        // 3. Regular restaurants without storeType (not stores like grocery, pets, etc.)
-        const isRestaurantByName = matchType === "restaurant" && !isProduct
-        const isRestaurantByMenu = matchType === "menu-item" && !isProduct
-        const isRegularRestaurant = !storeType && !isProduct && matchType !== "grocery" && matchType !== "pets" && matchType !== "convenience" && matchType !== "retail"
-        
-        return isRestaurantByName || isRestaurantByMenu || isRegularRestaurant
-      
-      case "Grocery":
-        return storeType === "grocery"
-      
-      case "Pet stores":
-        return storeType === "pets" || storeType === "pet-product"
-      
-      case "Retail":
-        return storeType === "retail"
-      
-      case "Convenience":
-        return storeType === "convenience"
-      
-      default:
-        return true
-    }
-  })
+  // Since we only have restaurants now, just return all results
+  return results
 }
-

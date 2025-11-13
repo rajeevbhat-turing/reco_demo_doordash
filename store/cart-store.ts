@@ -2,13 +2,12 @@ import { create } from "zustand"
 import { persist, devtools } from "zustand/middleware"
 import type { Product, AppliedModification } from "@/types"
 import { restaurants } from "@/constants/restaurants"
-import { convenienceStores } from "@/data/convenience-store-data"
 import { useVerifierStore } from "./verifier-store"
 import { useAppStore } from "./app-store"
 import { checkDealCriteriaBoolean } from "@/lib/utils/deal-utils"
 
 // Define supported cart categories
-export type CartCategory = "restaurant" | "grocery" | "retail" | "pets" | "convenience"
+export type CartCategory = "restaurant"
 
 // Base cart item interface (simplified - no vendor info)
 export interface CartItem {
@@ -47,30 +46,6 @@ const categoryConfigs: Record<CartCategory, CategoryConfig> = {
     serviceFeePercentage: 0.15,
     minServiceFee: 4.99,
   },
-  grocery: {
-    freeDeliveryThreshold: 35,
-    defaultDeliveryFee: 6.64,
-    serviceFeePercentage: 0.15,
-    minServiceFee: 5.49,
-  },
-  retail: {
-    freeDeliveryThreshold: 40,
-    defaultDeliveryFee: 7.99,
-    serviceFeePercentage: 0.12,
-    minServiceFee: 4.99,
-  },
-  pets: {
-    freeDeliveryThreshold: 35,
-    defaultDeliveryFee: 6.99,
-    serviceFeePercentage: 0.14,
-    minServiceFee: 5.29,
-  },
-  convenience: {
-    freeDeliveryThreshold: 25,
-    defaultDeliveryFee: 4.99,
-    serviceFeePercentage: 0.12,
-    minServiceFee: 3.99,
-  },
 }
 
 // Helper function to get store name from restaurant ID
@@ -79,72 +54,9 @@ const getStoreNameFromRestaurantId = (restaurantId: string): string => {
   return restaurant ? restaurant.name : "Unknown Store"
 }
 
-// Helper function to get store name from store ID (for grocery/retail/convenience/pets stores)
+// Helper function to get store name from store ID
 const getStoreNameFromStoreId = (storeId: string, category?: CartCategory): string => {
-  // If category is specified, check that category first
-  if (category) {
-    switch (category) {
-      case 'convenience':
-        if (convenienceStores[storeId]) {
-          return convenienceStores[storeId].name
-        }
-        break
-      case 'pets':
-        const { allPetStores } = require("@/data/pet-data")
-        const petStore = allPetStores.find((store: any) => store.id === storeId)
-        if (petStore) {
-          return petStore.name
-        }
-        break
-      case 'grocery':
-        const { stores } = require("@/data/store-data")
-        if (stores[storeId]) {
-          return stores[storeId].name
-        }
-        break
-      case 'retail':
-        try {
-          const { stores: retailStores } = require("@/constants/store")
-          if (retailStores[storeId]) {
-            return retailStores[storeId].name
-          }
-        } catch (error) {
-          // Ignore if retail stores data is not available
-        }
-        break
-    }
-  }
-
-  // Fallback: check all categories in order (for backward compatibility)
-  // Check convenience stores first
-  if (convenienceStores[storeId]) {
-    return convenienceStores[storeId].name
-  }
-
-  // Check pet stores
-  const { allPetStores } = require("@/data/pet-data")
-  const petStore = allPetStores.find((store: any) => store.id === storeId)
-  if (petStore) {
-    return petStore.name
-  }
-
-  // Check grocery stores
-  const { stores } = require("@/data/store-data")
-  if (stores[storeId]) {
-    return stores[storeId].name
-  }
-
-  // Check retail stores
-  try {
-    const { stores: retailStores } = require("@/constants/store")
-    if (retailStores[storeId]) {
-      return retailStores[storeId].name
-    }
-  } catch (error) {
-    // Ignore if retail stores data is not available
-  }
-
-  // For other stores, use the existing formatting logic
+  // For stores, use the existing formatting logic
   return storeId
     .split("-")
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
@@ -220,7 +132,7 @@ export const useCartStore = create<CartStore>()(
         // Get current category from app-store
         getCurrentCategory: () => {
           const appStore = useAppStore.getState()
-          return appStore.currentCategory || "grocery" // Default to grocery
+          return appStore.currentCategory || "restaurant" // Default to restaurant
         },
 
         // Get current store ID from app-store

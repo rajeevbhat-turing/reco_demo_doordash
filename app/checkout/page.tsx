@@ -41,10 +41,6 @@ import CountryCodeDropdown from '@/components/modals/country-code-dropdown';
 import PromoCodeModal from '@/components/modals/promocode-modal';
 import { useRestaurants } from "@/lib/hooks/use-restaurants";
 import { getRestaurantById } from "@/lib/utils/restaurant-utils";
-import { stores } from '@/data/store-data';
-import { stores as retailStores } from '@/constants/store';
-import { allPetStores } from '@/data/pet-data';
-import { convenienceStores } from '@/data/convenience-store-data';
 
 export default function CheckoutPage() {
   const router = useRouter();

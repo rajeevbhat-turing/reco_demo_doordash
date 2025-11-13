@@ -1,23 +1,26 @@
 "use client"
-import { Store } from "@/constants/store"
 import Image from "next/image"
 import { useState } from "react"
 
 const DEFAULT_STORE_LOGO = "/store-logos/default-store.svg"
 
-export default function StoreCard({ id, name, image, openTime, deliveryTime, discount, isDashPass, storeType = "retail" }: Store & { storeType?: string }) {
+interface StoreCardProps {
+  id: string
+  name: string
+  image: string
+  openTime?: string
+  deliveryTime: string
+  discount?: string
+  isDashPass: boolean
+  storeType?: string
+}
+
+export default function StoreCard({ id, name, image, openTime, deliveryTime, discount, isDashPass, storeType = "restaurant" }: StoreCardProps) {
     const [imageError, setImageError] = useState(false)
     const [isFavorite, setIsFavorite] = useState(false)
     
-    // Determine the correct navigation URL based on store type
-    let storeUrl = `/convenience/store/${id}?storeType=${storeType}`;
-    if (storeType === "pets") {
-      storeUrl = `/pets/store/${id}`;
-    } else if (storeType === "retail") {
-      storeUrl = `/retail/store/${id}`;
-    } else if (storeType === "grocery") {
-      storeUrl = `/grocery/store/${id}`;
-    }
+    // Only restaurants are supported now
+    const storeUrl = `/restaurants/${id}`;
   
     return (
       <div 

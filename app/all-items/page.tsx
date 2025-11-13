@@ -4,12 +4,6 @@ import { useRouter, useSearchParams } from "next/navigation"
 import VerticalListPage from "@/components/vertical-list-page"
 import { useRestaurants } from "@/lib/hooks/use-restaurants"
 import { useUserStore } from "@/store/user-store"
-import { 
-  getAllStores, 
-  getGroceryFavorites, 
-  getFastestNearYou 
-} from "@/app/grocery/data/retail-response-mapper"
-import { convenienceStores } from "@/data/convenience-store-data"
 import { Suspense } from "react"
 import { getDefaultRating } from "@/utils/rating-utils"
 import { RestaurantsSkeleton } from "@/components/skeletons/restaurant-skeleton"
@@ -94,68 +88,8 @@ function AllItemsContent() {
       }))
     }
     
-    // Grocery items
-    if (type === 'grocery') {
-      let groceryStores: any[] = []
-      switch (section) {
-        case 'all-stores':
-          groceryStores = getAllStores()
-          break
-        case 'grocery-favorites':
-          groceryStores = getGroceryFavorites()
-          break
-        case 'fastest-near-you':
-          groceryStores = getFastestNearYou()
-          break
-        default:
-          groceryStores = getAllStores()
-      }
-      
-      // Convert grocery stores to ListItem format
-      return groceryStores.map(store => ({
-        id: store.id,
-        name: store.name,
-        image: store.image,
-        rating: store.rating,
-        reviews: store.numRatings,
-        time: store.time,
-        deliveryFee: store.delivery,
-        discount: store.discount,
-        isSnapEligible: store.isSnap,
-        inStorePrice: store.inStorePrice,
-        isOpen: store.open
-      }))
-    }
-    
-    // Convenience items
-    if (type === 'convenience') {
-      // Convert convenience store data to array and match expected format
-      const formattedStores = Object.values(convenienceStores).map((store: any) => ({
-        id: store.id,
-        name: store.name,
-        image: store.logo,
-        rating: store.rating?.toString() || "4.5",
-        reviews: store.reviewCount?.toString() || "1,000+",
-        time: store.deliveryTime || store.expressTime || "30 min",
-        deliveryFee: "$0 delivery fee",
-        discount: store.discount || "",
-        isSnapEligible: store.isSnap || false,
-        inStorePrice: true,
-        isOpen: store.open !== false,
-        dashPass: store.isDashPass
-      })).filter((store: any) => store.id && store.name) // Filter out empty stores
-      
-      switch (section) {
-        case 'convenience-favorites':
-          // Filter for featured convenience stores
-          return formattedStores.filter((store: any) => 
-            ["cvs", "dashmart", "speedway", "extramile"].includes(store.id)
-          )
-        case 'all-stores':
-        default:
-          return formattedStores
-      }
-    }
+    // Only restaurants are supported now
+    // Return empty array for non-restaurant types
     
     // Default to empty array for other types
     return []

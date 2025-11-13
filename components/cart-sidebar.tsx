@@ -10,10 +10,6 @@ import { useRestaurants } from "@/lib/hooks/use-restaurants"
 import { useUserStore } from "@/store/user-store"
 import { getRestaurantById } from "@/lib/utils/restaurant-utils"
 import { getMenuItemsByRestaurantId } from "@/constants/menu-items"
-import { stores } from "@/data/store-data"
-import { stores as retailStores } from "@/constants/store"
-import { allPetStores } from "@/data/pet-data"
-import { convenienceStores } from "@/data/convenience-store-data"
 import OtherCarts from "./other-carts"
 
 interface CartSidebarProps {
@@ -84,28 +80,10 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
   const categoryConfig = getConfig()
 
   // Function to get store information based on category and store ID
+  // Note: Only restaurants are supported now
   const getStoreInfo = useCallback((storeId: string, category: string) => {
-    if (!storeId) return null;
-    
-    let result = null;
-    switch (category) {
-      case 'grocery':
-        result = stores[storeId] || null;
-        break;
-      case 'retail':
-        result = retailStores.find(store => store.id === storeId) || null;
-        break;
-      case 'pets':
-        result = allPetStores.find(store => store.id === storeId) || null;
-        break;
-      case 'convenience':
-        result = convenienceStores[storeId] || null;
-        break;
-      default:
-        break;
-    }
-    
-    return result;
+    // No store info for restaurants - they use restaurant data directly
+    return null;
   }, []);
 
   // Function to fetch complement items - moved outside useEffect for clarity
