@@ -37,18 +37,31 @@ export default function Home() {
   // Get cart store to set category
   const cartStore = useCartStore();
 
+  // Get authentication status
+  const isAuthenticated = useSyncExternalStore(
+    useUserStore.subscribe,
+    () => useUserStore.getState().isAuthenticated(),
+    () => false // fallback for SSR
+  )
+
   // Get user's address for location-based filtering
   const currentUser = useUserStore(state => state.currentUser);
   const defaultAddress = currentUser?.addresses.find(a => a.default);
 
+  // Get temp address for guest users
+  const tempAddress = useSyncExternalStore(
+    useUserStore.subscribe,
+    () => useUserStore.getState().getTempAddress(),
+    () => null // fallback for SSR
+  )
+
+  // Determine which address to use: logged-in user's default address or guest's temp address
+  const activeAddress = isAuthenticated ? defaultAddress : tempAddress
+
   // Fetch restaurants near user's address
-  const {
-    data: restaurants,
-    isLoading: isLoadingRestaurants,
-    error: restaurantsError,
-  } = useRestaurants(
-    defaultAddress?.lat,
-    defaultAddress?.lng,
+  const { data: restaurants, isLoading: isLoadingRestaurants, error: restaurantsError } = useRestaurants(
+    activeAddress?.lat,
+    activeAddress?.lng,
     10 // 10 mile radius
   );
 
@@ -375,8 +388,8 @@ export default function Home() {
     );
   }
 
-  // Show address prompt if no address
-  if (!defaultAddress) {
+  // Show address prompt if no address (neither default address for logged-in users nor temp address for guests)
+  if (!activeAddress) {
     return (
       <div className="w-full max-w-[1200px] mx-auto px-4 py-16">
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-8 text-center max-w-md mx-auto">
