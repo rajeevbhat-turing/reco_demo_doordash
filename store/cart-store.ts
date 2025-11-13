@@ -28,6 +28,7 @@ export interface Cart {
   storeCategory: CartCategory // Type of store
   items: CartItem[] // Items in this cart
   selectedCard?: any // Selected payment method for this cart
+  isReorder?: boolean // Flag to indicate if this cart is a reorder
 }
 
 // Category-specific configurations
@@ -157,10 +158,6 @@ interface CartStore {
   isGroupOrder: boolean
   groupOrderId: string | null
   isInitialized: boolean // Track if store has been initialized from DB
-
-  // Reorder mode tracking
-  isReorderMode: boolean
-  reorderOriginalCarts: Cart[] | null
   
   // Cart sidebar control
   shouldOpenCart: boolean
@@ -199,9 +196,7 @@ interface CartStore {
   getTotalPrice: (storeId?: string, category?: CartCategory) => string
 
   // Reorder methods
-  startReorderMode: (orderId: string, items: CartItem[], category: CartCategory, storeId: string, storeName: string) => void
-  confirmReorder: () => void
-  cancelReorder: () => void
+  startReorder: (items: CartItem[], category: CartCategory, storeId: string, storeName: string) => void
   
   // Cart sidebar control methods
   triggerOpenCart: () => void
@@ -220,8 +215,6 @@ export const useCartStore = create<CartStore>()(
         isGroupOrder: false,
         groupOrderId: null,
         isInitialized: false,
-        isReorderMode: false,
-        reorderOriginalCarts: null,
         shouldOpenCart: false,
 
         // Get current category from app-store
@@ -737,14 +730,10 @@ export const useCartStore = create<CartStore>()(
         },
 
         // Reorder methods
-        startReorderMode: (orderId: string, items: CartItem[], category: CartCategory, storeId: string, storeName: string) => {
-          const currentState = get()
+        startReorder: (items: CartItem[], category: CartCategory, storeId: string, storeName: string) => {
+          const { carts } = get()
           
-          console.log(`[REORDER] Starting reorder mode for order: ${orderId}`)
-          console.log(`[REORDER] Backing up current carts (${currentState.carts.length} carts)`)
-          
-          // Backup current carts
-          const backup = [...currentState.carts]
+          console.log(`[REORDER] Starting reorder with ${items.length} items from ${storeName}`)
           
           // Create a new cart for the reorder
           const reorderCart: Cart = {
@@ -752,46 +741,17 @@ export const useCartStore = create<CartStore>()(
             storeName: storeName,
             storeCategory: category,
             items: items,
-            selectedCard: null,
+            selectedCard: undefined,
+            isReorder: true, // Mark this cart as a reorder
           }
           
-          // Clear all carts and add the reorder cart
+          // Add the reorder cart to existing carts
           set({
-            isReorderMode: true,
-            reorderOriginalCarts: backup,
-            carts: [reorderCart],
+            carts: [...carts, reorderCart],
             shouldOpenCart: true, // Trigger cart to open
           })
           
-          console.log(`[REORDER] Reorder mode activated with ${items.length} items from ${storeName}`)
-        },
-
-        confirmReorder: () => {
-          console.log(`[REORDER] Confirming reorder - discarding original carts`)
-          set({
-            isReorderMode: false,
-            reorderOriginalCarts: null,
-          })
-        },
-
-        cancelReorder: () => {
-          const { reorderOriginalCarts } = get()
-          
-          if (reorderOriginalCarts) {
-            console.log(`[REORDER] Canceling reorder - restoring original carts (${reorderOriginalCarts.length} carts)`)
-            set({
-              isReorderMode: false,
-              carts: reorderOriginalCarts,
-              reorderOriginalCarts: null,
-            })
-          } else {
-            console.log(`[REORDER] Canceling reorder - no backup found, clearing carts`)
-            set({
-              isReorderMode: false,
-              carts: [],
-              reorderOriginalCarts: null,
-            })
-          }
+          console.log(`[REORDER] Reorder cart added with isReorder flag`)
         },
 
         // Cart sidebar control methods
@@ -817,8 +777,6 @@ export const useCartStore = create<CartStore>()(
           isGroupOrder: state.isGroupOrder,
           groupOrderId: state.groupOrderId,
           isInitialized: state.isInitialized,
-          isReorderMode: state.isReorderMode,
-          reorderOriginalCarts: state.reorderOriginalCarts,
         }),
         merge: (persistedState: any, currentState) => {
           let carts: Cart[] = []

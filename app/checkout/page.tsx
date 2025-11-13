@@ -64,8 +64,6 @@ export default function CheckoutPage() {
     setSelectedCard,
     removeItem,
     updateQuantity,
-    isReorderMode,
-    confirmReorder,
   } = useCartStore();
   const { recordCheckoutNavigation, recordDeliveryTimeSelection } = useVerifierStore();
   const {
@@ -294,11 +292,6 @@ export default function CheckoutPage() {
 
   const handlePlaceOrder = () => {
     const newOrderId = generateOrderId();
-
-    // If in reorder mode, confirm the reorder (discard original cart backup silently)
-    if (isReorderMode) {
-      confirmReorder();
-    }
 
     const orderData = {
       // 1. Order ID
