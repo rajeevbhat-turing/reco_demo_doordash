@@ -541,7 +541,7 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
           
            {/* Other Carts Section - show when no current store is set and there are other carts */}
            {!activeStoreId && otherCarts.length > 0 && (
-             <OtherCarts carts={otherCarts} onRemoveCart={handleRemoveCart} onClose={onClose} />
+             <OtherCarts carts={otherCarts} onRemoveCart={handleRemoveCart} onClose={onClose} restaurants={restaurants || []} />
            )}
         </div>
       </div>

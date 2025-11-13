@@ -9,13 +9,30 @@ interface OtherCartsProps {
   carts: Cart[]
   onRemoveCart: (storeId: string, storeCategory: string) => void
   onClose: () => void
+  restaurants: any[]
 }
 
-export default function OtherCarts({ carts, onRemoveCart, onClose }: OtherCartsProps) {
+export default function OtherCarts({ carts, onRemoveCart, onClose, restaurants }: OtherCartsProps) {
   const router = useRouter()
 
   if (carts.length === 0) {
     return null
+  }
+
+  // Helper function to check if a cart is outside delivery radius
+  const isOutsideRadius = (cart: Cart): boolean => {
+    // Only check restaurants (other categories might not be in the restaurants list)
+    if (cart.storeCategory !== 'restaurant') {
+      return false
+    }
+    
+    // If no restaurants data, assume it's in radius
+    if (!restaurants || restaurants.length === 0) {
+      return false
+    }
+    
+    // Check if the cart's restaurant is in the fetched restaurants list
+    return !restaurants.some(r => r.id === cart.storeId)
   }
 
   const handleCheckout = (cart: Cart) => {
@@ -61,6 +78,13 @@ export default function OtherCarts({ carts, onRemoveCart, onClose }: OtherCartsP
       <div className="space-y-4">
         {carts.map((cart) => (
           <div key={`${cart.storeId}-${cart.storeCategory}`} className="border rounded-lg mx-4 p-4 bg-white">
+            {/* Outside radius warning */}
+            {isOutsideRadius(cart) && (
+              <p className="text-sm text-red-600 font-medium mb-3">
+                Outside your current delivery area
+              </p>
+            )}
+            
             {/* Store header */}
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center">

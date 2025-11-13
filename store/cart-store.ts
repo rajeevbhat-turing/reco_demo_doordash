@@ -709,8 +709,16 @@ export const useCartStore = create<CartStore>()(
 
         // Initialize carts from database
         initializeCartsFromDB: (carts: Cart[]) => {
-          console.log(`[CART] Initializing ${carts.length} carts from database`)
-          set({ carts, isInitialized: true })
+          const { carts: guestCarts } = get()
+          
+          console.log(`[CART] Initializing carts from database`)
+          console.log(`[CART] Guest carts: ${guestCarts.length}, DB carts: ${carts.length}`)
+          
+          // Import merge utility
+          import('@/lib/utils/cart-merge').then(({ mergeGuestCartsWithDBCarts }) => {
+            const mergedCarts = mergeGuestCartsWithDBCarts(guestCarts, carts)
+            set({ carts: mergedCarts, isInitialized: true })
+          })
         },
       }),
       {

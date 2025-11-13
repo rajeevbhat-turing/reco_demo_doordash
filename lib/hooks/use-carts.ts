@@ -18,8 +18,9 @@ export function useCarts() {
   });
 
   // Initialize cart store with fetched carts (only if not already initialized)
+  // This also triggers cart merging when user logs in
   useEffect(() => {
-    if (carts && carts.length > 0 && !isInitialized) {
+    if (carts !== undefined && !isInitialized) {
       console.log('✅ Initializing cart store with', carts.length, 'carts from database');
       initializeCartsFromDB(carts);
     }
