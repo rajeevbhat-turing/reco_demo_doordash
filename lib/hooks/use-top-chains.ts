@@ -7,10 +7,17 @@ export interface TopChain {
   id: string;
   name: string;
   cuisine: string;
+  city: string;
   rating: number | null;
 }
 
 export interface TopCuisine {
+  name: string;
+  restaurantCount: number;
+  avgRating: number | null;
+}
+
+export interface TopCity {
   name: string;
   restaurantCount: number;
   avgRating: number | null;
@@ -98,5 +105,57 @@ export function useTopCuisines() {
   }, [chains]);
 
   return cuisines;
+}
+
+/**
+ * Hook to get top cities derived from top chains
+ * Returns unique cities from restaurants with rating > 4.5
+ */
+export function useTopCities() {
+  const { data: chains = [] } = useTopChains();
+
+  // Derive unique cities from top chains
+  const cities = useMemo(() => {
+    if (!chains || chains.length === 0) return [];
+
+    // Group chains by city
+    const cityMap = new Map<string, { count: number; totalRating: number }>();
+
+    chains.forEach((chain) => {
+      if (!chain.city) return;
+
+      const existing = cityMap.get(chain.city);
+      if (existing) {
+        existing.count += 1;
+        if (chain.rating) {
+          existing.totalRating += chain.rating;
+        }
+      } else {
+        cityMap.set(chain.city, {
+          count: 1,
+          totalRating: chain.rating || 0,
+        });
+      }
+    });
+
+    // Convert to array and calculate average rating
+    const cityArray: TopCity[] = Array.from(cityMap.entries()).map(([name, data]) => ({
+      name,
+      restaurantCount: data.count,
+      avgRating: data.count > 0 ? parseFloat((data.totalRating / data.count).toFixed(1)) : null,
+    }));
+
+    // Sort by average rating descending, then by name
+    return cityArray.sort((a, b) => {
+      if (a.avgRating !== null && b.avgRating !== null) {
+        if (b.avgRating !== a.avgRating) {
+          return b.avgRating - a.avgRating;
+        }
+      }
+      return a.name.localeCompare(b.name);
+    });
+  }, [chains]);
+
+  return cities;
 }
 

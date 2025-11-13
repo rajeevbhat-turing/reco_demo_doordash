@@ -19,13 +19,12 @@ import AddressReviewErrorModal from '@/components/modals/landing-page/address-re
 import AddressSearchModal from '@/components/modals/landing-page/address-search-modal';
 import { DashDoorLogoMark, DashDoorWordMark } from '@/components/common/Icons';
 import { useIsMobile } from '@/lib/hooks/use-mobile';
-import { topCities } from '@/constants/top-cities';
 import addressesData from '@/data/addresses.json';
 import { useUserStore } from '@/store/user-store';
 import { Address } from '@/lib/types/user-types';
 import { PersonIcon } from '@/lib/utils/icons';
 import { isValidEmail } from '@/lib/utils/helperFunctions';
-import { useTopChains, useTopCuisines } from '@/lib/hooks/use-top-chains';
+import { useTopChains, useTopCuisines, useTopCities } from '@/lib/hooks/use-top-chains';
 
 export default function LandingPage() {
   const [authModalMode, setAuthModalMode] = useState<'signin' | 'signup' | null>('signin');
@@ -53,6 +52,9 @@ export default function LandingPage() {
 
   // Derive top cuisines from top chains (cuisines of restaurants with rating > 4.5)
   const topCuisines = useTopCuisines();
+
+  // Derive top cities from top chains (cities of restaurants with rating > 4.5)
+  const topCities = useTopCities();
 
   useEffect(() => {
     let ticking = false;
@@ -1050,10 +1052,10 @@ export default function LandingPage() {
                 >
                   {(showAllCities ? topCities : topCities.slice(0, 15)).map((city, index) => (
                     <div
-                      key={`city-${index}`}
+                      key={`city-${city.name}-${index}`}
                       className="text-base font-medium text-[#191919ff] hover:underline"
                     >
-                      {city}
+                      {city.name}
                     </div>
                   ))}
                 </div>

@@ -15,6 +15,7 @@ export async function GET(request: NextRequest) {
         r.id,
         r.name,
         r.cuisine,
+        r.city,
         (
           SELECT AVG(mi.rating)
           FROM menu_items mi
@@ -33,6 +34,7 @@ export async function GET(request: NextRequest) {
       id: String(r.id),
       name: r.name,
       cuisine: r.cuisine,
+      city: r.city,
       rating: r.avg_rating ? parseFloat(r.avg_rating.toFixed(1)) : null,
     }));
 
