@@ -2,11 +2,10 @@ import { create } from "zustand"
 import { devtools } from "zustand/middleware"
 import type { Product } from "@/types"
 import { restaurants } from "@/constants/restaurants"
-import { convenienceStores } from "@/data/convenience-store-data"
 import { usePersistedState } from "@/lib/hooks/usePersistedState"
 
 // Define supported cart categories
-export type CartCategory = "restaurant" | "grocery" | "retail" | "pets" | "convenience"
+export type CartCategory = "restaurant"
 
 // Base cart item interface
 export interface CartItem {

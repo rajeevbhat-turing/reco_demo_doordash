@@ -7,7 +7,6 @@ import type { Product } from "@/types"
 import Link from "next/link"
 import Image from "next/image"
 import { CartCategory, useCartStore } from "@/store/cart-store"
-import { convenienceStores } from "@/data/convenience-store-data"
 
 interface ProductDisplayProps {
   title: string
@@ -32,7 +31,7 @@ export default function ProductDisplay({
   time,
   isSnapEligible,
   storeId = "1",
-  category = "grocery",
+  category = "restaurant",
 }: ProductDisplayProps) {
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   

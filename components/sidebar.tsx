@@ -5,11 +5,7 @@ import { usePathname } from 'next/navigation';
 import { useState, useSyncExternalStore } from 'react';
 import {
   Home,
-  ShoppingBag,
-  Store,
   FileText,
-  PawPrint,
-  Coffee,
   CircleUserRound,
 } from 'lucide-react';
 import AuthenticationModal from './modals/authentication-modal';
@@ -53,58 +49,6 @@ export default function Sidebar() {
               >
                 <Home className="h-5 w-5 mr-3" />
                 <span>Home</span>
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/grocery"
-                className={`flex items-center px-4 py-3 rounded-lg mx-2 ${
-                  pathname.startsWith('/grocery')
-                    ? 'bg-blue-50 text-blue-600 font-medium'
-                    : 'text-gray-700 hover:bg-gray-100'
-                }`}
-              >
-                <ShoppingBag className="h-5 w-5 mr-3" />
-                <span>Grocery</span>
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/retail"
-                className={`flex items-center px-4 py-3 rounded-lg mx-2 ${
-                  pathname.startsWith('/retail')
-                    ? 'bg-blue-50 text-blue-600 font-medium'
-                    : 'text-gray-700 hover:bg-gray-100'
-                }`}
-              >
-                <Store className="h-5 w-5 mr-3" />
-                <span>Retail</span>
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/pets"
-                className={`flex items-center px-4 py-3 rounded-lg mx-2 ${
-                  pathname.startsWith('/pets')
-                    ? 'bg-blue-50 text-blue-600 font-medium'
-                    : 'text-gray-700 hover:bg-gray-100'
-                }`}
-              >
-                <PawPrint className="h-5 w-5 mr-3" />
-                <span>Pets</span>
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/convenience"
-                className={`flex items-center px-4 py-3 rounded-lg mx-2 ${
-                  pathname.startsWith('/convenience')
-                    ? 'bg-blue-50 text-blue-600 font-medium'
-                    : 'text-gray-700 hover:bg-gray-100'
-                }`}
-              >
-                <Coffee className="h-5 w-5 mr-3" />
-                <span>Convenience</span>
               </Link>
             </li>
           </ul>

@@ -2,7 +2,7 @@ import { create } from "zustand"
 import { persist, devtools } from "zustand/middleware"
 
 // Cart category type (imported from cart-store concept)
-export type CartCategory = "restaurant" | "grocery" | "retail" | "pets" | "convenience"
+export type CartCategory = "restaurant"
 
 // Search result interface for storing search results
 export interface SearchResult {

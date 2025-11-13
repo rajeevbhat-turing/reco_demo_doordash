@@ -6,7 +6,6 @@ import Image from "next/image"
 import { Plus, Trash2, Minus } from "lucide-react"
 import type { Product } from "@/types"
 import { CartCategory, useCartStore } from "@/store/cart-store"
-import { convenienceStores } from "@/data/convenience-store-data"
 
 interface ProductCardProps {
   product: Product
@@ -19,7 +18,7 @@ export default function ProductCard({
   product, 
   onProductClick, 
   storeId,
-  category = "grocery"
+  category = "restaurant"
 }: ProductCardProps) {
   const { carts, findCart, updateQuantity, removeItem, setCategory, addItem } = useCartStore()
 
