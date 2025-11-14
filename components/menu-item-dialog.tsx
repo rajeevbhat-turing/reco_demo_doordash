@@ -636,14 +636,14 @@ export default function MenuItemDialog({ isOpen, onClose, item }: MenuItemDialog
         <div className="flex-shrink-0 bg-white p-4 border-t border-gray-200">
           <div className="flex items-center gap-4">
             {/* Quantity Selector */}
-            <div className="flex items-center gap-3 border border-gray-300 rounded-lg px-3 py-2">
+            <div className="flex items-center gap-3 rounded-lg px-3 py-2">
               <button
-                className="h-8 w-8 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="h-8 w-8 rounded-full bg-gray-50 flex items-center justify-center hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
                 onClick={decrementQuantity}
                 disabled={quantity <= 1}
                 aria-label="Decrease quantity"
               >
-                <Minus className="h-4 w-4" />
+                <Minus className="h-3.5 w-3.5 text-gray-600" />
               </button>
               <input
                 type="number"
@@ -653,14 +653,14 @@ export default function MenuItemDialog({ isOpen, onClose, item }: MenuItemDialog
                   const value = parseInt(e.target.value) || 1
                   setQuantity(Math.max(1, value))
                 }}
-                className="w-12 text-center text-base font-medium border-0 focus:outline-none focus:ring-0 p-0"
+                className="w-12 text-center text-base font-medium bg-gray-50 rounded-lg border-0 focus:outline-none focus:ring-0 p-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
               />
               <button
-                className="h-8 w-8 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-100"
+                className="h-8 w-8 rounded-full bg-gray-50 flex items-center justify-center hover:bg-gray-100"
                 onClick={incrementQuantity}
                 aria-label="Increase quantity"
               >
-                <Plus className="h-4 w-4" />
+                <Plus className="h-3.5 w-3.5 text-gray-600" />
               </button>
             </div>
             
