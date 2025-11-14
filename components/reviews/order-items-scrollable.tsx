@@ -29,30 +29,28 @@ export default function OrderItemsScrollable({
   const { data: menuData } = useRestaurantMenu(restaurantId || '');
   const menuItems = menuData?.menuItems || [];
 
-  // Find menu item by id
-  const getMenuItemById = (itemId: string, restaurantId?: string): MenuItem | null => {
-    if (restaurantId) {
-      return (
-        menuItems.find(item => item.id === itemId && (item.restaurantId === restaurantId || item.restaurant_id === restaurantId)) || null
-      );
+  // Find menu item by menuItemId (from order_items.menu_item_id)
+  const getMenuItemByOrderItem = (orderItem: OrderItem): MenuItem | null => {
+    if (!orderItem.menuItemId) {
+      return null;
     }
-    // If no restaurantId provided, try to find by id only (fallback)
-    const foundItem = menuItems.find(item => item.id === itemId);
-    return foundItem || null;
+    
+    return menuItems.find(item => item.id === orderItem.menuItemId) || null;
   };
 
-  // Handle item click
-  const handleItemClick = (orderItem: OrderItem) => {
+  // Open menu item dialog (similar to store page implementation)
+  const openItemDialog = (orderItem: OrderItem) => {
     const restaurantIdToUse = restaurantId || orderItem.restaurantId;
-    const menuItem = getMenuItemById(orderItem.id, restaurantIdToUse);
+    const menuItem = getMenuItemByOrderItem(orderItem);
 
     if (menuItem) {
-      // Ensure restaurantId is set and image is not null (MenuItemDialog requires string)
+      // Ensure the item has the restaurantId property
+      // Create a properly typed object that matches MenuItemDialog's expected type
       const itemWithRestaurantId: MenuItem = {
         ...menuItem,
         restaurantId: restaurantIdToUse,
-        image: menuItem.image || '/placeholder.svg', // Convert null to placeholder
-      };
+        image: menuItem.image || '/placeholder.svg',
+      } as MenuItem;
       setSelectedItem(itemWithRestaurantId);
       setMenuItemDialogOpen(true);
     }
@@ -109,7 +107,7 @@ export default function OrderItemsScrollable({
             key={`order-item-${item.id}`}
             className="rounded-lg flex items-center justify-between gap-3 min-w-[150px] flex-shrink-0 border border-[#e4e4e4] 
             cursor-pointer hover:border-gray-300 transition-colors"
-            onClick={() => handleItemClick(item)}
+            onClick={() => openItemDialog(item)}
           >
             {/* Left Section - Text Content */}
             <div className="flex flex-col gap-2 flex-1 min-w-0 px-3 py-4">
@@ -158,26 +156,14 @@ export default function OrderItemsScrollable({
       )}
 
       {/* Menu Item Dialog */}
-      {selectedItem && (
-        <MenuItemDialog
-          isOpen={menuItemDialogOpen}
-          onClose={() => {
-            setMenuItemDialogOpen(false);
-            setSelectedItem(null);
-          }}
-          item={{
-            id: selectedItem.id,
-            restaurantId: selectedItem.restaurantId,
-            name: selectedItem.name,
-            price: selectedItem.price,
-            image: selectedItem.image || '/placeholder.svg',
-            description: selectedItem.description || undefined,
-            rating: typeof selectedItem.rating === 'number' ? selectedItem.rating : undefined,
-            ratingCount: selectedItem.ratingCount || undefined,
-            calories: selectedItem.calories || undefined,
-          }}
-        />
-      )}
+      <MenuItemDialog
+        isOpen={menuItemDialogOpen}
+        onClose={() => {
+          setMenuItemDialogOpen(false);
+          setSelectedItem(null);
+        }}
+        item={selectedItem as any}
+      />
     </div>
   );
 }

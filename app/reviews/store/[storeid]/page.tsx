@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Star, ChevronLeft, ChevronRight, Info } from 'lucide-react';
@@ -14,6 +14,9 @@ import ReviewPhotosScrollable from '@/components/reviews/review-photos-scrollabl
 import { useStoreReviews } from '@/lib/hooks/use-reviews';
 import { useReviewStore } from '@/store/review-store';
 import { useUserStore } from '@/store/user-store';
+import { useAppStore } from '@/store/app-store';
+import { useCartStore } from '@/store/cart-store';
+import { useRestaurant } from '@/lib/hooks/use-restaurant';
 import { generateAvatarColor } from '@/lib/utils/helperFunctions';
 import { LightbulbIcon } from '@/lib/utils/icons';
 import { getMergedUserReviewCount } from '@/lib/utils/review-utils';
@@ -49,6 +52,25 @@ export default function StoreReviewsPage() {
 
   const toggleHelpfulRating = useReviewStore(state => state.toggleHelpfulRating);
   const currentUser = useUserStore(state => state.currentUser);
+  const { setCurrentStore, clearCurrentStore } = useAppStore();
+  const cartStore = useCartStore();
+  
+  // Fetch restaurant data to set current store
+  const { data: restaurantData } = useRestaurant(storeId);
+
+  // Set current store and category when restaurant data is available
+  useEffect(() => {
+    // Set the category to restaurant when the page loads
+    cartStore.setCategory('restaurant');
+    
+    if (restaurantData) {
+      setCurrentStore(restaurantData, 'restaurant');
+    }
+
+    return () => {
+      clearCurrentStore();
+    };
+  }, [restaurantData, setCurrentStore, clearCurrentStore, cartStore]);
 
   // Helper function to get user review count
   const getUserReviewCount = useMemo(() => {
