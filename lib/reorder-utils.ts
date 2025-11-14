@@ -1,13 +1,14 @@
-import { restaurants } from "@/constants/restaurants"
 import { CartCategory, CartItem } from "@/store/cart-store"
 import { Order, OrderItem } from "@/constants/order-data"
-import { getMenuItemsByRestaurantId } from "@/constants/menu-items"
+import type { Restaurant } from "@/constants/restaurants"
 
 /**
  * Detects the category from a restaurantId or storeId
  * Only restaurants are supported now
+ * @param id - The restaurant/store ID to check
+ * @param restaurants - Array of restaurants from backend
  */
-export function detectCategoryFromRestaurantId(id: string): CartCategory {
+export function detectCategoryFromRestaurantId(id: string, restaurants: Restaurant[]): CartCategory {
   // Check if it's a restaurant
   const isRestaurant = restaurants.some(r => r.id === id)
   if (isRestaurant) {
@@ -21,13 +22,20 @@ export function detectCategoryFromRestaurantId(id: string): CartCategory {
 
 /**
  * Attempts to find the menu item image by matching name
+ * @param itemName - Name of the item to find
+ * @param restaurantId - ID of the restaurant
+ * @param category - Category of the store
+ * @param menuItems - Array of menu items for this restaurant (optional)
  */
-function findMenuItemImage(itemName: string, restaurantId: string, category: CartCategory): string {
+function findMenuItemImage(
+  itemName: string, 
+  restaurantId: string, 
+  category: CartCategory,
+  menuItems?: any[]
+): string {
   // Only try to fetch images for restaurants (menu items are only for restaurants)
-  if (category === 'restaurant') {
+  if (category === 'restaurant' && menuItems && menuItems.length > 0) {
     try {
-      const menuItems = getMenuItemsByRestaurantId(restaurantId)
-      
       // Try exact match first
       let menuItem = menuItems.find(mi => mi.name.toLowerCase() === itemName.toLowerCase())
       
@@ -55,12 +63,18 @@ function findMenuItemImage(itemName: string, restaurantId: string, category: Car
 
 /**
  * Converts order items to cart items format
+ * @param orderItems - Items from the order
+ * @param restaurantId - ID of the restaurant
+ * @param restaurantName - Name of the restaurant
+ * @param category - Category of the store
+ * @param menuItems - Optional array of menu items for this restaurant
  */
 export function convertOrderItemsToCartItems(
   orderItems: OrderItem[],
   restaurantId: string,
   restaurantName: string,
-  category: CartCategory
+  category: CartCategory,
+  menuItems?: any[]
 ): CartItem[] {
   return orderItems.map((item, index) => {
     // Generate a unique ID for the cart item based on name and index
@@ -72,16 +86,8 @@ export function convertOrderItemsToCartItems(
       price: item.price,
       quantity: item.quantity,
       // Try to fetch the actual image, fallback to placeholder
-      image: findMenuItemImage(item.name, restaurantId, category),
-      category: category,
-      storeName: restaurantName,
-    }
-
-    // Set the appropriate store/restaurant ID based on category
-    if (category === 'restaurant') {
-      cartItem.restaurantId = restaurantId
-    } else {
-      cartItem.storeId = restaurantId
+      image: findMenuItemImage(item.name, restaurantId, category, menuItems),
+      appliedModifications: item.modifications,
     }
 
     console.log(`[REORDER] Created cart item:`, {
@@ -98,8 +104,15 @@ export function convertOrderItemsToCartItems(
 /**
  * Prepares order data for reordering
  * Supports backward compatibility with both restaurantId/storeId and restaurantName/storeName
+ * @param order - The order to reorder
+ * @param restaurants - Array of restaurants from backend
+ * @param menuItems - Optional array of menu items for the restaurant
  */
-export function prepareOrderForReorder(order: Order): {
+export function prepareOrderForReorder(
+  order: Order,
+  restaurants: Restaurant[],
+  menuItems?: any[]
+): {
   orderId: string
   items: CartItem[]
   category: CartCategory
@@ -120,12 +133,13 @@ export function prepareOrderForReorder(order: Order): {
     throw new Error('Cannot reorder: no items in order')
   }
 
-  const category = detectCategoryFromRestaurantId(storeId)
+  const category = detectCategoryFromRestaurantId(storeId, restaurants)
   const items = convertOrderItemsToCartItems(
     order.items,
     storeId,
     storeName,
-    category
+    category,
+    menuItems
   )
 
   return {

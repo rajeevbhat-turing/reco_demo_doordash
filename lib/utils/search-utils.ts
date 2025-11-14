@@ -1,7 +1,15 @@
-import { restaurants } from "@/constants/restaurants"
-import { menuItems } from "@/constants/menu-items"
-import { filterRestaurantsWithMenuItems } from "@/utils/restaurant-utils"
 import type { Restaurant } from "@/constants/restaurants"
+
+// MenuItem interface for menu items from API
+export interface MenuItem {
+  id: string | number;
+  restaurantId: string;
+  name: string;
+  description?: string;
+  category: string;
+  price: string | number;
+  image?: string;
+}
 
 export interface SearchResultRestaurant extends Restaurant {
   matchType: "restaurant" | "menu-item"
@@ -26,7 +34,11 @@ export function isOnlySpecialCharacters(query: string): boolean {
 /**
  * Search for restaurants that serve specific menu items
  */
-export function searchByMenuItem(searchTerm: string): SearchResultRestaurant[] {
+export function searchByMenuItem(
+  searchTerm: string,
+  restaurants: Restaurant[],
+  menuItems: MenuItem[]
+): SearchResultRestaurant[] {
   const lowerSearchTerm = searchTerm.toLowerCase()
   const matchingItems = menuItems.filter(
     (item) =>
@@ -36,12 +48,9 @@ export function searchByMenuItem(searchTerm: string): SearchResultRestaurant[] {
   )
 
   const restaurantMatches = new Map<string, { restaurant: Restaurant; items: string[] }>()
-
-  // Only consider restaurants that have menu items
-  const restaurantsWithMenus = filterRestaurantsWithMenuItems(restaurants);
   
   matchingItems.forEach((item) => {
-    const restaurant = restaurantsWithMenus.find((r) => r.id === item.restaurantId)
+    const restaurant = restaurants.find((r) => r.id === item.restaurantId)
     if (restaurant) {
       if (!restaurantMatches.has(restaurant.id)) {
         restaurantMatches.set(restaurant.id, { restaurant, items: [] })
@@ -59,8 +68,15 @@ export function searchByMenuItem(searchTerm: string): SearchResultRestaurant[] {
 
 /**
  * Perform complete search across all data sources
+ * @param query - The search query string
+ * @param restaurants - Array of restaurants from backend (based on user location)
+ * @param menuItems - Optional array of menu items. If not provided, will check if restaurants contain menu items
  */
-export function performSearch(query: string): SearchResultRestaurant[] {
+export function performSearch(
+  query: string,
+  restaurants: Restaurant[],
+  menuItems?: MenuItem[]
+): SearchResultRestaurant[] {
   // Handle special characters: if query contains only special characters, return empty
   if (isOnlySpecialCharacters(query)) {
     return []
@@ -78,7 +94,7 @@ export function performSearch(query: string): SearchResultRestaurant[] {
   }
   
   // First, try exact match with full query
-  let restaurantResults = filterRestaurantsWithMenuItems(restaurants)
+  let restaurantResults = restaurants
     .filter((restaurant) => {
       // Check if name or cuisine contains the full query
       const nameMatch = restaurant.name.toLowerCase().includes(queryLower);
@@ -111,7 +127,7 @@ export function performSearch(query: string): SearchResultRestaurant[] {
   // This handles cases like "Burger King" -> also search for "burger" in restaurant names
   // Only do this if we have multiple words and first word is meaningful (length > 2)
   if (queryWords.length > 1 && firstWord.length > 2) {
-    const firstWordResults = filterRestaurantsWithMenuItems(restaurants)
+    const firstWordResults = restaurants
       .filter((restaurant) => {
         // Check if name contains the first word
         const nameMatch = restaurant.name.toLowerCase().includes(firstWord);
@@ -135,20 +151,21 @@ export function performSearch(query: string): SearchResultRestaurant[] {
     restaurantResults = [...restaurantResults, ...newResults];
   }
 
-  // Search restaurants by menu items - try full query first, then first word if query has multiple words
-  // Use cleaned query instead of original query
-  let menuItemResults = searchByMenuItem(cleanedQuery);
-  
-  // If query has multiple words, also search by first word in menu items
-  // This handles cases like "Burger King" -> also search for "burger" in menu items
-  // Only do this if we have multiple words and first word is meaningful (length > 2)
-  if (queryWords.length > 1 && firstWord.length > 2) {
-    const firstWordMenuResults = searchByMenuItem(firstWord);
+  // Search restaurants by menu items only if menuItems are provided
+  let menuItemResults: SearchResultRestaurant[] = [];
+  if (menuItems && menuItems.length > 0) {
+    // Search restaurants by menu items - try full query first
+    menuItemResults = searchByMenuItem(cleanedQuery, restaurants, menuItems);
     
-    // Combine results, avoiding duplicates
-    const existingIds = new Set(menuItemResults.map(r => r.id));
-    const newResults = firstWordMenuResults.filter(r => !existingIds.has(r.id));
-    menuItemResults = [...menuItemResults, ...newResults];
+    // If query has multiple words, also search by first word in menu items
+    if (queryWords.length > 1 && firstWord.length > 2) {
+      const firstWordMenuResults = searchByMenuItem(firstWord, restaurants, menuItems);
+      
+      // Combine results, avoiding duplicates
+      const existingIds = new Set(menuItemResults.map(r => r.id));
+      const newResults = firstWordMenuResults.filter(r => !existingIds.has(r.id));
+      menuItemResults = [...menuItemResults, ...newResults];
+    }
   }
 
   // Combine results, removing duplicates (prioritize restaurant matches)

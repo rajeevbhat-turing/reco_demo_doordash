@@ -1,5 +1,3 @@
-import { getMenuItemsByRestaurantId } from "@/constants/menu-items"
-
 /**
  * Extract numeric price from a price string (e.g., "$7.40+" -> 7.40)
  */
@@ -15,21 +13,23 @@ export function extractPrice(priceStr: string | number): number {
 
 /**
  * Check if a restaurant has menu items within the specified price range
+ * @param restaurantId - ID of the restaurant
+ * @param minPrice - Minimum price filter (null for no minimum)
+ * @param maxPrice - Maximum price filter (null for no maximum)
+ * @param menuItems - Array of menu items for this restaurant from backend
  */
 export function restaurantHasItemsInPriceRange(
   restaurantId: string,
   minPrice: number | null,
-  maxPrice: number | null
+  maxPrice: number | null,
+  menuItems: Array<{ price: string | number }>
 ): boolean {
   // If no price filter is set, return true (don't filter)
   if (minPrice === null && maxPrice === null) {
     return true
   }
 
-  // Get all menu items for this restaurant
-  const menuItems = getMenuItemsByRestaurantId(restaurantId)
-
-  if (menuItems.length === 0) {
+  if (!menuItems || menuItems.length === 0) {
     return false // No items to check
   }
 

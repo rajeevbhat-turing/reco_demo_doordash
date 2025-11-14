@@ -5,7 +5,6 @@ import Image from "next/image"
 import { Search, X, ArrowLeft, ChevronRight, Clock } from "lucide-react"
 import { useRouter, usePathname } from "next/navigation"
 import { useRestaurants } from "@/lib/hooks/use-restaurants"
-import { menuItems } from "@/constants/menu-items"
 import { useUserStore } from "@/store/user-store"
 import { useAppStore } from "@/store/app-store"
 import { useVerifierStore } from "@/store/verifier-store"
@@ -119,22 +118,50 @@ const SearchBar = () => {
     }
   }
 
+  // State to hold all menu items for searching
+  const [allMenuItems, setAllMenuItems] = useState<any[]>([])
+
+  // Fetch menu items for all restaurants when restaurants are loaded
+  useEffect(() => {
+    const fetchAllMenuItems = async () => {
+      if (!restaurants || restaurants.length === 0) return
+
+      try {
+        // Fetch menu items for all restaurants in parallel
+        const menuPromises = restaurants.map(restaurant => 
+          fetch(`/api/restaurants/${restaurant.id}/menu`)
+            .then(res => res.json())
+            .then(data => data.success ? data.data.menuItems : [])
+            .catch(() => [])
+        )
+
+        const allMenus = await Promise.all(menuPromises)
+        const flattenedMenuItems = allMenus.flat()
+        setAllMenuItems(flattenedMenuItems)
+      } catch (error) {
+        console.error('Error fetching menu items:', error)
+      }
+    }
+
+    fetchAllMenuItems()
+  }, [restaurants])
+
   // Search for restaurants that serve specific menu items
   const searchByMenuItem = (searchTerm: string) => {
-    if (!restaurants) return [];
+    if (!restaurants || allMenuItems.length === 0) return [];
 
     const lowerSearchTerm = searchTerm.toLowerCase()
-    const matchingItems = menuItems.filter(
+    const matchingItems = allMenuItems.filter(
       (item) =>
-        item.name.toLowerCase().includes(lowerSearchTerm) ||
-        (item.description && item.description.toLowerCase().includes(lowerSearchTerm)) ||
-        item.category.toLowerCase().includes(lowerSearchTerm),
+        item.name.toLowerCase().includes(lowerSearchTerm)
+        // || (item.description && item.description.toLowerCase().includes(lowerSearchTerm))
+        // || (item.category_name && item.category_name.toLowerCase().includes(lowerSearchTerm)),
     )
 
     const restaurantMatches = new Map<string, { restaurant: any; items: string[] }>()
     
     matchingItems.forEach((item) => {
-      const restaurant = restaurants.find((r) => r.id === item.restaurantId)
+      const restaurant = restaurants.find((r) => r.id === item.restaurant_id || r.id === item.restaurantId)
       if (restaurant) {
         if (!restaurantMatches.has(restaurant.id)) {
           restaurantMatches.set(restaurant.id, { restaurant, items: [] })
@@ -273,51 +300,16 @@ const SearchBar = () => {
 
   // Handle clicking on a search result
   const handleResultClick = (result: SearchResult) => {
-    // Get the product name to display in search bar
-    const productName = result.matchedItem || result.name
-    
-    // Check for products FIRST (before checking type)
-    // Products have IDs like "convenience-product-XXX", "retail-product-XXX", "pet-product-XXX"
-    // This prevents products from being treated as stores
-    if (result.id.includes("-product-") || result.type === "pet-product") {
-      // For products, update search bar and navigate to search results page
-      setSearchTerm(productName) // Update search bar with product name
-      saveRecentSearch(productName)
-      recordSearch(productName)
-      router.push(`/search?q=${encodeURIComponent(productName)}`)
-      setIsSearchActive(false)
-      return // Important: return early to prevent other logic from running
-    }
-    
-    // Handle stores/restaurants (only if not a product)
-    // Get the restaurant/store name to display in search bar
+    // Get the restaurant name to display in search bar
     const restaurantName = result.name
     
-    // Update search bar with restaurant/store name
+    // Update search bar with restaurant name
     setSearchTerm(restaurantName)
     saveRecentSearch(restaurantName)
     recordSearch(restaurantName)
     
-    if (result.type === "grocery") {
-      // Extract the actual grocery store ID (remove "grocery-" prefix)
-      const actualId = result.id.replace("grocery-", "")
-      router.push(`/grocery/store/${actualId}`)
-    } else if (result.type === "convenience") {
-      // Extract the actual convenience store ID (remove "convenience-" prefix)
-      const actualId = result.id.replace("convenience-", "")
-      router.push(`/convenience/store/${actualId}`)
-    } else if (result.type === "pets") {
-      // Extract the actual pet store ID (remove "pets-" prefix)
-      const actualId = result.id.replace("pets-", "")
-      router.push(`/pets/store/${actualId}`)
-    } else if (result.type === "retail") {
-      // Extract the actual retail store ID (remove "retail-" prefix)
-      const actualId = result.id.replace("retail-", "")
-      router.push(`/retail/store/${actualId}`)
-    } else {
-      // Regular restaurants
-      router.push(`/store/${result.id}`)
-    }
+    // Only restaurants are supported now
+    router.push(`/store/${result.id}`)
     setIsSearchActive(false)
   }
 

@@ -7,9 +7,9 @@ import { X, ChevronRight, ChevronLeft, Plus, Minus } from "lucide-react"
 import { useCartStore } from "@/store/cart-store"
 import { Users } from "lucide-react"
 import { useRestaurants } from "@/lib/hooks/use-restaurants"
+import { useRestaurantMenu } from "@/lib/hooks/use-restaurant-menu"
 import { useUserStore } from "@/store/user-store"
 import { getRestaurantById } from "@/lib/utils/restaurant-utils"
-import { getMenuItemsByRestaurantId } from "@/constants/menu-items"
 import OtherCarts from "./other-carts"
 
 interface CartSidebarProps {
@@ -27,8 +27,7 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
     getCurrentRestaurantId,
     updateQuantity, 
     removeItem, 
-    clearCart, 
-    getTotalPrice, 
+    clearCart,  
     addItem, 
     isGroupOrder, 
     groupOrderId,
@@ -52,6 +51,9 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
   const currentRestaurantId = getCurrentRestaurantId()
   const activeStoreId = currentStoreId || currentRestaurantId
   
+  // Fetch menu items for the current restaurant
+  const { data: menuData } = useRestaurantMenu(activeStoreId || undefined)
+  
   // Find the cart for the current store
   // If no current store is set, use the last cart as the main cart
   let currentCart = activeStoreId ? findCart(activeStoreId, currentCategory) : null
@@ -65,16 +67,9 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
   
   const items = currentCart?.items || []
   
-  // Calculate price directly without state to avoid infinite loops
-  const price = items.length > 0 && currentCart 
-    ? getTotalPrice(currentCart.storeId, currentCart.storeCategory) 
-    : "Checkout"
-  
   const [restaurant, setRestaurant] = useState<any>(null)
   const [store, setStore] = useState<any>(null)
   const [complementItems, setComplementItems] = useState<any[]>([])
-  const [lastRestaurantId, setLastRestaurantId] = useState<string | null>(null)
-  const [lastStoreId, setLastStoreId] = useState<string | null>(null)
 
   // Get category-specific configuration
   const categoryConfig = getConfig()
@@ -98,8 +93,8 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
       const restaurantData = getRestaurantById(restaurants, currentId)
       setRestaurant(restaurantData)
 
-      // Get menu items strictly from this restaurant
-      const menuItems = getMenuItemsByRestaurantId(currentId)
+      // Get menu items from the hook data
+      const menuItems = menuData?.menuItems || []
 
       // Verify each item has the correct restaurantId
       const verifiedMenuItems = menuItems.filter((item) => {
@@ -107,7 +102,7 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
       })
 
       // Filter out items already in cart
-      const availableItems = verifiedMenuItems.filter((item) => !cartItemIds.includes(item.id))
+      const availableItems = verifiedMenuItems.filter((item) => !cartItemIds.includes(String(item.id)))
 
       if (availableItems.length === 0) {
         setComplementItems([])
@@ -147,7 +142,7 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
 
       setComplementItems(shuffledItems)
     },
-    [restaurants], // Add restaurants dependency
+    [restaurants, menuData], // Add restaurants and menuData dependencies
   )
 
   // Fetch complement items when items change - no useEffect needed
@@ -175,12 +170,8 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
       return store.name;
     }
     
-    // Fallback - try to get store info if we don't have it yet
-    if (currentCategory !== 'restaurant' && activeStoreId) {
-      const storeInfo = getStoreInfo(activeStoreId, currentCategory);
-      if (storeInfo) {
-        return storeInfo.name;
-      }
+    // Fallback - only restaurants are supported now
+    if (activeStoreId) {
       return `Store ${activeStoreId}`;
     }
     
@@ -194,29 +185,11 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
     const storeId = currentCart.storeId;
     const category = currentCart.storeCategory;
     
-    let storePath = '';
-    switch (category) {
-      case 'restaurant':
-        storePath = `/store/${storeId}`;
-        break;
-      case 'grocery':
-        storePath = `/grocery/store/${storeId}`;
-        break;
-      case 'retail':
-        storePath = `/retail/store/${storeId}`;
-        break;
-      case 'pets':
-        storePath = `/pets/store/${storeId}`;
-        break;
-      case 'convenience':
-        storePath = `/convenience/store/${storeId}`;
-        break;
-      default:
-        return; // Don't navigate if category is unknown
+    // Only restaurant category is supported now
+    if (category === 'restaurant') {
+      router.push(`/store/${storeId}`);
+      onClose(); // Close the cart sidebar after navigation
     }
-    
-    router.push(storePath);
-    onClose(); // Close the cart sidebar after navigation
   };
 
   // Helper function to calculate individual item price
@@ -520,7 +493,7 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
                     <div className="relative w-20 h-20 mb-2">
                       <Image
                         src={item.image || "/placeholder.svg"}
-                        alt={item.itemName || 'Item Image'}
+                        alt={item.name || 'Item Image'}
                         fill
                         className="object-cover rounded-lg"
                       />
@@ -531,7 +504,7 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
                         <Plus className="h-3 w-3" />
                       </button>
                     </div>
-                    <h4 className="text-xs text-center line-clamp-2 mb-1">{item.itemName}</h4>
+                    <h4 className="text-xs text-center line-clamp-2 mb-1">{item.name}</h4>
                     <p className="text-xs font-medium">{item.price}</p>
                   </div>
                 ))}

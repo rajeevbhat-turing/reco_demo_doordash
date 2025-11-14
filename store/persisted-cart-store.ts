@@ -1,7 +1,6 @@
 import { create } from "zustand"
 import { devtools } from "zustand/middleware"
 import type { Product } from "@/types"
-import { restaurants } from "@/constants/restaurants"
 import { usePersistedState } from "@/lib/hooks/usePersistedState"
 
 // Define supported cart categories
@@ -37,98 +36,22 @@ const categoryConfigs: Record<CartCategory, CategoryConfig> = {
     serviceFeePercentage: 0.15,
     minServiceFee: 4.99,
   },
-  grocery: {
-    freeDeliveryThreshold: 35,
-    defaultDeliveryFee: 6.64,
-    serviceFeePercentage: 0.15,
-    minServiceFee: 5.49,
-  },
-  retail: {
-    freeDeliveryThreshold: 40,
-    defaultDeliveryFee: 7.99,
-    serviceFeePercentage: 0.12,
-    minServiceFee: 4.99,
-  },
-  pets: {
-    freeDeliveryThreshold: 35,
-    defaultDeliveryFee: 6.99,
-    serviceFeePercentage: 0.14,
-    minServiceFee: 5.29,
-  },
-  convenience: {
-    freeDeliveryThreshold: 25,
-    defaultDeliveryFee: 4.99,
-    serviceFeePercentage: 0.12,
-    minServiceFee: 3.99,
-  },
 }
 
 // Helper function to get store name from restaurant ID
+// Note: This is a fallback - callers should pass the actual store name when adding items
 const getStoreNameFromRestaurantId = (restaurantId: string): string => {
-  const restaurant = restaurants.find((r) => r.id === restaurantId)
-  return restaurant ? restaurant.name : "Unknown Store"
+  // Format the ID as a display name (e.g., "philz-coffee" -> "Philz Coffee")
+  return restaurantId
+    .split("-")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ")
 }
 
 // Helper function to get store name from store ID
+// Only restaurants are supported now
 const getStoreNameFromStoreId = (storeId: string, category?: CartCategory): string => {
-  if (category) {
-    switch (category) {
-      case 'convenience':
-        if (convenienceStores[storeId]) {
-          return convenienceStores[storeId].name
-        }
-        break
-      case 'pets':
-        const { allPetStores } = require("@/data/pet-data")
-        const petStore = allPetStores.find((store: any) => store.id === storeId)
-        if (petStore) {
-          return petStore.name
-        }
-        break
-      case 'grocery':
-        const { stores } = require("@/data/store-data")
-        if (stores[storeId]) {
-          return stores[storeId].name
-        }
-        break
-      case 'retail':
-        try {
-          const { stores: retailStores } = require("@/constants/store")
-          if (retailStores[storeId]) {
-            return retailStores[storeId].name
-          }
-        } catch (error) {
-          // Ignore if retail stores data is not available
-        }
-        break
-    }
-  }
-  
-  // Fallback logic
-  if (convenienceStores[storeId]) {
-    return convenienceStores[storeId].name
-  }
-  
-  const { allPetStores } = require("@/data/pet-data")
-  const petStore = allPetStores.find((store: any) => store.id === storeId)
-  if (petStore) {
-    return petStore.name
-  }
-  
-  const { stores } = require("@/data/store-data")
-  if (stores[storeId]) {
-    return stores[storeId].name
-  }
-  
-  try {
-    const { stores: retailStores } = require("@/constants/store")
-    if (retailStores[storeId]) {
-      return retailStores[storeId].name
-    }
-  } catch (error) {
-    // Ignore if retail stores data is not available
-  }
-  
+  // Format the ID as a display name (e.g., "philz-coffee" -> "Philz Coffee")
   return storeId
     .split("-")
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
@@ -176,7 +99,7 @@ interface PersistedCartStore {
 export function usePersistedCartStore() {
   // Use our persisted state hook for cart items
   const [items, setItems] = usePersistedState<CartItem[]>('persisted-cart', []);
-  const [currentCategory, setCurrentCategory] = usePersistedState<CartCategory>('persisted-cart_category', 'grocery');
+  const [currentCategory, setCurrentCategory] = usePersistedState<CartCategory>('persisted-cart_category', 'restaurant');
   const [currentStoreId, setCurrentStoreId] = usePersistedState<string | null>('persisted-cart.storeId', null);
   const [currentRestaurantId, setCurrentRestaurantId] = usePersistedState<string | null>('persisted-cart.restaurantId', null);
   const [isGroupOrder, setIsGroupOrder] = usePersistedState<boolean>('persisted-cart.isGroupOrder', false);

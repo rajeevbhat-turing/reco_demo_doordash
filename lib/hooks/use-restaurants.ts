@@ -2,7 +2,7 @@
 
 import { useQuery } from '@tanstack/react-query';
 import { fetchRestaurants } from '@/lib/api/restaurants';
-import { Restaurant } from '@/constants/restaurants';
+import type { Restaurant } from '@/constants/restaurants';
 
 /**
  * Hook to fetch restaurants near a specific location
