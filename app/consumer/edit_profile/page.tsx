@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { ChevronDown, Mail, CreditCard } from 'lucide-react';
 import Link from 'next/link';
 import OTPVerificationModal from '@/components/modals/otp-verification-modal';
@@ -19,6 +19,14 @@ export default function AccountSettingsPage() {
   const [otp, setOtp] = useState('');
   const [pendingChanges, setPendingChanges] = useState<any>(null);
   const [verificationDone, setVerificationDone] = useState(false);
+  const [showCountryDropdown, setShowCountryDropdown] = useState(false);
+  const [showPhoneCountryDropdown, setShowPhoneCountryDropdown] = useState(false);
+  const countrySelectRef = useRef<HTMLDivElement>(null);
+  const countryButtonRef = useRef<HTMLButtonElement>(null);
+  const countryDropdownRef = useRef<HTMLDivElement>(null);
+  const phoneCountrySelectRef = useRef<HTMLDivElement>(null);
+  const phoneCountryButtonRef = useRef<HTMLButtonElement>(null);
+  const phoneCountryDropdownRef = useRef<HTMLDivElement>(null);
 
   // Form data state
   const [formData, setFormData] = useState({
@@ -52,6 +60,13 @@ export default function AccountSettingsPage() {
     }
   }, [currentUser]);
 
+  // Sync country state when userCountry changes (after save)
+  useEffect(() => {
+    if (currentUser?.userCountry) {
+      setCountry(currentUser.userCountry);
+    }
+  }, [currentUser?.userCountry]);
+
   // Disable body scroll and limit height when OTP modal is open
   useEffect(() => {
     if (showOTPModal) {
@@ -67,6 +82,49 @@ export default function AccountSettingsPage() {
       document.body.style.height = 'auto';
     };
   }, [showOTPModal]);
+
+  // Close country dropdown when clicking outside and position it below
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (countrySelectRef.current && !countrySelectRef.current.contains(event.target as Node)) {
+        setShowCountryDropdown(false);
+      }
+      if (phoneCountrySelectRef.current && !phoneCountrySelectRef.current.contains(event.target as Node)) {
+        setShowPhoneCountryDropdown(false);
+      }
+    };
+
+    const positionDropdown = () => {
+      if (showCountryDropdown && countryButtonRef.current && countryDropdownRef.current) {
+        const buttonRect = countryButtonRef.current.getBoundingClientRect();
+        // Position dropdown below the button
+        countryDropdownRef.current.style.top = `${buttonRect.bottom + 4}px`;
+        countryDropdownRef.current.style.left = `${buttonRect.left}px`;
+        countryDropdownRef.current.style.width = `${buttonRect.width}px`;
+      }
+      if (showPhoneCountryDropdown && phoneCountryButtonRef.current && phoneCountryDropdownRef.current) {
+        const buttonRect = phoneCountryButtonRef.current.getBoundingClientRect();
+        // Position dropdown below the button
+        phoneCountryDropdownRef.current.style.top = `${buttonRect.bottom + 4}px`;
+        phoneCountryDropdownRef.current.style.left = `${buttonRect.left}px`;
+        phoneCountryDropdownRef.current.style.width = `${buttonRect.width}px`;
+      }
+    };
+
+    if (showCountryDropdown || showPhoneCountryDropdown) {
+      document.addEventListener('mousedown', handleClickOutside);
+      positionDropdown();
+      // Reposition on scroll or resize
+      window.addEventListener('scroll', positionDropdown, true);
+      window.addEventListener('resize', positionDropdown);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      window.removeEventListener('scroll', positionDropdown, true);
+      window.removeEventListener('resize', positionDropdown);
+    };
+  }, [showCountryDropdown, showPhoneCountryDropdown]);
 
   // Check if form has changes and required fields are filled
   const hasChanges = () => {
@@ -115,7 +173,7 @@ export default function AccountSettingsPage() {
         return value.trim() === ''
           ? 'Phone number is required'
           : !phoneRegex.test(value)
-          ? 'Please enter a valid 10-digit phone number'
+          ? 'Phone number is invalid'
           : '';
       default:
         return '';
@@ -129,6 +187,11 @@ export default function AccountSettingsPage() {
     // Clear error when user starts typing
     if (errors[field as keyof typeof errors]) {
       setErrors(prev => ({ ...prev, [field]: '' }));
+    }
+    
+    // Clear general error when user starts typing in phone number field
+    if (field === 'phoneNumber' && generalError) {
+      setGeneralError('');
     }
   };
 
@@ -216,11 +279,15 @@ export default function AccountSettingsPage() {
         if (phoneChanged) {
           const phoneError = validateField('phoneNumber', formData.phoneNumber);
           if (phoneError) {
-            validationErrors.push(phoneError);
+            // Set specific phone number error message
+            setErrors(prev => ({ ...prev, phoneNumber: phoneError }));
+            setGeneralError(phoneError);
+            setIsSaving(false);
+            return;
           }
         }
 
-        // If there are validation errors, show general error and return
+        // If there are validation errors (for email), show general error and return
         if (validationErrors.length > 0) {
           setGeneralError('Unable to update profile. Please try again later.');
           setIsSaving(false);
@@ -250,6 +317,16 @@ export default function AccountSettingsPage() {
               name: selectedCountryData.name,
             };
           }
+        }
+
+        // Include country change if it changed
+        if (countryChanged) {
+          updateData.userCountry = country;
+        }
+
+        // Include name change if it changed
+        if (nameChanged) {
+          updateData.name = `${formData.firstName} ${formData.lastName}`.trim();
         }
 
         // If verification is already done, save directly
@@ -357,19 +434,42 @@ export default function AccountSettingsPage() {
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium mb-1">Country</label>
-                <div className="relative">
-                  <select
-                    className="w-full p-3 bg-gray-50 rounded-md appearance-none pr-10"
-                    value={phoneCountry}
-                    onChange={e => setPhoneCountry(e.target.value)}
+                <div className="relative" ref={phoneCountrySelectRef}>
+                  <button
+                    ref={phoneCountryButtonRef}
+                    type="button"
+                    onClick={() => setShowPhoneCountryDropdown(!showPhoneCountryDropdown)}
+                    className="w-full p-3 bg-gray-50 rounded-md pr-10 text-left flex items-center justify-between cursor-pointer hover:bg-gray-100 transition-colors"
                   >
-                    {countriesData.map(country => (
-                      <option key={country.code} value={`${country.dial_code} (${country.code})`}>
-                        {country.dial_code} ({country.code})
-                      </option>
-                    ))}
-                  </select>
-                  <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-500" />
+                    <span>{phoneCountry}</span>
+                    <ChevronDown className={`h-5 w-5 text-gray-500 transition-transform ${showPhoneCountryDropdown ? 'transform rotate-180' : ''}`} />
+                  </button>
+                  {showPhoneCountryDropdown && (
+                    <div 
+                      ref={phoneCountryDropdownRef}
+                      className="fixed bg-white border border-gray-200 rounded-md shadow-lg max-h-60 overflow-y-auto z-[1000]"
+                      style={{ 
+                        position: 'fixed',
+                        zIndex: 1000
+                      }}
+                    >
+                      {countriesData.map(country => (
+                        <button
+                          key={country.code}
+                          type="button"
+                          onClick={() => {
+                            setPhoneCountry(`${country.dial_code} (${country.code})`);
+                            setShowPhoneCountryDropdown(false);
+                          }}
+                          className={`w-full text-left px-4 py-2 hover:bg-gray-100 transition-colors ${
+                            phoneCountry === `${country.dial_code} (${country.code})` ? 'bg-gray-50 font-medium' : ''
+                          }`}
+                        >
+                          {country.dial_code} ({country.code})
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -378,49 +478,79 @@ export default function AccountSettingsPage() {
                 <div className="relative">
                   <input
                     type="tel"
-                    className="w-full p-3 bg-gray-50 rounded-md"
+                    className={`w-full p-3 bg-gray-50 rounded-md ${
+                      errors.phoneNumber ? 'border-2 border-red-500' : ''
+                    }`}
                     value={formData.phoneNumber}
                     onChange={e => handleInputChange('phoneNumber', e.target.value)}
                   />
-                  <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                    <div className="border-2 border-[#22C55E] rounded-full">
-                      <svg
-                        width="20"
-                        height="20"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          d="M20 6L9 17L4 12"
-                          stroke="#22C55E"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
+                  {!errors.phoneNumber && (
+                    <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                      <div className="border-2 border-[#22C55E] rounded-full">
+                        <svg
+                          width="20"
+                          height="20"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M20 6L9 17L4 12"
+                            stroke="#22C55E"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                      </div>
                     </div>
-                  </div>
+                  )}
                 </div>
+                {errors.phoneNumber && (
+                  <div className="mt-1 text-sm text-red-500">{errors.phoneNumber}</div>
+                )}
               </div>
             </div>
           </div>
 
           <div className="mt-6">
             <label className="block text-sm font-medium mb-1">Country</label>
-            <div className="relative w-full md:w-1/2">
-              <select
-                className="w-full p-3 bg-gray-50 rounded-md appearance-none pr-10"
-                value={country}
-                onChange={e => setCountry(e.target.value)}
+            <div className="relative w-full md:w-1/2" ref={countrySelectRef}>
+              <button
+                ref={countryButtonRef}
+                type="button"
+                onClick={() => setShowCountryDropdown(!showCountryDropdown)}
+                className="w-full p-3 bg-gray-50 rounded-md pr-10 text-left flex items-center justify-between cursor-pointer hover:bg-gray-100 transition-colors"
               >
-                {countriesData.map(countryData => (
-                  <option key={countryData.code} value={countryData.name}>
-                    {countryData.name}
-                  </option>
-                ))}
-              </select>
-              <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-500" />
+                <span>{country}</span>
+                <ChevronDown className={`h-5 w-5 text-gray-500 transition-transform ${showCountryDropdown ? 'transform rotate-180' : ''}`} />
+              </button>
+              {showCountryDropdown && (
+                <div 
+                  ref={countryDropdownRef}
+                  className="fixed bg-white border border-gray-200 rounded-md shadow-lg max-h-60 overflow-y-auto z-[1000]"
+                  style={{ 
+                    position: 'fixed',
+                    zIndex: 1000
+                  }}
+                >
+                  {countriesData.map(countryData => (
+                    <button
+                      key={countryData.code}
+                      type="button"
+                      onClick={() => {
+                        setCountry(countryData.name);
+                        setShowCountryDropdown(false);
+                      }}
+                      className={`w-full text-left px-4 py-2 hover:bg-gray-100 transition-colors ${
+                        country === countryData.name ? 'bg-gray-50 font-medium' : ''
+                      }`}
+                    >
+                      {countryData.name}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
 
