@@ -360,7 +360,7 @@ export default function CheckoutPage() {
               modificationId: appliedMod.modificationId,
               modificationDescription: appliedMod.modificationDescription,
               isRequired: false, // We don't have this info in cart, but it's historical so it's ok
-              options: appliedMod.appliedOptions.map(opt => ({
+              options: appliedMod.appliedOptions?.map(opt => ({
                 optionId: opt.optionId,
                 optionName: opt.optionName,
                 optionDescription: undefined,
