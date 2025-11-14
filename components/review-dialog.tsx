@@ -60,7 +60,15 @@ export default function ReviewDialog({
       // Add event listener for Escape key
       const handleEscapeKey = (event: KeyboardEvent) => {
         if (event.key === 'Escape') {
-          onClose();
+          if (showSuccess) {
+            // If showing success, call handleDone to trigger onSubmit callback
+            if (onSubmit) {
+              onSubmit(submittedRating, submittedText);
+            }
+            onClose();
+          } else {
+            onClose();
+          }
         }
       };
 
@@ -78,7 +86,7 @@ export default function ReviewDialog({
         document.removeEventListener('keydown', handleEscapeKey);
       };
     }
-  }, [isOpen, onClose]);
+  }, [isOpen, onClose, showSuccess, onSubmit, submittedRating, submittedText]);
 
   // Reset rating and form state when dialog opens with a new defaultRating
   useEffect(() => {
@@ -139,10 +147,13 @@ export default function ReviewDialog({
     // Clear any errors if validation passes
     setError({ type: null, message: null });
 
-    // Prefer consumer callback if provided, fallback to adding to review store
-    if (onSubmit) {
-      onSubmit(rating, reviewText.trim())
-    } else if (vendorId && currentUser) {
+    // Store submitted data for success message FIRST
+    setSubmittedRating(rating);
+    setSubmittedText(reviewText.trim());
+    setShowSuccess(true);
+
+    // If no onSubmit callback, add to review store immediately
+    if (!onSubmit && vendorId && currentUser) {
       // Legacy behavior: Add review to store if vendorId is provided
       addReview({
         vendorId: vendorId,
@@ -159,11 +170,15 @@ export default function ReviewDialog({
         likedItems: [],
       });
     }
+    // Note: onSubmit callback will be called when user clicks "Done" on success screen
+  };
 
-    // Store submitted data for success message
-    setSubmittedRating(rating);
-    setSubmittedText(reviewText.trim());
-    setShowSuccess(true);
+  const handleDone = () => {
+    // If onSubmit callback was provided, call it now (after showing success message)
+    if (onSubmit) {
+      onSubmit(submittedRating, submittedText);
+    }
+    onClose();
   };
 
   return (
@@ -174,7 +189,7 @@ export default function ReviewDialog({
       >
         <div className="pt-6 pb-4">
           <button
-            onClick={onClose}
+            onClick={showSuccess ? handleDone : onClose}
             className={`absolute top-6 ${showSuccess ? 'left-4' : 'left-6'}`}
             aria-label="Close dialog"
           >
@@ -247,7 +262,7 @@ export default function ReviewDialog({
               {/* Done Button */}
               <div className="flex justify-end px-4 border-t border-gray-200 pt-4">
                 <button
-                  onClick={onClose}
+                  onClick={handleDone}
                   className="px-3 py-2 rounded-full text-white font-bold text-base bg-red-500 hover:bg-red-600"
                 >
                   Done
