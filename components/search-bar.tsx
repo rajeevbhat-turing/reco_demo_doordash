@@ -54,12 +54,14 @@ const SearchBar = () => {
 
   // Get user's address for location-based search
   const currentUser = useUserStore(state => state.currentUser)
-  const defaultAddress = currentUser?.addresses.find(a => a.default)
+  const tempAddress = useUserStore(state => state.getTempAddress())
+  const defaultAddress = currentUser?.addresses?.find(a => a.default)
+  const activeAddress = defaultAddress || tempAddress
 
   // Fetch restaurants near user's address
   const { data: restaurants } = useRestaurants(
-    defaultAddress?.lat,
-    defaultAddress?.lng,
+    activeAddress?.lat,
+    activeAddress?.lng,
     10 // 10 mile radius
   )
 
