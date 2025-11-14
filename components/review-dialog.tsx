@@ -80,6 +80,17 @@ export default function ReviewDialog({
     }
   }, [isOpen, onClose]);
 
+  // Reset rating and form state when dialog opens with a new defaultRating
+  useEffect(() => {
+    if (isOpen) {
+      setRating(defaultRating || 0);
+      setHoverRating(0);
+      setReviewText('');
+      setError({ type: null, message: null });
+      setShowSuccess(false);
+    }
+  }, [isOpen, defaultRating]);
+
   if (!isOpen) return null;
 
   // Highlights stars on hover for better UX

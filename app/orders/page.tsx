@@ -19,6 +19,7 @@ export default function Orders() {
   const [activeTab, setActiveTab] = useState<'Personal' | 'Business'>('Personal')
   const [mounted, setMounted] = useState(false)
   const [reviewingOrder, setReviewingOrder] = useState<Order | null>(null)
+  const [selectedRating, setSelectedRating] = useState<number>(0)
   
   // Get user address for fetching restaurants
   const currentUser = useUserStore(state => state.currentUser)
@@ -225,14 +226,23 @@ export default function Orders() {
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-1">
                         {[1, 2, 3, 4, 5].map((starNum) => (
-                          <Star 
-                            key={starNum} 
-                            className={`w-5 h-5 ${
-                              order.rating && starNum <= order.rating
-                                ? 'text-gray-900 fill-gray-900'
-                                : 'text-gray-300 fill-gray-200'
-                            }`}
-                          />
+                          <button
+                            key={starNum}
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              setSelectedRating(starNum)
+                              setReviewingOrder(order)
+                            }}
+                            className="focus:outline-none"
+                          >
+                            <Star 
+                              className={`w-5 h-5 ${
+                                order.rating && starNum <= order.rating
+                                  ? 'text-gray-900 fill-gray-900'
+                                  : 'text-gray-300 fill-gray-200'
+                              }`}
+                            />
+                          </button>
                         ))}
                         {order.rating && order.reviewDate ? (
                           <span className="text-gray-900 text-sm ml-1">
@@ -241,7 +251,11 @@ export default function Orders() {
                         ) : (
                           <button
                             className="text-gray-600 text-sm ml-1 underline underline-offset-2"
-                            onClick={(e) => { e.stopPropagation(); setReviewingOrder(order) }}
+                            onClick={(e) => { 
+                              e.stopPropagation()
+                              setSelectedRating(0)
+                              setReviewingOrder(order) 
+                            }}
                           >
                             • Leave a review
                           </button>
@@ -308,10 +322,17 @@ export default function Orders() {
       {reviewingOrder && (
         <ReviewDialog
           isOpen={true}
-          onClose={() => setReviewingOrder(null)}
+          onClose={() => {
+            setReviewingOrder(null)
+            setSelectedRating(0)
+          }}
           restaurantName={getStoreName(reviewingOrder)}
+          vendorId={reviewingOrder.storeId || reviewingOrder.restaurantId}
+          defaultRating={selectedRating}
           onSubmit={(rating, text) => {
             updateOrderReview(reviewingOrder.id, rating, text)
+            setReviewingOrder(null)
+            setSelectedRating(0)
           }}
         />
       )}

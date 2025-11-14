@@ -411,7 +411,7 @@ export default function RestaurantPage() {
             </div>
           </div>
         )}
-        <div className="absolute top-4 right-4">
+        {/* <div className="absolute top-4 right-4">
           <button
             className="bg-white rounded-full p-2 flex items-center gap-2 shadow-md hover:bg-gray-50 transition-colors"
             onClick={e => {
@@ -422,7 +422,7 @@ export default function RestaurantPage() {
             <Heart className={`h-5 w-5 ${isSaved ? 'fill-red-500 text-red-500' : ''}`} />
             <span className="font-medium pr-1">Save</span>
           </button>
-        </div>
+        </div> */}
       </div>
 
       {/* Restaurant Info */}
