@@ -403,47 +403,51 @@ const FilterOptions = forwardRef<FilterOptionsRef, FilterOptionsProps>(
               {cuisineDropdownOpen && (
                 <div
                   ref={cuisineDropdownPositionedRef}
-                  className="fixed z-50 w-[400px] bg-white rounded-lg shadow-lg p-6 max-h-[500px] overflow-y-auto"
+                  className="fixed z-50 w-[400px] bg-white rounded-lg shadow-lg flex flex-col max-h-[500px]"
                 >
-                  <h3 className="text-xl font-bold mb-6">Cuisine</h3>
-                  <div className="space-y-2 mb-6">
-                    {[
-                      "American",
-                      "Italian",
-                      "Asian",
-                      "Mexican",
-                      "Chinese",
-                      "Japanese",
-                      "Indian",
-                      "Thai",
-                      "Mediterranean",
-                      "French",
-                      "Greek",
-                      "Korean",
-                      "Vietnamese",
-                      "Middle Eastern",
-                      "Spanish",
-                      "Seafood",
-                      "Steakhouse",
-                      "Pizza",
-                      "Fast Food",
-                      "Barbecue",
-                    ].map((cuisine) => (
-                      <button
-                        key={cuisine}
-                        className={`w-full px-4 py-3 rounded-lg text-left text-sm font-medium flex items-center justify-between ${
-                          selectedCuisines.includes(cuisine)
-                            ? "bg-black text-white"
-                            : "bg-gray-100 text-gray-900 hover:bg-gray-200"
-                        }`}
-                        onClick={() => handleCuisineToggle(cuisine)}
-                      >
-                        <span>{cuisine}</span>
-                        {selectedCuisines.includes(cuisine) && <Check className="h-4 w-4" />}
-                      </button>
-                    ))}
+                  <div className="p-6 pb-4 flex-shrink-0">
+                    <h3 className="text-xl font-bold mb-6">Cuisine</h3>
                   </div>
-                  <div className="flex justify-between">
+                  <div className="flex-1 overflow-y-auto px-6 pb-4 min-h-0">
+                    <div className="space-y-2">
+                      {[
+                        "American",
+                        "Italian",
+                        "Asian",
+                        "Mexican",
+                        "Chinese",
+                        "Japanese",
+                        "Indian",
+                        "Thai",
+                        "Mediterranean",
+                        "French",
+                        "Greek",
+                        "Korean",
+                        "Vietnamese",
+                        "Middle Eastern",
+                        "Spanish",
+                        "Seafood",
+                        "Steakhouse",
+                        "Pizza",
+                        "Fast Food",
+                        "Barbecue",
+                      ].map((cuisine) => (
+                        <button
+                          key={cuisine}
+                          className={`w-full px-4 py-3 rounded-lg text-left text-sm font-medium flex items-center justify-between ${
+                            selectedCuisines.includes(cuisine)
+                              ? "bg-black text-white"
+                              : "bg-gray-100 text-gray-900 hover:bg-gray-200"
+                          }`}
+                          onClick={() => handleCuisineToggle(cuisine)}
+                        >
+                          <span>{cuisine}</span>
+                          {selectedCuisines.includes(cuisine) && <Check className="h-4 w-4" />}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="flex justify-between p-6 pt-4 border-t border-gray-100 bg-white flex-shrink-0 rounded-b-lg">
                     <button className="text-gray-900 font-medium" onClick={resetCuisineFilter}>
                       Reset
                     </button>
@@ -485,36 +489,40 @@ const FilterOptions = forwardRef<FilterOptionsRef, FilterOptionsProps>(
               {dietaryDropdownOpen && (
                 <div
                   ref={dietaryDropdownPositionedRef}
-                  className="fixed z-50 w-[400px] bg-white rounded-lg shadow-lg p-6 max-h-[500px] overflow-y-auto"
+                  className="fixed z-50 w-[400px] bg-white rounded-lg shadow-lg flex flex-col max-h-[500px]"
                 >
-                  <h3 className="text-xl font-bold mb-6">Dietary Preferences</h3>
-                  <div className="space-y-2 mb-6">
-                    {[
-                      "Vegan",
-                      "Vegetarian",
-                      "Gluten-free",
-                      "Halal",
-                      "Kosher",
-                      "Dairy-free",
-                      "Nut-free",
-                      "Low-carb",
-                      "Keto-friendly",
-                    ].map((dietary) => (
-                      <button
-                        key={dietary}
-                        className={`w-full px-4 py-3 rounded-lg text-left text-sm font-medium flex items-center justify-between ${
-                          selectedDietaryPreferences.includes(dietary)
-                            ? "bg-black text-white"
-                            : "bg-gray-100 text-gray-900 hover:bg-gray-200"
-                        }`}
-                        onClick={() => handleDietaryToggle(dietary)}
-                      >
-                        <span>{dietary}</span>
-                        {selectedDietaryPreferences.includes(dietary) && <Check className="h-4 w-4" />}
-                      </button>
-                    ))}
+                  <div className="p-6 pb-4 flex-shrink-0">
+                    <h3 className="text-xl font-bold mb-6">Dietary Preferences</h3>
                   </div>
-                  <div className="flex justify-between">
+                  <div className="flex-1 overflow-y-auto px-6 pb-4 min-h-0">
+                    <div className="space-y-2">
+                      {[
+                        "Vegan",
+                        "Vegetarian",
+                        "Gluten-free",
+                        "Halal",
+                        "Kosher",
+                        "Dairy-free",
+                        "Nut-free",
+                        "Low-carb",
+                        "Keto-friendly",
+                      ].map((dietary) => (
+                        <button
+                          key={dietary}
+                          className={`w-full px-4 py-3 rounded-lg text-left text-sm font-medium flex items-center justify-between ${
+                            selectedDietaryPreferences.includes(dietary)
+                              ? "bg-black text-white"
+                              : "bg-gray-100 text-gray-900 hover:bg-gray-200"
+                          }`}
+                          onClick={() => handleDietaryToggle(dietary)}
+                        >
+                          <span>{dietary}</span>
+                          {selectedDietaryPreferences.includes(dietary) && <Check className="h-4 w-4" />}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="flex justify-between p-6 pt-4 border-t border-gray-100 bg-white flex-shrink-0 rounded-b-lg">
                     <button className="text-gray-900 font-medium" onClick={resetDietaryFilter}>
                       Reset
                     </button>
