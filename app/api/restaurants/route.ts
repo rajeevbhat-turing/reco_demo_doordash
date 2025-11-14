@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { calculateDeliveryTime, checkIfOpen, formatHours } from '@/lib/utils/restaurant-utils';
+import { getImageWithFallback } from '@/constants/image-placeholders';
 
 /**
  * GET /api/restaurants
@@ -112,9 +113,9 @@ export async function GET(request: NextRequest) {
       return {
         id: String(r.id),
         name: r.name,
-        logo: r.logo,
-        banner: r.banner,
-        detailsBanner: r.details_banner || undefined,
+        logo: getImageWithFallback(r.logo, 'logo'),
+        banner: getImageWithFallback(r.banner, 'image'),
+        detailsBanner: r.details_banner ? getImageWithFallback(r.details_banner, 'image') : undefined,
         rating: r.avg_rating ? parseFloat(r.avg_rating.toFixed(1)) : null,
         reviews: r.total_rating_count ? `${r.total_rating_count}+ ratings` : null,
         distance: `${distance.toFixed(1)} mi`,

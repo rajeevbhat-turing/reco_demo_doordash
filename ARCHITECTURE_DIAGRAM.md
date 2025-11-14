@@ -441,10 +441,6 @@ doordash-1/
 │   ├── modal-data.ts          # Modal configuration
 │   └── ui-config.ts           # UI configuration
 │
-├── scripts/                     # Build & Utility Scripts
-│   ├── init-db.js             # Database initialization
-│   └── [other scripts]        # Other utility scripts
-│
 ├── docs/                        # Documentation
 │   ├── README.md              # Main docs
 │   └── [other docs]           # Additional documentation

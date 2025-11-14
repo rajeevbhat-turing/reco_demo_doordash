@@ -173,7 +173,7 @@ interface PersistedCartStore {
 }
 
 // Custom hook that integrates with our persisted state system
-export function usePersistedCartStore(runId: string = 'default-cart-run') {
+export function usePersistedCartStore() {
   // Use our persisted state hook for cart items
   const [items, setItems] = usePersistedState<CartItem[]>('persisted-cart', []);
   const [currentCategory, setCurrentCategory] = usePersistedState<CartCategory>('persisted-cart_category', 'grocery');

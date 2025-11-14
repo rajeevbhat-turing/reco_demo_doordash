@@ -262,7 +262,7 @@ interface CartStore {
 }
 
 // Custom hook that integrates SQLite persistence with the existing cart store
-export function useCartStoreWithSQLite(runId: string = 'main-app-cart') {
+export function useCartStoreWithSQLite() {
   // Use our persisted state hook for cart items
   const [items, setItems] = usePersistedState<CartItem[]>('cart', []);
   const [currentCategory, setCurrentCategory] = usePersistedState<CartCategory>('cart_category', 'grocery');

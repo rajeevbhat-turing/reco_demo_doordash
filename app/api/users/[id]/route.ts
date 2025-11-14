@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
+import { getImageWithFallback } from '@/constants/image-placeholders';
 
 /**
  * GET /api/users/[id]
@@ -111,7 +112,7 @@ export async function GET(
         name: user.country_name,
       },
       userCountry: user.country_name,
-      avatar: user.avatar,
+      avatar: getImageWithFallback(user.avatar, 'user'),
       is_restricted: Boolean(user.is_restricted),
       addresses: addresses.map(addr => ({
         id: String(addr.id),

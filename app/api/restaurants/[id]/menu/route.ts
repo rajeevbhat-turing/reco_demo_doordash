@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
+import { getImageWithFallback } from '@/constants/image-placeholders';
 
 export async function GET(
   request: NextRequest,
@@ -144,7 +145,7 @@ export async function GET(
         name: item.name,
         description: item.description || null,
         price: priceDisplay,
-        image: item.image,
+        image: getImageWithFallback(item.image, 'image'),
         category: item.category_name,
         calories: item.calories ? String(item.calories) : undefined,
         rating: item.rating || null,

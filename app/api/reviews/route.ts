@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
+import { getImageWithFallback } from '@/constants/image-placeholders';
 
 /**
  * GET /api/reviews
@@ -121,7 +122,8 @@ export async function GET(request: NextRequest) {
       if (!photosByReview.has(photo.review_id)) {
         photosByReview.set(photo.review_id, []);
       }
-      photosByReview.get(photo.review_id)!.push(photo.url);
+      const validUrl = getImageWithFallback(photo.url, 'image');
+      photosByReview.get(photo.review_id)!.push(validUrl);
     });
 
     // Group helpful ratings by review_id
@@ -143,7 +145,7 @@ export async function GET(request: NextRequest) {
         id: String(item.order_item_id),
         name: item.item_name,
         restaurantId: String(item.restaurant_id),
-        image: item.item_image,
+        image: getImageWithFallback(item.item_image, 'image'),
       });
     });
 
@@ -152,11 +154,11 @@ export async function GET(request: NextRequest) {
       id: String(review.id),
       vendorId: String(review.store_id),
       vendorName: review.store_name,
-      vendorLogo: review.store_logo || undefined,
+      vendorLogo: getImageWithFallback(review.store_logo, 'logo'),
       userId: String(review.user_id),
       userName: review.user_name,
       userEmail: review.user_email,
-      userAvatar: review.user_avatar || null,
+      userAvatar: getImageWithFallback(review.user_avatar, 'user'),
       rating: review.rating,
       content: review.content,
       timestamp: review.timestamp,

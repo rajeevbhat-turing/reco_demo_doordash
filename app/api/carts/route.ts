@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
+import { getImageWithFallback } from '@/constants/image-placeholders';
 
 export async function GET(request: NextRequest) {
   try {
@@ -165,7 +166,7 @@ export async function GET(request: NextRequest) {
         id: String(ci.menu_item_id), // Use menu_item_id as the cart item ID
         itemName: menuItem.name,
         price: `$${(menuItem.price / 100).toFixed(2)}`,
-        image: menuItem.image,
+        image: getImageWithFallback(menuItem.image, 'image'),
         quantity: ci.quantity,
         customizations: ci.customizations,
         appliedModifications: appliedModifications,

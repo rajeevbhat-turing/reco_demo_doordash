@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
+import { getImageWithFallback } from '@/constants/image-placeholders';
 
 /**
  * GET /api/reviews/review/[reviewId]
@@ -89,22 +90,22 @@ export async function GET(
       id: String(review.id),
       vendorId: String(review.store_id),
       vendorName: review.store_name,
-      vendorLogo: review.store_logo || undefined,
+      vendorLogo: getImageWithFallback(review.store_logo, 'logo'),
       userId: String(review.user_id),
       userName: review.user_name,
       userEmail: review.user_email,
-      userAvatar: review.user_avatar || null,
+      userAvatar: getImageWithFallback(review.user_avatar, 'user'),
       rating: review.rating,
       content: review.content,
       timestamp: review.timestamp,
-      photos: photos.map((p: any) => p.url),
+      photos: photos.map((p: any) => getImageWithFallback(p.url, 'image')),
       ratedHelpfulBy: helpfulRatings.map((hr: any) => String(hr.user_id)),
       orderId: review.order_id ? String(review.order_id) : undefined,
       likedItems: likedItems.map((item: any) => ({
         id: String(item.order_item_id),
         name: item.item_name,
         restaurantId: String(item.restaurant_id),
-        image: item.item_image,
+        image: getImageWithFallback(item.item_image, 'image'),
       })),
       approvalStatus: review.approval_status as 'approved' | 'rejected' | 'pending',
     };
