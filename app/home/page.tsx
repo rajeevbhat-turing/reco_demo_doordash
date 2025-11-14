@@ -42,7 +42,7 @@ export default function Home() {
     useUserStore.subscribe,
     () => useUserStore.getState().isAuthenticated(),
     () => false // fallback for SSR
-  )
+  );
 
   // Get user's address for location-based filtering
   const currentUser = useUserStore(state => state.currentUser);
@@ -53,13 +53,17 @@ export default function Home() {
     useUserStore.subscribe,
     () => useUserStore.getState().getTempAddress(),
     () => null // fallback for SSR
-  )
+  );
 
   // Determine which address to use: logged-in user's default address or guest's temp address
-  const activeAddress = isAuthenticated ? defaultAddress : tempAddress
+  const activeAddress = isAuthenticated ? defaultAddress : tempAddress;
 
   // Fetch restaurants near user's address
-  const { data: restaurants, isLoading: isLoadingRestaurants, error: restaurantsError } = useRestaurants(
+  const {
+    data: restaurants,
+    isLoading: isLoadingRestaurants,
+    error: restaurantsError,
+  } = useRestaurants(
     activeAddress?.lat,
     activeAddress?.lng,
     10 // 10 mile radius
@@ -71,23 +75,18 @@ export default function Home() {
   }, []);
 
   // Get address from user store for location filtering
-  const { getAddresses, getTempAddress, isAuthenticated } = useUserStore()
-  const addresses = getAddresses()
-  const tempAddress = useSyncExternalStore(
-    useUserStore.subscribe,
-    () => useUserStore.getState().getTempAddress(),
-    () => null
-  )
-  const userIsAuthenticated = isAuthenticated()
-  
+  const { getAddresses, getTempAddress } = useUserStore();
+  const addresses = getAddresses();
+  const userIsAuthenticated = isAuthenticated;
+
   // Get active address (selected address for authenticated users, temp address for non-authenticated)
   const selectedAddress = useMemo(() => {
     if (userIsAuthenticated && addresses.length > 0) {
       // Find default address or use first address
-      return addresses.find(a => a.default) || addresses[0] || null
+      return addresses.find(a => a.default) || addresses[0] || null;
     }
-    return null
-  }, [userIsAuthenticated, addresses])
+    return null;
+  }, [userIsAuthenticated, addresses]);
 
   // Function to check if an image URL is valid (not placeholder/empty)
   const hasValidLogo = (logoUrl: string | undefined): boolean => {
@@ -131,25 +130,25 @@ export default function Home() {
 
   // Group restaurants by their section field from the database
   const restaurantsBySection = useMemo(() => {
-    const sections: { [key: string]: Restaurant[] } = {}
-    
-    actualRestaurants.forEach((restaurant) => {
-      const section = restaurant.section || 'Other'
+    const sections: { [key: string]: Restaurant[] } = {};
+
+    actualRestaurants.forEach(restaurant => {
+      const section = restaurant.section || 'Other';
       if (!sections[section]) {
-        sections[section] = []
+        sections[section] = [];
       }
       if (hasValidLogo(restaurant.logo)) {
-        sections[section].push(restaurant)
+        sections[section].push(restaurant);
       }
-    })
-    
+    });
+
     // Limit each section to 8 restaurants
     Object.keys(sections).forEach(key => {
-      sections[key] = sections[key].slice(0, 8)
-    })
-    
-    return sections
-  }, [actualRestaurants])
+      sections[key] = sections[key].slice(0, 8);
+    });
+
+    return sections;
+  }, [actualRestaurants]);
 
   // Legacy sections for backward compatibility and filtering
   const nationalFavorites = useMemo(() => {
@@ -554,41 +553,40 @@ export default function Home() {
                 ))}
               </div>
             ) : (
-                <div className="mt-10 py-16 text-center bg-gray-50 rounded-lg">
-                  <h3 className="text-lg font-medium text-gray-700">No restaurants match your filters</h3>
-                  <p className="text-gray-500 mt-2">Try adjusting your filters to see more options</p>
-                  <button
-                    onClick={handleReset}
-                    className="mt-4 bg-red-600 text-white px-6 py-2 rounded-full text-sm font-medium"
-                  >
-                    Reset Filters
-                  </button>
-                </div>
-              )}
-            </div>
-          ) : (
-            // Show dynamic sections from database
-            <>
-              {Object.entries(restaurantsBySection)
-                .filter(([_, restaurants]) => restaurants.length > 0)
-                .map(([sectionName, restaurants]) => (
-                  <RestaurantSection
-                    key={sectionName}
-                    title={sectionName}
-                    restaurants={restaurants}
-                  />
-                ))}
-
-              {/* Fallback: Show all stores if no sections exist */}
-              {Object.keys(restaurantsBySection).length === 0 && (
+              <div className="mt-10 py-16 text-center bg-gray-50 rounded-lg">
+                <h3 className="text-lg font-medium text-gray-700">
+                  No restaurants match your filters
+                </h3>
+                <p className="text-gray-500 mt-2">Try adjusting your filters to see more options</p>
+                <button
+                  onClick={handleReset}
+                  className="mt-4 bg-red-600 text-white px-6 py-2 rounded-full text-sm font-medium"
+                >
+                  Reset Filters
+                </button>
+              </div>
+            )}
+          </div>
+        ) : (
+          // Show dynamic sections from database
+          <>
+            {Object.entries(restaurantsBySection)
+              .filter(([_, restaurants]) => restaurants.length > 0)
+              .map(([sectionName, restaurants]) => (
                 <RestaurantSection
-                  title="All stores"
-                  restaurants={allStores}
+                  key={sectionName}
+                  title={sectionName}
+                  restaurants={restaurants}
                 />
-              )}
-            </>
-          )}
-        </div>
+              ))}
+
+            {/* Fallback: Show all stores if no sections exist */}
+            {Object.keys(restaurantsBySection).length === 0 && (
+              <RestaurantSection title="All stores" restaurants={allStores} />
+            )}
+          </>
+        )}
       </div>
+    </div>
   );
 }
