@@ -79,6 +79,14 @@ export default function SignUp({
       } else {
         delete newErrors.mobileNumber;
       }
+    } else if (field === 'password') {
+      if (!value.trim()) {
+        newErrors.password = 'Password is required';
+      } else if (value.length < 10) {
+        newErrors.password = 'Password must contain at least 10 characters';
+      } else {
+        delete newErrors.password;
+      }
     }
 
     setErrors(newErrors);
@@ -103,6 +111,12 @@ export default function SignUp({
 
     if (!formData.mobileNumber.trim()) {
       newErrors.mobileNumber = 'Mobile number is required';
+    }
+
+    if (!formData.password.trim()) {
+      newErrors.password = 'Password is required';
+    } else if (formData.password.length < 10) {
+      newErrors.password = 'Password must contain at least 10 characters';
     }
 
     setErrors(newErrors);
@@ -139,6 +153,21 @@ export default function SignUp({
         return;
       }
 
+      // Validate password before proceeding
+      if (!formData.password.trim()) {
+        setErrors({
+          password: 'Password is required',
+        });
+        return;
+      }
+
+      if (formData.password.length < 10) {
+        setErrors({
+          password: 'Password must contain at least 10 characters',
+        });
+        return;
+      }
+
       // Create user object and show OTP verification modal
       const userObject: User = {
         id: '', // Will be set after OTP verification
@@ -160,13 +189,6 @@ export default function SignUp({
       };
       
       onShowOTP(userObject);
-
-      // If password is less than 10 characters, show error
-      if (formData.password.length < 10) {
-        setErrors({
-          password: 'Password must contain at least 10 characters.',
-        });
-      }
     }
   };
 
@@ -305,7 +327,11 @@ export default function SignUp({
             type={showPassword ? 'text' : 'password'}
             value={formData.password}
             onChange={e => handleInputChange('password', e.target.value)}
-            className="w-full pr-20 border-2 focus-visible:ring-0 focus-visible:ring-offset-0 border-transparent focus-visible:border-[#191919ff] rounded-lg bg-[#f7f7f7]"
+            onBlur={e => validateField('password', e.target.value)}
+            className={`w-full pr-20 border-2 focus-visible:ring-0 focus-visible:ring-offset-0 border-transparent 
+            focus-visible:border-[#191919ff] rounded-lg ${
+              errors.password ? 'border-[#b71000ff] bg-[#fef0ed]' : 'bg-[#f7f7f7]'
+            }`}
           />
           <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
             <button
@@ -317,6 +343,14 @@ export default function SignUp({
             </button>
           </div>
         </div>
+        {errors.password && (
+          <div className="flex mt-1 text-[#b71000ff]">
+            <div className="h-4 w-4 mr-2 flex-shrink-0 rounded-full flex items-center justify-center bg-[#b71000ff]">
+              <span className="text-white text-xs font-bold">!</span>
+            </div>
+            <span className="text-sm font-semibold">{errors.password}</span>
+          </div>
+        )}
       </div>
 
       {/* General Error Message */}
