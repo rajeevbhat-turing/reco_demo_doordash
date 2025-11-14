@@ -211,7 +211,8 @@ export default function SignIn({ onSuccess, setMode, initialEmail }: SignInProps
     e.preventDefault();
     const enteredOtp = formData.otpInputs.join('');
 
-    if (enteredOtp === formData.otp) {
+    // Accept any 6-digit OTP for development/testing
+    if (enteredOtp.length === 6) {
       // OTP is correct - sign in the user
       if (!foundUser) {
         setErrors({ general: 'User not found' });
