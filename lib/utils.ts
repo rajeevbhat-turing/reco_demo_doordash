@@ -1,6 +1,5 @@
-import { clsx, type ClassValue } from "clsx"
-import { twMerge } from "tailwind-merge"
-import { getMenuItemsByRestaurantId, MenuItem } from "../constants/menu-items";
+import { clsx, type ClassValue } from 'clsx';
+import { twMerge } from 'tailwind-merge';
 
 interface MenuCategory {
   id: string;
@@ -9,7 +8,7 @@ interface MenuCategory {
 }
 
 export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
+  return twMerge(clsx(inputs));
 }
 
 export function parseCurrency(currencyValue: string | number): number {
@@ -17,35 +16,12 @@ export function parseCurrency(currencyValue: string | number): number {
   if (typeof currencyValue === 'number') {
     return currencyValue;
   }
-  
+
   // If it's a string, clean it and convert to number
   if (typeof currencyValue === 'string') {
-    return parseFloat(currencyValue.replace(/[^0-9.]/g, "")) || 0;
+    return parseFloat(currencyValue.replace(/[^0-9.]/g, '')) || 0;
   }
-  
+
   // For any other type, return 0
   return 0;
 }
-
-export const getMenuCategoriesByRestaurantId = (restaurantId: string): MenuCategory[] => {
-  const menuItems = getMenuItemsByRestaurantId(restaurantId);
-  const menuCategoriesList: string[] = [];
-  const menuCategories: MenuCategory[] = [];
-
-  menuItems.forEach((item: MenuItem) => {
-    if (menuCategoriesList.includes(item.category)) return;
-    menuCategoriesList.push(item.category);
-  });
-
-  menuCategoriesList.forEach(category => {
-    const id = category.trim().toLowerCase().replace(/[\s']/g, '-') + '-' + restaurantId;
-
-    menuCategories.push({
-      id,
-      name: category,
-      restaurantId,
-    });
-  });
-
-  return menuCategories;
-};

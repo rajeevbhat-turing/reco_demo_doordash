@@ -109,15 +109,7 @@ export default function Orders() {
   }
 
   if (!mounted) {
-    return (
-      <div className="max-w-[1200px] mx-auto px-8 pt-24 pb-12">
-        <h1 className="text-3xl font-bold mb-6">Orders</h1>
-        <div className="mb-6">
-          <h2 className="text-2xl font-semibold mb-4">Completed</h2>
-          <p className="text-gray-500">Loading orders...</p>
-        </div>
-      </div>
-    )
+    return null
   }
 
   return (
