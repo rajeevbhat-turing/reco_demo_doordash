@@ -2,11 +2,10 @@ import { create } from "zustand"
 import { devtools } from "zustand/middleware"
 import type { Product } from "@/types"
 import { restaurants } from "@/constants/restaurants"
-import { convenienceStores } from "@/data/convenience-store-data"
 import { usePersistedState } from "@/lib/hooks/usePersistedState"
 
 // Define supported cart categories
-export type CartCategory = "restaurant" | "grocery" | "retail" | "pets" | "convenience"
+export type CartCategory = "restaurant"
 
 // Base cart item interface
 export interface CartItem {
@@ -174,7 +173,7 @@ interface PersistedCartStore {
 }
 
 // Custom hook that integrates with our persisted state system
-export function usePersistedCartStore(runId: string = 'default-cart-run') {
+export function usePersistedCartStore() {
   // Use our persisted state hook for cart items
   const [items, setItems] = usePersistedState<CartItem[]>('persisted-cart', []);
   const [currentCategory, setCurrentCategory] = usePersistedState<CartCategory>('persisted-cart_category', 'grocery');

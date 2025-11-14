@@ -369,7 +369,7 @@ export default function MenuItemDialog({ isOpen, onClose, item }: MenuItemDialog
   
     // Add the item to cart
     const cartItem = {
-      id: `${item.id}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      id: item.id, // Use database ID directly
       itemName: item.name,
       price: totalPrice.toFixed(2),
       image: item.image,
@@ -667,6 +667,17 @@ function ModificationOptionCard({
           >
             <Plus className="h-4 w-4" />
           </button>
+          {option.image && (
+            <div className="ml-2 flex-shrink-0">
+              <Image
+                src={option.image}
+                alt={option.name}
+                width={48}
+                height={48}
+                className="rounded-lg object-cover min-h-[48px]"
+              />
+            </div>
+          )}
         </div>
       </div>
     )
@@ -724,6 +735,19 @@ function ModificationOptionCard({
           </p>
         )}
       </div>
+
+      {/* Optional Image on the far right */}
+      {option.image && (
+        <div className="flex-shrink-0">
+          <Image
+            src={option.image}
+            alt={option.name}
+            width={48}
+            height={48}
+            className="rounded-lg object-cover"
+          />
+        </div>
+      )}
     </button>
   )
 }

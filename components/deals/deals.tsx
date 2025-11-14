@@ -5,9 +5,8 @@ import Image from 'next/image';
 import { ChevronRight, ChevronLeft, ExternalLink } from 'lucide-react';
 import DealsModal from '../modals/deals-modal';
 import DealModal from '../modals/deal-modal';
-import { type Deal } from '@/constants/deals';
-import { DashDoorLogoMark } from '../common/Icons';
-import { useDealsStore } from '@/store/deals-store';
+import { type Deal } from '@/types/deal-types';
+import { useDealsByRestaurantId } from '@/lib/hooks/use-deals';
 
 interface DealsProps {
   restaurantId: string;
@@ -21,9 +20,8 @@ export default function Deals({ restaurantId }: DealsProps) {
   const [selectedDeal, setSelectedDeal] = useState<Deal | null>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
-  const { getDealsByRestaurantId } = useDealsStore();
-  // Get deals for this restaurant
-  const deals = getDealsByRestaurantId(restaurantId);
+  // Get deals for this restaurant from API
+  const { allDeals: deals, isLoading } = useDealsByRestaurantId(restaurantId);
 
   // Update scroll button states
   const updateScrollButtons = useCallback(() => {
@@ -107,8 +105,8 @@ export default function Deals({ restaurantId }: DealsProps) {
     }
   };
 
-  // If no deals exist, don't render anything
-  if (deals.length === 0) {
+  // If loading or no deals exist, don't render anything
+  if (isLoading || deals.length === 0) {
     return null;
   }
 
@@ -163,21 +161,25 @@ export default function Deals({ restaurantId }: DealsProps) {
           >
             {/* Icon */}
             <div className="flex-shrink-0">
-              {deal.icon ? (
-                <div className="w-12 h-12 flex items-center justify-center">
+              <div className="w-12 h-12 flex items-center justify-center">
+                {deal.id === 'dashpass-delivery-fee' ? (
                   <Image
-                    src={deal.icon}
+                    src="/dashpass-icon-green.svg"
                     alt={deal.title}
                     width={30}
                     height={30}
                     className="object-contain"
                   />
-                </div>
-              ) : (
-                <div className="w-12 h-12 rounded-full flex items-center justify-center">
-                  <DashDoorLogoMark color="#00838aff" width={25} height={20} />
-                </div>
-              )}
+                ) : (
+                  <Image
+                    src="/offer-icon.svg"
+                    alt={deal.title}
+                    width={30}
+                    height={30}
+                    className="object-contain"
+                  />
+                )}
+              </div>
             </div>
 
             {/* Text Content */}

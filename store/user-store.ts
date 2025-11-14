@@ -3,28 +3,29 @@
 import { create } from "zustand";
 import { persist, devtools } from "zustand/middleware";
 import { User, PaymentMethod, Address } from '@/lib/types/user-types';
-import { initialUsersData } from '@/constants/users-data';
 
 interface UserStore {
   // State
   users: User[];
   currentUser: User | null;
   changePasswordPhoneVerified: boolean;
+  deletedUserIds: string[]; // Track deleted user IDs to filter them out during login
   // Temporary address for non-authenticated users
   // This stores the address entered by users who are not signed in
   tempAddress: Address | null;
+  isInitialized: boolean; // Track if store has been initialized from DB
 
   // Actions
   getUser: (userId: string) => User | null;
+  getUserByEmail: (email: string) => User | null;
   getAllUsers: () => User[];
   setCurrentUser: (user: User | null) => void;
   addUser: (user: Omit<User, 'paymentMethods' | 'addresses'> & { paymentMethods?: PaymentMethod[]; addresses?: Address[] }, setAsCurrent: boolean) => void;
-  updateUser: (id: string, updatedUser: Partial<User>) => void;
+  fetchUserFromAPI: (userId: string) => Promise<User | null>;
+  updateUser: (id: string, updatedUser: Partial<User>) => Promise<void>;
   deleteUser: (id: string) => void;
-  restrictUser: (userId: string) => void;
-  unrestrictUser: (userId: string) => void;
-  addReviewToUser: (userId: string, reviewId: string) => void;
-  removeReviewFromUser: (userId: string, reviewId: string) => void;
+  restrictUser: (userId: string) => Promise<void>;
+  unrestrictUser: (userId: string) => Promise<void>;
   isAuthenticated: () => boolean;
   clearUsers: () => void;
   setChangePasswordPhoneVerified: (verified: boolean) => void;
@@ -50,15 +51,23 @@ export const useUserStore = create<UserStore>()(
     persist(
       (set, get) => ({
         // State
-        users: initialUsersData,
+        users: [],
         currentUser: null,
         changePasswordPhoneVerified: false,
+        deletedUserIds: [],
         tempAddress: null,
+        isInitialized: false,
 
         // Actions
         getUser: (userId: string) => {
           const state = get();
           return state.users.find(user => user.id === userId) || null;
+        },
+
+        getUserByEmail: (email: string) => {
+          const state = get();
+          const deletedIdsSet = new Set(state.deletedUserIds);
+          return state.users.find(user => user.email === email && !deletedIdsSet.has(user.id)) || null;
         },
 
         getAllUsers: () => {
@@ -67,22 +76,22 @@ export const useUserStore = create<UserStore>()(
         },
 
         setCurrentUser: (user: User | null) => {
-          
           // Clear tempAddress when signing in (existing user)
-          set({ 
+          set({
             currentUser: user,
             changePasswordPhoneVerified: user === null ? false : get().changePasswordPhoneVerified,
             tempAddress: null, // Clear temp address when signing in
+            isInitialized: user !== null ? true : get().isInitialized, // Mark as initialized when user logs in
           });
         },
 
         addUser: (user: Omit<User, 'paymentMethods' | 'addresses'> & { paymentMethods?: PaymentMethod[]; addresses?: Address[] }, setAsCurrent: boolean) => {
           const state = get();
           const tempAddress = state.tempAddress;
-          
+
           // Initialize addresses array
           let addresses: Address[] = [];
-          
+
           // If tempAddress exists, add it to the new user's addresses with default flag
           if (tempAddress) {
             const addressWithId: Address = {
@@ -92,14 +101,14 @@ export const useUserStore = create<UserStore>()(
             };
             addresses = [addressWithId];
           }
-          
+
           // Create user with addresses
           const newUser: User = {
             ...user,
             addresses: addresses,
             paymentMethods: user.paymentMethods || [],
           };
-          
+
           set((state) => ({
             users: [...state.users, newUser],
             tempAddress: null, // Clear temp address after adding it to the user,
@@ -107,70 +116,179 @@ export const useUserStore = create<UserStore>()(
           }));
         },
 
-        updateUser: (id: string, updatedUser: Partial<User>) => {
-          set((state) => ({
-            users: state.users.map(user =>
-              user.id === id ? { ...user, ...updatedUser } : user
-            ),
-            currentUser: state.currentUser?.id === id
-              ? { ...state.currentUser, ...updatedUser }
-              : state.currentUser
-          }));
+        // Helper function to fetch user from API
+        fetchUserFromAPI: async (userId: string): Promise<User | null> => {
+          try {
+            const response = await fetch(`/api/users/${userId}`);
+            const result = await response.json();
+
+            if (result.success && result.data) {
+              return result.data as User;
+            }
+            return null;
+          } catch (error) {
+            console.error('Failed to fetch user from API:', error);
+            return null;
+          }
+        },
+
+        updateUser: async (id: string, updatedUser: Partial<User>) => {
+          const state = get();
+          const isCurrentUser = state.currentUser?.id === id;
+
+          if (isCurrentUser && state.currentUser) {
+            // Case: ID is current user
+            const userExists = state.users.some(u => u.id === id);
+            const updatedCurrentUser: User = { ...state.currentUser, ...updatedUser };
+
+            if (userExists) {
+              // Update user in users array and current user
+              set({
+                users: state.users.map(user =>
+                  user.id === id ? updatedCurrentUser : user
+                ),
+                currentUser: updatedCurrentUser,
+              });
+            } else {
+              // Update current user and add to users array
+              set({
+                currentUser: updatedCurrentUser,
+                users: [...state.users, updatedCurrentUser],
+              });
+            }
+          } else {
+            // Case: ID is not current user
+            const userExists = state.users.some(u => u.id === id);
+
+            if (userExists) {
+              // Update user in users array
+              set({
+                users: state.users.map(user =>
+                  user.id === id ? { ...user, ...updatedUser } as User : user
+                ),
+              });
+            } else {
+              // Fetch user from API, update it, and add to users array
+              const fetchedUser = await get().fetchUserFromAPI(id);
+              if (fetchedUser) {
+                const updatedFetchedUser: User = { ...fetchedUser, ...updatedUser };
+                set({
+                  users: [...state.users, updatedFetchedUser],
+                });
+              }
+            }
+          }
         },
 
         deleteUser: (id: string) => {
-          set((state) => ({
-            users: state.users.filter(user => user.id !== id),
-            currentUser: state.currentUser?.id === id ? null : state.currentUser
-          }));
+          set((state) => {
+            // Add to deletedUserIds if not already there
+            const updatedDeletedIds = state.deletedUserIds.includes(id)
+              ? state.deletedUserIds
+              : [...state.deletedUserIds, id];
+
+            return {
+              users: state.users.filter(user => user.id !== id),
+              currentUser: state.currentUser?.id === id ? null : state.currentUser,
+              deletedUserIds: updatedDeletedIds,
+            };
+          });
         },
 
-        restrictUser: (userId: string) => {
-          set((state) => ({
-            users: state.users.map(user =>
-              user.id === userId ? { ...user, is_restricted: true } : user
-            ),
-            currentUser: state.currentUser?.id === userId
-              ? { ...state.currentUser, is_restricted: true }
-              : state.currentUser
-          }));
+        restrictUser: async (userId: string) => {
+          const state = get();
+          const isCurrentUser = state.currentUser?.id === userId;
+
+          if (isCurrentUser && state.currentUser) {
+            // Case: ID is current user
+            const userExists = state.users.some(u => u.id === userId);
+            const updatedCurrentUser: User = { ...state.currentUser, is_restricted: true };
+
+            if (userExists) {
+              // Update user in users array and current user
+              set({
+                users: state.users.map(user =>
+                  user.id === userId ? updatedCurrentUser : user
+                ),
+                currentUser: updatedCurrentUser,
+              });
+            } else {
+              // Update current user and add to users array
+              set({
+                currentUser: updatedCurrentUser,
+                users: [...state.users, updatedCurrentUser],
+              });
+            }
+          } else {
+            // Case: ID is not current user
+            const userExists = state.users.some(u => u.id === userId);
+
+            if (userExists) {
+              // Update user in users array
+              set({
+                users: state.users.map(user =>
+                  user.id === userId ? { ...user, is_restricted: true } as User : user
+                ),
+              });
+            } else {
+              // Fetch user from API, update it, and add to users array
+              const fetchedUser = await get().fetchUserFromAPI(userId);
+              if (fetchedUser) {
+                const updatedFetchedUser: User = { ...fetchedUser, is_restricted: true };
+                set({
+                  users: [...state.users, updatedFetchedUser],
+                });
+              }
+            }
+          }
         },
 
-        unrestrictUser: (userId: string) => {
-          set((state) => ({
-            users: state.users.map(user =>
-              user.id === userId ? { ...user, is_restricted: false } : user
-            ),
-            currentUser: state.currentUser?.id === userId
-              ? { ...state.currentUser, is_restricted: false }
-              : state.currentUser
-          }));
-        },
+        unrestrictUser: async (userId: string) => {
+          const state = get();
+          const isCurrentUser = state.currentUser?.id === userId;
 
-        addReviewToUser: (userId: string, reviewId: string) => {
-          set((state) => ({
-            users: state.users.map(user =>
-              user.id === userId && !user.reviews.includes(reviewId)
-                ? { ...user, reviews: [...user.reviews, reviewId] }
-                : user
-            ),
-            currentUser: state.currentUser?.id === userId && !state.currentUser.reviews.includes(reviewId)
-              ? { ...state.currentUser, reviews: [...state.currentUser.reviews, reviewId] }
-              : state.currentUser
-          }));
-        },
+          if (isCurrentUser && state.currentUser) {
+            // Case: ID is current user
+            const userExists = state.users.some(u => u.id === userId);
+            const updatedCurrentUser: User = { ...state.currentUser, is_restricted: false };
 
-        removeReviewFromUser: (userId: string, reviewId: string) => {
-          set((state) => ({
-            users: state.users.map(user =>
-              user.id === userId
-                ? { ...user, reviews: user.reviews.filter(id => id !== reviewId) }
-                : user
-            ),
-            currentUser: state.currentUser?.id === userId
-              ? { ...state.currentUser, reviews: state.currentUser.reviews.filter(id => id !== reviewId) }
-              : state.currentUser
-          }));
+            if (userExists) {
+              // Update user in users array and current user
+              set({
+                users: state.users.map(user =>
+                  user.id === userId ? updatedCurrentUser : user
+                ),
+                currentUser: updatedCurrentUser,
+              });
+            } else {
+              // Update current user and add to users array
+              set({
+                currentUser: updatedCurrentUser,
+                users: [...state.users, updatedCurrentUser],
+              });
+            }
+          } else {
+            // Case: ID is not current user
+            const userExists = state.users.some(u => u.id === userId);
+
+            if (userExists) {
+              // Update user in users array
+              set({
+                users: state.users.map(user =>
+                  user.id === userId ? { ...user, is_restricted: false } as User : user
+                ),
+              });
+            } else {
+              // Fetch user from API, update it, and add to users array
+              const fetchedUser = await get().fetchUserFromAPI(userId);
+              if (fetchedUser) {
+                const updatedFetchedUser: User = { ...fetchedUser, is_restricted: false };
+                set({
+                  users: [...state.users, updatedFetchedUser],
+                });
+              }
+            }
+          }
         },
 
         isAuthenticated: () => {
@@ -194,13 +312,18 @@ export const useUserStore = create<UserStore>()(
             return false;
           }
 
-          // Update password
+          // Update password and ensure current user is in users array
           const updatedUser = { ...state.currentUser, password: newPassword };
+          const userExists = state.users.some(u => u.id === state.currentUser!.id);
+          const updatedUsers = userExists
+            ? state.users.map(user =>
+              user.id === state.currentUser?.id ? updatedUser : user
+            )
+            : [...state.users, updatedUser];
+
           set({
             currentUser: updatedUser,
-            users: state.users.map(user =>
-              user.id === state.currentUser!.id ? updatedUser : user
-            ),
+            users: updatedUsers,
             changePasswordPhoneVerified: false // Reset after password change
           });
 
@@ -225,11 +348,17 @@ export const useUserStore = create<UserStore>()(
             ...state.currentUser,
             paymentMethods: [...(state.currentUser?.paymentMethods || []), newMethod],
           };
+          // Ensure current user is in users array
+          const userExists = state.users.some(u => u.id === state.currentUser?.id);
+          const updatedUsers = userExists
+            ? state.users.map(user =>
+              user.id === state.currentUser!.id ? updatedUser : user
+            )
+            : [...state.users, updatedUser];
+
           set({
             currentUser: updatedUser,
-            users: state.users.map(user =>
-              user.id === state.currentUser!.id ? updatedUser : user
-            ),
+            users: updatedUsers,
           });
           return newMethod;
         },
@@ -243,11 +372,17 @@ export const useUserStore = create<UserStore>()(
             ...state.currentUser,
             paymentMethods: state.currentUser.paymentMethods.filter((method) => method.id !== id),
           };
+          // Ensure current user is in users array
+          const userExists = state.users.some(u => u.id === state.currentUser!.id);
+          const updatedUsers = userExists
+            ? state.users.map(user =>
+              user.id === state.currentUser?.id ? updatedUser : user
+            )
+            : [...state.users, updatedUser];
+
           set({
             currentUser: updatedUser,
-            users: state.users.map(user =>
-              user.id === state.currentUser!.id ? updatedUser : user
-            ),
+            users: updatedUsers,
           });
         },
 
@@ -262,47 +397,53 @@ export const useUserStore = create<UserStore>()(
             throw new Error('No current user');
           }
           const id = Math.random().toString(36).substring(2, 15);
-          
+
           // Prepare new address
           let newAddress: Address = {
             ...address,
             id,
             default: true, // Set new address as default
           };
-          
+
           // If personalLabel is 'none', remove it entirely
           if (newAddress.personalLabel && newAddress.personalLabel.toLowerCase() === 'none') {
             const { personalLabel, ...addressWithoutLabel } = newAddress;
             newAddress = addressWithoutLabel as Address;
           }
-          
+
           // Set default: false for all existing addresses
           // Also, if the new address has a label other than 'none', remove it from other addresses
           const existingAddresses = state.currentUser.addresses || [];
           const updatedAddresses = existingAddresses.map(addr => {
             const updatedAddr = { ...addr, default: false };
-            
+
             // Remove matching label from other addresses (case-insensitive comparison)
-            if (newAddress.personalLabel && 
-                newAddress.personalLabel.toLowerCase() !== 'none' && 
-                addr.personalLabel &&
-                addr.personalLabel.toLowerCase() === newAddress.personalLabel.toLowerCase()) {
+            if (newAddress.personalLabel &&
+              newAddress.personalLabel.toLowerCase() !== 'none' &&
+              addr.personalLabel &&
+              addr.personalLabel.toLowerCase() === newAddress.personalLabel.toLowerCase()) {
               // Remove the personalLabel key entirely
               delete updatedAddr.personalLabel;
             }
-            
+
             return updatedAddr;
           });
-          
+
           const updatedUser = {
             ...state.currentUser,
             addresses: [...updatedAddresses, newAddress],
           };
+          // Ensure current user is in users array
+          const userExists = state.users.some(u => u.id === state.currentUser!.id);
+          const updatedUsers = userExists
+            ? state.users.map(user =>
+              user.id === state.currentUser!.id ? updatedUser : user
+            )
+            : [...state.users, updatedUser];
+
           set({
             currentUser: updatedUser,
-            users: state.users.map(user =>
-              user.id === state.currentUser!.id ? updatedUser : user
-            ),
+            users: updatedUsers,
           });
           return newAddress;
         },
@@ -316,11 +457,17 @@ export const useUserStore = create<UserStore>()(
             ...state.currentUser,
             addresses: state.currentUser.addresses.filter((address) => address.id !== id),
           };
+          // Ensure current user is in users array
+          const userExists = state.users.some(u => u.id === state.currentUser!.id);
+          const updatedUsers = userExists
+            ? state.users.map(user =>
+              user.id === state.currentUser!.id ? updatedUser : user
+            )
+            : [...state.users, updatedUser];
+
           set({
             currentUser: updatedUser,
-            users: state.users.map(user =>
-              user.id === state.currentUser!.id ? updatedUser : user
-            ),
+            users: updatedUsers,
           });
         },
 
@@ -329,7 +476,7 @@ export const useUserStore = create<UserStore>()(
           if (!state.currentUser) {
             return;
           }
-          
+
           // If personalLabel is being set to 'none', remove the field entirely
           let processedUpdates = { ...updates };
           if (updates.personalLabel && updates.personalLabel.toLowerCase() === 'none') {
@@ -337,7 +484,7 @@ export const useUserStore = create<UserStore>()(
             const { personalLabel, ...updatesWithoutLabel } = processedUpdates;
             processedUpdates = updatesWithoutLabel;
           }
-          
+
           // Apply updates to the target address
           let updatedAddresses = state.currentUser.addresses.map((address) => {
             if (address.id === id) {
@@ -351,14 +498,14 @@ export const useUserStore = create<UserStore>()(
             }
             return address;
           });
-          
+
           // If updating personalLabel (and it's not 'none'), remove it from other addresses
           if (updates.personalLabel && updates.personalLabel.toLowerCase() !== 'none') {
             // Remove the same label from all other addresses (case-insensitive comparison)
             updatedAddresses = updatedAddresses.map((address) => {
-              if (address.id !== id && 
-                  address.personalLabel && 
-                  address.personalLabel.toLowerCase() === updates.personalLabel!.toLowerCase()) {
+              if (address.id !== id &&
+                address.personalLabel &&
+                address.personalLabel.toLowerCase() === updates.personalLabel!.toLowerCase()) {
                 // Remove the personalLabel key entirely
                 const { personalLabel, ...addressWithoutLabel } = address;
                 return addressWithoutLabel as Address;
@@ -366,17 +513,23 @@ export const useUserStore = create<UserStore>()(
               return address;
             });
           }
-          
+
           const updatedUser = {
             ...state.currentUser,
             addresses: updatedAddresses,
           };
-          
+
+          // Ensure current user is in users array
+          const userExists = state.users.some(u => u.id === state.currentUser!.id);
+          const updatedUsers = userExists
+            ? state.users.map(user =>
+              user.id === state.currentUser!.id ? updatedUser : user
+            )
+            : [...state.users, updatedUser];
+
           set({
             currentUser: updatedUser,
-            users: state.users.map(user =>
-              user.id === state.currentUser!.id ? updatedUser : user
-            ),
+            users: updatedUsers,
           });
         },
 
@@ -385,23 +538,29 @@ export const useUserStore = create<UserStore>()(
           if (!state.currentUser) {
             return;
           }
-          
+
           // Set all addresses to default: false, except the selected one
           const updatedAddresses = state.currentUser.addresses.map((address) => ({
             ...address,
             default: address.id === id,
           }));
-          
+
           const updatedUser = {
             ...state.currentUser,
             addresses: updatedAddresses,
           };
-          
+
+          // Ensure current user is in users array
+          const userExists = state.users.some(u => u.id === state.currentUser!.id);
+          const updatedUsers = userExists
+            ? state.users.map(user =>
+              user.id === state.currentUser?.id ? updatedUser : user
+            )
+            : [...state.users, updatedUser];
+
           set({
             currentUser: updatedUser,
-            users: state.users.map(user =>
-              user.id === state.currentUser!.id ? updatedUser : user
-            ),
+            users: updatedUsers,
           });
         },
 
@@ -423,7 +582,9 @@ export const useUserStore = create<UserStore>()(
           users: state.users,
           currentUser: state.currentUser,
           changePasswordPhoneVerified: state.changePasswordPhoneVerified,
+          deletedUserIds: state.deletedUserIds,
           tempAddress: state.tempAddress,
+          isInitialized: state.isInitialized,
         }),
       }
     ),

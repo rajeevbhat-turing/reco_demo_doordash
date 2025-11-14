@@ -6,8 +6,10 @@ import { ChevronRight, ChevronLeft, ArrowRight, Star } from 'lucide-react';
 import OverallRating from './overall-rating';
 import ReviewCard from './review-card';
 import ReviewDialog from '@/components/review-dialog';
+import { useStoreReviews } from '@/lib/hooks/use-reviews';
 import { useReviewStore } from '@/store/review-store';
 import { useUserStore } from '@/store/user-store';
+import { getMergedUserReviewForVendor } from '@/lib/utils/review-utils';
 
 interface ReviewsProps {
   vendorId: string;
@@ -16,7 +18,6 @@ interface ReviewsProps {
 
 export default function Reviews({ vendorId, vendorName }: ReviewsProps) {
   const router = useRouter();
-  const { getVendorReviews, getApprovedReviews, getUserReviewForVendor } = useReviewStore();
   const currentUser = useUserStore(state => state.currentUser);
   const [reviewDialogOpen, setReviewDialogOpen] = useState(false);
   const [selectedRating, setSelectedRating] = useState(0);
@@ -25,21 +26,37 @@ export default function Reviews({ vendorId, vendorName }: ReviewsProps) {
   const [canScrollRight, setCanScrollRight] = useState(true);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
-  // Get reviews for this vendor
-  const vendorReviews = getVendorReviews(vendorId);
-  const approvedReviews = getApprovedReviews(vendorId);
+  // Fetch reviews from API and merge with store changes
+  const { vendorReviews, approvedReviews, averageRating, isLoading, apiData } = useStoreReviews(vendorId);
+
+  // Get store changes for merging - using individual selectors to prevent object recreation
+  const newReviews = useReviewStore(state => state.newReviews);
+  const helpfulChanges = useReviewStore(state => state.helpfulChanges);
+  const approvalChanges = useReviewStore(state => state.approvalChanges);
+  const deletedReviewIds = useReviewStore(state => state.deletedReviewIds);
+
+  const storeReviewChanges = useMemo(
+    () => ({
+      newReviews,
+      helpfulChanges,
+      approvalChanges,
+      deletedReviewIds,
+    }),
+    [newReviews, helpfulChanges, approvalChanges, deletedReviewIds]
+  );
 
   // Get current user's review for this vendor (if exists)
-  const userReview = currentUser ? getUserReviewForVendor(vendorId, currentUser.id) : null;
+  const userReview =
+    currentUser && apiData
+      ? getMergedUserReviewForVendor(
+          apiData,
+          vendorId,
+          currentUser.id,
+          storeReviewChanges
+        ) || useReviewStore.getState().getNewReviewForVendor(vendorId, currentUser.id)
+      : null;
 
-  // Calculate average rating and total reviews from approved reviews
-  const averageRating = useMemo(() => {
-    if (approvedReviews.length === 0) return 0;
-    const sum = approvedReviews.reduce((acc, review) => acc + review.rating, 0);
-    return Math.round((sum / approvedReviews.length) * 10) / 10;
-  }, [approvedReviews]);
-
-  const totalReviews = approvedReviews.length;
+  const totalReviews = approvedReviews?.length || 0;
 
   // Update scroll button states on mount and when reviews change
   useEffect(() => {
@@ -104,8 +121,18 @@ export default function Reviews({ vendorId, vendorName }: ReviewsProps) {
     router.push(`/reviews/store/${vendorId}`);
   };
 
+  // Show loading state
+  if (isLoading) {
+    return null;
+  }
+
   // If no reviews exist, show empty state
-  if (vendorReviews.length === 0 || approvedReviews.length === 0) {
+  if (
+    !vendorReviews ||
+    vendorReviews.length === 0 ||
+    !approvedReviews ||
+    approvedReviews.length === 0
+  ) {
     // If no reviews exist and no user is logged in, show nothing
     if (!currentUser) return null;
 
@@ -151,7 +178,9 @@ export default function Reviews({ vendorId, vendorName }: ReviewsProps) {
             onClose={() => setReviewDialogOpen(false)}
             restaurantName={vendorName}
             vendorId={vendorId}
-            vendorLogo={vendorReviews[0]?.vendorLogo}
+            vendorLogo={
+              vendorReviews && vendorReviews.length > 0 ? vendorReviews[0]?.vendorLogo : undefined
+            }
             defaultRating={selectedRating}
           />
         )}
@@ -236,7 +265,9 @@ export default function Reviews({ vendorId, vendorName }: ReviewsProps) {
         onClose={() => setReviewDialogOpen(false)}
         restaurantName={vendorName}
         vendorId={vendorId}
-        vendorLogo={vendorReviews[0]?.vendorLogo}
+        vendorLogo={
+          vendorReviews && vendorReviews.length > 0 ? vendorReviews[0]?.vendorLogo : undefined
+        }
       />
     </div>
   );

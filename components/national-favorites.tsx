@@ -4,22 +4,34 @@ import { useState, useEffect } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { Heart, Star } from "lucide-react"
-import { restaurants } from "@/constants/restaurants"
+import { useRestaurants } from "@/lib/hooks/use-restaurants"
+import { useUserStore } from "@/store/user-store"
 import type { FilterState } from "@/components/filter-options"
-import { filterRestaurantsWithMenuItems } from "@/utils/restaurant-utils"
+import { RestaurantsSkeleton } from "@/components/skeletons/restaurant-skeleton"
 
 interface NationalFavoritesProps {
   activeFilters: FilterState
 }
 
 export default function NationalFavorites({ activeFilters }: NationalFavoritesProps) {
-  // Only include restaurants with menu items
-  const restaurantsWithMenus = filterRestaurantsWithMenuItems(restaurants);
-  const [filteredRestaurants, setFilteredRestaurants] = useState(restaurantsWithMenus)
-  const [resultsCount, setResultsCount] = useState(restaurantsWithMenus.length)
+  // Get user's address for location-based filtering
+  const currentUser = useUserStore(state => state.currentUser)
+  const defaultAddress = currentUser?.addresses.find(a => a.default)
+
+  // Fetch restaurants near user's address
+  const { data: restaurants, isLoading } = useRestaurants(
+    defaultAddress?.lat,
+    defaultAddress?.lng,
+    10 // 10 mile radius
+  )
+
+  const [filteredRestaurants, setFilteredRestaurants] = useState(restaurants || [])
+  const [resultsCount, setResultsCount] = useState(restaurants?.length || 0)
 
   useEffect(() => {
-    let filteredRestaurants = [...restaurantsWithMenus]
+    if (!restaurants) return;
+    
+    let filteredRestaurants = [...restaurants]
 
     // Apply filters
     if (activeFilters.underThirtyMins) {
@@ -50,7 +62,7 @@ export default function NationalFavorites({ activeFilters }: NationalFavoritesPr
 
     setFilteredRestaurants(filteredRestaurants)
     setResultsCount(filteredRestaurants.length)
-  }, [activeFilters])
+  }, [activeFilters, restaurants])
 
   const hasActiveFilters = () => {
     return (
@@ -60,6 +72,27 @@ export default function NationalFavorites({ activeFilters }: NationalFavoritesPr
       (activeFilters.price !== null && activeFilters.price.length > 0) ||
       activeFilters.dashPass
     )
+  }
+
+  // Show loading skeleton while fetching restaurants
+  if (isLoading) {
+    return (
+      <div className="mt-8">
+        <RestaurantsSkeleton count={9} />
+      </div>
+    );
+  }
+
+  // Show address prompt if no address
+  if (!defaultAddress) {
+    return (
+      <div className="mt-8 bg-blue-50 border border-blue-200 rounded-lg p-8 text-center max-w-md mx-auto">
+        <h2 className="text-xl font-bold mb-2">Add Your Delivery Address</h2>
+        <p className="text-gray-600 mb-4">
+          We need your address to show restaurants that deliver to you.
+        </p>
+      </div>
+    );
   }
 
   return (

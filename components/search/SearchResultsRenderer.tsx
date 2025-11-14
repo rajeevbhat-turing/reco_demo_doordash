@@ -6,11 +6,6 @@ import Link from "next/link"
 import { Heart, Star, Trash2, Plus, Minus } from "lucide-react"
 import type { SearchResultRestaurant } from "@/lib/utils/search-utils"
 import { useCartStore } from "@/store/cart-store"
-import { stores as groceryStores } from "@/data/store-data"
-import { convenienceStores } from "@/data/convenience-store-data"
-import { getAllPetStores, getEnrichedPetProducts } from "@/app/pets/data/pet-response-mapper"
-import { stores as retailStores } from "@/constants/store"
-import { convenienceData } from "@/data/convenience-data"
 import MenuItemDialog from "@/components/menu-item-dialog"
 import type { Product } from "@/types"
 
@@ -22,7 +17,7 @@ export default function SearchResultsRenderer({ results }: SearchResultsRenderer
   const { addItem, findCart, updateQuantity, removeItem } = useCartStore()
   const [favoritedStores, setFavoritedStores] = useState<Set<string>>(new Set())
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
-  const [selectedProductCategory, setSelectedProductCategory] = useState<"grocery" | "retail" | "convenience" | "pets" | "restaurant">("grocery")
+  const [selectedProductCategory] = useState<"restaurant">("restaurant")
   const [selectedStoreId, setSelectedStoreId] = useState<string>("")
   const [selectedStoreName, setSelectedStoreName] = useState<string>("")
 
@@ -39,113 +34,9 @@ export default function SearchResultsRenderer({ results }: SearchResultsRenderer
     })
   }
 
-  // Find product by ID from search result
+  // Find product by ID from search result - only restaurants supported now
   const findProductById = (productId: string, storeType?: string, storeName?: string): Product | null => {
-    // Extract actual product ID from search result ID
-    // Format: "pet-product-{id}", "convenience-product-{id}", "retail-product-{id}"
-    let actualProductId: string | number = ""
-    let category: "grocery" | "retail" | "convenience" | "pets" = "grocery"
-    
-    if (productId.includes("pet-product-")) {
-      actualProductId = productId.replace("pet-product-", "")
-      category = "pets"
-    } else if (productId.includes("convenience-product-")) {
-      actualProductId = productId.replace("convenience-product-", "")
-      category = "convenience"
-    } else if (productId.includes("retail-product-")) {
-      actualProductId = productId.replace("retail-product-", "")
-      category = "retail"
-    } else {
-      return null
-    }
-
-    // Convert to number if possible
-    const numericId = typeof actualProductId === "string" && !isNaN(Number(actualProductId)) 
-      ? Number(actualProductId) 
-      : actualProductId
-
-    // Search pet products
-    if (category === "pets") {
-      try {
-        const petProducts = getEnrichedPetProducts()
-        for (const section of petProducts) {
-          for (const product of section.products) {
-            const productIdStr = String(product.id)
-            const searchIdStr = String(actualProductId)
-            if (productIdStr === searchIdStr || product.id === numericId) {
-              return {
-                id: product.id,
-                name: product.name,
-                price: product.price || 0,
-                image: product.image || "/placeholder.svg",
-                category: "pets"
-              }
-            }
-          }
-        }
-      } catch (error) {
-        console.error('Error finding pet product:', error)
-      }
-    }
-
-    // Search convenience products
-    if (category === "convenience") {
-      try {
-        for (const [storeId, storeProducts] of Object.entries(convenienceData)) {
-          if (Array.isArray(storeProducts)) {
-            for (const section of storeProducts) {
-              if (section.products && Array.isArray(section.products)) {
-                for (const product of section.products) {
-                  const productIdStr = String(product.id)
-                  const searchIdStr = String(actualProductId)
-                  if (productIdStr === searchIdStr || product.id === numericId) {
-                    return {
-                      id: product.id,
-                      name: product.name,
-                      price: product.price || 0,
-                      image: product.image || "/placeholder.svg",
-                      category: "convenience"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      } catch (error) {
-        console.error('Error finding convenience product:', error)
-      }
-    }
-
-    // Search retail products
-    if (category === "retail") {
-      try {
-        for (const store of retailStores) {
-          if (store.items && Array.isArray(store.items)) {
-            for (const section of store.items) {
-              if (section.products && Array.isArray(section.products)) {
-                for (const product of section.products) {
-                  const productIdStr = String(product.id)
-                  const searchIdStr = String(actualProductId)
-                  if (productIdStr === searchIdStr || product.id === numericId) {
-                    return {
-                      id: product.id,
-                      name: product.name,
-                      price: product.price || 0,
-                      image: product.image || "/placeholder.svg",
-                      category: "retail"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      } catch (error) {
-        console.error('Error finding retail product:', error)
-      }
-    }
-
+    // Products from other store types are no longer supported
     return null
   }
 
@@ -185,61 +76,9 @@ export default function SearchResultsRenderer({ results }: SearchResultsRenderer
     setSelectedStoreName("")
   }
 
-  // Helper function to get store information by store name and category
+  // Helper function to get store information - only restaurants supported now
   const getStoreInfo = (storeName: string, storeType?: string) => {
-    if (!storeName) return null
-    
-    // Try to find store by name in each category
-    if (storeType === "grocery" || !storeType) {
-      const groceryStore = Object.values(groceryStores).find(store => store.name === storeName)
-      if (groceryStore) {
-        return {
-          ...groceryStore,
-          category: "grocery" as const,
-          deliveryFee: "$0 delivery fee",
-          time: groceryStore.deliveryTime || groceryStore.expressTime || "30-45 min"
-        }
-      }
-    }
-    
-    if (storeType === "convenience" || !storeType) {
-      const convenienceStore = Object.values(convenienceStores).find(store => store.name === storeName)
-      if (convenienceStore) {
-        return {
-          ...convenienceStore,
-          category: "convenience" as const,
-          deliveryFee: "$0 delivery fee",
-          time: convenienceStore.deliveryTime || convenienceStore.expressTime || "30-45 min",
-          isOpen: convenienceStore.open !== false
-        }
-      }
-    }
-    
-    if (storeType === "pets" || !storeType) {
-      const allPetStores = getAllPetStores()
-      const petStore = allPetStores.find((store: any) => store.name === storeName)
-      if (petStore) {
-        return {
-          ...petStore,
-          category: "pets" as const,
-          deliveryFee: "$0 delivery fee",
-          time: "30-45 min"
-        }
-      }
-    }
-    
-    if (storeType === "retail" || !storeType) {
-      const retailStore = retailStores.find(store => store.name === storeName)
-      if (retailStore) {
-        return {
-          ...retailStore,
-          category: "retail" as const,
-          deliveryFee: "$0 delivery fee",
-          time: "30-45 min"
-        }
-      }
-    }
-    
+    // Other store types are no longer supported
     return null
   }
 

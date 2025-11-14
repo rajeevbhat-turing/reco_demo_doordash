@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation"
 import Link from "next/link"
 import FilterOptions, { FilterState, FilterOptionsRef } from "@/components/filter-options"
 import { useCartStore } from "@/store/cart-store"
+import { useUserStore } from "@/store/user-store"
 import { useVerifierStore } from "@/store/verifier-store"
 import { useAppStore } from "@/store/app-store"
 import { useUserStore } from "@/store/user-store"
@@ -45,24 +46,9 @@ export default function SearchPage() {
   const { updateSearchResults, clearSearchResults } = useAppStore()
   const { recordSearch } = useVerifierStore()
 
-  // Get address from user store for location filtering
-  const { getAddresses, getTempAddress, isAuthenticated } = useUserStore()
-  const addresses = getAddresses()
-  const tempAddress = useSyncExternalStore(
-    useUserStore.subscribe,
-    () => useUserStore.getState().getTempAddress(),
-    () => null
-  )
-  const userIsAuthenticated = isAuthenticated()
-  
-  // Get active address (selected address for authenticated users, temp address for non-authenticated)
-  const selectedAddress = useMemo(() => {
-    if (userIsAuthenticated && addresses.length > 0) {
-      // Find default address or use first address
-      return addresses.find(a => a.default) || addresses[0] || null
-    }
-    return null
-  }, [userIsAuthenticated, addresses])
+  // Get user's address for location-based search
+  const currentUser = useUserStore(state => state.currentUser)
+  const defaultAddress = currentUser?.addresses.find(a => a.default)
 
   // Handle filter changes
   const handleFilterChange = (filters: FilterState) => {

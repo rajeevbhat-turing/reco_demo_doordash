@@ -1,4 +1,35 @@
-import type { Deal } from '@/constants/deals';
+import type { Deal } from '@/types/deal-types';
+
+/**
+ * Fetch a deal by ID from the API
+ * This is a utility function that can be used outside of React components
+ */
+export async function fetchDealById(dealId: string, restaurantId?: string | number): Promise<Deal | null> {
+  try {
+    // Fetch deals (with restaurantId if provided to get both restaurant-specific + common deals)
+    const searchParams = new URLSearchParams();
+    if (restaurantId) {
+      searchParams.set('restaurantId', String(restaurantId));
+    }
+
+    const response = await fetch(`/api/deals?${searchParams.toString()}`);
+    if (!response.ok) {
+      return null;
+    }
+
+    const result = await response.json();
+    if (!result.success) {
+      return null;
+    }
+
+    // Find the deal by ID
+    const deal = result.data.find((d: Deal) => d.id === dealId);
+    return deal || null;
+  } catch (error) {
+    console.error('Error fetching deal by ID:', error);
+    return null;
+  }
+}
 
 // Cart item interface for deal checking
 export interface CartItemForDeal {

@@ -5,17 +5,15 @@ import { ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 import { UserReview } from '@/types/review-types';
 import { generateAvatarColor } from '@/lib/utils/helperFunctions';
-import { useReviewStore } from '@/store/review-store';
+import { useUserReviews } from '@/lib/hooks/use-reviews';
 
 interface ReviewCardProps {
   review: UserReview;
 }
 
 export default function ReviewCard({ review }: ReviewCardProps) {
-  const { getUserReviewCount } = useReviewStore();
-
-  // Get actual contribution count for this user
-  const contributions = getUserReviewCount(review.userId);
+  // Fetch user reviews to get contribution count
+  const { userReviewCount: contributions } = useUserReviews(review.userId);
 
   return (
     <div className="max-w-[308px] bg-[#f7f7f7] rounded-lg p-3 flex-shrink-0">

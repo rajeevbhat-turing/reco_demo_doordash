@@ -11,10 +11,12 @@ import PhotoViewerModal from '@/components/modals/photo-viewer-modal';
 import OrderItemsScrollable from '@/components/reviews/order-items-scrollable';
 import CustomerPhotosScrollable from '@/components/reviews/customer-photos-scrollable';
 import ReviewPhotosScrollable from '@/components/reviews/review-photos-scrollable';
+import { useStoreReviews } from '@/lib/hooks/use-reviews';
 import { useReviewStore } from '@/store/review-store';
 import { useUserStore } from '@/store/user-store';
 import { generateAvatarColor } from '@/lib/utils/helperFunctions';
 import { LightbulbIcon } from '@/lib/utils/icons';
+import { getMergedUserReviewCount } from '@/lib/utils/review-utils';
 
 export default function StoreReviewsPage() {
   const params = useParams();
@@ -29,30 +31,35 @@ export default function StoreReviewsPage() {
     timestamp: string;
   } | null>(null);
 
-  const {
-    getVendorReviews,
-    getApprovedReviews,
-    getUserReviewCount,
-    calculateAverageRating,
-    toggleHelpfulRating,
-  } = useReviewStore();
+  // Fetch reviews from API and merge with store changes
+  const { vendorReviews, approvedReviews, averageRating, isLoading, apiData } = useStoreReviews(storeId);
+  
+  // Get store review changes for merging - using individual selectors to prevent object recreation
+  const newReviews = useReviewStore(state => state.newReviews);
+  const helpfulChanges = useReviewStore(state => state.helpfulChanges);
+  const approvalChanges = useReviewStore(state => state.approvalChanges);
+  const deletedReviewIds = useReviewStore(state => state.deletedReviewIds);
+  
+  const storeReviewChanges = useMemo(() => ({
+    newReviews,
+    helpfulChanges,
+    approvalChanges,
+    deletedReviewIds,
+  }), [newReviews, helpfulChanges, approvalChanges, deletedReviewIds]);
+
+  const toggleHelpfulRating = useReviewStore(state => state.toggleHelpfulRating);
   const currentUser = useUserStore(state => state.currentUser);
-  const vendorReviews = getVendorReviews(storeId);
-  const approvedReviews = getApprovedReviews(storeId);
 
-  if (vendorReviews.length === 0) {
-    // Redirect to vendor page if no review data exists
-    router.replace(`/store/${storeId}`);
-    return null;
-  }
-
-  // Get vendor name from first review (all reviews for a vendor should have the same vendorName)
-  const vendorName = vendorReviews[0].vendorName;
-  const averageRating = calculateAverageRating(storeId);
-  const totalReviews = approvedReviews.length;
+  // Helper function to get user review count
+  const getUserReviewCount = useMemo(() => {
+    return (userId: string) => {
+      return getMergedUserReviewCount(apiData || [], userId, storeReviewChanges);
+    };
+  }, [apiData, storeReviewChanges]);
 
   // Collect all photos from all approved reviews with user info
   const allCustomerPhotos = useMemo(() => {
+    if (!approvedReviews) return [];
     const photosWithInfo: Array<{ photo: string; userName: string; timestamp: string }> = [];
     approvedReviews.forEach(review => {
       if (review.photos && review.photos.length > 0) {
@@ -67,6 +74,24 @@ export default function StoreReviewsPage() {
     });
     return photosWithInfo;
   }, [approvedReviews]);
+
+  // Get vendor name from first review
+  const vendorName = useMemo(() => {
+    return vendorReviews && vendorReviews.length > 0 ? vendorReviews[0].vendorName : '';
+  }, [vendorReviews]);
+
+  const totalReviews = approvedReviews?.length || 0;
+
+  // If loading
+  if (isLoading) {
+    return <div className="min-h-screen bg-white mt-[60px] p-6" />;
+  }
+
+  if (!vendorReviews || vendorReviews.length === 0) {
+    // Redirect to vendor page if no review data exists
+    router.replace(`/store/${storeId}`);
+    return null;
+  }
 
   // Handle photo click
   const handlePhotoClick = (photoInfo: { photo: string; userName: string; timestamp: string }) => {
@@ -241,7 +266,7 @@ export default function StoreReviewsPage() {
                     <button
                       onClick={() => {
                         if (currentUser) {
-                          toggleHelpfulRating(review.id, currentUser.id);
+                          toggleHelpfulRating(review.id, currentUser.id, review.ratedHelpfulBy);
                         }
                       }}
                       disabled={!currentUser}
@@ -275,7 +300,7 @@ export default function StoreReviewsPage() {
         onClose={() => setReviewDialogOpen(false)}
         restaurantName={vendorName}
         vendorId={storeId}
-        vendorLogo={vendorReviews[0]?.vendorLogo}
+        vendorLogo={vendorReviews && vendorReviews.length > 0 ? vendorReviews[0]?.vendorLogo : undefined}
       />
 
       {/* Reviews Info Modal */}

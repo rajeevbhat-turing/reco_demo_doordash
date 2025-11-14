@@ -2,13 +2,12 @@ import { create } from "zustand"
 import { persist, devtools } from "zustand/middleware"
 import type { Product, AppliedModification } from "@/types"
 import { restaurants } from "@/constants/restaurants"
-import { convenienceStores } from "@/data/convenience-store-data"
 import { useVerifierStore } from "./verifier-store"
 import { useAppStore } from "./app-store"
-import { checkDealCriteriaBoolean } from "@/lib/utils/deal-utils"
+import { checkDealCriteriaBoolean, fetchDealById } from "@/lib/utils/deal-utils"
 
 // Define supported cart categories
-export type CartCategory = "restaurant" | "grocery" | "retail" | "pets" | "convenience"
+export type CartCategory = "restaurant"
 
 // Base cart item interface (simplified - no vendor info)
 export interface CartItem {
@@ -28,6 +27,7 @@ export interface Cart {
   storeCategory: CartCategory // Type of store
   items: CartItem[] // Items in this cart
   selectedCard?: any // Selected payment method for this cart
+  isReorder?: boolean // Flag to indicate if this cart is a reorder
 }
 
 // Category-specific configurations
@@ -46,30 +46,6 @@ const categoryConfigs: Record<CartCategory, CategoryConfig> = {
     serviceFeePercentage: 0.15,
     minServiceFee: 4.99,
   },
-  grocery: {
-    freeDeliveryThreshold: 35,
-    defaultDeliveryFee: 6.64,
-    serviceFeePercentage: 0.15,
-    minServiceFee: 5.49,
-  },
-  retail: {
-    freeDeliveryThreshold: 40,
-    defaultDeliveryFee: 7.99,
-    serviceFeePercentage: 0.12,
-    minServiceFee: 4.99,
-  },
-  pets: {
-    freeDeliveryThreshold: 35,
-    defaultDeliveryFee: 6.99,
-    serviceFeePercentage: 0.14,
-    minServiceFee: 5.29,
-  },
-  convenience: {
-    freeDeliveryThreshold: 25,
-    defaultDeliveryFee: 4.99,
-    serviceFeePercentage: 0.12,
-    minServiceFee: 3.99,
-  },
 }
 
 // Helper function to get store name from restaurant ID
@@ -78,72 +54,9 @@ const getStoreNameFromRestaurantId = (restaurantId: string): string => {
   return restaurant ? restaurant.name : "Unknown Store"
 }
 
-// Helper function to get store name from store ID (for grocery/retail/convenience/pets stores)
+// Helper function to get store name from store ID
 const getStoreNameFromStoreId = (storeId: string, category?: CartCategory): string => {
-  // If category is specified, check that category first
-  if (category) {
-    switch (category) {
-      case 'convenience':
-        if (convenienceStores[storeId]) {
-          return convenienceStores[storeId].name
-        }
-        break
-      case 'pets':
-        const { allPetStores } = require("@/data/pet-data")
-        const petStore = allPetStores.find((store: any) => store.id === storeId)
-        if (petStore) {
-          return petStore.name
-        }
-        break
-      case 'grocery':
-        const { stores } = require("@/data/store-data")
-        if (stores[storeId]) {
-          return stores[storeId].name
-        }
-        break
-      case 'retail':
-        try {
-          const { stores: retailStores } = require("@/constants/store")
-          if (retailStores[storeId]) {
-            return retailStores[storeId].name
-          }
-        } catch (error) {
-          // Ignore if retail stores data is not available
-        }
-        break
-    }
-  }
-
-  // Fallback: check all categories in order (for backward compatibility)
-  // Check convenience stores first
-  if (convenienceStores[storeId]) {
-    return convenienceStores[storeId].name
-  }
-
-  // Check pet stores
-  const { allPetStores } = require("@/data/pet-data")
-  const petStore = allPetStores.find((store: any) => store.id === storeId)
-  if (petStore) {
-    return petStore.name
-  }
-
-  // Check grocery stores
-  const { stores } = require("@/data/store-data")
-  if (stores[storeId]) {
-    return stores[storeId].name
-  }
-
-  // Check retail stores
-  try {
-    const { stores: retailStores } = require("@/constants/store")
-    if (retailStores[storeId]) {
-      return retailStores[storeId].name
-    }
-  } catch (error) {
-    // Ignore if retail stores data is not available
-  }
-
-  // For other stores, use the existing formatting logic
+  // For stores, use the existing formatting logic
   return storeId
     .split("-")
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
@@ -156,11 +69,7 @@ interface CartStore {
   carts: Cart[] // Multiple carts - one per vendor
   isGroupOrder: boolean
   groupOrderId: string | null
-  totalCartValue: number
-
-  // Reorder mode tracking
-  isReorderMode: boolean
-  reorderOriginalCarts: Cart[] | null
+  isInitialized: boolean // Track if store has been initialized from DB
   
   // Cart sidebar control
   shouldOpenCart: boolean
@@ -198,17 +107,15 @@ interface CartStore {
   getTotal: (storeId?: string, category?: CartCategory) => number
   getTotalPrice: (storeId?: string, category?: CartCategory) => string
 
-  // Update total cart value
-  updateTotalCartValue: () => void
-
   // Reorder methods
-  startReorderMode: (orderId: string, items: CartItem[], category: CartCategory, storeId: string, storeName: string) => void
-  confirmReorder: () => void
-  cancelReorder: () => void
+  startReorder: (items: CartItem[], category: CartCategory, storeId: string, storeName: string) => void
   
   // Cart sidebar control methods
   triggerOpenCart: () => void
   resetOpenCartTrigger: () => void
+
+  // Initialize carts from database
+  initializeCartsFromDB: (carts: Cart[]) => void
 }
 
 export const useCartStore = create<CartStore>()(
@@ -219,15 +126,13 @@ export const useCartStore = create<CartStore>()(
         carts: [], // Multiple carts - one per vendor
         isGroupOrder: false,
         groupOrderId: null,
-        totalCartValue: 0,
-        isReorderMode: false,
-        reorderOriginalCarts: null,
+        isInitialized: false,
         shouldOpenCart: false,
 
         // Get current category from app-store
         getCurrentCategory: () => {
           const appStore = useAppStore.getState()
-          return appStore.currentCategory || "grocery" // Default to grocery
+          return appStore.currentCategory || "restaurant" // Default to restaurant
         },
 
         // Get current store ID from app-store
@@ -324,7 +229,6 @@ export const useCartStore = create<CartStore>()(
 
             set({ carts: [...carts, newCart] })
             verifierStore.resetVerifierConsumed()
-            setTimeout(() => get().updateTotalCartValue(), 0)
             return
           }
 
@@ -366,7 +270,6 @@ export const useCartStore = create<CartStore>()(
 
           set({ carts: updatedCarts })
           verifierStore.resetVerifierConsumed()
-          setTimeout(() => get().updateTotalCartValue(), 0)
         },
 
         // Remove item from cart
@@ -429,38 +332,61 @@ export const useCartStore = create<CartStore>()(
 
           set({ carts: updatedCarts })
 
-          // Check if deal criteria are still met after removing item
-          if (targetCart && newItems.length > 0) {
+          // Check if deal should be removed after removing item
+          if (targetCart) {
             const cartId = `${targetCart.storeId}-${targetCart.storeCategory}`
             // Dynamically import to avoid circular dependency
-            import('@/store/deals-store').then(({ useDealsStore }) => {
+            import('@/store/deals-store').then(async ({ useDealsStore }) => {
               const dealsStore = useDealsStore.getState()
-              const appliedDeal = dealsStore.getAppliedDeal(cartId)
+              const appliedDealId = dealsStore.getAppliedDealId(cartId)
 
-              if (appliedDeal) {
-                // Check if deal criteria are still met
-                const criteriaMet = checkDealCriteriaBoolean(appliedDeal, newItems, get().getSubtotal(targetCart.storeId, targetCart.storeCategory))
+              if (appliedDealId) {
+                // Check if the removed item is a free item from the deal
+                const freeItemIds = dealsStore.getFreeItemIds(cartId)
+                let removedItemId = typeof removedItem.id === 'string' ? removedItem.id : removedItem.id.toString()
 
-                if (!criteriaMet) {
-                  // Criteria no longer met - remove the deal
+                // If item ID starts with store ID, remove it before checking
+                if (targetCart.storeId && removedItemId.startsWith(targetCart.storeId + '-')) {
+                  removedItemId = removedItemId.substring(targetCart.storeId.length + 1)
+                }
+
+                // Check if removed item matches any free item ID
+                const isRemovedItemFree = freeItemIds.some(freeId => {
+                  // Check if the removed item ID starts with the free item ID or matches exactly
+                  return removedItemId === freeId || removedItemId.startsWith(freeId + '-')
+                })
+
+                if (isRemovedItemFree) {
+                  // Removed item is a free item - automatically remove the deal
+                  console.log(`[CART] Removed free item from deal, removing deal from cart`)
                   dealsStore.removeDeal(cartId)
+                  return
+                }
+
+                // If cart is empty, remove the deal
+                if (newItems.length === 0) {
+                  dealsStore.removeDeal(cartId)
+                  return
+                }
+
+                // Fetch the full deal object from API to check criteria
+                const appliedDeal = await fetchDealById(appliedDealId, targetCart.storeId)
+
+                if (appliedDeal) {
+                  // Check if deal criteria are still met
+                  const criteriaMet = checkDealCriteriaBoolean(appliedDeal, newItems, get().getSubtotal(targetCart.storeId, targetCart.storeCategory))
+
+                  if (!criteriaMet) {
+                    // Criteria no longer met - remove the deal
+                    dealsStore.removeDeal(cartId)
+                  }
                 }
               }
-            })
-          } else if (targetCart && newItems.length === 0) {
-            // Cart is empty - remove any applied deal
-            const cartId = `${targetCart.storeId}-${targetCart.storeCategory}`
-            import('@/store/deals-store').then(({ useDealsStore }) => {
-              const dealsStore = useDealsStore.getState()
-              dealsStore.removeDeal(cartId)
             })
           }
 
           // Reset verifier consumption on any cart change
           verifierStore.resetVerifierConsumed()
-
-          // After removing the item, update the total cart value
-          setTimeout(() => get().updateTotalCartValue(), 0)
         },
 
         // Update item quantity
@@ -536,17 +462,22 @@ export const useCartStore = create<CartStore>()(
           if (targetCart && newItems.length > 0) {
             const cartId = `${targetCart.storeId}-${targetCart.storeCategory}`
             // Dynamically import to avoid circular dependency
-            import('@/store/deals-store').then(({ useDealsStore }) => {
+            import('@/store/deals-store').then(async ({ useDealsStore }) => {
               const dealsStore = useDealsStore.getState()
-              const appliedDeal = dealsStore.getAppliedDeal(cartId)
+              const appliedDealId = dealsStore.getAppliedDealId(cartId)
 
-              if (appliedDeal) {
-                // Check if deal criteria are still met
-                const criteriaMet = checkDealCriteriaBoolean(appliedDeal, newItems, get().getSubtotal(targetCart.storeId, targetCart.storeCategory))
+              if (appliedDealId) {
+                // Fetch the full deal object from API
+                const appliedDeal = await fetchDealById(appliedDealId, targetCart.storeId)
 
-                if (!criteriaMet) {
-                  // Criteria no longer met - remove the deal
-                  dealsStore.removeDeal(cartId)
+                if (appliedDeal) {
+                  // Check if deal criteria are still met
+                  const criteriaMet = checkDealCriteriaBoolean(appliedDeal, newItems, get().getSubtotal(targetCart.storeId, targetCart.storeCategory))
+
+                  if (!criteriaMet) {
+                    // Criteria no longer met - remove the deal
+                    dealsStore.removeDeal(cartId)
+                  }
                 }
               }
             })
@@ -561,9 +492,6 @@ export const useCartStore = create<CartStore>()(
 
           // Reset verifier consumption on any cart change
           verifierStore.resetVerifierConsumed()
-
-          // After updating quantity, update the total cart value
-          setTimeout(() => get().updateTotalCartValue(), 0)
         },
 
         // Clear a specific cart or current cart
@@ -605,10 +533,7 @@ export const useCartStore = create<CartStore>()(
             !(cart.storeId === targetStoreId && cart.storeCategory === targetCategory)
           )
 
-          set({
-            carts: updatedCarts,
-            totalCartValue: updatedCarts.length === 0 ? 0 : get().totalCartValue,
-          })
+          set({ carts: updatedCarts })
         },
 
         // Clear all carts
@@ -628,10 +553,7 @@ export const useCartStore = create<CartStore>()(
           verifierStore.resetMaxItemsReached()
           verifierStore.resetVerifierConsumed()
 
-          set({
-            carts: [],
-            totalCartValue: 0,
-          })
+          set({ carts: [] })
         },
 
         // Set selected card for a cart
@@ -750,21 +672,11 @@ export const useCartStore = create<CartStore>()(
           return `$${get().getSubtotal(storeId, category).toFixed(2)}`
         },
 
-        // Update total cart value
-        updateTotalCartValue: () => {
-          const total = get().getTotal()
-          set({ totalCartValue: total })
-        },
-
         // Reorder methods
-        startReorderMode: (orderId: string, items: CartItem[], category: CartCategory, storeId: string, storeName: string) => {
-          const currentState = get()
+        startReorder: (items: CartItem[], category: CartCategory, storeId: string, storeName: string) => {
+          const { carts } = get()
           
-          console.log(`[REORDER] Starting reorder mode for order: ${orderId}`)
-          console.log(`[REORDER] Backing up current carts (${currentState.carts.length} carts)`)
-          
-          // Backup current carts
-          const backup = [...currentState.carts]
+          console.log(`[REORDER] Starting reorder with ${items.length} items from ${storeName}`)
           
           // Create a new cart for the reorder
           const reorderCart: Cart = {
@@ -772,46 +684,17 @@ export const useCartStore = create<CartStore>()(
             storeName: storeName,
             storeCategory: category,
             items: items,
-            selectedCard: null,
+            selectedCard: undefined,
+            isReorder: true, // Mark this cart as a reorder
           }
           
-          // Clear all carts and add the reorder cart
+          // Add the reorder cart to existing carts
           set({
-            isReorderMode: true,
-            reorderOriginalCarts: backup,
-            carts: [reorderCart],
+            carts: [...carts, reorderCart],
             shouldOpenCart: true, // Trigger cart to open
           })
           
-          console.log(`[REORDER] Reorder mode activated with ${items.length} items from ${storeName}`)
-        },
-
-        confirmReorder: () => {
-          console.log(`[REORDER] Confirming reorder - discarding original carts`)
-          set({
-            isReorderMode: false,
-            reorderOriginalCarts: null,
-          })
-        },
-
-        cancelReorder: () => {
-          const { reorderOriginalCarts } = get()
-          
-          if (reorderOriginalCarts) {
-            console.log(`[REORDER] Canceling reorder - restoring original carts (${reorderOriginalCarts.length} carts)`)
-            set({
-              isReorderMode: false,
-              carts: reorderOriginalCarts,
-              reorderOriginalCarts: null,
-            })
-          } else {
-            console.log(`[REORDER] Canceling reorder - no backup found, clearing carts`)
-            set({
-              isReorderMode: false,
-              carts: [],
-              reorderOriginalCarts: null,
-            })
-          }
+          console.log(`[REORDER] Reorder cart added with isReorder flag`)
         },
 
         // Cart sidebar control methods
@@ -823,6 +706,20 @@ export const useCartStore = create<CartStore>()(
         resetOpenCartTrigger: () => {
           set({ shouldOpenCart: false })
         },
+
+        // Initialize carts from database
+        initializeCartsFromDB: (carts: Cart[]) => {
+          const { carts: guestCarts } = get()
+          
+          console.log(`[CART] Initializing carts from database`)
+          console.log(`[CART] Guest carts: ${guestCarts.length}, DB carts: ${carts.length}`)
+          
+          // Import merge utility
+          import('@/lib/utils/cart-merge').then(({ mergeGuestCartsWithDBCarts }) => {
+            const mergedCarts = mergeGuestCartsWithDBCarts(guestCarts, carts)
+            set({ carts: mergedCarts, isInitialized: true })
+          })
+        },
       }),
       {
         name: "carts",
@@ -830,9 +727,7 @@ export const useCartStore = create<CartStore>()(
           carts: state.carts,
           isGroupOrder: state.isGroupOrder,
           groupOrderId: state.groupOrderId,
-          totalCartValue: state.totalCartValue,
-          isReorderMode: state.isReorderMode,
-          reorderOriginalCarts: state.reorderOriginalCarts,
+          isInitialized: state.isInitialized,
         }),
         merge: (persistedState: any, currentState) => {
           let carts: Cart[] = []

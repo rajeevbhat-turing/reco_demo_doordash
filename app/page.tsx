@@ -19,14 +19,12 @@ import AddressReviewErrorModal from '@/components/modals/landing-page/address-re
 import AddressSearchModal from '@/components/modals/landing-page/address-search-modal';
 import { DashDoorLogoMark, DashDoorWordMark } from '@/components/common/Icons';
 import { useIsMobile } from '@/lib/hooks/use-mobile';
-import { topCities } from '@/constants/top-cities';
-import { topCuisines } from '@/constants/top-cuisines';
-import { topChains } from '@/constants/top-chains';
 import addressesData from '@/data/addresses.json';
 import { useUserStore } from '@/store/user-store';
 import { Address } from '@/lib/types/user-types';
 import { PersonIcon } from '@/lib/utils/icons';
 import { isValidEmail } from '@/lib/utils/helperFunctions';
+import { useTopChains, useTopCuisines, useTopCities } from '@/lib/hooks/use-top-chains';
 
 export default function LandingPage() {
   const [authModalMode, setAuthModalMode] = useState<'signin' | 'signup' | null>('signin');
@@ -48,6 +46,15 @@ export default function LandingPage() {
 
   const { setTempAddress } = useUserStore();
   const isMobile = useIsMobile();
+
+  // Fetch top chains from API (restaurants with rating > 4.5)
+  const { data: topChains = [] } = useTopChains();
+
+  // Derive top cuisines from top chains (cuisines of restaurants with rating > 4.5)
+  const topCuisines = useTopCuisines();
+
+  // Derive top cities from top chains (cities of restaurants with rating > 4.5)
+  const topCities = useTopCities();
 
   useEffect(() => {
     let ticking = false;
@@ -819,76 +826,6 @@ export default function LandingPage() {
         </div>
       </div>
 
-      {/* Content section 4 */}
-      <div className="relative w-full">
-        <div className="relative w-full h-[350px] md:h-[600px] flex items-center justify-center">
-          {/* Background Image */}
-          <Image
-            src="/landing-page/gallery-3.png"
-            alt="Grocery items"
-            fill
-            className="object-cover"
-            priority
-          />
-
-          {/* Black Overlay */}
-          <div className="absolute inset-0 bg-black/50"></div>
-
-          {/* Overlay Text Content */}
-          <div className="px-6 relative z-10 mt-8">
-            <div className="max-w-[550px] text-white text-center">
-              <h2 className="text-2xl md:text-[40px] font-bold mb-4">
-                Get grocery and convenience store essentials
-              </h2>
-              <h3 className="text-lg md:text-[20px] font-bold mb-2">
-                Grocery delivery, exactly how you want it.
-              </h3>
-              <p className="text-sm md:text-base font-medium mb-8">
-                Shop from home and fill your cart with fresh produce, frozen entrees, deli delights
-                and more.
-              </p>
-              <button className="bg-[#eb1700ff] text-white font-bold px-3 py-2 rounded-[28px] text-sm md:text-base hover:bg-red-600 w-fit">
-                Shop Groceries
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Content section 5 */}
-      <div className="relative pb-0">
-        <div className="w-full max-w-7xl mx-auto px-6 pt-16 pb-6 md:pb-0">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-10 items-center">
-            {/* Left column - Text content */}
-            <div className="flex flex-col md:col-span-1 lg:col-span-1 order-2 md:order-1 ml-10 md:ml-0">
-              <h2 className="text-2xl md:text-[40px] font-bold text-[#191919ff] md:mb-4 leading-[40px]">
-                Convenience stores at your doorstep
-              </h2>
-              <p className="text-sm md:text-base font-medium text-[#191919ff] mb-6">
-                Stock up on snacks, household essentials, candy, or vitamins – all delivered in
-                under an hour.
-              </p>
-              <button
-                className="bg-[#eb1700ff] text-white font-bold px-3 py-2 rounded-[28px] text-sm md:text-base 
-              hover:bg-red-600 w-fit"
-              >
-                Shop Now
-              </button>
-            </div>
-
-            {/* Right column - Image */}
-            <div className="w-full relative z-10 md:col-span-1 lg:col-span-2 order-1 md:order-2 -mt-10 md:mt-0">
-              <Image
-                src="/landing-page/gallery-4.png"
-                alt="Convenience store items"
-                width={700}
-                height={500}
-                className="w-full h-[180px] md:h-[500px] md:w-auto object-cover"
-              />
-            </div>
-          </div>
-        </div>
-      </div>
 
       {/* Content section 6 */}
       <div className="bg-[#fef1ee] py-10 md:-mt-6 md:pt-20 md:pb-10">
@@ -977,31 +914,6 @@ export default function LandingPage() {
               </p>
             </div>
 
-            {/* Item 4: Pet supplies */}
-            <div className="flex flex-col items-center text-center">
-              <div className="w-full mb-4">
-                <Image
-                  src="/landing-page/gallery-8.png"
-                  alt="Pet supplies"
-                  width={600}
-                  height={400}
-                  className="w-full h-[180px] md:h-auto object-cover"
-                />
-              </div>
-              <h3 className="text-2xl md:text-[40px] font-bold text-[#191919ff] mb-2 md:mb-3 leading-[40px]">
-                What your pets need, and want
-              </h3>
-              <p className="text-sm md:text-base font-medium text-[#191919ff] mb-4">
-                Finally, something cat people and dog people agree on – pet supplies delivery. Shop
-                pet food, chew toys, and even costumes.
-              </p>
-              <button
-                className="bg-[#eb1700ff] text-white font-bold px-3 py-2 rounded-[28px] text-sm md:text-base 
-              hover:bg-red-600 w-fit"
-              >
-                Get Pet Supplies
-              </button>
-            </div>
           </div>
         </div>
       </div>
@@ -1140,10 +1052,10 @@ export default function LandingPage() {
                 >
                   {(showAllCities ? topCities : topCities.slice(0, 15)).map((city, index) => (
                     <div
-                      key={`city-${index}`}
+                      key={`city-${city.name}-${index}`}
                       className="text-base font-medium text-[#191919ff] hover:underline"
                     >
-                      {city}
+                      {city.name}
                     </div>
                   ))}
                 </div>
@@ -1187,10 +1099,10 @@ export default function LandingPage() {
                   {(showAllCuisines ? topCuisines : topCuisines.slice(0, 15)).map(
                     (cuisine, index) => (
                       <div
-                        key={`cuisine-${index}`}
+                        key={`cuisine-${cuisine.name}-${index}`}
                         className="text-base font-medium text-[#191919ff] hover:underline"
                       >
-                        {cuisine}
+                        {cuisine.name}
                       </div>
                     )
                   )}
@@ -1234,10 +1146,10 @@ export default function LandingPage() {
                 >
                   {(showAllChains ? topChains : topChains.slice(0, 15)).map((chain, index) => (
                     <div
-                      key={`chain-${index}`}
+                      key={`chain-${chain.id}-${index}`}
                       className="text-base font-medium text-[#191919ff] hover:underline"
                     >
-                      {chain}
+                      {chain.name}
                     </div>
                   ))}
                 </div>

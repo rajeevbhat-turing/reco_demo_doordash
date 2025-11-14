@@ -3,10 +3,11 @@
 import { useEffect, useRef, useState, useMemo } from 'react';
 import { X, AlertCircle } from 'lucide-react';
 import { Input } from '@/components/ui/input';
-import { type Deal } from '@/constants/deals';
+import { type Deal } from '@/types/deal-types';
 import { useDealsStore } from '@/store/deals-store';
 import { DashDoorLogoMark } from '../common/Icons';
 import { checkDealCriteria } from '@/lib/utils/deal-utils';
+import { useCheckoutDeals } from '@/lib/hooks/use-deals';
 
 interface PromoCodeModalProps {
   isOpen: boolean;
@@ -38,27 +39,13 @@ export default function PromoCodeModal({
     deals: null,
   });
 
-  const {
-    getDealsByRestaurantId,
-    getCommonDeals,
-    getDashpassDeal,
-    getAppliedDealId,
-    applyDeal,
-    removeDeal,
-  } = useDealsStore();
+  const { getAppliedDealId, applyDeal, removeDeal } = useDealsStore();
 
   // Get applied deal ID for this cart
   const appliedDealId = cartId ? getAppliedDealId(cartId) : null;
 
-  // Get all deals (restaurant-specific + common)
-  const allDeals = useMemo(() => {
-    const dashpassDeal = getDashpassDeal();
-    const restaurantDeals = restaurantId ? getDealsByRestaurantId(restaurantId) : [];
-    const commonDeals = getCommonDeals();
-    // Filter out dashpass from restaurant deals and combine
-    const filteredRestaurantDeals = restaurantDeals.filter(deal => deal.id !== dashpassDeal.id);
-    return [...filteredRestaurantDeals, ...commonDeals];
-  }, [restaurantId, getDealsByRestaurantId, getCommonDeals, getDashpassDeal]);
+  // Get deals from API: restaurant-specific + common deals (no DashPass deal)
+  const { data: allDeals, isLoading: isLoadingDeals } = useCheckoutDeals(restaurantId);
 
   useEffect(() => {
     if (isOpen) {
@@ -368,8 +355,12 @@ export default function PromoCodeModal({
                         <p className="text-sm text-[#606060ff] font-medium">
                           {deal.promocode ? (
                             <>
-                              {deal.freeItemName
-                                ? `Add ${deal.freeItemName} and code ${deal.promocode} to apply`
+                              {deal.freeItems && deal.freeItems.length > 0
+                                ? `Add ${
+                                    deal.freeItems.length === 1
+                                      ? deal.freeItems[0].name
+                                      : 'free items'
+                                  } and code ${deal.promocode} to apply`
                                 : deal.minimumPurchase
                                 ? `Spend $${deal.minimumPurchase}+ and code ${deal.promocode} to apply`
                                 : `Use code ${deal.promocode} to apply`}

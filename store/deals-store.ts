@@ -2,7 +2,6 @@
 
 import { create } from 'zustand';
 import { persist, devtools } from 'zustand/middleware';
-import { Deal, getDealsByRestaurantId, getCommonDeals, dashpassDeal, deals } from '@/constants/deals';
 
 interface AppliedDeal {
   dealId: string;
@@ -18,14 +17,9 @@ interface DealsStore {
   // Actions
   applyDeal: (dealId: string, cartId: string, freeItemIds?: string[]) => void;
   removeDeal: (cartId: string) => void;
-  getAppliedDeal: (cartId: string) => Deal | null;
   getAppliedDealId: (cartId: string) => string | null;
   getFreeItemIds: (cartId: string) => string[];
   isFreeItem: (cartId: string, itemId: string) => boolean;
-  getAllDeals: () => Deal[];
-  getDealsByRestaurantId: (restaurantId: string) => Deal[];
-  getCommonDeals: () => Deal[];
-  getDashpassDeal: () => Deal;
 }
 
 export const useDealsStore = create<DealsStore>()(
@@ -61,16 +55,6 @@ export const useDealsStore = create<DealsStore>()(
           });
         },
 
-        getAppliedDeal: (cartId: string) => {
-          const state = get();
-          const appliedDeal = state.appliedDeals.find(deal => deal.cartId === cartId);
-          if (!appliedDeal) return null;
-
-          // Find the deal from constants
-          const allDeals = [...deals, dashpassDeal];
-          return allDeals.find(deal => deal.id === appliedDeal.dealId) || null;
-        },
-
         getAppliedDealId: (cartId: string) => {
           const state = get();
           const appliedDeal = state.appliedDeals.find(deal => deal.cartId === cartId);
@@ -87,23 +71,6 @@ export const useDealsStore = create<DealsStore>()(
           const state = get();
           const appliedDeal = state.appliedDeals.find(deal => deal.cartId === cartId);
           return appliedDeal?.freeItemIds?.includes(itemId) || false;
-        },
-
-        getAllDeals: () => {
-          return [...deals, dashpassDeal];
-        },
-
-        getDealsByRestaurantId: (restaurantId: string) => {
-          return getDealsByRestaurantId(restaurantId);
-        },
-
-        getCommonDeals: () => {
-          const commonDeals = getCommonDeals();
-          return commonDeals;
-        },
-
-        getDashpassDeal: () => {
-          return dashpassDeal;
         },
       }),
       {

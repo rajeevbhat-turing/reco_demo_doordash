@@ -13,7 +13,7 @@ import ReviewDialog from "@/components/review-dialog"
 export default function Orders() {
   const router = useRouter()
   const { orders, updateOrderReview } = useOrdersStore()
-  const { startReorderMode } = useCartStore()
+  const { startReorder } = useCartStore()
   const [activeTab, setActiveTab] = useState<'Personal' | 'Business'>('Personal')
   const [mounted, setMounted] = useState(false)
   const [reviewingOrder, setReviewingOrder] = useState<Order | null>(null)
@@ -54,8 +54,8 @@ export default function Orders() {
         storeName
       })
       
-      // Start reorder mode (this will backup current cart and load order items)
-      startReorderMode(orderId, items, category, storeId, storeName)
+      // Start reorder (adds a cart with isReorder flag)
+      startReorder(items, category, storeId, storeName)
       
       // Navigate to the store page based on category
       let storePath = ''

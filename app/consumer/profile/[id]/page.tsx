@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Star, ChevronRight, ArrowRight } from 'lucide-react';
@@ -8,9 +8,11 @@ import { format } from 'date-fns';
 import Image from 'next/image';
 import UserRatingsModal from '@/components/modals/user-ratings-modal';
 import { useUserStore } from '@/store/user-store';
-import { useReviewStore } from '@/store/review-store';
 import { generateAvatarColor } from '@/lib/utils/helperFunctions';
-import { getRestaurantById } from '@/constants/restaurants';
+import { useRestaurants } from '@/lib/hooks/use-restaurants';
+import { useUserReviews } from '@/lib/hooks/use-reviews';
+import { useUser } from '@/lib/hooks/use-user';
+import { getRestaurantById } from '@/lib/utils/restaurant-utils';
 import {
   LockIcon,
   VerificationIcon,
@@ -22,32 +24,29 @@ import {
 
 export default function UserProfilePage() {
   const params = useParams();
-  const router = useRouter();
   const userId = params.id as string;
   const [ratingsModalOpen, setRatingsModalOpen] = useState(false);
 
-  const { getUser } = useUserStore();
-  const { getUserReviewCount } = useReviewStore();
+  const { currentUser } = useUserStore();
 
-  const user = getUser(userId);
+  // Get user by ID - checks store first, then API
+  const { data: user, isLoading: isLoadingUser } = useUser(userId);
 
-  if (!user) {
-    router.replace('/');
-    return null;
-  }
+  // Fetch restaurants near user's address
+  const defaultAddress = currentUser?.addresses.find(a => a.default);
+  const { data: restaurants } = useRestaurants(
+    defaultAddress?.lat,
+    defaultAddress?.lng,
+    10 // 10 mile radius
+  );
 
-  const contributions = getUserReviewCount(userId);
+  // Fetch approved user reviews from API
+  const { data: allReviews, userReviewCount: contributions } = useUserReviews(userId, 'approved');
 
-  // Get all reviews by this user
-  const allReviews = useMemo(() => {
-    const store = useReviewStore.getState();
-    return store.reviews.filter(
-      review => review.userId === userId && review.approvalStatus === 'approved'
-    );
-  }, [userId]);
-
-  // Get unique vendors rated by this user (top rated)
+  // Get unique vendors rated by this user (top rated) - memoized
   const topRatedVendors = useMemo(() => {
+    if (!allReviews || allReviews.length === 0) return [];
+
     const vendorMap = new Map<
       string,
       { vendorId: string; vendorName: string; vendorLogo?: string; avgRating: number }
@@ -73,16 +72,26 @@ export default function UserProfilePage() {
       .slice(0, 5);
   }, [allReviews]);
 
-  // Calculate total ratings count
-  const totalRatings = allReviews.length;
+  // Calculate total ratings count (approved reviews only) - memoized
+  const totalRatings = useMemo(() => {
+    return allReviews?.length || 0;
+  }, [allReviews]);
 
-  // Get user initials for avatar
-  const userInitials = user.name
-    .split(' ')
-    .map(n => n[0])
-    .join('')
-    .toUpperCase()
-    .slice(0, 2);
+  // Get user initials for avatar - memoized
+  const userInitials = useMemo(() => {
+    if (!user) return '';
+    return user.name
+      .split(' ')
+      .map(n => n[0])
+      .join('')
+      .toUpperCase()
+      .slice(0, 2);
+  }, [user]);
+
+  // If user is loading or not found
+  if (isLoadingUser || !user) {
+    return <div className="min-h-screen bg-white pt-[90px] pb-8" />
+  }
 
   return (
     <div className="min-h-screen bg-white pt-[90px] pb-8">
@@ -163,8 +172,8 @@ export default function UserProfilePage() {
 
             {/* User Reviews Section */}
             <div className="bg-white rounded-lg shadow-sm flex flex-col gap-6 mt-6">
-              {allReviews.map(review => {
-                const restaurant = getRestaurantById(review.vendorId);
+              {(allReviews || []).map(review => {
+                const restaurant = getRestaurantById(restaurants, review.vendorId);
                 return (
                   <div key={review.id} className="border border-[#e5e5e5] rounded-2xl px-3.5 py-4">
                     {/* Review Header */}
@@ -250,7 +259,7 @@ export default function UserProfilePage() {
           isOpen={ratingsModalOpen}
           onClose={() => setRatingsModalOpen(false)}
           userName={user.name}
-          reviews={allReviews}
+          reviews={allReviews || []}
         />
       </div>
     </div>

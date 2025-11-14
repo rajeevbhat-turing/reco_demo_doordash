@@ -6,12 +6,10 @@ import { useRouter } from "next/navigation"
 import { X, ChevronRight, ChevronLeft, Plus, Minus } from "lucide-react"
 import { useCartStore } from "@/store/cart-store"
 import { Users } from "lucide-react"
-import { getRestaurantById } from "@/constants/restaurants"
+import { useRestaurants } from "@/lib/hooks/use-restaurants"
+import { useUserStore } from "@/store/user-store"
+import { getRestaurantById } from "@/lib/utils/restaurant-utils"
 import { getMenuItemsByRestaurantId } from "@/constants/menu-items"
-import { stores } from "@/data/store-data"
-import { stores as retailStores } from "@/constants/store"
-import { allPetStores } from "@/data/pet-data"
-import { convenienceStores } from "@/data/convenience-store-data"
 import OtherCarts from "./other-carts"
 
 interface CartSidebarProps {
@@ -36,6 +34,17 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
     groupOrderId,
     getConfig
   } = useCartStore()
+
+  // Get user's address for fetching restaurants
+  const currentUser = useUserStore(state => state.currentUser)
+  const defaultAddress = currentUser?.addresses.find(a => a.default)
+
+  // Fetch restaurants near user's address
+  const { data: restaurants } = useRestaurants(
+    defaultAddress?.lat,
+    defaultAddress?.lng,
+    10 // 10 mile radius
+  )
   
   // Get current store info
   const currentCategory = getCurrentCategory()
@@ -71,28 +80,10 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
   const categoryConfig = getConfig()
 
   // Function to get store information based on category and store ID
+  // Note: Only restaurants are supported now
   const getStoreInfo = useCallback((storeId: string, category: string) => {
-    if (!storeId) return null;
-    
-    let result = null;
-    switch (category) {
-      case 'grocery':
-        result = stores[storeId] || null;
-        break;
-      case 'retail':
-        result = retailStores.find(store => store.id === storeId) || null;
-        break;
-      case 'pets':
-        result = allPetStores.find(store => store.id === storeId) || null;
-        break;
-      case 'convenience':
-        result = convenienceStores[storeId] || null;
-        break;
-      default:
-        break;
-    }
-    
-    return result;
+    // No store info for restaurants - they use restaurant data directly
+    return null;
   }, []);
 
   // Function to fetch complement items - moved outside useEffect for clarity
@@ -104,7 +95,7 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
       }
 
       // Get restaurant data
-      const restaurantData = getRestaurantById(currentId)
+      const restaurantData = getRestaurantById(restaurants, currentId)
       setRestaurant(restaurantData)
 
       // Get menu items strictly from this restaurant
@@ -156,7 +147,7 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
 
       setComplementItems(shuffledItems)
     },
-    [], // Remove items dependency to make it stable
+    [restaurants], // Add restaurants dependency
   )
 
   // Fetch complement items when items change - no useEffect needed
@@ -550,7 +541,7 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
           
            {/* Other Carts Section - show when no current store is set and there are other carts */}
            {!activeStoreId && otherCarts.length > 0 && (
-             <OtherCarts carts={otherCarts} onRemoveCart={handleRemoveCart} onClose={onClose} />
+             <OtherCarts carts={otherCarts} onRemoveCart={handleRemoveCart} onClose={onClose} restaurants={restaurants || []} />
            )}
         </div>
       </div>

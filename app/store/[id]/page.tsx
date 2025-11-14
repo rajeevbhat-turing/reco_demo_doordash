@@ -3,21 +3,32 @@
 import { useEffect, useState, useRef, useCallback, useMemo } from 'react';
 import Image from 'next/image';
 import { useParams } from 'next/navigation';
-import { ChevronDown, Info, ChevronLeft, ChevronRight, Heart, Search, X } from 'lucide-react';
-import { getRestaurantById } from '@/constants/restaurants';
-import { getMenuItemsByCategory } from '@/constants/menu-items';
-import { getMenuCategoriesByRestaurantId } from '@/lib/utils';
-import { useCartStore } from '@/store/cart-store';
-import { useAppStore } from '@/store/app-store';
-import { useVerifierStore } from '@/store/verifier-store';
-import MenuItemDialog from '@/components/menu-item-dialog';
-import GroupOrderDialog from '@/components/group-order-dialog';
-import StoreDetailsDialog from '@/components/store-details-dialog';
-import { Reviews } from '@/components/reviews';
+import {
+  ChevronDown,
+  Info,
+  ChevronLeft,
+  ChevronRight,
+  Heart,
+  Search,
+  X,
+} from 'lucide-react';
+import { useRestaurants } from "@/lib/hooks/use-restaurants";
+import { useRestaurant } from "@/lib/hooks/use-restaurant";
+import { useRestaurantMenu } from "@/lib/hooks/use-restaurant-menu";
+import { useUserStore } from "@/store/user-store";
+import { getRestaurantById } from "@/lib/utils/restaurant-utils";
+import { useCartStore } from "@/store/cart-store";
+import { useAppStore } from "@/store/app-store";
+import { useVerifierStore } from "@/store/verifier-store";
+import MenuItemDialog from "@/components/menu-item-dialog";
+import GroupOrderDialog from "@/components/group-order-dialog";
+import StoreDetailsDialog from "@/components/store-details-dialog";
+import { Reviews } from "@/components/reviews";
+import { type Deal } from '@/types/deal-types';
+import { useDealsByRestaurantId } from '@/lib/hooks/use-deals';
 import { Deals } from '@/components/deals';
 import ServiceFeesInfo from '@/components/service-fees-info';
 import { getDefaultRating } from '@/utils/rating-utils';
-import { getDealsByRestaurantId, dashpassDeal, type Deal } from '@/constants/deals';
 
 const menuTypes = [
   {
@@ -91,6 +102,27 @@ export default function RestaurantPage() {
   const { addItem } = useCartStore();
   const ticking = useRef(false);
   const featuredItemsRef = useRef<HTMLDivElement>(null);
+  const dealsRef = useRef<HTMLDivElement>(null);
+
+  // Fetch restaurants near user's address
+  const currentUser = useUserStore(state => state.currentUser);
+  const defaultAddress = currentUser?.addresses.find(a => a.default);
+  const { data: restaurants } = useRestaurants(
+    defaultAddress?.lat,
+    defaultAddress?.lng,
+    10 // 10 mile radius
+  );
+
+  // Check if restaurant is in nearby results
+  const restaurantInNearby = restaurants ? getRestaurantById(restaurants, id) : null;
+  
+  // If not in nearby results, fetch this specific restaurant
+  const { data: specificRestaurant, isLoading: isLoadingRestaurant } = useRestaurant(
+    !restaurantInNearby && id ? id : undefined
+  );
+
+  // Fetch menu for this restaurant
+  const { data: menuData, isLoading: isLoadingMenu, error: menuError } = useRestaurantMenu(id);
 
   // Set the category to restaurant when the page loads
   useEffect(() => {
@@ -135,18 +167,44 @@ export default function RestaurantPage() {
   }, []);
 
   useEffect(() => {
-    if (id) {
-      const restaurantData = getRestaurantById(id);
-      const featuredItemsData = getMenuItemsByCategory(id, 'Featured Items');
-      const menuCategoriesData = getMenuCategoriesByRestaurantId(id);
-      const mostOrderedItemsData = getMenuItemsByCategory(id, 'Most Ordered');
-      const familySharingItemsData = getMenuItemsByCategory(id, 'Family & Sharing');
-      const beefItemsData = getMenuItemsByCategory(id, 'Beef');
+    if (id && menuData) {
+      // Use restaurant from nearby results if available, otherwise use specifically fetched one
+      const restaurantData = restaurantInNearby || specificRestaurant;
 
       if (restaurantData) {
         setCurrentStore(restaurantData, 'restaurant');
       }
       setRestaurant(restaurantData);
+
+      // Get featured items using the featured flag from database
+      const featuredItemsData = menuData.menuItems.filter(item => item.featured === true);
+
+      // Get most ordered items - prioritize popular flag, then sort by rating_count
+      const mostOrderedItemsData = menuData.menuItems
+        .filter(item => item.popular === true || (item.ratingCount && item.ratingCount > 0))
+        .sort((a, b) => {
+          // First prioritize items with popular flag
+          if (a.popular && !b.popular) return -1;
+          if (!a.popular && b.popular) return 1;
+          // Then sort by rating count (descending)
+          const aCount = a.ratingCount || 0;
+          const bCount = b.ratingCount || 0;
+          return bCount - aCount;
+        })
+        .slice(0, 5); // Take top 5
+
+      const familySharingItemsData = menuData.menuItems.filter(
+        item => item.category === 'Family & Sharing'
+      );
+      const beefItemsData = menuData.menuItems.filter(item => item.category === 'Beef');
+
+      // Transform categories to match expected format
+      const menuCategoriesData = menuData.categories.map(cat => ({
+        id: cat.id,
+        name: cat.name,
+        description: cat.description,
+      }));
+
       setFeaturedItems(featuredItemsData);
       setMenuCategories(menuCategoriesData);
       setMostOrderedItems(mostOrderedItemsData);
@@ -157,7 +215,7 @@ export default function RestaurantPage() {
     return () => {
       clearCurrentStore();
     };
-  }, [id]);
+  }, [id, restaurantInNearby, specificRestaurant, menuData]);
 
   // Save the initial position of the menu after the component mounts
   useEffect(() => {
@@ -206,26 +264,34 @@ export default function RestaurantPage() {
     }
   };
 
+  // Get deals from API
+  const { restaurantDeals } = useDealsByRestaurantId(id || '');
+
   // Get first deal (excluding dashpass)
   const firstDeal = useMemo(() => {
-    if (!id) return null;
-    const allDeals = getDealsByRestaurantId(id);
-    const restaurantDeals = allDeals.filter(deal => deal.id !== dashpassDeal.id);
     return restaurantDeals.length > 0 ? restaurantDeals[0] : null;
-  }, [id]);
+  }, [restaurantDeals]);
 
   // Format deal banner text
   const getDealBannerText = (deal: Deal) => {
-    if (deal.discountType === 'percentage' && deal.minimumPurchase && deal.discountValue && deal.maximumDiscount) {
+    if (
+      deal.discountType === 'percentage' &&
+      deal.minimumPurchase &&
+      deal.discountValue &&
+      deal.maximumDiscount
+    ) {
       return `Spend $${deal.minimumPurchase}, get ${deal.discountValue}% off up to $${deal.maximumDiscount}`;
     } else if (deal.discountType === 'percentage' && deal.minimumPurchase && deal.discountValue) {
       return `Spend $${deal.minimumPurchase}, get ${deal.discountValue}% off`;
     } else if (deal.discountType === 'fixed' && deal.minimumPurchase && deal.discountValue) {
       return `Spend $${deal.minimumPurchase}, get $${deal.discountValue} off`;
     } else if (deal.freeItems && deal.freeItems.length > 0 && deal.minimumPurchase) {
-      return `Spend $${deal.minimumPurchase}, get free item`;
-    } else if (deal.freeItemName && deal.minimumPurchase) {
-      return `Spend $${deal.minimumPurchase}, get ${deal.freeItemName} free`;
+      // If single free item, show its name; otherwise show "free items"
+      if (deal.freeItems.length === 1) {
+        return `Spend $${deal.minimumPurchase}, get ${deal.freeItems[0].name} free`;
+      } else {
+        return `Spend $${deal.minimumPurchase}, get free items`;
+      }
     }
     return deal.title;
   };
@@ -237,7 +303,7 @@ export default function RestaurantPage() {
   const handleAddToCart = (item: any) => {
     // Add to cart - will automatically find or create restaurant cart
     const cartItem = {
-      id: `${item.id}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`, // Generate unique ID
+      id: item.id, // Use database ID directly
       itemName: item.name, // Use itemName instead of name
       price: item.price,
       image: item.image,
@@ -287,6 +353,40 @@ export default function RestaurantPage() {
 
   // Find the selected menu type object
   const selectedMenuTypeObj = menuTypes.find(menu => menu.name === selectedMenuType);
+
+  // Show loading state
+  if (isLoadingMenu || isLoadingRestaurant || !restaurant) {
+    return (
+      <div className="px-8 py-16">
+        <div className="max-w-7xl mx-auto min-h-screen">
+          <div className="animate-pulse">
+            <div className="h-[220px] bg-gray-200 rounded-xl mb-6"></div>
+            <div className="h-8 bg-gray-200 rounded w-1/3 mb-4"></div>
+            <div className="h-4 bg-gray-200 rounded w-1/2 mb-8"></div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {[1, 2, 3, 4].map(i => (
+                <div key={i} className="h-32 bg-gray-200 rounded"></div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state
+  if (menuError) {
+    return (
+      <div className="px-8 py-16">
+        <div className="max-w-7xl mx-auto">
+          <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
+            <h2 className="text-xl font-bold text-red-800 mb-2">Failed to Load Menu</h2>
+            <p className="text-red-600">{menuError.message}</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="px-8 py-16">
@@ -463,6 +563,35 @@ export default function RestaurantPage() {
                 </div>
                 <div className="p-2 max-h-[calc(100vh-200px)] overflow-y-auto">
                   <ul className="space-y-1">
+                    {/* Featured Items section */}
+                    {featuredItems.length > 0 && (
+                      <li>
+                        <button
+                          className={`w-full text-left px-2 py-2 rounded-md ${
+                            activeCategory === 'Featured Items' ? 'bg-gray-100 font-medium' : ''
+                          }`}
+                          onClick={() => scrollToSection('Featured Items')}
+                        >
+                          Featured Items
+                        </button>
+                      </li>
+                    )}
+
+                    {/* Most Ordered section */}
+                    {mostOrderedItems.length > 0 && (
+                      <li>
+                        <button
+                          className={`w-full text-left px-2 py-2 rounded-md ${
+                            activeCategory === 'Most Ordered' ? 'bg-gray-100 font-medium' : ''
+                          }`}
+                          onClick={() => scrollToSection('Most Ordered')}
+                        >
+                          Most Ordered
+                        </button>
+                      </li>
+                    )}
+
+                    {/* Regular menu categories */}
                     {menuCategories.map(category => (
                       <li key={category.id}>
                         <button
@@ -488,14 +617,13 @@ export default function RestaurantPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {/* Filter all menu items across categories */}
                   {(() => {
-                    const filteredItems = menuCategories.flatMap(category =>
-                      getMenuItemsByCategory(id, category.name).filter(
+                    const filteredItems =
+                      menuData?.menuItems.filter(
                         item =>
                           item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                           (item.description &&
                             item.description.toLowerCase().includes(searchQuery.toLowerCase()))
-                      )
-                    );
+                      ) || [];
 
                     return filteredItems.length > 0 ? (
                       filteredItems.map(item => (
@@ -717,7 +845,9 @@ export default function RestaurantPage() {
                     >
                       <h2 className="text-xl font-bold mb-4">{category.name}</h2>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {getMenuItemsByCategory(id, category.name).map(item => (
+                        {(
+                          menuData?.menuItems.filter(item => item.category === category.name) || []
+                        ).map(item => (
                           <div
                             key={item.id}
                             className="border border-gray-200 rounded-lg overflow-hidden cursor-pointer"
@@ -778,23 +908,23 @@ export default function RestaurantPage() {
       />
       {/* Service Fees Info Dialog */}
       <ServiceFeesInfo isOpen={serviceFeesInfoOpen} onClose={() => setServiceFeesInfoOpen(false)} />
-      
+
       {/* Deal Banner */}
       {firstDeal && (
-        <div className="fixed bottom-0 left-0 md:left-[220px] right-0 bg-[#fef0ed] px-4 py-2 flex items-center justify-center gap-3 z-40 
-        border-t border-gray-200">
+        <div
+          className="fixed bottom-0 left-0 md:left-[220px] right-0 bg-[#fef0ed] px-4 py-2 flex items-center justify-center gap-3 z-40 
+        border-t border-gray-200"
+        >
           <div className="flex items-center gap-3">
-            {firstDeal.icon && (
-              <div className="flex-shrink-0">
-                <Image
-                  src={firstDeal.icon}
-                  alt="Deal"
-                  width={24}
-                  height={24}
-                  className="object-contain"
-                />
-              </div>
-            )}
+            <div className="flex-shrink-0">
+              <Image
+                src="/offer-icon.svg"
+                alt="Deal"
+                width={24}
+                height={24}
+                className="object-contain"
+              />
+            </div>
             <span className="text-base font-bold text-[#eb1700ff]">
               {getDealBannerText(firstDeal)}
             </span>
