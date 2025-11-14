@@ -15,11 +15,6 @@ COPY . .
 RUN npm run build
 
 FROM base AS runner
-
-# Persistent data directory for the database
-RUN mkdir -p /data && chown -R node:node /data
-ENV DB_PATH=/data/app.db
-
 WORKDIR /app
 
 ENV NODE_ENV=production
@@ -34,6 +29,13 @@ RUN chown nextjs:nodejs .next
 
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+
+COPY --from=builder --chown=nextjs:nodejs \
+  /app/node_modules/@libsql/linux-x64-musl \
+  ./node_modules/@libsql/linux-x64-musl
+
+COPY ./doordash.db /app/doordash.db
+ENV LIBSQL_URL=file:/app/doordash.db
 
 USER nextjs
 
