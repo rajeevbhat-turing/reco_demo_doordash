@@ -70,6 +70,25 @@ export default function Home() {
     cartStore.setCategory('restaurant');
   }, []);
 
+  // Get address from user store for location filtering
+  const { getAddresses, getTempAddress, isAuthenticated } = useUserStore()
+  const addresses = getAddresses()
+  const tempAddress = useSyncExternalStore(
+    useUserStore.subscribe,
+    () => useUserStore.getState().getTempAddress(),
+    () => null
+  )
+  const userIsAuthenticated = isAuthenticated()
+  
+  // Get active address (selected address for authenticated users, temp address for non-authenticated)
+  const selectedAddress = useMemo(() => {
+    if (userIsAuthenticated && addresses.length > 0) {
+      // Find default address or use first address
+      return addresses.find(a => a.default) || addresses[0] || null
+    }
+    return null
+  }, [userIsAuthenticated, addresses])
+
   // Function to check if an image URL is valid (not placeholder/empty)
   const hasValidLogo = (logoUrl: string | undefined): boolean => {
     if (!logoUrl || logoUrl.trim() === '') return false;

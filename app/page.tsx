@@ -106,6 +106,7 @@ export default function LandingPage() {
 
   // Handle address selection
   const handleSelectAddress = (address: (typeof addressesData)[0]) => {
+    setAddressSearchQuery(`${address.street}, ${address.city}, ${address.state} ${address.zipCode}`);
     const tempAddress: Address = {
       id: 'temp-address',
       street: address.street,
@@ -117,7 +118,6 @@ export default function LandingPage() {
       addressType: 'house', // default type
     };
     setTempAddress(tempAddress);
-    setAddressSearchQuery('');
     setShowAddressDropdown(false);
   };
 
