@@ -1,4 +1,4 @@
-import { MenuItem } from '@/constants/menu-items';
+import type { MenuItem } from '@/constants/menu-items';
 
 export interface MenuCategory {
   id: string;

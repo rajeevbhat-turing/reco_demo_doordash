@@ -1,348 +1,819 @@
-"use client"
+'use client';
 
-import { useEffect, useState, useRef, useMemo, useSyncExternalStore } from "react"
-import { useSearchParams } from "next/navigation"
-import Link from "next/link"
-import FilterOptions, { FilterState, FilterOptionsRef } from "@/components/filter-options"
-import { useCartStore } from "@/store/cart-store"
-import { useUserStore } from "@/store/user-store"
-import { useVerifierStore } from "@/store/verifier-store"
-import { useAppStore } from "@/store/app-store"
-import { calculateDistance } from "@/lib/utils/distance-utils"
-import { performSearch, isOnlySpecialCharacters, type SearchResultRestaurant } from "@/lib/utils/search-utils"
-import { applySearchFilters, determineSearchContext, detectAvailableCategories, filterByCategory } from "@/lib/utils/search-filter-utils"
-import SearchResultsRenderer from "@/components/search/SearchResultsRenderer"
+import { useState, useEffect, useMemo, useRef, useSyncExternalStore } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
+import Image from 'next/image';
+import Link from 'next/link';
+import { Heart, ChevronLeft, ChevronRight } from 'lucide-react';
+import { useRestaurants } from '@/lib/hooks/use-restaurants';
+import { useUserStore } from '@/store/user-store';
+import { useCartStore } from '@/store/cart-store';
+import FilterOptions, {
+  type FilterOptionsRef,
+  type FilterState,
+} from '@/components/filter-options';
+import type { Restaurant } from '@/constants/restaurants';
+import type { MenuItem } from '@/constants/menu-items';
+import { getDefaultRating } from '@/utils/rating-utils';
+import { RestaurantsSkeleton } from '@/components/skeletons/restaurant-skeleton';
 
-// Force dynamic rendering
-export const dynamic = 'force-dynamic'
+interface MenuItemWithRestaurant extends MenuItem {
+  restaurant_id: string;
+  restaurantName?: string;
+  restaurantLogo?: string;
+  category_name?: string;
+}
+
 export default function SearchPage() {
-  const searchParams = useSearchParams()
-  const query = searchParams.get("q") || ""
+  const searchParams = useSearchParams();
+  const searchQuery = searchParams.get('q') || '';
+  const router = useRouter();
   
-  console.log('🚀 SearchPage rendered with query:', query)
-  const [searchResults, setSearchResults] = useState<SearchResultRestaurant[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [hideCuisineFilter, setHideCuisineFilter] = useState(false)
-  const [hideDietaryFilter, setHideDietaryFilter] = useState(false)
-  const [originalHasProducts, setOriginalHasProducts] = useState(false)
-  const [originalHasRestaurants, setOriginalHasRestaurants] = useState(false)
-  const [selectedCategory, setSelectedCategory] = useState<string>("All")
-  const [availableCategories, setAvailableCategories] = useState<string[]>([])
-  const [allFilteredResults, setAllFilteredResults] = useState<SearchResultRestaurant[]>([])
-  const { addItem } = useCartStore()
-  const [activeFilters, setActiveFilters] = useState<FilterState>({
+  const [filters, setFilters] = useState<FilterState>({
     underThirtyMins: false,
     deals: false,
     overRating: null,
-    price: null, // DEPRECATED
-    minPrice: null,
-    maxPrice: null,
+    price: null,
     dashPass: false,
-    location: null,
     cuisine: null,
     dietaryPreferences: null,
-  })
-  const { updateSearchResults, clearSearchResults } = useAppStore()
-  const { recordSearch } = useVerifierStore()
+  });
+  const filterOptionsRef = useRef<FilterOptionsRef>(null);
+  const [allMenuItems, setAllMenuItems] = useState<MenuItemWithRestaurant[]>([]);
+  const [favorites, setFavorites] = useState<{ [key: string]: boolean }>({});
+  const dishesScrollRef = useRef<HTMLDivElement>(null);
+  const [showLeftArrow, setShowLeftArrow] = useState(false);
+  const [showRightArrow, setShowRightArrow] = useState(false);
 
-  // Get user's address for location-based search
-  const currentUser = useUserStore(state => state.currentUser)
-  const defaultAddress = currentUser?.addresses.find(a => a.default)
+  // Get cart store to set category and add items
+  const cartStore = useCartStore();
+  const { addItem } = useCartStore();
 
-  // Handle filter changes
-  const handleFilterChange = (filters: FilterState) => {
-    console.log(`[SEARCH] Filter change detected:`, filters);
-    console.log(`[SEARCH] Previous activeFilters:`, activeFilters);
-    setActiveFilters(filters);
+  // Get authentication status
+  const isAuthenticated = useSyncExternalStore(
+    useUserStore.subscribe,
+    () => useUserStore.getState().isAuthenticated(),
+    () => false
+  );
+
+  // Get user's address for location-based filtering
+  const currentUser = useUserStore(state => state.currentUser);
+  const defaultAddress = currentUser?.addresses.find(a => a.default);
+
+  // Get temp address for guest users
+  const tempAddress = useSyncExternalStore(
+    useUserStore.subscribe,
+    () => useUserStore.getState().getTempAddress(),
+    () => null
+  );
+
+  // Determine which address to use
+  const activeAddress = isAuthenticated ? defaultAddress : tempAddress;
+
+  // Fetch restaurants near user's address
+  const {
+    data: restaurants,
+    isLoading: isLoadingRestaurants,
+  } = useRestaurants(
+    activeAddress?.lat,
+    activeAddress?.lng,
+    10
+  );
+
+  // Set the category to restaurant when component mounts
+  useEffect(() => {
+    cartStore.setCategory('restaurant');
+  }, []);
+
+  // Reset filters when search query changes
+  useEffect(() => {
+    if (searchQuery) {
+      setFilters({
+        underThirtyMins: false,
+        deals: false,
+        overRating: null,
+        price: null,
+        dashPass: false,
+        cuisine: null,
+        dietaryPreferences: null,
+      });
+    }
+  }, [searchQuery]);
+
+  // Fetch menu items for all restaurants
+  useEffect(() => {
+    const fetchAllMenuItems = async () => {
+      if (!restaurants || restaurants.length === 0) return;
+
+      try {
+        const menuPromises = restaurants.map(restaurant =>
+          fetch(`/api/restaurants/${restaurant.id}/menu`)
+            .then(res => res.json())
+            .then(data => {
+              if (data.success && data.data.menuItems) {
+                return data.data.menuItems.map((item: any) => ({
+                  ...item,
+                  restaurant_id: restaurant.id, // Ensure restaurant_id is set correctly
+                  restaurantId: restaurant.id, // Also set restaurantId for consistency
+                  restaurantName: restaurant.name,
+                  restaurantLogo: restaurant.logo,
+                }));
+              }
+              return [];
+            })
+            .catch(() => [])
+        );
+
+        const allMenus = await Promise.all(menuPromises);
+        const flattenedMenuItems = allMenus.flat();
+        console.log('Fetched menu items:', flattenedMenuItems.length);
+        setAllMenuItems(flattenedMenuItems);
+      } catch (error) {
+        console.error('Error fetching menu items:', error);
+      }
+    };
+
+    fetchAllMenuItems();
+  }, [restaurants]);
+
+  // Function to check if an image URL is valid
+  const hasValidLogo = (logoUrl: string | undefined): boolean => {
+    if (!logoUrl || logoUrl.trim() === '') return false;
+    if (logoUrl.includes('placeholder.svg')) return false;
+    if (logoUrl.includes('placeholder.png')) return false;
+    return true;
   };
 
-  // Debug activeFilters changes
-  useEffect(() => {
-    console.log(`[SEARCH] activeFilters changed:`, activeFilters);
-  }, [activeFilters]);
+  // Filter restaurants based on search query and filters
+  const filteredRestaurants = useMemo(() => {
+    if (!restaurants) return [];
 
-  // Track previous query to detect query changes
-  const prevQueryRef = useRef<string>("")
+    let filtered = restaurants.filter(restaurant => hasValidLogo(restaurant.logo));
 
-  useEffect(() => {
-    // Reset filter visibility only when query changes (not when filters change)
-    const queryChanged = prevQueryRef.current !== query
-    if (queryChanged) {
-      setHideCuisineFilter(false)
-      setHideDietaryFilter(false)
-      setSelectedCategory("All") // Reset to "All" when query changes
-      prevQueryRef.current = query
-    }
-    
-    // Simulate loading
-    setIsLoading(true)
-
-    // Handle special characters: if query contains only special characters, show no results
-    if (isOnlySpecialCharacters(query)) {
-      setSearchResults([])
-      setAllFilteredResults([])
-      setAvailableCategories([])
-      setIsLoading(false)
-      return
-    }
-    
-    // Perform search
-    let combinedResults = performSearch(query)
-    
-    // Apply location filtering to restaurant results (only restaurants, not products or stores)
-    // Separate restaurant results from other results
-    const restaurantResults = combinedResults.filter(r => r.matchType === "restaurant" && !r.storeType)
-    const nonRestaurantResults = combinedResults.filter(r => r.matchType !== "restaurant" || r.storeType !== undefined)
-    
-    // Apply location filtering to restaurant results if we have an address
-    if (restaurantResults.length > 0 && (selectedAddress || tempAddress)) {
-      // Convert SearchResultRestaurant to Restaurant format for location filtering
-      // We need to filter by lat/lng, so we'll manually filter here
-      const activeAddress = selectedAddress || tempAddress
+    // Apply search query
+    if (searchQuery) {
+      const lowerQuery = searchQuery.toLowerCase();
       
-      if (activeAddress && typeof activeAddress.lat === 'number' && typeof activeAddress.lng === 'number') {
-        const locationFilteredRestaurants = restaurantResults.filter((restaurant) => {
-          // Validate that restaurant has coordinates
-          if (typeof restaurant.lat !== 'number' || typeof restaurant.lng !== 'number') {
-            return false
+      // Find restaurants that match by name, cuisine, or categories
+      const directMatches = filtered.filter(
+        restaurant =>
+          restaurant.name.toLowerCase().includes(lowerQuery) ||
+          restaurant.cuisine.toLowerCase().includes(lowerQuery) ||
+          (restaurant.categories &&
+            restaurant.categories.some(cat => cat.toLowerCase().includes(lowerQuery)))
+      );
+
+      // Find restaurants that have menu items matching the search query
+      const restaurantIdsWithMatchingItems = new Set<string>();
+      
+      if (allMenuItems.length > 0) {
+        allMenuItems.forEach(item => {
+          if (item.name.toLowerCase().includes(lowerQuery)) {
+            // Check both possible ID fields
+            const restaurantId = item.restaurant_id || item.restaurantId;
+            if (restaurantId) {
+              restaurantIdsWithMatchingItems.add(restaurantId);
+            }
           }
-          
-          // Calculate distance using Haversine formula
-          const distance = calculateDistance(
-            activeAddress.lat,
-            activeAddress.lng,
-            restaurant.lat,
-            restaurant.lng
-          )
-          
-          // Return true if restaurant is within 3 miles radius
-          return distance <= 3
-        })
-        
-        // Combine filtered restaurants with non-restaurant results
-        combinedResults = [...locationFilteredRestaurants, ...nonRestaurantResults]
+        });
       }
-    }
-    
-    // Check if original results had products or restaurants (for empty state messages)
-    const hasProducts = combinedResults.some(r => r.id.includes("-product-"))
-    const hasRestaurants = combinedResults.some(r => !r.id.includes("-product-") && (r.matchType === "restaurant" || !r.storeType))
-    setOriginalHasProducts(hasProducts)
-    setOriginalHasRestaurants(hasRestaurants)
-    
-    // Determine search context based on ORIGINAL results (before filtering) to hide irrelevant filters
-    // This ensures context doesn't change when filters are applied
-    const searchContext = determineSearchContext(combinedResults)
-    
-    // Check if all results are products from an exact match (single or multiple products with same name)
-    // If so, show only "All" tab to focus on the specific product(s) the user clicked
-    const allResultsAreProducts = combinedResults.length > 0 && combinedResults.every(r => r.id.includes("-product-"))
-    const isExactProductMatch = allResultsAreProducts && combinedResults.length <= 10 // Reasonable limit for exact matches
-    
-    // Also check if there's only a single product result - show only "All" tab for better UX
-    const isSingleProduct = combinedResults.length === 1 && combinedResults[0].id.includes("-product-")
-    
-    // Detect available categories from combinedResults (before filtering)
-    // If it's an exact product match OR a single product, only show "All" tab
-    const categories = (isExactProductMatch || isSingleProduct) ? ["All"] : detectAvailableCategories(combinedResults)
-    setAvailableCategories(categories)
-    
-    // Store search context for FilterOptions
-    // Always use the context detected from original results to ensure consistency
-    setHideCuisineFilter(searchContext.hideCuisine)
-    setHideDietaryFilter(searchContext.hideDietary)
-    
-    // Convert results to SearchResult format for cart store (immediate update for verifier)
-    const immediateCartSearchResults = combinedResults.map(restaurant => ({
-      id: restaurant.id,
-      name: restaurant.name,
-      logo: restaurant.logo || "",
-      description: restaurant.cuisine,
-      dashPass: restaurant.dashPass,
-      type: restaurant.storeType === "grocery" || restaurant.storeType === "pets" || restaurant.storeType === "pet-product" || restaurant.storeType === "convenience" ? "restaurant" as const : "restaurant" as const,
-      restaurantId: restaurant.id,
-      matchedItem: restaurant.matchType === "menu-item" || restaurant.matchType === "pet-product" || restaurant.matchType === "convenience" ? restaurant.matchedItems?.[0] : undefined,
-      categories: restaurant.categories,
-      priceRange: restaurant.priceRange
-    }))
-    
-    console.log(`[SEARCH] Immediate update with ${immediateCartSearchResults.length} results`);
-    updateSearchResults(immediateCartSearchResults)
 
-    // Simulate API delay and apply filters
-    const timer = setTimeout(() => {
-      // Apply filters to search results
-      const filteredResults = applySearchFilters(combinedResults, activeFilters)
-      
-      // Convert results to SearchResult format for cart store
-      const cartSearchResults = filteredResults.map(restaurant => ({
-        id: restaurant.id,
-        name: restaurant.name,
-        logo: restaurant.logo || "",
-        description: restaurant.cuisine,
-        dashPass: restaurant.dashPass,
-        type: restaurant.storeType === "grocery" || restaurant.storeType === "pets" || restaurant.storeType === "pet-product" || restaurant.storeType === "convenience" ? "restaurant" as const : "restaurant" as const,
-        restaurantId: restaurant.id,
-        matchedItem: restaurant.matchType === "menu-item" || restaurant.matchType === "pet-product" || restaurant.matchType === "convenience" ? restaurant.matchedItems?.[0] : undefined,
-        categories: restaurant.categories,
-        priceRange: restaurant.priceRange
-      }))
-      
-      console.log(`[SEARCH] Updating cart store with ${cartSearchResults.length} results`);
-      console.log(`[SEARCH] Sample result:`, cartSearchResults[0]);
-      updateSearchResults(cartSearchResults)
-      
-      // Store all filtered results (before category filtering)
-      setAllFilteredResults(filteredResults)
-      setIsLoading(false)
-    }, 500)
+      console.log('Search query:', lowerQuery);
+      console.log('Direct matches:', directMatches.length);
+      console.log('Restaurant IDs with matching menu items:', restaurantIdsWithMatchingItems.size);
 
-    return () => {
-      clearTimeout(timer)
-    }
-  }, [query, activeFilters, updateSearchResults, selectedAddress, tempAddress])
+      // Find restaurant objects for menu item matches
+      const menuItemMatches = filtered.filter(restaurant =>
+        restaurantIdsWithMatchingItems.has(restaurant.id)
+      );
 
-  // Apply category filtering when selectedCategory or allFilteredResults changes
-  useEffect(() => {
-    if (allFilteredResults.length === 0) {
-      setSearchResults([])
-      return
-    }
-    
-    // Filter results based on selected category
-    const categoryFilteredResults = filterByCategory(allFilteredResults, selectedCategory)
-    
-    setSearchResults(categoryFilteredResults)
-  }, [selectedCategory, allFilteredResults])
-
-  useEffect(() => {
-    return () => {
-      clearSearchResults()
-    }
-  }, [clearSearchResults])
-
-  // Save search to recent searches
-  useEffect(() => {
-    if (query) {
-      try {
-        if (typeof window !== 'undefined') {
-          const savedSearches = localStorage.getItem("recentSearches")
-          let recentSearches = savedSearches ? JSON.parse(savedSearches) : []
-
-          // Add current search to recent searches if not already present
-          if (!recentSearches.includes(query)) {
-            recentSearches = [query, ...recentSearches].slice(0, 5)
-            localStorage.setItem("recentSearches", JSON.stringify(recentSearches))
-          }
+      // Combine both types of matches, removing duplicates
+      const allMatches = [...directMatches];
+      menuItemMatches.forEach(restaurant => {
+        if (!allMatches.find(r => r.id === restaurant.id)) {
+          allMatches.push(restaurant);
         }
-      } catch (error) {
-        console.error('Error saving search to recent searches:', error)
-        // Continue without saving if localStorage fails
-      }
-    }
-  }, [query])
+      });
 
-  // Record search in cart store for verifier tracking
-  useEffect(() => {
-    if (query) {
-      recordSearch(query)
+      console.log('Total matches (direct + menu items):', allMatches.length);
+
+      filtered = allMatches;
     }
-  }, [query, recordSearch])
+
+    // Apply filters
+    if (filters.underThirtyMins) {
+      filtered = filtered.filter(restaurant => {
+        const timeStr = restaurant.time;
+        const minutes = Number.parseInt(timeStr.match(/\d+/)?.[0] || '100');
+        return minutes < 30;
+      });
+    }
+
+    if (filters.overRating) {
+      filtered = filtered.filter(
+        restaurant => getDefaultRating(restaurant.rating) >= filters.overRating!
+      );
+    }
+
+    if (filters.dashPass) {
+      filtered = filtered.filter(restaurant => restaurant.dashPass);
+    }
+
+    if (filters.price && filters.price.length > 0) {
+      filtered = filtered.filter(restaurant => filters.price!.includes(restaurant.priceRange));
+    }
+
+    if (filters.deals) {
+      filtered = filtered.filter(restaurant => restaurant.discount);
+    }
+
+    if (filters.cuisine && filters.cuisine.length > 0) {
+      filtered = filtered.filter(restaurant => {
+        if (restaurant.categories && restaurant.categories.length > 0) {
+          return filters.cuisine!.some(selectedCuisine =>
+            restaurant.categories!.some(
+              cat =>
+                cat.toLowerCase().includes(selectedCuisine.toLowerCase()) ||
+                selectedCuisine.toLowerCase().includes(cat.toLowerCase())
+            )
+          );
+        }
+        return false;
+      });
+    }
+
+    if (filters.dietaryPreferences && filters.dietaryPreferences.length > 0) {
+      filtered = filtered.filter(restaurant => {
+        if (restaurant.categories && restaurant.categories.length > 0) {
+          return filters.dietaryPreferences!.some(dietary =>
+            restaurant.categories!.some(
+              cat =>
+                cat.toLowerCase().includes(dietary.toLowerCase()) ||
+                dietary.toLowerCase().includes(cat.toLowerCase())
+            )
+          );
+        }
+        return false;
+      });
+    }
+
+    return filtered;
+  }, [restaurants, searchQuery, filters, allMenuItems]);
+
+  // Get popular restaurants (first 2-3)
+  // Popularity score = rating × log(reviews + 1)
+  // This balances high ratings with high review volume
+  const popularRestaurants = useMemo(() => {
+    return filteredRestaurants
+      .map(restaurant => {
+        const rating = getDefaultRating(restaurant.rating);
+        const reviewCount = parseInt(restaurant.reviews?.replace(/[^0-9]/g, '') || '0');
+        const popularityScore = rating * Math.log(reviewCount + 1);
+        return { ...restaurant, popularityScore };
+      })
+      .sort((a, b) => b.popularityScore - a.popularityScore)
+      .slice(0, 3); // Max 3 popular restaurants
+  }, [filteredRestaurants]);
+
+  // Filter menu items based on search query or show popular items
+  const matchedMenuItems = useMemo(() => {
+    if (!allMenuItems.length) return [];
+
+    if (searchQuery) {
+      const lowerQuery = searchQuery.toLowerCase();
+      return allMenuItems
+        .filter(item => item.name.toLowerCase().includes(lowerQuery))
+        .slice(0, 20);
+    }
+
+    // If no search query, show popular menu items
+    return allMenuItems
+      .filter(item => item.popular || item.featured)
+      .slice(0, 20);
+  }, [allMenuItems, searchQuery]);
+
+  // Remaining restaurants (after popular, shown below dishes)
+  const remainingRestaurants = useMemo(() => {
+    // Get IDs of popular restaurants to exclude them
+    const popularIds = new Set(popularRestaurants.map(r => r.id));
+    return filteredRestaurants.filter(r => !popularIds.has(r.id));
+  }, [filteredRestaurants, popularRestaurants]);
+
+  const handleFilterChange = (newFilters: FilterState) => {
+    setFilters(newFilters);
+  };
+
+  const handleReset = () => {
+    setFilters({
+      underThirtyMins: false,
+      deals: false,
+      overRating: null,
+      price: null,
+      dashPass: false,
+      cuisine: null,
+      dietaryPreferences: null,
+    });
+  };
+
+  // Check if any filters are active
+  const hasActiveFilters = () => {
+    return (
+      filters.underThirtyMins ||
+      filters.deals ||
+      filters.overRating !== null ||
+      (filters.price !== null && filters.price.length > 0) ||
+      filters.dashPass ||
+      (filters.cuisine !== null && filters.cuisine !== undefined && filters.cuisine.length > 0) ||
+      (filters.dietaryPreferences !== null && filters.dietaryPreferences !== undefined && filters.dietaryPreferences.length > 0)
+    );
+  };
+
+  const toggleFavorite = (restaurantId: string) => {
+    setFavorites(prev => ({
+      ...prev,
+      [restaurantId]: !prev[restaurantId],
+    }));
+  };
+
+  // Check scroll position for arrows
+  useEffect(() => {
+    const checkScroll = () => {
+      if (dishesScrollRef.current) {
+        const { scrollLeft, scrollWidth, clientWidth } = dishesScrollRef.current;
+        setShowLeftArrow(scrollLeft > 0);
+        setShowRightArrow(scrollLeft < scrollWidth - clientWidth - 10);
+      }
+    };
+
+    const scrollContainer = dishesScrollRef.current;
+    if (scrollContainer) {
+      checkScroll();
+      scrollContainer.addEventListener('scroll', checkScroll);
+      return () => scrollContainer.removeEventListener('scroll', checkScroll);
+    }
+  }, [matchedMenuItems]);
+
+  const scrollDishes = (direction: 'left' | 'right') => {
+    if (dishesScrollRef.current) {
+      const scrollAmount = 300;
+      dishesScrollRef.current.scrollBy({
+        left: direction === 'left' ? -scrollAmount : scrollAmount,
+        behavior: 'smooth',
+      });
+    }
+  };
+
+  // Show loading skeleton
+  if (isLoadingRestaurants) {
+    return (
+      <div className="w-full max-w-[1200px] mx-auto px-4">
+        <FilterOptions
+          ref={filterOptionsRef}
+          onFilterChange={handleFilterChange}
+          onReset={handleReset}
+          filters={filters}
+        />
+        <div className="mt-8">
+          <RestaurantsSkeleton count={12} />
+        </div>
+      </div>
+    );
+  }
+
+  // Show address prompt if no address
+  if (!activeAddress) {
+    return (
+      <div className="w-full max-w-[1200px] mx-auto px-4 py-16">
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-8 text-center max-w-md mx-auto">
+          <h2 className="text-2xl font-bold mb-3">Add Your Delivery Address</h2>
+          <p className="text-gray-600 mb-4">
+            We need your address to show restaurants that deliver to you.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8 mt-14">
-      {/* Category Tabs - Only show if there are multiple categories */}
-      {!isLoading && availableCategories.length > 1 && (
-        <div className="mb-6 border-b border-gray-200">
-          <div className="flex gap-1 overflow-x-auto no-scrollbar">
-            {availableCategories.map((category) => (
-              <button
-                key={category}
-                onClick={() => setSelectedCategory(category)}
-                className={`px-4 py-2 text-sm font-medium whitespace-nowrap transition-colors ${
-                  selectedCategory === category
-                    ? "text-gray-900 border-b-2 border-gray-900"
-                    : "text-gray-600 hover:text-gray-900 border-b-2 border-transparent"
-                }`}
+    <div className="w-full mx-auto px-4">
+      {/* Filters */}
+      <FilterOptions
+        ref={filterOptionsRef}
+        onFilterChange={handleFilterChange}
+        onReset={handleReset}
+        filters={filters}
+      />
+
+      <div className="mt-4">
+        {/* Search Results Header */}
+        {searchQuery && (
+          <div className="mb-6">
+            <h1 className="text-2xl font-bold text-gray-900">
+              Results for "{searchQuery}"
+            </h1>
+          </div>
+        )}
+
+        {!searchQuery && (
+          <div className="mb-6">
+            <h1 className="text-2xl font-bold text-gray-900">
+              All Restaurants
+            </h1>
+          </div>
+        )}
+
+        {/* Popular Restaurants - First Row (2-3 restaurants) */}
+        {!hasActiveFilters() && popularRestaurants.length > 0 && (
+          <div className="mb-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              {popularRestaurants.map(restaurant => (
+                <Link
+                  key={restaurant.id}
+                  href={`/store/${restaurant.id}`}
+                  className="block"
+                  prefetch={false}
+                >
+                  <div className="restaurant-card">
+                    <div className="relative h-[140px] bg-gray-100 rounded-lg overflow-hidden">
+                      <Image
+                        src={
+                          restaurant.banner ||
+                          `/placeholder.svg?height=160&width=300&query=${restaurant.name} restaurant`
+                        }
+                        alt={restaurant.name}
+                        fill
+                        className="object-cover"
+                      />
+                      {restaurant.new && (
+                        <div className="absolute top-3 left-3 bg-black text-white text-xs font-bold px-2 py-1 rounded">
+                          NEW
+                        </div>
+                      )}
+                    </div>
+                    <div className="py-3">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2 flex-1 min-w-0">
+                          <h3 className="font-bold text-base truncate">{restaurant.name}</h3>
+                          {restaurant.dashPass && (
+                            <div className="text-teal-600 flex-shrink-0">
+                              <svg
+                                width="16"
+                                height="10"
+                                viewBox="0 0 20 12"
+                                fill="none"
+                                xmlns="http://www.w3.org/2000/svg"
+                              >
+                                <path
+                                  d="M18.5 1.5L11.5 9.5L7.5 5.5L1.5 10.5"
+                                  stroke="currentColor"
+                                  strokeWidth="2"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                />
+                              </svg>
+                            </div>
+                          )}
+                        </div>
+                        <button
+                          className="text-gray-400 hover:text-gray-600 ml-2 flex-shrink-0"
+                          onClick={e => {
+                            e.preventDefault();
+                            toggleFavorite(restaurant.id);
+                          }}
+                        >
+                          <Heart
+                            className={`h-5 w-5 ${
+                              favorites[restaurant.id] ? 'fill-red-500 text-red-500' : ''
+                            }`}
+                          />
+                        </button>
+                      </div>
+
+                      <div className="flex items-center mt-1 text-xs text-gray-700">
+                        <span className="font-semibold">{getDefaultRating(restaurant.rating)}</span>
+                        <svg
+                          width="14"
+                          height="14"
+                          viewBox="0 0 16 16"
+                          fill="currentColor"
+                          className="ml-1"
+                        >
+                          <path d="M8 0L10.2571 5.08631L16 5.87013L11.8 9.79752L12.9443 15.5L8 12.5863L3.05573 15.5L4.2 9.79752L0 5.87013L5.74286 5.08631L8 0Z" />
+                        </svg>
+                        <span className="mx-1">({restaurant.reviews})</span>
+                        <span className="mx-1">•</span>
+                        <span>{restaurant.distance}</span>
+                        <span className="mx-1">•</span>
+                        <span>{restaurant.time}</span>
+                      </div>
+
+                      <div className="mt-1 text-xs text-gray-500">{restaurant.deliveryFee}</div>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Popular Dishes Carousel */}
+        {!hasActiveFilters() && matchedMenuItems.length > 0 && (
+          <div className="mb-8">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-bold">Popular Dishes</h2>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => scrollDishes('left')}
+                  disabled={!showLeftArrow}
+                  className={`bg-gray-100 rounded-full p-2 transition-colors ${
+                    showLeftArrow ? 'hover:bg-gray-200 cursor-pointer' : 'opacity-40 cursor-not-allowed'
+                  }`}
+                  aria-label="Scroll left"
+                >
+                  <ChevronLeft className="w-5 h-5" />
+                </button>
+                <button
+                  onClick={() => scrollDishes('right')}
+                  disabled={!showRightArrow}
+                  className={`bg-gray-100 rounded-full p-2 transition-colors ${
+                    showRightArrow ? 'hover:bg-gray-200 cursor-pointer' : 'opacity-40 cursor-not-allowed'
+                  }`}
+                  aria-label="Scroll right"
+                >
+                  <ChevronRight className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
+            <div className="relative">
+              <div
+                ref={dishesScrollRef}
+                className="flex gap-4 overflow-x-auto scrollbar-hide scroll-smooth"
+                style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
               >
-                {category}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
+                {matchedMenuItems.map(item => {
+                  const handleAddToCart = (e: React.MouseEvent) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    // Parse price to number
+                    const priceStr = item.price.startsWith('$') ? item.price.slice(1) : item.price;
+                    const price = parseFloat(priceStr);
+                    
+                    // Add item to cart
+                    addItem(
+                      {
+                        id: item.id,
+                        itemName: item.name,
+                        price: price,
+                        image: item.image || '/placeholder.svg',
+                      },
+                      'restaurant',
+                      item.restaurantName || 'Restaurant',
+                      item.restaurant_id || item.restaurantId || ''
+                    );
+                    
+                    // Navigate to restaurant page
+                    router.push(`/store/${item.restaurant_id || item.restaurantId}`);
+                  };
 
-      {/* Filter Options Bar */}
-      <div className="mb-6">
-        <FilterOptions 
-          isGrocery={false} 
-          onFilterChange={handleFilterChange}
-          filters={activeFilters}
-          hideCuisineFilter={hideCuisineFilter}
-          hideDietaryFilter={hideDietaryFilter}
-        />
+                  return (
+                    <div
+                      key={item.id}
+                      className="flex-shrink-0 w-[180px] cursor-pointer hover:shadow-lg transition-shadow"
+                      onClick={() => router.push(`/store/${item.restaurant_id || item.restaurantId}`)}
+                    >
+                      <div className="relative h-[180px] bg-gray-100 rounded-lg overflow-hidden mb-2">
+                        <Image
+                          src={item.image || '/placeholder.svg?height=180&width=180'}
+                          alt={item.name}
+                          fill
+                          className="object-cover"
+                        />
+                      </div>
+                      <div className="px-1">
+                        <h3 className="font-semibold text-sm line-clamp-2 mb-1">{item.name}</h3>
+                        <p className="text-xs text-gray-600 mb-1">{item.restaurantName}</p>
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm font-bold">
+                            {item.price.startsWith('$') ? item.price : `$${item.price}`}
+                          </span>
+                          <button
+                            onClick={handleAddToCart}
+                            className="bg-white border border-gray-300 rounded-full px-3 py-1 text-xs font-semibold hover:bg-gray-50"
+                          >
+                            Add
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* All Restaurants (when filters active) or Remaining Restaurants */}
+        {hasActiveFilters() ? (
+          // Show all restaurants in one section when filters are active
+          filteredRestaurants.length > 0 && (
+            <div className="mb-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                {filteredRestaurants.map(restaurant => (
+                  <Link
+                    key={restaurant.id}
+                    href={`/store/${restaurant.id}`}
+                    className="block"
+                    prefetch={false}
+                  >
+                    <div className="restaurant-card">
+                      <div className="relative h-[140px] bg-gray-100 rounded-lg overflow-hidden">
+                        <Image
+                          src={
+                            restaurant.banner ||
+                            `/placeholder.svg?height=140&width=300&query=${restaurant.name} restaurant`
+                          }
+                          alt={restaurant.name}
+                          fill
+                          className="object-cover"
+                        />
+                        {restaurant.new && (
+                          <div className="absolute top-3 left-3 bg-black text-white text-xs font-bold px-2 py-1 rounded">
+                            NEW
+                          </div>
+                        )}
+                      </div>
+                      <div className="py-3">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2 flex-1 min-w-0">
+                            <h3 className="font-bold text-base truncate">{restaurant.name}</h3>
+                            {restaurant.dashPass && (
+                              <div className="text-teal-600 flex-shrink-0">
+                                <svg
+                                  width="16"
+                                  height="10"
+                                  viewBox="0 0 20 12"
+                                  fill="none"
+                                  xmlns="http://www.w3.org/2000/svg"
+                                >
+                                  <path
+                                    d="M18.5 1.5L11.5 9.5L7.5 5.5L1.5 10.5"
+                                    stroke="currentColor"
+                                    strokeWidth="2"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                  />
+                                </svg>
+                              </div>
+                            )}
+                          </div>
+                          <button
+                            className="text-gray-400 hover:text-gray-600 ml-2 flex-shrink-0"
+                            onClick={e => {
+                              e.preventDefault();
+                              toggleFavorite(restaurant.id);
+                            }}
+                          >
+                            <Heart
+                              className={`h-5 w-5 ${
+                                favorites[restaurant.id] ? 'fill-red-500 text-red-500' : ''
+                              }`}
+                            />
+                          </button>
+                        </div>
+
+                        <div className="flex items-center mt-1 text-xs text-gray-700">
+                          <span className="font-semibold">{getDefaultRating(restaurant.rating)}</span>
+                          <svg
+                            width="14"
+                            height="14"
+                            viewBox="0 0 16 16"
+                            fill="currentColor"
+                            className="ml-1"
+                          >
+                            <path d="M8 0L10.2571 5.08631L16 5.87013L11.8 9.79752L12.9443 15.5L8 12.5863L3.05573 15.5L4.2 9.79752L0 5.87013L5.74286 5.08631L8 0Z" />
+                          </svg>
+                          <span className="mx-1">({restaurant.reviews})</span>
+                          <span className="mx-1">•</span>
+                          <span>{restaurant.distance}</span>
+                          <span className="mx-1">•</span>
+                          <span>{restaurant.time}</span>
+                        </div>
+
+                        <div className="mt-1 text-xs text-gray-500">{restaurant.deliveryFee}</div>
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )
+        ) : (
+          // Show remaining restaurants when no filters are active
+          remainingRestaurants.length > 0 && (
+            <div className="mb-8">
+              <hr className="mb-6 border-t border-gray-200" />
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              {remainingRestaurants.map(restaurant => (
+                <Link
+                  key={restaurant.id}
+                  href={`/store/${restaurant.id}`}
+                  className="block"
+                  prefetch={false}
+                >
+                  <div className="restaurant-card">
+                    <div className="relative h-[140px] bg-gray-100 rounded-lg overflow-hidden">
+                      <Image
+                        src={
+                          restaurant.banner ||
+                          `/placeholder.svg?height=200&width=400&query=${restaurant.name} restaurant`
+                        }
+                        alt={restaurant.name}
+                        fill
+                        className="object-cover"
+                      />
+                      {restaurant.new && (
+                        <div className="absolute top-3 left-3 bg-black text-white text-xs font-bold px-2 py-1 rounded">
+                          NEW
+                        </div>
+                      )}
+                    </div>
+                    <div className="py-3">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2 flex-1 min-w-0">
+                          <h3 className="font-bold text-base truncate">{restaurant.name}</h3>
+                          {restaurant.dashPass && (
+                            <div className="text-teal-600 flex-shrink-0">
+                              <svg
+                                width="16"
+                                height="10"
+                                viewBox="0 0 20 12"
+                                fill="none"
+                                xmlns="http://www.w3.org/2000/svg"
+                              >
+                                <path
+                                  d="M18.5 1.5L11.5 9.5L7.5 5.5L1.5 10.5"
+                                  stroke="currentColor"
+                                  strokeWidth="2"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                />
+                              </svg>
+                            </div>
+                          )}
+                        </div>
+                        <button
+                          className="text-gray-400 hover:text-gray-600 ml-2 flex-shrink-0"
+                          onClick={e => {
+                            e.preventDefault();
+                            toggleFavorite(restaurant.id);
+                          }}
+                        >
+                          <Heart
+                            className={`h-5 w-5 ${
+                              favorites[restaurant.id] ? 'fill-red-500 text-red-500' : ''
+                            }`}
+                          />
+                        </button>
+                      </div>
+
+                      <div className="flex items-center mt-1 text-xs text-gray-700">
+                        <span className="font-semibold">{getDefaultRating(restaurant.rating)}</span>
+                        <svg
+                          width="14"
+                          height="14"
+                          viewBox="0 0 16 16"
+                          fill="currentColor"
+                          className="ml-1"
+                        >
+                          <path d="M8 0L10.2571 5.08631L16 5.87013L11.8 9.79752L12.9443 15.5L8 12.5863L3.05573 15.5L4.2 9.79752L0 5.87013L5.74286 5.08631L8 0Z" />
+                        </svg>
+                        <span className="mx-1">({restaurant.reviews})</span>
+                        <span className="mx-1">•</span>
+                        <span>{restaurant.distance}</span>
+                        <span className="mx-1">•</span>
+                        <span>{restaurant.time}</span>
+                      </div>
+
+                      <div className="mt-1 text-xs text-gray-500">{restaurant.deliveryFee}</div>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+          )
+        )}
+
+        {/* No Results */}
+        {filteredRestaurants.length === 0 && !isLoadingRestaurants && (
+          <div className="text-center py-16">
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">No restaurants found</h2>
+            <p className="text-gray-600">Try adjusting your search or filters</p>
+          </div>
+        )}
       </div>
-
-      {isLoading ? (
-        <div className="flex justify-center items-center py-12">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-red-600"></div>
-        </div>
-      ) : searchResults.length > 0 ? (
-        <div className="space-y-8">
-          <SearchResultsRenderer results={searchResults} />
-        </div>
-      ) : (
-        <div className="text-center py-12 bg-gray-50 rounded-lg">
-          <div className="mb-4">
-            <svg
-              className="mx-auto h-12 w-12 text-gray-400"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              aria-hidden="true"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-              />
-            </svg>
-          </div>
-          {/* Check if price filter is active and show appropriate message */}
-          {(activeFilters.minPrice != null || activeFilters.maxPrice != null) ? (
-            <>
-              {(() => {
-                if (originalHasProducts && !originalHasRestaurants) {
-                  return <h3 className="text-lg font-medium text-gray-700">No products match your price</h3>
-                } else if (originalHasRestaurants && !originalHasProducts) {
-                  return <h3 className="text-lg font-medium text-gray-700">No restaurants match your price</h3>
-                } else {
-                  return <h3 className="text-lg font-medium text-gray-700">No results match your price</h3>
-                }
-              })()}
-              <p className="text-gray-500 mt-2">
-                Try adjusting your price range or browse other options
-              </p>
-            </>
-          ) : (
-            <>
-              <h3 className="text-lg font-medium text-gray-700">No results found</h3>
-              <p className="text-gray-500 mt-2">
-                Try searching for something else or browse our categories to discover great restaurants
-              </p>
-            </>
-          )}
-          <div className="mt-4">
-            <Link
-              href="/home"
-              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700"
-            >
-              Browse Restaurants
-            </Link>
-          </div>
-        </div>
-      )}
     </div>
-  )
+  );
 }
+

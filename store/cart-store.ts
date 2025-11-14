@@ -1,7 +1,6 @@
 import { create } from "zustand"
 import { persist, devtools } from "zustand/middleware"
 import type { Product, AppliedModification } from "@/types"
-import { restaurants } from "@/constants/restaurants"
 import { useVerifierStore } from "./verifier-store"
 import { useAppStore } from "./app-store"
 import { checkDealCriteriaBoolean, fetchDealById } from "@/lib/utils/deal-utils"
@@ -46,12 +45,6 @@ const categoryConfigs: Record<CartCategory, CategoryConfig> = {
     serviceFeePercentage: 0.15,
     minServiceFee: 4.99,
   },
-}
-
-// Helper function to get store name from restaurant ID
-const getStoreNameFromRestaurantId = (restaurantId: string): string => {
-  const restaurant = restaurants.find((r) => r.id === restaurantId)
-  return restaurant ? restaurant.name : "Unknown Store"
 }
 
 // Helper function to get store name from store ID

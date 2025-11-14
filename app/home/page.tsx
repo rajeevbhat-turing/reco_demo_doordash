@@ -28,6 +28,8 @@ export default function Home() {
     overRating: null,
     price: null,
     dashPass: false,
+    cuisine: null,
+    dietaryPreferences: null,
   });
   const [allFilteredRestaurants, setAllFilteredRestaurants] = useState<Restaurant[]>([]);
   const filterOptionsRef = useRef<FilterOptionsRef>(null);
@@ -209,37 +211,62 @@ export default function Home() {
       let filtered = [...restaurantList];
       console.log('filtered', filtered);
 
-      // Apply category filter
+      // Apply category filter (from FoodCategories component)
       if (selectedCategory) {
         filtered = filtered.filter(restaurant => {
-          // Check if restaurant has categories array and if it includes the selected category
+          // Check if restaurant has categories array
           if (restaurant.categories && restaurant.categories.length > 0) {
-            // Convert category names to IDs for comparison (e.g., "Fast Food" -> "fast-food")
+            // Convert category name to ID for comparison (e.g., "Fast Food" -> "fast-food")
             const categoryId = selectedCategory.toLowerCase().replace(/\s+/g, '-');
-            return restaurant.categories.includes(categoryId);
-          }
-
-          // Fallback to the old logic for backward compatibility
-          // Match category to cuisine
-          if (restaurant.cuisine.toLowerCase() === selectedCategory.toLowerCase()) {
-            return true;
-          }
-          // For Fast Food category, include restaurants with $ price range
-          if (selectedCategory === 'Fast Food' && restaurant.priceRange === '$') {
-            return true;
-          }
-          // For Comfort Food, include restaurants with certain cuisines
-          if (
-            selectedCategory === 'Comfort Food' &&
-            ['American', 'Italian', 'Burgers'].includes(restaurant.cuisine)
-          ) {
-            return true;
+            // Use "contains" match - check if any category contains the search term
+            return restaurant.categories.some(cat => cat.toLowerCase().includes(categoryId));
           }
           return false;
         });
       }
 
-      // Apply filters
+      // Apply cuisine filter (from FilterOptions component)
+      if (filters.cuisine && filters.cuisine.length > 0) {
+        filtered = filtered.filter(restaurant => {
+          if (restaurant.categories && restaurant.categories.length > 0) {
+            // Check if any selected cuisine matches any restaurant category (contains match)
+            return filters.cuisine!.some(selectedCuisine =>
+              restaurant.categories!.some(cat =>
+                cat.toLowerCase().includes(selectedCuisine.toLowerCase()) ||
+                selectedCuisine.toLowerCase().includes(cat.toLowerCase())
+              )
+            );
+          }
+          return false;
+        });
+      }
+
+      // Apply dietary preferences filter (from FilterOptions component)
+      if (filters.dietaryPreferences && filters.dietaryPreferences.length > 0) {
+        filtered = filtered.filter(restaurant => {
+          if (restaurant.categories && restaurant.categories.length > 0) {
+            // Check if any dietary preference matches any restaurant category (contains match)
+            return filters.dietaryPreferences!.some(dietary =>
+              restaurant.categories!.some(cat =>
+                cat.toLowerCase().includes(dietary.toLowerCase()) ||
+                dietary.toLowerCase().includes(cat.toLowerCase())
+              )
+            );
+          }
+          // Also check dietaryPreferences field if available
+          if (restaurant.dietaryPreferences && restaurant.dietaryPreferences.length > 0) {
+            return filters.dietaryPreferences!.some(dietary =>
+              restaurant.dietaryPreferences!.some(pref =>
+                pref.toLowerCase().includes(dietary.toLowerCase()) ||
+                dietary.toLowerCase().includes(pref.toLowerCase())
+              )
+            );
+          }
+          return false;
+        });
+      }
+
+      // Apply other filters
       if (filters.underThirtyMins) {
         filtered = filtered.filter(restaurant => {
           const timeStr = restaurant.time;
@@ -305,54 +332,6 @@ export default function Home() {
 
   const handleFilterChange = (newFilters: FilterState) => {
     setFilters(newFilters);
-
-    if (!restaurants) return;
-
-    // Apply filters to restaurants
-    let filteredRestaurants = [...restaurants];
-
-    // Filter by category if selected
-    if (selectedCategory) {
-      filteredRestaurants = filteredRestaurants.filter(restaurant =>
-        restaurant.categories?.some(cat =>
-          cat.toLowerCase().includes(selectedCategory.toLowerCase())
-        )
-      );
-    }
-
-    // Apply other filters
-    if (newFilters.underThirtyMins) {
-      // Filter by delivery time (using the time string from restaurant data)
-      filteredRestaurants = filteredRestaurants.filter(restaurant => {
-        const timeMatch = restaurant.time.match(/(\d+)/);
-        const deliveryTime = timeMatch ? parseInt(timeMatch[1]) : 60;
-        return deliveryTime <= 30;
-      });
-    }
-
-    if (newFilters.deals) {
-      filteredRestaurants = filteredRestaurants.filter(
-        restaurant => restaurant.discount && restaurant.discount.length > 0
-      );
-    }
-
-    if (newFilters.overRating) {
-      filteredRestaurants = filteredRestaurants.filter(
-        restaurant => getDefaultRating(restaurant.rating) >= newFilters.overRating!
-      );
-    }
-
-    if (newFilters.price && newFilters.price.length > 0) {
-      filteredRestaurants = filteredRestaurants.filter(restaurant =>
-        newFilters.price!.includes(restaurant.priceRange)
-      );
-    }
-
-    if (newFilters.dashPass) {
-      filteredRestaurants = filteredRestaurants.filter(restaurant => restaurant.dashPass);
-    }
-
-    setAllFilteredRestaurants(filteredRestaurants);
   };
 
   // Modify the handleReset function to avoid calling the child's resetFilters method
@@ -364,6 +343,8 @@ export default function Home() {
       overRating: null,
       price: null,
       dashPass: false,
+      cuisine: null,
+      dietaryPreferences: null,
     };
 
     // Update the state with the reset filters
@@ -379,7 +360,9 @@ export default function Home() {
       filters.deals ||
       filters.overRating !== null ||
       (filters.price !== null && filters.price.length > 0) ||
-      filters.dashPass
+      filters.dashPass ||
+      (filters.cuisine !== null && filters.cuisine !== undefined && filters.cuisine.length > 0) ||
+      (filters.dietaryPreferences !== null && filters.dietaryPreferences !== undefined && filters.dietaryPreferences.length > 0)
     );
   };
 

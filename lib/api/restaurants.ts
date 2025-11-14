@@ -1,4 +1,4 @@
-import { Restaurant } from '@/constants/restaurants';
+import type { Restaurant } from '@/constants/restaurants';
 
 /**
  * API Response type for restaurants

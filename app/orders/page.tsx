@@ -9,6 +9,8 @@ import { useCartStore } from "@/store/cart-store"
 import { prepareOrderForReorder } from "@/lib/reorder-utils"
 import { useRouter } from "next/navigation"
 import ReviewDialog from "@/components/review-dialog"
+import { useRestaurants } from "@/lib/hooks/use-restaurants"
+import { useUserStore } from "@/store/user-store"
 
 export default function Orders() {
   const router = useRouter()
@@ -17,6 +19,18 @@ export default function Orders() {
   const [activeTab, setActiveTab] = useState<'Personal' | 'Business'>('Personal')
   const [mounted, setMounted] = useState(false)
   const [reviewingOrder, setReviewingOrder] = useState<Order | null>(null)
+  
+  // Get user address for fetching restaurants
+  const currentUser = useUserStore(state => state.currentUser)
+  const tempAddress = useUserStore(state => state.getTempAddress())
+  const defaultAddress = currentUser?.addresses?.find(a => a.default)
+  const activeAddress = defaultAddress || tempAddress
+  
+  // Fetch restaurants from backend
+  const { data: restaurants = [], isLoading: isLoadingRestaurants } = useRestaurants(
+    activeAddress?.lat,
+    activeAddress?.lng
+  )
 
   // Fix hydration by only rendering orders on client side
   useEffect(() => {
@@ -39,12 +53,35 @@ export default function Orders() {
   )
 
   // Handle reorder functionality
-  const handleReorder = (order: Order) => {
+  const handleReorder = async (order: Order) => {
     console.log('[ORDERS] Reorder button clicked for order:', order.id)
     
     try {
+      // Get the restaurant ID from the order
+      const restaurantId = order.storeId || order.restaurantId
+      if (!restaurantId) {
+        throw new Error('No restaurant ID found in order')
+      }
+      
+      // Fetch menu items for this restaurant
+      let menuItems: any[] = []
+      try {
+        const response = await fetch(`/api/restaurants/${restaurantId}/menu`)
+        const data = await response.json()
+        if (data.success && data.data?.menuItems) {
+          menuItems = data.data.menuItems
+        }
+      } catch (error) {
+        console.warn('[ORDERS] Could not fetch menu items for reorder:', error)
+        // Continue without menu items - will use placeholder images
+      }
+      
       // Prepare the order for reordering
-      const { orderId, items, category, storeId, storeName } = prepareOrderForReorder(order)
+      const { orderId, items, category, storeId, storeName } = prepareOrderForReorder(
+        order,
+        restaurants,
+        menuItems
+      )
       
       console.log('[ORDERS] Prepared reorder data:', {
         orderId,
@@ -57,19 +94,8 @@ export default function Orders() {
       // Start reorder (adds a cart with isReorder flag)
       startReorder(items, category, storeId, storeName)
       
-      // Navigate to the store page based on category
-      let storePath = ''
-      if (category === 'restaurant') {
-        storePath = `/store/${storeId}`
-      } else if (category === 'grocery') {
-        storePath = `/grocery/store/${storeId}`
-      } else if (category === 'retail') {
-        storePath = `/retail/store/${storeId}`
-      } else if (category === 'pets') {
-        storePath = `/pets/store/${storeId}`
-      } else if (category === 'convenience') {
-        storePath = `/convenience/store/${storeId}`
-      }
+      // Navigate to the store page (only restaurant category is supported)
+      const storePath = `/store/${storeId}`
       
       console.log('[ORDERS] Navigating to store page:', storePath)
       
@@ -226,14 +252,15 @@ export default function Orders() {
                     <div className="flex gap-3">
                       <Button
                         variant="secondary"
-                        className="rounded-full bg-gray-200 hover:bg-gray-300 text-gray-900 font-medium px-4 py-2 text-sm h-auto"
+                        className="rounded-full bg-gray-200 hover:bg-gray-300 text-gray-900 font-medium px-4 py-2 text-sm h-auto disabled:opacity-50 disabled:cursor-not-allowed"
                         onClick={(e) => {
                           e.stopPropagation()
                           handleReorder(order)
                         }}
+                        disabled={isLoadingRestaurants || !restaurants || restaurants.length === 0}
                       >
                         <ShoppingCart className="w-4 h-4 mr-1.5" />
-                        Reorder
+                        {isLoadingRestaurants ? 'Loading...' : 'Reorder'}
                       </Button>
                       <Button
                         variant="secondary"

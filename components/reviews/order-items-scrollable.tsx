@@ -5,8 +5,8 @@ import { ThumbsUp, ChevronLeft, ChevronRight } from 'lucide-react';
 import Image from 'next/image';
 import { OrderItem } from '@/types/review-types';
 import MenuItemDialog from '@/components/menu-item-dialog';
-import { menuItems } from '@/constants/menu-items';
-import { MenuItem } from '@/constants/menu-items';
+import type { MenuItem } from '@/constants/menu-items';
+import { useRestaurantMenu } from '@/lib/hooks/use-restaurant-menu';
 
 interface OrderItemsScrollableProps {
   items: OrderItem[];
@@ -25,11 +25,15 @@ export default function OrderItemsScrollable({
   const [menuItemDialogOpen, setMenuItemDialogOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null);
 
+  // Fetch menu items for the restaurant from backend
+  const { data: menuData } = useRestaurantMenu(restaurantId || '');
+  const menuItems = menuData?.menuItems || [];
+
   // Find menu item by id
   const getMenuItemById = (itemId: string, restaurantId?: string): MenuItem | null => {
     if (restaurantId) {
       return (
-        menuItems.find(item => item.id === itemId && item.restaurantId === restaurantId) || null
+        menuItems.find(item => item.id === itemId && (item.restaurantId === restaurantId || item.restaurant_id === restaurantId)) || null
       );
     }
     // If no restaurantId provided, try to find by id only (fallback)

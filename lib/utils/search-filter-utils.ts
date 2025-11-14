@@ -5,10 +5,14 @@ import type { SearchResultRestaurant } from "./search-utils"
 
 /**
  * Apply all filters to search results
+ * @param results - Search results to filter
+ * @param filters - Filter state
+ * @param restaurantMenuItems - Optional map of restaurant ID to menu items for price filtering
  */
 export function applySearchFilters(
   results: SearchResultRestaurant[],
-  filters: FilterState
+  filters: FilterState,
+  restaurantMenuItems?: Map<string, Array<{ price: string | number }>>
 ): SearchResultRestaurant[] {
   let filteredResults = results;
   
@@ -63,13 +67,16 @@ export function applySearchFilters(
   }
 
   // Filter by min/max price (new implementation)
-  if (filters.minPrice != null || filters.maxPrice != null) {
+  if ((filters.minPrice != null || filters.maxPrice != null) && restaurantMenuItems) {
     filteredResults = filteredResults.filter(result => {
       const minPrice = filters.minPrice != null ? filters.minPrice : null
       const maxPrice = filters.maxPrice != null ? filters.maxPrice : null
       
-      // Check if it's a restaurant - check if it has menu items within price range
-      return restaurantHasItemsInPriceRange(result.id, minPrice, maxPrice)
+      // Get menu items for this restaurant
+      const menuItems = restaurantMenuItems.get(result.id) || []
+      
+      // Check if restaurant has menu items within price range
+      return restaurantHasItemsInPriceRange(result.id, minPrice, maxPrice, menuItems)
     });
     console.log(`[SEARCH] After min/max price filter: ${filteredResults.length} results`);
   }

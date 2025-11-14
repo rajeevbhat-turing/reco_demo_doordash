@@ -1,4 +1,4 @@
-import { Restaurant } from "@/constants/restaurants"
+import type { Restaurant } from "@/constants/restaurants"
 import { Address } from "@/lib/types/user-types"
 import { calculateDistance } from "./distance-utils"
 
