@@ -648,13 +648,14 @@ export default function RestaurantPage() {
                                 className="object-cover rounded-lg"
                               />
                               <button
-                                className="absolute bottom-1 right-1 bg-white rounded-full p-1 shadow-md"
+                                className="absolute bottom-1 right-1 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-md hover:bg-gray-50 transition-colors"
                                 onClick={e => {
                                   e.stopPropagation(); // Prevent opening the dialog
                                   handleAddToCart(item);
                                 }}
+                                aria-label="Add to cart"
                               >
-                                <span className="text-lg font-bold">+</span>
+                                <span className="text-lg font-bold text-gray-900">+</span>
                               </button>
                             </div>
                           </div>
@@ -749,13 +750,14 @@ export default function RestaurantPage() {
                             sizes="(max-width: 768px) 200px, 200px"
                           />
                           <button
-                            className="absolute bottom-3 right-3 bg-white rounded-full p-1 shadow-md"
+                            className="absolute bottom-3 right-3 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-md hover:bg-gray-50 transition-colors"
                             onClick={e => {
                               e.stopPropagation(); // Prevent opening the dialog
-                              openItemDialog(item);
+                              handleAddToCart(item);
                             }}
+                            aria-label="Add to cart"
                           >
-                            <span className="text-xl font-bold">+</span>
+                            <span className="text-lg font-bold text-gray-900">+</span>
                           </button>
                         </div>
                         <div className="p-3">
@@ -798,13 +800,14 @@ export default function RestaurantPage() {
                             className="object-cover"
                           />
                           <button
-                            className="absolute bottom-3 right-3 bg-white rounded-full p-1 shadow-md"
+                            className="absolute bottom-3 right-3 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-md hover:bg-gray-50 transition-colors"
                             onClick={e => {
                               e.stopPropagation(); // Prevent opening the dialog
                               handleAddToCart(item);
                             }}
+                            aria-label="Add to cart"
                           >
-                            <span className="text-xl font-bold">+</span>
+                            <span className="text-lg font-bold text-gray-900">+</span>
                           </button>
                         </div>
                         <div className="p-3">
@@ -869,13 +872,14 @@ export default function RestaurantPage() {
                                   className="object-cover rounded-lg"
                                 />
                                 <button
-                                  className="absolute bottom-1 right-1 bg-white rounded-full p-1 shadow-md"
+                                  className="absolute bottom-1 right-1 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-md hover:bg-gray-50 transition-colors"
                                   onClick={e => {
                                     e.stopPropagation(); // Prevent opening the dialog
                                     handleAddToCart(item);
                                   }}
+                                  aria-label="Add to cart"
                                 >
-                                  <span className="text-lg font-bold">+</span>
+                                  <span className="text-lg font-bold text-gray-900">+</span>
                                 </button>
                               </div>
                             </div>
