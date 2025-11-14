@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useCallback, useMemo } from "react"
+import { useState, useEffect, useCallback, useMemo, useRef } from "react"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { X, ChevronRight, ChevronLeft, Plus, Minus } from "lucide-react"
@@ -70,6 +70,7 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
   const [restaurant, setRestaurant] = useState<any>(null)
   const [store, setStore] = useState<any>(null)
   const [complementItems, setComplementItems] = useState<any[]>([])
+  const complementScrollRef = useRef<HTMLDivElement>(null)
 
   // Get category-specific configuration
   const categoryConfig = getConfig()
@@ -478,16 +479,36 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
               <div className="flex items-center justify-between mb-4">
                 <h3 className="font-bold text-lg">Complement your cart</h3>
                 <div className="flex space-x-2">
-                  <button className="p-1 rounded-full border border-gray-200">
+                  <button 
+                    className="p-1 rounded-full border border-gray-200 hover:bg-gray-50"
+                    onClick={() => {
+                      if (complementScrollRef.current) {
+                        complementScrollRef.current.scrollBy({
+                          left: -200,
+                          behavior: 'smooth'
+                        })
+                      }
+                    }}
+                  >
                     <ChevronLeft className="h-4 w-4" />
                   </button>
-                  <button className="p-1 rounded-full border border-gray-200">
+                  <button 
+                    className="p-1 rounded-full border border-gray-200 hover:bg-gray-50"
+                    onClick={() => {
+                      if (complementScrollRef.current) {
+                        complementScrollRef.current.scrollBy({
+                          left: 200,
+                          behavior: 'smooth'
+                        })
+                      }
+                    }}
+                  >
                     <ChevronRight className="h-4 w-4" />
                   </button>
                 </div>
               </div>
 
-              <div className="flex overflow-x-auto space-x-4 pb-4 hide-scrollbar">
+              <div ref={complementScrollRef} className="flex overflow-x-auto space-x-4 pb-4 hide-scrollbar scroll-smooth">
                 {complementItems.map((item) => (
                   <div key={item.id} className="flex flex-col items-center min-w-[100px]">
                     <div className="relative w-20 h-20 mb-2">
