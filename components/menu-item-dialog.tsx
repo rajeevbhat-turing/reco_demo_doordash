@@ -41,8 +41,9 @@ export default function MenuItemDialog({ isOpen, onClose, item }: MenuItemDialog
   const [appliedModifications, setAppliedModifications] = useState<Map<string, AppliedModificationOption[]>>(new Map())
   const [expandedModifications, setExpandedModifications] = useState<Set<string>>(new Set())
   const [visibleModifications, setVisibleModifications] = useState<Modification[]>([])
+  const [quantity, setQuantity] = useState(1)
   const dialogRef = useRef<HTMLDivElement>(null)
-  const { addItem } = useCartStore()
+  const { addItem, findCart, updateQuantity } = useCartStore()
 
   useEffect(() => {
     if (isOpen) {
@@ -63,6 +64,8 @@ export default function MenuItemDialog({ isOpen, onClose, item }: MenuItemDialog
       }
     } else {
       document.body.style.overflow = "auto"
+      // Reset quantity when dialog closes
+      setQuantity(1)
     }
   }, [isOpen, onClose])
 
@@ -99,6 +102,9 @@ export default function MenuItemDialog({ isOpen, onClose, item }: MenuItemDialog
 
       setAppliedModifications(defaultSelections)
       setExpandedModifications(initialExpanded)
+      
+      // Always start with quantity 1
+      setQuantity(1)
     }
   }, [isOpen, item])
 
@@ -163,7 +169,8 @@ export default function MenuItemDialog({ isOpen, onClose, item }: MenuItemDialog
       }
     }
     
-    return total.toFixed(2)
+    // Multiply by quantity
+    return (total * quantity).toFixed(2)
   }
 
   const recommendedOptions: MenuItemOption[] = [
@@ -334,7 +341,7 @@ export default function MenuItemDialog({ isOpen, onClose, item }: MenuItemDialog
     if (!item || !canAddToCart()) return
   
     const menuItem = item as MenuItem
-    const totalPrice = parseFloat(calculateTotalPrice())
+    const singleItemPrice = parseFloat(calculateTotalPrice()) / quantity
   
     // Format applied modifications for cart
     const formattedModifications: AppliedModification[] = []
@@ -357,7 +364,7 @@ export default function MenuItemDialog({ isOpen, onClose, item }: MenuItemDialog
         customizationText.push(option.title)
       }
     }
-  
+
     for (const mod of formattedModifications) {
       for (const opt of mod.appliedOptions) {
         const displayText = opt.quantity > 1 
@@ -367,19 +374,40 @@ export default function MenuItemDialog({ isOpen, onClose, item }: MenuItemDialog
       }
     }
   
-    // Add the item to cart
-    const cartItem = {
-      id: item.id, // Use database ID directly
-      itemName: item.name,
-      price: totalPrice.toFixed(2),
-      image: item.image,
-      customizations: customizationText.join(" · "),
-      appliedModifications: formattedModifications.length > 0 ? formattedModifications : undefined,
+    // Check if item already exists in cart (compare by ID and customizations)
+    const cart = findCart(item.restaurantId, "restaurant")
+    const customizationsString = customizationText.join(" · ")
+    const existingItem = cart?.items.find((i) => 
+      i.id === item.id && 
+      i.customizations === customizationsString
+    )
+    
+    if (existingItem) {
+      // Item exists with same customizations - update quantity by adding the dialog quantity
+      const newQuantity = existingItem.quantity + quantity
+      updateQuantity(existingItem.id, newQuantity)
+    } else {
+      // Item doesn't exist or has different customizations - add it quantity times
+      const cartItem = {
+        id: item.id, // Use database ID directly
+        itemName: item.name,
+        price: singleItemPrice.toFixed(2),
+        image: item.image,
+        customizations: customizationsString,
+        appliedModifications: formattedModifications.length > 0 ? formattedModifications : undefined,
+      }
+      
+      // Add the item quantity times
+      for (let i = 0; i < quantity; i++) {
+        addItem(cartItem, "restaurant", undefined, item.restaurantId)
+      }
     }
     
-    addItem(cartItem, "restaurant", undefined, item.restaurantId)
     onClose()
   }
+  
+  const incrementQuantity = () => setQuantity((prev) => prev + 1)
+  const decrementQuantity = () => setQuantity((prev) => (prev > 1 ? prev - 1 : 1))
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
@@ -606,14 +634,46 @@ export default function MenuItemDialog({ isOpen, onClose, item }: MenuItemDialog
 
         {/* Fixed bottom button */}
         <div className="flex-shrink-0 bg-white p-4 border-t border-gray-200">
-          <button
-            className={`w-full py-3 ${canAddToCart() ? "bg-red-600" : "bg-gray-300"
-              } text-white font-medium rounded-lg`}
-            disabled={!canAddToCart()}
-            onClick={handleAddToCart}
-          >
-            Add to cart - ${calculateTotalPrice()}
-          </button>
+          <div className="flex items-center gap-4">
+            {/* Quantity Selector */}
+            <div className="flex items-center gap-3 border border-gray-300 rounded-lg px-3 py-2">
+              <button
+                className="h-8 w-8 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+                onClick={decrementQuantity}
+                disabled={quantity <= 1}
+                aria-label="Decrease quantity"
+              >
+                <Minus className="h-4 w-4" />
+              </button>
+              <input
+                type="number"
+                min="1"
+                value={quantity}
+                onChange={(e) => {
+                  const value = parseInt(e.target.value) || 1
+                  setQuantity(Math.max(1, value))
+                }}
+                className="w-12 text-center text-base font-medium border-0 focus:outline-none focus:ring-0 p-0"
+              />
+              <button
+                className="h-8 w-8 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-100"
+                onClick={incrementQuantity}
+                aria-label="Increase quantity"
+              >
+                <Plus className="h-4 w-4" />
+              </button>
+            </div>
+            
+            {/* Add to Cart Button */}
+            <button
+              className={`flex-1 py-3 ${canAddToCart() ? "bg-red-600" : "bg-gray-300"
+                } text-white font-medium rounded-lg`}
+              disabled={!canAddToCart()}
+              onClick={handleAddToCart}
+            >
+              Add to cart - ${calculateTotalPrice()}
+            </button>
+          </div>
         </div>
       </div>
     </div>
