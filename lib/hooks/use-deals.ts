@@ -94,15 +94,16 @@ export function useDealsByRestaurantId(restaurantId: string | number) {
   const { data, isLoading, error, refetch } = useDeals(restaurantId);
 
   // Filter deals: DashPass (id = 'dashpass-delivery-fee') + restaurant-specific (restaurantId matches)
+  // TEMPORARILY DISABLED: DashPass deal
   const filteredDeals = useMemo(() => {
     return data.filter((deal: Deal) =>
-      deal.id === 'dashpass-delivery-fee' ||
+      // deal.id === 'dashpass-delivery-fee' || // TEMPORARILY DISABLED
       deal.restaurantId === String(restaurantId)
     );
   }, [data, restaurantId]);
 
   // Separate into categories
-  const dashpassDeal = filteredDeals.find((deal: Deal) => deal.id === 'dashpass-delivery-fee') || null;
+  const dashpassDeal = null; // TEMPORARILY DISABLED: filteredDeals.find((deal: Deal) => deal.id === 'dashpass-delivery-fee') || null;
   const restaurantDeals = filteredDeals.filter((deal: Deal) => deal.id !== 'dashpass-delivery-fee');
 
   return {
