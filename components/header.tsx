@@ -58,6 +58,9 @@ export default function Header() {
   const [manualState, setManualState] = useState('Alabama');
   const [manualZipCode, setManualZipCode] = useState('');
 
+  // Checking if current path is auth flow
+  const isAuthFlow = pathname.startsWith('/auth');
+
   const { getAddresses, addAddress, updateAddress, setDefaultAddress, setTempAddress } =
     useUserStore();
   const shouldOpenCart = useCartStore(state => state.shouldOpenCart);
@@ -380,24 +383,26 @@ export default function Header() {
     <>
       <header className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-200">
         <div className="w-full max-w-screen-2xl mx-auto px-4 h-16 flex items-center justify-between">
-          {isCheckoutPage ? (
+          {isCheckoutPage || isAuthFlow ? (
             <>
               {/* Checkout Header Layout */}
               {/* Back to store button */}
-              <button
-                onClick={handleBackToStore}
-                className="flex items-center space-x-2 text-gray-700 hover:text-gray-900 transition-colors"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M15 19l-7-7 7-7"
-                  />
-                </svg>
-                <span className="font-medium">Back to store</span>
-              </button>
+              {!isAuthFlow && (
+                <button
+                  onClick={handleBackToStore}
+                  className="flex items-center space-x-2 text-gray-700 hover:text-gray-900 transition-colors"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M15 19l-7-7 7-7"
+                    />
+                  </svg>
+                  <span className="font-medium">Back to store</span>
+                </button>
+              )}
 
               {/* Centered Logo */}
               <Link

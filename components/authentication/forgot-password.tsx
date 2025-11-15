@@ -9,6 +9,8 @@ import { isValidEmail } from '@/lib/utils/helperFunctions';
 interface ForgotPasswordProps {
   onBackToSignIn: () => void;
   email?: string;
+  onSuccessStateChange?: (showSuccess: boolean) => void;
+  onSuccess?: () => void;
 }
 
 const IllustrationImage = () => (
@@ -297,7 +299,7 @@ const SuccessIllustration = () => (
   </svg>
 );
 
-export default function ForgotPassword({ onBackToSignIn, email }: ForgotPasswordProps) {
+export default function ForgotPassword({ onBackToSignIn, email, onSuccessStateChange, onSuccess }: ForgotPasswordProps) {
   const [formData, setFormData] = useState({
     email: email || '',
   });
@@ -315,6 +317,13 @@ export default function ForgotPassword({ onBackToSignIn, email }: ForgotPassword
     },
     []
   );
+
+  // Notify parent of success state changes
+  useEffect(() => {
+    if (onSuccessStateChange) {
+      onSuccessStateChange(showSuccess);
+    }
+  }, [showSuccess, onSuccessStateChange]);
 
   // Updates form data and validates on change
   const handleFormDataChange = (field: string, value: any) => {
@@ -354,6 +363,10 @@ export default function ForgotPassword({ onBackToSignIn, email }: ForgotPassword
 
     // Show success screen
     setShowSuccess(true);
+    // Call onSuccess callback if provided
+    if (onSuccess) {
+      onSuccess();
+    }
   };
 
   // Handles resend email button click
@@ -427,7 +440,7 @@ export default function ForgotPassword({ onBackToSignIn, email }: ForgotPassword
       </div>
 
       {/* Instruction Text */}
-      <p className="text-sm text-[#191919ff] mb-6 text-center">
+      <p className="text-base text-left text-[#191919ff] mb-6">
         Please specify your email address to receive instructions for resetting it. If an account
         exists by that email, we will send a password reset.
       </p>

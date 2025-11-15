@@ -12,12 +12,14 @@ interface SignUpProps {
   onShowOTP: (user: User) => void;
   selectedCountry: any;
   setShowCountryDropdown: (show: boolean) => void;
+  countryButtonRef?: (element: HTMLButtonElement | null) => void;
 }
 
 export default function SignUp({
   onShowOTP,
   selectedCountry,
   setShowCountryDropdown,
+  countryButtonRef,
 }: SignUpProps) {
   const users = useUserStore(state => state.users);
   const [formData, setFormData] = useState({
@@ -280,6 +282,7 @@ export default function SignUp({
         </Label>
         <div className="flex">
           <button
+            ref={countryButtonRef}
             type="button"
             onClick={() => setShowCountryDropdown(true)}
             className="flex items-center border border-gray-300 rounded-l-md px-3 bg-gray-50 hover:bg-gray-100 transition-colors"

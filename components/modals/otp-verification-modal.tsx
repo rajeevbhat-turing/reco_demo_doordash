@@ -90,7 +90,7 @@ export default function OTPVerificationModal({
 
   return (
     <div
-      className={`absolute inset-0 z-60 flex items-center justify-center ${containerClassName}`}
+      className={`absolute inset-0 z-[100] flex items-center justify-center ${containerClassName}`}
       style={{ backgroundColor: 'rgba(0, 0, 0, 0.65)' }}
     >
       <div className="bg-white rounded-xl shadow-xl max-w-md w-full mx-4 pt-6">

@@ -8,6 +8,7 @@ import { useUserStore } from '@/store/user-store'
 export default function LayoutWrapper({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
   const isCheckoutPage = pathname === '/checkout'
+  const isAuthPage = pathname?.startsWith('/auth')
 
   // Get store data using Zustand hooks
   const isAuthenticated = useUserStore(state => state.isAuthenticated())
@@ -25,8 +26,8 @@ export default function LayoutWrapper({ children }: { children: React.ReactNode 
   return (
     <>
       <div className="flex flex-1 relative">
-        {!isCheckoutPage && <Sidebar />}
-        <div className={`flex-1 w-0 min-w-0 ${!isCheckoutPage ? 'md:ml-[220px]' : ''}`}>
+        {!isCheckoutPage && !isAuthPage && <Sidebar />}
+        <div className={`flex-1 w-0 min-w-0 ${!isCheckoutPage && !isAuthPage ? 'md:ml-[220px]' : ''}`}>
           {shouldShowContent ? (
             <main className="flex-1">{children}</main>
           ) : (
