@@ -40,7 +40,10 @@ export default function SearchPage() {
   });
   const filterOptionsRef = useRef<FilterOptionsRef>(null);
   const [allMenuItems, setAllMenuItems] = useState<MenuItemWithRestaurant[]>([]);
-  const [favorites, setFavorites] = useState<{ [key: string]: boolean }>({});
+  const [favorites, setFavorites] = useState<string[]>([]);
+  const favoritesLoadedRef = useRef(false);
+  const loadedFavoritesRef = useRef<string[]>([]);
+  const isInitializingRef = useRef(true);
   const dishesScrollRef = useRef<HTMLDivElement>(null);
   const [showLeftArrow, setShowLeftArrow] = useState(false);
   const [showRightArrow, setShowRightArrow] = useState(false);
@@ -84,6 +87,82 @@ export default function SearchPage() {
   useEffect(() => {
     cartStore.setCategory('restaurant');
   }, []);
+
+  // Load favorites from localStorage on mount
+  useEffect(() => {
+    if (currentUser) {
+      isInitializingRef.current = true;
+      favoritesLoadedRef.current = false; // Reset when user changes
+      const saved = localStorage.getItem('favorites');
+      let userFavorites: string[] = [];
+      
+      if (saved) {
+        try {
+          const favoritesObj: { [userId: string]: string[] } = JSON.parse(saved);
+          userFavorites = favoritesObj[currentUser.id] || [];
+          if (!Array.isArray(userFavorites)) {
+            userFavorites = [];
+          }
+        } catch (error) {
+          console.error('Error parsing favorites from localStorage:', error);
+          userFavorites = [];
+        }
+      }
+      
+      loadedFavoritesRef.current = [...userFavorites];
+      isInitializingRef.current = true; // Prevent save during load
+      setFavorites(userFavorites);
+      favoritesLoadedRef.current = true;
+      
+      // Allow saves after load completes (next tick)
+      requestAnimationFrame(() => {
+        isInitializingRef.current = false;
+      });
+    } else {
+      // If no user, clear favorites
+      isInitializingRef.current = true;
+      favoritesLoadedRef.current = false;
+      loadedFavoritesRef.current = [];
+      setFavorites([]);
+      requestAnimationFrame(() => {
+        isInitializingRef.current = false;
+      });
+    }
+  }, [currentUser]);
+
+  // Save favorites to localStorage when they change (only after initial load and only if actually changed)
+  useEffect(() => {
+    // Don't save during initialization
+    if (isInitializingRef.current) {
+      return;
+    }
+    
+    if (currentUser && favoritesLoadedRef.current) {
+      // Only save if favorites have actually changed from what was loaded
+      const currentFavsStr = JSON.stringify([...favorites].sort());
+      const loadedFavsStr = JSON.stringify([...loadedFavoritesRef.current].sort());
+      
+      if (currentFavsStr !== loadedFavsStr) {
+        const saved = localStorage.getItem('favorites');
+        let favoritesObj: { [userId: string]: string[] } = {};
+        
+        if (saved) {
+          try {
+            favoritesObj = JSON.parse(saved);
+            if (typeof favoritesObj !== 'object' || favoritesObj === null) {
+              favoritesObj = {};
+            }
+          } catch (error) {
+            favoritesObj = {};
+          }
+        }
+
+        favoritesObj[currentUser.id] = favorites;
+        localStorage.setItem('favorites', JSON.stringify(favoritesObj));
+        loadedFavoritesRef.current = [...favorites];
+      }
+    }
+  }, [favorites, currentUser]);
 
   // Reset filters when search query changes
   useEffect(() => {
@@ -329,10 +408,14 @@ export default function SearchPage() {
   };
 
   const toggleFavorite = (restaurantId: string) => {
-    setFavorites(prev => ({
-      ...prev,
-      [restaurantId]: !prev[restaurantId],
-    }));
+    isInitializingRef.current = false; // Mark as user-initiated change
+    setFavorites(prev => {
+      if (prev.includes(restaurantId)) {
+        return prev.filter(id => id !== restaurantId);
+      } else {
+        return [...prev, restaurantId];
+      }
+    });
   };
 
   // Check scroll position for arrows
@@ -483,7 +566,7 @@ export default function SearchPage() {
                         >
                           <Heart
                             className={`h-5 w-5 ${
-                              favorites[restaurant.id] ? 'fill-red-500 text-red-500' : ''
+                              favorites.includes(restaurant.id) ? 'fill-red-500 text-red-500' : ''
                             }`}
                           />
                         </button>
@@ -676,7 +759,7 @@ export default function SearchPage() {
                           >
                             <Heart
                               className={`h-5 w-5 ${
-                                favorites[restaurant.id] ? 'fill-red-500 text-red-500' : ''
+                                favorites.includes(restaurant.id) ? 'fill-red-500 text-red-500' : ''
                               }`}
                             />
                           </button>
@@ -771,7 +854,7 @@ export default function SearchPage() {
                         >
                           <Heart
                             className={`h-5 w-5 ${
-                              favorites[restaurant.id] ? 'fill-red-500 text-red-500' : ''
+                              favorites.includes(restaurant.id) ? 'fill-red-500 text-red-500' : ''
                             }`}
                           />
                         </button>

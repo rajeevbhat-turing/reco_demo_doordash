@@ -146,6 +146,58 @@ export default function RestaurantPage() {
   const { setCurrentStore, clearCurrentStore } = useAppStore();
   const { recordNavigationFromSearch } = useVerifierStore();
 
+  // Load saved state from localStorage on mount
+  useEffect(() => {
+    if (currentUser && id) {
+      const saved = localStorage.getItem('favorites');
+      if (saved) {
+        try {
+          const favoritesObj: { [userId: string]: string[] } = JSON.parse(saved);
+          const userFavorites = favoritesObj[currentUser.id] || [];
+          if (userFavorites.includes(id)) {
+            setIsSaved(true);
+          }
+        } catch (error) {
+          console.error('Error parsing favorites from localStorage:', error);
+        }
+      }
+    }
+  }, [currentUser, id]);
+
+  // Save to localStorage when isSaved changes
+  useEffect(() => {
+    if (currentUser && id) {
+      const saved = localStorage.getItem('favorites');
+      let favoritesObj: { [userId: string]: string[] } = {};
+      
+      if (saved) {
+        try {
+          favoritesObj = JSON.parse(saved);
+          if (typeof favoritesObj !== 'object' || favoritesObj === null) {
+            favoritesObj = {};
+          }
+        } catch (error) {
+          favoritesObj = {};
+        }
+      }
+
+      let userFavorites = favoritesObj[currentUser.id] || [];
+      
+      if (isSaved) {
+        // Add restaurant ID if not already in array
+        if (!userFavorites.includes(id)) {
+          userFavorites = [...userFavorites, id];
+        }
+      } else {
+        // Remove restaurant ID from array
+        userFavorites = userFavorites.filter(favId => favId !== id);
+      }
+
+      favoritesObj[currentUser.id] = userFavorites;
+      localStorage.setItem('favorites', JSON.stringify(favoritesObj));
+    }
+  }, [isSaved, currentUser, id]);
+
   // Check if user came from search and record navigation
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -411,18 +463,20 @@ export default function RestaurantPage() {
             </div>
           </div>
         )}
-        {/* <div className="absolute top-4 right-4">
-          <button
-            className="bg-white rounded-full p-2 flex items-center gap-2 shadow-md hover:bg-gray-50 transition-colors"
-            onClick={e => {
-              e.stopPropagation();
-              setIsSaved(!isSaved);
-            }}
-          >
-            <Heart className={`h-5 w-5 ${isSaved ? 'fill-red-500 text-red-500' : ''}`} />
-            <span className="font-medium pr-1">Save</span>
-          </button>
-        </div> */}
+        {currentUser && (
+          <div className="absolute top-4 right-4">
+            <button
+              className="bg-white rounded-full py-2 px-3 text-sm flex items-center gap-2 shadow-md hover:bg-gray-50 transition-colors"
+              onClick={e => {
+                e.stopPropagation();
+                setIsSaved(!isSaved);
+              }}
+            >
+              <Heart className={`h-4 w-4 ${isSaved ? 'fill-red-500 text-red-500' : ''}`} />
+              <span className="font-medium pr-1">Save</span>
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Restaurant Info */}
