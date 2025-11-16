@@ -161,12 +161,12 @@ export default function NationalFavorites({ activeFilters }: NationalFavoritesPr
                 </div>
 
                 <div className="flex items-center mt-1 text-sm text-gray-700 flex-wrap">
-                  <div className="flex items-center">
+                  {restaurant?.rating && restaurant.rating != 0 && <div className="flex items-center">
                     <span className="font-semibold">{restaurant.rating}</span>
                     <Star className="h-4 w-4 ml-1 text-gray-700 fill-current" />
-                  </div>
-                  <span className="mx-1">({restaurant.reviews})</span>
-                  <span className="mx-1">•</span>
+                  </div>}
+                  {restaurant?.reviews && restaurant.reviews != '0' && restaurant.reviews != '0 ratings' && <span className="mx-1">({restaurant.reviews})</span>}
+                  {restaurant?.rating && restaurant.rating != 0 && <span className="mx-1">•</span>}
                   <span>{restaurant.distance}</span>
                   <span className="mx-1">•</span>
                   <span>{restaurant.time}</span>

@@ -115,7 +115,7 @@ export default function ProductCarousel({
               <div className="font-bold text-sm">{product.price}</div>
               <div className="text-sm text-gray-700 line-clamp-2">{product.name}</div>
 
-              {product.rating && (
+              {product.rating && product.rating !== '0' && (
                 <div className="flex items-center text-sm text-gray-500">
                   <span>★ {getDefaultRating(product.rating)}</span>
                   <span className="ml-1">({product.numRatings})</span>

@@ -420,7 +420,7 @@ export default function MenuItemDialog({ isOpen, onClose, item }: MenuItemDialog
         <div className="flex-1 overflow-y-auto">
           <div className="px-4 pt-14 pb-8">
           <h2 className="text-2xl font-bold">{item.name}</h2>
-          {item.rating && item.ratingCount && (
+          {item.rating && item.ratingCount && item.ratingCount != 0 && (
             <div className="flex items-center text-sm text-gray-500 mb-3">
               <span className="bg-green-600 text-white px-2 py-1 rounded text-xs">
                 {Math.round(getDefaultRating(item.rating) * 20)}% ({item.ratingCount})

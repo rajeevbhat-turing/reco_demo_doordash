@@ -208,7 +208,7 @@ export default function DealModal({ isOpen, onClose, deal }: DealModalProps) {
                     )}
                     <div className="flex items-center gap-3 mb-1">
                       <span className="text-sm font-bold text-[#606060ff]">{item.price}</span>
-                      {item.rating && (
+                      {item.rating && item.rating != 0 && (
                         <div className="flex items-center gap-1">
                           <ThumbsUp className="w-4 h-4 text-[#606060ff]" strokeWidth={2} />
                           <span className="text-sm text-[#606060ff] font-medium">
