@@ -11,6 +11,8 @@ import { useRestaurantMenu } from "@/lib/hooks/use-restaurant-menu"
 import { useUserStore } from "@/store/user-store"
 import { getRestaurantById } from "@/lib/utils/restaurant-utils"
 import OtherCarts from "./other-carts"
+import MenuItemDialog from "@/components/menu-item-dialog"
+import type { MenuItem } from "@/constants/menu-items"
 
 interface CartSidebarProps {
   isOpen: boolean
@@ -71,6 +73,8 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
   const [store, setStore] = useState<any>(null)
   const [complementItems, setComplementItems] = useState<any[]>([])
   const complementScrollRef = useRef<HTMLDivElement>(null)
+  const [menuItemDialogOpen, setMenuItemDialogOpen] = useState(false)
+  const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null)
 
   // Get category-specific configuration
   const categoryConfig = getConfig()
@@ -129,15 +133,12 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
       // Use prioritized items if available, otherwise use any available items
       const itemsToShow = prioritizedItems.length > 0 ? prioritizedItems : availableItems
 
-      // Shuffle and take first 5 items
+      // Shuffle and take first 5 items - keep full item data including modifications
       const shuffledItems = itemsToShow
         .sort(() => Math.random() - 0.5)
         .slice(0, 5)
         .map((item) => ({
-          id: item.id,
-          restaurantId: item.restaurantId,
-          name: item.name,
-          price: item.price,
+          ...item,
           image: item.image || "/diverse-food-spread.png",
         }))
 
@@ -235,6 +236,15 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
   const handleAddComplementItem = (item: any) => {
     // Verify the item belongs to the same restaurant as the current cart
     if (currentCart && currentCart.storeCategory === 'restaurant' && item.restaurantId === currentCart.storeId) {
+      // Check if item has modifications
+      if (item.modifications && item.modifications.length > 0) {
+        // Item has modifications - open dialog instead
+        setSelectedItem(item)
+        setMenuItemDialogOpen(true)
+        return
+      }
+
+      // No modifications - add directly to cart
       addItem({
         id: item.id,
         itemName: item.name,
@@ -539,6 +549,13 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
            )}
         </div>
       </div>
+
+      {/* Menu Item Dialog */}
+      <MenuItemDialog
+        isOpen={menuItemDialogOpen}
+        onClose={() => setMenuItemDialogOpen(false)}
+        item={selectedItem}
+      />
     </div>
   )
 }

@@ -16,6 +16,7 @@ import type { Restaurant } from '@/constants/restaurants';
 import type { MenuItem } from '@/constants/menu-items';
 import { getDefaultRating } from '@/utils/rating-utils';
 import { RestaurantsSkeleton } from '@/components/skeletons/restaurant-skeleton';
+import MenuItemDialog from '@/components/menu-item-dialog';
 
 interface MenuItemWithRestaurant extends MenuItem {
   restaurant_id: string;
@@ -47,6 +48,8 @@ export default function SearchPage() {
   const dishesScrollRef = useRef<HTMLDivElement>(null);
   const [showLeftArrow, setShowLeftArrow] = useState(false);
   const [showRightArrow, setShowRightArrow] = useState(false);
+  const [menuItemDialogOpen, setMenuItemDialogOpen] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<MenuItemWithRestaurant | null>(null);
 
   // Get cart store to set category and add items
   const cartStore = useCartStore();
@@ -638,11 +641,19 @@ export default function SearchPage() {
                     e.preventDefault();
                     e.stopPropagation();
                     
+                    // Check if item has modifications
+                    if (item.modifications && item.modifications.length > 0) {
+                      // Item has modifications - open dialog instead
+                      setSelectedItem(item);
+                      setMenuItemDialogOpen(true);
+                      return;
+                    }
+                    
                     // Parse price to number
                     const priceStr = item.price.startsWith('$') ? item.price.slice(1) : item.price;
                     const price = parseFloat(priceStr);
                     
-                    // Add item to cart
+                    // No modifications - add directly to cart
                     addItem(
                       {
                         id: item.id,
@@ -896,6 +907,13 @@ export default function SearchPage() {
           </div>
         )}
       </div>
+
+      {/* Menu Item Dialog */}
+      <MenuItemDialog
+        isOpen={menuItemDialogOpen}
+        onClose={() => setMenuItemDialogOpen(false)}
+        item={selectedItem}
+      />
     </div>
   );
 }

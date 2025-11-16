@@ -419,7 +419,19 @@ export default function RestaurantPage() {
   }
 
   const handleAddToCart = (item: any) => {
-    // Add to cart - will automatically find or create restaurant cart
+    // Check if item has modifications
+    if (item.modifications && item.modifications.length > 0) {
+      // Item has modifications - open dialog instead
+      const itemWithRestaurantId = {
+        ...item,
+        restaurantId: item.restaurantId || id,
+      };
+      setSelectedItem(itemWithRestaurantId);
+      setMenuItemDialogOpen(true);
+      return;
+    }
+
+    // No modifications - add directly to cart
     const cartItem = {
       id: item.id, // Use database ID directly
       itemName: item.name, // Use itemName instead of name

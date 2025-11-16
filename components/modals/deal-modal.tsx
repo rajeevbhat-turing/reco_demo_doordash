@@ -11,6 +11,8 @@ import { useGlobalContext } from '@/app/global-context';
 import { useRestaurantMenu } from '@/lib/hooks/use-restaurant-menu';
 import { useRestaurants } from '@/lib/hooks/use-restaurants';
 import { useUserStore } from '@/store/user-store';
+import MenuItemDialog from '@/components/menu-item-dialog';
+import { useState } from 'react';
 
 interface DealModalProps {
   isOpen: boolean;
@@ -22,6 +24,8 @@ export default function DealModal({ isOpen, onClose, deal }: DealModalProps) {
   const modalRef = useRef<HTMLDivElement>(null);
   const { addItem, setCategory } = useCartStore();
   const { setSnackbar } = useGlobalContext();
+  const [menuItemDialogOpen, setMenuItemDialogOpen] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null);
 
   useEffect(() => {
     if (isOpen) {
@@ -95,6 +99,15 @@ export default function DealModal({ isOpen, onClose, deal }: DealModalProps) {
   const handleAddToCart = (item: MenuItem) => {
     if (!deal) return;
 
+    // Check if item has modifications
+    if (item.modifications && item.modifications.length > 0) {
+      // Item has modifications - open dialog instead
+      setSelectedItem(item);
+      setMenuItemDialogOpen(true);
+      return;
+    }
+
+    // No modifications - add directly to cart
     const cartItem = {
       id: item.id, // Use database ID directly
       itemName: item.name,
@@ -266,6 +279,13 @@ export default function DealModal({ isOpen, onClose, deal }: DealModalProps) {
           </button>
         </div>
       </div>
+
+      {/* Menu Item Dialog */}
+      <MenuItemDialog
+        isOpen={menuItemDialogOpen}
+        onClose={() => setMenuItemDialogOpen(false)}
+        item={selectedItem}
+      />
     </div>
   );
 }
