@@ -164,7 +164,13 @@ export default function Orders() {
               const isToday = order.orderDate === todayStr;
               const dateDisplay = isToday
                 ? `Today, ${order.orderDate.split(', ')[1]}`
-                : order.orderDate;
+                : order.orderDate
+                ? new Date(order.orderDate).toLocaleDateString('en-US', {
+                    weekday: 'short',
+                    month: 'short',
+                    day: 'numeric',
+                  })
+                : '';
 
               return (
                 <div
