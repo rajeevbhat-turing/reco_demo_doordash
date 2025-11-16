@@ -89,7 +89,6 @@ export async function GET(request: NextRequest) {
             SELECT AVG(ur.rating)
             FROM user_reviews ur
             WHERE ur.store_id = r.id 
-              AND ur.store_category = 'restaurant'
               AND ur.approval_status = 'approved'
           ) AS avg_rating,
           -- Get total rating count from user reviews (approved only)
@@ -97,7 +96,6 @@ export async function GET(request: NextRequest) {
             SELECT COUNT(*)
             FROM user_reviews ur
             WHERE ur.store_id = r.id 
-              AND ur.store_category = 'restaurant'
               AND ur.approval_status = 'approved'
           ) AS total_rating_count
         FROM restaurants r
