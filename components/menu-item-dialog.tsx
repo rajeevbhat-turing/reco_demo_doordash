@@ -42,7 +42,9 @@ export default function MenuItemDialog({ isOpen, onClose, item }: MenuItemDialog
   const [expandedModifications, setExpandedModifications] = useState<Set<string>>(new Set())
   const [visibleModifications, setVisibleModifications] = useState<Modification[]>([])
   const [quantity, setQuantity] = useState(1)
+  const [isScrolled, setIsScrolled] = useState(false)
   const dialogRef = useRef<HTMLDivElement>(null)
+  const scrollContainerRef = useRef<HTMLDivElement>(null)
   const { addItem, findCart, updateQuantity } = useCartStore()
 
   useEffect(() => {
@@ -105,8 +107,26 @@ export default function MenuItemDialog({ isOpen, onClose, item }: MenuItemDialog
       
       // Always start with quantity 1
       setQuantity(1)
+      // Reset scroll state when dialog opens
+      setIsScrolled(false)
     }
   }, [isOpen, item])
+
+  // Handle scroll detection
+  useEffect(() => {
+    const scrollContainer = scrollContainerRef.current
+    if (!scrollContainer) return
+
+    const handleScroll = () => {
+      const scrollTop = scrollContainer.scrollTop
+      setIsScrolled(scrollTop > 50) // Show header after scrolling 50px
+    }
+
+    scrollContainer.addEventListener('scroll', handleScroll)
+    return () => {
+      scrollContainer.removeEventListener('scroll', handleScroll)
+    }
+  }, [isOpen])
 
   // Update visible modifications based on parent_option selections
   useEffect(() => {
@@ -412,12 +432,25 @@ export default function MenuItemDialog({ isOpen, onClose, item }: MenuItemDialog
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
       <div ref={dialogRef} className="relative bg-white rounded-lg w-full max-w-xl max-h-[90vh] flex flex-col">
-        <button onClick={onClose} className="absolute top-4 left-4 z-10 p-1" aria-label="Close dialog">
-          <X className="h-6 w-6" />
-        </button>
+        {/* Fixed header that appears on scroll */}
+        {isScrolled && (
+          <div className="absolute top-0 left-0 right-0 bg-white border-b border-gray-200 px-4 py-3 flex items-center z-20 rounded-t-lg">
+            <button onClick={onClose} className="p-1 flex-shrink-0" aria-label="Close dialog">
+              <X className="h-6 w-6" />
+            </button>
+            <h3 className="text-lg font-semibold truncate flex-1 ml-4">{item.name}</h3>
+          </div>
+        )}
+
+        {/* Original close button (hidden when scrolled) */}
+        {!isScrolled && (
+          <button onClick={onClose} className="absolute top-4 left-4 z-10 p-1" aria-label="Close dialog">
+            <X className="h-6 w-6" />
+          </button>
+        )}
 
         {/* Scrollable content area */}
-        <div className="flex-1 overflow-y-auto">
+        <div ref={scrollContainerRef} className="flex-1 overflow-y-auto">
           <div className="px-4 pt-14 pb-8">
           <h2 className="text-2xl font-bold">{item.name}</h2>
           {item.rating && item.ratingCount && item.ratingCount != 0 && (
