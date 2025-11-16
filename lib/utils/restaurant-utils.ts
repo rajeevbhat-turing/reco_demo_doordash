@@ -26,20 +26,71 @@ export function calculateDeliveryTime(distance: number): string {
 }
 
 /**
+ * Parse hour from either integer or ISO date string
+ */
+function parseHour(hourValue: number | string | null | undefined): number {
+  if (hourValue === null || hourValue === undefined) {
+    return 0;
+  }
+  
+  // If it's already a number, return it
+  if (typeof hourValue === 'number') {
+    return hourValue;
+  }
+  
+  // If it's a string, try to parse it
+  if (typeof hourValue === 'string') {
+    // Try parsing as ISO date string (e.g., "2025-11-12T08:44:00-07:30")
+    try {
+      const date = new Date(hourValue);
+      if (!isNaN(date.getTime())) {
+        // Extract hour from the parsed date (in UTC, but we want the local hour from the ISO string)
+        // For ISO strings like "2025-11-12T08:44:00-07:30", we want to get the hour (08)
+        // The Date object will parse this correctly, but we need to get the hour from the original timezone
+        // Actually, let's extract it directly from the string if it's in ISO format
+        const isoTimeMatch = hourValue.match(/T(\d{2}):/);
+        if (isoTimeMatch) {
+          const hour = parseInt(isoTimeMatch[1], 10);
+          if (!isNaN(hour) && hour >= 0 && hour <= 23) {
+            return hour;
+          }
+        }
+        // Fallback to Date.getHours() if regex doesn't match
+        return date.getHours();
+      }
+    } catch (e) {
+      // If parsing fails, try parsing as integer string
+      const parsed = parseInt(hourValue, 10);
+      if (!isNaN(parsed)) {
+        return parsed;
+      }
+    }
+  }
+  
+  return 0;
+}
+
+/**
  * Check if restaurant is currently open
  */
-export function checkIfOpen(openingHour: number, closingHour: number, currentHour: number): boolean {
-  if (closingHour < openingHour) {
+export function checkIfOpen(openingHour: number | string | null | undefined, closingHour: number | string | null | undefined, currentHour: number): boolean {
+  const opening = parseHour(openingHour);
+  const closing = parseHour(closingHour);
+  
+  if (closing < opening) {
     // Handles cases like 10 PM - 2 AM (22 - 2)
-    return currentHour >= openingHour || currentHour < closingHour;
+    return currentHour >= opening || currentHour < closing;
   }
-  return currentHour >= openingHour && currentHour < closingHour;
+  return currentHour >= opening && currentHour < closing;
 }
 
 /**
  * Format opening hours for display
  */
-export function formatHours(openingHour: number, closingHour: number): string {
+export function formatHours(openingHour: number | string | null | undefined, closingHour: number | string | null | undefined): string {
+  const opening = parseHour(openingHour);
+  const closing = parseHour(closingHour);
+  
   const formatHour = (hour: number): string => {
     if (hour === 0) return '12:00 AM';
     if (hour < 12) return `${hour}:00 AM`;
@@ -47,5 +98,5 @@ export function formatHours(openingHour: number, closingHour: number): string {
     return `${hour - 12}:00 PM`;
   };
   
-  return `${formatHour(openingHour)} - ${formatHour(closingHour)}`;
+  return `${formatHour(opening)} - ${formatHour(closing)}`;
 } 

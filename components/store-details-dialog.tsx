@@ -138,31 +138,31 @@ export default function StoreDetailsDialog({ isOpen, onClose, store }: StoreDeta
                 <div className="mt-2 space-y-2 text-sm">
                   <div className="flex justify-between">
                     <span className="font-medium">Monday</span>
-                    <span>5:00 AM - 11:00 PM</span>
+                    <span>{store.openingHours}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="font-medium">Tuesday</span>
-                    <span>5:00 AM - 11:00 PM</span>
+                    <span>{store.openingHours}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="font-medium">Wednesday</span>
-                    <span>5:00 AM - 11:00 PM</span>
+                    <span>{store.openingHours}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="font-medium">Thursday</span>
-                    <span>5:00 AM - 11:00 PM</span>
+                    <span>{store.openingHours}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="font-medium">Friday</span>
-                    <span>5:00 AM - 12:00 AM</span>
+                    <span>{store.openingHours}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="font-medium">Saturday</span>
-                    <span>5:00 AM - 12:00 AM</span>
+                    <span>{store.openingHours}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="font-medium">Sunday</span>
-                    <span>5:00 AM - 11:00 PM</span>
+                    <span>{store.openingHours}</span>
                   </div>
                 </div>
               )}
