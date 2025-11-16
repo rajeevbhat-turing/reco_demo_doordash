@@ -512,7 +512,7 @@ export default function Home() {
 
                       <div className="flex items-center mt-1 text-sm text-gray-700 flex-wrap">
                         <div className="flex items-center">
-                          <span className="font-semibold">{restaurant.rating}</span>
+                          {restaurant?.rating && restaurant.rating !== 0 && <span className="font-semibold">{restaurant.rating}</span>}
                           <svg
                             width="16"
                             height="16"
@@ -523,7 +523,7 @@ export default function Home() {
                             <path d="M8 0L10.2571 5.08631L16 5.87013L11.8 9.79752L12.9443 15.5L8 12.5863L3.05573 15.5L4.2 9.79752L0 5.87013L5.74286 5.08631L8 0Z" />
                           </svg>
                         </div>
-                        <span className="mx-1">({restaurant.reviews})</span>
+                        {restaurant?.reviews && restaurant.reviews !== '0 ratings' && <span className="mx-1">({restaurant.reviews})</span>}
                         <span className="mx-1">•</span>
                         <span>{restaurant.distance}</span>
                         <span className="mx-1">•</span>

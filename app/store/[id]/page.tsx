@@ -486,8 +486,8 @@ export default function RestaurantPage() {
               )}
               <div className="flex items-center mb-1">
                 <span className="text-sm">
-                  {getDefaultRating(restaurant.rating)} ★{' '}
-                  {restaurant.reviews ? `(${restaurant.reviews} ratings)` : '(0 ratings)'} •{' '}
+                  {restaurant?.rating && restaurant.rating !== 0 && <span className="font-semibold mr-0.5">{getDefaultRating(restaurant.rating)} ★</span>}
+                  {restaurant.reviews ? `(${restaurant.reviews} ratings)` : ''} •{' '}
                   {restaurant.distance || 'Distance unavailable'}
                 </span>
               </div>
@@ -816,7 +816,7 @@ export default function RestaurantPage() {
                             <p className="text-sm text-gray-500">({item.calories})</p>
                           )}
                           <p className="text-gray-900 mt-1">{item.price}</p>
-                          {item.rating && (
+                          {item.rating && item.rating !== 0 && (
                             <div className="flex items-center mt-1">
                               <span className="text-sm">
                                 {Math.round(getDefaultRating(item.rating) * 20)}%

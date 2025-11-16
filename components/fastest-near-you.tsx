@@ -92,7 +92,7 @@ export default function FastestNearYou({ stores = defaultStores }: FastestNearYo
                 )}
               </div>
               <div className="flex items-center text-sm text-gray-500">
-                <span>★ {store.rating}</span>
+                {store?.rating && <span>★ {store.rating}</span>}
                 <span className="mx-1">•</span>
                 <span>{store.distance}</span>
                 <span className="mx-1">•</span>
