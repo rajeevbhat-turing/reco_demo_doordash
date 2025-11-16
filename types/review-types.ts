@@ -4,6 +4,7 @@ export interface OrderItem {
   name: string;
   restaurantId: string;
   image: string | null;
+  menuItemId?: string; // menu_item_id from order_items table
 }
 
 export interface UserReview {

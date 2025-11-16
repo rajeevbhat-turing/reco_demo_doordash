@@ -103,7 +103,6 @@ export async function GET(request: NextRequest) {
     const likedItems = await db.query<any>(
       `SELECT 
         rli.review_id,
-        rli.order_item_id,
         oi.id AS order_item_id,
         oi.menu_item_id,
         mi.name AS item_name,
@@ -146,6 +145,7 @@ export async function GET(request: NextRequest) {
         name: item.item_name,
         restaurantId: String(item.restaurant_id),
         image: getImageWithFallback(item.item_image, 'image'),
+        menuItemId: String(item.menu_item_id),
       });
     });
 
