@@ -1,5 +1,7 @@
 'use client';
 
+import { getDefaultRating } from '@/lib/utils/rating-utils';
+
 interface OverallRatingProps {
   averageRating: number;
   totalReviews: number;
@@ -20,6 +22,11 @@ export default function OverallRating({ averageRating, totalReviews }: OverallRa
   const strokeDasharray = `${progressLength} ${circumference}`;
   // strokeDashoffset = gap at start (27.5%)
   const strokeDashoffset = circumference * 0.275;
+
+  // Format rating to show one decimal only if decimal is not 0
+  const ratingValue = getDefaultRating(averageRating);
+  const rounded = Math.round(ratingValue * 10) / 10; // Round to 1 decimal
+  const formattedRating = rounded % 1 === 0 ? rounded.toString() : rounded.toFixed(1);
 
   return (
     <div className="bg-[#f7f7f7] rounded-lg p-3 flex flex-col items-center justify-center h-full">
@@ -63,7 +70,7 @@ export default function OverallRating({ averageRating, totalReviews }: OverallRa
         {/* Rating number */}
         <div className="absolute inset-0 flex items-center justify-center left-[-3px] top-[-5px]">
           <span className="text-[18px] font-bold text-[#606060ff]">
-            {Math.round(averageRating)}
+            {formattedRating}
           </span>
         </div>
 

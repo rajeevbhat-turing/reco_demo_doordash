@@ -61,15 +61,21 @@ export async function GET(
             FROM restaurant_categories rc
             WHERE rc.restaurant_id = r.id
           ) AS categories_str,
+          -- Get average rating from user reviews (approved only)
           (
-            SELECT AVG(mi.rating)
-            FROM menu_items mi
-            WHERE mi.restaurant_id = r.id AND mi.rating IS NOT NULL
+            SELECT AVG(ur.rating)
+            FROM user_reviews ur
+            WHERE ur.store_id = r.id 
+              AND ur.store_category = 'restaurant'
+              AND ur.approval_status = 'approved'
           ) AS avg_rating,
+          -- Get total rating count from user reviews (approved only)
           (
-            SELECT SUM(mi.rating_count)
-            FROM menu_items mi
-            WHERE mi.restaurant_id = r.id AND mi.rating_count IS NOT NULL
+            SELECT COUNT(*)
+            FROM user_reviews ur
+            WHERE ur.store_id = r.id 
+              AND ur.store_category = 'restaurant'
+              AND ur.approval_status = 'approved'
           ) AS total_rating_count
         FROM restaurants r
         WHERE r.id = ?`
@@ -104,20 +110,26 @@ export async function GET(
             FROM restaurant_categories rc
             WHERE rc.restaurant_id = r.id
           ) AS categories_str,
+          -- Get average rating from user reviews (approved only)
           (
-            SELECT AVG(mi.rating)
-            FROM menu_items mi
-            WHERE mi.restaurant_id = r.id AND mi.rating IS NOT NULL
+            SELECT AVG(ur.rating)
+            FROM user_reviews ur
+            WHERE ur.store_id = r.id 
+              AND ur.store_category = 'restaurant'
+              AND ur.approval_status = 'approved'
           ) AS avg_rating,
+          -- Get total rating count from user reviews (approved only)
           (
-            SELECT SUM(mi.rating_count)
-            FROM menu_items mi
-            WHERE mi.restaurant_id = r.id AND mi.rating_count IS NOT NULL
+            SELECT COUNT(*)
+            FROM user_reviews ur
+            WHERE ur.store_id = r.id 
+              AND ur.store_category = 'restaurant'
+              AND ur.approval_status = 'approved'
           ) AS total_rating_count
         FROM restaurants r
         WHERE r.id = ?`;
 
-    const params_array = lat && lng 
+    const params_array = lat && lng
       ? [lat, lng, lat, restaurantId]
       : [restaurantId];
 
@@ -135,7 +147,7 @@ export async function GET(
     const deliveryTime = calculateDeliveryTime(distance);
     const currentHour = new Date().getHours();
     const isOpen = checkIfOpen(restaurantRaw.opening_hour, restaurantRaw.closing_hour, currentHour);
-    
+
     const restaurant = {
       id: String(restaurantRaw.id),
       name: restaurantRaw.name,
