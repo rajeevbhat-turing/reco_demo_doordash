@@ -1,60 +1,67 @@
-"use client"
+'use client';
 
-import { useEffect, useRef, useState } from "react"
-import { X, MapPin, Clock, Phone, ChevronDown, ChevronUp } from "lucide-react"
-import Image from "next/image"
+import { useEffect, useRef, useState } from 'react';
+import { X, MapPin, Clock, Phone, ChevronDown, ChevronUp } from 'lucide-react';
+import Image from 'next/image';
 
 interface StoreDetailsDialogProps {
-  isOpen: boolean
-  onClose: () => void
+  isOpen: boolean;
+  onClose: () => void;
   store: {
-    id: string
-    name: string
-    logo?: string
-    address: string
-    isOpen: boolean
-    openingHours: string
-    phone: string
-  }
+    id: string;
+    name: string;
+    logo?: string;
+    street?: string;
+    city?: string;
+    state?: string;
+    zipCode?: string;
+    address?: string; // Fallback for backward compatibility
+    isOpen: boolean;
+    openingHours: string;
+    phone: string;
+  };
 }
 
 export default function StoreDetailsDialog({ isOpen, onClose, store }: StoreDetailsDialogProps) {
-  const dialogRef = useRef<HTMLDivElement>(null)
-  const [showHours, setShowHours] = useState(false)
-  
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const [showHours, setShowHours] = useState(false);
+
   useEffect(() => {
     const handleEscapeKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        onClose()
+      if (event.key === 'Escape') {
+        onClose();
       }
-    }
+    };
 
     const handleClickOutside = (event: MouseEvent) => {
       if (dialogRef.current && !dialogRef.current.contains(event.target as Node)) {
-        onClose()
+        onClose();
       }
-    }
+    };
 
     if (isOpen) {
-      document.body.style.overflow = "hidden"
-      document.addEventListener("keydown", handleEscapeKey)
-      document.addEventListener("mousedown", handleClickOutside)
+      document.body.style.overflow = 'hidden';
+      document.addEventListener('keydown', handleEscapeKey);
+      document.addEventListener('mousedown', handleClickOutside);
     } else {
-      document.body.style.overflow = "auto"
+      document.body.style.overflow = 'auto';
     }
 
     return () => {
-      document.body.style.overflow = "auto"
-      document.removeEventListener("keydown", handleEscapeKey)
-      document.removeEventListener("mousedown", handleClickOutside)
-    }
-  }, [isOpen, onClose])
+      document.body.style.overflow = 'auto';
+      document.removeEventListener('keydown', handleEscapeKey);
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isOpen, onClose]);
 
-  if (!isOpen) return null
+  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div ref={dialogRef} className="relative bg-white rounded-[8px] w-full max-w-[480px] max-h-[80vh] overflow-auto">
+      <div
+        ref={dialogRef}
+        className="relative bg-white rounded-[8px] w-full max-w-[480px] max-h-[80vh] overflow-auto"
+      >
         <button onClick={onClose} className="absolute top-4 right-4 z-10" aria-label="Close dialog">
           <X className="h-6 w-6 text-gray-500" />
         </button>
@@ -64,8 +71,8 @@ export default function StoreDetailsDialog({ isOpen, onClose, store }: StoreDeta
           <div className="flex items-center mb-6">
             {store.logo && (
               <div className="mr-3 w-12 h-12 rounded-full overflow-hidden border-2 border-gray-200">
-                <Image 
-                  src={store.logo} 
+                <Image
+                  src={store.logo}
                   alt={store.name}
                   width={48}
                   height={48}
@@ -93,7 +100,13 @@ export default function StoreDetailsDialog({ isOpen, onClose, store }: StoreDeta
             <MapPin className="h-5 w-5 text-gray-500 mt-0.5 mr-2 flex-shrink-0" />
             <div>
               <h3 className="font-medium mb-1">Address</h3>
-              <p className="text-gray-700">{store.address}</p>
+              {store.street && store.city && store.state && store.zipCode ? (
+                <div>
+                  {store.street}, {store.city}, {store.state} {store.zipCode}
+                </div>
+              ) : (
+                <p className="text-gray-700">{store.address || 'Address not available'}</p>
+              )}
             </div>
           </div>
 
@@ -103,11 +116,12 @@ export default function StoreDetailsDialog({ isOpen, onClose, store }: StoreDeta
             <div className="flex-1">
               <div className="flex items-center justify-between mb-1">
                 <h3 className="font-medium">Hours</h3>
-                <button 
-                  onClick={() => setShowHours(!showHours)}
-                  className="text-gray-500"
-                >
-                  {showHours ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
+                <button onClick={() => setShowHours(!showHours)} className="text-gray-500">
+                  {showHours ? (
+                    <ChevronUp className="h-5 w-5" />
+                  ) : (
+                    <ChevronDown className="h-5 w-5" />
+                  )}
                 </button>
               </div>
               <p className="text-gray-700">
@@ -116,10 +130,10 @@ export default function StoreDetailsDialog({ isOpen, onClose, store }: StoreDeta
                 ) : (
                   <span className="text-red-600 font-medium">Closed now</span>
                 )}
-                {" • "}
+                {' • '}
                 {store.openingHours}
               </p>
-              
+
               {showHours && (
                 <div className="mt-2 space-y-2 text-sm">
                   <div className="flex justify-between">
@@ -166,5 +180,5 @@ export default function StoreDetailsDialog({ isOpen, onClose, store }: StoreDeta
         </div>
       </div>
     </div>
-  )
+  );
 }
