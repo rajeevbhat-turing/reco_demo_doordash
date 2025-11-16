@@ -250,7 +250,7 @@ export default function AllStores({
                     )}
                   </div>
 
-                  {store?.rating && store.rating !== 0 && (
+                  {store?.rating && store.rating != 0 && (
                     <div className="text-sm text-gray-500">
                       ★ {getDefaultRating(store.rating)} ({store.numRatings || "0"})
                     </div>

@@ -232,12 +232,12 @@ export default function UserProfilePage() {
                         </div>
                         {restaurant && (
                           <p className="text-sm text-[#191919ff] font-medium flex items-center gap-1">
-                            <span className="font-bold">
+                            {restaurant?.rating && restaurant.rating != 0 && <span className="font-bold">
                               {restaurant.rating?.toFixed(1) || 'N/A'}
-                            </span>
-                            <Star className="w-3 h-3 text-[#e8c501] fill-[#e8c501]" />(
-                            {restaurant.reviews || '0'}) {restaurant.cuisine}
-                            <span className="text-xs"> • </span>
+                            </span>}
+                            {restaurant?.rating && restaurant.rating != 0 && <Star className="w-3 h-3 text-[#e8c501] fill-[#e8c501]" />}
+                            {restaurant?.reviews && restaurant.reviews !== '0' && <span>({restaurant.reviews || '0'})</span>} {restaurant.cuisine}
+                            {restaurant?.rating && restaurant.rating != 0 && <span className="text-xs"> • </span>}
                             {restaurant.priceRange}
                           </p>
                         )}

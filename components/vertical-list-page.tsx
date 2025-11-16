@@ -123,7 +123,7 @@ export default function VerticalListPage({
                       </span>
                     )}
                     
-                    {item.rating && (
+                    {item.rating && item.rating != 0 && (
                       <>
                         <div className="flex items-center">
                           <Star className="w-4 h-4 fill-current text-yellow-500 mr-1" />

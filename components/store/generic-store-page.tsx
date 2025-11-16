@@ -179,7 +179,7 @@ export default function GenericStorePage({
                   DashPass
                 </span>
               )}
-              {'rating' in storeData && storeConfig.showRating !== false && storeData?.rating && (
+              {'rating' in storeData && storeConfig.showRating !== false && storeData?.rating && storeData.rating != 0 && (
                 <>
                   <div className="flex items-center mr-2">
                     <Star className="w-4 h-4 fill-current text-yellow-500 mr-1" />

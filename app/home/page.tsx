@@ -231,9 +231,10 @@ export default function Home() {
           if (restaurant.categories && restaurant.categories.length > 0) {
             // Check if any selected cuisine matches any restaurant category (contains match)
             return filters.cuisine!.some(selectedCuisine =>
-              restaurant.categories!.some(cat =>
-                cat.toLowerCase().includes(selectedCuisine.toLowerCase()) ||
-                selectedCuisine.toLowerCase().includes(cat.toLowerCase())
+              restaurant.categories!.some(
+                cat =>
+                  cat.toLowerCase().includes(selectedCuisine.toLowerCase()) ||
+                  selectedCuisine.toLowerCase().includes(cat.toLowerCase())
               )
             );
           }
@@ -247,18 +248,20 @@ export default function Home() {
           if (restaurant.categories && restaurant.categories.length > 0) {
             // Check if any dietary preference matches any restaurant category (contains match)
             return filters.dietaryPreferences!.some(dietary =>
-              restaurant.categories!.some(cat =>
-                cat.toLowerCase().includes(dietary.toLowerCase()) ||
-                dietary.toLowerCase().includes(cat.toLowerCase())
+              restaurant.categories!.some(
+                cat =>
+                  cat.toLowerCase().includes(dietary.toLowerCase()) ||
+                  dietary.toLowerCase().includes(cat.toLowerCase())
               )
             );
           }
           // Also check dietaryPreferences field if available
           if (restaurant.dietaryPreferences && restaurant.dietaryPreferences.length > 0) {
             return filters.dietaryPreferences!.some(dietary =>
-              restaurant.dietaryPreferences!.some(pref =>
-                pref.toLowerCase().includes(dietary.toLowerCase()) ||
-                dietary.toLowerCase().includes(pref.toLowerCase())
+              restaurant.dietaryPreferences!.some(
+                pref =>
+                  pref.toLowerCase().includes(dietary.toLowerCase()) ||
+                  dietary.toLowerCase().includes(pref.toLowerCase())
               )
             );
           }
@@ -362,7 +365,9 @@ export default function Home() {
       (filters.price !== null && filters.price.length > 0) ||
       filters.dashPass ||
       (filters.cuisine !== null && filters.cuisine !== undefined && filters.cuisine.length > 0) ||
-      (filters.dietaryPreferences !== null && filters.dietaryPreferences !== undefined && filters.dietaryPreferences.length > 0)
+      (filters.dietaryPreferences !== null &&
+        filters.dietaryPreferences !== undefined &&
+        filters.dietaryPreferences.length > 0)
     );
   };
 
@@ -512,19 +517,27 @@ export default function Home() {
 
                       <div className="flex items-center mt-1 text-sm text-gray-700 flex-wrap">
                         <div className="flex items-center">
-                          {restaurant?.rating && restaurant.rating !== 0 && <span className="font-semibold">{restaurant.rating}</span>}
-                          <svg
-                            width="16"
-                            height="16"
-                            viewBox="0 0 16 16"
-                            fill="currentColor"
-                            className="ml-1"
-                          >
-                            <path d="M8 0L10.2571 5.08631L16 5.87013L11.8 9.79752L12.9443 15.5L8 12.5863L3.05573 15.5L4.2 9.79752L0 5.87013L5.74286 5.08631L8 0Z" />
-                          </svg>
+                          {restaurant?.rating && restaurant.rating != 0 && (
+                            <span className="font-semibold">{restaurant.rating}</span>
+                          )}
+                          {restaurant?.rating && restaurant.rating != 0 && (
+                            <svg
+                              width="16"
+                              height="16"
+                              viewBox="0 0 16 16"
+                              fill="currentColor"
+                              className="ml-1"
+                            >
+                              <path d="M8 0L10.2571 5.08631L16 5.87013L11.8 9.79752L12.9443 15.5L8 12.5863L3.05573 15.5L4.2 9.79752L0 5.87013L5.74286 5.08631L8 0Z" />
+                            </svg>
+                          )}
                         </div>
-                        {restaurant?.reviews && restaurant.reviews !== '0 ratings' && <span className="mx-1">({restaurant.reviews})</span>}
-                        <span className="mx-1">•</span>
+                        {restaurant?.reviews &&
+                          restaurant.reviews !== '0 ratings' &&
+                          restaurant.reviews !== '0' && (
+                            <span className="mx-1">({restaurant.reviews})</span>
+                          )}
+                        {restaurant?.rating && restaurant.rating != 0 && <span className="mx-1">•</span>}
                         <span>{restaurant.distance}</span>
                         <span className="mx-1">•</span>
                         <span>{restaurant.time}</span>
