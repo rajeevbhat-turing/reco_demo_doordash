@@ -196,8 +196,8 @@ export default function StoreGrid({
                         </div>
 
                         <div className="flex items-center text-sm text-gray-500 mt-1">
-                          <span>★ {getDefaultRating(store.rating)}</span>
-                          <span className="ml-1">({store.numRatings})</span>
+                          {store?.rating && store.rating !== 0 && <span>★ {getDefaultRating(store.rating)}</span>}
+                          {store.numRatings && store.numRatings !== '0 ratings' && <span className="ml-1">({store.numRatings})</span>}
                           <span className="mx-1">•</span>
                           <span>{store.distance}</span>
                           <span className="mx-1">•</span>
@@ -259,8 +259,8 @@ export default function StoreGrid({
                         )}
                       </div>
                       <div className="flex items-center text-sm text-gray-500 flex-wrap">
-                        <span>★ {getDefaultRating(store.rating)}</span>
-                        {store.numRatings && (
+                        {store?.rating && store.rating !== 0 && <span>★ {getDefaultRating(store.rating)}</span>}
+                        {store.numRatings && store.numRatings !== '0 ratings' && (
                           <>
                             <span className="mx-1">•</span>
                             <span>{store.numRatings}</span>

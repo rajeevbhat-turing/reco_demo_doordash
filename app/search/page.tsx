@@ -573,7 +573,7 @@ export default function SearchPage() {
                       </div>
 
                       <div className="flex items-center mt-1 text-xs text-gray-700">
-                        <span className="font-semibold">{getDefaultRating(restaurant.rating)}</span>
+                        {restaurant?.rating && restaurant.rating !== 0 && <span className="font-semibold">{getDefaultRating(restaurant.rating)}</span>}
                         <svg
                           width="14"
                           height="14"
@@ -583,7 +583,7 @@ export default function SearchPage() {
                         >
                           <path d="M8 0L10.2571 5.08631L16 5.87013L11.8 9.79752L12.9443 15.5L8 12.5863L3.05573 15.5L4.2 9.79752L0 5.87013L5.74286 5.08631L8 0Z" />
                         </svg>
-                        <span className="mx-1">({restaurant.reviews})</span>
+                        {restaurant?.reviews && restaurant.reviews !== '0 ratings' && <span className="mx-1">({restaurant.reviews})</span>}
                         <span className="mx-1">•</span>
                         <span>{restaurant.distance}</span>
                         <span className="mx-1">•</span>
@@ -766,7 +766,7 @@ export default function SearchPage() {
                         </div>
 
                         <div className="flex items-center mt-1 text-xs text-gray-700">
-                          <span className="font-semibold">{getDefaultRating(restaurant.rating)}</span>
+                          {restaurant?.rating && restaurant.rating !== 0 && <span className="font-semibold">{getDefaultRating(restaurant.rating)}</span>}
                           <svg
                             width="14"
                             height="14"
@@ -776,7 +776,7 @@ export default function SearchPage() {
                           >
                             <path d="M8 0L10.2571 5.08631L16 5.87013L11.8 9.79752L12.9443 15.5L8 12.5863L3.05573 15.5L4.2 9.79752L0 5.87013L5.74286 5.08631L8 0Z" />
                           </svg>
-                          <span className="mx-1">({restaurant.reviews})</span>
+                          {restaurant?.reviews && restaurant.reviews !== '0 ratings' && <span className="mx-1">({restaurant.reviews})</span>}
                           <span className="mx-1">•</span>
                           <span>{restaurant.distance}</span>
                           <span className="mx-1">•</span>
@@ -861,7 +861,7 @@ export default function SearchPage() {
                       </div>
 
                       <div className="flex items-center mt-1 text-xs text-gray-700">
-                        <span className="font-semibold">{getDefaultRating(restaurant.rating)}</span>
+                        {restaurant?.rating && restaurant.rating !== 0 && <span className="font-semibold">{getDefaultRating(restaurant.rating)}</span>}
                         <svg
                           width="14"
                           height="14"
@@ -871,7 +871,7 @@ export default function SearchPage() {
                         >
                           <path d="M8 0L10.2571 5.08631L16 5.87013L11.8 9.79752L12.9443 15.5L8 12.5863L3.05573 15.5L4.2 9.79752L0 5.87013L5.74286 5.08631L8 0Z" />
                         </svg>
-                        <span className="mx-1">({restaurant.reviews})</span>
+                        {restaurant?.reviews && restaurant.reviews !== '0 ratings' && <span className="mx-1">({restaurant.reviews})</span>}
                         <span className="mx-1">•</span>
                         <span>{restaurant.distance}</span>
                         <span className="mx-1">•</span>
