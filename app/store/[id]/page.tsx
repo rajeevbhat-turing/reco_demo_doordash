@@ -3,27 +3,19 @@
 import { useEffect, useState, useRef, useCallback, useMemo } from 'react';
 import Image from 'next/image';
 import { useParams } from 'next/navigation';
-import {
-  ChevronDown,
-  Info,
-  ChevronLeft,
-  ChevronRight,
-  Heart,
-  Search,
-  X,
-} from 'lucide-react';
-import { useRestaurants } from "@/lib/hooks/use-restaurants";
-import { useRestaurant } from "@/lib/hooks/use-restaurant";
-import { useRestaurantMenu } from "@/lib/hooks/use-restaurant-menu";
-import { useUserStore } from "@/store/user-store";
-import { getRestaurantById } from "@/lib/utils/restaurant-utils";
-import { useCartStore } from "@/store/cart-store";
-import { useAppStore } from "@/store/app-store";
-import { useVerifierStore } from "@/store/verifier-store";
-import MenuItemDialog from "@/components/menu-item-dialog";
-import GroupOrderDialog from "@/components/group-order-dialog";
-import StoreDetailsDialog from "@/components/store-details-dialog";
-import { Reviews } from "@/components/reviews";
+import { ChevronDown, Info, ChevronLeft, ChevronRight, Heart, Search, X } from 'lucide-react';
+import { useRestaurants } from '@/lib/hooks/use-restaurants';
+import { useRestaurant } from '@/lib/hooks/use-restaurant';
+import { useRestaurantMenu } from '@/lib/hooks/use-restaurant-menu';
+import { useUserStore } from '@/store/user-store';
+import { getRestaurantById } from '@/lib/utils/restaurant-utils';
+import { useCartStore } from '@/store/cart-store';
+import { useAppStore } from '@/store/app-store';
+import { useVerifierStore } from '@/store/verifier-store';
+import MenuItemDialog from '@/components/menu-item-dialog';
+import GroupOrderDialog from '@/components/group-order-dialog';
+import StoreDetailsDialog from '@/components/store-details-dialog';
+import { Reviews } from '@/components/reviews';
 import { type Deal } from '@/types/deal-types';
 import { useDealsByRestaurantId } from '@/lib/hooks/use-deals';
 import { Deals } from '@/components/deals';
@@ -115,7 +107,7 @@ export default function RestaurantPage() {
 
   // Check if restaurant is in nearby results
   const restaurantInNearby = restaurants ? getRestaurantById(restaurants, id) : null;
-  
+
   // If not in nearby results, fetch this specific restaurant
   const { data: specificRestaurant, isLoading: isLoadingRestaurant } = useRestaurant(
     !restaurantInNearby && id ? id : undefined
@@ -142,6 +134,15 @@ export default function RestaurantPage() {
 
   const [isSaved, setIsSaved] = useState(false);
   const [selectedMenuType, setSelectedMenuType] = useState('Regular Menu');
+  const [isStickyHeader, setIsStickyHeader] = useState(false);
+  const [isStickyMenu, setIsStickyMenu] = useState(false);
+  const [stickyHeaderHeight, setStickyHeaderHeight] = useState(0);
+  const [menuContainerDimensions, setMenuContainerDimensions] = useState({
+    width: 0,
+    left: 0,
+    height: 0,
+  });
+  const stickyHeaderRef = useRef<HTMLDivElement>(null);
 
   const { setCurrentStore, clearCurrentStore } = useAppStore();
   const { recordNavigationFromSearch } = useVerifierStore();
@@ -169,7 +170,7 @@ export default function RestaurantPage() {
     if (currentUser && id) {
       const saved = localStorage.getItem('favorites');
       let favoritesObj: { [userId: string]: string[] } = {};
-      
+
       if (saved) {
         try {
           favoritesObj = JSON.parse(saved);
@@ -182,7 +183,7 @@ export default function RestaurantPage() {
       }
 
       let userFavorites = favoritesObj[currentUser.id] || [];
-      
+
       if (isSaved) {
         // Add restaurant ID if not already in array
         if (!userFavorites.includes(id)) {
@@ -274,14 +275,79 @@ export default function RestaurantPage() {
     if (menuRef.current && menuContainerRef.current) {
       const rect = menuContainerRef.current.getBoundingClientRect();
       setMenuTopPosition(rect.top + window.scrollY);
+      
+      // Check initial sticky state
+      const containerRect = menuContainerRef.current.getBoundingClientRect();
+      const shouldBeSticky = containerRect.top <= 0;
+      setIsStickyHeader(shouldBeSticky);
+      setIsStickyMenu(shouldBeSticky);
+      
+      // Measure menu container dimensions when not sticky
+      if (!shouldBeSticky) {
+        setMenuContainerDimensions({
+          width: rect.width,
+          left: rect.left,
+          height: rect.height,
+        });
+      }
     }
   }, [restaurant]);
+
+  // Measure sticky header height when it appears
+  useEffect(() => {
+    if (isStickyHeader && stickyHeaderRef.current) {
+      const height = stickyHeaderRef.current.offsetHeight;
+      setStickyHeaderHeight(height);
+    }
+  }, [isStickyHeader]);
+
+  // Measure menu container dimensions when not sticky
+  useEffect(() => {
+    const updateMenuDimensions = () => {
+      if (!isStickyMenu && menuContainerRef.current) {
+        const rect = menuContainerRef.current.getBoundingClientRect();
+        setMenuContainerDimensions({
+          width: rect.width,
+          left: rect.left,
+          height: rect.height,
+        });
+      }
+    };
+
+    updateMenuDimensions();
+    window.addEventListener('resize', updateMenuDimensions);
+    return () => window.removeEventListener('resize', updateMenuDimensions);
+  }, [isStickyMenu]);
 
   const handleScroll = useCallback(() => {
     if (!ticking.current) {
       ticking.current = true;
 
       requestAnimationFrame(() => {
+        // Use stable reference point (menuTopPosition) to determine sticky state
+        // This prevents flickering when menu becomes fixed positioned
+        const scrollY = window.scrollY;
+        const headerOffset = 64; // Main header height
+        const stickyThreshold = menuTopPosition - headerOffset;
+        
+        // Add small threshold to prevent rapid toggling (hysteresis)
+        const shouldBeSticky = scrollY >= stickyThreshold && menuTopPosition > 0;
+        
+        setIsStickyHeader(shouldBeSticky);
+        setIsStickyMenu(shouldBeSticky);
+        
+        // Measure dimensions when not sticky (only when transitioning or already not sticky)
+        if (!shouldBeSticky && menuContainerRef.current) {
+          const containerRect = menuContainerRef.current.getBoundingClientRect();
+          if (containerRect.width > 0) {
+            setMenuContainerDimensions({
+              width: containerRect.width,
+              left: containerRect.left,
+              height: containerRect.height,
+            });
+          }
+        }
+
         // Find which section is currently in view
         const sectionPositions = Object.entries(sectionRefs.current).map(([category, ref]) => {
           const position = ref?.getBoundingClientRect().top || 0;
@@ -299,7 +365,7 @@ export default function RestaurantPage() {
         ticking.current = false;
       });
     }
-  }, [activeCategory]);
+  }, [activeCategory, menuTopPosition]);
 
   useEffect(() => {
     window.addEventListener('scroll', handleScroll, { passive: true });
@@ -481,7 +547,65 @@ export default function RestaurantPage() {
 
       {/* Restaurant Info */}
       <div className="max-w-7xl mx-auto px-4">
-        <div className="flex flex-wrap justify-between mt-6 mb-6">
+        {/* Sticky Header - appears when scrolling past menuContainerRef */}
+        {isStickyHeader && (
+          <div ref={stickyHeaderRef} className="fixed top-[64px] left-[220px] right-4 bg-white z-50 border-b border-gray-200">
+            <div className="max-w-7xl mx-auto px-4 py-4">
+              <div className="flex flex-wrap justify-between items-center">
+                <div className="flex-1">
+                  <h1
+                    style={{
+                      fontFamily:
+                        'TT Norms -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol',
+                    }}
+                    className="text-2xl font-bold"
+                  >
+                    {restaurant.name}
+                  </h1>
+                  <div className="flex items-center text-sm text-gray-700 mt-1">
+                    {restaurant?.rating && restaurant.rating != 0 && (
+                      <>
+                        <span className="font-semibold mr-0.5">
+                          {getDefaultRating(restaurant.rating)}
+                        </span>
+                        <span className="text-gray-500 mr-1">★</span>
+                        {restaurant.reviews && restaurant.reviews != 0 && (
+                          <span className="mr-1">({restaurant.reviews})</span>
+                        )}
+                      </>
+                    )}
+                    {restaurant.cuisine && (
+                      <>
+                        {(restaurant?.rating && restaurant.rating != 0) && (
+                          <span className="text-gray-400 mx-1">•</span>
+                        )}
+                        <span>{restaurant.cuisine}</span>
+                      </>
+                    )}
+                    {restaurant.distance && (
+                      <>
+                        {((restaurant?.rating && restaurant.rating != 0) || restaurant.cuisine) && (
+                          <span className="text-gray-400 mx-1">•</span>
+                        )}
+                        <span>{restaurant.distance}</span>
+                      </>
+                    )}
+                  </div>
+                </div>
+                <SearchBar
+                  restaurantName={restaurant.name}
+                  searchQuery={searchQuery}
+                  onSearchChange={query => {
+                    setSearchQuery(query);
+                    setIsSearching(query.trim().length > 0);
+                  }}
+                />
+              </div>
+            </div>
+          </div>
+        )}
+        {/* Original Header */}
+        <div className={`flex flex-wrap justify-between mt-6 mb-6 ${isStickyHeader ? 'opacity-0' : ''}`}>
           <h1
             style={{
               fontFamily:
@@ -540,8 +664,14 @@ export default function RestaurantPage() {
               )}
               <div className="flex items-center mb-1">
                 <span className="text-sm">
-                  {restaurant?.rating && restaurant.rating != 0 ? <span className="font-semibold mr-0.5">{getDefaultRating(restaurant.rating)} ★</span> : null}
-                  {restaurant.reviews && restaurant.reviews != 0 ? `(${restaurant.reviews} ratings) • ` : ''}
+                  {restaurant?.rating && restaurant.rating != 0 ? (
+                    <span className="font-semibold mr-0.5">
+                      {getDefaultRating(restaurant.rating)} ★
+                    </span>
+                  ) : null}
+                  {restaurant.reviews && restaurant.reviews != 0
+                    ? `(${restaurant.reviews} ratings) • `
+                    : ''}
                   {restaurant.distance || 'Distance unavailable'}
                 </span>
               </div>
@@ -565,17 +695,26 @@ export default function RestaurantPage() {
                 </button>
               </div>
             </div>
-            <div ref={menuContainerRef} className="relative mt-4">
-              <div
-                ref={menuRef}
-                className="overflow-hidden"
-                style={{
-                  position: 'sticky',
-                  top: '80px',
-                  transition: 'none',
-                  zIndex: 10,
-                }}
-              >
+            <div
+              ref={menuContainerRef}
+              className={`mt-4 ${
+                isStickyMenu
+                  ? 'fixed bg-white z-40 border-r border-gray-200'
+                  : 'relative'
+              }`}
+              style={
+                isStickyMenu && stickyHeaderHeight > 0 && menuContainerDimensions.width > 0
+                  ? {
+                      top: `${64 + stickyHeaderHeight}px`,
+                      left: `${menuContainerDimensions.left}px`,
+                      width: `${menuContainerDimensions.width}px`,
+                      maxHeight: `calc(100vh - ${64 + stickyHeaderHeight}px)`,
+                      overflowY: 'auto',
+                    }
+                  : undefined
+              }
+            >
+              <div ref={menuRef} className="overflow-hidden">
                 <div className="p-4 relative" ref={menuDropdownRef}>
                   <button
                     className="w-full flex items-center justify-between font-medium"
@@ -662,6 +801,16 @@ export default function RestaurantPage() {
                 </div>
               </div>
             </div>
+            {/* Spacer to prevent layout shift when menu becomes sticky */}
+            {isStickyMenu && menuContainerDimensions.height > 0 && menuContainerDimensions.width > 0 && (
+              <div
+                style={{
+                  width: `${menuContainerDimensions.width}px`,
+                  height: `${menuContainerDimensions.height}px`,
+                  marginTop: '1rem',
+                }}
+              />
+            )}
           </div>
 
           <div className="w-full md:w-3/4 md:pl-4">

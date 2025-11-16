@@ -35,7 +35,7 @@ export default function LayoutWrapper({ children }: { children: React.ReactNode 
           )}
         </div>
       </div>
-      {!isCheckoutPage && <Footer />}
+      {/* {!isCheckoutPage && <Footer />} */}
     </>
   )
 }

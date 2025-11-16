@@ -381,7 +381,7 @@ export default function Header() {
 
   return (
     <>
-      <header className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-200">
+      <header className="fixed h-16 top-0 left-0 right-0 z-50 bg-white border-b border-gray-200">
         <div className="w-full max-w-screen-2xl mx-auto px-4 h-16 flex items-center justify-between">
           {isCheckoutPage || isAuthFlow ? (
             <>
