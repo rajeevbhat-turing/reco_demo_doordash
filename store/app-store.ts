@@ -25,6 +25,7 @@ interface AppStore {
   currentStore: Record<string, any>
   currentCategory: CartCategory | null
   visitedStores: string[]
+  routeBeforeAuth: string | null
 
   // Search methods
   updateSearchResults: (results: SearchResult[]) => void
@@ -33,6 +34,9 @@ interface AppStore {
   // Store management methods
   setCurrentStore: (store: Record<string, any>, category?: CartCategory) => void
   clearCurrentStore: () => void
+
+  // Route management methods
+  setRouteBeforeAuth: (path: string | null) => void
 }
 
 export const useAppStore = create<AppStore>()(
@@ -44,6 +48,7 @@ export const useAppStore = create<AppStore>()(
         currentStore: {},
         currentCategory: null,
         visitedStores: [],
+        routeBeforeAuth: null,
 
         // Update search results
         updateSearchResults: (results: SearchResult[]) => {
@@ -103,6 +108,11 @@ export const useAppStore = create<AppStore>()(
             currentCategory: null
           })
         },
+
+        // Set route before auth (for redirecting after authentication)
+        setRouteBeforeAuth: (path: string | null) => {
+          set({ routeBeforeAuth: path })
+        },
       }),
       {
         name: "app-state",
@@ -111,6 +121,7 @@ export const useAppStore = create<AppStore>()(
           currentStore: state.currentStore,
           currentCategory: state.currentCategory,
           visitedStores: state.visitedStores,
+          routeBeforeAuth: state.routeBeforeAuth,
         }),
       },
     ),

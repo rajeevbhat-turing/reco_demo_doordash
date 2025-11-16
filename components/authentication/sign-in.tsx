@@ -14,9 +14,11 @@ interface SignInProps {
   onSuccess: () => void;
   setMode: (mode: 'signin' | 'signup' | 'forgot-password', email?: string) => void;
   initialEmail?: string;
+  style?: any;
+  onFormStateChange?: (formState: { currentForm: 'email' | 'password' | 'otp'; foundUser: any }) => void;
 }
 
-export default function SignIn({ onSuccess, setMode, initialEmail }: SignInProps) {
+export default function SignIn({ onSuccess, setMode, initialEmail, style, onFormStateChange }: SignInProps) {
   const { login, generateOTP, isLoading, isGeneratingOTP } = useAuth();
   const getTempAddress = useUserStore(state => state.getTempAddress);
   const [formData, setFormData] = useState({
@@ -39,6 +41,13 @@ export default function SignIn({ onSuccess, setMode, initialEmail }: SignInProps
       setFormData(prev => ({ ...prev, email: initialEmail }));
     }
   }, [initialEmail]);
+
+  // Notify parent of form state changes
+  useEffect(() => {
+    if (onFormStateChange) {
+      onFormStateChange({ currentForm, foundUser });
+    }
+  }, [currentForm, foundUser, onFormStateChange]);
 
   // Clearing the interval when the component unmounts
   useEffect(
@@ -631,7 +640,8 @@ export default function SignIn({ onSuccess, setMode, initialEmail }: SignInProps
       <Button
         type="submit"
         disabled={isGeneratingOTP}
-        className="w-full bg-red-600 hover:bg-red-700 text-white font-bold text-[15px] py-3 rounded-3xl mt-4 disabled:opacity-50 disabled:cursor-not-allowed"
+        className={`w-full bg-red-600 hover:bg-red-700 text-white font-bold text-[15px] py-3 rounded-3xl mt-4 disabled:opacity-50 
+          disabled:cursor-not-allowed ${style?.continueButton ?? ''}`}
       >
         Continue to Sign In
       </Button>
