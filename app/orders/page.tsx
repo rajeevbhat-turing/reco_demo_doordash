@@ -192,7 +192,8 @@ export default function Orders() {
                     {order.storeId || order.restaurantId ? (
                       <Link
                         href={`/store/${order.storeId || order.restaurantId}`}
-                        className="flex items-center justify-between mb-3"
+                        className="flex items-center justify-between mb-3 border-b border-gray-200 py-2"
+                        onClick={e => e.stopPropagation()}
                       >
                         <div className="flex items-center gap-2">
                           <h4 className="text-base font-semibold">{getStoreName(order)}</h4>

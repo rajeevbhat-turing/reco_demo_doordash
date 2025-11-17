@@ -93,6 +93,7 @@ export default function RestaurantPage() {
   const menuRef = useRef<HTMLDivElement>(null);
   const menuContainerRef = useRef<HTMLDivElement>(null);
   const sectionRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
+  const isProgrammaticScroll = useRef(false);
   // Get both setCategory and addItem from the cart store
   const cartStore = useCartStore();
   const { addItem } = useCartStore();
@@ -373,16 +374,46 @@ export default function RestaurantPage() {
         }
 
         // Find which section is currently in view
-        const sectionPositions = Object.entries(sectionRefs.current).map(([category, ref]) => {
-          const position = ref?.getBoundingClientRect().top || 0;
-          return { category, position };
-        });
+        const sectionPositions = Object.entries(sectionRefs.current)
+          .filter(([_, ref]) => ref !== null)
+          .map(([category, ref]) => {
+            const rect = ref!.getBoundingClientRect();
+            const position = rect.top;
+            const bottom = rect.bottom;
+            return { category, position, bottom, ref: ref! };
+          });
 
-        const currentSection = sectionPositions
-          .filter(section => section.position <= 200)
-          .sort((a, b) => b.position - a.position)[0];
+        // Check if we're near the bottom of the page
+        const windowHeight = window.innerHeight;
+        const documentHeight = document.documentElement.scrollHeight;
+        const scrollTop = window.scrollY;
+        const isNearBottom = scrollTop + windowHeight >= documentHeight - 100; // 100px threshold
 
-        if (currentSection && currentSection.category !== activeCategory) {
+        let currentSection;
+
+        if (isNearBottom && sectionPositions.length > 0) {
+          // If near bottom, prioritize the last section
+          const sortedSections = sectionPositions.sort((a, b) => {
+            const aTop = a.ref.offsetTop;
+            const bTop = b.ref.offsetTop;
+            return bTop - aTop; // Sort by position descending (last section first)
+          });
+          currentSection = sortedSections[0];
+        } else {
+          // Normal logic: find section that's in view near the top
+          const visibleSections = sectionPositions.filter(section => section.position <= 200);
+          if (visibleSections.length > 0) {
+            // Sort by position descending and pick the one closest to top
+            currentSection = visibleSections.sort((a, b) => b.position - a.position)[0];
+          }
+        }
+
+        // Only update active category if not programmatically scrolling
+        if (
+          !isProgrammaticScroll.current &&
+          currentSection &&
+          currentSection.category !== activeCategory
+        ) {
           setActiveCategory(currentSection.category);
         }
 
@@ -400,9 +431,23 @@ export default function RestaurantPage() {
     setActiveCategory(category);
     const section = sectionRefs.current[category];
     if (section) {
-      const offset = 80;
-      const top = section.getBoundingClientRect().top + window.scrollY - offset;
-      window.scrollTo({ top, behavior: 'smooth' });
+      // Disable scroll-based highlight changes during programmatic scroll
+      isProgrammaticScroll.current = true;
+
+      // Use smaller offset for Featured Items, larger offset for other sections to prevent title from being hidden due to sticky header
+      const offset = category === 'Featured Items' ? 100 : 140;
+      // Use getBoundingClientRect for accurate position relative to viewport
+      const rect = section.getBoundingClientRect();
+      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+      const top = rect.top + scrollTop - offset;
+
+      window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
+
+      // Re-enable scroll-based highlight changes after scroll animation completes
+      // Smooth scroll typically takes ~500-1000ms, using 1200ms to be safe
+      setTimeout(() => {
+        isProgrammaticScroll.current = false;
+      }, 1200);
     }
   };
 
@@ -587,7 +632,7 @@ export default function RestaurantPage() {
         {isStickyHeader && (
           <div
             ref={stickyHeaderRef}
-            className="fixed top-[64px] left-[220px] right-4 bg-white z-50 border-b border-gray-200"
+            className="fixed top-[64px] left-[220px] right-4 bg-white z-30 border-b border-gray-200"
           >
             <div className="max-w-7xl mx-auto px-4 py-4">
               <div className="flex flex-wrap justify-between items-center">
@@ -961,7 +1006,12 @@ export default function RestaurantPage() {
                 <Deals restaurantId={id} />
 
                 {/* Featured Items */}
-                <div className="mt-4">
+                <div
+                  ref={el => {
+                    sectionRefs.current['Featured Items'] = el;
+                  }}
+                  className="mt-4"
+                >
                   <div className="flex items-center justify-between mb-4">
                     <h2 className="text-xl font-bold">Featured Items</h2>
                     <div className="flex">
