@@ -220,9 +220,15 @@ export default function AccountPopup({ isOpen, onClose, anchorElement }: Account
           </Link>
 
           {/* Payment */}
-          {/* <div className="hover:bg-gray-100 cursor-pointer px-4 py-[10px]">
+          <div
+            className="hover:bg-gray-100 cursor-pointer px-4 py-[10px]"
+            onClick={() => {
+              router.push('/payment');
+              onClose();
+            }}
+          >
             <div className="text-[15px] font-medium text-[#191919ff]">Payment</div>
-          </div> */}
+          </div>
 
           {/* Language */}
           <div className="px-4 py-[10px]">
