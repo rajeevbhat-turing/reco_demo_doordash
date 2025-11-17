@@ -714,9 +714,9 @@ export default function RestaurantPage() {
               </div>
               <div className="flex items-center text-sm text-gray-500 mt-2">
                 <span>Service fees apply</span>
-                <button onClick={() => setServiceFeesInfoOpen(true)} className="ml-1">
+                {/* <button onClick={() => setServiceFeesInfoOpen(true)} className="ml-1">
                   <Info className="h-4 w-4 text-gray-500" />
-                </button>
+                </button> */}
               </div>
               <div className="flex justify-center mt-6">
                 <button
@@ -925,7 +925,7 @@ export default function RestaurantPage() {
                         <span className="font-medium text-[#3d8f8f]">$0 delivery fee</span>
                         <div className="flex items-center text-gray-800 text-sm">
                           <span>pricing & fees</span>
-                          <Info className="h-4 w-4 ml-1 text-gray-500" />
+                          {/* <Info className="h-4 w-4 ml-1 text-gray-500" /> */}
                         </div>
                       </div>
                     </div>

@@ -176,12 +176,12 @@ export default function StoreReviewsPage() {
               <div className="mb-4">
                 <div className="flex items-center gap-2 text-sm font-medium text-[#767676]">
                   <span>What are public reviews?</span>
-                  <button
+                  {/* <button
                     onClick={() => setReviewsInfoModalOpen(true)}
                     aria-label="Learn about public reviews"
                   >
                     <Info className="w-5 h-5" strokeWidth={2} />
-                  </button>
+                  </button> */}
                 </div>
               </div>
 

@@ -216,7 +216,7 @@ export default function ReviewDialog({
                     </span>
                     {/* Pending Badge */}
                     <div className="flex items-center gap-1 p-1 bg-[#e7e7e7] rounded-md flex-shrink-0">
-                      <Info className="h-4 w-4 text-[#191919ff]" />
+                      {/* <Info className="h-4 w-4 text-[#191919ff]" /> */}
                       <span className="text-xs font-bold text-[#191919ff]">Pending</span>
                     </div>
                   </div>
@@ -291,7 +291,7 @@ export default function ReviewDialog({
                     </div>
                 <div className="flex items-center bg-gray-200 rounded-md px-1 py-2">
                   <span className="mr-1 text-sm font-medium text-[#191919ff]">Everyone</span>
-                  <Info className="h-5 w-5 text-[#191919ff]" />
+                  {/* <Info className="h-5 w-5 text-[#191919ff]" /> */}
                 </div>
               </div>
 

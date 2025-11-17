@@ -159,7 +159,7 @@ export default function VerticalListPage({
                   
                   {item.inStorePrice && (
                     <div className="flex items-center gap-1 text-xs text-gray-500 mt-1">
-                      <Info className="h-3 w-3" />
+                      {/* <Info className="h-3 w-3" /> */}
                       In-store prices
                     </div>
                   )}
