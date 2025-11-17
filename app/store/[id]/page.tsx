@@ -3,7 +3,7 @@
 import { useEffect, useState, useRef, useCallback, useMemo } from 'react';
 import Image from 'next/image';
 import { useParams } from 'next/navigation';
-import { ChevronDown, Info, ChevronLeft, ChevronRight, Heart, Search, X } from 'lucide-react';
+import { ChevronDown, Info, ChevronLeft, ChevronRight, Heart, Search, X, ThumbsUp } from 'lucide-react';
 import { useRestaurants } from '@/lib/hooks/use-restaurants';
 import { useRestaurant } from '@/lib/hooks/use-restaurant';
 import { useRestaurantMenu } from '@/lib/hooks/use-restaurant-menu';
@@ -981,7 +981,7 @@ export default function RestaurantPage() {
                         <span className="font-medium text-[#3d8f8f]">
                           {restaurant.isFreeDelivery
                             ? '$0 delivery fee'
-                            : `$${restaurant.minDeliveryFee} delivery fee`}
+                            : `$${(restaurant.minDeliveryFee / 100).toFixed(2)} delivery fee`}
                         </span>
                         <div className="flex items-center text-gray-800 text-sm">
                           <span>pricing & fees</span>
@@ -1118,6 +1118,7 @@ export default function RestaurantPage() {
                           <p className="text-gray-900 mt-1">{item.price}</p>
                           {item.rating && item.rating != 0 && (
                             <div className="flex items-center mt-1">
+                              <ThumbsUp className="w-4 h-4 text-gray-500 mr-1" strokeWidth={2} />
                               <span className="text-sm">
                                 {Math.round(getDefaultRating(item.rating) * 20)}%
                               </span>

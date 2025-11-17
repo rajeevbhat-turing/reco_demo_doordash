@@ -458,23 +458,30 @@ export default function Home() {
     );
   }
 
+  // Check if we should show "STAY TUNED" message (no restaurants found)
+  const showStayTuned = Object.keys(allSections).length === 0 && allStores.length === 0;
+
   return (
     <div className="w-full max-w-[1200px] mx-auto px-4">
-      <div className="pt-16">
-        <FoodCategories
-          selectedCategory={selectedCategory}
-          onCategorySelect={handleCategorySelect}
-        />
-      </div>
-      {/* Pass the current filters to the FilterOptions component */}
-      <FilterOptions
-        ref={filterOptionsRef}
-        onFilterChange={handleFilterChange}
-        onReset={handleReset}
-        filters={filters}
-      />
+      {!showStayTuned && (
+        <>
+          <div className="pt-16">
+            <FoodCategories
+              selectedCategory={selectedCategory}
+              onCategorySelect={handleCategorySelect}
+            />
+          </div>
+          {/* Pass the current filters to the FilterOptions component */}
+          <FilterOptions
+            ref={filterOptionsRef}
+            onFilterChange={handleFilterChange}
+            onReset={handleReset}
+            filters={filters}
+          />
+        </>
+      )}
       <div className="mt-4">
-        {!hasActiveFilters() && <PromoBanners />}
+        {!showStayTuned && !hasActiveFilters() && <PromoBanners />}
 
         {/* Show filtered results when filters are active */}
         {hasActiveFilters() ? (
@@ -601,19 +608,43 @@ export default function Home() {
         ) : (
           // Show dynamic sections and sections from database
           <>
-            {Object.entries(allSections)
-              .filter(([_, restaurants]) => restaurants.length > 0)
-              .map(([sectionName, restaurants]) => (
-                <RestaurantSection
-                  key={sectionName}
-                  title={sectionName}
-                  restaurants={restaurants}
-                />
-              ))}
+            {showStayTuned ? (
+              <div className="mt-16 py-20 text-center">
+                <div className="mb-8">
+                  <div className="flex justify-center items-center gap-1 text-6xl md:text-7xl font-bold">
+                    <span className="text-[#3d8f8f]">S</span>
+                    <span className="text-[#4a90e2]">T</span>
+                    <span className="text-[#eb1700]">A</span>
+                    <span className="text-[#ff6b9d]">Y</span>
+                    <span className="w-2"></span>
+                    <span className="text-[#ffd700]">T</span>
+                    <span className="text-[#ff6b9d]">U</span>
+                    <span className="text-[#3d8f8f]">N</span>
+                    <span className="text-[#228b22]">E</span>
+                    <span className="text-[#3d8f8f]">D</span>
+                  </div>
+                </div>
+                <p className="text-base text-gray-900 max-w-md mx-auto">
+                  We couldn't find any restaurants near your location that we currently deliver from. Follow along as we launch in new cities.
+                </p>
+              </div>
+            ) : (
+              <>
+                {Object.entries(allSections)
+                  .filter(([_, restaurants]) => restaurants.length > 0)
+                  .map(([sectionName, restaurants]) => (
+                    <RestaurantSection
+                      key={sectionName}
+                      title={sectionName}
+                      restaurants={restaurants}
+                    />
+                  ))}
 
-            {/* Fallback: Show all stores if no sections exist */}
-            {Object.keys(allSections).length === 0 && (
-              <RestaurantSection title="All stores" restaurants={allStores} />
+                {/* Fallback: Show all stores if no sections exist */}
+                {Object.keys(allSections).length === 0 && (
+                  <RestaurantSection title="All stores" restaurants={allStores} />
+                )}
+              </>
             )}
           </>
         )}

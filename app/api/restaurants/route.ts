@@ -123,8 +123,8 @@ export async function GET(request: NextRequest) {
         distance: `${distance.toFixed(1)} mi`,
         time: deliveryTime,
         deliveryFee: r.is_free_delivery === 1 
-          ? '$0.00' 
-          : `$${(r.min_delivery_fee / 100).toFixed(2)}`,
+          ? '$0 delivery fee' 
+          : `$${(r.min_delivery_fee / 100).toFixed(2)} delivery fee`,
         isFreeDelivery: r.is_free_delivery === 1,
         minDeliveryFee: r.min_delivery_fee,
         priceRange: '$'.repeat(r.price_range),
