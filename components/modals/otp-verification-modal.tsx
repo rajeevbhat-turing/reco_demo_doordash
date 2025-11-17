@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Input } from '@/components/ui/input';
 import { VerificationIcon } from '@/lib/utils/icons';
 
@@ -30,6 +30,7 @@ export default function OTPVerificationModal({
   generatedOTP,
   containerClassName = '',
 }: OTPVerificationModalProps) {
+  const dialogRef = useRef<HTMLDivElement>(null);
   const [otpInput, setOtpInput] = useState<string>('');
   const [otpError, setOtpError] = useState<string>('');
   const [attemptsLeft, setAttemptsLeft] = useState(5);
@@ -75,6 +76,31 @@ export default function OTPVerificationModal({
     onClose();
   };
 
+  // Handle escape key and outside click
+  useEffect(() => {
+    const handleEscapeKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        onClose();
+      }
+    };
+
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dialogRef.current && !dialogRef.current.contains(event.target as Node)) {
+        onClose();
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('keydown', handleEscapeKey);
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleEscapeKey);
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isOpen, onClose]);
+
   // Reset state when modal opens
   useEffect(() => {
     if (isOpen) {
@@ -90,6 +116,7 @@ export default function OTPVerificationModal({
 
   return (
     <div
+      ref={dialogRef}
       className={`absolute inset-0 z-[100] flex items-center justify-center ${containerClassName}`}
       style={{ backgroundColor: 'rgba(0, 0, 0, 0.65)' }}
     >

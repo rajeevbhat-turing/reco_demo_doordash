@@ -72,7 +72,23 @@ export default function ReviewDialog({
         }
       };
 
+      // Add event listener for outside click
+      const handleClickOutside = (event: MouseEvent) => {
+        if (dialogRef.current && !dialogRef.current.contains(event.target as Node)) {
+          if (showSuccess) {
+            // If showing success, call handleDone to trigger onSubmit callback
+            if (onSubmit) {
+              onSubmit(submittedRating, submittedText);
+            }
+            onClose();
+          } else {
+            onClose();
+          }
+        }
+      };
+
       document.addEventListener('keydown', handleEscapeKey);
+      document.addEventListener('mousedown', handleClickOutside);
 
       // Focus the textarea when the dialog opens (if not showing success)
       if (textareaRef.current && !showSuccess) {
@@ -84,6 +100,7 @@ export default function ReviewDialog({
       return () => {
         document.body.style.overflow = 'auto';
         document.removeEventListener('keydown', handleEscapeKey);
+        document.removeEventListener('mousedown', handleClickOutside);
       };
     }
   }, [isOpen, onClose, showSuccess, onSubmit, submittedRating, submittedText]);
@@ -216,7 +233,7 @@ export default function ReviewDialog({
                     </span>
                     {/* Pending Badge */}
                     <div className="flex items-center gap-1 p-1 bg-[#e7e7e7] rounded-md flex-shrink-0">
-                      <Info className="h-4 w-4 text-[#191919ff]" />
+                      {/* <Info className="h-4 w-4 text-[#191919ff]" /> */}
                       <span className="text-xs font-bold text-[#191919ff]">Pending</span>
                     </div>
                   </div>
@@ -291,7 +308,7 @@ export default function ReviewDialog({
                     </div>
                 <div className="flex items-center bg-gray-200 rounded-md px-1 py-2">
                   <span className="mr-1 text-sm font-medium text-[#191919ff]">Everyone</span>
-                  <Info className="h-5 w-5 text-[#191919ff]" />
+                  {/* <Info className="h-5 w-5 text-[#191919ff]" /> */}
                 </div>
               </div>
 

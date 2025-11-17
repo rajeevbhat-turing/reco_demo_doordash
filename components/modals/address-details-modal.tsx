@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { X, ChevronDown } from "lucide-react"
 import { Address } from "@/lib/types/user-types"
 
@@ -55,6 +55,7 @@ export default function AddressDetailsModal({
   hideAddressType = false,
   onBack
 }: AddressDetailsModalProps) {
+  const dialogRef = useRef<HTMLDivElement>(null)
   const [addressType, setAddressType] = useState<Address['addressType']>(address?.addressType || "house")
   
   // Separate state for each address type
@@ -162,6 +163,35 @@ export default function AddressDetailsModal({
       }
     }
   }, [address])
+
+  // Handle escape key and outside click
+  useEffect(() => {
+    const handleEscapeKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        onClose()
+      }
+    }
+
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dialogRef.current && !dialogRef.current.contains(event.target as Node)) {
+        onClose()
+      }
+    }
+
+    if (isOpen) {
+      document.body.style.overflow = "hidden"
+      document.addEventListener("keydown", handleEscapeKey)
+      document.addEventListener("mousedown", handleClickOutside)
+    } else {
+      document.body.style.overflow = "auto"
+    }
+
+    return () => {
+      document.body.style.overflow = "auto"
+      document.removeEventListener("keydown", handleEscapeKey)
+      document.removeEventListener("mousedown", handleClickOutside)
+    }
+  }, [isOpen, onClose])
 
   // Update meetLocation default when address type changes
   useEffect(() => {
@@ -337,7 +367,7 @@ export default function AddressDetailsModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
-      <div className="relative bg-white rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+      <div ref={dialogRef} className="relative bg-white rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
         <div className="sticky top-0 bg-white rounded-t-2xl p-6 pb-4 border-b border-gray-100 z-10">
           {/* Close button */}
           <button 

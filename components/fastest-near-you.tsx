@@ -2,6 +2,7 @@ import Image from "next/image"
 import { Heart } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { ChevronLeft, ChevronRight } from "lucide-react"
+import { calculateDeliveryTime, parseDistance } from "@/lib/utils/restaurant-utils"
 
 interface NearbyStore {
   id: string;
@@ -53,6 +54,20 @@ const defaultStores: NearbyStore[] = [
 ];
 
 export default function FastestNearYou({ stores = defaultStores }: FastestNearYouProps) {
+  // Calculate delivery time from distance if available, otherwise use provided time
+  const getDeliveryTime = (store: NearbyStore): string => {
+    if (store.distance) {
+      const distance = parseDistance(store.distance);
+      if (distance > 0) {
+        // Extract min time from calculated range (e.g., "25-35 min" -> "25 min")
+        const calculatedTime = calculateDeliveryTime(distance, 'standard');
+        const minTime = calculatedTime.split('-')[0];
+        return `${minTime} min`;
+      }
+    }
+    return store.time;
+  };
+
   return (
     <div className="py-6">
       <div className="mb-4">
@@ -100,7 +115,7 @@ export default function FastestNearYou({ stores = defaultStores }: FastestNearYo
                 )}
                 <span>{store.distance}</span>
                 <span className="mx-1">•</span>
-                <span>{store.time}</span>
+                <span>{getDeliveryTime(store)}</span>
               </div>
               
             </div>

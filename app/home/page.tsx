@@ -130,6 +130,36 @@ export default function Home() {
     return withDefaultRatings(filterOnlyRestaurants(restaurants));
   }, [restaurants]);
 
+  // Helper function to extract delivery time in minutes
+  const getDeliveryTimeMinutes = (timeStr: string): number => {
+    return Number.parseInt(timeStr.match(/\d+/)?.[0] || '100');
+  };
+
+  // Define dynamic sections (not from database)
+  // This makes it easy to add more sections later
+  const dynamicSections = useMemo(() => {
+    const sections: { [key: string]: Restaurant[] } = {};
+
+    // Under 30 Minutes section
+    const under30Minutes = actualRestaurants
+      .filter(restaurant => {
+        const minutes = getDeliveryTimeMinutes(restaurant.time);
+        return minutes < 30 && hasValidLogo(restaurant.logo);
+      })
+      .sort((a, b) => {
+        const timeA = getDeliveryTimeMinutes(a.time);
+        const timeB = getDeliveryTimeMinutes(b.time);
+        return timeA - timeB;
+      })
+      .slice(0, 8);
+
+    if (under30Minutes.length > 0) {
+      sections['Under 30 Minutes'] = under30Minutes;
+    }
+
+    return sections;
+  }, [actualRestaurants]);
+
   // Group restaurants by their section field from the database
   const restaurantsBySection = useMemo(() => {
     const sections: { [key: string]: Restaurant[] } = {};
@@ -151,6 +181,11 @@ export default function Home() {
 
     return sections;
   }, [actualRestaurants]);
+
+  // Merge dynamic sections with database sections
+  const allSections = useMemo(() => {
+    return { ...dynamicSections, ...restaurantsBySection };
+  }, [dynamicSections, restaurantsBySection]);
 
   // Legacy sections for backward compatibility and filtering
   const nationalFavorites = useMemo(() => {
@@ -439,7 +474,7 @@ export default function Home() {
         filters={filters}
       />
       <div className="mt-4">
-        {/* {!hasActiveFilters() && <PromoBanners />} */}
+        {!hasActiveFilters() && <PromoBanners />}
 
         {/* Show filtered results when filters are active */}
         {hasActiveFilters() ? (
@@ -564,9 +599,9 @@ export default function Home() {
             )}
           </div>
         ) : (
-          // Show dynamic sections from database
+          // Show dynamic sections and sections from database
           <>
-            {Object.entries(restaurantsBySection)
+            {Object.entries(allSections)
               .filter(([_, restaurants]) => restaurants.length > 0)
               .map(([sectionName, restaurants]) => (
                 <RestaurantSection
@@ -577,7 +612,7 @@ export default function Home() {
               ))}
 
             {/* Fallback: Show all stores if no sections exist */}
-            {Object.keys(restaurantsBySection).length === 0 && (
+            {Object.keys(allSections).length === 0 && (
               <RestaurantSection title="All stores" restaurants={allStores} />
             )}
           </>

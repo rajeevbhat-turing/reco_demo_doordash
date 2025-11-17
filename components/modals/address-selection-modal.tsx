@@ -9,16 +9,19 @@ import { useUserStore } from '@/store/user-store';
 interface AddressSelectionModalProps {
   isOpen: boolean;
   onAddNewAddress: () => void;
+  onClose?: () => void;
 }
 
 export default function AddressSelectionModal({
   isOpen,
   onAddNewAddress,
+  onClose,
 }: AddressSelectionModalProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const inputContainerRef = useRef<HTMLDivElement>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
 
   const { addAddress, setDefaultAddress } = useUserStore();
 
@@ -43,6 +46,41 @@ export default function AddressSelectionModal({
       };
     }
   }, [searchQuery]);
+
+  // Handle escape key and outside click to close modal
+  useEffect(() => {
+    const handleEscapeKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && onClose) {
+        onClose();
+      }
+    };
+
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dialogRef.current &&
+        !dialogRef.current.contains(event.target as Node) &&
+        !inputContainerRef.current?.contains(event.target as Node) &&
+        !dropdownRef.current?.contains(event.target as Node) &&
+        onClose
+      ) {
+        onClose();
+      }
+    };
+
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+      document.addEventListener('keydown', handleEscapeKey);
+      document.addEventListener('mousedown', handleClickOutside);
+    } else {
+      document.body.style.overflow = 'auto';
+    }
+
+    return () => {
+      document.body.style.overflow = 'auto';
+      document.removeEventListener('keydown', handleEscapeKey);
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isOpen, onClose]);
 
   // Filter addresses based on search query
   const filteredAddresses = useMemo(() => {
@@ -95,7 +133,7 @@ export default function AddressSelectionModal({
   return (
     <div className="fixed inset-0 z-50 bg-black bg-opacity-50 backdrop-blur-sm">
       <div className="absolute inset-0 flex items-center justify-center p-4">
-        <div className="relative bg-white rounded-xl shadow-xl w-full max-w-lg mx-auto max-h-[90vh] flex flex-col">
+        <div ref={dialogRef} className="relative bg-white rounded-xl shadow-xl w-full max-w-lg mx-auto max-h-[90vh] flex flex-col">
           {/* Non-scrollable content */}
           <div className="px-6 py-6">
             {/* Top Section - Food Icons */}

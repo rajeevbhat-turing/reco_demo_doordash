@@ -58,11 +58,20 @@ export default function MenuItemDialog({ isOpen, onClose, item }: MenuItemDialog
         }
       }
 
+      // Add event listener for outside click
+      const handleClickOutside = (event: MouseEvent) => {
+        if (dialogRef.current && !dialogRef.current.contains(event.target as Node)) {
+          onClose()
+        }
+      }
+
       document.addEventListener("keydown", handleEscapeKey)
+      document.addEventListener("mousedown", handleClickOutside)
 
       return () => {
         document.body.style.overflow = "auto"
         document.removeEventListener("keydown", handleEscapeKey)
+        document.removeEventListener("mousedown", handleClickOutside)
       }
     } else {
       document.body.style.overflow = "auto"

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import { Search, X, ChevronRight, Plus, Star } from 'lucide-react';
 import addressesData from '@/data/addresses.json';
 import { Address } from '@/lib/types/user-types';
@@ -21,6 +21,7 @@ export default function AddressSearchModal({
   onAddNewAddress,
   onContinueInApp,
 }: AddressSearchModalProps) {
+  const dialogRef = useRef<HTMLDivElement>(null);
   const [searchQuery, setSearchQuery] = useState('');
 
   // Filter addresses based on search query
@@ -52,11 +53,39 @@ export default function AddressSearchModal({
     setSearchQuery('');
   };
 
+  useEffect(() => {
+    const handleEscapeKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        onClose();
+      }
+    };
+
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dialogRef.current && !dialogRef.current.contains(event.target as Node)) {
+        onClose();
+      }
+    };
+
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+      document.addEventListener('keydown', handleEscapeKey);
+      document.addEventListener('mousedown', handleClickOutside);
+    } else {
+      document.body.style.overflow = 'auto';
+    }
+
+    return () => {
+      document.body.style.overflow = 'auto';
+      document.removeEventListener('keydown', handleEscapeKey);
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center">
-      <div className="relative flex flex-col bg-white max-w-lg rounded-xl p-4 mx-4 w-full">
+      <div ref={dialogRef} className="relative flex flex-col bg-white max-w-lg rounded-xl p-4 mx-4 w-full">
         {/* Top Section - Search Bar */}
         <div className="flex items-center gap-3 mt-4 mb-2">
           <div

@@ -14,15 +14,36 @@ export function getRestaurantById(restaurants: Restaurant[] | undefined, id: str
 /**
  * Calculate estimated delivery time based on distance
  * Formula: base time + (distance * time per mile)
+ * @param distance - Distance in miles
+ * @param deliveryType - Optional: 'express' for faster delivery, 'standard' for regular delivery (default)
  */
-export function calculateDeliveryTime(distance: number): string {
-  const baseTime = 15; // Base prep time in minutes
-  const timePerMile = 3; // Minutes per mile
+export function calculateDeliveryTime(distance: number, deliveryType: 'express' | 'standard' = 'standard'): string {
+  // Express delivery: faster base time and less time per mile
+  const baseTime = deliveryType === 'express' ? 10 : 15; // Base prep time in minutes
+  const timePerMile = deliveryType === 'express' ? 2 : 3; // Minutes per mile
+  const buffer = deliveryType === 'express' ? 5 : 10; // Buffer time in minutes
   
   const minTime = Math.round(baseTime + (distance * timePerMile));
-  const maxTime = Math.round(minTime + 10); // Add 10 min buffer
+  const maxTime = Math.round(minTime + buffer);
   
   return `${minTime}-${maxTime} min`;
+}
+
+/**
+ * Parse distance from string format (e.g., "2.5 mi" -> 2.5)
+ * @param distanceStr - Distance string like "2.5 mi" or "0.7 mi"
+ * @returns Distance in miles as a number, or 0 if parsing fails
+ */
+export function parseDistance(distanceStr: string | undefined | null): number {
+  if (!distanceStr) return 0;
+  
+  // Extract number from string like "2.5 mi" or "0.7 mi"
+  const match = distanceStr.match(/(\d+\.?\d*)/);
+  if (match) {
+    return parseFloat(match[1]);
+  }
+  
+  return 0;
 }
 
 /**

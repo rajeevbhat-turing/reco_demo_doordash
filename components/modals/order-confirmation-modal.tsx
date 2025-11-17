@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { X, CheckCircle } from 'lucide-react';
 import { useCartStore, type CartCategory } from '@/store/cart-store';
@@ -41,17 +41,35 @@ export default function OrderConfirmationModal({
   const currentCart = storeId && category ? findCart(storeId, category) : null;
   const items = currentCart?.items || [];
 
+  const dialogRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
+    const handleEscapeKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        onClose();
+      }
+    };
+
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dialogRef.current && !dialogRef.current.contains(event.target as Node)) {
+        onClose();
+      }
+    };
+
     if (isOpen) {
       document.body.style.overflow = 'hidden';
+      document.addEventListener('keydown', handleEscapeKey);
+      document.addEventListener('mousedown', handleClickOutside);
     } else {
       document.body.style.overflow = 'auto';
     }
 
     return () => {
       document.body.style.overflow = 'auto';
+      document.removeEventListener('keydown', handleEscapeKey);
+      document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [isOpen]);
+  }, [isOpen, onClose]);
 
   const handleClose = () => {
     console.log('[ORDER] 🚀 Order completion starting...', {
@@ -100,7 +118,7 @@ export default function OrderConfirmationModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="relative bg-white rounded-lg w-full max-w-md mx-4 p-6">
+      <div ref={dialogRef} className="relative bg-white rounded-lg w-full max-w-md mx-4 p-6">
         <button
           onClick={handleClose}
           className="absolute top-4 right-4 p-1"

@@ -8,7 +8,11 @@ import { useRestaurants } from '@/lib/hooks/use-restaurants';
 import { useRestaurant } from '@/lib/hooks/use-restaurant';
 import { useRestaurantMenu } from '@/lib/hooks/use-restaurant-menu';
 import { useUserStore } from '@/store/user-store';
-import { getRestaurantById, calculateDeliveryTime } from '@/lib/utils/restaurant-utils';
+import {
+  getRestaurantById,
+  calculateDeliveryTime,
+  parseDistance,
+} from '@/lib/utils/restaurant-utils';
 import { useCartStore } from '@/store/cart-store';
 import { useAppStore } from '@/store/app-store';
 import { useVerifierStore } from '@/store/verifier-store';
@@ -271,6 +275,26 @@ export default function RestaurantPage() {
     };
   }, [id, restaurantInNearby, specificRestaurant, menuData]);
 
+  // Use restaurant.time (already calculated by API using calculateDeliveryTime) or calculate from distance
+  const deliveryTime = useMemo(() => {
+    if (!restaurant) return '21-31 min'; // Fallback with range
+
+    // If restaurant already has calculated time from API, use it (should be in range format)
+    if (restaurant.time) {
+      return restaurant.time;
+    }
+
+    // If restaurant has distance but no time, calculate it using calculateDeliveryTime
+    if (restaurant.distance) {
+      const distance = parseDistance(restaurant.distance);
+      if (distance > 0) {
+        return calculateDeliveryTime(distance, 'standard');
+      }
+    }
+
+    return '21-31 min'; // Final fallback with range
+  }, [restaurant]);
+
   // Save the initial position of the menu after the component mounts
   useEffect(() => {
     if (menuRef.current && menuContainerRef.current) {
@@ -458,18 +482,6 @@ export default function RestaurantPage() {
     }
     return deal.title;
   };
-
-  // Calculate delivery time from restaurant distance
-  const deliveryTime = useMemo(() => {
-    if (!restaurant?.distance) return ''; // Fallback if no distance
-    // Parse distance string like "2.5 mi" to get numeric value
-    const distanceMatch = restaurant.distance.match(/([\d.]+)/);
-    if (distanceMatch) {
-      const distanceInMiles = parseFloat(distanceMatch[1]);
-      return calculateDeliveryTime(distanceInMiles);
-    }
-    return ''; // Fallback
-  }, [restaurant?.distance]);
 
   if (!restaurant) {
     return <div className="p-8 text-center">Loading...</div>;
@@ -758,9 +770,9 @@ export default function RestaurantPage() {
               </div>
               <div className="flex items-center text-sm text-gray-500 mt-2">
                 <span>Service fees apply</span>
-                <button onClick={() => setServiceFeesInfoOpen(true)} className="ml-1">
+                {/* <button onClick={() => setServiceFeesInfoOpen(true)} className="ml-1">
                   <Info className="h-4 w-4 text-gray-500" />
-                </button>
+                </button> */}
               </div>
               <div className="flex justify-center mt-6">
                 <button
@@ -966,10 +978,14 @@ export default function RestaurantPage() {
                   <div className="flex items-center space-x-4">
                     <div className="bg-[#e8f7f7] rounded-lg p-4">
                       <div className="flex flex-col">
-                        <span className="font-medium text-[#3d8f8f]">$0 delivery fee</span>
+                        <span className="font-medium text-[#3d8f8f]">
+                          {restaurant.isFreeDelivery
+                            ? '$0 delivery fee'
+                            : `$${restaurant.minDeliveryFee} delivery fee`}
+                        </span>
                         <div className="flex items-center text-gray-800 text-sm">
                           <span>pricing & fees</span>
-                          <Info className="h-4 w-4 ml-1 text-gray-500" />
+                          {/* <Info className="h-4 w-4 ml-1 text-gray-500" /> */}
                         </div>
                       </div>
                     </div>

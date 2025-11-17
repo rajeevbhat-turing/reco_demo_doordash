@@ -358,3 +358,31 @@ CREATE TABLE deal_free_items (
   FOREIGN KEY (deal_id) REFERENCES deals(id) ON DELETE CASCADE ON UPDATE CASCADE,
   FOREIGN KEY (item_id) REFERENCES menu_items(id) ON DELETE CASCADE ON UPDATE CASCADE
 );
+
+
+-- ===========================================
+-- PROMOTIONALS
+-- ===========================================
+CREATE TABLE IF NOT EXISTS promotionals (
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    restaurant_id INTEGER NOT NULL,
+    title TEXT NOT NULL,
+    description TEXT NOT NULL,
+    button_text TEXT NOT NULL,
+    button_color TEXT NOT NULL,
+    gradient TEXT NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    is_active INTEGER NOT NULL DEFAULT 1 CHECK (is_active IN (0, 1)),
+    display_order INTEGER NOT NULL DEFAULT 0,
+    FOREIGN KEY (restaurant_id) REFERENCES restaurants (id) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+-- Create index for active promotionals ordered by display_order
+CREATE INDEX IF NOT EXISTS idx_promotionals_active_order 
+ON promotionals(is_active, display_order);
+
+-- Create index for restaurant_id for faster lookups
+CREATE INDEX IF NOT EXISTS idx_promotionals_restaurant_id 
+ON promotionals(restaurant_id);
+

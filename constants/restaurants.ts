@@ -9,6 +9,8 @@ export interface Restaurant {
   distance: string;
   time: string;
   deliveryFee: string;
+  isFreeDelivery: boolean;
+  minDeliveryFee: number; // in cents
   priceRange: string;
   cuisine: string;
   dashPass: boolean;

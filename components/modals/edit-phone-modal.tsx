@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect, useRef } from "react"
 import { X } from "lucide-react"
 
 interface EditPhoneModalProps {
@@ -18,9 +18,38 @@ export default function EditPhoneModal({
   initialCountryCode = "+1 (US)", 
   initialNumber = "" 
 }: EditPhoneModalProps) {
+  const dialogRef = useRef<HTMLDivElement>(null)
   const [countryCode, setCountryCode] = useState(initialCountryCode)
   const [number, setNumber] = useState(initialNumber)
   const [error, setError] = useState("")
+
+  useEffect(() => {
+    const handleEscapeKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        onClose()
+      }
+    }
+
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dialogRef.current && !dialogRef.current.contains(event.target as Node)) {
+        onClose()
+      }
+    }
+
+    if (isOpen) {
+      document.body.style.overflow = "hidden"
+      document.addEventListener("keydown", handleEscapeKey)
+      document.addEventListener("mousedown", handleClickOutside)
+    } else {
+      document.body.style.overflow = "auto"
+    }
+
+    return () => {
+      document.body.style.overflow = "auto"
+      document.removeEventListener("keydown", handleEscapeKey)
+      document.removeEventListener("mousedown", handleClickOutside)
+    }
+  }, [isOpen, onClose])
 
   if (!isOpen) return null
 
@@ -50,7 +79,7 @@ export default function EditPhoneModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="relative bg-white rounded-2xl w-full max-w-md mx-4 p-6">
+      <div ref={dialogRef} className="relative bg-white rounded-2xl w-full max-w-md mx-4 p-6">
         {/* Close button */}
         <button 
           onClick={handleCancel}
