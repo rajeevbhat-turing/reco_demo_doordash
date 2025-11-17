@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect, useRef } from "react"
 import { X } from "lucide-react"
 
 interface ScheduleDeliveryModalProps {
@@ -14,6 +14,36 @@ export default function ScheduleDeliveryModal({
   onClose,
   onSelectTime
 }: ScheduleDeliveryModalProps) {
+  const dialogRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const handleEscapeKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        onClose()
+      }
+    }
+
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dialogRef.current && !dialogRef.current.contains(event.target as Node)) {
+        onClose()
+      }
+    }
+
+    if (isOpen) {
+      document.body.style.overflow = "hidden"
+      document.addEventListener("keydown", handleEscapeKey)
+      document.addEventListener("mousedown", handleClickOutside)
+    } else {
+      document.body.style.overflow = "auto"
+    }
+
+    return () => {
+      document.body.style.overflow = "auto"
+      document.removeEventListener("keydown", handleEscapeKey)
+      document.removeEventListener("mousedown", handleClickOutside)
+    }
+  }, [isOpen, onClose])
+
   // Generate dates dynamically starting from today
   const generateDates = () => {
     const dates = []
@@ -180,7 +210,7 @@ export default function ScheduleDeliveryModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
-      <div className="relative bg-white rounded-2xl w-full max-w-lg mx-4 p-6 max-h-[95vh] overflow-y-auto">
+      <div ref={dialogRef} className="relative bg-white rounded-2xl w-full max-w-lg mx-4 p-6 max-h-[95vh] overflow-y-auto">
         {/* Close button */}
         <button
           onClick={onClose}

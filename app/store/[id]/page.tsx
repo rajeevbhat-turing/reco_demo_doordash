@@ -8,7 +8,11 @@ import { useRestaurants } from '@/lib/hooks/use-restaurants';
 import { useRestaurant } from '@/lib/hooks/use-restaurant';
 import { useRestaurantMenu } from '@/lib/hooks/use-restaurant-menu';
 import { useUserStore } from '@/store/user-store';
-import { getRestaurantById, calculateDeliveryTime, parseDistance } from '@/lib/utils/restaurant-utils';
+import {
+  getRestaurantById,
+  calculateDeliveryTime,
+  parseDistance,
+} from '@/lib/utils/restaurant-utils';
 import { useCartStore } from '@/store/cart-store';
 import { useAppStore } from '@/store/app-store';
 import { useVerifierStore } from '@/store/verifier-store';
@@ -273,12 +277,12 @@ export default function RestaurantPage() {
   // Use restaurant.time (already calculated by API using calculateDeliveryTime) or calculate from distance
   const deliveryTime = useMemo(() => {
     if (!restaurant) return '21-31 min'; // Fallback with range
-    
+
     // If restaurant already has calculated time from API, use it (should be in range format)
     if (restaurant.time) {
       return restaurant.time;
     }
-    
+
     // If restaurant has distance but no time, calculate it using calculateDeliveryTime
     if (restaurant.distance) {
       const distance = parseDistance(restaurant.distance);
@@ -286,7 +290,7 @@ export default function RestaurantPage() {
         return calculateDeliveryTime(distance, 'standard');
       }
     }
-    
+
     return '21-31 min'; // Final fallback with range
   }, [restaurant]);
 
@@ -295,13 +299,13 @@ export default function RestaurantPage() {
     if (menuRef.current && menuContainerRef.current) {
       const rect = menuContainerRef.current.getBoundingClientRect();
       setMenuTopPosition(rect.top + window.scrollY);
-      
+
       // Check initial sticky state
       const containerRect = menuContainerRef.current.getBoundingClientRect();
       const shouldBeSticky = containerRect.top <= 0;
       setIsStickyHeader(shouldBeSticky);
       setIsStickyMenu(shouldBeSticky);
-      
+
       // Measure menu container dimensions when not sticky
       if (!shouldBeSticky) {
         setMenuContainerDimensions({
@@ -349,13 +353,13 @@ export default function RestaurantPage() {
         const scrollY = window.scrollY;
         const headerOffset = 64; // Main header height
         const stickyThreshold = menuTopPosition - headerOffset;
-        
+
         // Add small threshold to prevent rapid toggling (hysteresis)
         const shouldBeSticky = scrollY >= stickyThreshold && menuTopPosition > 0;
-        
+
         setIsStickyHeader(shouldBeSticky);
         setIsStickyMenu(shouldBeSticky);
-        
+
         // Measure dimensions when not sticky (only when transitioning or already not sticky)
         if (!shouldBeSticky && menuContainerRef.current) {
           const containerRect = menuContainerRef.current.getBoundingClientRect();
@@ -581,7 +585,10 @@ export default function RestaurantPage() {
       <div className="max-w-7xl mx-auto px-4">
         {/* Sticky Header - appears when scrolling past menuContainerRef */}
         {isStickyHeader && (
-          <div ref={stickyHeaderRef} className="fixed top-[64px] left-[220px] right-4 bg-white z-50 border-b border-gray-200">
+          <div
+            ref={stickyHeaderRef}
+            className="fixed top-[64px] left-[220px] right-4 bg-white z-50 border-b border-gray-200"
+          >
             <div className="max-w-7xl mx-auto px-4 py-4">
               <div className="flex flex-wrap justify-between items-center">
                 <div className="flex-1">
@@ -608,7 +615,7 @@ export default function RestaurantPage() {
                     )}
                     {restaurant.cuisine && (
                       <>
-                        {(restaurant?.rating && restaurant.rating != 0) && (
+                        {restaurant?.rating && restaurant.rating != 0 && (
                           <span className="text-gray-400 mx-1">•</span>
                         )}
                         <span>{restaurant.cuisine}</span>
@@ -637,7 +644,11 @@ export default function RestaurantPage() {
           </div>
         )}
         {/* Original Header */}
-        <div className={`flex flex-wrap justify-between mt-6 mb-6 ${isStickyHeader ? 'opacity-0' : ''}`}>
+        <div
+          className={`flex flex-wrap justify-between mt-6 mb-6 ${
+            isStickyHeader ? 'opacity-0' : ''
+          }`}
+        >
           <h1
             style={{
               fontFamily:
@@ -730,9 +741,7 @@ export default function RestaurantPage() {
             <div
               ref={menuContainerRef}
               className={`mt-4 ${
-                isStickyMenu
-                  ? 'fixed bg-white z-40 border-r border-gray-200'
-                  : 'relative'
+                isStickyMenu ? 'fixed bg-white z-40 border-r border-gray-200' : 'relative'
               }`}
               style={
                 isStickyMenu && stickyHeaderHeight > 0 && menuContainerDimensions.width > 0
@@ -834,15 +843,17 @@ export default function RestaurantPage() {
               </div>
             </div>
             {/* Spacer to prevent layout shift when menu becomes sticky */}
-            {isStickyMenu && menuContainerDimensions.height > 0 && menuContainerDimensions.width > 0 && (
-              <div
-                style={{
-                  width: `${menuContainerDimensions.width}px`,
-                  height: `${menuContainerDimensions.height}px`,
-                  marginTop: '1rem',
-                }}
-              />
-            )}
+            {isStickyMenu &&
+              menuContainerDimensions.height > 0 &&
+              menuContainerDimensions.width > 0 && (
+                <div
+                  style={{
+                    width: `${menuContainerDimensions.width}px`,
+                    height: `${menuContainerDimensions.height}px`,
+                    marginTop: '1rem',
+                  }}
+                />
+              )}
           </div>
 
           <div className="w-full md:w-3/4 md:pl-4">
@@ -922,7 +933,11 @@ export default function RestaurantPage() {
                   <div className="flex items-center space-x-4">
                     <div className="bg-[#e8f7f7] rounded-lg p-4">
                       <div className="flex flex-col">
-                        <span className="font-medium text-[#3d8f8f]">$0 delivery fee</span>
+                        <span className="font-medium text-[#3d8f8f]">
+                          {restaurant.isFreeDelivery
+                            ? '$0 delivery fee'
+                            : `$${restaurant.minDeliveryFee} delivery fee`}
+                        </span>
                         <div className="flex items-center text-gray-800 text-sm">
                           <span>pricing & fees</span>
                           {/* <Info className="h-4 w-4 ml-1 text-gray-500" /> */}

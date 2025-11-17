@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect, useRef } from "react"
 import { X, Home, Building2, Hotel as HotelIcon, Building, MapPin } from "lucide-react"
 import { Address } from "@/lib/types/user-types"
 
@@ -19,9 +19,38 @@ export default function AddressTypeModal({
   onNext,
   onBack
 }: AddressTypeModalProps) {
+  const dialogRef = useRef<HTMLDivElement>(null)
   const [selectedType, setSelectedType] = useState<Address['addressType']>(
     addressData.addressType || 'house'
   )
+
+  useEffect(() => {
+    const handleEscapeKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        onClose()
+      }
+    }
+
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dialogRef.current && !dialogRef.current.contains(event.target as Node)) {
+        onClose()
+      }
+    }
+
+    if (isOpen) {
+      document.body.style.overflow = "hidden"
+      document.addEventListener("keydown", handleEscapeKey)
+      document.addEventListener("mousedown", handleClickOutside)
+    } else {
+      document.body.style.overflow = "auto"
+    }
+
+    return () => {
+      document.body.style.overflow = "auto"
+      document.removeEventListener("keydown", handleEscapeKey)
+      document.removeEventListener("mousedown", handleClickOutside)
+    }
+  }, [isOpen, onClose])
 
   if (!isOpen) return null
 
@@ -42,7 +71,7 @@ export default function AddressTypeModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
-      <div className="relative bg-white rounded-2xl w-full max-w-md mx-4">
+      <div ref={dialogRef} className="relative bg-white rounded-2xl w-full max-w-md mx-4">
         <div className="p-6">
           {/* Close button */}
           <button 

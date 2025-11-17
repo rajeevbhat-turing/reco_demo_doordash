@@ -32,9 +32,16 @@ export default function GroupOrderDialog({ isOpen, onClose }: GroupOrderDialogPr
       }
     }
 
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dialogRef.current && !dialogRef.current.contains(event.target as Node)) {
+        onClose()
+      }
+    }
+
     if (isOpen) {
       document.body.style.overflow = "hidden"
       document.addEventListener("keydown", handleEscapeKey)
+      document.addEventListener("mousedown", handleClickOutside)
     } else {
       // Reset to main view when dialog is closed
       setCurrentView("main")
@@ -43,6 +50,7 @@ export default function GroupOrderDialog({ isOpen, onClose }: GroupOrderDialogPr
     return () => {
       document.body.style.overflow = "auto"
       document.removeEventListener("keydown", handleEscapeKey)
+      document.removeEventListener("mousedown", handleClickOutside)
       // Reset to main view when dialog is closed
       if (!isOpen) {
         setCurrentView("main")

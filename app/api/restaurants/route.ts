@@ -125,6 +125,8 @@ export async function GET(request: NextRequest) {
         deliveryFee: r.is_free_delivery === 1 
           ? '$0.00' 
           : `$${(r.min_delivery_fee / 100).toFixed(2)}`,
+        isFreeDelivery: r.is_free_delivery === 1,
+        minDeliveryFee: r.min_delivery_fee,
         priceRange: '$'.repeat(r.price_range),
         cuisine: r.cuisine,
         dashPass: r.dash_pass === 1,

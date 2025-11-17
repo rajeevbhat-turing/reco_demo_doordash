@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect, useRef } from "react"
 import { X } from "lucide-react"
 
 interface AddCardModalProps {
@@ -15,6 +15,7 @@ interface AddCardModalProps {
 }
 
 export default function AddCardModal({ isOpen, onClose, onAddCard }: AddCardModalProps) {
+  const dialogRef = useRef<HTMLDivElement>(null)
   const [cardNumber, setCardNumber] = useState("")
   const [cvc, setCvc] = useState("")
   const [expiration, setExpiration] = useState("")
@@ -25,6 +26,34 @@ export default function AddCardModal({ isOpen, onClose, onAddCard }: AddCardModa
     expiration: "",
     zipCode: ""
   })
+
+  useEffect(() => {
+    const handleEscapeKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        onClose()
+      }
+    }
+
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dialogRef.current && !dialogRef.current.contains(event.target as Node)) {
+        onClose()
+      }
+    }
+
+    if (isOpen) {
+      document.body.style.overflow = "hidden"
+      document.addEventListener("keydown", handleEscapeKey)
+      document.addEventListener("mousedown", handleClickOutside)
+    } else {
+      document.body.style.overflow = "auto"
+    }
+
+    return () => {
+      document.body.style.overflow = "auto"
+      document.removeEventListener("keydown", handleEscapeKey)
+      document.removeEventListener("mousedown", handleClickOutside)
+    }
+  }, [isOpen, onClose])
 
   if (!isOpen) return null
 
@@ -165,7 +194,7 @@ export default function AddCardModal({ isOpen, onClose, onAddCard }: AddCardModa
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="relative bg-white rounded-2xl w-full mx-4 p-4" style={{ maxWidth: '622px' }}>
+      <div ref={dialogRef} className="relative bg-white rounded-2xl w-full mx-4 p-4" style={{ maxWidth: '622px' }}>
         {/* Close button */}
         <button 
           onClick={handleBack}

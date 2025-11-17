@@ -5,69 +5,105 @@ import Image from "next/image"
 import Link from "next/link"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 
+interface PromoBanner {
+  id: string
+  restaurantId: string
+  title: string
+  description: string
+  buttonText: string
+  buttonColor: string
+  gradient: string
+  image: string
+  restaurantName: string
+  textColor?: string
+}
+
 export default function PromoBanners() {
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   const [currentIndex, setCurrentIndex] = useState(0)
   const [isAutoScrolling, setIsAutoScrolling] = useState(true)
+  const [banners, setBanners] = useState<PromoBanner[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
-  const banners = [
-    {
-      id: 'philz-coffee',
-      title: 'Handcrafted specialty coffee at Philz Coffee',
-      description: 'asdasdasasdasdasd our signature blends, cold brews, and custom coffee creations made just for you.',
-      href: '/store/philz-coffee',
-      buttonText: 'Order now',
-      buttonColor: 'bg-amber-600',
-      gradient: 'from-amber-100 to-orange-100',
-      image: 'https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/ac042b0c-d74a-48f9-92f7-3c4347d7ba25.png',
-      alt: 'Philz Coffee'
-    },
-    {
-      id: 'peets-coffee',
-      title: 'Premium coffee and fresh pastries at Peet\'s Coffee',
-      description: 'Experience rich, deep-roasted coffee, espresso drinks, and delicious breakfast items.',
-      href: '/store/peet\'s-coffee',
-      buttonText: 'Order now',
-      buttonColor: 'bg-teal-600',
-      gradient: 'from-green-50 to-teal-50',
-      image: 'https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/8ca5d03b-706e-4919-9746-ca9c45bc8b3d.png',
-      alt: 'Peet\'s Coffee'
-    },
-    {
-      id: 'starbucks',
-      title: 'Classic favorites and seasonal specials at Starbucks',
-      description: 'Enjoy our signature Frappuccinos, lattes, teas, and fresh food options.',
-      href: '/store/starbucks-(299-fremont-street)',
-      buttonText: 'Order now',
-      buttonColor: 'bg-white text-green-600',
-      gradient: 'from-green-600 to-green-700',
-      textColor: 'text-white',
-      image: 'https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/2c09d946-5237-4271-9f64-a23a83b3e8a1.05',
-      alt: 'Starbucks'
-    },
-    {
-      id: 'pressed-acai',
-      title: 'Fresh acai bowls and healthy smoothies at Pressed',
-      description: 'Nutritious acai bowls, cold-pressed juices, and wellness shots made with organic ingredients.',
-      href: '/store/pressed-acai-bowls',
-      buttonText: 'Order now',
-      buttonColor: 'bg-purple-600',
-      gradient: 'from-purple-100 to-pink-100',
-      image: 'https://img.cdn4dd.com/p/fit=contain,width=200,height=200,format=auto,quality=95/media/restaurant/cover_square/55ec8325-0521-4d0f-96a3-68afd7fc36cf.jpeg',
-      alt: 'Pressed Acai Bowls'
-    },
-    {
-      id: 'il-canto-cafe',
-      title: 'Authentic Italian cuisine at IL Canto Cafe',
-      description: 'Traditional pasta dishes, wood-fired pizzas, and Italian specialties made with fresh ingredients.',
-      href: '/store/il-canto-cafe',
-      buttonText: 'Order now',
-      buttonColor: 'bg-orange-600',
-      gradient: 'from-yellow-50 to-orange-50',
-      image: 'https://img.cdn4dd.com/cdn-cgi/image/fit=contain,format=auto,width=800,quality=50/https://doordash-static.s3.amazonaws.com/media/photos/1ec80bad-7385-4de0-b4d9-634894f1f845-retina-large.jpg',
-      alt: 'IL Canto Cafe'
+  // Fetch promotional banners from API
+  useEffect(() => {
+    const fetchBanners = async () => {
+      try {
+        setIsLoading(true)
+        setError(null)
+        const response = await fetch('/api/promotionals')
+        const result = await response.json()
+
+        if (result.success && result.data) {
+          // Transform API data to component format
+          const transformedBanners = result.data.map((promo: any) => ({
+            id: promo.id,
+            restaurantId: promo.restaurantId,
+            title: promo.title,
+            description: promo.description,
+            buttonText: promo.buttonText,
+            buttonColor: promo.buttonColor,
+            gradient: promo.gradient,
+            image: promo.image,
+            restaurantName: promo.restaurantName,
+            // Determine text color based on gradient (if gradient is dark, use white text)
+            textColor: promo.gradient.includes('green-600') || promo.gradient.includes('green-700') 
+              ? 'text-white' 
+              : undefined
+          }))
+          setBanners(transformedBanners)
+        } else {
+          setError('Failed to load promotional banners')
+        }
+      } catch (err) {
+        console.error('Error fetching promotional banners:', err)
+        setError('Failed to load promotional banners')
+      } finally {
+        setIsLoading(false)
+      }
     }
-  ]
+
+    fetchBanners()
+  }, [])
+
+  // Update currentIndex based on scroll position
+  useEffect(() => {
+    const container = scrollContainerRef.current
+    if (!container || banners.length === 0) return
+
+    const updateIndexFromScroll = () => {
+      const cardWidth = container.querySelector('.promo-card')?.clientWidth || 0
+      const gap = 16
+      const scrollLeft = container.scrollLeft
+      const maxScroll = container.scrollWidth - container.clientWidth
+      
+      // Check if we're at the end (within 5px tolerance)
+      if (scrollLeft >= maxScroll - 5) {
+        setCurrentIndex(banners.length - 1)
+      } else if (scrollLeft <= 5) {
+        // At the start
+        setCurrentIndex(0)
+      } else {
+        // Calculate index based on scroll position
+        const newIndex = Math.round(scrollLeft / (cardWidth + gap))
+        setCurrentIndex(Math.min(Math.max(0, newIndex), banners.length - 1))
+      }
+    }
+
+    container.addEventListener('scroll', updateIndexFromScroll)
+    // Also check on resize
+    window.addEventListener('resize', updateIndexFromScroll)
+    
+    // Initial check after a short delay to ensure layout is complete
+    const timeoutId = setTimeout(updateIndexFromScroll, 100)
+
+    return () => {
+      clearTimeout(timeoutId)
+      container.removeEventListener('scroll', updateIndexFromScroll)
+      window.removeEventListener('resize', updateIndexFromScroll)
+    }
+  }, [banners.length])
 
   const scrollBanners = (direction: "left" | "right") => {
     if (!scrollContainerRef.current) return
@@ -92,7 +128,7 @@ export default function PromoBanners() {
 
   // Auto-scroll functionality
   useEffect(() => {
-    if (!isAutoScrolling) return
+    if (!isAutoScrolling || banners.length === 0) return
 
     const interval = setInterval(() => {
       setCurrentIndex(prev => {
@@ -119,6 +155,21 @@ export default function PromoBanners() {
     return () => clearInterval(interval)
   }, [isAutoScrolling, banners.length])
 
+  // Don't render if loading or error
+  if (isLoading) {
+    return (
+      <div className="relative mb-6">
+        <div className="flex gap-4">
+          <div className="flex-shrink-0 w-full max-w-xl bg-gray-200 animate-pulse rounded-lg h-32" />
+        </div>
+      </div>
+    )
+  }
+
+  if (error || banners.length === 0) {
+    return null // Don't show anything if there's an error or no banners
+  }
+
   return (
     <div className="relative mb-6">
       {/* Scrollable Banner Container */}
@@ -132,7 +183,7 @@ export default function PromoBanners() {
         {banners.map((banner) => (
           <Link
             key={banner.id}
-            href={banner.href}
+            href={`/store/${banner.restaurantId}`}
             className={`promo-card flex-shrink-0 w-full max-w-xl bg-gradient-to-r ${banner.gradient} overflow-hidden cursor-pointer hover:shadow-lg transition-all duration-300 hover:scale-[1.02] rounded-lg`}
             style={{ scrollSnapAlign: "start" }}
             prefetch={false}
@@ -154,7 +205,7 @@ export default function PromoBanners() {
               <div className="relative w-48 h-auto flex items-center justify-center">
                 <Image
                   src={banner.image}
-                  alt={banner.alt}
+                  alt={banner.restaurantName}
                   width={120}
                   height={120}
                   className="object-contain rounded-full"
@@ -172,25 +223,27 @@ export default function PromoBanners() {
       </div>
 
       {/* Navigation buttons */}
-      <div className="absolute -left-4 top-1/2 -translate-y-1/2">
-        <button
-          onClick={() => scrollBanners("left")}
-          className="bg-white rounded-full p-2 shadow-md hover:shadow-lg transition-all duration-200 hover:scale-110"
-          disabled={currentIndex === 0}
-        >
-          <ChevronLeft className="h-5 w-5" />
-        </button>
-      </div>
+      {currentIndex > 0 && (
+        <div className="absolute -left-4 top-1/2 -translate-y-1/2">
+          <button
+            onClick={() => scrollBanners("left")}
+            className="bg-white rounded-full p-2 shadow-md hover:shadow-lg transition-all duration-200 hover:scale-110"
+          >
+            <ChevronLeft className="h-5 w-5" />
+          </button>
+        </div>
+      )}
 
-      <div className="absolute -right-4 top-1/2 -translate-y-1/2">
-        <button
-          onClick={() => scrollBanners("right")}
-          className="bg-white rounded-full p-2 shadow-md hover:shadow-lg transition-all duration-200 hover:scale-110"
-          disabled={currentIndex >= banners.length - 1}
-        >
-          <ChevronRight className="h-5 w-5" />
-        </button>
-      </div>
+      {currentIndex < banners.length - 1 && (
+        <div className="absolute -right-4 top-1/2 -translate-y-1/2">
+          <button
+            onClick={() => scrollBanners("right")}
+            className="bg-white rounded-full p-2 shadow-md hover:shadow-lg transition-all duration-200 hover:scale-110"
+          >
+            <ChevronRight className="h-5 w-5" />
+          </button>
+        </div>
+      )}
 
       {/* Indicator dots
       <div className="flex justify-center space-x-2 mt-4">

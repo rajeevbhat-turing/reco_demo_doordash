@@ -36,11 +36,27 @@ export default function AuthenticationModal({
   const [lastVerifiedUser, setLastVerifiedUser] = useState<User | null>(null);
   const [signUpUser, setSignUpUser] = useState<User | null>(null);
 
+  const dialogRef = useRef<HTMLDivElement>(null);
+
   // Disable body scroll and limit height when modal is open
   useEffect(() => {
+    const handleEscapeKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        handleClose();
+      }
+    };
+
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dialogRef.current && !dialogRef.current.contains(event.target as Node)) {
+        handleClose();
+      }
+    };
+
     if (defaultMode) {
       document.body.style.overflow = 'hidden';
       document.body.style.height = '100vh';
+      document.addEventListener('keydown', handleEscapeKey);
+      document.addEventListener('mousedown', handleClickOutside);
     } else {
       document.body.style.overflow = 'auto';
       document.body.style.height = 'auto';
@@ -49,6 +65,8 @@ export default function AuthenticationModal({
     return () => {
       document.body.style.overflow = 'auto';
       document.body.style.height = 'auto';
+      document.removeEventListener('keydown', handleEscapeKey);
+      document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [defaultMode]);
 
@@ -245,7 +263,7 @@ export default function AuthenticationModal({
       <div className="absolute inset-0 bg-black/50" onClick={handleClose} />
 
       {/* Modal */}
-      <div className="relative bg-white rounded-xl shadow-xl max-w-xl w-full mx-4 h-[90vh] overflow-hidden">
+      <div ref={dialogRef} className="relative bg-white rounded-xl shadow-xl max-w-xl w-full mx-4 h-[90vh] overflow-hidden">
         {/* Fixed Header - appears when original header is out of view */}
         {showFixedHeader && (
           <div className="absolute top-0 left-0 right-0 z-30 bg-white border-b border-gray-300 p-4 rounded-t-xl">

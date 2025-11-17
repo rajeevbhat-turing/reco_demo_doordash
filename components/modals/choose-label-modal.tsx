@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { X } from "lucide-react"
 
 interface ChooseLabelModalProps {
@@ -18,6 +18,7 @@ export default function ChooseLabelModal({
 }: ChooseLabelModalProps) {
   const labels = ["None", "Home", "Work", "Custom"]
   const standardLabels = ["none", "home", "work"]
+  const dialogRef = useRef<HTMLDivElement>(null)
   
   // Determine initial selected label and custom text
   const normalizedLabel = currentLabel?.toLowerCase() || "none"
@@ -37,6 +38,34 @@ export default function ChooseLabelModal({
     }
   }, [isOpen, currentLabel])
 
+  useEffect(() => {
+    const handleEscapeKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        onClose()
+      }
+    }
+
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dialogRef.current && !dialogRef.current.contains(event.target as Node)) {
+        onClose()
+      }
+    }
+
+    if (isOpen) {
+      document.body.style.overflow = "hidden"
+      document.addEventListener("keydown", handleEscapeKey)
+      document.addEventListener("mousedown", handleClickOutside)
+    } else {
+      document.body.style.overflow = "auto"
+    }
+
+    return () => {
+      document.body.style.overflow = "auto"
+      document.removeEventListener("keydown", handleEscapeKey)
+      document.removeEventListener("mousedown", handleClickOutside)
+    }
+  }, [isOpen, onClose])
+
   if (!isOpen) return null
 
   const handleSave = () => {
@@ -49,7 +78,7 @@ export default function ChooseLabelModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="relative bg-white rounded-2xl w-full max-w-sm mx-4">
+      <div ref={dialogRef} className="relative bg-white rounded-2xl w-full max-w-sm mx-4">
         <div className="p-6">
           {/* Close button */}
           <button 

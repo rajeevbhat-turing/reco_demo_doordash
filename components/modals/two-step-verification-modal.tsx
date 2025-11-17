@@ -25,16 +25,39 @@ export default function TwoStepVerificationModal({
   const [attemptsLeft, setAttemptsLeft] = useState(5);
   const [showTooManyAttempts, setShowTooManyAttempts] = useState(false);
 
+  const dialogRef = useRef<HTMLDivElement>(null);
+
   // Disable body scroll and limit height when modal is open
   useEffect(() => {
+    const handleEscapeKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        onClose();
+      }
+    };
+
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dialogRef.current && !dialogRef.current.contains(event.target as Node)) {
+        onClose();
+      }
+    };
+
     if (isOpen) {
       document.body.style.overflow = 'hidden';
       document.body.style.height = '100vh';
+      document.addEventListener('keydown', handleEscapeKey);
+      document.addEventListener('mousedown', handleClickOutside);
     } else {
       document.body.style.overflow = 'auto';
       document.body.style.height = 'auto';
     }
-  }, [isOpen]);
+
+    return () => {
+      document.body.style.overflow = 'auto';
+      document.body.style.height = 'auto';
+      document.removeEventListener('keydown', handleEscapeKey);
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isOpen, onClose]);
   
   // Handles code input changes
   const handleCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -145,6 +168,7 @@ export default function TwoStepVerificationModal({
 
   return (
     <div
+      ref={dialogRef}
       className="fixed inset-0 z-[150] flex items-center justify-center"
       style={{ backgroundColor: 'rgba(0, 0, 0, 0.65)' }}
       onClick={handleOutsideClick}

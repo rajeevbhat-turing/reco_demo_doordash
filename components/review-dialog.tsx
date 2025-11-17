@@ -72,7 +72,23 @@ export default function ReviewDialog({
         }
       };
 
+      // Add event listener for outside click
+      const handleClickOutside = (event: MouseEvent) => {
+        if (dialogRef.current && !dialogRef.current.contains(event.target as Node)) {
+          if (showSuccess) {
+            // If showing success, call handleDone to trigger onSubmit callback
+            if (onSubmit) {
+              onSubmit(submittedRating, submittedText);
+            }
+            onClose();
+          } else {
+            onClose();
+          }
+        }
+      };
+
       document.addEventListener('keydown', handleEscapeKey);
+      document.addEventListener('mousedown', handleClickOutside);
 
       // Focus the textarea when the dialog opens (if not showing success)
       if (textareaRef.current && !showSuccess) {
@@ -84,6 +100,7 @@ export default function ReviewDialog({
       return () => {
         document.body.style.overflow = 'auto';
         document.removeEventListener('keydown', handleEscapeKey);
+        document.removeEventListener('mousedown', handleClickOutside);
       };
     }
   }, [isOpen, onClose, showSuccess, onSubmit, submittedRating, submittedText]);

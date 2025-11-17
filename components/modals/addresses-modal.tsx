@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState, useMemo, useEffect, useRef } from "react"
 import { X, Search, Plus, Edit2, ChevronRight } from "lucide-react"
 import { Address } from "@/lib/types/user-types"
 import addressesData from "@/data/addresses.json"
@@ -29,6 +29,35 @@ export default function AddressesModal({
   onAddLabel
 }: AddressesModalProps) {
   const [searchQuery, setSearchQuery] = useState("")
+  const dialogRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const handleEscapeKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        onClose()
+      }
+    }
+
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dialogRef.current && !dialogRef.current.contains(event.target as Node)) {
+        onClose()
+      }
+    }
+
+    if (isOpen) {
+      document.body.style.overflow = "hidden"
+      document.addEventListener("keydown", handleEscapeKey)
+      document.addEventListener("mousedown", handleClickOutside)
+    } else {
+      document.body.style.overflow = "auto"
+    }
+
+    return () => {
+      document.body.style.overflow = "auto"
+      document.removeEventListener("keydown", handleEscapeKey)
+      document.removeEventListener("mousedown", handleClickOutside)
+    }
+  }, [isOpen, onClose])
 
   // Filter searchable addresses from JSON data (API simulation) - for dropdown
   const filteredSearchAddresses = useMemo(() => {
@@ -48,7 +77,7 @@ export default function AddressesModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="relative bg-white rounded-2xl w-full max-w-md mx-4">
+      <div ref={dialogRef} className="relative bg-white rounded-2xl w-full max-w-md mx-4">
         <div className="p-6 pb-0">
           {/* Close button */}
           <button 

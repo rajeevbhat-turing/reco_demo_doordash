@@ -155,6 +155,8 @@ export async function GET(
       distance: distance > 0 ? `${distance.toFixed(1)} mi` : 'Distance unavailable',
       time: deliveryTime,
       deliveryFee: restaurantRaw.is_free_delivery === 1 ? '$0.00' : `$${(restaurantRaw.min_delivery_fee / 100).toFixed(2)}`,
+      isFreeDelivery: restaurantRaw.is_free_delivery === 1,
+      minDeliveryFee: restaurantRaw.min_delivery_fee,
       priceRange: '$'.repeat(restaurantRaw.price_range),
       cuisine: restaurantRaw.cuisine,
       dashPass: restaurantRaw.dash_pass === 1,
