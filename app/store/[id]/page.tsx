@@ -8,7 +8,7 @@ import { useRestaurants } from '@/lib/hooks/use-restaurants';
 import { useRestaurant } from '@/lib/hooks/use-restaurant';
 import { useRestaurantMenu } from '@/lib/hooks/use-restaurant-menu';
 import { useUserStore } from '@/store/user-store';
-import { getRestaurantById } from '@/lib/utils/restaurant-utils';
+import { getRestaurantById, calculateDeliveryTime } from '@/lib/utils/restaurant-utils';
 import { useCartStore } from '@/store/cart-store';
 import { useAppStore } from '@/store/app-store';
 import { useVerifierStore } from '@/store/verifier-store';
@@ -89,6 +89,7 @@ export default function RestaurantPage() {
   const menuRef = useRef<HTMLDivElement>(null);
   const menuContainerRef = useRef<HTMLDivElement>(null);
   const sectionRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
+  const isProgrammaticScroll = useRef(false);
   // Get both setCategory and addItem from the cart store
   const cartStore = useCartStore();
   const { addItem } = useCartStore();
@@ -275,13 +276,13 @@ export default function RestaurantPage() {
     if (menuRef.current && menuContainerRef.current) {
       const rect = menuContainerRef.current.getBoundingClientRect();
       setMenuTopPosition(rect.top + window.scrollY);
-      
+
       // Check initial sticky state
       const containerRect = menuContainerRef.current.getBoundingClientRect();
       const shouldBeSticky = containerRect.top <= 0;
       setIsStickyHeader(shouldBeSticky);
       setIsStickyMenu(shouldBeSticky);
-      
+
       // Measure menu container dimensions when not sticky
       if (!shouldBeSticky) {
         setMenuContainerDimensions({
@@ -329,13 +330,13 @@ export default function RestaurantPage() {
         const scrollY = window.scrollY;
         const headerOffset = 64; // Main header height
         const stickyThreshold = menuTopPosition - headerOffset;
-        
+
         // Add small threshold to prevent rapid toggling (hysteresis)
         const shouldBeSticky = scrollY >= stickyThreshold && menuTopPosition > 0;
-        
+
         setIsStickyHeader(shouldBeSticky);
         setIsStickyMenu(shouldBeSticky);
-        
+
         // Measure dimensions when not sticky (only when transitioning or already not sticky)
         if (!shouldBeSticky && menuContainerRef.current) {
           const containerRect = menuContainerRef.current.getBoundingClientRect();
@@ -349,16 +350,46 @@ export default function RestaurantPage() {
         }
 
         // Find which section is currently in view
-        const sectionPositions = Object.entries(sectionRefs.current).map(([category, ref]) => {
-          const position = ref?.getBoundingClientRect().top || 0;
-          return { category, position };
-        });
+        const sectionPositions = Object.entries(sectionRefs.current)
+          .filter(([_, ref]) => ref !== null)
+          .map(([category, ref]) => {
+            const rect = ref!.getBoundingClientRect();
+            const position = rect.top;
+            const bottom = rect.bottom;
+            return { category, position, bottom, ref: ref! };
+          });
 
-        const currentSection = sectionPositions
-          .filter(section => section.position <= 200)
-          .sort((a, b) => b.position - a.position)[0];
+        // Check if we're near the bottom of the page
+        const windowHeight = window.innerHeight;
+        const documentHeight = document.documentElement.scrollHeight;
+        const scrollTop = window.scrollY;
+        const isNearBottom = scrollTop + windowHeight >= documentHeight - 100; // 100px threshold
 
-        if (currentSection && currentSection.category !== activeCategory) {
+        let currentSection;
+
+        if (isNearBottom && sectionPositions.length > 0) {
+          // If near bottom, prioritize the last section
+          const sortedSections = sectionPositions.sort((a, b) => {
+            const aTop = a.ref.offsetTop;
+            const bTop = b.ref.offsetTop;
+            return bTop - aTop; // Sort by position descending (last section first)
+          });
+          currentSection = sortedSections[0];
+        } else {
+          // Normal logic: find section that's in view near the top
+          const visibleSections = sectionPositions.filter(section => section.position <= 200);
+          if (visibleSections.length > 0) {
+            // Sort by position descending and pick the one closest to top
+            currentSection = visibleSections.sort((a, b) => b.position - a.position)[0];
+          }
+        }
+
+        // Only update active category if not programmatically scrolling
+        if (
+          !isProgrammaticScroll.current &&
+          currentSection &&
+          currentSection.category !== activeCategory
+        ) {
           setActiveCategory(currentSection.category);
         }
 
@@ -376,9 +407,23 @@ export default function RestaurantPage() {
     setActiveCategory(category);
     const section = sectionRefs.current[category];
     if (section) {
-      const offset = 80;
-      const top = section.getBoundingClientRect().top + window.scrollY - offset;
-      window.scrollTo({ top, behavior: 'smooth' });
+      // Disable scroll-based highlight changes during programmatic scroll
+      isProgrammaticScroll.current = true;
+
+      // Use smaller offset for Featured Items, larger offset for other sections to prevent title from being hidden due to sticky header
+      const offset = category === 'Featured Items' ? 100 : 140;
+      // Use getBoundingClientRect for accurate position relative to viewport
+      const rect = section.getBoundingClientRect();
+      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+      const top = rect.top + scrollTop - offset;
+
+      window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
+
+      // Re-enable scroll-based highlight changes after scroll animation completes
+      // Smooth scroll typically takes ~500-1000ms, using 1200ms to be safe
+      setTimeout(() => {
+        isProgrammaticScroll.current = false;
+      }, 1200);
     }
   };
 
@@ -413,6 +458,18 @@ export default function RestaurantPage() {
     }
     return deal.title;
   };
+
+  // Calculate delivery time from restaurant distance
+  const deliveryTime = useMemo(() => {
+    if (!restaurant?.distance) return ''; // Fallback if no distance
+    // Parse distance string like "2.5 mi" to get numeric value
+    const distanceMatch = restaurant.distance.match(/([\d.]+)/);
+    if (distanceMatch) {
+      const distanceInMiles = parseFloat(distanceMatch[1]);
+      return calculateDeliveryTime(distanceInMiles);
+    }
+    return ''; // Fallback
+  }, [restaurant?.distance]);
 
   if (!restaurant) {
     return <div className="p-8 text-center">Loading...</div>;
@@ -561,7 +618,10 @@ export default function RestaurantPage() {
       <div className="max-w-7xl mx-auto px-4">
         {/* Sticky Header - appears when scrolling past menuContainerRef */}
         {isStickyHeader && (
-          <div ref={stickyHeaderRef} className="fixed top-[64px] left-[220px] right-4 bg-white z-50 border-b border-gray-200">
+          <div
+            ref={stickyHeaderRef}
+            className="fixed top-[64px] left-[220px] right-4 bg-white z-30 border-b border-gray-200"
+          >
             <div className="max-w-7xl mx-auto px-4 py-4">
               <div className="flex flex-wrap justify-between items-center">
                 <div className="flex-1">
@@ -588,7 +648,7 @@ export default function RestaurantPage() {
                     )}
                     {restaurant.cuisine && (
                       <>
-                        {(restaurant?.rating && restaurant.rating != 0) && (
+                        {restaurant?.rating && restaurant.rating != 0 && (
                           <span className="text-gray-400 mx-1">•</span>
                         )}
                         <span>{restaurant.cuisine}</span>
@@ -617,7 +677,11 @@ export default function RestaurantPage() {
           </div>
         )}
         {/* Original Header */}
-        <div className={`flex flex-wrap justify-between mt-6 mb-6 ${isStickyHeader ? 'opacity-0' : ''}`}>
+        <div
+          className={`flex flex-wrap justify-between mt-6 mb-6 ${
+            isStickyHeader ? 'opacity-0' : ''
+          }`}
+        >
           <h1
             style={{
               fontFamily:
@@ -710,9 +774,7 @@ export default function RestaurantPage() {
             <div
               ref={menuContainerRef}
               className={`mt-4 ${
-                isStickyMenu
-                  ? 'fixed bg-white z-40 border-r border-gray-200'
-                  : 'relative'
+                isStickyMenu ? 'fixed bg-white z-40 border-r border-gray-200' : 'relative'
               }`}
               style={
                 isStickyMenu && stickyHeaderHeight > 0 && menuContainerDimensions.width > 0
@@ -814,15 +876,17 @@ export default function RestaurantPage() {
               </div>
             </div>
             {/* Spacer to prevent layout shift when menu becomes sticky */}
-            {isStickyMenu && menuContainerDimensions.height > 0 && menuContainerDimensions.width > 0 && (
-              <div
-                style={{
-                  width: `${menuContainerDimensions.width}px`,
-                  height: `${menuContainerDimensions.height}px`,
-                  marginTop: '1rem',
-                }}
-              />
-            )}
+            {isStickyMenu &&
+              menuContainerDimensions.height > 0 &&
+              menuContainerDimensions.width > 0 && (
+                <div
+                  style={{
+                    width: `${menuContainerDimensions.width}px`,
+                    height: `${menuContainerDimensions.height}px`,
+                    marginTop: '1rem',
+                  }}
+                />
+              )}
           </div>
 
           <div className="w-full md:w-3/4 md:pl-4">
@@ -910,7 +974,7 @@ export default function RestaurantPage() {
                       </div>
                     </div>
                     <div className="text-right">
-                      <div className="font-medium">21 min</div>
+                      <div className="font-medium">{deliveryTime}</div>
                       <div className="text-sm text-gray-600">delivery time</div>
                     </div>
                   </div>
@@ -926,7 +990,12 @@ export default function RestaurantPage() {
                 <Deals restaurantId={id} />
 
                 {/* Featured Items */}
-                <div className="mt-4">
+                <div
+                  ref={el => {
+                    sectionRefs.current['Featured Items'] = el;
+                  }}
+                  className="mt-4"
+                >
                   <div className="flex items-center justify-between mb-4">
                     <h2 className="text-xl font-bold">Featured Items</h2>
                     <div className="flex">
