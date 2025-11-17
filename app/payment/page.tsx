@@ -163,9 +163,7 @@ export default function PaymentPage() {
 
           {/* Add New Payment Method */}
           <div className="px-6 py-6">
-            <h3 className="text-sm font-medium text-gray-900 mb-3">
-              Add New Payment Method
-            </h3>
+            <h3 className="text-sm font-medium text-gray-900 mb-3">Add New Payment Method</h3>
             <div className="space-y-3">
               {/* Credit/Debit Card Option */}
               <div
@@ -218,7 +216,7 @@ export default function PaymentPage() {
               <span className="text-xl font-semibold text-gray-900">$0.00</span>
               <span className="text-sm text-gray-600">Can be applied only in United States</span>
             </div>
-            <hr className='my-4 mx-3' />
+            <hr className="my-4 mx-3" />
             <p className="text-sm text-gray-600">
               Your credits will be automatically applied to your next order
             </p>
@@ -226,13 +224,11 @@ export default function PaymentPage() {
         </div>
 
         {/* Payment Frequency Section */}
-        <div className="border border-gray-200 rounded-lg overflow-hidden mt-6">
-          {/* Payment Frequency Header */}
+        {/* <div className="border border-gray-200 rounded-lg overflow-hidden mt-6">
           <div className="px-6 py-4 border-b border-gray-200">
             <h1 className="text-xl font-semibold text-gray-900">Payment frequency</h1>
           </div>
 
-          {/* Payment Frequency Option */}
           <div
             className="flex items-center justify-between px-6 py-5 cursor-pointer hover:bg-gray-50 transition-colors"
             onClick={() => setShowPaymentFrequencyModal(true)}
@@ -244,15 +240,10 @@ export default function PaymentPage() {
               stroke="currentColor"
               viewBox="0 0 24 24"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M9 5l7 7-7 7"
-              />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
             </svg>
           </div>
-        </div>
+        </div> */}
       </div>
 
       {/* Add Card Modal */}
@@ -263,12 +254,12 @@ export default function PaymentPage() {
       />
 
       {/* Payment Frequency Modal */}
-      <PaymentFrequencyModal
+      {/* <PaymentFrequencyModal
         isOpen={showPaymentFrequencyModal}
         onClose={() => setShowPaymentFrequencyModal(false)}
         onSave={handleSavePaymentFrequency}
         currentFrequency={paymentFrequency}
-      />
+      /> */}
     </div>
   );
 }
