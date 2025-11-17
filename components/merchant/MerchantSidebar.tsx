@@ -5,9 +5,15 @@ import { usePathname } from "next/navigation"
 import { ChevronDown, Home, BarChart2, FileText, Users, Star, MessageSquare, Receipt, Target, Utensils, Clock, DollarSign, Truck, Settings, UserCog, PlusSquare } from "lucide-react"
 import { DashDoorLogoMark, DashDoorWordMark } from "@/components/common/Icons"
 
-function NavItem({ href, label, active, icon: Icon }: { href: string; label: string; active: boolean; icon: React.ComponentType<any> }) {
+function NavItem({ href, label, active, icon: Icon, highlightRed }: { href: string; label: string; active: boolean; icon: React.ComponentType<any>; highlightRed?: boolean }) {
+  const activeClass = highlightRed && active 
+    ? "bg-red-50 text-red-700 border-l-2 border-red-600" 
+    : active 
+    ? "bg-gray-100 text-gray-900" 
+    : "text-gray-700"
+  
   return (
-    <Link href={href} className={`flex items-center px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-100 ${active ? "bg-gray-100 text-gray-900" : "text-gray-700"}`}>
+    <Link href={href} className={`flex items-center px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-100 ${activeClass}`}>
       <Icon className="h-4 w-4 mr-2" />
       <span>{label}</span>
     </Link>
@@ -47,7 +53,7 @@ export default function MerchantSidebar() {
           </div>
           <NavItem href="/merchant/orders" label="Orders" icon={Receipt} active={pathname?.startsWith("/merchant/orders") || false} />
           <NavItem href="#" label="Marketing" icon={Target} active={false} />
-          <NavItem href="#" label="Menu" icon={Utensils} active={false} />
+          <NavItem href="/merchant/menu" label="Menu" icon={Utensils} active={pathname?.startsWith("/merchant/menu") || false} highlightRed={true} />
           <NavItem href="#" label="Store Availability" icon={Clock} active={false} />
           <NavItem href="#" label="Financials" icon={DollarSign} active={false} />
           <div className="mt-2 ml-2 space-y-1">
