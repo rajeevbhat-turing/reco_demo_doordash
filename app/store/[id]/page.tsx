@@ -8,7 +8,7 @@ import { useRestaurants } from '@/lib/hooks/use-restaurants';
 import { useRestaurant } from '@/lib/hooks/use-restaurant';
 import { useRestaurantMenu } from '@/lib/hooks/use-restaurant-menu';
 import { useUserStore } from '@/store/user-store';
-import { getRestaurantById } from '@/lib/utils/restaurant-utils';
+import { getRestaurantById, calculateDeliveryTime, parseDistance } from '@/lib/utils/restaurant-utils';
 import { useCartStore } from '@/store/cart-store';
 import { useAppStore } from '@/store/app-store';
 import { useVerifierStore } from '@/store/verifier-store';
@@ -269,6 +269,26 @@ export default function RestaurantPage() {
       clearCurrentStore();
     };
   }, [id, restaurantInNearby, specificRestaurant, menuData]);
+
+  // Use restaurant.time (already calculated by API using calculateDeliveryTime) or calculate from distance
+  const deliveryTime = useMemo(() => {
+    if (!restaurant) return '21-31 min'; // Fallback with range
+    
+    // If restaurant already has calculated time from API, use it (should be in range format)
+    if (restaurant.time) {
+      return restaurant.time;
+    }
+    
+    // If restaurant has distance but no time, calculate it using calculateDeliveryTime
+    if (restaurant.distance) {
+      const distance = parseDistance(restaurant.distance);
+      if (distance > 0) {
+        return calculateDeliveryTime(distance, 'standard');
+      }
+    }
+    
+    return '21-31 min'; // Final fallback with range
+  }, [restaurant]);
 
   // Save the initial position of the menu after the component mounts
   useEffect(() => {
@@ -910,7 +930,7 @@ export default function RestaurantPage() {
                       </div>
                     </div>
                     <div className="text-right">
-                      <div className="font-medium">21 min</div>
+                      <div className="font-medium">{deliveryTime}</div>
                       <div className="text-sm text-gray-600">delivery time</div>
                     </div>
                   </div>

@@ -40,7 +40,7 @@ import OTPVerificationModal from '@/components/modals/otp-verification-modal';
 import CountryCodeDropdown from '@/components/modals/country-code-dropdown';
 import PromoCodeModal from '@/components/modals/promocode-modal';
 import { useRestaurants } from '@/lib/hooks/use-restaurants';
-import { getRestaurantById } from '@/lib/utils/restaurant-utils';
+import { getRestaurantById, calculateDeliveryTime, parseDistance } from '@/lib/utils/restaurant-utils';
 import { useDeals } from '@/lib/hooks/use-deals';
 import { Deal } from '@/types/deal-types';
 import { stores } from '@/data/store-data';
@@ -198,6 +198,22 @@ export default function CheckoutPage() {
   // Check if restaurant is outside delivery area
   const isOutsideDeliveryArea = currentCategory === 'restaurant' && currentStoreId && restaurants && !restaurants.some((r: any) => r.id === currentStoreId);
 
+  // Get restaurant and calculate distance for delivery time calculation
+  const currentRestaurant = useMemo(() => {
+    if (currentCategory === 'restaurant' && currentStoreId && restaurants) {
+      return getRestaurantById(restaurants, currentStoreId);
+    }
+    return null;
+  }, [currentCategory, currentStoreId, restaurants]);
+
+  const restaurantDistance = useMemo(() => {
+    if (currentRestaurant?.distance) {
+      return parseDistance(currentRestaurant.distance);
+    }
+    // Default to 2 miles if distance not available
+    return 2;
+  }, [currentRestaurant]);
+
   const [showOrderConfirmation, setShowOrderConfirmation] = useState(false);
   const [orderId, setOrderId] = useState('');
   const [showScheduleModal, setShowScheduleModal] = useState(false);
@@ -210,6 +226,24 @@ export default function CheckoutPage() {
   const [selectedDeliveryOption, setSelectedDeliveryOption] = useState('standard');
   const [deliveryTime, setDeliveryTime] = useState('45-60 min');
   const [extraDeliveryFee, setExtraDeliveryFee] = useState(0);
+
+  // Update delivery time when restaurant distance or delivery option changes
+  useEffect(() => {
+    if (restaurantDistance > 0) {
+      if (selectedDeliveryOption === 'standard') {
+        setDeliveryTime(calculateDeliveryTime(restaurantDistance, 'standard'));
+      } else if (selectedDeliveryOption === 'express') {
+        setDeliveryTime(calculateDeliveryTime(restaurantDistance, 'express'));
+      }
+    } else {
+      // Fallback to default times if distance not available
+      if (selectedDeliveryOption === 'standard') {
+        setDeliveryTime('45-60 min');
+      } else if (selectedDeliveryOption === 'express') {
+        setDeliveryTime('25-35 min');
+      }
+    }
+  }, [restaurantDistance, selectedDeliveryOption]);
 
   // Payment details
   const [showExpandedPayment, setShowExpandedPayment] = useState(false);
@@ -555,11 +589,15 @@ export default function CheckoutPage() {
 
     switch (optionId) {
       case 'express':
-        setDeliveryTime('25-35 min');
+        setDeliveryTime(restaurantDistance > 0 
+          ? calculateDeliveryTime(restaurantDistance, 'express')
+          : '25-35 min');
         setExtraDeliveryFee(2.99);
         break;
       case 'standard':
-        setDeliveryTime('45-60 min');
+        setDeliveryTime(restaurantDistance > 0 
+          ? calculateDeliveryTime(restaurantDistance, 'standard')
+          : '45-60 min');
         setExtraDeliveryFee(0);
         break;
       case 'schedule':
@@ -568,7 +606,9 @@ export default function CheckoutPage() {
         setShowScheduleModal(true);
         break;
       default:
-        setDeliveryTime('45-60 min');
+        setDeliveryTime(restaurantDistance > 0 
+          ? calculateDeliveryTime(restaurantDistance, 'standard')
+          : '45-60 min');
         setExtraDeliveryFee(0);
     }
   };
@@ -583,7 +623,9 @@ export default function CheckoutPage() {
     if (timeType === 'asap' || !timeSlot) {
       // Revert to standard option
       setSelectedDeliveryOption('standard');
-      setDeliveryTime('45-60 min');
+      setDeliveryTime(restaurantDistance > 0 
+        ? calculateDeliveryTime(restaurantDistance, 'standard')
+        : '45-60 min');
       setExtraDeliveryFee(0);
       setScheduledDate(null);
       setScheduledTimeSlot('');
@@ -805,18 +847,22 @@ export default function CheckoutPage() {
     return subtotal + serviceFee + deliveryFee + extraDeliveryFee - discountAmount;
   };
 
-  const deliveryOptions = [
+  const deliveryOptions = useMemo(() => [
     {
       id: 'express',
       name: 'Express',
-      time: '25-35 min',
+      time: restaurantDistance > 0 
+        ? calculateDeliveryTime(restaurantDistance, 'express')
+        : '25-35 min',
       description: 'Direct to you',
       price: 2.99,
     },
     {
       id: 'standard',
       name: 'Standard',
-      time: '45-60 min',
+      time: restaurantDistance > 0 
+        ? calculateDeliveryTime(restaurantDistance, 'standard')
+        : '45-60 min',
       description: '',
       price: 0,
     },
@@ -827,7 +873,7 @@ export default function CheckoutPage() {
       description: '',
       price: 0,
     },
-  ];
+  ], [restaurantDistance]);
 
   // Get the selected payment method object
   const selectedPaymentMethodObj = savedPaymentMethods.find(m => m.id === selectedPaymentMethod);
@@ -1779,7 +1825,9 @@ export default function CheckoutPage() {
           // Revert to standard if modal is closed without selection
           if (selectedDeliveryOption === 'schedule' && !scheduledTimeSlot) {
             setSelectedDeliveryOption('standard');
-            setDeliveryTime('45-60 min');
+            setDeliveryTime(restaurantDistance > 0 
+              ? calculateDeliveryTime(restaurantDistance, 'standard')
+              : '45-60 min');
           }
         }}
         onSelectTime={handleScheduleTimeSelect}
