@@ -14,7 +14,7 @@ export default function PromoBanners() {
     {
       id: 'philz-coffee',
       title: 'Handcrafted specialty coffee at Philz Coffee',
-      description: 'Discover our signature blends, cold brews, and custom coffee creations made just for you.',
+      description: 'asdasdasasdasdasd our signature blends, cold brews, and custom coffee creations made just for you.',
       href: '/store/philz-coffee',
       buttonText: 'Order now',
       buttonColor: 'bg-amber-600',
@@ -124,7 +124,7 @@ export default function PromoBanners() {
       {/* Scrollable Banner Container */}
       <div
         ref={scrollContainerRef}
-        className="flex gap-4 overflow-x-auto scrollbar-hide pb-4"
+        className="flex gap-4 overflow-x-auto scrollbar-hide"
         style={{ scrollSnapType: "x mandatory" }}
         onMouseEnter={() => setIsAutoScrolling(false)}
         onMouseLeave={() => setIsAutoScrolling(true)}
@@ -172,7 +172,7 @@ export default function PromoBanners() {
       </div>
 
       {/* Navigation buttons */}
-      <div className="absolute left-4 top-1/2 transform -translate-y-1/2">
+      <div className="absolute -left-4 top-1/2 -translate-y-1/2">
         <button
           onClick={() => scrollBanners("left")}
           className="bg-white rounded-full p-2 shadow-md hover:shadow-lg transition-all duration-200 hover:scale-110"
@@ -182,7 +182,7 @@ export default function PromoBanners() {
         </button>
       </div>
 
-      <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
+      <div className="absolute -right-4 top-1/2 -translate-y-1/2">
         <button
           onClick={() => scrollBanners("right")}
           className="bg-white rounded-full p-2 shadow-md hover:shadow-lg transition-all duration-200 hover:scale-110"
@@ -192,7 +192,7 @@ export default function PromoBanners() {
         </button>
       </div>
 
-      {/* Indicator dots */}
+      {/* Indicator dots
       <div className="flex justify-center space-x-2 mt-4">
         {banners.map((_, index) => (
           <button
@@ -214,7 +214,7 @@ export default function PromoBanners() {
             }`}
           />
         ))}
-      </div>
+      </div> */}
     </div>
   )
 }

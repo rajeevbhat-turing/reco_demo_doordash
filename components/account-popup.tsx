@@ -78,7 +78,7 @@ export default function AccountPopup({ isOpen, onClose, anchorElement }: Account
     <div
       id="account-popup"
       ref={popupRef}
-      className="fixed z-50 translate-y-[-250px] w-[380px] h-[580px] bg-white rounded-lg shadow-lg border border-gray-200 overflow-hidden flex flex-col"
+      className="fixed z-50 translate-y-[-150px] w-[380px] max-h-[580px] bg-white rounded-lg shadow-lg border border-gray-200 overflow-hidden flex flex-col"
       onClick={e => e.stopPropagation()}
     >
       {/* Fixed Header */}
@@ -107,7 +107,7 @@ export default function AccountPopup({ isOpen, onClose, anchorElement }: Account
         </div>
 
         {/* DashPass Promotion */}
-        <div className="bg-[#ecfcfc] px-4 py-[18px] flex justify-between">
+        {/* <div className="bg-[#ecfcfc] px-4 py-[18px] flex justify-between">
           <div className="flex">
             <div className="flex-shrink-0 w-[26px] h-[26px] mr-3">
               <svg
@@ -130,9 +130,9 @@ export default function AccountPopup({ isOpen, onClose, anchorElement }: Account
             </div>
           </div>
           <ArrowRight className="h-6 w-6 text-[#00838a] flex-shrink-0" />
-        </div>
+        </div> */}
 
-        <div>
+        {/* <div>
           <div className="pl-[14px] hover:bg-gray-100 cursor-pointer">
             <div className="flex items-center gap-3 border-b border-gray-200 py-[10px] pr-[14px]">
               <svg
@@ -151,7 +151,6 @@ export default function AccountPopup({ isOpen, onClose, anchorElement }: Account
             </div>
           </div>
 
-          {/* Saved Stores */}
           <div className="pl-[14px] hover:bg-gray-100 cursor-pointer">
             <div className="flex items-center gap-3 border-b border-gray-200 py-[10px] pr-[14px]">
               <Heart className="h-[22px] w-[22px] text-[#191919ff]" />
@@ -159,7 +158,6 @@ export default function AccountPopup({ isOpen, onClose, anchorElement }: Account
             </div>
           </div>
 
-          {/* My Rewards */}
           <div className="pl-[14px] hover:bg-gray-100 cursor-pointer">
             <div className="flex items-center gap-3 border-b border-gray-200 py-[10px] pr-[14px]">
               <div className="h-[22px] w-[22px] text-[#191919ff]">
@@ -169,7 +167,6 @@ export default function AccountPopup({ isOpen, onClose, anchorElement }: Account
             </div>
           </div>
 
-          {/* Velocity Frequent Flyer */}
           <div className="pl-[14px] hover:bg-gray-100 cursor-pointer">
             <div className="flex items-center gap-3 border-b border-gray-200 py-[10px] pr-[14px]">
               <Plane className="h-[22px] w-[22px] text-[#191919ff]" />
@@ -185,7 +182,6 @@ export default function AccountPopup({ isOpen, onClose, anchorElement }: Account
             </div>
           </div>
 
-          {/* Help */}
           <div className="pl-[14px] hover:bg-gray-100 cursor-pointer">
             <div className="flex items-center gap-3 border-b border-gray-200 py-[10px] pr-[14px]">
               <MessageIcon height={22} width={22} />
@@ -193,7 +189,6 @@ export default function AccountPopup({ isOpen, onClose, anchorElement }: Account
             </div>
           </div>
 
-          {/* Gift Card */}
           <div className="pl-[14px] hover:bg-gray-100 cursor-pointer">
             <div className="flex items-center gap-3 border-b border-gray-200 py-[10px] pr-[14px]">
               <GiftIcon height={22} width={22} />
@@ -201,14 +196,13 @@ export default function AccountPopup({ isOpen, onClose, anchorElement }: Account
             </div>
           </div>
 
-          {/* Get $1 in Credits */}
           <div className="pl-[14px] hover:bg-red-100 bg-red-50 cursor-pointer">
             <div className="flex items-center gap-3 border-b border-gray-200 py-[10px] pr-[14px]">
               <UsersRound className="h-[22px] w-[22px] text-[#191919ff]" />
               <span className="text-[15px] font-medium text-[#191919ff]">Get $1 in Credits</span>
             </div>
           </div>
-        </div>
+        </div> */}
 
         <div className="w-full h-2 bg-gray-100 border-y border-gray-200" />
 
@@ -226,9 +220,9 @@ export default function AccountPopup({ isOpen, onClose, anchorElement }: Account
           </Link>
 
           {/* Payment */}
-          <div className="hover:bg-gray-100 cursor-pointer px-4 py-[10px]">
+          {/* <div className="hover:bg-gray-100 cursor-pointer px-4 py-[10px]">
             <div className="text-[15px] font-medium text-[#191919ff]">Payment</div>
-          </div>
+          </div> */}
 
           {/* Language */}
           <div className="px-4 py-[10px]">

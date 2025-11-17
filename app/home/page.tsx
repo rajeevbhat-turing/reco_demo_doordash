@@ -474,7 +474,7 @@ export default function Home() {
         filters={filters}
       />
       <div className="mt-4">
-        {/* {!hasActiveFilters() && <PromoBanners />} */}
+        {!hasActiveFilters() && <PromoBanners />}
 
         {/* Show filtered results when filters are active */}
         {hasActiveFilters() ? (
