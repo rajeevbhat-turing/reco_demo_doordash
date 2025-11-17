@@ -59,7 +59,7 @@ export default function MerchantSidebar() {
           <NavItem href="#" label="Settings" icon={Settings} active={false} />
           <div className="mt-2 ml-2 space-y-1">
             <NavItem href="#" label="Store Info" icon={FileText} active={false} />
-            <NavItem href="#" label="Users / Roles" icon={UserCog} active={false} />
+            <NavItem href="/merchant/users" label="Manage Users" icon={UserCog} active={pathname?.startsWith("/merchant/users") || false} />
           </div>
           <NavItem href="#" label="Add Solutions" icon={PlusSquare} active={false} />
         </div>
