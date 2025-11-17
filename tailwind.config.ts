@@ -10,6 +10,29 @@ const config = {
     "*.{js,ts,jsx,tsx,mdx}",
   ],
   prefix: "",
+  safelist: [
+    // Gradient utilities
+    {
+      pattern: /bg-gradient-to-(r|l|t|b|tr|tl|br|bl)/,
+    },
+    {
+      pattern: /from-(green|teal|blue|purple|pink|red|yellow|orange|indigo|gray|slate|zinc|neutral|stone|amber|lime|emerald|cyan|sky|violet|fuchsia|rose)-(50|100|200|300|400|500|600|700|800|900|950)/,
+    },
+    {
+      pattern: /to-(green|teal|blue|purple|pink|red|yellow|orange|indigo|gray|slate|zinc|neutral|stone|amber|lime|emerald|cyan|sky|violet|fuchsia|rose)-(50|100|200|300|400|500|600|700|800|900|950)/,
+    },
+    {
+      pattern: /via-(green|teal|blue|purple|pink|red|yellow|orange|indigo|gray|slate|zinc|neutral|stone|amber|lime|emerald|cyan|sky|violet|fuchsia|rose)-(50|100|200|300|400|500|600|700|800|900|950)/,
+    },
+    // Background colors (for button_color)
+    {
+      pattern: /bg-(green|teal|blue|purple|pink|red|yellow|orange|indigo|gray|slate|zinc|neutral|stone|amber|lime|emerald|cyan|sky|violet|fuchsia|rose|white|black)-(50|100|200|300|400|500|600|700|800|900|950)?/,
+    },
+    // Text colors (for button_color)
+    {
+      pattern: /text-(green|teal|blue|purple|pink|red|yellow|orange|indigo|gray|slate|zinc|neutral|stone|amber|lime|emerald|cyan|sky|violet|fuchsia|rose|white|black)-(50|100|200|300|400|500|600|700|800|900|950)?/,
+    },
+  ],
   theme: {
     container: {
       center: true,
