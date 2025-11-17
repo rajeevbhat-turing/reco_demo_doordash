@@ -65,4 +65,5 @@ export interface User {
   addresses: Address[];
   is_restricted: boolean;
   reviews: string[];
+  paymentFrequency?: 'once-a-day' | 'after-each-order';
 }

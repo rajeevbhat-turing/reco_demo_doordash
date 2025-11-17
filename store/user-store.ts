@@ -34,7 +34,9 @@ interface UserStore {
   // Payment Method Actions
   addPaymentMethod: (method: Omit<PaymentMethod, 'id' | 'type' | 'lastFour'>) => PaymentMethod;
   removePaymentMethod: (id: string) => void;
+  setDefaultPaymentMethod: (id: string) => void;
   getPaymentMethods: () => PaymentMethod[];
+  setPaymentFrequency: (frequency: 'once-a-day' | 'after-each-order') => void;
 
   // Address Actions
   addAddress: (address: Omit<Address, 'id'>) => Address;
@@ -388,6 +390,62 @@ export const useUserStore = create<UserStore>()(
 
         getPaymentMethods: () => {
           return get().currentUser?.paymentMethods || [];
+        },
+
+        setDefaultPaymentMethod: (id) => {
+          const state = get();
+          if (!state.currentUser) {
+            return;
+          }
+
+          // Set all payment methods to default: false, except the selected one
+          const updatedPaymentMethods = state.currentUser.paymentMethods.map((method) => ({
+            ...method,
+            default: method.id === id,
+          }));
+
+          const updatedUser = {
+            ...state.currentUser,
+            paymentMethods: updatedPaymentMethods,
+          };
+
+          // Ensure current user is in users array
+          const userExists = state.users.some(u => u.id === state.currentUser!.id);
+          const updatedUsers = userExists
+            ? state.users.map(user =>
+                user.id === state.currentUser!.id ? updatedUser : user
+              )
+            : [...state.users, updatedUser];
+
+          set({
+            currentUser: updatedUser,
+            users: updatedUsers
+          });
+        },
+
+        setPaymentFrequency: (frequency) => {
+          const state = get();
+          if (!state.currentUser) {
+            return;
+          }
+
+          const updatedUser = {
+            ...state.currentUser,
+            paymentFrequency: frequency,
+          };
+
+          // Ensure current user is in users array
+          const userExists = state.users.some(u => u.id === state.currentUser!.id);
+          const updatedUsers = userExists
+            ? state.users.map(user =>
+                user.id === state.currentUser!.id ? updatedUser : user
+              )
+            : [...state.users, updatedUser];
+
+          set({
+            currentUser: updatedUser,
+            users: updatedUsers
+          });
         },
 
         // Address Actions
