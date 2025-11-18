@@ -73,7 +73,22 @@ export default function OrderReceiptPage() {
   const discount = (order as any).discount || 0;
   const deliveryFee = order.deliveryFee ?? order.deliveryOption?.extraFee ?? 0.99;
   const serviceFee = order.serviceFee || 3.0;
-  const estimatedTax = 0.42; // TODO: Calculate from order
+  
+  // Calculate tax from order data if available, otherwise calculate it
+  let estimatedTax = 0;
+  if ((order as any).estimatedTax !== undefined) {
+    estimatedTax = (order as any).estimatedTax;
+  } else if (order.deliveryAddress) {
+    // Calculate tax based on delivery address
+    const { calculateEstimatedTax } = require('@/lib/utils/fee-calculator');
+    estimatedTax = calculateEstimatedTax(
+      subtotal,
+      deliveryFee,
+      serviceFee,
+      order.deliveryAddress
+    );
+  }
+  
   const dasherTip = order.tipAmount ?? 1.5;
 
   // Calculate original total (before discounts) and final total

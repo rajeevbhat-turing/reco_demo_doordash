@@ -99,6 +99,37 @@ interface CartStore {
   getDeliveryFee: (storeId?: string, category?: CartCategory) => number
   getTotal: (storeId?: string, category?: CartCategory) => number
   getTotalPrice: (storeId?: string, category?: CartCategory) => string
+  
+  // Enhanced fee calculations with dynamic factors
+  getDynamicDeliveryFee: (
+    storeId?: string,
+    category?: CartCategory,
+    options?: {
+      restaurant?: any;
+      customerAddress?: any;
+      distance?: number;
+      appliedDeal?: any;
+      deliveryOption?: 'standard' | 'express' | 'schedule';
+    }
+  ) => number
+  getDynamicServiceFee: (
+    storeId?: string,
+    category?: CartCategory,
+    options?: {
+      restaurant?: any;
+      distance?: number;
+    }
+  ) => number
+  getEstimatedTax: (
+    storeId?: string,
+    category?: CartCategory,
+    options?: {
+      customerAddress?: any;
+      subtotal?: number;
+      deliveryFee?: number;
+      serviceFee?: number;
+    }
+  ) => number
 
   // Reorder methods
   startReorder: (items: CartItem[], category: CartCategory, storeId: string, storeName: string) => void
@@ -658,6 +689,102 @@ export const useCartStore = create<CartStore>()(
         getTotal: (storeId?, category?) => {
           const { getSubtotal, getServiceFee, getDeliveryFee } = get()
           return getSubtotal(storeId, category) + getServiceFee(storeId, category) + getDeliveryFee(storeId, category)
+        },
+
+        // Enhanced dynamic fee calculations
+        getDynamicDeliveryFee: (storeId?, category?, options?) => {
+          try {
+            const { calculateFees } = require('@/lib/utils/fee-calculator')
+            const { getSubtotal } = get()
+            const currentCategory = category || get().getCurrentCategory()
+            const subtotal = getSubtotal(storeId, category)
+            
+            // If no options provided, fall back to old calculation
+            if (!options || !options.restaurant) {
+              return get().getDeliveryFee(storeId, category)
+            }
+            
+            const feeResult = calculateFees({
+              subtotal,
+              distance: options.distance || 0,
+              restaurant: options.restaurant,
+              customerAddress: options.customerAddress,
+              appliedDeal: options.appliedDeal,
+              deliveryOption: options.deliveryOption || 'standard',
+              category: currentCategory,
+            })
+            
+            return feeResult.deliveryFee
+          } catch (error) {
+            // Fallback to old calculation on error
+            return get().getDeliveryFee(storeId, category)
+          }
+        },
+
+        getDynamicServiceFee: (storeId?, category?, options?) => {
+          try {
+            const { calculateFees } = require('@/lib/utils/fee-calculator')
+            const { getSubtotal } = get()
+            const currentCategory = category || get().getCurrentCategory()
+            const subtotal = getSubtotal(storeId, category)
+            
+            // If no options provided, fall back to old calculation
+            if (!options || !options.restaurant) {
+              return get().getServiceFee(storeId, category)
+            }
+            
+            const feeResult = calculateFees({
+              subtotal,
+              distance: options.distance || 0,
+              restaurant: options.restaurant,
+              customerAddress: null,
+              appliedDeal: null,
+              deliveryOption: 'standard',
+              category: currentCategory,
+            })
+            
+            return feeResult.serviceFee
+          } catch (error) {
+            // Fallback to old calculation on error
+            return get().getServiceFee(storeId, category)
+          }
+        },
+
+        getEstimatedTax: (storeId?, category?, options?) => {
+          try {
+            const { calculateFees } = require('@/lib/utils/fee-calculator')
+            const { getSubtotal, getServiceFee, getDeliveryFee } = get()
+            const currentCategory = category || get().getCurrentCategory()
+            
+            // If no options provided, use basic calculation
+            if (!options || !options.customerAddress) {
+              const subtotal = options?.subtotal || getSubtotal(storeId, category)
+              const deliveryFee = options?.deliveryFee || getDeliveryFee(storeId, category)
+              const serviceFee = options?.serviceFee || getServiceFee(storeId, category)
+              
+              const { calculateEstimatedTax } = require('@/lib/utils/fee-calculator')
+              return calculateEstimatedTax(subtotal, deliveryFee, serviceFee, null)
+            }
+            
+            const subtotal = options.subtotal || getSubtotal(storeId, category)
+            const deliveryFee = options.deliveryFee || getDeliveryFee(storeId, category)
+            const serviceFee = options.serviceFee || getServiceFee(storeId, category)
+            
+            const feeResult = calculateFees({
+              subtotal,
+              distance: 0,
+              restaurant: null,
+              customerAddress: options.customerAddress,
+              appliedDeal: null,
+              deliveryOption: 'standard',
+              category: currentCategory,
+            })
+            
+            return feeResult.estimatedTax
+          } catch (error) {
+            // Fallback to default tax calculation
+            return 0
+          }
         },
 
         // Get formatted total price (for cart display - only subtotal, no fees) for specific cart or all carts

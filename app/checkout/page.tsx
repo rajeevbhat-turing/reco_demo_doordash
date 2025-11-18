@@ -41,6 +41,8 @@ import CountryCodeDropdown from '@/components/modals/country-code-dropdown';
 import PromoCodeModal from '@/components/modals/promocode-modal';
 import { useRestaurants } from '@/lib/hooks/use-restaurants';
 import { getRestaurantById, calculateDeliveryTime, parseDistance } from '@/lib/utils/restaurant-utils';
+import { calculateDistance } from '@/lib/utils/distance-utils';
+import { calculateFees, calculateEstimatedTax } from '@/lib/utils/fee-calculator';
 import { useDeals } from '@/lib/hooks/use-deals';
 import { Deal } from '@/types/deal-types';
 import { stores } from '@/data/store-data';
@@ -191,8 +193,6 @@ export default function CheckoutPage() {
   }, [cartId, appliedDeal, items, getFreeItemIds]);
 
   const subtotal = baseSubtotal - freeItemDiscount;
-  const serviceFee = getServiceFee(currentStoreId || undefined, currentCategory || undefined);
-  const deliveryFee = getDeliveryFee(currentStoreId || undefined, currentCategory || undefined);
   const totalItems = getTotalItems(currentStoreId || undefined, currentCategory || undefined);
 
   // Check if restaurant is outside delivery area
@@ -225,7 +225,7 @@ export default function CheckoutPage() {
   // Delivery options
   const [selectedDeliveryOption, setSelectedDeliveryOption] = useState('standard');
   const [deliveryTime, setDeliveryTime] = useState('45-60 min');
-  const [extraDeliveryFee, setExtraDeliveryFee] = useState(0);
+  // Note: extraDeliveryFee is now handled in dynamic fee calculation
 
   // Update delivery time when restaurant distance or delivery option changes
   useEffect(() => {
@@ -272,6 +272,91 @@ export default function CheckoutPage() {
     const defaultAddress = addresses.find(a => a.default);
     return defaultAddress?.id || addresses[0]?.id || '';
   });
+
+  // Get the selected address object (needed for fee calculation)
+  const selectedAddress = addresses.find(a => a.id === selectedAddressId) || tempAddress || null;
+
+  // Calculate actual distance from customer address to restaurant
+  const deliveryDistance = useMemo(() => {
+    if (!selectedAddress || !currentRestaurant) {
+      // Fallback to restaurant distance from API if available
+      return restaurantDistance;
+    }
+    
+    // Calculate actual distance using coordinates
+    try {
+      return calculateDistance(
+        selectedAddress.lat,
+        selectedAddress.lng,
+        currentRestaurant.lat,
+        currentRestaurant.lng
+      );
+    } catch (error) {
+      // Fallback to restaurant distance
+      return restaurantDistance;
+    }
+  }, [selectedAddress, currentRestaurant, restaurantDistance]);
+
+  // Calculate dynamic fees
+  const fees = useMemo(() => {
+    // If we don't have restaurant data, fall back to old calculation
+    if (!currentRestaurant || !selectedAddress) {
+      const oldServiceFee = getServiceFee(currentStoreId || undefined, currentCategory || undefined);
+      const oldDeliveryFee = getDeliveryFee(currentStoreId || undefined, currentCategory || undefined);
+      
+      // Calculate tax even in fallback mode
+      const fallbackTax = calculateEstimatedTax(
+        subtotal,
+        oldDeliveryFee,
+        oldServiceFee,
+        selectedAddress || tempAddress || null
+      );
+      
+      return {
+        deliveryFee: oldDeliveryFee,
+        serviceFee: oldServiceFee,
+        estimatedTax: fallbackTax,
+        total: subtotal + oldServiceFee + oldDeliveryFee + fallbackTax,
+      };
+    }
+
+    // Use dynamic fee calculator
+    const feeResult = calculateFees({
+      subtotal,
+      distance: deliveryDistance,
+      restaurant: {
+        id: currentRestaurant.id,
+        isFreeDelivery: currentRestaurant.isFreeDelivery,
+        minDeliveryFee: currentRestaurant.minDeliveryFee,
+        dashPass: currentRestaurant.dashPass,
+      },
+      customerAddress: selectedAddress,
+      appliedDeal: appliedDeal || null,
+      deliveryOption: selectedDeliveryOption as 'standard' | 'express' | 'schedule',
+      category: currentCategory || 'restaurant',
+    });
+
+    return {
+      deliveryFee: feeResult.deliveryFee,
+      serviceFee: feeResult.serviceFee,
+      estimatedTax: feeResult.estimatedTax,
+      total: feeResult.total,
+    };
+  }, [
+    subtotal,
+    deliveryDistance,
+    currentRestaurant,
+    selectedAddress,
+    appliedDeal,
+    selectedDeliveryOption,
+    currentCategory,
+    currentStoreId,
+  ]);
+
+  // Extract fees for backward compatibility
+  const serviceFee = fees.serviceFee;
+  const deliveryFee = fees.deliveryFee;
+  const estimatedTax = fees.estimatedTax;
 
   // Address details modal state
   const [showAddressDetailsModal, setShowAddressDetailsModal] = useState(false);
@@ -321,11 +406,20 @@ export default function CheckoutPage() {
     }
   }, [savedPaymentMethods, selectedPaymentMethod]);
 
-  // Redirect if cart not found
+  // Redirect if cart not found or empty
   useEffect(() => {
-    if (isClient && !currentCart && categoryParam && storeIdParam) {
-      // Cart was deleted or doesn't exist
-      router.push('/home');
+    if (isClient) {
+      // If no cart params, redirect to home
+      if (!categoryParam || !storeIdParam) {
+        router.push('/home');
+        return;
+      }
+      
+      // If cart doesn't exist or is empty, redirect to home
+      if (!currentCart || !currentCart.items || currentCart.items.length === 0) {
+        router.push('/home');
+        return;
+      }
     }
   }, [isClient, currentCart, categoryParam, storeIdParam, router]);
 
@@ -442,7 +536,7 @@ export default function CheckoutPage() {
       tipAmount: 0,
       subtotal: subtotal,
       serviceFee: serviceFee,
-      deliveryFee: deliveryFee + extraDeliveryFee,
+      deliveryFee: deliveryFee, // Already includes express surcharge if applicable
       discount: discountAmount,
       total: getTotalWithExtras(),
       totalAmount: getTotalWithExtras(), // Old field name for backward compatibility
@@ -592,24 +686,20 @@ export default function CheckoutPage() {
         setDeliveryTime(restaurantDistance > 0 
           ? calculateDeliveryTime(restaurantDistance, 'express')
           : '25-35 min');
-        setExtraDeliveryFee(2.99);
         break;
       case 'standard':
         setDeliveryTime(restaurantDistance > 0 
           ? calculateDeliveryTime(restaurantDistance, 'standard')
           : '45-60 min');
-        setExtraDeliveryFee(0);
         break;
       case 'schedule':
         setDeliveryTime('Choose a time');
-        setExtraDeliveryFee(0);
         setShowScheduleModal(true);
         break;
       default:
         setDeliveryTime(restaurantDistance > 0 
           ? calculateDeliveryTime(restaurantDistance, 'standard')
           : '45-60 min');
-        setExtraDeliveryFee(0);
     }
   };
 
@@ -626,7 +716,6 @@ export default function CheckoutPage() {
       setDeliveryTime(restaurantDistance > 0 
         ? calculateDeliveryTime(restaurantDistance, 'standard')
         : '45-60 min');
-      setExtraDeliveryFee(0);
       setScheduledDate(null);
       setScheduledTimeSlot('');
     } else {
@@ -642,7 +731,6 @@ export default function CheckoutPage() {
             .padStart(2, '0')}`
         : date;
       setDeliveryTime(`${formattedDate} at ${timeSlotDisplay || timeSlot}`);
-      setExtraDeliveryFee(0);
 
       // Record for verifiers
       recordDeliveryTimeSelection(
@@ -843,8 +931,9 @@ export default function CheckoutPage() {
   }, [appliedDeal, cartId, baseSubtotal]);
 
   const getTotalWithExtras = () => {
-    // Use the adjusted subtotal (which already has freeItemDiscount subtracted
-    return subtotal + serviceFee + deliveryFee + extraDeliveryFee - discountAmount;
+    // Use the adjusted subtotal (which already has freeItemDiscount subtracted)
+    // All fees (delivery, service, tax) are calculated dynamically
+    return subtotal + serviceFee + deliveryFee + estimatedTax - discountAmount;
   };
 
   const deliveryOptions = useMemo(() => [
@@ -877,9 +966,6 @@ export default function CheckoutPage() {
 
   // Get the selected payment method object
   const selectedPaymentMethodObj = savedPaymentMethods.find(m => m.id === selectedPaymentMethod);
-
-  // Get the selected address object
-  const selectedAddress = addresses.find(a => a.id === selectedAddressId);
 
   // Handler for successful authentication
   const handleAuthSuccess = () => {
@@ -1769,7 +1855,7 @@ export default function CheckoutPage() {
                     </svg>
                   </div>
                   <span className="text-gray-900 font-medium">
-                    ${(deliveryFee + extraDeliveryFee).toFixed(2)}
+                    ${deliveryFee.toFixed(2)}
                   </span>
                 </div>
                 <div className="flex justify-between text-sm">
@@ -1790,7 +1876,7 @@ export default function CheckoutPage() {
                       />
                     </svg>
                   </div>
-                  <span className="text-gray-900 font-medium">${serviceFee.toFixed(2)}</span>
+                  <span className="text-gray-900 font-medium">${(serviceFee + estimatedTax).toFixed(2)}</span>
                 </div>
                 {discountAmount > 0 && (
                   <div className="flex justify-between text-sm">
@@ -1803,7 +1889,7 @@ export default function CheckoutPage() {
                   <div className="flex items-center gap-2">
                     {(discountAmount > 0 || freeItemDiscount > 0) && (
                       <span className="text-[#606060ff] line-through text-sm">
-                        ${(baseSubtotal + serviceFee + deliveryFee + extraDeliveryFee).toFixed(2)}
+                        ${(baseSubtotal + serviceFee + deliveryFee + estimatedTax).toFixed(2)}
                       </span>
                     )}
                     <span className="text-[#eb1700ff] font-bold text-lg">
