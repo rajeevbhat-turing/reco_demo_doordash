@@ -1,12 +1,16 @@
 "use client"
 
+import { useState } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { ChevronDown, Home, BarChart2, FileText, Users, Star, MessageSquare, Receipt, Target, Utensils, Clock, DollarSign, Truck, Settings, UserCog, PlusSquare } from "lucide-react"
+import { ChevronDown, ChevronRight, Home, BarChart2, FileText, Users, Star, MessageSquare, Receipt, Target, Utensils, Clock, DollarSign, Truck, Settings, UserCog, PlusSquare, CreditCard, Building2, Mail, Plug } from "lucide-react"
 import { DashDoorLogoMark, DashDoorWordMark } from "@/components/common/Icons"
+import StoreSelector from "./StoreSelector"
 
-function NavItem({ href, label, active, icon: Icon, highlightRed }: { href: string; label: string; active: boolean; icon: React.ComponentType<any>; highlightRed?: boolean }) {
-  const activeClass = highlightRed && active 
+function NavItem({ href, label, active, icon: Icon, highlightRed, highlightOrange }: { href: string; label: string; active: boolean; icon: React.ComponentType<any>; highlightRed?: boolean; highlightOrange?: boolean }) {
+  const activeClass = highlightOrange && active 
+    ? "bg-orange-50 text-orange-900" 
+    : highlightRed && active 
     ? "bg-red-50 text-red-700 border-l-2 border-red-600" 
     : active 
     ? "bg-gray-100 text-gray-900" 
@@ -22,34 +26,78 @@ function NavItem({ href, label, active, icon: Icon, highlightRed }: { href: stri
 
 export default function MerchantSidebar() {
   const pathname = usePathname()
+  const [settingsExpanded, setSettingsExpanded] = useState(true) // Settings expanded by default
+  const [customersExpanded, setCustomersExpanded] = useState(true) // Customers expanded by default
+  const [isStoreSelectorOpen, setIsStoreSelectorOpen] = useState(false)
+  const [selectedStoreId, setSelectedStoreId] = useState<string | undefined>(undefined)
+  const isSettingsPage = pathname?.startsWith("/merchant/settings") || false
+  const isCustomersPage = pathname?.startsWith("/merchant/customers") || false
 
   return (
-    <aside className="fixed left-0 top-0 bottom-0 w-[240px] border-r border-gray-200 bg-white overflow-y-auto">
-      <div className="px-4 pt-4 pb-3">
-        <div className="flex items-center mb-4">
-          <DashDoorLogoMark />
-          <div className="ml-1">
-            <DashDoorWordMark />
+    <>
+      <aside className="fixed left-0 top-0 bottom-0 w-[240px] border-r border-gray-200 bg-white overflow-y-auto">
+        <div className="px-4 pt-4 pb-3">
+          <div className="flex items-center mb-4">
+            <DashDoorLogoMark />
+            <div className="ml-1">
+              <DashDoorWordMark />
+            </div>
           </div>
+          <div className="text-xs text-gray-500 uppercase tracking-wide mb-1">Merchant</div>
+          <button
+            onClick={() => setIsStoreSelectorOpen(true)}
+            className="w-full flex items-center justify-between px-3 py-2 bg-gray-50 border border-gray-200 rounded-md cursor-pointer hover:bg-gray-100 transition-colors"
+          >
+            <div>
+              <div className="text-sm font-medium">Frosty Bear test NCP 🐻🍯</div>
+              <div className="text-xs text-gray-500">Store</div>
+            </div>
+            <ChevronDown className="h-4 w-4 text-gray-500" />
+          </button>
         </div>
-        <div className="text-xs text-gray-500 uppercase tracking-wide mb-1">Merchant</div>
-        <div className="flex items-center justify-between px-3 py-2 bg-gray-50 border border-gray-200 rounded-md cursor-pointer">
-          <div>
-            <div className="text-sm font-medium">Frosty Bear test NCP 🐻🍯</div>
-            <div className="text-xs text-gray-500">Store</div>
-          </div>
-          <ChevronDown className="h-4 w-4 text-gray-500" />
-        </div>
-      </div>
 
       <nav className="px-2 space-y-6">
         <div>
           <NavItem href="/merchant" label="Home" icon={Home} active={pathname === "/merchant"} />
           <NavItem href="#" label="Insights" icon={BarChart2} active={false} />
-          <NavItem href="#" label="Reports" icon={FileText} active={false} />
-          <div className="mt-2 ml-2 space-y-1">
-            <NavItem href="#" label="Customer Insights" icon={Users} active={false} />
-            <NavItem href="#" label="Ratings & Reviews" icon={Star} active={false} />
+          <NavItem href="/merchant/reports" label="Reports" icon={FileText} active={pathname?.startsWith("/merchant/reports") || false} />
+          
+          {/* Customers Section */}
+          <div>
+            <button
+              onClick={() => setCustomersExpanded(!customersExpanded)}
+              className={`w-full flex items-center justify-between px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-100 ${
+                isCustomersPage ? "bg-gray-100 text-gray-900" : "text-gray-700"
+              }`}
+            >
+              <div className="flex items-center">
+                <Users className="h-4 w-4 mr-2" />
+                <span>Customers</span>
+              </div>
+              {customersExpanded ? (
+                <ChevronDown className="h-4 w-4" />
+              ) : (
+                <ChevronRight className="h-4 w-4" />
+              )}
+            </button>
+            {customersExpanded && (
+              <div className="mt-1 ml-2 space-y-1">
+                <NavItem 
+                  href="/merchant/customers/insights" 
+                  label="Customer Insights" 
+                  icon={Users} 
+                  active={pathname === "/merchant/customers/insights"}
+                  highlightRed={pathname === "/merchant/customers/insights"}
+                />
+                <NavItem 
+                  href="/merchant/customers/ratings-reviews" 
+                  label="Ratings & Reviews" 
+                  icon={Star} 
+                  active={pathname === "/merchant/customers/ratings-reviews"}
+                  highlightRed={pathname === "/merchant/customers/ratings-reviews"}
+                />
+              </div>
+            )}
           </div>
           <NavItem href="/merchant/orders" label="Orders" icon={Receipt} active={pathname?.startsWith("/merchant/orders") || false} />
           <NavItem href="#" label="Marketing" icon={Target} active={false} />
@@ -62,11 +110,44 @@ export default function MerchantSidebar() {
             <NavItem href="#" label="Statements" icon={FileText} active={false} />
           </div>
           <NavItem href="#" label="Request a Delivery" icon={Truck} active={false} />
-          <NavItem href="#" label="Settings" icon={Settings} active={false} />
-          <div className="mt-2 ml-2 space-y-1">
-            <NavItem href="#" label="Store Info" icon={FileText} active={false} />
-            <NavItem href="/merchant/users" label="Manage Users" icon={UserCog} active={pathname?.startsWith("/merchant/users") || false} />
+          
+          {/* Settings with expandable submenu */}
+          <div>
+            <button
+              onClick={() => setSettingsExpanded(!settingsExpanded)}
+              className={`w-full flex items-center justify-between px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-100 ${
+                isSettingsPage ? "bg-gray-100 text-gray-900" : "text-gray-700"
+              }`}
+            >
+              <div className="flex items-center">
+                <Settings className="h-4 w-4 mr-2" />
+                <span>Settings</span>
+              </div>
+              {settingsExpanded ? (
+                <ChevronDown className="h-4 w-4" />
+              ) : (
+                <ChevronRight className="h-4 w-4" />
+              )}
+            </button>
+            {settingsExpanded && (
+              <div className="mt-1 ml-2 space-y-1">
+                <NavItem href="/merchant/settings/account" label="Account settings" icon={UserCog} active={pathname === "/merchant/settings/account"} />
+                <NavItem href="/merchant/settings/pricing" label="Pricing plans" icon={DollarSign} active={pathname === "/merchant/settings/pricing"} />
+                <NavItem href="/merchant/settings/store" label="Store settings" icon={Building2} active={pathname === "/merchant/settings/store"} />
+                <NavItem href="/merchant/users" label="Manage Users" icon={Users} active={pathname?.startsWith("/merchant/users") || false} />
+                <NavItem href="/merchant/settings/communications" label="Store communications" icon={Mail} active={pathname === "/merchant/settings/communications"} />
+                <NavItem 
+                  href="/merchant/settings/bank-account" 
+                  label="Bank account" 
+                  icon={CreditCard} 
+                  active={pathname === "/merchant/settings/bank-account"}
+                  highlightOrange={pathname === "/merchant/settings/bank-account"}
+                />
+                <NavItem href="/merchant/settings/integrations" label="Integrations" icon={Plug} active={pathname === "/merchant/settings/integrations"} />
+              </div>
+            )}
           </div>
+          
           <NavItem href="#" label="Add Solutions" icon={PlusSquare} active={false} />
         </div>
 
@@ -79,7 +160,16 @@ export default function MerchantSidebar() {
           <div className="mt-3 text-sm text-gray-600">Kyle McCarney ▾</div>
         </div>
       </nav>
-    </aside>
+      </aside>
+
+      {/* Store Selector */}
+      <StoreSelector
+        isOpen={isStoreSelectorOpen}
+        onClose={() => setIsStoreSelectorOpen(false)}
+        selectedStoreId={selectedStoreId}
+        onSelectStore={setSelectedStoreId}
+      />
+    </>
   )
 }
 
