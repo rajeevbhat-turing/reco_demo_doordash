@@ -3,26 +3,11 @@ import { useState } from "react"
 import MerchantLayout from "@/components/merchant/MerchantLayout"
 import { Search, ChevronRight, Plus } from "lucide-react"
 import { Input } from "@/components/ui/input"
-
-interface User {
-  role: string
-  email: string
-  firstName: string
-  lastName: string
-}
+import { useMerchantUsersStore } from "@/store/merchant-users-store"
 
 export default function MerchantUsersPage() {
   const [searchValue, setSearchValue] = useState("")
-  
-  // Sample user data - matching the screenshot
-  const users: User[] = [
-    {
-      role: "Business Admin",
-      email: "kkapoor@bombaycafe.com",
-      firstName: "Kira",
-      lastName: "Kapoor"
-    }
-  ]
+  const { users } = useMerchantUsersStore()
 
   const filteredUsers = users.filter(user => 
     user.email.toLowerCase().includes(searchValue.toLowerCase()) ||
