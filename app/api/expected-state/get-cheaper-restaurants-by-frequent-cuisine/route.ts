@@ -82,14 +82,16 @@ export async function GET(request: NextRequest) {
       cuisineCount[cuisine] = (cuisineCount[cuisine] || 0) + 1;
     }
 
-    console.log("============ cuisineCount", cuisineCount)
-
     const mostFrequentCuisine = Object.entries(cuisineCount)
       .sort(([, a], [, b]) => b - a)[0][0];
 
     // Step 3: Find the lowest delivery fee from orders of that cuisine
     const cuisineOrders = orders.filter(order => order.cuisine === mostFrequentCuisine);
     const lowestDeliveryFee = Math.min(...cuisineOrders.map(order => order.delivery_fee));
+    
+    // Find the restaurant with the lowest delivery fee from previous orders
+    const orderWithLowestFee = cuisineOrders.find(order => order.delivery_fee === lowestDeliveryFee);
+    const restaurantIdWithLowestFee = orderWithLowestFee?.store_id;
 
     // Step 4: Get all restaurants of that cuisine
     const allRestaurants = await db.query<any>(
@@ -113,9 +115,6 @@ export async function GET(request: NextRequest) {
       [mostFrequentCuisine]
     );
 
-    console.log("======================")
-    console.log(lowestDeliveryFee)
-
     // Step 4.5: Filter restaurants by distance (within radius)
     const restaurantsWithinRadius = allRestaurants.filter(restaurant => {
       const distance = calculateDistance(
@@ -127,13 +126,18 @@ export async function GET(request: NextRequest) {
       return distance <= maxRadius;
     });
 
-    console.log("======================")
-    console.log(restaurantsWithinRadius)
-
     // Step 5: Filter restaurants with lower min_delivery_fee
-    const cheaperRestaurants = restaurantsWithinRadius
+    let cheaperRestaurants = restaurantsWithinRadius
       .filter(r => r.min_delivery_fee < lowestDeliveryFee)
       .sort((a, b) => a.min_delivery_fee - b.min_delivery_fee);
+
+    // If no cheaper restaurants found, return the restaurant with lowest delivery fee from previous orders
+    if (cheaperRestaurants.length === 0 && restaurantIdWithLowestFee) {
+      const fallbackRestaurant = allRestaurants.find(r => r.id === restaurantIdWithLowestFee);
+      if (fallbackRestaurant) {
+        cheaperRestaurants = [fallbackRestaurant];
+      }
+    }
 
     return NextResponse.json({
       success: true,
