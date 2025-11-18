@@ -111,8 +111,12 @@ export default function SignUp({
       newErrors.email = 'Please enter a valid email';
     }
 
-    if (!formData.mobileNumber.trim()) {
-      newErrors.mobileNumber = 'Mobile number is required';
+    if (!formData.mobileNumber.trim() || formData.mobileNumber.length <= 1) {
+      newErrors.mobileNumber = 'Phone number is required';
+    } else if (!/^\d+$/.test(formData.mobileNumber)) {
+      newErrors.mobileNumber = 'Phone number is required';
+    } else if (![8, 9, 10, 11].includes(formData.mobileNumber.length)) {
+      newErrors.mobileNumber = 'Phone number is invalid';
     }
 
     if (!formData.password.trim()) {
