@@ -64,14 +64,12 @@ export async function GET(request: NextRequest) {
     if (!orders || orders.length === 0) {
       return NextResponse.json({
         success: true,
-        data: {
-          restaurants: [],
-          metadata: {
-            reason: 'No previous orders found',
-            mostFrequentCuisine: null,
-            lowestDeliveryFee: null,
-          }
-        },
+        data: null,
+        metadata: {
+          reason: 'No previous orders found',
+          mostFrequentCuisine: null,
+          lowestDeliveryFee: null,
+        }
       });
     }
 
@@ -126,28 +124,39 @@ export async function GET(request: NextRequest) {
       return distance <= maxRadius;
     });
 
-    // Step 5: Filter restaurants with lower min_delivery_fee
-    let cheaperRestaurants = restaurantsWithinRadius
+    // Step 5: Find restaurant with lowest min_delivery_fee (cheaper than historical lowest)
+    const cheaperRestaurants = restaurantsWithinRadius
       .filter(r => r.min_delivery_fee < lowestDeliveryFee)
       .sort((a, b) => a.min_delivery_fee - b.min_delivery_fee);
 
+    let selectedRestaurant = cheaperRestaurants[0];
+
     // If no cheaper restaurants found, return the restaurant with lowest delivery fee from previous orders
-    if (cheaperRestaurants.length === 0 && restaurantIdWithLowestFee) {
-      const fallbackRestaurant = allRestaurants.find(r => r.id === restaurantIdWithLowestFee);
-      if (fallbackRestaurant) {
-        cheaperRestaurants = [fallbackRestaurant];
-      }
+    if (!selectedRestaurant && restaurantIdWithLowestFee) {
+      selectedRestaurant = allRestaurants.find(r => r.id === restaurantIdWithLowestFee);
+    }
+
+    if (!selectedRestaurant) {
+      return NextResponse.json({
+        success: true,
+        data: null,
+        metadata: {
+          reason: 'No restaurant found',
+          mostFrequentCuisine,
+          lowestDeliveryFee,
+        }
+      });
     }
 
     return NextResponse.json({
       success: true,
       data: {
-        restaurants: cheaperRestaurants.map(r => ({
-          id: String(r.id),
-          name: r.name,
-          cuisine: r.cuisine,
-          minDeliveryFee: r.min_delivery_fee,
-        }))
+        restaurant: {
+          id: String(selectedRestaurant.id),
+          name: selectedRestaurant.name,
+          cuisine: selectedRestaurant.cuisine,
+          minDeliveryFee: selectedRestaurant.min_delivery_fee,
+        }
       },
     });
 
