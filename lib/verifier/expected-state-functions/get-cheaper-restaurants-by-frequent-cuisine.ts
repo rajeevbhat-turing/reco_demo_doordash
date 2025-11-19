@@ -17,7 +17,7 @@ export interface Restaurant {
 }
 
 export interface CheaperRestaurantsResult {
-  restaurants: Restaurant[];
+  restaurant: Restaurant | null;
   metadata: {
     mostFrequentCuisine: string | null;
     lowestDeliveryFee: number | null;
@@ -28,15 +28,16 @@ export interface CheaperRestaurantsResult {
 }
 
 /**
- * Get restaurants with cheaper delivery fees than user's most frequent cuisine orders
+ * Get the restaurant with the lowest delivery fee for user's most frequent cuisine
  * 
  * Algorithm:
  * 1. Fetch all previous orders for the logged in user
  * 2. Find the most frequently ordered cuisine
  * 3. Within that cuisine's orders, find the lowest delivery fee
- * 4. Return all restaurants for that cuisine with lower calculated delivery fees (within radius)
+ * 4. Return the restaurant for that cuisine with the lowest delivery fee (within radius)
+ * 5. If no cheaper restaurant found, return the restaurant from previous orders with lowest fee
  * 
- * @returns Object containing matching restaurants and metadata
+ * @returns Object containing the restaurant with lowest delivery fee and metadata
  */
 export async function get_cheaper_restaurants_by_frequent_cuisine(): Promise<CheaperRestaurantsResult | null> {
   const userStore = useUserStore.getState();
