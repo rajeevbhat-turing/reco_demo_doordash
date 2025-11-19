@@ -1,24 +1,130 @@
 'use client'
 import { useState, useEffect } from "react"
 import MerchantLayout from "@/components/merchant/MerchantLayout"
-import { Search, RefreshCw, Calendar, ChevronLeft, ChevronRight, ChevronDown } from "lucide-react"
+import { Search, RefreshCw, ChevronLeft, ChevronRight, ChevronDown } from "lucide-react"
 import { Input } from "@/components/ui/input"
+
+interface Order {
+  customer: string
+  orderId: string
+  orderStatus: "Completed" | "Cancelled - Not Paid"
+  date: string
+  time: string
+  fulfillmentStatus: string
+  fulfillmentType: "Customer pickup" | "DoorDash delivery"
+  channel: string
+  subtotal: string
+}
+
+const mockOrders: Order[] = [
+  {
+    customer: "TAS-USER T",
+    orderId: "87C36FE2",
+    orderStatus: "Completed",
+    date: "4/22/2025",
+    time: "11:18 PM",
+    fulfillmentStatus: "",
+    fulfillmentType: "Customer pickup",
+    channel: "Marketplace",
+    subtotal: "$5.00"
+  },
+  {
+    customer: "TAS-USER T",
+    orderId: "0A5B17C0",
+    orderStatus: "Completed",
+    date: "4/22/2025",
+    time: "11:12 PM",
+    fulfillmentStatus: "",
+    fulfillmentType: "Customer pickup",
+    channel: "Marketplace",
+    subtotal: "$5.87"
+  },
+  {
+    customer: "Alina Y",
+    orderId: "A2BD9D59",
+    orderStatus: "Cancelled - Not Paid",
+    date: "4/22/2025",
+    time: "5:34 PM",
+    fulfillmentStatus: "",
+    fulfillmentType: "DoorDash delivery",
+    channel: "Marketplace",
+    subtotal: "$3.53"
+  },
+  {
+    customer: "Huajun G",
+    orderId: "0FCCB375",
+    orderStatus: "Completed",
+    date: "4/22/2025",
+    time: "5:06 PM",
+    fulfillmentStatus: "",
+    fulfillmentType: "Customer pickup",
+    channel: "Marketplace",
+    subtotal: "$10.18"
+  },
+  {
+    customer: "Alina Y",
+    orderId: "7CD789E9",
+    orderStatus: "Cancelled - Not Paid",
+    date: "4/22/2025",
+    time: "12:00 PM",
+    fulfillmentStatus: "",
+    fulfillmentType: "DoorDash delivery",
+    channel: "Marketplace",
+    subtotal: "$4.82"
+  },
+  {
+    customer: "Mrinal K",
+    orderId: "45655F29",
+    orderStatus: "Cancelled - Not Paid",
+    date: "4/21/2025",
+    time: "5:42 PM",
+    fulfillmentStatus: "",
+    fulfillmentType: "Customer pickup",
+    channel: "Marketplace",
+    subtotal: "$5.18"
+  },
+  {
+    customer: "TAS-USER T",
+    orderId: "7837127B",
+    orderStatus: "Cancelled - Not Paid",
+    date: "4/21/2025",
+    time: "8:16 AM",
+    fulfillmentStatus: "",
+    fulfillmentType: "Customer pickup",
+    channel: "Marketplace",
+    subtotal: "$6.17"
+  },
+  {
+    customer: "Mike K",
+    orderId: "BDC8F5FD",
+    orderStatus: "Cancelled - Not Paid",
+    date: "4/16/2025",
+    time: "3:01 PM",
+    fulfillmentStatus: "",
+    fulfillmentType: "Customer pickup",
+    channel: "Marketplace",
+    subtotal: "$5.57"
+  }
+]
 
 function FilterBar({ searchValue, onSearchChange }: { searchValue: string; onSearchChange: (value: string) => void }) {
   return (
     <div className="flex items-center justify-between w-full">
       <div className="flex items-center gap-3">
         <select className="border border-gray-300 rounded-md text-sm px-3 py-1.5 bg-white text-gray-700">
-          <option>All Channels</option>
+          <option>All channels</option>
           <option>DashDoor</option>
           <option>Pickup</option>
         </select>
         <select className="border border-gray-300 rounded-md text-sm px-3 py-1.5 bg-white text-gray-700">
-          <option>Status</option>
-          <option>Delivered</option>
-          <option>Picked Up</option>
-          <option>Scheduled Delivery</option>
-          <option>Cancelled</option>
+          <option>Last 7 Days</option>
+          <option>Last 30 Days</option>
+          <option>Last 90 Days</option>
+        </select>
+        <select className="border border-gray-300 rounded-md text-sm px-3 py-1.5 bg-white text-gray-700">
+          <option>Order status</option>
+          <option>Completed</option>
+          <option>Cancelled - Not Paid</option>
         </select>
       </div>
       <div className="relative">
@@ -37,7 +143,8 @@ function FilterBar({ searchValue, onSearchChange }: { searchValue: string; onSea
 
 export default function MerchantOrdersPage() {
   const [searchValue, setSearchValue] = useState("")
-  const [lastUpdated, setLastUpdated] = useState(14)
+  const [lastUpdated, setLastUpdated] = useState(3)
+  const [activeTab, setActiveTab] = useState<"Active" | "Scheduled" | "History">("History")
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -50,6 +157,15 @@ export default function MerchantOrdersPage() {
     setLastUpdated(0)
   }
 
+  // Filter orders based on active tab
+  const filteredOrders = mockOrders.filter(order => {
+    if (activeTab === "History") {
+      return true // Show all orders in history
+    }
+    // For Active and Scheduled tabs, filter accordingly
+    return false // Placeholder - add logic as needed
+  })
+
   return (
     <MerchantLayout>
       {/* Header */}
@@ -58,8 +174,8 @@ export default function MerchantOrdersPage() {
           <div>
             <h1 className="text-3xl font-bold text-gray-900 mb-2">Orders</h1>
             <p className="text-sm text-gray-600">
-              Track all your orders from every channel in real time. For even more order details, go to{" "}
-              <a href="#" className="text-blue-600 hover:underline">Orders Breakdown</a>.
+              Track all your orders from every channel in real-time. For even more transaction details, go to{" "}
+              <a href="#" className="text-blue-600 hover:underline">Transactions</a>.
             </p>
           </div>
           <div className="flex items-center gap-4">
@@ -82,13 +198,34 @@ export default function MerchantOrdersPage() {
 
       {/* Tabs */}
       <div className="flex items-center gap-1 mb-6 border-b border-gray-200">
-        <button className="px-4 py-2 text-sm font-medium text-blue-600 border-b-2 border-blue-600">
+        <button 
+          onClick={() => setActiveTab("Active")}
+          className={`px-4 py-2 text-sm font-medium ${
+            activeTab === "Active"
+              ? "text-gray-900 border-b-2 border-gray-900"
+              : "text-gray-600 hover:text-gray-900"
+          }`}
+        >
           Active
         </button>
-        <button className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900">
+        <button 
+          onClick={() => setActiveTab("Scheduled")}
+          className={`px-4 py-2 text-sm font-medium ${
+            activeTab === "Scheduled"
+              ? "text-gray-900 border-b-2 border-gray-900"
+              : "text-gray-600 hover:text-gray-900"
+          }`}
+        >
           Scheduled
         </button>
-        <button className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900">
+        <button 
+          onClick={() => setActiveTab("History")}
+          className={`px-4 py-2 text-sm font-medium ${
+            activeTab === "History"
+              ? "text-gray-900 border-b-2 border-gray-900"
+              : "text-gray-600 hover:text-gray-900"
+          }`}
+        >
           History
         </button>
       </div>
@@ -103,35 +240,47 @@ export default function MerchantOrdersPage() {
         <table className="w-full text-sm">
           <thead className="bg-gray-50 border-b border-gray-200">
             <tr>
+              <th className="text-left font-medium px-4 py-3 text-gray-700">Customer</th>
               <th className="text-left font-medium px-4 py-3 text-gray-700">Order ID</th>
-              <th className="text-left font-medium px-4 py-3 text-gray-700">Status</th>
+              <th className="text-left font-medium px-4 py-3 text-gray-700">Order status</th>
               <th className="text-left font-medium px-4 py-3 text-gray-700">Date</th>
               <th className="text-left font-medium px-4 py-3 text-gray-700">Time</th>
-              <th className="text-left font-medium px-4 py-3 text-gray-700">Customer</th>
-              <th className="text-left font-medium px-4 py-3 text-gray-700">Dasher</th>
+              <th className="text-left font-medium px-4 py-3 text-gray-700">Fulfillment status</th>
+              <th className="text-left font-medium px-4 py-3 text-gray-700">Fulfillment type</th>
               <th className="text-left font-medium px-4 py-3 text-gray-700">Channel</th>
               <th className="text-right font-medium px-4 py-3 text-gray-700">Subtotal</th>
             </tr>
           </thead>
           <tbody>
-            <tr className="border-b border-gray-100 hover:bg-gray-50">
-              <td className="px-4 py-3 font-medium">BDC96DA6</td>
-              <td className="px-4 py-3">
-                <span className="inline-flex items-center gap-1.5 text-gray-700">
-                  <Calendar className="h-4 w-4" />
-                  Scheduled Delivery
-                </span>
-              </td>
-              <td className="px-4 py-3 text-gray-600">4/4/2023</td>
-              <td className="px-4 py-3">
-                <div className="text-gray-900">12:20 PM</div>
-                <div className="text-xs text-gray-500">Est. Pickup</div>
-              </td>
-              <td className="px-4 py-3 text-gray-600">Hannah B</td>
-              <td className="px-4 py-3 text-gray-600">Nuredin</td>
-              <td className="px-4 py-3 text-gray-600">DoorDash</td>
-              <td className="px-4 py-3 text-right font-medium">$26.47</td>
-            </tr>
+            {activeTab === "History" && filteredOrders.map((order) => (
+              <tr key={order.orderId} className="border-b border-gray-100 hover:bg-gray-50">
+                <td className="px-4 py-3 text-gray-900">{order.customer}</td>
+                <td className="px-4 py-3 font-medium text-gray-900">{order.orderId}</td>
+                <td className="px-4 py-3">
+                  <span className="inline-flex items-center gap-1.5">
+                    <span className={`w-2 h-2 rounded-full ${
+                      order.orderStatus === "Completed" ? "bg-gray-900" : "bg-red-500"
+                    }`} />
+                    <span className={order.orderStatus === "Cancelled - Not Paid" ? "text-red-600" : "text-gray-700"}>
+                      {order.orderStatus}
+                    </span>
+                  </span>
+                </td>
+                <td className="px-4 py-3 text-gray-600">{order.date}</td>
+                <td className="px-4 py-3 text-gray-600">{order.time}</td>
+                <td className="px-4 py-3 text-gray-600">{order.fulfillmentStatus || "-"}</td>
+                <td className="px-4 py-3 text-gray-600">{order.fulfillmentType}</td>
+                <td className="px-4 py-3 text-gray-600">{order.channel}</td>
+                <td className="px-4 py-3 text-right font-medium">{order.subtotal}</td>
+              </tr>
+            ))}
+            {activeTab !== "History" && (
+              <tr>
+                <td colSpan={9} className="px-4 py-8 text-center text-gray-500">
+                  No orders found for this tab
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>
@@ -147,7 +296,7 @@ export default function MerchantOrdersPage() {
           </select>
         </div>
         <div className="flex items-center gap-4">
-          <span>Showing 1-1 of 1</span>
+          <span>Showing 1-{filteredOrders.length} of {filteredOrders.length}</span>
           <div className="flex items-center gap-1">
             <button className="p-1 rounded hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
               <ChevronLeft className="h-4 w-4" />
