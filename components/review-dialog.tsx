@@ -184,9 +184,17 @@ export default function ReviewDialog({
   };
 
   const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setReviewText(e.target.value);
-    // Clear input error if text is valid
-    if (e.target.value.length >= 10 && error.type === 'input') {
+    const newValue = e.target.value;
+    setReviewText(newValue);
+
+    // Check for max character limit
+    if (newValue.length > 2000) {
+      setError({ type: 'input', message: 'Max character limit' });
+    } else if (newValue.length >= 10 && error.type === 'input') {
+      // Clear input error if text is valid
+      setError({ type: null, message: null });
+    } else if (newValue.length < 2000 && error.message === 'Max character limit') {
+      // Clear max character limit error if text is less than 2000 characters and previous error was max character limit
       setError({ type: null, message: null });
     }
   };
@@ -204,6 +212,12 @@ export default function ReviewDialog({
     // Validate review text
     if (reviewText.trim().length < 10) {
       setError({ type: 'input', message: 'Min characters: 10' });
+      return;
+    }
+
+    // Validate max character limit
+    if (reviewText.length > 2000) {
+      setError({ type: 'input', message: 'Max character limit' });
       return;
     }
 

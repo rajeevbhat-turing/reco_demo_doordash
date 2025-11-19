@@ -106,7 +106,7 @@ function calculateDistanceSurcharge(
 /**
  * Calculate delivery fee with all dynamic factors
  */
-function calculateDeliveryFee(params: FeeCalculationParams): {
+export function calculateDeliveryFee(params: FeeCalculationParams): {
   fee: number;
   breakdown: {
     baseDeliveryFee: number;

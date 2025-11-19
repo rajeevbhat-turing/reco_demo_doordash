@@ -297,6 +297,9 @@ export default function Orders() {
                           <button
                             key={starNum}
                             onClick={e => {
+                              if (order.rating && order.reviewDate) {
+                                return; // If order has already been reviewed, don't allow rating again
+                              }
                               e.stopPropagation();
                               setSelectedRating(starNum);
                               setReviewingOrder(order);
