@@ -964,6 +964,12 @@ export default function CheckoutPage() {
     },
   ], [restaurantDistance]);
 
+  // Calculate extra delivery fee based on selected delivery option
+  const extraDeliveryFee = useMemo(() => {
+    const selectedOption = deliveryOptions.find(opt => opt.id === selectedDeliveryOption);
+    return selectedOption?.price || 0;
+  }, [selectedDeliveryOption, deliveryOptions]);
+
   // Get the selected payment method object
   const selectedPaymentMethodObj = savedPaymentMethods.find(m => m.id === selectedPaymentMethod);
 
