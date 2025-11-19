@@ -9,7 +9,7 @@ import StoreSelector from "./StoreSelector"
 
 function NavItem({ href, label, active, icon: Icon, highlightRed, highlightOrange }: { href: string; label: string; active: boolean; icon: React.ComponentType<any>; highlightRed?: boolean; highlightOrange?: boolean }) {
   const activeClass = highlightOrange && active 
-    ? "bg-orange-50 text-orange-900" 
+    ? "bg-orange-50 text-orange-900 border-l-2 border-orange-600" 
     : highlightRed && active 
     ? "bg-red-50 text-red-700 border-l-2 border-red-600" 
     : active 
@@ -28,10 +28,12 @@ export default function MerchantSidebar() {
   const pathname = usePathname()
   const [settingsExpanded, setSettingsExpanded] = useState(true) // Settings expanded by default
   const [customersExpanded, setCustomersExpanded] = useState(true) // Customers expanded by default
+  const [financialsExpanded, setFinancialsExpanded] = useState(true) // Financials expanded by default
   const [isStoreSelectorOpen, setIsStoreSelectorOpen] = useState(false)
   const [selectedStoreId, setSelectedStoreId] = useState<string | undefined>(undefined)
   const isSettingsPage = pathname?.startsWith("/merchant/settings") || false
   const isCustomersPage = pathname?.startsWith("/merchant/customers") || false
+  const isFinancialsPage = pathname?.startsWith("/merchant/financials") || false
 
   return (
     <>
@@ -103,11 +105,38 @@ export default function MerchantSidebar() {
           <NavItem href="#" label="Marketing" icon={Target} active={false} />
           <NavItem href="/merchant/menu" label="Menu" icon={Utensils} active={pathname?.startsWith("/merchant/menu") || false} highlightRed={true} />
           <NavItem href="#" label="Store Availability" icon={Clock} active={false} />
-          <NavItem href="#" label="Financials" icon={DollarSign} active={false} />
-          <div className="mt-2 ml-2 space-y-1">
-            <NavItem href="#" label="Transactions" icon={FileText} active={false} />
-            <NavItem href="#" label="Payouts" icon={DollarSign} active={false} />
-            <NavItem href="#" label="Statements" icon={FileText} active={false} />
+          
+          {/* Financials Section */}
+          <div>
+            <button
+              onClick={() => setFinancialsExpanded(!financialsExpanded)}
+              className={`w-full flex items-center justify-between px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-100 ${
+                isFinancialsPage ? "bg-orange-50 text-orange-900" : "text-gray-700"
+              }`}
+            >
+              <div className="flex items-center">
+                <DollarSign className="h-4 w-4 mr-2" />
+                <span>Financials</span>
+              </div>
+              {financialsExpanded ? (
+                <ChevronDown className="h-4 w-4" />
+              ) : (
+                <ChevronRight className="h-4 w-4" />
+              )}
+            </button>
+            {financialsExpanded && (
+              <div className="mt-1 ml-2 space-y-1">
+                <NavItem 
+                  href="/merchant/financials/transactions" 
+                  label="Transactions" 
+                  icon={FileText} 
+                  active={pathname === "/merchant/financials/transactions"}
+                  highlightOrange={pathname === "/merchant/financials/transactions"}
+                />
+                <NavItem href="#" label="Payouts" icon={DollarSign} active={false} />
+                <NavItem href="#" label="Statements" icon={FileText} active={false} />
+              </div>
+            )}
           </div>
           <NavItem href="#" label="Request a Delivery" icon={Truck} active={false} />
           
