@@ -206,9 +206,25 @@ export default function TwoStepVerificationModal({
               </label>
               <Input
                 type="text"
+                inputMode="numeric"
+                pattern="[0-9]*"
                 maxLength={6}
                 value={code}
                 onChange={handleCodeChange}
+                onKeyDown={e => {
+                  // Allow: backspace, delete, tab, escape, enter, and arrow keys
+                  if (
+                    ['Backspace', 'Delete', 'Tab', 'Escape', 'Enter', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(
+                      e.key
+                    )
+                  ) {
+                    return; // Allow these keys
+                  }
+                  // Block non-numeric characters
+                  if (e.key.length === 1 && !/[0-9]/.test(e.key)) {
+                    e.preventDefault();
+                  }
+                }}
                 className={`w-full border-2 focus-visible:ring-0 focus-visible:ring-offset-0 border-transparent rounded-lg 
                  focus-visible:border-[#191919ff] text-lg font-medium tracking-widest h-12 px-3 ${
                    codeError ? 'border-[#b71000ff] bg-[#fef0ed]' : 'bg-[#f7f7f7]'

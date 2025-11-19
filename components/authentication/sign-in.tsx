@@ -175,10 +175,12 @@ export default function SignIn({ onSuccess, setMode, initialEmail, style, onForm
 
   // Handles OTP input change
   const handleOTPChange = (index: number, value: string) => {
-    if (value.length > 1) return; // Only allow single digit
+    // Only allow numbers
+    const numericValue = value.replace(/\D/g, '');
+    if (numericValue.length > 1) return; // Only allow single digit
 
     const newOtpInputs = [...formData.otpInputs];
-    newOtpInputs[index] = value;
+    newOtpInputs[index] = numericValue;
     handleFormDataChange('otpInputs', newOtpInputs);
 
     // Auto-focus next input
@@ -194,8 +196,21 @@ export default function SignIn({ onSuccess, setMode, initialEmail, style, onForm
     }
   };
 
-  // Handles OTP input keydown (for backspace)
+  // Handles OTP input keydown (for backspace and number validation)
   const handleOTPKeyDown = (index: number, e: React.KeyboardEvent) => {
+    // Allow: backspace, delete, tab, escape, enter, and arrow keys
+    if (
+      ['Backspace', 'Delete', 'Tab', 'Escape', 'Enter', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(
+        e.key
+      )
+    ) {
+      // Allow these keys
+    } else if (e.key.length === 1 && !/[0-9]/.test(e.key)) {
+      // Block non-numeric characters
+      e.preventDefault();
+      return;
+    }
+
     if (e.key === 'Backspace') {
       const newOtpInputs = [...formData.otpInputs];
 
@@ -496,6 +511,8 @@ export default function SignIn({ onSuccess, setMode, initialEmail, style, onForm
               key={index}
               id={`otp-${index}`}
               type="text"
+              inputMode="numeric"
+              pattern="[0-9]*"
               maxLength={1}
               value={value}
               onChange={e => handleOTPChange(index, e.target.value)}
