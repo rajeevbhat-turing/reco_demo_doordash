@@ -5,11 +5,18 @@ import { Search, Settings, Eye, Plus, ChevronDown, Star, X, Pencil, Trash2 } fro
 import { Input } from "@/components/ui/input"
 import { useMerchantMenuStore } from "@/store/merchant-menu-store"
 import ItemStatusDropdown from "@/components/merchant/ItemStatusDropdown"
+import MenuSettingsDropdown from "@/components/merchant/MenuSettingsDropdown"
+import RestaurantSelector from "@/components/merchant/RestaurantSelector"
+import ItemEditorPanel from "@/components/merchant/ItemEditorPanel"
+import { MenuItem } from "@/store/merchant-menu-store"
 
 export default function MerchantMenuPage() {
   const [searchValue, setSearchValue] = useState("")
-  const [selectedTimePeriod, setSelectedTimePeriod] = useState("All Day")
   const [selectedFilter, setSelectedFilter] = useState("All items")
+  const [isMenuSettingsOpen, setIsMenuSettingsOpen] = useState(false)
+  const [selectedRestaurantId, setSelectedRestaurantId] = useState<string>("philz-coffee")
+  const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null)
+  const [isItemEditorOpen, setIsItemEditorOpen] = useState(false)
   
   const {
     categories,
@@ -18,6 +25,7 @@ export default function MerchantMenuPage() {
     toggleCategory,
     setShowBanner,
     updateItemStatus,
+    updateItem,
     deleteItem
   } = useMerchantMenuStore()
 
@@ -72,12 +80,41 @@ export default function MerchantMenuPage() {
       )}
 
       {/* Controls Bar */}
-      <div className="mb-6 flex items-center justify-between flex-wrap gap-4">
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2">
-            <span className="text-sm font-medium text-gray-700">All Day</span>
-            <ChevronDown className="h-4 w-4 text-gray-500" />
+      <div className="mb-6">
+        {/* Top Row - Restaurant Selector and Action Buttons */}
+        <div className="flex items-center justify-between mb-4">
+          <RestaurantSelector 
+            selectedRestaurantId={selectedRestaurantId}
+            onSelectRestaurant={setSelectedRestaurantId}
+          />
+          <div className="flex items-center gap-3">
+            <div className="relative">
+              <button 
+                onClick={() => setIsMenuSettingsOpen(!isMenuSettingsOpen)}
+                className="inline-flex items-center gap-2 px-3 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50"
+              >
+                <Settings className="h-4 w-4" />
+                Menu Settings
+              </button>
+              <MenuSettingsDropdown 
+                isOpen={isMenuSettingsOpen}
+                onClose={() => setIsMenuSettingsOpen(false)}
+              />
+            </div>
+            <button className="inline-flex items-center gap-2 px-3 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">
+              <Eye className="h-4 w-4" />
+              Preview Menu
+            </button>
+            <button className="inline-flex items-center gap-2 px-3 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md text-sm font-medium">
+              <Plus className="h-4 w-4" />
+              Add
+              <ChevronDown className="h-4 w-4" />
+            </button>
           </div>
+        </div>
+        
+        {/* Bottom Row - Search and Filter */}
+        <div className="flex items-center gap-3">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
             <Input
@@ -97,21 +134,6 @@ export default function MerchantMenuPage() {
             <option>In stock</option>
             <option>Out of stock</option>
           </select>
-        </div>
-        <div className="flex items-center gap-3">
-          <button className="inline-flex items-center gap-2 px-3 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">
-            <Settings className="h-4 w-4" />
-            Menu Settings
-          </button>
-          <button className="inline-flex items-center gap-2 px-3 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">
-            <Eye className="h-4 w-4" />
-            Preview Menu
-          </button>
-          <button className="inline-flex items-center gap-2 px-3 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md text-sm font-medium">
-            <Plus className="h-4 w-4" />
-            Add
-            <ChevronDown className="h-4 w-4" />
-          </button>
         </div>
       </div>
 
@@ -179,7 +201,13 @@ export default function MerchantMenuPage() {
                               />
                             </td>
                             <td className="px-4 py-3">
-                              <button className="p-1.5 text-gray-400 hover:text-gray-600 rounded">
+                              <button 
+                                onClick={() => {
+                                  setSelectedItem(item)
+                                  setIsItemEditorOpen(true)
+                                }}
+                                className="p-1.5 text-gray-400 hover:text-gray-600 rounded"
+                              >
                                 <Pencil className="h-4 w-4" />
                               </button>
                             </td>
@@ -209,6 +237,19 @@ export default function MerchantMenuPage() {
           )
         })}
       </div>
+
+      {/* Item Editor Panel */}
+      <ItemEditorPanel
+        item={selectedItem}
+        isOpen={isItemEditorOpen}
+        onClose={() => {
+          setIsItemEditorOpen(false)
+          setSelectedItem(null)
+        }}
+        onUpdate={(itemId, updates) => {
+          updateItem(itemId, updates)
+        }}
+      />
     </MerchantLayout>
   )
 }

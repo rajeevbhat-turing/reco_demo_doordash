@@ -29,11 +29,13 @@ export default function MerchantSidebar() {
   const [settingsExpanded, setSettingsExpanded] = useState(true) // Settings expanded by default
   const [customersExpanded, setCustomersExpanded] = useState(true) // Customers expanded by default
   const [financialsExpanded, setFinancialsExpanded] = useState(true) // Financials expanded by default
+  const [menuExpanded, setMenuExpanded] = useState(true) // Menu expanded by default
   const [isStoreSelectorOpen, setIsStoreSelectorOpen] = useState(false)
   const [selectedStoreId, setSelectedStoreId] = useState<string | undefined>(undefined)
   const isSettingsPage = pathname?.startsWith("/merchant/settings") || false
   const isCustomersPage = pathname?.startsWith("/merchant/customers") || false
   const isFinancialsPage = pathname?.startsWith("/merchant/financials") || false
+  const isMenuPage = pathname?.startsWith("/merchant/menu") || false
 
   return (
     <>
@@ -103,7 +105,45 @@ export default function MerchantSidebar() {
           </div>
           <NavItem href="/merchant/orders" label="Orders" icon={Receipt} active={pathname?.startsWith("/merchant/orders") || false} />
           <NavItem href="#" label="Marketing" icon={Target} active={false} />
-          <NavItem href="/merchant/menu" label="Menu" icon={Utensils} active={pathname?.startsWith("/merchant/menu") || false} highlightRed={true} />
+          
+          {/* Menu Section */}
+          <div>
+            <button
+              onClick={() => setMenuExpanded(!menuExpanded)}
+              className={`w-full flex items-center justify-between px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-100 ${
+                isMenuPage ? "bg-red-50 text-red-700" : "text-gray-700"
+              }`}
+            >
+              <div className="flex items-center">
+                <Utensils className="h-4 w-4 mr-2" />
+                <span>Menu</span>
+              </div>
+              {menuExpanded ? (
+                <ChevronDown className="h-4 w-4" />
+              ) : (
+                <ChevronRight className="h-4 w-4" />
+              )}
+            </button>
+            {menuExpanded && (
+              <div className="mt-1 ml-2 space-y-1">
+                <NavItem 
+                  href="/merchant/menu" 
+                  label="Menu Manager" 
+                  icon={Utensils} 
+                  active={pathname === "/merchant/menu"}
+                  highlightRed={pathname === "/merchant/menu"}
+                />
+                <NavItem 
+                  href="/merchant/menu/pricing" 
+                  label="Pricing" 
+                  icon={DollarSign} 
+                  active={pathname === "/merchant/menu/pricing"}
+                  highlightRed={pathname === "/merchant/menu/pricing"}
+                />
+              </div>
+            )}
+          </div>
+          
           <NavItem href="#" label="Store Availability" icon={Clock} active={false} />
           
           {/* Financials Section */}
