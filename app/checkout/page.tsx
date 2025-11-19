@@ -196,7 +196,7 @@ export default function CheckoutPage() {
   const totalItems = getTotalItems(currentStoreId || undefined, currentCategory || undefined);
 
   // Check if restaurant is outside delivery area
-  const isOutsideDeliveryArea = currentCategory === 'restaurant' && currentStoreId && restaurants && !restaurants.some((r: any) => r.id === currentStoreId);
+  const isOutsideDeliveryArea = Boolean(currentCategory === 'restaurant' && currentStoreId && restaurants && !restaurants.some((r: any) => r.id === currentStoreId));
 
   // Get restaurant and calculate distance for delivery time calculation
   const currentRestaurant = useMemo(() => {
@@ -518,7 +518,7 @@ export default function CheckoutPage() {
       deliveryOption: {
         type: selectedDeliveryOption,
         deliveryTime: deliveryTime,
-        extraFee: extraDeliveryFee,
+        extraFee: 0,
         scheduledDate: scheduledDate,
         scheduledTimeSlot: scheduledTimeSlot,
       },
@@ -540,6 +540,14 @@ export default function CheckoutPage() {
       discount: discountAmount,
       total: getTotalWithExtras(),
       totalAmount: getTotalWithExtras(), // Old field name for backward compatibility
+      // Deal/Promotion info
+      appliedDeal: appliedDeal ? {
+        id: appliedDeal.id,
+        title: appliedDeal.title,
+        promoCode: appliedDeal.promocode,
+        discountType: appliedDeal.discountType,
+        discountValue: appliedDeal.discountValue,
+      } : null,
       // Order metadata
       orderDate: new Date().toLocaleDateString('en-US', {
         weekday: 'short',

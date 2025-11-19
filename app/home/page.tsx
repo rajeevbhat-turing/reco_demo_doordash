@@ -263,16 +263,27 @@ export default function Home() {
       // Apply cuisine filter (from FilterOptions component)
       if (filters.cuisine && filters.cuisine.length > 0) {
         filtered = filtered.filter(restaurant => {
+          // Check if any selected cuisine matches restaurant categories (contains match)
           if (restaurant.categories && restaurant.categories.length > 0) {
-            // Check if any selected cuisine matches any restaurant category (contains match)
-            return filters.cuisine!.some(selectedCuisine =>
+            const matchesCategories = filters.cuisine!.some(selectedCuisine =>
               restaurant.categories!.some(
                 cat =>
                   cat.toLowerCase().includes(selectedCuisine.toLowerCase()) ||
                   selectedCuisine.toLowerCase().includes(cat.toLowerCase())
               )
             );
+            if (matchesCategories) return true;
           }
+          
+          // Also check cuisine field
+          if (restaurant.cuisine) {
+            const matchesCuisine = filters.cuisine!.some(selectedCuisine =>
+              restaurant.cuisine!.toLowerCase().includes(selectedCuisine.toLowerCase()) ||
+              selectedCuisine.toLowerCase().includes(restaurant.cuisine!.toLowerCase())
+            );
+            if (matchesCuisine) return true;
+          }
+          
           return false;
         });
       }
@@ -280,26 +291,27 @@ export default function Home() {
       // Apply dietary preferences filter (from FilterOptions component)
       if (filters.dietaryPreferences && filters.dietaryPreferences.length > 0) {
         filtered = filtered.filter(restaurant => {
+          // Check if any dietary preference matches restaurant categories (contains match)
           if (restaurant.categories && restaurant.categories.length > 0) {
-            // Check if any dietary preference matches any restaurant category (contains match)
-            return filters.dietaryPreferences!.some(dietary =>
+            const matchesCategories = filters.dietaryPreferences!.some(dietary =>
               restaurant.categories!.some(
                 cat =>
                   cat.toLowerCase().includes(dietary.toLowerCase()) ||
                   dietary.toLowerCase().includes(cat.toLowerCase())
               )
             );
+            if (matchesCategories) return true;
           }
-          // Also check dietaryPreferences field if available
-          if (restaurant.dietaryPreferences && restaurant.dietaryPreferences.length > 0) {
-            return filters.dietaryPreferences!.some(dietary =>
-              restaurant.dietaryPreferences!.some(
-                pref =>
-                  pref.toLowerCase().includes(dietary.toLowerCase()) ||
-                  dietary.toLowerCase().includes(pref.toLowerCase())
-              )
+          
+          // Also check cuisine field
+          if (restaurant.cuisine) {
+            const matchesCuisine = filters.dietaryPreferences!.some(dietary =>
+              restaurant.cuisine!.toLowerCase().includes(dietary.toLowerCase()) ||
+              dietary.toLowerCase().includes(restaurant.cuisine!.toLowerCase())
             );
+            if (matchesCuisine) return true;
           }
+          
           return false;
         });
       }

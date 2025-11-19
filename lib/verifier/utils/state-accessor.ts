@@ -7,15 +7,10 @@ import { useReviewStore } from '@/store/review-store';
 import { User, Address, PaymentMethod } from '@/lib/types/user-types';
 import { Order } from '@/constants/order-data';
 import { UserReview } from '@/types/review-types';
-import * as expectedStateFunctions from './expected-state-functions';
+import * as expectedStateFunctions from '../expected-state-functions';
 
 interface AppState {
-  cart: {
-    carts: Cart[];
-    totalItems: number;
-    isGroupOrder: boolean;
-    groupOrderId: string | null;
-  };
+  carts: Cart[];
   user: {
     currentUser: User | null;
     isAuthenticated: boolean;
@@ -65,12 +60,7 @@ export async function getStates(expected_state_functions: ExpectedStateFunction[
 
   // Build the actual state
   const actual_state: AppState = {
-    cart: {
-      carts: cartStore.carts,
-      totalItems: cartStore.getTotalItems(),
-      isGroupOrder: cartStore.isGroupOrder,
-      groupOrderId: cartStore.groupOrderId,
-    },
+    carts: cartStore.carts,
     user: {
       currentUser: userStore.currentUser,
       isAuthenticated: userStore.isAuthenticated(),
