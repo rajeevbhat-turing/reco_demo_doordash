@@ -10,8 +10,11 @@ import { prepareOrderForReorder } from '@/lib/reorder-utils';
 import { useRouter } from 'next/navigation';
 import ReviewDialog from '@/components/review-dialog';
 import { useRestaurants } from '@/lib/hooks/use-restaurants';
+import { useRestaurant } from '@/lib/hooks/use-restaurant';
+import { useRestaurantMenu } from '@/lib/hooks/use-restaurant-menu';
 import { useUserStore } from '@/store/user-store';
 import Link from 'next/link';
+import { OrderItem as ReviewOrderItem } from '@/types/review-types';
 
 export default function Orders() {
   const router = useRouter();
@@ -21,6 +24,14 @@ export default function Orders() {
   const [mounted, setMounted] = useState(false);
   const [reviewingOrder, setReviewingOrder] = useState<Order | null>(null);
   const [selectedRating, setSelectedRating] = useState<number>(0);
+
+  // Get restaurant ID for the order being reviewed
+  const reviewingRestaurantId =
+    reviewingOrder?.storeId || reviewingOrder?.restaurantId || undefined;
+
+  // Fetch restaurant and menu data (hooks automatically skip fetching when ID is undefined)
+  const { data: orderRestaurant } = useRestaurant(reviewingRestaurantId);
+  const { data: orderMenuData } = useRestaurantMenu(reviewingRestaurantId);
 
   // Get user address for fetching restaurants
   const currentUser = useUserStore(state => state.currentUser);
@@ -47,6 +58,52 @@ export default function Orders() {
   // Helper function to get total (support both old and new field names)
   const getTotal = (order: Order) => {
     return order.total || order.totalAmount || 0;
+  };
+
+  // Convert order items to review OrderItem format
+  const convertOrderItemsToReviewItems = (order: Order): ReviewOrderItem[] => {
+    if (!order.items || order.items.length === 0) return [];
+    const restaurantId = order.storeId || order.restaurantId || '';
+
+    return order.items.map(item => {
+      // Try to find matching menu item by name to get image
+      const menuItem = orderMenuData?.menuItems.find(
+        mi => mi.id?.toString() === item.id?.toString()
+      );
+
+      return {
+        id: item.id,
+        name: item.name,
+        restaurantId: restaurantId,
+        image: menuItem?.image || (item as any).image || null,
+        menuItemId: menuItem?.id || (item as any).menuItemId,
+        price: item.price, // Include price for display
+      };
+    });
+  };
+
+  // Format order date for display
+  const formatOrderDate = (order: Order): string => {
+    if (order.orderDate) {
+      // If orderDate is already formatted, return it
+      if (order.orderDate.includes(',')) {
+        return order.orderDate;
+      }
+      // Otherwise, try to format it
+      try {
+        const date = new Date(order.orderDate);
+        return date.toLocaleDateString('en-US', {
+          month: 'short',
+          day: 'numeric',
+          year: 'numeric',
+          hour: 'numeric',
+          minute: '2-digit',
+        });
+      } catch {
+        return order.orderDate;
+      }
+    }
+    return '';
   };
 
   // Filter orders by the active tab
@@ -343,7 +400,10 @@ export default function Orders() {
           restaurantName={getStoreName(reviewingOrder)}
           vendorId={reviewingOrder.storeId || reviewingOrder.restaurantId}
           defaultRating={selectedRating}
-          onSubmit={(rating, text) => {
+          orderItems={convertOrderItemsToReviewItems(reviewingOrder)}
+          orderDate={formatOrderDate(reviewingOrder)}
+          vendorLogo={orderRestaurant?.logo || undefined}
+          onSubmit={(rating, text, likedItems) => {
             updateOrderReview(reviewingOrder.id, rating, text);
             setReviewingOrder(null);
             setSelectedRating(0);
