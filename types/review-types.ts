@@ -5,6 +5,7 @@ export interface OrderItem {
   restaurantId: string;
   image: string | null;
   menuItemId?: string; // menu_item_id from order_items table
+  price?: number; // Price for display in review dialog
 }
 
 export interface UserReview {

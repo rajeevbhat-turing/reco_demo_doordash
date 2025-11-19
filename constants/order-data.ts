@@ -44,7 +44,7 @@ export interface Order {
   paymentCard?: PaymentCard;
   
   // Delivery info
-  deliveryAddress?: DeliveryAddress;
+  deliveryAddress?: DeliveryAddress | null;
   deliveryOption?: DeliveryOption;
   phoneNumber?: PhoneNumber;
   
@@ -53,8 +53,18 @@ export interface Order {
   subtotal?: number;
   serviceFee?: number;
   deliveryFee?: number;
+  discount?: number;
   total?: number;
   totalAmount?: number; // Old field name
+  
+  // Deal/Promotion info
+  appliedDeal?: {
+    id: string;
+    title: string;
+    promocode?: string;
+    discountType?: string;
+    discountValue?: number;
+  } | null;
   
   // Order metadata
   orderDate: string;
