@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Star, ChevronLeft, ChevronRight, Info } from 'lucide-react';
@@ -19,7 +19,7 @@ import { useCartStore } from '@/store/cart-store';
 import { useRestaurant } from '@/lib/hooks/use-restaurant';
 import { generateAvatarColor } from '@/lib/utils/helperFunctions';
 import { LightbulbIcon } from '@/lib/utils/icons';
-import { getMergedUserReviewCount } from '@/lib/utils/review-utils';
+import { mergeReviewsWithChanges } from '@/lib/utils/review-utils';
 
 export default function StoreReviewsPage() {
   const params = useParams();
@@ -72,12 +72,27 @@ export default function StoreReviewsPage() {
     };
   }, [restaurantData, setCurrentStore, clearCurrentStore, cartStore]);
 
-  // Helper function to get user review count
-  const getUserReviewCount = useMemo(() => {
-    return (userId: string) => {
-      return getMergedUserReviewCount(apiData || [], userId, storeReviewChanges);
-    };
+  // Pre-compute user review counts once for all users (performance optimization)
+  // This prevents O(n²) complexity from calling getUserReviewCount for each review
+  const userReviewCountsMap = useMemo(() => {
+    if (!apiData) return new Map<string, number>();
+    
+    const merged = mergeReviewsWithChanges(apiData, storeReviewChanges);
+    const countsMap = new Map<string, number>();
+    
+    // Count reviews per user in a single pass
+    merged.forEach(review => {
+      const currentCount = countsMap.get(review.userId) || 0;
+      countsMap.set(review.userId, currentCount + 1);
+    });
+    
+    return countsMap;
   }, [apiData, storeReviewChanges]);
+
+  // Helper function to get user review count from pre-computed map
+  const getUserReviewCount = useCallback((userId: string) => {
+    return userReviewCountsMap.get(userId) || 0;
+  }, [userReviewCountsMap]);
 
   // Collect all photos from all approved reviews with user info
   const allCustomerPhotos = useMemo(() => {
