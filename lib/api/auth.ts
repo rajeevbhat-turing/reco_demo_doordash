@@ -58,7 +58,11 @@ export interface GenerateOTPResult {
  * @returns User data with addresses and payment methods
  */
 export async function loginUser(credentials: LoginCredentials): Promise<User> {
-  const { email, password } = credentials;
+  const { email: emailAddress, password } = credentials;
+
+  // Convert email address to lowercase
+  const email = emailAddress.toLowerCase();
+
   const state = useUserStore.getState();
   
   // Step 1: Check store first (localStorage has priority)
@@ -109,7 +113,11 @@ export async function loginUser(credentials: LoginCredentials): Promise<User> {
  * @returns OTP and user data
  */
 export async function generateOTP(request: GenerateOTPRequest): Promise<GenerateOTPResult> {
-  const { email } = request;
+  const { email: emailAddress } = request;
+
+  // Convert email address to lowercase
+  const email = emailAddress?.toLowerCase();
+
   const state = useUserStore.getState();
   
   // Step 1: Check store first (localStorage has priority)

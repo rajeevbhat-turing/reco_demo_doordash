@@ -178,7 +178,8 @@ export default function SignUp({
       const userObject: User = {
         id: '', // Will be set after OTP verification
         name: `${formData.firstName} ${formData.lastName}`,
-        email: formData.email,
+        // Convert email address to lowercase
+        email: formData.email?.toLowerCase(),
         phoneNumber: formData.mobileNumber,
         password: formData.password,
         country: {
