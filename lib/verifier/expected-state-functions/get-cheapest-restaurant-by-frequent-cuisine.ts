@@ -16,7 +16,7 @@ export interface Restaurant {
   };
 }
 
-export interface CheaperRestaurantsResult {
+export interface CheapestRestaurantResult {
   restaurant: Restaurant | null;
   metadata: {
     mostFrequentCuisine: string | null;
@@ -39,7 +39,7 @@ export interface CheaperRestaurantsResult {
  * 
  * @returns Object containing the restaurant with lowest delivery fee and metadata
  */
-export async function get_cheaper_restaurants_by_frequent_cuisine(): Promise<CheaperRestaurantsResult | null> {
+export async function get_cheapest_restaurant_by_frequent_cuisine(): Promise<CheapestRestaurantResult | null> {
   const userStore = useUserStore.getState();
   const currentUser = userStore.currentUser;
   
@@ -59,7 +59,7 @@ export async function get_cheaper_restaurants_by_frequent_cuisine(): Promise<Che
   try {
     // Call API route with lat/lng parameters
     const response = await fetch(
-      `/api/expected-state/get-cheaper-restaurants-by-frequent-cuisine?userId=${currentUser.id}&lat=${selectedAddress.lat}&lng=${selectedAddress.lng}&radius=10`
+      `/api/expected-state/get-cheapest-restaurant-by-frequent-cuisine?userId=${currentUser.id}&lat=${selectedAddress.lat}&lng=${selectedAddress.lng}&radius=10`
     );
     
     if (!response.ok) {
@@ -69,13 +69,14 @@ export async function get_cheaper_restaurants_by_frequent_cuisine(): Promise<Che
     const result = await response.json();
     
     if (!result.success) {
-      throw new Error(result.error || 'Failed to fetch cheaper restaurants');
+      throw new Error(result.error || 'Failed to fetch cheapest restaurant');
     }
 
     return result.data;
   } catch (error) {
-    console.error('Error fetching cheaper restaurants by frequent cuisine:', error);
+    console.error('Error fetching cheapest restaurant by frequent cuisine:', error);
     return null;
   }
 }
+
 
