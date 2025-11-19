@@ -26,16 +26,19 @@ function NavItem({ href, label, active, icon: Icon, highlightRed, highlightOrang
 
 export default function MerchantSidebar() {
   const pathname = usePathname()
-  const [settingsExpanded, setSettingsExpanded] = useState(true) // Settings expanded by default
-  const [customersExpanded, setCustomersExpanded] = useState(true) // Customers expanded by default
-  const [financialsExpanded, setFinancialsExpanded] = useState(true) // Financials expanded by default
-  const [menuExpanded, setMenuExpanded] = useState(true) // Menu expanded by default
+  // Auto-expand based on current pathname
+  const [settingsExpanded, setSettingsExpanded] = useState(pathname?.startsWith("/merchant/settings") || false)
+  const [customersExpanded, setCustomersExpanded] = useState(pathname?.startsWith("/merchant/customers") || false)
+  const [financialsExpanded, setFinancialsExpanded] = useState(pathname?.startsWith("/merchant/financials") || false)
+  const [menuExpanded, setMenuExpanded] = useState(pathname?.startsWith("/merchant/menu") || false)
+  const [marketingExpanded, setMarketingExpanded] = useState(pathname?.startsWith("/merchant/marketing") || false)
   const [isStoreSelectorOpen, setIsStoreSelectorOpen] = useState(false)
   const [selectedStoreId, setSelectedStoreId] = useState<string | undefined>(undefined)
   const isSettingsPage = pathname?.startsWith("/merchant/settings") || false
   const isCustomersPage = pathname?.startsWith("/merchant/customers") || false
   const isFinancialsPage = pathname?.startsWith("/merchant/financials") || false
   const isMenuPage = pathname?.startsWith("/merchant/menu") || false
+  const isMarketingPage = pathname?.startsWith("/merchant/marketing") || false
 
   return (
     <>
@@ -77,12 +80,8 @@ export default function MerchantSidebar() {
               <div className="flex items-center">
                 <Users className="h-4 w-4 mr-2" />
                 <span>Customers</span>
+                <ChevronDown className={`h-3 w-3 ml-1.5 transition-transform ${customersExpanded ? '' : 'rotate-[-90deg]'}`} />
               </div>
-              {customersExpanded ? (
-                <ChevronDown className="h-4 w-4" />
-              ) : (
-                <ChevronRight className="h-4 w-4" />
-              )}
             </button>
             {customersExpanded && (
               <div className="mt-1 ml-2 space-y-1">
@@ -104,7 +103,41 @@ export default function MerchantSidebar() {
             )}
           </div>
           <NavItem href="/merchant/orders" label="Orders" icon={Receipt} active={pathname?.startsWith("/merchant/orders") || false} />
-          <NavItem href="#" label="Marketing" icon={Target} active={false} />
+          
+          {/* Marketing Section */}
+          <div>
+            <button
+              onClick={() => setMarketingExpanded(!marketingExpanded)}
+              className={`w-full flex items-center justify-between px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-100 ${
+                isMarketingPage ? "bg-red-50 text-red-700" : "text-gray-700"
+              }`}
+            >
+              <div className="flex items-center">
+                <Target className="h-4 w-4 mr-2" />
+                <span>Marketing</span>
+                <ChevronDown className={`h-3 w-3 ml-1.5 transition-transform ${marketingExpanded ? '' : 'rotate-[-90deg]'}`} />
+              </div>
+            </button>
+            {marketingExpanded && (
+              <div className="mt-1 ml-2 space-y-1">
+                <NavItem 
+                  href="/merchant/marketing/run-campaign" 
+                  label="Run a campaign" 
+                  icon={Target} 
+                  active={pathname === "/merchant/marketing/run-campaign"}
+                  highlightRed={pathname === "/merchant/marketing/run-campaign"}
+                />
+                <NavItem href="#" label="Campaigns" icon={Target} active={false} />
+                <NavItem 
+                  href="/merchant/marketing/loyalty" 
+                  label="Loyalty" 
+                  icon={Star} 
+                  active={pathname === "/merchant/marketing/loyalty"}
+                  highlightRed={pathname === "/merchant/marketing/loyalty"}
+                />
+              </div>
+            )}
+          </div>
           
           {/* Menu Section */}
           <div>
@@ -117,12 +150,8 @@ export default function MerchantSidebar() {
               <div className="flex items-center">
                 <Utensils className="h-4 w-4 mr-2" />
                 <span>Menu</span>
+                <ChevronDown className={`h-3 w-3 ml-1.5 transition-transform ${menuExpanded ? '' : 'rotate-[-90deg]'}`} />
               </div>
-              {menuExpanded ? (
-                <ChevronDown className="h-4 w-4" />
-              ) : (
-                <ChevronRight className="h-4 w-4" />
-              )}
             </button>
             {menuExpanded && (
               <div className="mt-1 ml-2 space-y-1">
@@ -144,7 +173,13 @@ export default function MerchantSidebar() {
             )}
           </div>
           
-          <NavItem href="#" label="Store Availability" icon={Clock} active={false} />
+          <NavItem 
+            href="/merchant/store-availability" 
+            label="Store Availability" 
+            icon={Clock} 
+            active={pathname === "/merchant/store-availability"}
+            highlightRed={pathname === "/merchant/store-availability"}
+          />
           
           {/* Financials Section */}
           <div>
@@ -157,12 +192,8 @@ export default function MerchantSidebar() {
               <div className="flex items-center">
                 <DollarSign className="h-4 w-4 mr-2" />
                 <span>Financials</span>
+                <ChevronDown className={`h-3 w-3 ml-1.5 transition-transform ${financialsExpanded ? '' : 'rotate-[-90deg]'}`} />
               </div>
-              {financialsExpanded ? (
-                <ChevronDown className="h-4 w-4" />
-              ) : (
-                <ChevronRight className="h-4 w-4" />
-              )}
             </button>
             {financialsExpanded && (
               <div className="mt-1 ml-2 space-y-1">
@@ -191,12 +222,8 @@ export default function MerchantSidebar() {
               <div className="flex items-center">
                 <Settings className="h-4 w-4 mr-2" />
                 <span>Settings</span>
+                <ChevronDown className={`h-3 w-3 ml-1.5 transition-transform ${settingsExpanded ? '' : 'rotate-[-90deg]'}`} />
               </div>
-              {settingsExpanded ? (
-                <ChevronDown className="h-4 w-4" />
-              ) : (
-                <ChevronRight className="h-4 w-4" />
-              )}
             </button>
             {settingsExpanded && (
               <div className="mt-1 ml-2 space-y-1">
