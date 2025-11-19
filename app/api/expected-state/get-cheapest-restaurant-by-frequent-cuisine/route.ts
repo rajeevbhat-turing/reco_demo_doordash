@@ -3,14 +3,14 @@ import { db } from '@/lib/db';
 import { calculateDistance } from '@/lib/utils/distance-utils';
 
 /**
- * GET /api/expected-state/get-cheaper-restaurants-by-frequent-cuisine?userId=123&lat=37.7749&lng=-122.4194&radius=10
+ * GET /api/expected-state/get-cheapest-restaurant-by-frequent-cuisine?userId=123&lat=37.7749&lng=-122.4194&radius=10
  * 
- * Finds restaurants with lower delivery fees than the user's previous orders:
+ * Finds the restaurant with the lowest delivery fee for user's most frequent cuisine:
  * 1. Gets user's previous orders
  * 2. Finds the most frequently ordered cuisine
  * 3. Gets the lowest delivery fee from orders of that cuisine
- * 4. Calculates actual delivery fees for all restaurants in that cuisine within radius
- * 5. Returns restaurants with lower calculated delivery fees
+ * 4. Returns the restaurant for that cuisine with the lowest delivery fee (within radius)
+ * 5. If no cheaper restaurant found, returns the restaurant from previous orders with lowest fee
  */
 export async function GET(request: NextRequest) {
   try {
@@ -161,7 +161,7 @@ export async function GET(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('❌ Get cheaper restaurants by frequent cuisine error:', error);
+    console.error('❌ Get cheapest restaurant by frequent cuisine error:', error);
     return NextResponse.json(
       { 
         success: false, 
@@ -171,4 +171,5 @@ export async function GET(request: NextRequest) {
     );
   }
 }
+
 
