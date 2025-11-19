@@ -205,7 +205,13 @@ export default function MerchantSidebar() {
                   highlightOrange={pathname === "/merchant/financials/transactions"}
                 />
                 <NavItem href="#" label="Payouts" icon={DollarSign} active={false} />
-                <NavItem href="#" label="Statements" icon={FileText} active={false} />
+                <NavItem 
+                  href="/merchant/financials/statements" 
+                  label="Statements" 
+                  icon={FileText} 
+                  active={pathname === "/merchant/financials/statements"}
+                  highlightOrange={pathname === "/merchant/financials/statements"}
+                />
               </div>
             )}
           </div>
