@@ -209,7 +209,7 @@ export default function Home() {
       .slice(0, 8);
   }, [actualRestaurants]);
 
-  // Fetch all deals to get restaurants with restaurant-specific deals
+  // Fetch all deals
   const { data: allDeals } = useAllDeals();
 
   const dealsForYou = useMemo(() => {
@@ -226,8 +226,7 @@ export default function Home() {
     return actualRestaurants
       .filter(
         restaurant => restaurantIdsWithDeals.has(restaurant.id) && hasValidLogo(restaurant.logo)
-      )
-      .slice(0, 8);
+      );
   }, [actualRestaurants, allDeals]);
 
   const newOnDoorDash = useMemo(() => {
@@ -244,7 +243,6 @@ export default function Home() {
   useEffect(() => {
     const applyFilters = (restaurantList: Restaurant[]): Restaurant[] => {
       let filtered = [...restaurantList];
-      console.log('filtered', filtered);
 
       // Apply category filter (from FoodCategories component)
       if (selectedCategory) {
@@ -339,10 +337,11 @@ export default function Home() {
         filtered = filtered.filter(restaurant => filters.price!.includes(restaurant.priceRange));
       }
 
-      // For demo purposes, we'll just simulate these filters
       if (filters.deals) {
-        // Filter restaurants that have deals
-        filtered = filtered.filter(restaurant => restaurant.discount);
+        // Filter the restaurants that have atleast one restaurant-specific deal
+        filtered = filtered.filter(restaurant => {
+          return allDeals?.some(deal => deal.restaurantId === restaurant.id);
+        });
       }
 
       return filtered;
