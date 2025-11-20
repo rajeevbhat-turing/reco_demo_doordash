@@ -100,9 +100,15 @@ export default function SignUp({
 
     if (!formData.firstName.trim()) {
       newErrors.firstName = 'First name is required';
+    } else if (!/^[a-zA-Z0-9\s\-'.,]+$/.test(formData.firstName)) {
+      newErrors.firstName =
+        'First name must only contain letters, numbers, spaces, hyphens, apostrophes, periods, and commas';
     }
     if (!formData.lastName.trim()) {
       newErrors.lastName = 'Last name is required';
+    } else if (!/^[a-zA-Z0-9\s\-'.,]+$/.test(formData.lastName)) {
+      newErrors.lastName =
+        'Last name must only contain letters, numbers, spaces, hyphens, apostrophes, periods, and commas';
     }
 
     if (!formData.email.trim()) {
