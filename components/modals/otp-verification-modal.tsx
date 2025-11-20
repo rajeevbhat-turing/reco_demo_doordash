@@ -218,26 +218,6 @@ export default function OTPVerificationModal({
               >
                 {resendTimer > 0 ? `Resend Code (${resendTimer})` : 'Resend Code'}
               </button>
-              <div
-                className="rounded-full"
-                style={{ backgroundColor: '#191919ff', width: '3px', height: '3px' }}
-              ></div>
-              <button
-                onClick={() => {}}
-                className="underline font-semibold text-sm text-[#191919ff] hover:text-gray-700"
-              >
-                Receive a code via call
-              </button>
-              <div
-                className="rounded-full"
-                style={{ backgroundColor: '#191919ff', width: '3px', height: '3px' }}
-              ></div>
-              <button
-                onClick={() => {}}
-                className="underline font-semibold text-sm text-[#191919ff] hover:text-gray-700"
-              >
-                Get Help
-              </button>
             </div>
 
             {/* Action Buttons */}
