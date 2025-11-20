@@ -6,6 +6,8 @@ import { usePathname } from "next/navigation"
 import { ChevronDown, ChevronRight, Home, BarChart2, FileText, Users, Star, MessageSquare, Receipt, Target, Utensils, Clock, DollarSign, Truck, Settings, UserCog, PlusSquare, CreditCard, Building2, Mail, Plug } from "lucide-react"
 import { DashDoorLogoMark, DashDoorWordMark } from "@/components/common/Icons"
 import StoreSelector from "./StoreSelector"
+import { useCurrentStore } from "@/lib/hooks/useCurrentStore"
+import { restaurants } from "@/constants/restaurants"
 
 function NavItem({ href, label, active, icon: Icon, highlightRed, highlightOrange, disabled }: { href: string; label: string; active: boolean; icon: React.ComponentType<any>; highlightRed?: boolean; highlightOrange?: boolean; disabled?: boolean }) {
   const activeClass = highlightOrange && active 
@@ -37,6 +39,7 @@ function NavItem({ href, label, active, icon: Icon, highlightRed, highlightOrang
 
 export default function MerchantSidebar() {
   const pathname = usePathname()
+  const { currentStoreId } = useCurrentStore()
   // Auto-expand based on current pathname
   const [settingsExpanded, setSettingsExpanded] = useState(pathname?.startsWith("/merchant/settings") || false)
   const [customersExpanded, setCustomersExpanded] = useState(pathname?.startsWith("/merchant/customers") || false)
@@ -44,7 +47,8 @@ export default function MerchantSidebar() {
   const [menuExpanded, setMenuExpanded] = useState(pathname?.startsWith("/merchant/menu") || false)
   const [marketingExpanded, setMarketingExpanded] = useState(pathname?.startsWith("/merchant/marketing") || false)
   const [isStoreSelectorOpen, setIsStoreSelectorOpen] = useState(false)
-  const [selectedStoreId, setSelectedStoreId] = useState<string | undefined>(undefined)
+  
+  const currentStore = restaurants.find(r => r.id === currentStoreId) || restaurants[0]
   const isSettingsPage = pathname?.startsWith("/merchant/settings") || false
   const isCustomersPage = pathname?.startsWith("/merchant/customers") || false
   const isFinancialsPage = pathname?.startsWith("/merchant/financials") || false
@@ -67,7 +71,7 @@ export default function MerchantSidebar() {
             className="w-full flex items-end justify-between px-3 py-2 bg-gray-50 border border-gray-200 rounded-md cursor-pointer hover:bg-gray-100 transition-colors"
           >
             <div className="flex items-end gap-2">
-              <div className="text-sm font-medium">Frosty Bear test NCP 🐻🍯</div>
+              <div className="text-sm font-medium">{currentStore.name}</div>
               <div className="text-xs text-gray-500 mb-0.5">Store</div>
             </div>
             <ChevronDown className="h-4 w-4 text-gray-500 mb-0.5" />
@@ -303,8 +307,6 @@ export default function MerchantSidebar() {
       <StoreSelector
         isOpen={isStoreSelectorOpen}
         onClose={() => setIsStoreSelectorOpen(false)}
-        selectedStoreId={selectedStoreId}
-        onSelectStore={setSelectedStoreId}
       />
     </>
   )

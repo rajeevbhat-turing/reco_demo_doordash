@@ -4,6 +4,8 @@ import MerchantLayout from "@/components/merchant/MerchantLayout"
 import { Search, RefreshCw, ChevronLeft, ChevronRight, ChevronDown } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { useMerchantPersistedState } from "@/lib/hooks/useMerchantPersistedState"
+import { useCurrentStore } from "@/lib/hooks/useCurrentStore"
+import { useMerchantOrdersStore } from "@/store/merchant-orders-store"
 
 interface Order {
   customer: string
@@ -143,9 +145,26 @@ function FilterBar({ searchValue, onSearchChange }: { searchValue: string; onSea
 }
 
 export default function MerchantOrdersPage() {
-  const [searchValue, setSearchValue] = useMerchantPersistedState('orders', 'filters', 'searchQuery', '')
+  const { currentStoreId, currentStoreData } = useCurrentStore()
+  const { orders, searchQuery, selectedFilter, activeTab, setOrders, setSearchQuery, setSelectedFilter, setActiveTab } = useMerchantOrdersStore()
+  const [searchValue, setSearchValue] = useState(searchQuery)
   const [lastUpdated, setLastUpdated] = useState(3)
-  const [activeTab, setActiveTab] = useMerchantPersistedState<'Active' | 'Scheduled' | 'History'>('orders', 'tabs', 'activeTab', 'History')
+
+  // Load store-specific orders when store changes
+  useEffect(() => {
+    if (currentStoreData?.orders) {
+      setOrders(currentStoreData.orders.orders)
+      setSearchQuery(currentStoreData.orders.searchQuery)
+      setSelectedFilter(currentStoreData.orders.selectedFilter)
+      setActiveTab(currentStoreData.orders.activeTab)
+      setSearchValue(currentStoreData.orders.searchQuery)
+    }
+  }, [currentStoreId, currentStoreData, setOrders, setSearchQuery, setSelectedFilter, setActiveTab])
+
+  // Sync search value with store
+  useEffect(() => {
+    setSearchQuery(searchValue)
+  }, [searchValue, setSearchQuery])
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -158,13 +177,13 @@ export default function MerchantOrdersPage() {
     setLastUpdated(0)
   }
 
-  // Filter orders based on active tab
-  const filteredOrders = mockOrders.filter(order => {
-    if (activeTab === "History") {
-      return true // Show all orders in history
-    }
-    // For Active and Scheduled tabs, filter accordingly
-    return false // Placeholder - add logic as needed
+  // Filter orders based on active tab and search
+  const filteredOrders = orders.filter(order => {
+    const matchesTab = activeTab === "History" || order.orderStatus === activeTab
+    const matchesSearch = searchValue === "" || 
+      order.customer.toLowerCase().includes(searchValue.toLowerCase()) ||
+      order.orderId.toLowerCase().includes(searchValue.toLowerCase())
+    return matchesTab && matchesSearch
   })
 
   return (

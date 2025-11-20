@@ -4,6 +4,8 @@ import MerchantLayout from "@/components/merchant/MerchantLayout"
 import { ArrowRight, Lightbulb, Megaphone, TrendingUp, ChevronRight, Star, Sparkles } from "lucide-react"
 import SalesChart from "@/components/merchant/SalesChart"
 import { useReviewStore } from "@/store/review-store"
+import { useCurrentStore } from "@/lib/hooks/useCurrentStore"
+import { useMerchantHomeStore } from "@/store/merchant-home-store"
 
 function Stat({ label, value }: { label: string; value: string }) {
   return (
@@ -140,7 +142,16 @@ function OperationsReviewCard() {
 }
 
 export default function MerchantHomePage() {
+  const { currentStoreId, currentStoreData } = useCurrentStore()
+  const { metrics } = useMerchantHomeStore()
   const [activeFilter, setActiveFilter] = useState("All")
+
+  // Load store-specific metrics when store changes
+  useEffect(() => {
+    if (currentStoreData?.home) {
+      useMerchantHomeStore.getState().setMetrics(currentStoreData.home.metrics)
+    }
+  }, [currentStoreId, currentStoreData])
 
   // Sample sales data for the chart
   const salesData = [800, 1200, 950, 1400, 1100, 1600, 1800, 1500, 1700, 1900, 1600, 2000, 1800, 1900]
@@ -161,9 +172,9 @@ export default function MerchantHomePage() {
 
           {/* Stats */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-            <Stat label="Gross sales" value="$309.00" />
-            <Stat label="Total orders" value="14" />
-            <Stat label="Average ticket size" value="$22.07" />
+            <Stat label="Gross sales" value={`$${metrics.totalSales.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`} />
+            <Stat label="Total orders" value={metrics.totalOrders.toString()} />
+            <Stat label="Average ticket size" value={`$${metrics.averageOrderValue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`} />
           </div>
 
           {/* Insights filter tabs */}

@@ -3,6 +3,8 @@
 import { create } from "zustand"
 import { persist } from "zustand/middleware"
 import { MerchantStorageKeys } from "@/lib/utils/merchant-storage"
+import { setStoreScopedStorage } from "@/lib/utils/store-scoped-storage"
+import { merchantStoreData, StoreMerchantData } from "@/constants/merchant-store-data"
 
 export type ItemStatus = 
   | "In stock"
@@ -209,6 +211,9 @@ const initialCategories: MenuCategory[] = [
   }
 ]
 
+// Store instance - will be updated when store changes
+let currentStoreId = 'philz-coffee'
+
 export const useMerchantMenuStore = create<MerchantMenuStore>()(
   persist(
     (set, get) => ({
@@ -216,17 +221,36 @@ export const useMerchantMenuStore = create<MerchantMenuStore>()(
       expandedCategories: new Set(["paninis"]),
       showBanner: true,
 
-      setCategories: (categories) => set({ categories }),
+      setCategories: (categories) => {
+        set({ categories })
+        if (typeof window !== 'undefined') {
+          setStoreScopedStorage(currentStoreId, 'menu', {
+            categories,
+            expandedCategories: Array.from(get().expandedCategories),
+            showBanner: get().showBanner
+          })
+        }
+      },
 
       updateItemStatus: (itemId, status) =>
-        set((state) => ({
-          categories: state.categories.map((category) => ({
-            ...category,
-            items: category.items.map((item) =>
-              item.id === itemId ? { ...item, status } : item
-            )
-          }))
-        })),
+        set((state) => {
+          const updated = {
+            categories: state.categories.map((category) => ({
+              ...category,
+              items: category.items.map((item) =>
+                item.id === itemId ? { ...item, status } : item
+              )
+            }))
+          }
+          if (typeof window !== 'undefined') {
+            setStoreScopedStorage(currentStoreId, 'menu', {
+              ...updated,
+              expandedCategories: Array.from(state.expandedCategories),
+              showBanner: state.showBanner
+            })
+          }
+          return updated
+        }),
 
       toggleCategory: (categoryId) =>
         set((state) => {
@@ -239,37 +263,83 @@ export const useMerchantMenuStore = create<MerchantMenuStore>()(
           } else {
             newExpanded.add(categoryId)
           }
+          if (typeof window !== 'undefined') {
+            setStoreScopedStorage(currentStoreId, 'menu', {
+              categories: state.categories,
+              expandedCategories: Array.from(newExpanded),
+              showBanner: state.showBanner
+            })
+          }
           return { expandedCategories: newExpanded }
         }),
 
-      setShowBanner: (show) => set({ showBanner: show }),
+      setShowBanner: (show) => {
+        set({ showBanner: show })
+        if (typeof window !== 'undefined') {
+          setStoreScopedStorage(currentStoreId, 'menu', {
+            categories: get().categories,
+            expandedCategories: Array.from(get().expandedCategories),
+            showBanner: show
+          })
+        }
+      },
 
       addItem: (categoryId, item) =>
-        set((state) => ({
-          categories: state.categories.map((category) =>
-            category.id === categoryId
-              ? { ...category, items: [...category.items, item] }
-              : category
-          )
-        })),
+        set((state) => {
+          const updated = {
+            categories: state.categories.map((category) =>
+              category.id === categoryId
+                ? { ...category, items: [...category.items, item] }
+                : category
+            )
+          }
+          if (typeof window !== 'undefined') {
+            setStoreScopedStorage(currentStoreId, 'menu', {
+              ...updated,
+              expandedCategories: Array.from(state.expandedCategories),
+              showBanner: state.showBanner
+            })
+          }
+          return updated
+        }),
 
       updateItem: (itemId, updates) =>
-        set((state) => ({
-          categories: state.categories.map((category) => ({
-            ...category,
-            items: category.items.map((item) =>
-              item.id === itemId ? { ...item, ...updates } : item
-            )
-          }))
-        })),
+        set((state) => {
+          const updated = {
+            categories: state.categories.map((category) => ({
+              ...category,
+              items: category.items.map((item) =>
+                item.id === itemId ? { ...item, ...updates } : item
+              )
+            }))
+          }
+          if (typeof window !== 'undefined') {
+            setStoreScopedStorage(currentStoreId, 'menu', {
+              ...updated,
+              expandedCategories: Array.from(state.expandedCategories),
+              showBanner: state.showBanner
+            })
+          }
+          return updated
+        }),
 
       deleteItem: (itemId) =>
-        set((state) => ({
-          categories: state.categories.map((category) => ({
-            ...category,
-            items: category.items.filter((item) => item.id !== itemId)
-          }))
-        }))
+        set((state) => {
+          const updated = {
+            categories: state.categories.map((category) => ({
+              ...category,
+              items: category.items.filter((item) => item.id !== itemId)
+            }))
+          }
+          if (typeof window !== 'undefined') {
+            setStoreScopedStorage(currentStoreId, 'menu', {
+              ...updated,
+              expandedCategories: Array.from(state.expandedCategories),
+              showBanner: state.showBanner
+            })
+          }
+          return updated
+        })
     }),
     {
       name: MerchantStorageKeys.MENU,
@@ -288,4 +358,36 @@ export const useMerchantMenuStore = create<MerchantMenuStore>()(
     }
   )
 )
+
+// Listen for store changes and reload data
+if (typeof window !== 'undefined') {
+  window.addEventListener('storeDataLoaded', ((event: CustomEvent<{ storeId: string, storeData: StoreMerchantData }>) => {
+    const { storeId, storeData } = event.detail
+    currentStoreId = storeId
+    
+    // Load store-specific data from localStorage or use default from storeData
+    const storageKey = `merchant.${storeId}.menu`
+    let storedData = storeData.menu
+    
+    try {
+      const stored = localStorage.getItem(storageKey)
+      if (stored) {
+        storedData = JSON.parse(stored)
+      }
+    } catch (e) {
+      // Use default from storeData
+    }
+    
+    useMerchantMenuStore.getState().setCategories(storedData.categories)
+    useMerchantMenuStore.getState().setShowBanner(storedData.showBanner)
+    
+    // Set expanded categories
+    const expandedSet = new Set(storedData.expandedCategories || [])
+    storedData.expandedCategories?.forEach((catId: string) => {
+      if (!useMerchantMenuStore.getState().expandedCategories.has(catId)) {
+        useMerchantMenuStore.getState().toggleCategory(catId)
+      }
+    })
+  }) as EventListener)
+}
 
