@@ -215,7 +215,13 @@ export default function MerchantSidebar() {
               </div>
             )}
           </div>
-          <NavItem href="#" label="Request a Delivery" icon={Truck} active={false} />
+          <NavItem 
+            href="/merchant/request-delivery" 
+            label="Request a Delivery" 
+            icon={Truck} 
+            active={pathname === "/merchant/request-delivery"}
+            highlightRed={pathname === "/merchant/request-delivery"}
+          />
           
           {/* Settings with expandable submenu */}
           <div>
@@ -231,23 +237,41 @@ export default function MerchantSidebar() {
                 <ChevronDown className={`h-3 w-3 ml-1.5 transition-transform ${settingsExpanded ? '' : 'rotate-[-90deg]'}`} />
               </div>
             </button>
-            {settingsExpanded && (
-              <div className="mt-1 ml-2 space-y-1">
-                <NavItem href="/merchant/settings/account" label="Account settings" icon={UserCog} active={pathname === "/merchant/settings/account"} />
-                <NavItem href="/merchant/settings/pricing" label="Pricing plans" icon={DollarSign} active={pathname === "/merchant/settings/pricing"} />
-                <NavItem href="/merchant/settings/store" label="Store settings" icon={Building2} active={pathname === "/merchant/settings/store"} />
-                <NavItem href="/merchant/users" label="Manage Users" icon={Users} active={pathname?.startsWith("/merchant/users") || false} />
-                <NavItem href="/merchant/settings/communications" label="Store communications" icon={Mail} active={pathname === "/merchant/settings/communications"} />
-                <NavItem 
-                  href="/merchant/settings/bank-account" 
-                  label="Bank account" 
-                  icon={CreditCard} 
-                  active={pathname === "/merchant/settings/bank-account"}
-                  highlightOrange={pathname === "/merchant/settings/bank-account"}
-                />
-                <NavItem href="/merchant/settings/integrations" label="Integrations" icon={Plug} active={pathname === "/merchant/settings/integrations"} />
-              </div>
-            )}
+                {settingsExpanded && (
+                  <div className="mt-1 ml-2 space-y-1">
+                    <NavItem 
+                      href="/merchant/settings/account" 
+                      label="Account settings" 
+                      icon={UserCog} 
+                      active={pathname === "/merchant/settings/account"}
+                      highlightRed={pathname === "/merchant/settings/account"}
+                    />
+                    <NavItem 
+                      href="/merchant/settings/pricing" 
+                      label="Pricing plans" 
+                      icon={DollarSign} 
+                      active={pathname === "/merchant/settings/pricing"}
+                      highlightRed={pathname === "/merchant/settings/pricing"}
+                    />
+                    <NavItem 
+                      href="/merchant/settings/store" 
+                      label="Store settings" 
+                      icon={Building2} 
+                      active={pathname === "/merchant/settings/store"}
+                      highlightRed={pathname === "/merchant/settings/store"}
+                    />
+                    <NavItem href="/merchant/users" label="Manage Users" icon={Users} active={pathname?.startsWith("/merchant/users") || false} />
+                    <NavItem href="/merchant/settings/communications" label="Store communications" icon={Mail} active={pathname === "/merchant/settings/communications"} />
+                    <NavItem 
+                      href="/merchant/settings/bank-account" 
+                      label="Bank account" 
+                      icon={CreditCard} 
+                      active={pathname === "/merchant/settings/bank-account"}
+                      highlightOrange={pathname === "/merchant/settings/bank-account"}
+                    />
+                    <NavItem href="/merchant/settings/integrations" label="Integrations" icon={Plug} active={pathname === "/merchant/settings/integrations"} />
+                  </div>
+                )}
           </div>
           
           <NavItem href="#" label="Add Solutions" icon={PlusSquare} active={false} />
