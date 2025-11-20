@@ -194,7 +194,7 @@ export default function SignUp({
         paymentMethods: [],
         addresses: [],
       };
-      
+
       onShowOTP(userObject);
     }
   };
@@ -381,15 +381,9 @@ export default function SignUp({
 
       {/* Legal Text */}
       <p className="text-sm font-medium text-[#606060ff] mt-8 mb-4">
-        By tapping "Sign Up" or "Continue with...," you agree to DashDoor's{' '}
-        <a href="" className="text-[#1700ee] underline">
-          Terms
-        </a>
-        , including a waiver of your jury trial right, and{' '}
-        <a href="" className="text-[#1700ee] underline">
-          Privacy Policy
-        </a>
-        . We may text you a verification code. Msg & data rates apply.
+        By tapping "Sign Up" or "Continue with...," you agree to DashDoor's Terms, including a
+        waiver of your jury trial right, and Privacy Policy. We may text you a verification code.
+        Msg & data rates apply.
       </p>
 
       {/* Sign Up Button */}
