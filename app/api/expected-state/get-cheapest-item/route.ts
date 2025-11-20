@@ -161,12 +161,6 @@ export async function GET(request: NextRequest) {
       filteredItems = filteredItems.filter((item: any) => item.restaurantId === nearestRestaurantId);
     }
 
-    if (restaurantFilters.includes('with_discounts')) {
-      filteredItems = filteredItems.filter((item: any) => 
-        item.restaurantDiscountPercentage > 0 || item.itemDiscountPercentage > 0
-      );
-    }
-
     if (filteredItems.length === 0) {
       return NextResponse.json({
         success: true,
@@ -176,9 +170,33 @@ export async function GET(request: NextRequest) {
         },
       });
     }
-
-    // Step 6: Apply item filters
-    let selectedItem = filteredItems[0];
+    
+    // Find the minimum effective price
+    const minPrice = Math.min(...filteredItems.map((item: any) => item.itemPrice));
+    
+    // Get all items with the minimum price
+    const cheapestItems = filteredItems.filter((item: any) => item.itemPrice === minPrice);
+    
+    // If there's a tie, prefer the item whose name appears first in the options list
+    let selectedItem;
+    if (cheapestItems.length === 1) {
+      selectedItem = cheapestItems[0];
+    } else {
+      // For each option in order, check if any of the cheapest items match
+      for (const optionName of options) {
+        const match = cheapestItems.find((item: any) => 
+          item.itemName.toLowerCase().includes(optionName.toLowerCase())
+        );
+        if (match) {
+          selectedItem = match;
+          break;
+        }
+      }
+      // Fallback to first item if no match found (shouldn't happen)
+      if (!selectedItem) {
+        selectedItem = cheapestItems[0];
+      }
+    }
 
     // Step 7: Format the response
     const result = {
@@ -186,13 +204,10 @@ export async function GET(request: NextRequest) {
         id: String(selectedItem.itemId),
         name: selectedItem.itemName,
         price: selectedItem.itemPrice,
-        effectivePrice: selectedItem.effectivePrice || selectedItem.itemPrice,
         description: selectedItem.itemDescription,
         image: selectedItem.itemImage,
         calories: selectedItem.itemCalories,
         rating: selectedItem.itemRating,
-        discountPercentage: selectedItem.itemDiscountPercentage,
-        discountCap: selectedItem.itemDiscountCap,
       },
       restaurant: {
         id: String(selectedItem.restaurantId),
