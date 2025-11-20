@@ -1,5 +1,4 @@
 'use client'
-import { useState } from "react"
 import MerchantLayout from "@/components/merchant/MerchantLayout"
 import { Search, Settings, Eye, Plus, ChevronDown, Star, X, Pencil, Trash2 } from "lucide-react"
 import { Input } from "@/components/ui/input"
@@ -9,14 +8,15 @@ import MenuSettingsDropdown from "@/components/merchant/MenuSettingsDropdown"
 import RestaurantSelector from "@/components/merchant/RestaurantSelector"
 import ItemEditorPanel from "@/components/merchant/ItemEditorPanel"
 import { MenuItem } from "@/store/merchant-menu-store"
+import { useMerchantPersistedState } from "@/lib/hooks/useMerchantPersistedState"
 
 export default function MerchantMenuPage() {
-  const [searchValue, setSearchValue] = useState("")
-  const [selectedFilter, setSelectedFilter] = useState("All items")
-  const [isMenuSettingsOpen, setIsMenuSettingsOpen] = useState(false)
-  const [selectedRestaurantId, setSelectedRestaurantId] = useState<string>("philz-coffee")
-  const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null)
-  const [isItemEditorOpen, setIsItemEditorOpen] = useState(false)
+  const [searchValue, setSearchValue] = useMerchantPersistedState('menu', 'filters', 'searchQuery', '')
+  const [selectedFilter, setSelectedFilter] = useMerchantPersistedState('menu', 'filters', 'selectedFilter', 'All items')
+  const [isMenuSettingsOpen, setIsMenuSettingsOpen] = useMerchantPersistedState('menu', 'ui', 'isMenuSettingsOpen', false)
+  const [selectedRestaurantId, setSelectedRestaurantId] = useMerchantPersistedState('menu', 'selector', 'selectedRestaurantId', 'philz-coffee')
+  const [selectedItem, setSelectedItem] = useMerchantPersistedState<MenuItem | null>('menu', 'editor', 'selectedItem', null)
+  const [isItemEditorOpen, setIsItemEditorOpen] = useMerchantPersistedState('menu', 'editor', 'isOpen', false)
   
   const {
     categories,
