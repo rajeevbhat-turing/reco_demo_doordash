@@ -1,6 +1,5 @@
 'use client';
 
-import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useUserStore } from '@/store/user-store';
 import { User } from '@/lib/types/user-types';
@@ -16,12 +15,10 @@ import { User } from '@/lib/types/user-types';
  * @returns User data with loading and error states
  */
 export function useUser(userId: string) {
-  const getUser = useUserStore(state => state.getUser);
-  
-  // Check store first
-  const storeUser = useMemo(() => {
-    return getUser(userId);
-  }, [getUser, userId]);
+  // Subscribe to the specific user in the store - this will update when store changes
+  const storeUser = useUserStore(state =>
+    state.users.find(user => user.id === userId) || null
+  );
 
   // Only fetch from API if user is not in store
   const query = useQuery<User>({
@@ -29,7 +26,7 @@ export function useUser(userId: string) {
     queryFn: async () => {
       const response = await fetch(`/api/users/${userId}`);
       const result = await response.json();
-      
+
       if (!result.success) {
         throw new Error(result.error || 'Failed to fetch user');
       }
