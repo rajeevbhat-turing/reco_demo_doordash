@@ -4,15 +4,15 @@ import { useState, useMemo, useRef, useEffect } from "react"
 import { Search, X } from "lucide-react"
 import { restaurants } from "@/constants/restaurants"
 import { Input } from "@/components/ui/input"
+import { useCurrentStore } from "@/lib/hooks/useCurrentStore"
 
 interface StoreSelectorProps {
   isOpen: boolean
   onClose: () => void
-  selectedStoreId?: string
-  onSelectStore?: (storeId: string) => void
 }
 
-export default function StoreSelector({ isOpen, onClose, selectedStoreId, onSelectStore }: StoreSelectorProps) {
+export default function StoreSelector({ isOpen, onClose }: StoreSelectorProps) {
+  const { currentStoreId, setCurrentStoreId } = useCurrentStore()
   const [searchValue, setSearchValue] = useState("")
   const dropdownRef = useRef<HTMLDivElement>(null)
 
@@ -118,12 +118,12 @@ export default function StoreSelector({ isOpen, onClose, selectedStoreId, onSele
             <h3 className="text-sm font-semibold text-gray-900 mb-2">Your stores</h3>
             <div className="space-y-0">
               {filteredStores.map((store) => {
-                const isSelected = selectedStoreId === store.id
+                const isSelected = currentStoreId === store.id
                 return (
                   <button
                     key={store.id}
                     onClick={() => {
-                      onSelectStore?.(store.id)
+                      setCurrentStoreId(store.id)
                       onClose()
                     }}
                     className={`w-full text-left px-3 py-2.5 rounded-md transition-colors ${

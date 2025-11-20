@@ -3,6 +3,7 @@
 import { create } from "zustand"
 import { persist } from "zustand/middleware"
 import { MerchantStorageKeys } from "@/lib/utils/merchant-storage"
+import { merchantStoreData, StoreMerchantData } from "@/constants/merchant-store-data"
 
 export interface Order {
   customer: string
@@ -57,6 +58,8 @@ const initialOrders: Order[] = [
   }
 ]
 
+let currentStoreId = 'philz-coffee'
+
 export const useMerchantOrdersStore = create<OrdersStore>()(
   persist(
     (set) => ({
@@ -86,4 +89,30 @@ export const useMerchantOrdersStore = create<OrdersStore>()(
     }
   )
 )
+
+// Listen for store changes and reload data
+if (typeof window !== 'undefined') {
+  window.addEventListener('storeDataLoaded', ((event: CustomEvent<{ storeId: string, storeData: StoreMerchantData }>) => {
+    const { storeId, storeData } = event.detail
+    currentStoreId = storeId
+    
+    // Load store-specific data from localStorage or use default from storeData
+    const storageKey = `merchant.${storeId}.orders`
+    let storedData = storeData.orders
+    
+    try {
+      const stored = localStorage.getItem(storageKey)
+      if (stored) {
+        storedData = JSON.parse(stored)
+      }
+    } catch (e) {
+      // Use default from storeData
+    }
+    
+    useMerchantOrdersStore.getState().setOrders(storedData.orders)
+    useMerchantOrdersStore.getState().setSearchQuery(storedData.searchQuery)
+    useMerchantOrdersStore.getState().setSelectedFilter(storedData.selectedFilter)
+    useMerchantOrdersStore.getState().setActiveTab(storedData.activeTab)
+  }) as EventListener)
+}
 
