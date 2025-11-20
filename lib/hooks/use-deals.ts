@@ -56,8 +56,9 @@ export function useCommonDeals() {
 /**
  * Fetch all deals (restaurant-specific + common deals)
  * Useful for getting a list of all restaurants that have deals
+ * @param enabled - Whether to fetch deals (default: true)
  */
-export function useAllDeals() {
+export function useAllDeals(enabled: boolean = true) {
   const query = useQuery<Deal[]>({
     queryKey: ['deals', 'all'],
     queryFn: async () => {
@@ -71,6 +72,7 @@ export function useAllDeals() {
       }
       return result.data || [];
     },
+    enabled, // Only fetch when enabled
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 

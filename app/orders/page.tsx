@@ -39,10 +39,13 @@ export default function Orders() {
   const defaultAddress = currentUser?.addresses?.find(a => a.default);
   const activeAddress = defaultAddress || tempAddress;
 
-  // Fetch restaurants from backend
+  // Only fetch restaurants when there are orders (optimization: avoid unnecessary API calls)
+  // Restaurants are needed for reorder functionality
+  const hasOrders = orders.length > 0;
+  const shouldFetchRestaurants = hasOrders && activeAddress?.lat && activeAddress?.lng;
   const { data: restaurants = [], isLoading: isLoadingRestaurants } = useRestaurants(
-    activeAddress?.lat,
-    activeAddress?.lng
+    shouldFetchRestaurants ? activeAddress?.lat : undefined,
+    shouldFetchRestaurants ? activeAddress?.lng : undefined
   );
 
   // Fix hydration by only rendering orders on client side

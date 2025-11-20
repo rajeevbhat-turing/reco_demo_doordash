@@ -36,25 +36,11 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
     getConfig
   } = useCartStore()
 
-  // Get user's address for fetching restaurants
-  const currentUser = useUserStore(state => state.currentUser)
-  const defaultAddress = currentUser?.addresses.find(a => a.default)
-
-  // Fetch restaurants near user's address
-  const { data: restaurants } = useRestaurants(
-    defaultAddress?.lat,
-    defaultAddress?.lng,
-    10 // 10 mile radius
-  )
-  
-  // Get current store info
+  // Get current store info first (before fetching data)
   const currentCategory = getCurrentCategory()
   const currentStoreId = getCurrentStoreId()
   const currentRestaurantId = getCurrentRestaurantId()
   const activeStoreId = currentStoreId || currentRestaurantId
-  
-  // Fetch menu items for the current restaurant
-  const { data: menuData } = useRestaurantMenu(activeStoreId || undefined)
   
   // Find the cart for the current store
   // If no current store is set, use the last cart as the main cart
@@ -66,6 +52,24 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
     currentCart = carts[carts.length - 1]
     otherCarts = carts.slice(0, -1)
   }
+
+  // Only fetch restaurants if needed (for restaurant carts or other carts that might be restaurants)
+  const currentUser = useUserStore(state => state.currentUser)
+  const defaultAddress = currentUser?.addresses.find(a => a.default)
+  const hasRestaurantCart = currentCart?.storeCategory === 'restaurant' || 
+    otherCarts.some(cart => cart.storeCategory === 'restaurant')
+  const shouldFetchRestaurants = hasRestaurantCart && defaultAddress?.lat && defaultAddress?.lng
+  
+  // Fetch restaurants near user's address (only when needed)
+  const { data: restaurants } = useRestaurants(
+    shouldFetchRestaurants ? defaultAddress?.lat : undefined,
+    shouldFetchRestaurants ? defaultAddress?.lng : undefined,
+    10 // 10 mile radius
+  )
+  
+  // Only fetch menu items for restaurant category carts
+  const shouldFetchMenu = currentCart?.storeCategory === 'restaurant' && activeStoreId
+  const { data: menuData } = useRestaurantMenu(shouldFetchMenu ? activeStoreId : undefined)
   
   const items = currentCart?.items || []
   

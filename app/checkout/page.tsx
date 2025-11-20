@@ -83,11 +83,19 @@ export default function CheckoutPage() {
   const { addOrder } = useOrdersStore();
   const { getAppliedDealId, getFreeItemIds } = useDealsStore();
 
-  // Fetch restaurants near user's address
+    // Find the cart using query params first (before fetching restaurants)
+  const currentCart = categoryParam && storeIdParam ? findCart(storeIdParam, categoryParam) : null;
+  const items = currentCart?.items || [];
+  const currentCategory = currentCart?.storeCategory || categoryParam; // Use categoryParam as fallback for faster access
+  const currentStoreId = currentCart?.storeId || null;
+
+  // Only fetch restaurants if this is a restaurant order (optimization: avoid unnecessary API calls)
+  // Use categoryParam directly for faster check without waiting for cart lookup
   const defaultAddress = currentUser?.addresses.find(a => a.default);
+  const shouldFetchRestaurants = categoryParam === 'restaurant' && defaultAddress?.lat && defaultAddress?.lng;
   const { data: restaurants } = useRestaurants(
-    defaultAddress?.lat,
-    defaultAddress?.lng,
+    shouldFetchRestaurants ? defaultAddress?.lat : undefined,
+    shouldFetchRestaurants ? defaultAddress?.lng : undefined,
     10 // 10 mile radius
   );
 
@@ -111,21 +119,16 @@ export default function CheckoutPage() {
   });
   const [showCountryDropdown, setShowCountryDropdown] = useState(false);
 
-  // Find the cart using query params
-  const currentCart = categoryParam && storeIdParam ? findCart(storeIdParam, categoryParam) : null;
-  const items = currentCart?.items || [];
-  const currentCategory = currentCart?.storeCategory || null;
-  const currentStoreId = currentCart?.storeId || null;
-
   // Get applied deal for this cart
   const cartId = currentStoreId && currentCategory ? `${currentStoreId}-${currentCategory}` : null;
   const appliedDealId = cartId ? getAppliedDealId(cartId) : null;
 
-  // Fetch deals to get the full deal object (includes restaurant-specific + common deals if restaurantId provided)
-  const { data: allDeals } = useDeals(currentStoreId || undefined);
+  // Only fetch deals if there's an applied deal (optimization: avoid unnecessary API calls)
+  const shouldFetchDeals = !!appliedDealId && !!currentStoreId;
+  const { data: allDeals } = useDeals(shouldFetchDeals ? currentStoreId : undefined);
 
   // Find the applied deal by ID
-  const appliedDeal: Deal | null = appliedDealId
+  const appliedDeal: Deal | null = appliedDealId && allDeals
     ? allDeals.find(deal => deal.id === appliedDealId) || null
     : null;
 
@@ -1172,25 +1175,22 @@ export default function CheckoutPage() {
                   <h2 className="text-lg font-semibold mb-6">2. Shipping details</h2>
 
                   {/* Map Placeholder */}
-                  <div className="mb-6">
+                  {/* <div className="mb-6">
                     <div className="relative h-48 bg-gray-100 rounded-lg overflow-hidden">
-                      {/* Map Placeholder */}
                       <div className="absolute inset-0 bg-gradient-to-br from-gray-200 to-gray-300">
-                        {/* Pin Icon */}
                         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-full">
                           <svg className="w-10 h-10" viewBox="0 0 24 24" fill="black">
                             <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
                           </svg>
                         </div>
                       </div>
-                      {/* Adjust Pin Button */}
                       <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2">
                         <button className="bg-white px-4 py-2 rounded-full shadow-md text-sm font-medium hover:bg-gray-50 transition-colors">
                           Adjust pin
                         </button>
                       </div>
                     </div>
-                  </div>
+                  </div> */}
 
                   {/* Delivery Time */}
                   <div className="mb-6">

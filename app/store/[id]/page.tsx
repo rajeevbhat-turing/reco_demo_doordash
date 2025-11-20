@@ -101,25 +101,26 @@ export default function RestaurantPage() {
   const featuredItemsRef = useRef<HTMLDivElement>(null);
   const dealsRef = useRef<HTMLDivElement>(null);
 
-  // Fetch restaurants near user's address
+  // Fetch the specific restaurant directly (optimization: don't wait for nearby restaurants list)
   const currentUser = useUserStore(state => state.currentUser);
   const defaultAddress = currentUser?.addresses.find(a => a.default);
+  
+  // Fetch this specific restaurant immediately - we have the ID from URL
+  const { data: specificRestaurant, isLoading: isLoadingRestaurant } = useRestaurant(id);
+
+  // Fetch menu for this restaurant in parallel
+  const { data: menuData, isLoading: isLoadingMenu, error: menuError } = useRestaurantMenu(id);
+
+  // Optionally fetch nearby restaurants list (non-blocking, for delivery area check)
+  // Only fetch if we have coordinates and want to check if restaurant is in delivery area
   const { data: restaurants } = useRestaurants(
     defaultAddress?.lat,
     defaultAddress?.lng,
     10 // 10 mile radius
   );
 
-  // Check if restaurant is in nearby results
+  // Check if restaurant is in nearby results (for delivery area validation)
   const restaurantInNearby = restaurants ? getRestaurantById(restaurants, id) : null;
-
-  // If not in nearby results, fetch this specific restaurant
-  const { data: specificRestaurant, isLoading: isLoadingRestaurant } = useRestaurant(
-    !restaurantInNearby && id ? id : undefined
-  );
-
-  // Fetch menu for this restaurant
-  const { data: menuData, isLoading: isLoadingMenu, error: menuError } = useRestaurantMenu(id);
 
   // Set the category to restaurant when the page loads
   useEffect(() => {
@@ -226,7 +227,8 @@ export default function RestaurantPage() {
 
   useEffect(() => {
     if (id && menuData) {
-      // Use restaurant from nearby results if available, otherwise use specifically fetched one
+      // Use restaurant from nearby results if available (for distance info), otherwise use specifically fetched one
+      // This allows the page to render immediately with specificRestaurant, then update if nearby list loads
       const restaurantData = restaurantInNearby || specificRestaurant;
 
       if (restaurantData) {

@@ -123,12 +123,16 @@ export function calculateDeliveryFee(params: FeeCalculationParams): {
   
   // Priority 1: Restaurant offers free delivery
   if (params.restaurant?.isFreeDelivery) {
+    // Free delivery for standard, but express surcharge still applies
+    if (params.deliveryOption === 'express') {
+      expressSurcharge = 2.99;
+    }
     return {
-      fee: 0,
+      fee: expressSurcharge,
       breakdown: {
         baseDeliveryFee: 0,
         distanceSurcharge: 0,
-        expressSurcharge: 0,
+        expressSurcharge,
         dealDiscount: 0,
       },
     };

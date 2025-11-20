@@ -25,8 +25,9 @@ function AllItemsContent() {
     10 // 10 mile radius
   );
 
-  // Fetch all deals to get restaurants with restaurant-specific deals
-  const { data: allDeals } = useAllDeals();
+  // Only fetch all deals when needed for "deals-for-you" section (optimization)
+  const shouldFetchDeals = section === 'deals-for-you';
+  const { data: allDeals } = useAllDeals(shouldFetchDeals);
 
   // Get parameters from the URL
   const title = decodeURIComponent(searchParams.get('title') || 'All Items');
