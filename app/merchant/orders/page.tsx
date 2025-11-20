@@ -3,6 +3,7 @@ import { useState, useEffect } from "react"
 import MerchantLayout from "@/components/merchant/MerchantLayout"
 import { Search, RefreshCw, ChevronLeft, ChevronRight, ChevronDown } from "lucide-react"
 import { Input } from "@/components/ui/input"
+import { useMerchantPersistedState } from "@/lib/hooks/useMerchantPersistedState"
 
 interface Order {
   customer: string
@@ -142,9 +143,9 @@ function FilterBar({ searchValue, onSearchChange }: { searchValue: string; onSea
 }
 
 export default function MerchantOrdersPage() {
-  const [searchValue, setSearchValue] = useState("")
+  const [searchValue, setSearchValue] = useMerchantPersistedState('orders', 'filters', 'searchQuery', '')
   const [lastUpdated, setLastUpdated] = useState(3)
-  const [activeTab, setActiveTab] = useState<"Active" | "Scheduled" | "History">("History")
+  const [activeTab, setActiveTab] = useMerchantPersistedState<'Active' | 'Scheduled' | 'History'>('orders', 'tabs', 'activeTab', 'History')
 
   useEffect(() => {
     const interval = setInterval(() => {

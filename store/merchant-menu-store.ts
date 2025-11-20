@@ -2,6 +2,7 @@
 
 import { create } from "zustand"
 import { persist } from "zustand/middleware"
+import { MerchantStorageKeys } from "@/lib/utils/merchant-storage"
 
 export type ItemStatus = 
   | "In stock"
@@ -271,7 +272,7 @@ export const useMerchantMenuStore = create<MerchantMenuStore>()(
         }))
     }),
     {
-      name: "merchantstore.menu",
+      name: MerchantStorageKeys.MENU,
       // Custom serialization for Set
       partialize: (state) => ({
         categories: state.categories,

@@ -1,5 +1,4 @@
 'use client'
-import { useState } from "react"
 import MerchantLayout from "@/components/merchant/MerchantLayout"
 import { Edit, Plus } from "lucide-react"
 import { Label } from "@/components/ui/label"
@@ -8,19 +7,23 @@ import EditStoreAddressModal from "@/components/merchant/EditStoreAddressModal"
 import EditPhoneNumberModal from "@/components/merchant/EditPhoneNumberModal"
 import EditWebsiteModal from "@/components/merchant/EditWebsiteModal"
 import EditDescriptionModal from "@/components/merchant/EditDescriptionModal"
+import { useMerchantPersistedState } from "@/lib/hooks/useMerchantPersistedState"
+import { useMerchantSettingsStore } from "@/store/merchant-settings-store"
 
 export default function StoreSettingsPage() {
-  const [storeName, setStoreName] = useState("Frosty Bear test NCP 🐻🍯")
-  const [address, setAddress] = useState("575 Bellevue Sq, Bellevue, WA 98004, USA")
-  const [phoneNumber, setPhoneNumber] = useState("")
-  const [website, setWebsite] = useState("http://himalayan-grill.com")
-  const [description, setDescription] = useState("start Hand crafted burgers, made the way they were intended to be. start Hand crafted burgers, made the way they were intended to be. start Hand crafted burgers, made the way they were intended to be. start Hand crafted burgers, made the way they were intended to be. start Hand crafted burgers, made the way they were intended to be. start Hand crafted burgers, made the way they were intended to be. start Hand crafted burgers, made the way they were intended to be. start Hand crafted burgers, made the way they were intended to be. start Hand crafted burgers, made the way they were intended to be. start Hand crafted burgers, made the way they were intended to be. start Hand crafted burgers, made the way they were intended to be. start Hand crafted burgers, made the way they were intended to be. start Hand crafted burgers, made the way they were intended to be. start Hand crafted burgers, made the way they were intended to be. start Hand crafted burgers, made the way they were intended to be. start Hand crafted burgers, made the way they were intended to be. start Hand crafted burgers, made the way they were intended to be. start Hand crafted burgers, made the way they were intended to be. start Hand crafted burgers, made the way they were intended to be. start Hand crafted burgers, made the way they were intended to be.")
+  const { store, updateStoreSettings } = useMerchantSettingsStore()
+  
+  const [storeName, setStoreName] = useMerchantPersistedState('settings', 'store', 'storeName', store.storeName)
+  const [address, setAddress] = useMerchantPersistedState('settings', 'store', 'address', store.address)
+  const [phoneNumber, setPhoneNumber] = useMerchantPersistedState('settings', 'store', 'phoneNumber', store.phoneNumber)
+  const [website, setWebsite] = useMerchantPersistedState('settings', 'store', 'website', store.website)
+  const [description, setDescription] = useMerchantPersistedState('settings', 'store', 'description', store.description)
 
-  const [isStoreNameModalOpen, setIsStoreNameModalOpen] = useState(false)
-  const [isAddressModalOpen, setIsAddressModalOpen] = useState(false)
-  const [isPhoneModalOpen, setIsPhoneModalOpen] = useState(false)
-  const [isWebsiteModalOpen, setIsWebsiteModalOpen] = useState(false)
-  const [isDescriptionModalOpen, setIsDescriptionModalOpen] = useState(false)
+  const [isStoreNameModalOpen, setIsStoreNameModalOpen] = useMerchantPersistedState('settings', 'modals', 'isStoreNameOpen', false)
+  const [isAddressModalOpen, setIsAddressModalOpen] = useMerchantPersistedState('settings', 'modals', 'isAddressOpen', false)
+  const [isPhoneModalOpen, setIsPhoneModalOpen] = useMerchantPersistedState('settings', 'modals', 'isPhoneOpen', false)
+  const [isWebsiteModalOpen, setIsWebsiteModalOpen] = useMerchantPersistedState('settings', 'modals', 'isWebsiteOpen', false)
+  const [isDescriptionModalOpen, setIsDescriptionModalOpen] = useMerchantPersistedState('settings', 'modals', 'isDescriptionOpen', false)
 
   return (
     <MerchantLayout>
@@ -142,6 +145,7 @@ export default function StoreSettingsPage() {
           currentName={storeName}
           onSave={(name) => {
             setStoreName(name)
+            updateStoreSettings({ storeName: name })
             setIsStoreNameModalOpen(false)
           }}
         />
@@ -152,6 +156,7 @@ export default function StoreSettingsPage() {
           currentAddress={address}
           onSave={(addr) => {
             setAddress(addr)
+            updateStoreSettings({ address: addr })
             setIsAddressModalOpen(false)
           }}
         />
@@ -162,6 +167,7 @@ export default function StoreSettingsPage() {
           currentPhone={phoneNumber}
           onSave={(phone) => {
             setPhoneNumber(phone)
+            updateStoreSettings({ phoneNumber: phone })
             setIsPhoneModalOpen(false)
           }}
         />
@@ -172,6 +178,7 @@ export default function StoreSettingsPage() {
           currentWebsite={website}
           onSave={(url) => {
             setWebsite(url)
+            updateStoreSettings({ website: url })
             setIsWebsiteModalOpen(false)
           }}
         />
@@ -182,6 +189,7 @@ export default function StoreSettingsPage() {
           currentDescription={description}
           onSave={(desc) => {
             setDescription(desc)
+            updateStoreSettings({ description: desc })
             setIsDescriptionModalOpen(false)
           }}
         />

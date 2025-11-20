@@ -1,5 +1,4 @@
 'use client'
-import { useState } from "react"
 import MerchantLayout from "@/components/merchant/MerchantLayout"
 import { Search, ChevronRight, Plus, X, ChevronDown } from "lucide-react"
 import { Input } from "@/components/ui/input"
@@ -7,15 +6,16 @@ import { Label } from "@/components/ui/label"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useMerchantUsersStore } from "@/store/merchant-users-store"
+import { useMerchantPersistedState } from "@/lib/hooks/useMerchantPersistedState"
 
 export default function MerchantUsersPage() {
-  const [searchValue, setSearchValue] = useState("")
-  const [isAddUserModalOpen, setIsAddUserModalOpen] = useState(false)
-  const [firstName, setFirstName] = useState("Maria")
-  const [lastName, setLastName] = useState("Smith")
-  const [email, setEmail] = useState("mariasmith@lapanineria.com")
-  const [selectedRole, setSelectedRole] = useState<string>("")
-  const [storeAccess, setStoreAccess] = useState(true)
+  const [searchValue, setSearchValue] = useMerchantPersistedState('users', 'search', 'query', '')
+  const [isAddUserModalOpen, setIsAddUserModalOpen] = useMerchantPersistedState('users', 'modal', 'isOpen', false)
+  const [firstName, setFirstName] = useMerchantPersistedState('users', 'form', 'firstName', '')
+  const [lastName, setLastName] = useMerchantPersistedState('users', 'form', 'lastName', '')
+  const [email, setEmail] = useMerchantPersistedState('users', 'form', 'email', '')
+  const [selectedRole, setSelectedRole] = useMerchantPersistedState('users', 'form', 'role', '')
+  const [storeAccess, setStoreAccess] = useMerchantPersistedState('users', 'form', 'storeAccess', true)
   
   const { users, addUser } = useMerchantUsersStore()
 

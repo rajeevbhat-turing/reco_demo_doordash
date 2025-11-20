@@ -2,6 +2,7 @@
 
 import { create } from "zustand"
 import { persist } from "zustand/middleware"
+import { MerchantStorageKeys } from "@/lib/utils/merchant-storage"
 
 export interface MerchantUser {
   id: string
@@ -62,7 +63,7 @@ export const useMerchantUsersStore = create<MerchantUsersStore>()(
         }))
     }),
     {
-      name: "merchantstore.users"
+      name: MerchantStorageKeys.USERS
     }
   )
 )

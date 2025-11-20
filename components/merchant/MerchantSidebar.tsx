@@ -7,7 +7,7 @@ import { ChevronDown, ChevronRight, Home, BarChart2, FileText, Users, Star, Mess
 import { DashDoorLogoMark, DashDoorWordMark } from "@/components/common/Icons"
 import StoreSelector from "./StoreSelector"
 
-function NavItem({ href, label, active, icon: Icon, highlightRed, highlightOrange }: { href: string; label: string; active: boolean; icon: React.ComponentType<any>; highlightRed?: boolean; highlightOrange?: boolean }) {
+function NavItem({ href, label, active, icon: Icon, highlightRed, highlightOrange, disabled }: { href: string; label: string; active: boolean; icon: React.ComponentType<any>; highlightRed?: boolean; highlightOrange?: boolean; disabled?: boolean }) {
   const activeClass = highlightOrange && active 
     ? "bg-orange-50 text-orange-900 border-l-2 border-orange-600" 
     : highlightRed && active 
@@ -15,6 +15,17 @@ function NavItem({ href, label, active, icon: Icon, highlightRed, highlightOrang
     : active 
     ? "bg-gray-100 text-gray-900" 
     : "text-gray-700"
+  
+  const disabledClass = disabled ? "opacity-50 cursor-not-allowed" : ""
+  
+  if (disabled || href === "#") {
+    return (
+      <div className={`flex items-center px-3 py-2 rounded-md text-sm font-medium ${activeClass} ${disabledClass}`}>
+        <Icon className="h-4 w-4 mr-2" />
+        <span>{label}</span>
+      </div>
+    )
+  }
   
   return (
     <Link href={href} className={`flex items-center px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-100 ${activeClass}`}>
@@ -66,7 +77,7 @@ export default function MerchantSidebar() {
       <nav className="px-2 space-y-6">
         <div>
           <NavItem href="/merchant" label="Home" icon={Home} active={pathname === "/merchant"} />
-          <NavItem href="#" label="Insights" icon={BarChart2} active={false} />
+          <NavItem href="#" label="Insights" icon={BarChart2} active={false} disabled={true} />
           <NavItem href="/merchant/reports" label="Reports" icon={FileText} active={pathname?.startsWith("/merchant/reports") || false} />
           
           {/* Customers Section */}
@@ -127,7 +138,7 @@ export default function MerchantSidebar() {
                   active={pathname === "/merchant/marketing/run-campaign"}
                   highlightRed={pathname === "/merchant/marketing/run-campaign"}
                 />
-                <NavItem href="#" label="Campaigns" icon={Target} active={false} />
+                <NavItem href="#" label="Campaigns" icon={Target} active={false} disabled={true} />
                 <NavItem 
                   href="/merchant/marketing/loyalty" 
                   label="Loyalty" 
@@ -204,7 +215,7 @@ export default function MerchantSidebar() {
                   active={pathname === "/merchant/financials/transactions"}
                   highlightOrange={pathname === "/merchant/financials/transactions"}
                 />
-                <NavItem href="#" label="Payouts" icon={DollarSign} active={false} />
+                <NavItem href="#" label="Payouts" icon={DollarSign} active={false} disabled={true} />
                 <NavItem 
                   href="/merchant/financials/statements" 
                   label="Statements" 
@@ -261,7 +272,7 @@ export default function MerchantSidebar() {
                       highlightRed={pathname === "/merchant/settings/store"}
                     />
                     <NavItem href="/merchant/users" label="Manage Users" icon={Users} active={pathname?.startsWith("/merchant/users") || false} />
-                    <NavItem href="/merchant/settings/communications" label="Store communications" icon={Mail} active={pathname === "/merchant/settings/communications"} />
+                    <NavItem href="#" label="Store communications" icon={Mail} active={false} disabled={true} />
                     <NavItem 
                       href="/merchant/settings/bank-account" 
                       label="Bank account" 
@@ -269,12 +280,12 @@ export default function MerchantSidebar() {
                       active={pathname === "/merchant/settings/bank-account"}
                       highlightOrange={pathname === "/merchant/settings/bank-account"}
                     />
-                    <NavItem href="/merchant/settings/integrations" label="Integrations" icon={Plug} active={pathname === "/merchant/settings/integrations"} />
+                    <NavItem href="#" label="Integrations" icon={Plug} active={false} disabled={true} />
                   </div>
                 )}
           </div>
           
-          <NavItem href="#" label="Add Solutions" icon={PlusSquare} active={false} />
+          <NavItem href="#" label="Add Solutions" icon={PlusSquare} active={false} disabled={true} />
         </div>
 
         <div className="px-2">
