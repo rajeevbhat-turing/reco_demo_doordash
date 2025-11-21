@@ -84,16 +84,15 @@ export default function StoreDetailsDialog({ isOpen, onClose, store }: StoreDeta
           </div>
 
           {/* Map Location */}
-          <div className="mb-6">
+          {/* <div className="mb-6">
             <div className="relative h-48 w-full bg-gray-200 rounded-lg overflow-hidden mb-2">
-              {/* This would be replaced with an actual map integration */}
               <div className="absolute inset-0 flex items-center justify-center">
                 <MapPin className="h-8 w-8 text-red-600" />
                 <span className="text-gray-500 ml-2">Map integration would go here</span>
               </div>
             </div>
             <p className="text-sm text-gray-500">Map data would be shown here</p>
-          </div>
+          </div> */}
 
           {/* Address */}
           <div className="flex items-start mb-4 pb-4 border-b border-gray-100">
