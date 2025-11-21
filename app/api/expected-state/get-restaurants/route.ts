@@ -2,6 +2,11 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { calculateDistance } from '@/lib/utils/distance-utils';
 
+interface SortSpec {
+  key: string;
+  order?: "asc" | "desc";
+}
+
 /**
  * GET /api/expected-state/get-restaurants
  * 
@@ -9,7 +14,11 @@ import { calculateDistance } from '@/lib/utils/distance-utils';
  * - userId: User ID (required)
  * - lat: Latitude (required)
  * - lng: Longitude (required)
- * - sort_type: Sorting type (e.g., "nearest")
+ * - sort_type: JSON array of sort specifications (optional)
+ *   - Each spec: { key: string, order?: "asc" | "desc" }
+ *   - Example: [{ "key": "distance", "order": "asc" }, { "key": "minDeliveryFee", "order": "asc" }]
+ *   - Sorts by first spec, then uses subsequent specs as tiebreakers
+ *   - order defaults to "asc" if not provided
  * - limit: Number of restaurants to return (optional, returns all if not provided)
  * - cuisine: Filter by cuisine type
  * 
@@ -18,14 +27,14 @@ import { calculateDistance } from '@/lib/utils/distance-utils';
  * 2. Applies cuisine filter if provided
  * 3. Calculates distance for all restaurants
  * 4. Filters restaurants within 10 mile radius
- * 5. Sorts by distance if sort_type is "nearest"
+ * 5. Applies multi-level sorting based on sort_type array
  * 6. Returns top N restaurants based on limit
  */
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
     const userId = searchParams.get('userId');
-    const sortType = searchParams.get('sort_type');
+    const sortTypeParam = searchParams.get('sort_type');
     const limitParam = searchParams.get('limit');
     const limit = limitParam ? parseInt(limitParam, 10) : null;
     const cuisineFilter = searchParams.get('cuisine');
@@ -51,6 +60,59 @@ export async function GET(request: NextRequest) {
         },
         { status: 400 }
       );
+    }
+
+    // Parse sort_type if provided
+    let sortSpecs: SortSpec[] = [];
+    if (sortTypeParam) {
+      try {
+        sortSpecs = JSON.parse(sortTypeParam);
+        if (!Array.isArray(sortSpecs)) {
+          return NextResponse.json(
+            { 
+              success: false, 
+              error: 'sort_type must be an array' 
+            },
+            { status: 400 }
+          );
+        }
+        
+        // Validate each sort spec
+        for (const spec of sortSpecs) {
+          if (!spec.key || typeof spec.key !== 'string') {
+            return NextResponse.json(
+              { 
+                success: false, 
+                error: 'Each sort_type entry must have a "key" field' 
+              },
+              { status: 400 }
+            );
+          }
+          
+          // Default order to "asc" if not provided
+          if (!spec.order) {
+            spec.order = "asc";
+          }
+          
+          if (spec.order !== "asc" && spec.order !== "desc") {
+            return NextResponse.json(
+              { 
+                success: false, 
+                error: 'sort_type "order" must be "asc" or "desc"' 
+              },
+              { status: 400 }
+            );
+          }
+        }
+      } catch (error) {
+        return NextResponse.json(
+          { 
+            success: false, 
+            error: 'Invalid sort_type format' 
+          },
+          { status: 400 }
+        );
+      }
     }
 
     // Build SQL query with optional cuisine filter
@@ -123,9 +185,42 @@ export async function GET(request: NextRequest) {
     // Filter restaurants within 10 mile radius
     results = results.filter((restaurant: any) => restaurant.distance <= maxRadius);
 
-    // Sort by distance if sort_type is "nearest"
-    if (sortType === 'nearest') {
-      results.sort((a: any, b: any) => a.distance - b.distance);
+    // Apply multi-level sorting if sort_type is provided
+    if (sortSpecs.length > 0) {
+      results.sort((a: any, b: any) => {
+        // Apply each sort spec in order
+        for (const spec of sortSpecs) {
+          const aValue = a[spec.key];
+          const bValue = b[spec.key];
+          
+          // Handle null/undefined values (put them at the end)
+          if (aValue == null && bValue == null) continue;
+          if (aValue == null) return 1;
+          if (bValue == null) return -1;
+          
+          let comparison = 0;
+          
+          // Compare based on type
+          if (typeof aValue === 'number' && typeof bValue === 'number') {
+            comparison = aValue - bValue;
+          } else if (typeof aValue === 'boolean' && typeof bValue === 'boolean') {
+            comparison = aValue === bValue ? 0 : (aValue ? 1 : -1);
+          } else {
+            // String comparison
+            comparison = String(aValue).localeCompare(String(bValue));
+          }
+          
+          // If values are different, apply order and return
+          if (comparison !== 0) {
+            return spec.order === 'desc' ? -comparison : comparison;
+          }
+          
+          // If values are equal, continue to next sort spec
+        }
+        
+        // Final fallback: restaurant ID (for deterministic results)
+        return a.id.localeCompare(b.id);
+      });
     }
 
     // Apply limit if provided

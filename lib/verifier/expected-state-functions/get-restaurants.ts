@@ -17,8 +17,13 @@ export interface RestaurantResult {
   distance: number; // Distance in miles from user location
 }
 
+export interface SortSpec {
+  key: string; // Field to sort by (e.g., "distance", "minDeliveryFee")
+  order?: "asc" | "desc"; // Sort order, defaults to "asc"
+}
+
 export interface GetRestaurantsArgs {
-  sort_type?: string; // e.g., "nearest"
+  sort_type?: SortSpec[]; // Array of sort specifications for multi-level sorting
   limit?: number; // Number of restaurants to return
   lat?: number; // Optional explicit latitude
   lng?: number; // Optional explicit longitude
@@ -34,6 +39,12 @@ export interface GetRestaurantsResult {
 /**
  * Get restaurants with optional filtering and sorting
  * Filters restaurants within 10 mile radius of user location
+ * 
+ * Multi-level Sorting:
+ * - sort_type is an array of sort specifications applied in order
+ * - Each spec has a "key" (field name) and optional "order" ("asc" or "desc", defaults to "asc")
+ * - Example: [{ key: "distance", order: "asc" }, { key: "minDeliveryFee", order: "asc" }]
+ *   → Sorts by distance ascending first, then by delivery fee for restaurants at same distance
  * 
  * @param args - Object containing lat, lng, sort_type, limit, and filters
  * @returns Object with restaurants array (all within 10 mile radius)
@@ -78,8 +89,8 @@ export async function get_restaurants(args: GetRestaurantsArgs): Promise<GetRest
       params.append('limit', String(limit));
     }
     
-    if (sort_type) {
-      params.append('sort_type', sort_type);
+    if (sort_type && sort_type.length > 0) {
+      params.append('sort_type', JSON.stringify(sort_type));
     }
     
     if (filters.cuisine) {
