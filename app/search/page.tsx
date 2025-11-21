@@ -489,7 +489,7 @@ export default function SearchPage() {
   }
 
   return (
-    <div className="w-full mx-auto px-4">
+    <div className="w-full max-w-[1200px] mx-auto px-4">
       {/* Filters */}
       <FilterOptions
         ref={filterOptionsRef}
@@ -498,7 +498,7 @@ export default function SearchPage() {
         filters={filters}
       />
 
-      <div className="mt-4">
+      <div className="mt-20">
 
         {/* Popular Restaurants - First Row (2-3 restaurants) */}
         {!hasActiveFilters() && !searchQuery && popularRestaurants.length > 0 && (
