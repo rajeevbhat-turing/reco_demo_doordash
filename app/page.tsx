@@ -347,7 +347,7 @@ export default function LandingPage() {
           <div className="w-full rounded-full px-3.5 py-1.5 flex items-center gap-3 border border-gray-200">
             <Search className="w-5 h-6 text-[#191919ff] flex-shrink-0" />
             <span
-              className="text-base font-medium text-[#606060ff] flex-1 text-left cursor-text"
+              className="text-xs font-medium text-[#606060ff] flex-1 text-left cursor-text sm:text-base"
               onClick={() => setShowAddressSearchModal(true)}
             >
               Enter delivery address
@@ -382,7 +382,8 @@ export default function LandingPage() {
           >
             Login
           </button>
-          <button className="bg-[#d91400ff] text-white text-base font-bold px-3 py-3.5 hover:bg-red-700 rounded-[28px]">
+          <button className="bg-[#d91400ff] text-white text-sm font-bold px-1.5 py-2 hover:bg-red-700 rounded-[28px] sm:text-base sm:px-3 
+          sm:py-3.5">
             Open App
           </button>
         </div>

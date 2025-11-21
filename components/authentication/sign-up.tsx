@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useUserStore } from '@/store/user-store';
-import { isValidEmail } from '@/lib/utils/helperFunctions';
+import { isValidEmail, isValidName } from '@/lib/utils/helperFunctions';
 import { User } from '@/lib/types/user-types';
 interface SignUpProps {
   onShowOTP: (user: User) => void;
@@ -48,7 +48,7 @@ export default function SignUp({
     if (field === 'firstName') {
       if (!value.trim()) {
         newErrors.firstName = 'First name is required';
-      } else if (!/^[a-zA-Z0-9\s\-'.,]+$/.test(value)) {
+      } else if (!isValidName(value)) {
         newErrors.firstName =
           'First name must only contain letters, numbers, spaces, hyphens, apostrophes, periods, and commas';
       } else {
@@ -57,7 +57,7 @@ export default function SignUp({
     } else if (field === 'lastName') {
       if (!value.trim()) {
         newErrors.lastName = 'Last name is required';
-      } else if (!/^[a-zA-Z0-9\s\-'.,]+$/.test(value)) {
+      } else if (!isValidName(value)) {
         newErrors.lastName =
           'Last name must only contain letters, numbers, spaces, hyphens, apostrophes, periods, and commas';
       } else {
@@ -100,13 +100,13 @@ export default function SignUp({
 
     if (!formData.firstName.trim()) {
       newErrors.firstName = 'First name is required';
-    } else if (!/^[a-zA-Z0-9\s\-'.,]+$/.test(formData.firstName)) {
+    } else if (!isValidName(formData.firstName)) {
       newErrors.firstName =
         'First name must only contain letters, numbers, spaces, hyphens, apostrophes, periods, and commas';
     }
     if (!formData.lastName.trim()) {
       newErrors.lastName = 'Last name is required';
-    } else if (!/^[a-zA-Z0-9\s\-'.,]+$/.test(formData.lastName)) {
+    } else if (!isValidName(formData.lastName)) {
       newErrors.lastName =
         'Last name must only contain letters, numbers, spaces, hyphens, apostrophes, periods, and commas';
     }
@@ -114,7 +114,7 @@ export default function SignUp({
     if (!formData.email.trim()) {
       newErrors.email = 'Email is required';
     } else if (!isValidEmail(formData.email)) {
-      newErrors.email = 'Please enter a valid email';
+      newErrors.email = 'Email format is invalid';
     }
 
     if (!formData.mobileNumber.trim() || formData.mobileNumber.length <= 1) {

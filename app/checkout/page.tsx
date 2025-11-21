@@ -40,7 +40,11 @@ import OTPVerificationModal from '@/components/modals/otp-verification-modal';
 import CountryCodeDropdown from '@/components/modals/country-code-dropdown';
 import PromoCodeModal from '@/components/modals/promocode-modal';
 import { useRestaurants } from '@/lib/hooks/use-restaurants';
-import { getRestaurantById, calculateDeliveryTime, parseDistance } from '@/lib/utils/restaurant-utils';
+import {
+  getRestaurantById,
+  calculateDeliveryTime,
+  parseDistance,
+} from '@/lib/utils/restaurant-utils';
 import { calculateDistance } from '@/lib/utils/distance-utils';
 import { calculateFees, calculateEstimatedTax } from '@/lib/utils/fee-calculator';
 import { useDeals } from '@/lib/hooks/use-deals';
@@ -83,7 +87,7 @@ export default function CheckoutPage() {
   const { addOrder } = useOrdersStore();
   const { getAppliedDealId, getFreeItemIds } = useDealsStore();
 
-    // Find the cart using query params first (before fetching restaurants)
+  // Find the cart using query params first (before fetching restaurants)
   const currentCart = categoryParam && storeIdParam ? findCart(storeIdParam, categoryParam) : null;
   const items = currentCart?.items || [];
   const currentCategory = currentCart?.storeCategory || categoryParam; // Use categoryParam as fallback for faster access
@@ -92,7 +96,8 @@ export default function CheckoutPage() {
   // Only fetch restaurants if this is a restaurant order (optimization: avoid unnecessary API calls)
   // Use categoryParam directly for faster check without waiting for cart lookup
   const defaultAddress = currentUser?.addresses.find(a => a.default);
-  const shouldFetchRestaurants = categoryParam === 'restaurant' && defaultAddress?.lat && defaultAddress?.lng;
+  const shouldFetchRestaurants =
+    categoryParam === 'restaurant' && defaultAddress?.lat && defaultAddress?.lng;
   const { data: restaurants } = useRestaurants(
     shouldFetchRestaurants ? defaultAddress?.lat : undefined,
     shouldFetchRestaurants ? defaultAddress?.lng : undefined,
@@ -128,9 +133,8 @@ export default function CheckoutPage() {
   const { data: allDeals } = useDeals(shouldFetchDeals ? currentStoreId : undefined);
 
   // Find the applied deal by ID
-  const appliedDeal: Deal | null = appliedDealId && allDeals
-    ? allDeals.find(deal => deal.id === appliedDealId) || null
-    : null;
+  const appliedDeal: Deal | null =
+    appliedDealId && allDeals ? allDeals.find(deal => deal.id === appliedDealId) || null : null;
 
   // Calculate values for this specific cart
   const baseSubtotal = getSubtotal(currentStoreId || undefined, currentCategory || undefined);
@@ -199,7 +203,12 @@ export default function CheckoutPage() {
   const totalItems = getTotalItems(currentStoreId || undefined, currentCategory || undefined);
 
   // Check if restaurant is outside delivery area
-  const isOutsideDeliveryArea = Boolean(currentCategory === 'restaurant' && currentStoreId && restaurants && !restaurants.some((r: any) => r.id === currentStoreId));
+  const isOutsideDeliveryArea = Boolean(
+    currentCategory === 'restaurant' &&
+      currentStoreId &&
+      restaurants &&
+      !restaurants.some((r: any) => r.id === currentStoreId)
+  );
 
   // Get restaurant and calculate distance for delivery time calculation
   const currentRestaurant = useMemo(() => {
@@ -285,7 +294,7 @@ export default function CheckoutPage() {
       // Fallback to restaurant distance from API if available
       return restaurantDistance;
     }
-    
+
     // Calculate actual distance using coordinates
     try {
       return calculateDistance(
@@ -304,9 +313,15 @@ export default function CheckoutPage() {
   const fees = useMemo(() => {
     // If we don't have restaurant data, fall back to old calculation
     if (!currentRestaurant || !selectedAddress) {
-      const oldServiceFee = getServiceFee(currentStoreId || undefined, currentCategory || undefined);
-      const oldDeliveryFee = getDeliveryFee(currentStoreId || undefined, currentCategory || undefined);
-      
+      const oldServiceFee = getServiceFee(
+        currentStoreId || undefined,
+        currentCategory || undefined
+      );
+      const oldDeliveryFee = getDeliveryFee(
+        currentStoreId || undefined,
+        currentCategory || undefined
+      );
+
       // Calculate tax even in fallback mode
       const fallbackTax = calculateEstimatedTax(
         subtotal,
@@ -314,7 +329,7 @@ export default function CheckoutPage() {
         oldServiceFee,
         selectedAddress || tempAddress || null
       );
-      
+
       return {
         deliveryFee: oldDeliveryFee,
         serviceFee: oldServiceFee,
@@ -417,7 +432,7 @@ export default function CheckoutPage() {
         router.push('/home');
         return;
       }
-      
+
       // If cart doesn't exist or is empty, redirect to home
       if (!currentCart || !currentCart.items || currentCart.items.length === 0) {
         router.push('/home');
@@ -544,13 +559,15 @@ export default function CheckoutPage() {
       total: getTotalWithExtras(),
       totalAmount: getTotalWithExtras(), // Old field name for backward compatibility
       // Deal/Promotion info
-      appliedDeal: appliedDeal ? {
-        id: appliedDeal.id,
-        title: appliedDeal.title,
-        promoCode: appliedDeal.promocode,
-        discountType: appliedDeal.discountType,
-        discountValue: appliedDeal.discountValue,
-      } : null,
+      appliedDeal: appliedDeal
+        ? {
+            id: appliedDeal.id,
+            title: appliedDeal.title,
+            promoCode: appliedDeal.promocode,
+            discountType: appliedDeal.discountType,
+            discountValue: appliedDeal.discountValue,
+          }
+        : null,
       // Order metadata
       orderDate: new Date().toLocaleDateString('en-US', {
         weekday: 'short',
@@ -694,23 +711,29 @@ export default function CheckoutPage() {
 
     switch (optionId) {
       case 'express':
-        setDeliveryTime(restaurantDistance > 0 
-          ? calculateDeliveryTime(restaurantDistance, 'express')
-          : '25-35 min');
+        setDeliveryTime(
+          restaurantDistance > 0
+            ? calculateDeliveryTime(restaurantDistance, 'express')
+            : '25-35 min'
+        );
         break;
       case 'standard':
-        setDeliveryTime(restaurantDistance > 0 
-          ? calculateDeliveryTime(restaurantDistance, 'standard')
-          : '45-60 min');
+        setDeliveryTime(
+          restaurantDistance > 0
+            ? calculateDeliveryTime(restaurantDistance, 'standard')
+            : '45-60 min'
+        );
         break;
       case 'schedule':
         setDeliveryTime('Choose a time');
         setShowScheduleModal(true);
         break;
       default:
-        setDeliveryTime(restaurantDistance > 0 
-          ? calculateDeliveryTime(restaurantDistance, 'standard')
-          : '45-60 min');
+        setDeliveryTime(
+          restaurantDistance > 0
+            ? calculateDeliveryTime(restaurantDistance, 'standard')
+            : '45-60 min'
+        );
     }
   };
 
@@ -724,9 +747,9 @@ export default function CheckoutPage() {
     if (timeType === 'asap' || !timeSlot) {
       // Revert to standard option
       setSelectedDeliveryOption('standard');
-      setDeliveryTime(restaurantDistance > 0 
-        ? calculateDeliveryTime(restaurantDistance, 'standard')
-        : '45-60 min');
+      setDeliveryTime(
+        restaurantDistance > 0 ? calculateDeliveryTime(restaurantDistance, 'standard') : '45-60 min'
+      );
       setScheduledDate(null);
       setScheduledTimeSlot('');
     } else {
@@ -947,33 +970,38 @@ export default function CheckoutPage() {
     return subtotal + serviceFee + deliveryFee + estimatedTax - discountAmount;
   };
 
-  const deliveryOptions = useMemo(() => [
-    {
-      id: 'express',
-      name: 'Express',
-      time: restaurantDistance > 0 
-        ? calculateDeliveryTime(restaurantDistance, 'express')
-        : '25-35 min',
-      description: 'Direct to you',
-      price: 2.99,
-    },
-    {
-      id: 'standard',
-      name: 'Standard',
-      time: restaurantDistance > 0 
-        ? calculateDeliveryTime(restaurantDistance, 'standard')
-        : '45-60 min',
-      description: '',
-      price: 0,
-    },
-    {
-      id: 'schedule',
-      name: 'Schedule for later',
-      time: 'Choose a time',
-      description: '',
-      price: 0,
-    },
-  ], [restaurantDistance]);
+  const deliveryOptions = useMemo(
+    () => [
+      {
+        id: 'express',
+        name: 'Express',
+        time:
+          restaurantDistance > 0
+            ? calculateDeliveryTime(restaurantDistance, 'express')
+            : '25-35 min',
+        description: 'Direct to you',
+        price: 2.99,
+      },
+      {
+        id: 'standard',
+        name: 'Standard',
+        time:
+          restaurantDistance > 0
+            ? calculateDeliveryTime(restaurantDistance, 'standard')
+            : '45-60 min',
+        description: '',
+        price: 0,
+      },
+      {
+        id: 'schedule',
+        name: 'Schedule for later',
+        time: 'Choose a time',
+        description: '',
+        price: 0,
+      },
+    ],
+    [restaurantDistance]
+  );
 
   // Calculate extra delivery fee based on selected delivery option
   const extraDeliveryFee = useMemo(() => {
@@ -1335,11 +1363,16 @@ export default function CheckoutPage() {
                         <div className="flex items-center flex-1">
                           <Package className="w-5 h-5 text-gray-600 mr-3 flex-shrink-0" />
                           <div>
-                            <p className="font-medium text-sm">Leave it at my door</p>
-                            <p className="text-xs text-gray-600">
-                              Please ring the bell and drop off at the door, thank you. Its around
-                              the corner on the ground floor
+                            <p className="font-medium text-sm">
+                              {selectedAddress.deliveryPreference === 'location'
+                                ? 'Meet at a location'
+                                : 'Leave it at my door'}
                             </p>
+                            {selectedAddress.deliveryInstructions && (
+                              <p className="text-xs text-gray-600">
+                                {selectedAddress.deliveryInstructions}
+                              </p>
+                            )}
                           </div>
                         </div>
                         <svg
@@ -1600,10 +1633,34 @@ export default function CheckoutPage() {
                 <div className="mx-4 mt-4 bg-yellow-50 border border-yellow-200 rounded-lg p-3 flex items-start justify-between">
                   <div className="flex items-start">
                     <div className="flex-shrink-0 mr-2 mt-0.5">
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M10.29 3.86L1.82 18C1.64537 18.3024 1.55299 18.6453 1.55201 18.9945C1.55103 19.3437 1.64151 19.6871 1.81445 19.9905C1.98738 20.2939 2.23675 20.5467 2.53773 20.7239C2.83871 20.9011 3.18082 20.9962 3.53 21H20.47C20.8192 20.9962 21.1613 20.9011 21.4623 20.7239C21.7633 20.5467 22.0126 20.2939 22.1856 19.9905C22.3585 19.6871 22.449 19.3437 22.448 18.9945C22.447 18.6453 22.3546 18.3024 22.18 18L13.71 3.86C13.5317 3.56611 13.2807 3.32312 12.9812 3.15448C12.6817 2.98585 12.3437 2.89725 12 2.89725C11.6563 2.89725 11.3183 2.98585 11.0188 3.15448C10.7193 3.32312 10.4683 3.56611 10.29 3.86Z" stroke="#D97706" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                        <path d="M12 9V13" stroke="#D97706" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                        <path d="M12 17H12.01" stroke="#D97706" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      <svg
+                        width="20"
+                        height="20"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M10.29 3.86L1.82 18C1.64537 18.3024 1.55299 18.6453 1.55201 18.9945C1.55103 19.3437 1.64151 19.6871 1.81445 19.9905C1.98738 20.2939 2.23675 20.5467 2.53773 20.7239C2.83871 20.9011 3.18082 20.9962 3.53 21H20.47C20.8192 20.9962 21.1613 20.9011 21.4623 20.7239C21.7633 20.5467 22.0126 20.2939 22.1856 19.9905C22.3585 19.6871 22.449 19.3437 22.448 18.9945C22.447 18.6453 22.3546 18.3024 22.18 18L13.71 3.86C13.5317 3.56611 13.2807 3.32312 12.9812 3.15448C12.6817 2.98585 12.3437 2.89725 12 2.89725C11.6563 2.89725 11.3183 2.98585 11.0188 3.15448C10.7193 3.32312 10.4683 3.56611 10.29 3.86Z"
+                          stroke="#D97706"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                        <path
+                          d="M12 9V13"
+                          stroke="#D97706"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                        <path
+                          d="M12 17H12.01"
+                          stroke="#D97706"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
                       </svg>
                     </div>
                     <div className="flex-1">
@@ -1871,9 +1928,7 @@ export default function CheckoutPage() {
                       />
                     </svg>
                   </div>
-                  <span className="text-gray-900 font-medium">
-                    ${deliveryFee.toFixed(2)}
-                  </span>
+                  <span className="text-gray-900 font-medium">${deliveryFee.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <div className="flex items-center">
@@ -1893,7 +1948,9 @@ export default function CheckoutPage() {
                       />
                     </svg>
                   </div>
-                  <span className="text-gray-900 font-medium">${(serviceFee + estimatedTax).toFixed(2)}</span>
+                  <span className="text-gray-900 font-medium">
+                    ${(serviceFee + estimatedTax).toFixed(2)}
+                  </span>
                 </div>
                 {discountAmount > 0 && (
                   <div className="flex justify-between text-sm">
@@ -1928,9 +1985,11 @@ export default function CheckoutPage() {
           // Revert to standard if modal is closed without selection
           if (selectedDeliveryOption === 'schedule' && !scheduledTimeSlot) {
             setSelectedDeliveryOption('standard');
-            setDeliveryTime(restaurantDistance > 0 
-              ? calculateDeliveryTime(restaurantDistance, 'standard')
-              : '45-60 min');
+            setDeliveryTime(
+              restaurantDistance > 0
+                ? calculateDeliveryTime(restaurantDistance, 'standard')
+                : '45-60 min'
+            );
           }
         }}
         onSelectTime={handleScheduleTimeSelect}

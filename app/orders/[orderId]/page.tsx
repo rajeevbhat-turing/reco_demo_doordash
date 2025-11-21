@@ -73,7 +73,7 @@ export default function OrderReceiptPage() {
   const discount = (order as any).discount || 0;
   const deliveryFee = order.deliveryFee ?? order.deliveryOption?.extraFee ?? 0.99;
   const serviceFee = order.serviceFee || 3.0;
-  
+
   // Calculate tax from order data if available, otherwise calculate it
   let estimatedTax = 0;
   if ((order as any).estimatedTax !== undefined) {
@@ -81,14 +81,9 @@ export default function OrderReceiptPage() {
   } else if (order.deliveryAddress) {
     // Calculate tax based on delivery address
     const { calculateEstimatedTax } = require('@/lib/utils/fee-calculator');
-    estimatedTax = calculateEstimatedTax(
-      subtotal,
-      deliveryFee,
-      serviceFee,
-      order.deliveryAddress
-    );
+    estimatedTax = calculateEstimatedTax(subtotal, deliveryFee, serviceFee, order.deliveryAddress);
   }
-  
+
   const dasherTip = order.tipAmount ?? 1.5;
 
   // Calculate original total (before discounts) and final total
@@ -103,6 +98,7 @@ export default function OrderReceiptPage() {
   const deliveryCity = order.deliveryAddress
     ? `${order.deliveryAddress.city}, ${order.deliveryAddress.state} ${order.deliveryAddress.zipCode}`
     : '';
+  const deliveryPreference = order.deliveryAddress?.deliveryPreference || 'Leave it at my door';
   const deliveryInstructions =
     order.deliveryAddress?.deliveryInstructions || 'No special instructions';
   const dasherName = 'Dasher'; // TODO: Add to order data
@@ -479,8 +475,14 @@ export default function OrderReceiptPage() {
                   </svg>
                 </div>
                 <div>
-                  <p className="font-semibold text-sm">Leave it at my door</p>
-                  <p className="text-xs text-gray-600">{deliveryInstructions}</p>
+                  <p className="font-semibold text-sm">
+                    {deliveryPreference === 'location'
+                      ? 'Meet at a location'
+                      : 'Leave it at my door'}
+                  </p>
+                  {deliveryInstructions && (
+                    <p className="text-xs text-gray-600">{deliveryInstructions}</p>
+                  )}
                 </div>
               </div>
             </div>

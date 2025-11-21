@@ -18,12 +18,43 @@ export default function AddressSelectionModal({
   onClose,
 }: AddressSelectionModalProps) {
   const [searchQuery, setSearchQuery] = useState('');
+  const [dropdownMaxHeight, setDropdownMaxHeight] = useState<number>(230);
   const inputRef = useRef<HTMLInputElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const inputContainerRef = useRef<HTMLDivElement>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
 
   const { addAddress, setDefaultAddress } = useUserStore();
+
+  // Calculate dropdown max height based on available space
+  useEffect(() => {
+    if (searchQuery.trim() && inputContainerRef.current) {
+      const calculateMaxHeight = () => {
+        const inputContainer = inputContainerRef.current;
+        if (!inputContainer) return;
+
+        const inputRect = inputContainer.getBoundingClientRect();
+        const viewportHeight = window.innerHeight;
+        const dropdownTop = inputRect.bottom + 8; // mt-2 = 8px
+        const availableSpace = viewportHeight - dropdownTop - 16; // 16px padding from bottom
+        const maxHeight = Math.max(50, Math.min(availableSpace, 230)); // Min 50px, max 230px
+
+        setDropdownMaxHeight(maxHeight);
+      };
+
+      // Calculate immediately
+      calculateMaxHeight();
+
+      // Recalculate on window resize
+      window.addEventListener('resize', calculateMaxHeight);
+      window.addEventListener('scroll', calculateMaxHeight);
+
+      return () => {
+        window.removeEventListener('resize', calculateMaxHeight);
+        window.removeEventListener('scroll', calculateMaxHeight);
+      };
+    }
+  }, [searchQuery]);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -133,7 +164,10 @@ export default function AddressSelectionModal({
   return (
     <div className="fixed inset-0 z-50 bg-black bg-opacity-50 backdrop-blur-sm">
       <div className="absolute inset-0 flex items-center justify-center p-4">
-        <div ref={dialogRef} className="relative bg-white rounded-xl shadow-xl w-full max-w-lg mx-auto max-h-[90vh] flex flex-col">
+        <div
+          ref={dialogRef}
+          className="relative bg-white rounded-xl shadow-xl w-full max-w-lg mx-auto max-h-[90vh] flex flex-col"
+        >
           {/* Non-scrollable content */}
           <div className="px-6 py-6">
             {/* Top Section - Food Icons */}
@@ -217,8 +251,13 @@ export default function AddressSelectionModal({
               {searchQuery.trim() && (
                 <div
                   ref={dropdownRef}
-                  className="absolute top-full left-0 right-0 mt-2 bg-white rounded-md shadow-lg border border-gray-200 max-h-[230px] 
+                  className="absolute top-full left-0 right-0 mt-2 bg-white rounded-md shadow-lg border border-gray-200 
                   overflow-y-auto z-[60]"
+                  style={{
+                    maxHeight: `${dropdownMaxHeight}px`,
+                    scrollbarWidth: 'thin',
+                    scrollbarColor: '#cbd5e1 #f1f5f9',
+                  }}
                 >
                   {filteredAddresses?.slice(0, 3)?.map(address => (
                     <div
