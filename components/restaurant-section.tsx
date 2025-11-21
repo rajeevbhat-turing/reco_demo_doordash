@@ -135,7 +135,15 @@ export default function RestaurantSection({
                   </div>
                 ) : null}
 
-                <div className="text-sm text-gray-500">{restaurant.time}</div>
+                <div className="text-sm text-gray-500">
+                  {restaurant.distance && (
+                    <>
+                      <span>{restaurant.distance}</span>
+                      <span className="mx-1">•</span>
+                    </>
+                  )}
+                  <span>{restaurant.time}</span>
+                </div>
 
                 <div className="text-sm text-gray-500">{restaurant.deliveryFee}</div>
               </div>
