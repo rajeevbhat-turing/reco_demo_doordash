@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 
+interface SortSpec {
+  key: string;
+  order?: "asc" | "desc";
+}
+
 /**
  * GET /api/expected-state/get-items
  * 
@@ -8,17 +13,18 @@ import { db } from '@/lib/db';
  * - userId: User ID (required)
  * - restaurant_id: Filter by restaurant ID (optional, searches all restaurants if not provided)
  * - keywords: JSON array of keywords to match against item name (optional)
- * - sort_type: Sorting type (e.g., "cheapest")
- * - tiebreaker: Tiebreaker strategy when items have same primary sort value (optional)
- *   - "keyword": Break ties based on keyword array order (earlier keywords preferred)
+ * - sort_type: JSON array of sort specifications (optional)
+ *   - Each spec: { key: string, order?: "asc" | "desc" }
+ *   - Example: [{ "key": "price", "order": "asc" }, { "key": "rating", "order": "desc" }]
+ *   - Sorts by first spec, then uses subsequent specs as tiebreakers
+ *   - order defaults to "asc" if not provided
  * - limit: Number of items to return (optional, returns all if not provided)
  * 
  * Finds menu items with optional filtering and sorting:
  * 1. Fetches menu items from database (all or from specific restaurant)
  * 2. Filters by keywords if provided (matches against item name only)
- * 3. Sorts by primary sort field (e.g., price for "cheapest")
- * 4. Applies tiebreaker if specified and items are tied on primary sort
- * 5. Returns top N items based on limit
+ * 3. Applies multi-level sorting based on sort_type array
+ * 4. Returns top N items based on limit
  */
 export async function GET(request: NextRequest) {
   try {
@@ -26,8 +32,7 @@ export async function GET(request: NextRequest) {
     const userId = searchParams.get('userId');
     const restaurantId = searchParams.get('restaurant_id');
     const keywordsParam = searchParams.get('keywords');
-    const sortType = searchParams.get('sort_type');
-    const tiebreaker = searchParams.get('tiebreaker');
+    const sortTypeParam = searchParams.get('sort_type');
     const limitParam = searchParams.get('limit');
     const limit = limitParam ? parseInt(limitParam, 10) : null;
 
@@ -60,6 +65,59 @@ export async function GET(request: NextRequest) {
           { 
             success: false, 
             error: 'Invalid keywords format' 
+          },
+          { status: 400 }
+        );
+      }
+    }
+
+    // Parse sort_type if provided
+    let sortSpecs: SortSpec[] = [];
+    if (sortTypeParam) {
+      try {
+        sortSpecs = JSON.parse(sortTypeParam);
+        if (!Array.isArray(sortSpecs)) {
+          return NextResponse.json(
+            { 
+              success: false, 
+              error: 'sort_type must be an array' 
+            },
+            { status: 400 }
+          );
+        }
+        
+        // Validate each sort spec
+        for (const spec of sortSpecs) {
+          if (!spec.key || typeof spec.key !== 'string') {
+            return NextResponse.json(
+              { 
+                success: false, 
+                error: 'Each sort_type entry must have a "key" field' 
+              },
+              { status: 400 }
+            );
+          }
+          
+          // Default order to "asc" if not provided
+          if (!spec.order) {
+            spec.order = "asc";
+          }
+          
+          if (spec.order !== "asc" && spec.order !== "desc") {
+            return NextResponse.json(
+              { 
+                success: false, 
+                error: 'sort_type "order" must be "asc" or "desc"' 
+              },
+              { status: 400 }
+            );
+          }
+        }
+      } catch (error) {
+        return NextResponse.json(
+          { 
+            success: false, 
+            error: 'Invalid sort_type format' 
           },
           { status: 400 }
         );
@@ -115,62 +173,58 @@ export async function GET(request: NextRequest) {
     }
 
     // Transform to result format
-    let results = menuItems.map((item: any) => {
-      const result: any = {
-        id: String(item.id),
-        restaurantId: String(item.restaurant_id),
-        categoryId: String(item.category_id),
-        name: item.name,
-        description: item.description,
-        price: item.price,
-        image: item.image,
-        calories: item.calories,
-        rating: item.rating,
-        ratingCount: item.rating_count,
-        popular: item.popular === 1,
-        featured: item.featured === 1,
-      };
+    let results = menuItems.map((item: any) => ({
+      id: String(item.id),
+      restaurantId: String(item.restaurant_id),
+      categoryId: String(item.category_id),
+      name: item.name,
+      description: item.description,
+      price: item.price,
+      image: item.image,
+      calories: item.calories,
+      rating: item.rating,
+      ratingCount: item.rating_count,
+      popular: item.popular === 1,
+      featured: item.featured === 1,
+    }));
 
-      // Calculate keyword priority if tiebreaker is "keyword"
-      if (tiebreaker === 'keyword' && keywords.length > 0) {
-        const itemNameLower = item.name.toLowerCase();
-        let keywordPriority = Infinity; // Default: no match
-        
-        for (let i = 0; i < keywords.length; i++) {
-          if (itemNameLower.includes(keywords[i].toLowerCase())) {
-            keywordPriority = i; // Lower index = higher priority
-            break; // Stop at first match
-          }
-        }
-        
-        result._keywordPriority = keywordPriority;
-      }
-
-      return result;
-    });
-
-    // Sort if sort_type is provided
-    if (sortType === 'cheapest') {
+    // Apply multi-level sorting if sort_type is provided
+    if (sortSpecs.length > 0) {
       results.sort((a: any, b: any) => {
-        // Primary sort: by price (ascending)
-        if (a.price !== b.price) {
-          return a.price - b.price;
-        }
-        
-        // Tiebreaker: keyword priority if enabled
-        if (tiebreaker === 'keyword' && a._keywordPriority !== undefined && b._keywordPriority !== undefined) {
-          if (a._keywordPriority !== b._keywordPriority) {
-            return a._keywordPriority - b._keywordPriority;
+        // Apply each sort spec in order
+        for (const spec of sortSpecs) {
+          const aValue = a[spec.key];
+          const bValue = b[spec.key];
+          
+          // Handle null/undefined values (put them at the end)
+          if (aValue == null && bValue == null) continue;
+          if (aValue == null) return 1;
+          if (bValue == null) return -1;
+          
+          let comparison = 0;
+          
+          // Compare based on type
+          if (typeof aValue === 'number' && typeof bValue === 'number') {
+            comparison = aValue - bValue;
+          } else if (typeof aValue === 'boolean' && typeof bValue === 'boolean') {
+            comparison = aValue === bValue ? 0 : (aValue ? 1 : -1);
+          } else {
+            // String comparison
+            comparison = String(aValue).localeCompare(String(bValue));
           }
+          
+          // If values are different, apply order and return
+          if (comparison !== 0) {
+            return spec.order === 'desc' ? -comparison : comparison;
+          }
+          
+          // If values are equal, continue to next sort spec
         }
         
         // Final fallback: item ID (for deterministic results)
         return a.id.localeCompare(b.id);
       });
     }
-
-    // Remove temporary fields
-    results = results.map(({ _keywordPriority, ...rest }: any) => rest);
 
     // Apply limit if provided
     const limitedResults = limit ? results.slice(0, limit) : results;
