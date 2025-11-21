@@ -1008,68 +1008,70 @@ export default function RestaurantPage() {
                 <Deals restaurantId={id} />
 
                 {/* Featured Items */}
-                <div
-                  ref={el => {
-                    sectionRefs.current['Featured Items'] = el;
-                  }}
-                  className="mt-4"
-                >
-                  <div className="flex items-center justify-between mb-4">
-                    <h2 className="text-xl font-bold">Featured Items</h2>
-                    <div className="flex">
-                      <button
-                        className="p-2 rounded-full border border-gray-200 mr-2"
-                        onClick={() => scrollContainer(featuredItemsRef, 'left')}
-                      >
-                        <ChevronLeft className="h-5 w-5" />
-                      </button>
-                      <button
-                        className="p-2 rounded-full border border-gray-200"
-                        onClick={() => scrollContainer(featuredItemsRef, 'right')}
-                      >
-                        <ChevronRight className="h-5 w-5" />
-                      </button>
+                {featuredItems.length > 0 && (
+                  <div
+                    ref={el => {
+                      sectionRefs.current['Featured Items'] = el;
+                    }}
+                    className="mt-4"
+                  >
+                    <div className="flex items-center justify-between mb-4">
+                      <h2 className="text-xl font-bold">Featured Items</h2>
+                      <div className="flex">
+                        <button
+                          className="p-2 rounded-full border border-gray-200 mr-2"
+                          onClick={() => scrollContainer(featuredItemsRef, 'left')}
+                        >
+                          <ChevronLeft className="h-5 w-5" />
+                        </button>
+                        <button
+                          className="p-2 rounded-full border border-gray-200"
+                          onClick={() => scrollContainer(featuredItemsRef, 'right')}
+                        >
+                          <ChevronRight className="h-5 w-5" />
+                        </button>
+                      </div>
+                    </div>
+                    <div
+                      ref={featuredItemsRef}
+                      className="flex overflow-x-auto space-x-4 pb-4 hide-scrollbar"
+                    >
+                      {featuredItems.map(item => (
+                        <div
+                          key={item.id}
+                          className="min-w-[200px] border border-gray-200 rounded-lg overflow-hidden flex-shrink-0 cursor-pointer"
+                          onClick={() => openItemDialog(item)}
+                        >
+                          <div className="relative h-40">
+                            <Image
+                              src={item.image || '/placeholder.svg?height=160&width=200&query=burger'}
+                              alt={item.name}
+                              fill
+                              className="object-cover"
+                              loading="lazy"
+                              priority={false}
+                              sizes="(max-width: 768px) 200px, 200px"
+                            />
+                            <button
+                              className="absolute bottom-3 right-3 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-md hover:bg-gray-50 transition-colors"
+                              onClick={e => {
+                                e.stopPropagation(); // Prevent opening the dialog
+                                handleAddToCart(item);
+                              }}
+                              aria-label="Add to cart"
+                            >
+                              <span className="text-lg font-bold text-gray-900">+</span>
+                            </button>
+                          </div>
+                          <div className="p-3">
+                            <h3 className="font-medium">{item.name}</h3>
+                            <p className="text-gray-900 mt-1">{item.price}</p>
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   </div>
-                  <div
-                    ref={featuredItemsRef}
-                    className="flex overflow-x-auto space-x-4 pb-4 hide-scrollbar"
-                  >
-                    {featuredItems.map(item => (
-                      <div
-                        key={item.id}
-                        className="min-w-[200px] border border-gray-200 rounded-lg overflow-hidden flex-shrink-0 cursor-pointer"
-                        onClick={() => openItemDialog(item)}
-                      >
-                        <div className="relative h-40">
-                          <Image
-                            src={item.image || '/placeholder.svg?height=160&width=200&query=burger'}
-                            alt={item.name}
-                            fill
-                            className="object-cover"
-                            loading="lazy"
-                            priority={false}
-                            sizes="(max-width: 768px) 200px, 200px"
-                          />
-                          <button
-                            className="absolute bottom-3 right-3 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-md hover:bg-gray-50 transition-colors"
-                            onClick={e => {
-                              e.stopPropagation(); // Prevent opening the dialog
-                              handleAddToCart(item);
-                            }}
-                            aria-label="Add to cart"
-                          >
-                            <span className="text-lg font-bold text-gray-900">+</span>
-                          </button>
-                        </div>
-                        <div className="p-3">
-                          <h3 className="font-medium">{item.name}</h3>
-                          <p className="text-gray-900 mt-1">{item.price}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+                )}
 
                 {/* Reviews Section */}
                 <Reviews vendorId={restaurant.id} vendorName={restaurant.name} />
@@ -1079,67 +1081,74 @@ export default function RestaurantPage() {
             {!isSearching && (
               <>
                 {/* Most Ordered */}
-                <div
-                  ref={el => {
-                    sectionRefs.current['Most Ordered'] = el;
-                  }}
-                  className="mt-8 pt-4"
-                  id="most-ordered"
-                >
-                  <h2 className="text-xl font-bold mb-4">Most Ordered</h2>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    {mostOrderedItems.map(item => (
-                      <div
-                        key={item.id}
-                        className="border border-gray-200 rounded-lg overflow-hidden cursor-pointer"
-                        onClick={() => openItemDialog(item)}
-                      >
-                        <div className="relative h-40">
-                          <Image
-                            src={item.image || '/placeholder.svg'}
-                            alt={item.name}
-                            fill
-                            className="object-cover"
-                          />
-                          <button
-                            className="absolute bottom-3 right-3 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-md hover:bg-gray-50 transition-colors"
-                            onClick={e => {
-                              e.stopPropagation(); // Prevent opening the dialog
-                              handleAddToCart(item);
-                            }}
-                            aria-label="Add to cart"
-                          >
-                            <span className="text-lg font-bold text-gray-900">+</span>
-                          </button>
-                        </div>
-                        <div className="p-3">
-                          <h3 className="font-medium">{item.name}</h3>
-                          {item.calories && (
-                            <p className="text-sm text-gray-500">({item.calories})</p>
-                          )}
-                          <p className="text-gray-900 mt-1">{item.price}</p>
-                          {item.rating && item.rating != 0 && (
-                            <div className="flex items-center mt-1">
-                              <ThumbsUp className="w-4 h-4 text-gray-500 mr-1" strokeWidth={2} />
-                              <span className="text-sm">
-                                {Math.round(getDefaultRating(item.rating) * 20)}%
-                              </span>
-                              {item.ratingCount && (
-                                <span className="text-sm text-gray-500 ml-1">
-                                  ({item.ratingCount})
+                {mostOrderedItems.length > 0 && (
+                  <div
+                    ref={el => {
+                      sectionRefs.current['Most Ordered'] = el;
+                    }}
+                    className="mt-8 pt-4"
+                    id="most-ordered"
+                  >
+                    <h2 className="text-xl font-bold mb-4">Most Ordered</h2>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      {mostOrderedItems.map(item => (
+                        <div
+                          key={item.id}
+                          className="border border-gray-200 rounded-lg overflow-hidden cursor-pointer"
+                          onClick={() => openItemDialog(item)}
+                        >
+                          <div className="relative h-40">
+                            <Image
+                              src={item.image || '/placeholder.svg'}
+                              alt={item.name}
+                              fill
+                              className="object-cover"
+                            />
+                            <button
+                              className="absolute bottom-3 right-3 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-md hover:bg-gray-50 transition-colors"
+                              onClick={e => {
+                                e.stopPropagation(); // Prevent opening the dialog
+                                handleAddToCart(item);
+                              }}
+                              aria-label="Add to cart"
+                            >
+                              <span className="text-lg font-bold text-gray-900">+</span>
+                            </button>
+                          </div>
+                          <div className="p-3">
+                            <h3 className="font-medium">{item.name}</h3>
+                            {item.calories && (
+                              <p className="text-sm text-gray-500">({item.calories})</p>
+                            )}
+                            <p className="text-gray-900 mt-1">{item.price}</p>
+                            {item.rating && item.rating != 0 && (
+                              <div className="flex items-center mt-1">
+                                <ThumbsUp className="w-4 h-4 text-gray-500 mr-1" strokeWidth={2} />
+                                <span className="text-sm">
+                                  {Math.round(getDefaultRating(item.rating) * 20)}%
                                 </span>
-                              )}
-                            </div>
-                          )}
+                                {item.ratingCount && (
+                                  <span className="text-sm text-gray-500 ml-1">
+                                    ({item.ratingCount})
+                                  </span>
+                                )}
+                              </div>
+                            )}
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      ))}
+                    </div>
                   </div>
-                </div>
+                )}
 
                 {/* Add refs for other menu categories */}
                 {menuCategories
                   .filter(category => !['Featured Items', 'Most Ordered'].includes(category.name))
+                  .filter(category => {
+                    // Only show categories that have items
+                    const categoryItems = menuData?.menuItems.filter(item => item.category === category.name) || [];
+                    return categoryItems.length > 0;
+                  })
                   .map(category => (
                     <div
                       key={category.id}
