@@ -3,6 +3,16 @@ export const isValidEmail = (email: string) => {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 };
 
+// Name validation
+export const isValidName = (name: string) => {
+  // Check if name exceeds 119 characters or contains invalid characters
+  // Valid characters: letters, numbers, spaces, hyphens, apostrophes, periods, and commas
+  if (name.length > 119 || !/^[a-zA-Z0-9\s\-'.,]+$/.test(name)) {
+    return false;
+  }
+  return true;
+};
+
 // Generate a consistent color based on the name
 export const generateAvatarColor = (name: string) => {
   const colors = [

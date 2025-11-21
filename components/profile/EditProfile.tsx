@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { useUserStore } from '@/store/user-store';
-import { generateAvatarColor } from '@/lib/utils/helperFunctions';
+import { generateAvatarColor, isValidName } from '@/lib/utils/helperFunctions';
 import { Switch } from '@/components/ui/switch';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -99,9 +99,19 @@ export default function EditProfile({ onCancel }: EditProfileProps) {
     try {
       // Preprocess first name: trim and remove special characters
       let processedFirstName = preprocessName(firstName);
+      
+      // Validate first name - if not empty and invalid, use original value
+      if (processedFirstName && !isValidName(processedFirstName)) {
+        processedFirstName = originalFirstName;
+      }
 
       // Preprocess last name: trim and remove special characters
       let processedLastName = preprocessName(lastName);
+      
+      // Validate last name - if not empty and invalid, use original value
+      if (processedLastName && !isValidName(processedLastName)) {
+        processedLastName = originalLastName;
+      }
 
       // Combine first and last name
       let finalFullName = `${processedFirstName} ${processedLastName}`.trim();
