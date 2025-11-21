@@ -41,6 +41,7 @@ export default function SearchPage() {
   });
   const filterOptionsRef = useRef<FilterOptionsRef>(null);
   const [allMenuItems, setAllMenuItems] = useState<MenuItemWithRestaurant[]>([]);
+  const [isLoadingMenuItems, setIsLoadingMenuItems] = useState(false);
   const [favorites, setFavorites] = useState<string[]>([]);
   const favoritesLoadedRef = useRef(false);
   const loadedFavoritesRef = useRef<string[]>([]);
@@ -185,8 +186,12 @@ export default function SearchPage() {
   // Fetch menu items for all restaurants
   useEffect(() => {
     const fetchAllMenuItems = async () => {
-      if (!restaurants || restaurants.length === 0) return;
+      if (!restaurants || restaurants.length === 0) {
+        setIsLoadingMenuItems(false);
+        return;
+      }
 
+      setIsLoadingMenuItems(true);
       try {
         const menuPromises = restaurants.map(restaurant =>
           fetch(`/api/restaurants/${restaurant.id}/menu`)
@@ -212,6 +217,8 @@ export default function SearchPage() {
         setAllMenuItems(flattenedMenuItems);
       } catch (error) {
         console.error('Error fetching menu items:', error);
+      } finally {
+        setIsLoadingMenuItems(false);
       }
     };
 
@@ -899,8 +906,17 @@ export default function SearchPage() {
           )
         )}
 
-        {/* No Results */}
-        {filteredRestaurants.length === 0 && !isLoadingRestaurants && (
+        {/* Loading Spinner - Show when loading restaurants or menu items (if searching) */}
+        {filteredRestaurants.length === 0 && (isLoadingRestaurants || (isLoadingMenuItems && searchQuery)) && (
+          <div className="text-center py-16">
+            <div className="flex justify-center">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+            </div>
+          </div>
+        )}
+
+        {/* No Results - Only show when not loading and no results */}
+        {filteredRestaurants.length === 0 && !isLoadingRestaurants && !(isLoadingMenuItems && searchQuery) && (
           <div className="text-center py-16">
             <h2 className="text-2xl font-bold text-gray-900 mb-2">No restaurants found</h2>
             <p className="text-gray-600">Try adjusting your search or filters</p>

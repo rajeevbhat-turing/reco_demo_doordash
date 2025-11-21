@@ -15,10 +15,19 @@ interface SignInProps {
   setMode: (mode: 'signin' | 'signup' | 'forgot-password', email?: string) => void;
   initialEmail?: string;
   style?: any;
-  onFormStateChange?: (formState: { currentForm: 'email' | 'password' | 'otp'; foundUser: any }) => void;
+  onFormStateChange?: (formState: {
+    currentForm: 'email' | 'password' | 'otp';
+    foundUser: any;
+  }) => void;
 }
 
-export default function SignIn({ onSuccess, setMode, initialEmail, style, onFormStateChange }: SignInProps) {
+export default function SignIn({
+  onSuccess,
+  setMode,
+  initialEmail,
+  style,
+  onFormStateChange,
+}: SignInProps) {
   const { login, generateOTP, isLoading, isGeneratingOTP } = useAuth();
   const getTempAddress = useUserStore(state => state.getTempAddress);
   const [formData, setFormData] = useState({
@@ -200,9 +209,17 @@ export default function SignIn({ onSuccess, setMode, initialEmail, style, onForm
   const handleOTPKeyDown = (index: number, e: React.KeyboardEvent) => {
     // Allow: backspace, delete, tab, escape, enter, and arrow keys
     if (
-      ['Backspace', 'Delete', 'Tab', 'Escape', 'Enter', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(
-        e.key
-      )
+      [
+        'Backspace',
+        'Delete',
+        'Tab',
+        'Escape',
+        'Enter',
+        'ArrowLeft',
+        'ArrowRight',
+        'ArrowUp',
+        'ArrowDown',
+      ].includes(e.key)
     ) {
       // Allow these keys
     } else if (e.key.length === 1 && !/[0-9]/.test(e.key)) {
@@ -553,12 +570,6 @@ export default function SignIn({ onSuccess, setMode, initialEmail, style, onForm
               {resendTimer > 0 ? `Resend code (${resendTimer})` : 'Resend code'}
             </button>
             <div className="rounded-full bg-[#191919ff] w-[3px] h-[3px]"></div>
-            <button
-              type="button"
-              className="underline font-semibold text-sm text-[#191919ff] hover:text-gray-700"
-            >
-              Get phone call instead
-            </button>
           </div>
         </div>
 
@@ -665,15 +676,9 @@ export default function SignIn({ onSuccess, setMode, initialEmail, style, onForm
 
       {/* Legal Text */}
       <p className="text-sm font-medium text-[#606060ff] mt-4 mb-4">
-        By tapping any "Continue" button, you agree to DashDoor's{' '}
-        <a href="" className="text-[#1700ee] underline">
-          Terms
-        </a>
-        , including a waiver of your jury trial right, and{' '}
-        <a href="" className="text-[#1700ee] underline">
-          Privacy Policy
-        </a>
-        . We may text you a verification code. Msg & data rates apply.
+        By tapping any "Continue" button, you agree to DashDoor's , including a waiver of your jury
+        trial right, and Privacy Policy. We may text you a verification code. Msg & data rates
+        apply.
       </p>
     </form>
   );
