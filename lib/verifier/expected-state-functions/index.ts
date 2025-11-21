@@ -7,5 +7,5 @@ export type { Restaurant, CheapestRestaurantResult } from './get-cheapest-restau
 export { get_restaurants } from './get-restaurants';
 export type { RestaurantResult, GetRestaurantsArgs, GetRestaurantsResult } from './get-restaurants';
 export { get_items } from './get-items';
-export type { MenuItemResult, GetItemsArgs, GetItemsResult } from './get-items';
+export type { MenuItemResult, GetItemsArgs, GetItemsResult, SortSpec } from './get-items';
 
