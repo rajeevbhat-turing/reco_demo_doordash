@@ -17,6 +17,7 @@ import type { MenuItem } from '@/constants/menu-items';
 import { getDefaultRating } from '@/utils/rating-utils';
 import { RestaurantsSkeleton } from '@/components/skeletons/restaurant-skeleton';
 import MenuItemDialog from '@/components/menu-item-dialog';
+import RestaurantSection from '@/components/restaurant-section';
 
 interface MenuItemWithRestaurant extends MenuItem {
   restaurant_id: string;
@@ -498,115 +499,13 @@ export default function SearchPage() {
       />
 
       <div className="mt-4">
-        {/* Search Results Header */}
-        {searchQuery && (
-          <div className="mb-6">
-            <h1 className="text-2xl font-bold text-gray-900">
-              Results for "{searchQuery}"
-            </h1>
-          </div>
-        )}
-
-        {!searchQuery && (
-          <div className="mb-6">
-            <h1 className="text-2xl font-bold text-gray-900">
-              All Restaurants
-            </h1>
-          </div>
-        )}
 
         {/* Popular Restaurants - First Row (2-3 restaurants) */}
-        {!hasActiveFilters() && popularRestaurants.length > 0 && (
-          <div className="mb-8">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              {popularRestaurants.map(restaurant => (
-                <Link
-                  key={restaurant.id}
-                  href={`/store/${restaurant.id}`}
-                  className="block"
-                  prefetch={false}
-                >
-                  <div className="restaurant-card">
-                    <div className="relative h-[140px] bg-gray-100 rounded-lg overflow-hidden">
-                      <Image
-                        src={
-                          restaurant.banner ||
-                          `/placeholder.svg?height=160&width=300&query=${restaurant.name} restaurant`
-                        }
-                        alt={restaurant.name}
-                        fill
-                        className="object-cover"
-                      />
-                      {restaurant.new && (
-                        <div className="absolute top-3 left-3 bg-black text-white text-xs font-bold px-2 py-1 rounded">
-                          NEW
-                        </div>
-                      )}
-                    </div>
-                    <div className="py-3">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2 flex-1 min-w-0">
-                          <h3 className="font-bold text-base truncate">{restaurant.name}</h3>
-                          {restaurant.dashPass && (
-                            <div className="text-teal-600 flex-shrink-0">
-                              <svg
-                                width="16"
-                                height="10"
-                                viewBox="0 0 20 12"
-                                fill="none"
-                                xmlns="http://www.w3.org/2000/svg"
-                              >
-                                <path
-                                  d="M18.5 1.5L11.5 9.5L7.5 5.5L1.5 10.5"
-                                  stroke="currentColor"
-                                  strokeWidth="2"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                />
-                              </svg>
-                            </div>
-                          )}
-                        </div>
-                        <button
-                          className="text-gray-400 hover:text-gray-600 ml-2 flex-shrink-0"
-                          onClick={e => {
-                            e.preventDefault();
-                            toggleFavorite(restaurant.id);
-                          }}
-                        >
-                          <Heart
-                            className={`h-5 w-5 ${
-                              favorites.includes(restaurant.id) ? 'fill-red-500 text-red-500' : ''
-                            }`}
-                          />
-                        </button>
-                      </div>
-
-                      <div className="flex items-center mt-1 text-xs text-gray-700">
-                        {restaurant?.rating && restaurant.rating != 0 && <span className="font-semibold">{getDefaultRating(restaurant.rating)}</span>}
-                        {restaurant?.rating && restaurant.rating != 0 && <svg
-                          width="14"
-                          height="14"
-                          viewBox="0 0 16 16"
-                          fill="currentColor"
-                          className="ml-1"
-                        >
-                          <path d="M8 0L10.2571 5.08631L16 5.87013L11.8 9.79752L12.9443 15.5L8 12.5863L3.05573 15.5L4.2 9.79752L0 5.87013L5.74286 5.08631L8 0Z" />
-                        </svg>}
-                        {restaurant?.reviews && restaurant.reviews !== '0 ratings' && restaurant.reviews !== '0' && <span className="mx-1">({restaurant.reviews})</span>}
-                        {restaurant?.rating && restaurant.rating != 0 && <span className="mx-1">•</span>}
-                        <span>{restaurant.distance}</span>
-                        {restaurant?.rating && restaurant.rating != 0 && <span className="mx-1">•</span>}
-                        <span>{restaurant.time}</span>
-                      </div>
-
-                      <div className="mt-1 text-xs text-gray-500">{restaurant.deliveryFee}</div>
-                    </div>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </div>
+        {!hasActiveFilters() && !searchQuery && popularRestaurants.length > 0 && (
+          <RestaurantSection
+            title="Popular Restaurants"
+            restaurants={popularRestaurants}
+          />
         )}
 
         {/* Popular Dishes Carousel */}
@@ -715,194 +614,21 @@ export default function SearchPage() {
         )}
 
         {/* All Restaurants (when filters active) or Remaining Restaurants */}
-        {hasActiveFilters() ? (
-          // Show all restaurants in one section when filters are active
-          filteredRestaurants.length > 0 && (
-            <div className="mb-8">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                {filteredRestaurants.map(restaurant => (
-                  <Link
-                    key={restaurant.id}
-                    href={`/store/${restaurant.id}`}
-                    className="block"
-                    prefetch={false}
-                  >
-                    <div className="restaurant-card">
-                      <div className="relative h-[140px] bg-gray-100 rounded-lg overflow-hidden">
-                        <Image
-                          src={
-                            restaurant.banner ||
-                            `/placeholder.svg?height=140&width=300&query=${restaurant.name} restaurant`
-                          }
-                          alt={restaurant.name}
-                          fill
-                          className="object-cover"
-                        />
-                        {restaurant.new && (
-                          <div className="absolute top-3 left-3 bg-black text-white text-xs font-bold px-2 py-1 rounded">
-                            NEW
-                          </div>
-                        )}
-                      </div>
-                      <div className="py-3">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2 flex-1 min-w-0">
-                            <h3 className="font-bold text-base truncate">{restaurant.name}</h3>
-                            {restaurant.dashPass && (
-                              <div className="text-teal-600 flex-shrink-0">
-                                <svg
-                                  width="16"
-                                  height="10"
-                                  viewBox="0 0 20 12"
-                                  fill="none"
-                                  xmlns="http://www.w3.org/2000/svg"
-                                >
-                                  <path
-                                    d="M18.5 1.5L11.5 9.5L7.5 5.5L1.5 10.5"
-                                    stroke="currentColor"
-                                    strokeWidth="2"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                  />
-                                </svg>
-                              </div>
-                            )}
-                          </div>
-                          <button
-                            className="text-gray-400 hover:text-gray-600 ml-2 flex-shrink-0"
-                            onClick={e => {
-                              e.preventDefault();
-                              toggleFavorite(restaurant.id);
-                            }}
-                          >
-                            <Heart
-                              className={`h-5 w-5 ${
-                                favorites.includes(restaurant.id) ? 'fill-red-500 text-red-500' : ''
-                              }`}
-                            />
-                          </button>
-                        </div>
-
-                        <div className="flex items-center mt-1 text-xs text-gray-700">
-                          {restaurant?.rating && restaurant.rating != 0 && <span className="font-semibold">{getDefaultRating(restaurant.rating)}</span>}
-                          {restaurant?.rating && restaurant.rating != 0 && <svg
-                            width="14"
-                            height="14"
-                            viewBox="0 0 16 16"
-                            fill="currentColor"
-                            className="ml-1"
-                          >
-                            <path d="M8 0L10.2571 5.08631L16 5.87013L11.8 9.79752L12.9443 15.5L8 12.5863L3.05573 15.5L4.2 9.79752L0 5.87013L5.74286 5.08631L8 0Z" />
-                          </svg>}
-                          {restaurant?.reviews && restaurant.reviews !== '0 ratings' && restaurant.reviews !== '0' && <span className="mx-1">({restaurant.reviews})</span>}
-                          {restaurant?.rating && restaurant.rating != 0 && <span className="mx-1">•</span>}
-                          <span>{restaurant.distance}</span>
-                          <span className="mx-1">•</span>
-                          <span>{restaurant.time}</span>
-                        </div>
-
-                        <div className="mt-1 text-xs text-gray-500">{restaurant.deliveryFee}</div>
-                      </div>
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            </div>
-          )
+        {hasActiveFilters() || searchQuery ? (
+          // Show all restaurants in one section when filters are active or when searching
+          filteredRestaurants.length > 0 ? (
+            <RestaurantSection
+              title={searchQuery ? `Results for "${searchQuery}"` : `${filteredRestaurants.length} results`}
+              restaurants={filteredRestaurants}
+            />
+          ) : null
         ) : (
-          // Show remaining restaurants when no filters are active
-          remainingRestaurants.length > 0 && (
-            <div className="mb-8">
-              <hr className="mb-6 border-t border-gray-200" />
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              {remainingRestaurants.map(restaurant => (
-                <Link
-                  key={restaurant.id}
-                  href={`/store/${restaurant.id}`}
-                  className="block"
-                  prefetch={false}
-                >
-                  <div className="restaurant-card">
-                    <div className="relative h-[140px] bg-gray-100 rounded-lg overflow-hidden">
-                      <Image
-                        src={
-                          restaurant.banner ||
-                          `/placeholder.svg?height=200&width=400&query=${restaurant.name} restaurant`
-                        }
-                        alt={restaurant.name}
-                        fill
-                        className="object-cover"
-                      />
-                      {restaurant.new && (
-                        <div className="absolute top-3 left-3 bg-black text-white text-xs font-bold px-2 py-1 rounded">
-                          NEW
-                        </div>
-                      )}
-                    </div>
-                    <div className="py-3">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2 flex-1 min-w-0">
-                          <h3 className="font-bold text-base truncate">{restaurant.name}</h3>
-                          {restaurant.dashPass && (
-                            <div className="text-teal-600 flex-shrink-0">
-                              <svg
-                                width="16"
-                                height="10"
-                                viewBox="0 0 20 12"
-                                fill="none"
-                                xmlns="http://www.w3.org/2000/svg"
-                              >
-                                <path
-                                  d="M18.5 1.5L11.5 9.5L7.5 5.5L1.5 10.5"
-                                  stroke="currentColor"
-                                  strokeWidth="2"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                />
-                              </svg>
-                            </div>
-                          )}
-                        </div>
-                        <button
-                          className="text-gray-400 hover:text-gray-600 ml-2 flex-shrink-0"
-                          onClick={e => {
-                            e.preventDefault();
-                            toggleFavorite(restaurant.id);
-                          }}
-                        >
-                          <Heart
-                            className={`h-5 w-5 ${
-                              favorites.includes(restaurant.id) ? 'fill-red-500 text-red-500' : ''
-                            }`}
-                          />
-                        </button>
-                      </div>
-
-                      <div className="flex items-center mt-1 text-xs text-gray-700">
-                        {restaurant?.rating && restaurant.rating != 0 && <span className="font-semibold">{getDefaultRating(restaurant.rating)}</span>}
-                        {restaurant?.rating && restaurant.rating != 0 && <svg
-                          width="14"
-                          height="14"
-                          viewBox="0 0 16 16"
-                          fill="currentColor"
-                          className="ml-1"
-                        >
-                          <path d="M8 0L10.2571 5.08631L16 5.87013L11.8 9.79752L12.9443 15.5L8 12.5863L3.05573 15.5L4.2 9.79752L0 5.87013L5.74286 5.08631L8 0Z" />
-                        </svg>}
-                        {restaurant?.reviews && restaurant.reviews !== '0 ratings' && restaurant.reviews !== '0' && <span className="mx-1">({restaurant.reviews})</span>}
-                        {restaurant?.rating && restaurant.rating != 0 && <span className="mx-1">•</span>}
-                        <span>{restaurant.distance}</span>
-                        <span className="mx-1">•</span>
-                        <span>{restaurant.time}</span>
-                      </div>
-
-                      <div className="mt-1 text-xs text-gray-500">{restaurant.deliveryFee}</div>
-                    </div>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </div>
+          // Show remaining restaurants when no filters are active and no search query
+          !searchQuery && remainingRestaurants.length > 0 && (
+            <RestaurantSection
+              title="All Restaurants"
+              restaurants={remainingRestaurants}
+            />
           )
         )}
 

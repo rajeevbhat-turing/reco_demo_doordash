@@ -510,97 +510,10 @@ export default function Home() {
             </div>
 
             {allFilteredRestaurants.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {allFilteredRestaurants.map(restaurant => (
-                  <div key={restaurant.id} className="restaurant-card">
-                    <Link href={`/store/${restaurant.id}`} className="block" prefetch={false}>
-                      <div className="relative h-[200px] bg-gray-100">
-                        <Image
-                          src={
-                            restaurant.banner ||
-                            `/placeholder.svg?height=200&width=400&query=${
-                              restaurant.name || '/placeholder.svg'
-                            } restaurant`
-                          }
-                          alt={restaurant.name}
-                          fill
-                          className="object-cover"
-                          onError={e => {
-                            // Fallback to placeholder if image fails to load
-                            const target = e.target as HTMLImageElement;
-                            target.src = '/placeholder.svg';
-                          }}
-                        />
-                        {restaurant.new && (
-                          <div className="absolute top-3 left-3 bg-black text-white text-xs font-bold px-2 py-1 rounded">
-                            NEW
-                          </div>
-                        )}
-                      </div>
-                    </Link>
-
-                    <div className="py-3">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <h3 className="font-bold text-lg">{restaurant.name}</h3>
-                          {restaurant.dashPass && (
-                            <div className="text-teal-600">
-                              <svg
-                                width="20"
-                                height="12"
-                                viewBox="0 0 20 12"
-                                fill="none"
-                                xmlns="http://www.w3.org/2000/svg"
-                              >
-                                <path
-                                  d="M18.5 1.5L11.5 9.5L7.5 5.5L1.5 10.5"
-                                  stroke="currentColor"
-                                  strokeWidth="2"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                />
-                              </svg>
-                            </div>
-                          )}
-                        </div>
-                        <button className="text-gray-400 hover:text-gray-600">
-                          <Heart className="h-6 w-6" />
-                        </button>
-                      </div>
-
-                      <div className="flex items-center mt-1 text-sm text-gray-700 flex-wrap">
-                        <div className="flex items-center">
-                          {restaurant?.rating && restaurant.rating != 0 && (
-                            <span className="font-semibold">{restaurant.rating}</span>
-                          )}
-                          {restaurant?.rating && restaurant.rating != 0 && (
-                            <svg
-                              width="16"
-                              height="16"
-                              viewBox="0 0 16 16"
-                              fill="currentColor"
-                              className="ml-1"
-                            >
-                              <path d="M8 0L10.2571 5.08631L16 5.87013L11.8 9.79752L12.9443 15.5L8 12.5863L3.05573 15.5L4.2 9.79752L0 5.87013L5.74286 5.08631L8 0Z" />
-                            </svg>
-                          )}
-                        </div>
-                        {restaurant?.reviews &&
-                          restaurant.reviews !== '0 ratings' &&
-                          restaurant.reviews !== '0' && (
-                            <span className="mx-1">({restaurant.reviews})</span>
-                          )}
-                        {restaurant?.rating && restaurant.rating != 0 && <span className="mx-1">•</span>}
-                        <span>{restaurant.distance}</span>
-                        <span className="mx-1">•</span>
-                        <span>{restaurant.time}</span>
-                      </div>
-
-                      <div className="mt-1 text-sm text-gray-500">{restaurant.deliveryFee}</div>
-                    </div>
-                  </div>
-                ))}
-              </div>
+              <RestaurantSection
+                title={`${allFilteredRestaurants.length} results`}
+                restaurants={allFilteredRestaurants}
+              />
             ) : (
               <div className="mt-10 py-16 text-center bg-gray-50 rounded-lg">
                 <h3 className="text-lg font-medium text-gray-700">
