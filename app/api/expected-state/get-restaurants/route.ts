@@ -3,21 +3,23 @@ import { db } from '@/lib/db';
 import { calculateDistance } from '@/lib/utils/distance-utils';
 
 /**
- * GET /api/expected-state/get-restaurant
+ * GET /api/expected-state/get-restaurants
  * 
  * Query Parameters:
  * - userId: User ID (required)
+ * - lat: Latitude (required)
+ * - lng: Longitude (required)
  * - sort_type: Sorting type (e.g., "nearest")
  * - limit: Number of restaurants to return (optional, returns all if not provided)
  * - cuisine: Filter by cuisine type
- * - lat: Latitude (required if sort_type is "nearest")
- * - lng: Longitude (required if sort_type is "nearest")
  * 
  * Finds restaurants with optional filtering and sorting:
  * 1. Fetches all restaurants from database
  * 2. Applies cuisine filter if provided
- * 3. Calculates distance and sorts if sort_type is "nearest"
- * 4. Returns top N restaurants based on limit
+ * 3. Calculates distance for all restaurants
+ * 4. Filters restaurants within 10 mile radius
+ * 5. Sorts by distance if sort_type is "nearest"
+ * 6. Returns top N restaurants based on limit
  */
 export async function GET(request: NextRequest) {
   try {
@@ -40,12 +42,12 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // If sort_type is "nearest", lat and lng are required
-    if (sortType === 'nearest' && (!lat || !lng)) {
+    // lat and lng are always required for radius filtering
+    if (!lat || !lng) {
       return NextResponse.json(
         { 
           success: false, 
-          error: 'lat and lng are required when sort_type is "nearest"' 
+          error: 'lat and lng are required' 
         },
         { status: 400 }
       );
@@ -74,8 +76,8 @@ export async function GET(request: NextRequest) {
     
     // Apply cuisine filter if provided
     if (cuisineFilter) {
-      query += ' WHERE cuisine = ?';
-      queryParams.push(cuisineFilter);
+      query += ' WHERE cuisine like ?';
+      queryParams.push(`%${cuisineFilter}%`);
     }
 
     const restaurants = await db.query<any>(query, queryParams);
@@ -87,52 +89,44 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    // Transform to result format
-    let results = restaurants.map((restaurant: any) => ({
-      id: String(restaurant.id),
-      name: restaurant.name,
-      logo: restaurant.logo,
-      cuisine: restaurant.cuisine,
-      minDeliveryFee: restaurant.min_delivery_fee,
-      priceRange: restaurant.price_range,
-      dashPass: restaurant.dash_pass === 1,
-      address: {
-        street: restaurant.street,
-        city: restaurant.city,
-        state: restaurant.state,
-        zipCode: restaurant.zip_code,
-      },
-      // Store latitude and longitude temporarily for distance calculation
-      _latitude: restaurant.latitude,
-      _longitude: restaurant.longitude,
-    }));
+    const userLat = parseFloat(lat!);
+    const userLng = parseFloat(lng!);
+    const maxRadius = 10; // 10 mile radius
 
-    // Calculate distance and sort if sort_type is "nearest"
+    // Transform to result format and calculate distance for all restaurants
+    let results = restaurants.map((restaurant: any) => {
+      const distance = calculateDistance(
+        restaurant.latitude,
+        restaurant.longitude,
+        userLat,
+        userLng
+      );
+      
+      return {
+        id: String(restaurant.id),
+        name: restaurant.name,
+        logo: restaurant.logo,
+        cuisine: restaurant.cuisine,
+        minDeliveryFee: restaurant.min_delivery_fee,
+        priceRange: restaurant.price_range,
+        dashPass: restaurant.dash_pass === 1,
+        address: {
+          street: restaurant.street,
+          city: restaurant.city,
+          state: restaurant.state,
+          zipCode: restaurant.zip_code,
+        },
+        distance: Math.round(distance * 100) / 100, // Round to 2 decimal places
+      };
+    });
+
+    // Filter restaurants within 10 mile radius
+    results = results.filter((restaurant: any) => restaurant.distance <= maxRadius);
+
+    // Sort by distance if sort_type is "nearest"
     if (sortType === 'nearest') {
-      const userLat = parseFloat(lat!);
-      const userLng = parseFloat(lng!);
-
-      // Calculate distance for each restaurant
-      results = results.map((restaurant: any) => {
-        const distance = calculateDistance(
-          restaurant._latitude,
-          restaurant._longitude,
-          userLat,
-          userLng
-        );
-        
-        return {
-          ...restaurant,
-          distance: Math.round(distance * 100) / 100, // Round to 2 decimal places
-        };
-      });
-
-      // Sort by distance (ascending - nearest first)
       results.sort((a: any, b: any) => a.distance - b.distance);
     }
-
-    // Remove temporary latitude/longitude fields
-    results = results.map(({ _latitude, _longitude, ...rest }: any) => rest);
 
     // Apply limit if provided
     const limitedResults = limit ? results.slice(0, limit) : results;
@@ -143,7 +137,7 @@ export async function GET(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('❌ Get restaurant error:', error);
+    console.error('❌ Get restaurants error:', error);
     return NextResponse.json(
       { 
         success: false, 
