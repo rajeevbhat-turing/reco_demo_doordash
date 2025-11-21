@@ -262,6 +262,23 @@ export function useFilterOptions({
     setVisibleTimeOptions(times.slice(0, 6))
   }, [selectedDay])
 
+  // Auto-select rating 1 when dropdown opens (if no filter is currently applied)
+  useEffect(() => {
+    if (ratingDropdownOpen) {
+      // When dropdown opens, if no filter is applied, pre-select rating 1 for display
+      if (filters.overRating === null) {
+        setSelectedRating(1)
+      } else {
+        // If a filter is already applied, show that rating
+        setSelectedRating(filters.overRating)
+      }
+    } else {
+      // When dropdown closes, reset selectedRating to match the actual filter state
+      // This ensures that if user closes without applying, the preview selection is cleared
+      setSelectedRating(filters.overRating)
+    }
+  }, [ratingDropdownOpen, filters.overRating])
+
   // Close dropdowns when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -687,7 +704,7 @@ export function useFilterOptions({
     if (filters.overRating) {
       return `Over ${filters.overRating}★`
     }
-    return "Over 4.5★"
+    return "Over 1★"
   }
 
   // Complete reset function that resets all internal state

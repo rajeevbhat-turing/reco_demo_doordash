@@ -511,7 +511,7 @@ export default function Home() {
 
             {allFilteredRestaurants.length > 0 ? (
               <RestaurantSection
-                title={`${allFilteredRestaurants.length} results`}
+                title=""
                 restaurants={allFilteredRestaurants}
               />
             ) : (
