@@ -457,13 +457,14 @@ export default function LandingPage() {
                 {/* Legal Disclaimer */}
                 <p className="text-xs text-[#606060ff] mb-4 leading-relaxed font-bold">
                   By clicking on any "Continue" button, you agree to DoorDash's{' '}
-                  <a href="" className="text-[#1700ee] underline hover:text-blue-700">
+                  {/* <a href="" className="text-[#1700ee] underline hover:text-blue-700"> */}
                     Terms and Conditions
-                  </a>{' '}
+                  {/* </a> */}
+                  {' '}
                   and{' '}
-                  <a href="" className="text-[#1700ee] underline hover:text-blue-700">
+                  {/* <a href="" className="text-[#1700ee] underline hover:text-blue-700"> */}
                     Privacy Policy
-                  </a>
+                  {/* </a> */}
                   .
                 </p>
 

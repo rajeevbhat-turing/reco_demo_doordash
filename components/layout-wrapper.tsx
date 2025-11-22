@@ -21,7 +21,7 @@ export default function LayoutWrapper({ children }: { children: React.ReactNode 
   // 2. User is logged in AND there are no addresses
   const shouldShowContent = isAuthenticated 
     ? addresses.length > 0 
-    : tempAddress !== null
+    : (isAuthPage || tempAddress !== null)
 
   return (
     <>
