@@ -227,10 +227,7 @@ export default function EditProfile({ onCancel }: EditProfileProps) {
             </p>
             <p>
               When your profile is restricted, it will display your first name, last initial, and
-              number of contributions, but not the content of those contributions.{' '}
-              <span className="text-[#191919ff] underline hover:opacity-80 hover:cursor-pointer transition-opacity">
-                Learn more
-              </span>
+              number of contributions, but not the content of those contributions.
             </p>
           </div>
         </div>

@@ -144,7 +144,6 @@ export default function ProfileBadgesModal({ isOpen, onClose }: ProfileBadgesMod
 
         {/* Footer */}
         <div className="sticky bottom-0 bg-white border-t border-gray-200 px-6 py-4 flex items-center justify-end gap-3">
-          <button className="text-base font-bold text-[#191919ff] underline">Learn more</button>
           <button
             onClick={onClose}
             className="px-3 py-2 bg-gray-100 text-[#191919ff] font-bold text-base rounded-[28px] hover:bg-gray-200 transition-colors"

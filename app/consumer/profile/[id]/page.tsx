@@ -143,7 +143,7 @@ export default function UserProfilePage() {
         </div>
 
         {/* Badge Progress Card - Only for current user */}
-        {isCurrentUser && (
+        {/* {isCurrentUser && (
           <div
             className="bg-[#f7f7f7] rounded-xl p-2.5 mb-4 flex items-center justify-between hover:cursor-pointer"
             onClick={() => setProfileBadgesModalOpen(true)}
@@ -158,7 +158,7 @@ export default function UserProfilePage() {
               <span className="text-sm font-medium text-[#191919ff]">0/3</span>
             </div>
           </div>
-        )}
+        )} */}
 
         {/* Contributions count */}
         <p className="text-base text-[#191919ff] font-bold">
