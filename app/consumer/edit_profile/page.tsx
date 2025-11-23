@@ -6,6 +6,7 @@ import Link from 'next/link';
 import OTPVerificationModal from '@/components/modals/otp-verification-modal';
 import { useUserStore } from '@/store/user-store';
 import countriesData from '@/lib/utils/countryCode.json';
+import { isValidName } from '@/lib/utils/helperFunctions';
 
 export default function AccountSettingsPage() {
   const currentUser = useUserStore(state => state.currentUser);
@@ -241,6 +242,18 @@ export default function AccountSettingsPage() {
 
     setIsSaving(true);
     setGeneralError(''); // Clear any previous general error
+
+    // Validate first name and last name
+    if (
+      !formData.firstName.trim() ||
+      !formData.lastName.trim() ||
+      !isValidName(formData.firstName) ||
+      !isValidName(formData.lastName)
+    ) {
+      setGeneralError('Unable to update profile. Please try again later.');
+      setIsSaving(false);
+      return;
+    }
 
     try {
       // Check what has changed

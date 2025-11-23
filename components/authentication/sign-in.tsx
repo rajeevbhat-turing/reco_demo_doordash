@@ -104,7 +104,7 @@ export default function SignIn({
       setErrors({ email: 'Email is required' });
       return false;
     } else if (!isValidEmail(formData.email)) {
-      setErrors({ email: 'Please enter a valid email' });
+      setErrors({ email: 'Email format is invalid' });
       return false;
     }
     return true;

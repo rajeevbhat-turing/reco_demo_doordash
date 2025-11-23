@@ -1,6 +1,21 @@
 // Email validation
 export const isValidEmail = (email: string) => {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return false;
+  }
+  // Check if local part (before @) exceeds 64 characters
+  const localPart = email.split('@')[0];
+  return localPart.length <= 64;
+};
+
+// Name validation
+export const isValidName = (name: string) => {
+  // Check if name exceeds 119 characters or contains invalid characters
+  // Valid characters: letters, numbers, spaces, hyphens, apostrophes, periods, and commas
+  if (name.length > 119 || !/^[a-zA-Z0-9\s\-'.,]+$/.test(name)) {
+    return false;
+  }
+  return true;
 };
 
 // Name validation
