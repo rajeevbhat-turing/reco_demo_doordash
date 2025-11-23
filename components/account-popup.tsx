@@ -72,6 +72,12 @@ export default function AccountPopup({ isOpen, onClose, anchorElement }: Account
     onClose();
   };
 
+  // Go to profile page
+  const handleProfileClick = () => {
+    router.push(`/consumer/profile/${currentUser?.id}`);
+    onClose();
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -95,12 +101,13 @@ export default function AccountPopup({ isOpen, onClose, anchorElement }: Account
               {currentUser?.name?.charAt(0) || 'U'}
             </span>
           </div>
-          <div className="flex-1">
+          <div className="flex-1" onClick={handleProfileClick}>
             <div className="flex items-center">
               <span className="font-bold text-lg text-[#191919ff]">
                 {currentUser?.name || 'User'}
               </span>
-              <Lock className="h-4 w-4 ml-1 text-[#191919ff]" />
+              {/* Display lock icon if the user is restricted */}
+              {currentUser?.is_restricted ? <Lock className="h-4 w-4 ml-1 text-[#191919ff]" /> : null}
             </div>
             <div className="text-[16px] font-medium text-[#191919ff]">View Profile</div>
           </div>
