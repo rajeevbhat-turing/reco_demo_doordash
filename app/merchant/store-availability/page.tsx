@@ -27,7 +27,7 @@ export default function StoreAvailabilityPage() {
           </div>
 
           <p className="text-sm text-gray-600 mb-4">
-            All ordering channels are currently paused from receiving orders. This store will reopen on DoorDash at 12:16 AM PDT on 4/29/2025.
+            All ordering channels are currently paused from receiving orders. This store will reopen on DashDoor at 12:16 AM PDT on 4/29/2025.
           </p>
 
           <div className="flex items-center gap-4 mb-6">
@@ -81,7 +81,7 @@ export default function StoreAvailabilityPage() {
                     </div>
                   </td>
                   <td className="px-4 py-3 text-gray-600">
-                    This store is currently available to use DoorDash Drive On-Demand.
+                    This store is currently available to use DashDoor Drive On-Demand.
                   </td>
                 </tr>
               </tbody>
@@ -93,7 +93,7 @@ export default function StoreAvailabilityPage() {
         <div className="bg-white border border-gray-200 rounded-lg p-6 mb-6">
           <h2 className="text-lg font-semibold text-gray-900 mb-2">Regular menu hours</h2>
           <p className="text-sm text-gray-600 mb-4">
-            These are the hours your store is available on DoorDash. Last updated on Mon, Apr 28, 2025, 4:36 AM PDT.
+            These are the hours your store is available on DashDoor. Last updated on Mon, Apr 28, 2025, 4:36 AM PDT.
           </p>
 
           <div className="flex items-center gap-4 mb-4">

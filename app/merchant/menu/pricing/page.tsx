@@ -27,7 +27,7 @@ export default function PricingPage() {
           </div>
           <div className="text-5xl font-bold text-gray-900 mb-3">30%</div>
           <p className="text-sm text-gray-600 mb-4">
-            You can boost visibility and conversions by making your DoorDash prices similar to what you offer in-store.
+            You can boost visibility and conversions by making your DashDoor prices similar to what you offer in-store.
           </p>
           <button className="inline-flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-md transition-colors">
             Edit markup rate
@@ -117,8 +117,8 @@ export default function PricingPage() {
           <h2 className="text-lg font-semibold text-gray-900 mb-2">Benefits of matching your in-store prices</h2>
           <p className="text-sm text-gray-600 mb-6">
             Reach out to our team for questions at{" "}
-            <a href="mailto:menu-pricing@doordash.com" className="text-blue-600 hover:underline">
-              menu-pricing@doordash.com
+            <a href="mailto:menu-pricing@dashdoor.com" className="text-blue-600 hover:underline">
+              menu-pricing@dashdoor.com
             </a>
           </p>
 
@@ -144,7 +144,7 @@ export default function PricingPage() {
               <div>
                 <h3 className="text-base font-semibold text-gray-900 mb-2">More repeat orders</h3>
                 <p className="text-sm text-gray-600">
-                  Regulars often switch to competitors when they see higher prices on DoorDash than in-store.
+                  Regulars often switch to competitors when they see higher prices on DashDoor than in-store.
                 </p>
               </div>
             </div>

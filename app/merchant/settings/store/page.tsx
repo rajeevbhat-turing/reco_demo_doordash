@@ -109,7 +109,7 @@ export default function StoreSettingsPage() {
             <div className="flex-1">
               <Label className="text-sm font-medium text-gray-900 mb-2 block">Website</Label>
               <div className="text-base text-gray-900">{website}</div>
-              <p className="text-sm text-gray-500 mt-1">Highlight your website on your DoorDash store page</p>
+              <p className="text-sm text-gray-500 mt-1">Highlight your website on your DashDoor store page</p>
             </div>
             <button
               onClick={() => setIsWebsiteModalOpen(true)}

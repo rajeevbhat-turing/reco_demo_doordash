@@ -14,7 +14,7 @@ interface Order {
   date: string
   time: string
   fulfillmentStatus: string
-  fulfillmentType: "Customer pickup" | "DoorDash delivery"
+  fulfillmentType: "Customer pickup" | "DashDoor delivery"
   channel: string
   subtotal: string
 }
@@ -49,7 +49,7 @@ const mockOrders: Order[] = [
     date: "4/22/2025",
     time: "5:34 PM",
     fulfillmentStatus: "",
-    fulfillmentType: "DoorDash delivery",
+    fulfillmentType: "DashDoor delivery",
     channel: "Marketplace",
     subtotal: "$3.53"
   },
@@ -71,7 +71,7 @@ const mockOrders: Order[] = [
     date: "4/22/2025",
     time: "12:00 PM",
     fulfillmentStatus: "",
-    fulfillmentType: "DoorDash delivery",
+    fulfillmentType: "DashDoor delivery",
     channel: "Marketplace",
     subtotal: "$4.82"
   },

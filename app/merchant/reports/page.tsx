@@ -119,7 +119,7 @@ export default function ReportsPage() {
           <div>
             <h1 className="text-3xl font-bold text-gray-900 mb-2">Reports</h1>
             <p className="text-sm text-gray-600">
-              Create and manage the reports that provide access to sales, operations, and financial data for your store on DoorDash.
+              Create and manage the reports that provide access to sales, operations, and financial data for your store on DashDoor.
             </p>
           </div>
           <button

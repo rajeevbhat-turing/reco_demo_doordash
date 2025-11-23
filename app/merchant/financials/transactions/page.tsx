@@ -120,7 +120,7 @@ export default function TransactionsPage() {
         <div className="mb-6">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Transactions</h1>
           <p className="text-sm text-gray-600 mb-4">
-            All charges from all orders, campaigns, fees, and adjustments associated with your DoorDash account. To track real-time orders, go to{" "}
+            All charges from all orders, campaigns, fees, and adjustments associated with your DashDoor account. To track real-time orders, go to{" "}
             <a href="/merchant/orders" className="text-blue-600 hover:underline">Orders</a>.
           </p>
           
@@ -153,7 +153,7 @@ export default function TransactionsPage() {
             <Info className="h-5 w-5 text-gray-600 mt-0.5 flex-shrink-0" />
             <div>
               <p className="text-sm text-gray-700 mb-1">
-                <span className="font-semibold">Introducing a new metric - marketing spend.</span> To help you better track and understand your marketing efforts, we're unveiling a new metric--marketing spend. This number represents the total you paid to DoorDash to run marketing after marketing credits and third-party contributions have been deducted. You'll also be downloaded reports.
+                <span className="font-semibold">Introducing a new metric - marketing spend.</span> To help you better track and understand your marketing efforts, we're unveiling a new metric--marketing spend. This number represents the total you paid to DashDoor to run marketing after marketing credits and third-party contributions have been deducted. You'll also be downloaded reports.
               </p>
             </div>
           </div>

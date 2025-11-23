@@ -15,7 +15,7 @@ export default function RunCampaignPage() {
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Run a campaign</h1>
           <p className="text-sm text-gray-600">
-            Boost your sales by running a paid marketing campaign or promotion on DoorDash channels. You only pay if your promotion leads to an order.
+            Boost your sales by running a paid marketing campaign or promotion on DashDoor channels. You only pay if your promotion leads to an order.
           </p>
         </div>
 
@@ -119,7 +119,7 @@ export default function RunCampaignPage() {
             <div className="border border-gray-200 rounded-lg p-5 hover:border-gray-300 transition-colors">
               <h3 className="text-base font-semibold text-gray-900 mb-2">Advertise to new customers</h3>
               <p className="text-sm text-gray-600 mb-4">
-                You could be featured prominently on the DoorDash app and seen by more customers. You only pay for ads when you receive an order.
+                You could be featured prominently on the DashDoor app and seen by more customers. You only pay for ads when you receive an order.
               </p>
               <button 
                 onClick={() => router.push("/merchant/marketing/run-campaign/advertise-new-customers")}

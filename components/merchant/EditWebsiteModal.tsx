@@ -46,7 +46,7 @@ export default function EditWebsiteModal({ isOpen, onClose, currentWebsite, onSa
               placeholder="http://example.com"
             />
             <p className="text-xs text-gray-500 mt-1">
-              Highlight your website on your DoorDash store page
+              Highlight your website on your DashDoor store page
             </p>
           </div>
         </div>

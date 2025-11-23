@@ -6,7 +6,7 @@ import { ExternalLink } from "lucide-react"
 interface Statement {
   month: string
   sales: string
-  doorDashServices: string
+  dashDoorServices: string
   amendments: string
   netTotal: string
 }
@@ -15,56 +15,56 @@ const mockStatements: Statement[] = [
   {
     month: "March 2025",
     sales: "$0.00",
-    doorDashServices: "-$18.00",
+    dashDoorServices: "-$18.00",
     amendments: "$0.00",
     netTotal: "-$18.00"
   },
   {
     month: "February 2025",
     sales: "$0.00",
-    doorDashServices: "-$12.00",
+    dashDoorServices: "-$12.00",
     amendments: "$27.00",
     netTotal: "$15.00"
   },
   {
     month: "January 2025",
     sales: "$16.96",
-    doorDashServices: "-$28.57",
+    dashDoorServices: "-$28.57",
     amendments: "$0.00",
     netTotal: "-$11.61"
   },
   {
     month: "December 2024",
     sales: "$24.62",
-    doorDashServices: "-$32.10",
+    dashDoorServices: "-$32.10",
     amendments: "$0.00",
     netTotal: "-$7.48"
   },
   {
     month: "November 2024",
     sales: "$27.50",
-    doorDashServices: "-$28.19",
+    dashDoorServices: "-$28.19",
     amendments: "$0.00",
     netTotal: "-$0.69"
   },
   {
     month: "October 2024",
     sales: "$0.00",
-    doorDashServices: "-$24.00",
+    dashDoorServices: "-$24.00",
     amendments: "$0.00",
     netTotal: "-$24.00"
   },
   {
     month: "September 2024",
     sales: "$26.57",
-    doorDashServices: "-$25.44",
+    dashDoorServices: "-$25.44",
     amendments: "$0.00",
     netTotal: "$1.13"
   },
   {
     month: "August 2024",
     sales: "$723.00",
-    doorDashServices: "-$18.38",
+    dashDoorServices: "-$18.38",
     amendments: "$0.00",
     netTotal: "-$11.15"
   }
@@ -162,7 +162,7 @@ export default function StatementsPage() {
                     </th>
                     <th className="text-left font-medium px-4 py-3 text-gray-700">Month</th>
                     <th className="text-right font-medium px-4 py-3 text-gray-700">Sales</th>
-                    <th className="text-right font-medium px-4 py-3 text-gray-700">DoorDash services</th>
+                    <th className="text-right font-medium px-4 py-3 text-gray-700">DashDoor services</th>
                     <th className="text-right font-medium px-4 py-3 text-gray-700">Amendments</th>
                     <th className="text-right font-medium px-4 py-3 text-gray-700">Net total</th>
                     <th className="text-right font-medium px-4 py-3 text-gray-700">Actions</th>
@@ -181,7 +181,7 @@ export default function StatementsPage() {
                       </td>
                       <td className="px-4 py-3 text-gray-900">{statement.month}</td>
                       <td className="px-4 py-3 text-right text-gray-900">{statement.sales}</td>
-                      <td className="px-4 py-3 text-right text-gray-900">{statement.doorDashServices}</td>
+                      <td className="px-4 py-3 text-right text-gray-900">{statement.dashDoorServices}</td>
                       <td className="px-4 py-3 text-right text-gray-900">{statement.amendments}</td>
                       <td className={`px-4 py-3 text-right font-medium ${
                         statement.netTotal.startsWith('-') ? 'text-red-600' : 'text-gray-900'

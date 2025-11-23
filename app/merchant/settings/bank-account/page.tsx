@@ -36,7 +36,7 @@ export default function BankAccountPage() {
           <div className="mb-4">
             <h2 className="text-lg font-semibold text-gray-900 mb-1">Bank account information</h2>
             <p className="text-sm text-gray-600">
-              DoorDash only uses your bank account information to deposit payouts.
+              DashDoor only uses your bank account information to deposit payouts.
             </p>
           </div>
 
@@ -87,7 +87,7 @@ export default function BankAccountPage() {
           <div className="mb-4">
             <h2 className="text-lg font-semibold text-gray-900 mb-1">Business information</h2>
             <p className="text-sm text-gray-600">
-              To process payouts, DoorDash and our payments processing partner, Stripe, are required to collect your business information for compliance and tax purposes.
+              To process payouts, DashDoor and our payments processing partner, Stripe, are required to collect your business information for compliance and tax purposes.
             </p>
           </div>
 

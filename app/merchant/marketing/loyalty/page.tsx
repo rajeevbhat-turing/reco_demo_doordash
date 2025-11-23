@@ -11,8 +11,8 @@ export default function LoyaltyPage() {
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Loyalty</h1>
           <p className="text-sm text-gray-600">
             Performance insights since the launch of your loyalty program, reflecting a maximum of 12 months of data. For questions, contact us at{" "}
-            <a href="mailto:loyalty@doordash.com" className="text-blue-600 hover:underline">
-              loyalty@doordash.com
+            <a href="mailto:loyalty@dashdoor.com" className="text-blue-600 hover:underline">
+              loyalty@dashdoor.com
             </a>.
           </p>
         </div>
@@ -38,8 +38,8 @@ export default function LoyaltyPage() {
           {/* Call to Action */}
           <p className="text-sm text-gray-600 max-w-md">
             Build customer loyalty by offering rewards. To get started, contact us at{" "}
-            <a href="mailto:loyalty@doordash.com" className="text-blue-600 hover:underline">
-              loyalty@doordash.com
+            <a href="mailto:loyalty@dashdoor.com" className="text-blue-600 hover:underline">
+              loyalty@dashdoor.com
             </a>.
           </p>
         </div>

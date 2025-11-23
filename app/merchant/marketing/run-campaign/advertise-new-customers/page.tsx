@@ -14,7 +14,7 @@ export default function AdvertiseNewCustomersPage() {
             <div className="mb-6">
               <h1 className="text-3xl font-bold text-gray-900 mb-2">Advertise to new customers</h1>
               <p className="text-sm text-gray-600">
-                You could be featured prominently on the DoorDash app and seen by more customers. You only pay for ads when you receive an order.
+                You could be featured prominently on the DashDoor app and seen by more customers. You only pay for ads when you receive an order.
               </p>
             </div>
 

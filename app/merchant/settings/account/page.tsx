@@ -71,7 +71,7 @@ export default function AccountSettingsPage() {
             <div className="flex-1">
               <h3 className="text-base font-medium text-gray-900 mb-1">Alcohol sales</h3>
               <p className="text-sm text-gray-600 mb-2">
-                Sell alcohol on DoorDash in compliance with local laws and regulations. To get started, confirm that alcohol delivery is allowed in your state.
+                Sell alcohol on DashDoor in compliance with local laws and regulations. To get started, confirm that alcohol delivery is allowed in your state.
               </p>
               <a href="#" className="text-sm text-blue-600 hover:underline">Learn more</a>
             </div>
@@ -85,10 +85,10 @@ export default function AccountSettingsPage() {
             <div className="flex-1">
               <h3 className="text-base font-medium text-gray-900 mb-1">Use item photos from customers</h3>
               <p className="text-sm text-gray-600 mb-2">
-                DoorDash only adds photos to your menu when there're items missing photos. All photos from customers will be permanently removed if you turn it off.
+                DashDoor only adds photos to your menu when there're items missing photos. All photos from customers will be permanently removed if you turn it off.
               </p>
               <span className="inline-block px-2 py-0.5 bg-yellow-100 text-yellow-800 text-xs font-medium rounded">
-                DoorDash employees only
+                DashDoor employees only
               </span>
             </div>
             <div className="ml-4 text-sm text-gray-600">Turned off</div>
@@ -104,7 +104,7 @@ export default function AccountSettingsPage() {
             <div className="flex-1">
               <h3 className="text-base font-medium text-gray-900 mb-1">Tablet access</h3>
               <p className="text-sm text-gray-600 mb-3">
-                Create and manage your PIN to pause your store on the DoorDash Tablet.
+                Create and manage your PIN to pause your store on the DashDoor Tablet.
               </p>
               <div className="flex items-center gap-3">
                 <div className="flex items-center gap-2">
@@ -137,7 +137,7 @@ export default function AccountSettingsPage() {
             <div className="flex-1">
               <h3 className="text-base font-medium text-gray-900 mb-1">Chat feature</h3>
               <p className="text-sm text-gray-600">
-                Add chat functionality to contact customers directly through the DoorDash Tablet.
+                Add chat functionality to contact customers directly through the DashDoor Tablet.
               </p>
             </div>
             <label className="relative inline-flex items-center cursor-pointer ml-4">

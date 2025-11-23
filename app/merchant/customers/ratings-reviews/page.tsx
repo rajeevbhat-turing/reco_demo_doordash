@@ -52,7 +52,7 @@ export default function RatingsReviewsPage() {
             <div className="bg-white border border-gray-200 rounded-lg p-5">
               <h3 className="text-lg font-semibold text-gray-900 mb-2">Lifetime rating</h3>
               <p className="text-sm text-gray-600 mb-4">
-                This is the rating of your store since joining DoorDash and the rating that customers will view in the DoorDash app.
+                This is the rating of your store since joining DashDoor and the rating that customers will view in the DashDoor app.
               </p>
               
               {/* Overall Rating */}

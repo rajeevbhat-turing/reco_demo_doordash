@@ -205,7 +205,7 @@ export default function LunchSpecialsPage() {
               </div>
               <div className="space-y-3 mb-4">
                 <div>
-                  <div className="text-sm text-gray-600 mb-1">Marketing fee paid to DoorDash</div>
+                  <div className="text-sm text-gray-600 mb-1">Marketing fee paid to DashDoor</div>
                   <div className="text-lg font-semibold text-gray-900">$0.00</div>
                 </div>
                 <div>

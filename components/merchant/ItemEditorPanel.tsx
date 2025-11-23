@@ -184,7 +184,7 @@ export default function ItemEditorPanel({ item, isOpen, onClose, onUpdate }: Ite
               </div>
               <p className="text-xs text-gray-500 mb-2">226e97e2-a711-45f8-8737-5345491ad65c.jpg</p>
               <p className="text-sm text-gray-600 mb-3">
-                This photo is visible on your DoorDash menu.
+                This photo is visible on your DashDoor menu.
               </p>
               <div className="flex items-center gap-2">
                 <button className="px-3 py-1.5 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">

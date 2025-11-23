@@ -147,7 +147,13 @@ export default function MerchantSidebar() {
                   active={pathname === "/merchant/marketing/run-campaign"}
                   highlightRed={pathname === "/merchant/marketing/run-campaign"}
                 />
-                <NavItem href="#" label="Campaigns" icon={Target} active={false} disabled={true} />
+                <NavItem 
+                  href="/merchant/marketing/campaigns" 
+                  label="Campaigns" 
+                  icon={Target} 
+                  active={pathname === "/merchant/marketing/campaigns" || pathname?.startsWith("/merchant/marketing/campaigns/")}
+                  highlightRed={pathname === "/merchant/marketing/campaigns" || pathname?.startsWith("/merchant/marketing/campaigns/")}
+                />
                 <NavItem 
                   href="/merchant/marketing/loyalty" 
                   label="Loyalty" 
@@ -224,7 +230,13 @@ export default function MerchantSidebar() {
                   active={pathname === "/merchant/financials/transactions"}
                   highlightOrange={pathname === "/merchant/financials/transactions"}
                 />
-                <NavItem href="#" label="Payouts" icon={DollarSign} active={false} disabled={true} />
+                <NavItem 
+                  href="/merchant/financials/payouts" 
+                  label="Payouts" 
+                  icon={DollarSign} 
+                  active={pathname === "/merchant/financials/payouts"}
+                  highlightOrange={pathname === "/merchant/financials/payouts"}
+                />
                 <NavItem 
                   href="/merchant/financials/statements" 
                   label="Statements" 
@@ -281,7 +293,13 @@ export default function MerchantSidebar() {
                       highlightRed={pathname === "/merchant/settings/store"}
                     />
                     <NavItem href="/merchant/users" label="Manage Users" icon={Users} active={pathname?.startsWith("/merchant/users") || false} />
-                    <NavItem href="#" label="Store communications" icon={Mail} active={false} disabled={true} />
+                    <NavItem 
+                      href="/merchant/settings/store-communications" 
+                      label="Store communications" 
+                      icon={Mail} 
+                      active={pathname === "/merchant/settings/store-communications"}
+                      highlightRed={pathname === "/merchant/settings/store-communications"}
+                    />
                     <NavItem 
                       href="/merchant/settings/bank-account" 
                       label="Bank account" 
