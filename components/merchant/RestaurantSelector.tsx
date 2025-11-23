@@ -2,7 +2,8 @@
 
 import { useState, useMemo, useRef, useEffect } from "react"
 import { ChevronDown, X } from "lucide-react"
-import { restaurants } from "@/constants/restaurants"
+import { useAllRestaurants } from "@/lib/hooks/use-restaurants"
+import type { Restaurant } from "@/constants/restaurants"
 
 interface RestaurantSelectorProps {
   selectedRestaurantId?: string
@@ -13,6 +14,9 @@ export default function RestaurantSelector({ selectedRestaurantId, onSelectResta
   const [isOpen, setIsOpen] = useState(false)
   const [searchValue, setSearchValue] = useState("")
   const dropdownRef = useRef<HTMLDivElement>(null)
+  
+  // Fetch restaurants from database
+  const { data: restaurants = [], isLoading } = useAllRestaurants()
 
   const selectedRestaurant = restaurants.find(r => r.id === selectedRestaurantId) || restaurants[0]
 
@@ -25,10 +29,31 @@ export default function RestaurantSelector({ selectedRestaurantId, onSelectResta
       restaurant.name.toLowerCase().includes(searchLower) ||
       `${restaurant.street}, ${restaurant.city}, ${restaurant.state} ${restaurant.zipCode}`.toLowerCase().includes(searchLower)
     )
-  }, [searchValue])
+  }, [searchValue, restaurants])
 
-  const formatAddress = (restaurant: typeof restaurants[0]) => {
+  const formatAddress = (restaurant: Restaurant) => {
     return `${restaurant.street}, ${restaurant.city}, ${restaurant.state} ${restaurant.zipCode}, USA`
+  }
+  
+  // Show loading state or empty state
+  if (isLoading) {
+    return (
+      <div className="px-3 py-2 bg-gray-50 border border-gray-200 rounded-md">
+        <div className="text-sm text-gray-500">Loading restaurants...</div>
+      </div>
+    )
+  }
+  
+  if (restaurants.length === 0) {
+    return (
+      <div className="px-3 py-2 bg-gray-50 border border-gray-200 rounded-md">
+        <div className="text-sm text-gray-500">No restaurants available</div>
+      </div>
+    )
+  }
+  
+  if (!selectedRestaurant) {
+    return null
   }
 
   // Close dropdown when clicking outside

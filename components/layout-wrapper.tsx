@@ -8,10 +8,7 @@ import { useUserStore } from '@/store/user-store'
 export default function LayoutWrapper({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
   const isCheckoutPage = pathname === '/checkout'
-<<<<<<< HEAD
   const isAuthPage = pathname?.startsWith('/auth')
-=======
->>>>>>> 36707c32fb35c142fe3ede76ec3394f6ba3e0a44
   const isMerchantPage = pathname?.startsWith('/merchant')
 
   // Get store data using Zustand hooks
@@ -30,13 +27,8 @@ export default function LayoutWrapper({ children }: { children: React.ReactNode 
   return (
     <>
       <div className="flex flex-1 relative">
-<<<<<<< HEAD
         {!isCheckoutPage && !isAuthPage && !isMerchantPage && <Sidebar />}
         <div className={`flex-1 w-0 min-w-0 ${!isCheckoutPage && !isAuthPage && !isMerchantPage ? 'md:ml-[220px]' : ''}`}>
-=======
-        {!isCheckoutPage && !isMerchantPage && <Sidebar />}
-        <div className={`flex-1 w-0 min-w-0 ${!isCheckoutPage && !isMerchantPage ? 'md:ml-[220px]' : ''}`}>
->>>>>>> 36707c32fb35c142fe3ede76ec3394f6ba3e0a44
           {shouldShowContent ? (
             <main className="flex-1">{children}</main>
           ) : (
