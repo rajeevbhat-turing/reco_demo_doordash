@@ -208,11 +208,7 @@ export default function AddressSelectionModal({
 
             {/* Disclaimer */}
             <p className="text-base text-[#191919ff] text-left font-medium mb-4 leading-relaxed">
-              Other fees, taxes and gratuity still apply. See further terms and conditions{' '}
-              <a href="#" className="font-bold text-[#191919ff] underline">
-                here
-              </a>
-              . Enter your exact address to find all available stores and delivery times.
+              Other fees, taxes and gratuity still apply. Enter your exact address to find all available stores and delivery times.
             </p>
 
             {/* Address Input Label */}
