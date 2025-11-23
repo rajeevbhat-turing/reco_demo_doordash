@@ -3,9 +3,10 @@ import { useState, useMemo, useEffect } from "react"
 import MerchantLayout from "@/components/merchant/MerchantLayout"
 import { ArrowRight, Lightbulb, Megaphone, TrendingUp, ChevronRight, Star, Sparkles } from "lucide-react"
 import SalesChart from "@/components/merchant/SalesChart"
-import { useReviewStore } from "@/store/review-store"
+import { useStoreApprovedReviews } from "@/lib/hooks/use-reviews"
 import { useCurrentStore } from "@/lib/hooks/useCurrentStore"
 import { useMerchantHomeStore } from "@/store/merchant-home-store"
+import { UserReview } from "@/types/review-types"
 
 function Stat({ label, value }: { label: string; value: string }) {
   return (
@@ -42,10 +43,20 @@ function OperationsReviewCard() {
   // For now, we'll use a hardcoded store ID - in production this would come from the merchant context
   // Try multiple store IDs to find reviews
   const storeIds = ["philz-coffee", "il-canto-cafe", "peet's-coffee"]
-  const { getApprovedReviews } = useReviewStore()
+  
+  // Fetch approved reviews for each store
+  const philzReviews = useStoreApprovedReviews(storeIds[0])
+  const ilCantoReviews = useStoreApprovedReviews(storeIds[1])
+  const peetsReviews = useStoreApprovedReviews(storeIds[2])
   
   // Get all reviews from any of the stores
-  const allReviews = storeIds.flatMap(storeId => getApprovedReviews(storeId))
+  const allReviews = useMemo(() => {
+    const reviews: UserReview[] = []
+    if (philzReviews.data) reviews.push(...philzReviews.data)
+    if (ilCantoReviews.data) reviews.push(...ilCantoReviews.data)
+    if (peetsReviews.data) reviews.push(...peetsReviews.data)
+    return reviews
+  }, [philzReviews.data, ilCantoReviews.data, peetsReviews.data])
 
   // Get recent reviews that need responses (within 7 days, or show recent ones if none are that recent)
   const recentReviews = useMemo(() => {

@@ -7,7 +7,7 @@ import { ChevronDown, ChevronRight, Home, BarChart2, FileText, Users, Star, Mess
 import { DashDoorLogoMark, DashDoorWordMark } from "@/components/common/Icons"
 import StoreSelector from "./StoreSelector"
 import { useCurrentStore } from "@/lib/hooks/useCurrentStore"
-import { restaurants } from "@/constants/restaurants"
+import { useAllRestaurants } from "@/lib/hooks/use-restaurants"
 
 function NavItem({ href, label, active, icon: Icon, highlightRed, highlightOrange, disabled }: { href: string; label: string; active: boolean; icon: React.ComponentType<any>; highlightRed?: boolean; highlightOrange?: boolean; disabled?: boolean }) {
   const activeClass = highlightOrange && active 
@@ -40,6 +40,8 @@ function NavItem({ href, label, active, icon: Icon, highlightRed, highlightOrang
 export default function MerchantSidebar() {
   const pathname = usePathname()
   const { currentStoreId } = useCurrentStore()
+  const { data: restaurants, isLoading: isLoadingRestaurants } = useAllRestaurants()
+  
   // Auto-expand based on current pathname
   const [settingsExpanded, setSettingsExpanded] = useState(pathname?.startsWith("/merchant/settings") || false)
   const [customersExpanded, setCustomersExpanded] = useState(pathname?.startsWith("/merchant/customers") || false)
@@ -48,7 +50,7 @@ export default function MerchantSidebar() {
   const [marketingExpanded, setMarketingExpanded] = useState(pathname?.startsWith("/merchant/marketing") || false)
   const [isStoreSelectorOpen, setIsStoreSelectorOpen] = useState(false)
   
-  const currentStore = restaurants.find(r => r.id === currentStoreId) || restaurants[0]
+  const currentStore = restaurants?.find(r => r.id === currentStoreId) || restaurants?.[0]
   const isSettingsPage = pathname?.startsWith("/merchant/settings") || false
   const isCustomersPage = pathname?.startsWith("/merchant/customers") || false
   const isFinancialsPage = pathname?.startsWith("/merchant/financials") || false
@@ -69,9 +71,12 @@ export default function MerchantSidebar() {
           <button
             onClick={() => setIsStoreSelectorOpen(true)}
             className="w-full flex items-end justify-between px-3 py-2 bg-gray-50 border border-gray-200 rounded-md cursor-pointer hover:bg-gray-100 transition-colors"
+            disabled={isLoadingRestaurants || !currentStore}
           >
             <div className="flex items-end gap-2">
-              <div className="text-sm font-medium">{currentStore.name}</div>
+              <div className="text-sm font-medium">
+                {isLoadingRestaurants ? 'Loading...' : currentStore?.name || 'No store selected'}
+              </div>
               <div className="text-xs text-gray-500 mb-0.5">Store</div>
             </div>
             <ChevronDown className="h-4 w-4 text-gray-500 mb-0.5" />
@@ -307,6 +312,8 @@ export default function MerchantSidebar() {
       <StoreSelector
         isOpen={isStoreSelectorOpen}
         onClose={() => setIsStoreSelectorOpen(false)}
+        restaurants={restaurants || []}
+        isLoading={isLoadingRestaurants}
       />
     </>
   )

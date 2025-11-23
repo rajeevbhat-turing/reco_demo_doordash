@@ -6,16 +6,20 @@ import { OrderModification, OrderModificationOption } from '@/types';
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const userId = searchParams.get('userId');
+  const storeId = searchParams.get('storeId');
 
-  if (!userId) {
+  if (!userId && !storeId) {
     return NextResponse.json(
-      { success: false, message: 'User ID is required' },
+      { success: false, message: 'User ID or Store ID is required' },
       { status: 400 }
     );
   }
 
   try {
-    // Fetch orders for the user
+    // Fetch orders - by userId or storeId (for merchant portal)
+    const whereClause = storeId ? 'o.store_id = ?' : 'o.user_id = ?';
+    const queryParam = storeId || userId;
+    
     const ordersRaw = await db.query<any>(
       `SELECT 
         o.id,
@@ -39,9 +43,9 @@ export async function GET(request: NextRequest) {
         o.order_date,
         o.status
       FROM orders o
-      WHERE o.user_id = ?
+      WHERE ${whereClause}
       ORDER BY o.order_date DESC`,
-      [userId]
+      [queryParam]
     );
 
     if (ordersRaw.length === 0) {
@@ -280,7 +284,11 @@ export async function GET(request: NextRequest) {
       };
     });
 
-    console.log(`✅ Fetched ${orders.length} orders for user ${userId}`);
+    if (storeId) {
+      console.log(`✅ Fetched ${orders.length} orders for store ${storeId}`);
+    } else {
+      console.log(`✅ Fetched ${orders.length} orders for user ${userId}`);
+    }
 
     return NextResponse.json({
       success: true,

@@ -5,6 +5,7 @@ import './globals.css';
 import Header from '@/components/header';
 import LayoutWrapper from '@/components/layout-wrapper';
 import LocalStorageSync from '@/components/LocalStorageSync';
+import { QueryProvider } from '@/lib/providers/query-provider';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -21,11 +22,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <LocalStorageSync />
-        <div className="flex flex-col min-h-screen">
-          <Header />
-          <LayoutWrapper>{children}</LayoutWrapper>
-        </div>
+        <QueryProvider>
+          <LocalStorageSync />
+          <div className="flex flex-col min-h-screen">
+            <Header />
+            <LayoutWrapper>{children}</LayoutWrapper>
+          </div>
 
         {/* Global Functions Script */}
         <script
@@ -218,6 +220,7 @@ export default function RootLayout({
             `,
           }}
         />
+        </QueryProvider>
       </body>
     </html>
   );

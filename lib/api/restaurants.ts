@@ -98,3 +98,24 @@ export async function fetchRestaurantById(
   return result.data;
 }
 
+/**
+ * Fetch all restaurants (for merchant portal, etc.)
+ * 
+ * @returns Array of all restaurants
+ */
+export async function fetchAllRestaurants(): Promise<Restaurant[]> {
+  const response = await fetch(`/api/restaurants?all=true`);
+  
+  if (!response.ok) {
+    throw new Error(`Failed to fetch all restaurants: ${response.statusText}`);
+  }
+  
+  const result: RestaurantsResponse = await response.json();
+  
+  if (!result.success || !result.data) {
+    throw new Error(result.error || 'Failed to fetch all restaurants');
+  }
+  
+  return result.data;
+}
+
