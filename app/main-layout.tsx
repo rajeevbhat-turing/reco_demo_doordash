@@ -65,8 +65,16 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
       if (!isAuthenticated && !tempAddress) {
         router.replace('/');
       }
+    } else if (
+      !isAuthenticated &&
+      !tempAddress &&
+      pathname !== '/' &&
+      !pathname.startsWith('/auth')
+    ) {
+      // If user is not logged in, has no temp address, and is not on "/" or "/auth" paths, redirect to "/"
+      router.replace('/');
     }
-  }, [pathname, isAuthenticated, tempAddress, isMounted]);
+  }, [pathname, isAuthenticated, tempAddress, isMounted, router]);
 
   if (pathname === '/') {
     return (
