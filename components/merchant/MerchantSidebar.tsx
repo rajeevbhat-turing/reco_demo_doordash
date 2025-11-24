@@ -3,7 +3,7 @@
 import { useState } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { ChevronDown, ChevronRight, Home, BarChart2, FileText, Users, Star, MessageSquare, Receipt, Target, Utensils, Clock, DollarSign, Truck, Settings, UserCog, PlusSquare, CreditCard, Building2, Mail, Plug } from "lucide-react"
+import { ChevronDown, ChevronRight, Home, BarChart2, FileText, Users, Star, MessageSquare, Receipt, Target, Utensils, Clock, DollarSign, Truck, Settings, UserCog, PlusSquare, CreditCard, Building2, Mail, Plug, TrendingUp, Package, CheckCircle } from "lucide-react"
 import { DashDoorLogoMark, DashDoorWordMark } from "@/components/common/Icons"
 import StoreSelector from "./StoreSelector"
 import { useCurrentStore } from "@/lib/hooks/useCurrentStore"
@@ -48,6 +48,7 @@ export default function MerchantSidebar() {
   const [financialsExpanded, setFinancialsExpanded] = useState(pathname?.startsWith("/merchant/financials") || false)
   const [menuExpanded, setMenuExpanded] = useState(pathname?.startsWith("/merchant/menu") || false)
   const [marketingExpanded, setMarketingExpanded] = useState(pathname?.startsWith("/merchant/marketing") || false)
+  const [insightsExpanded, setInsightsExpanded] = useState(pathname?.startsWith("/merchant/insights") || false)
   const [isStoreSelectorOpen, setIsStoreSelectorOpen] = useState(false)
   
   const currentStore = restaurants?.find(r => r.id === currentStoreId) || restaurants?.[0]
@@ -56,6 +57,7 @@ export default function MerchantSidebar() {
   const isFinancialsPage = pathname?.startsWith("/merchant/financials") || false
   const isMenuPage = pathname?.startsWith("/merchant/menu") || false
   const isMarketingPage = pathname?.startsWith("/merchant/marketing") || false
+  const isInsightsPage = pathname?.startsWith("/merchant/insights") || false
 
   return (
     <>
@@ -86,7 +88,55 @@ export default function MerchantSidebar() {
       <nav className="px-2 space-y-6">
         <div>
           <NavItem href="/merchant" label="Home" icon={Home} active={pathname === "/merchant"} />
-          <NavItem href="#" label="Insights" icon={BarChart2} active={false} disabled={true} />
+          
+          {/* Insights Section */}
+          <div>
+            <button
+              onClick={() => setInsightsExpanded(!insightsExpanded)}
+              className={`w-full flex items-center justify-between px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-100 ${
+                isInsightsPage ? "bg-red-50 text-red-700" : "text-gray-700"
+              }`}
+            >
+              <div className="flex items-center">
+                <BarChart2 className="h-4 w-4 mr-2" />
+                <span>Insights</span>
+                <ChevronDown className={`h-3 w-3 ml-1.5 transition-transform ${insightsExpanded ? '' : 'rotate-[-90deg]'}`} />
+              </div>
+            </button>
+            {insightsExpanded && (
+              <div className="mt-1 ml-2 space-y-1">
+                <NavItem 
+                  href="/merchant/insights/optimization-score" 
+                  label="Optimization score" 
+                  icon={TrendingUp} 
+                  active={pathname === "/merchant/insights/optimization-score"}
+                  highlightRed={pathname === "/merchant/insights/optimization-score"}
+                />
+                <NavItem 
+                  href="/merchant/insights/sales" 
+                  label="Sales" 
+                  icon={BarChart2} 
+                  active={pathname === "/merchant/insights/sales"}
+                  highlightRed={pathname === "/merchant/insights/sales"}
+                />
+                <NavItem 
+                  href="/merchant/insights/product-mix" 
+                  label="Product mix" 
+                  icon={Package} 
+                  active={pathname === "/merchant/insights/product-mix"}
+                  highlightRed={pathname === "/merchant/insights/product-mix"}
+                />
+                <NavItem 
+                  href="/merchant/insights/operations-quality" 
+                  label="Operations quality" 
+                  icon={CheckCircle} 
+                  active={pathname === "/merchant/insights/operations-quality"}
+                  highlightRed={pathname === "/merchant/insights/operations-quality"}
+                />
+              </div>
+            )}
+          </div>
+          
           <NavItem href="/merchant/reports" label="Reports" icon={FileText} active={pathname?.startsWith("/merchant/reports") || false} />
           
           {/* Customers Section */}
