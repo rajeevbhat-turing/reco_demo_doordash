@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { ChevronDown, ChevronRight, Home, BarChart2, FileText, Users, Star, MessageSquare, Receipt, Target, Utensils, Clock, DollarSign, Truck, Settings, UserCog, PlusSquare, CreditCard, Building2, Mail, Plug, TrendingUp, Package, CheckCircle } from "lucide-react"
@@ -39,7 +39,7 @@ function NavItem({ href, label, active, icon: Icon, highlightRed, highlightOrang
 
 export default function MerchantSidebar() {
   const pathname = usePathname()
-  const { currentStoreId } = useCurrentStore()
+  const { currentStoreId: contextStoreId } = useCurrentStore()
   const { data: restaurants, isLoading: isLoadingRestaurants } = useAllRestaurants()
   
   // Auto-expand based on current pathname
@@ -51,7 +51,38 @@ export default function MerchantSidebar() {
   const [insightsExpanded, setInsightsExpanded] = useState(pathname?.startsWith("/merchant/insights") || false)
   const [isStoreSelectorOpen, setIsStoreSelectorOpen] = useState(false)
   
-  const currentStore = restaurants?.find(r => r.id === currentStoreId) || restaurants?.[0]
+  // Extract store ID from URL if we're on /merchant/store/[id] route
+  // This ensures the sidebar shows the correct store even if context hasn't updated yet
+  const urlStoreId = useMemo(() => {
+    if (pathname?.startsWith('/merchant/store/')) {
+      const match = pathname.match(/\/merchant\/store\/([^\/]+)/)
+      return match ? match[1] : null
+    }
+    return null
+  }, [pathname])
+  
+  // Use URL store ID as source of truth if available, otherwise use context
+  const effectiveStoreId = urlStoreId || contextStoreId
+  
+  // Find the current store - prioritize URL param, then context
+  const currentStore = useMemo(() => {
+    if (!restaurants) return null
+    
+    // First try to find by URL store ID
+    if (urlStoreId) {
+      const store = restaurants.find(r => r.id === urlStoreId)
+      if (store) return store
+    }
+    
+    // Then try context store ID
+    if (contextStoreId) {
+      const store = restaurants.find(r => r.id === contextStoreId)
+      if (store) return store
+    }
+    
+    // Fallback to first restaurant
+    return restaurants[0] || null
+  }, [restaurants, urlStoreId, contextStoreId])
   const isSettingsPage = pathname?.startsWith("/merchant/settings") || false
   const isCustomersPage = pathname?.startsWith("/merchant/customers") || false
   const isFinancialsPage = pathname?.startsWith("/merchant/financials") || false

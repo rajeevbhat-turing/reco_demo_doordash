@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef, useCallback, useMemo } from 'react';
 import Image from 'next/image';
-import { useParams } from 'next/navigation';
+import { useParams, usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { ChevronDown, Info, ChevronLeft, ChevronRight, Heart, Search, X, ThumbsUp } from 'lucide-react';
 import { useRestaurants } from '@/lib/hooks/use-restaurants';
 import { useRestaurant } from '@/lib/hooks/use-restaurant';
@@ -80,9 +80,15 @@ function SearchBar({
 
 export default function RestaurantPage() {
   const params = useParams();
+  const pathname = usePathname();
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const rawId = params.id as string;
   const id = decodeURIComponent(rawId); // Decode URL-encoded characters like %26 to &
   const [restaurant, setRestaurant] = useState<any>(null);
+  
+  // Note: Merchant redirect logic removed - merchant routes handle their own routing
+  // This page is for customer-facing store pages only
   const [featuredItems, setFeaturedItems] = useState<any[]>([]);
   const [menuCategories, setMenuCategories] = useState<any[]>([]);
   const [activeCategory, setActiveCategory] = useState('Featured Items');

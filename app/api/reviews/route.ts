@@ -193,3 +193,115 @@ export async function GET(request: NextRequest) {
   }
 }
 
+/**
+ * POST /api/reviews
+ * 
+ * Creates a new review
+ * 
+ * Body:
+ * - storeId: Store ID (required)
+ * - userId: User ID (required)
+ * - rating: Rating 0-5 (required)
+ * - content: Review text (required)
+ * - orderId: Optional order ID this review is for
+ * - storeCategory: Store category (default: 'restaurant')
+ */
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.json();
+    const { storeId, userId, rating, content, orderId, storeCategory = 'restaurant' } = body;
+
+    // Validate required fields
+    if (!storeId || !userId || rating === undefined || !content) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Missing required fields: storeId, userId, rating, and content are required',
+        },
+        { status: 400 }
+      );
+    }
+
+    // Validate rating range
+    if (rating < 0 || rating > 5) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Rating must be between 0 and 5',
+        },
+        { status: 400 }
+      );
+    }
+
+    // Validate content length
+    if (content.trim().length < 10) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Review content must be at least 10 characters',
+        },
+        { status: 400 }
+      );
+    }
+
+    // Convert storeId and userId to numbers (database uses INTEGER)
+    const storeIdNum = parseInt(storeId, 10);
+    const userIdNum = parseInt(userId, 10);
+
+    if (isNaN(storeIdNum) || isNaN(userIdNum)) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Invalid storeId or userId',
+        },
+        { status: 400 }
+      );
+    }
+
+    // Get order ID if provided
+    let orderIdNum: number | null = null;
+    if (orderId) {
+      orderIdNum = parseInt(orderId, 10);
+      if (isNaN(orderIdNum)) {
+        orderIdNum = null;
+      }
+    }
+
+    // Insert review into database
+    const timestamp = new Date().toISOString();
+    const result = await db.query<any>(
+      `INSERT INTO user_reviews (
+        store_id, store_category, user_id, rating, content, timestamp, order_id, approval_status
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+      [storeIdNum, storeCategory, userIdNum, rating, content.trim(), timestamp, orderIdNum, 'approved']
+    );
+
+    const reviewId = result.lastInsertRowid;
+
+    console.log(`✅ Created review ${reviewId} for store ${storeIdNum} by user ${userIdNum}`);
+
+    return NextResponse.json({
+      success: true,
+      data: {
+        id: String(reviewId),
+        storeId: String(storeIdNum),
+        userId: String(userIdNum),
+        rating,
+        content: content.trim(),
+        timestamp,
+        orderId: orderIdNum ? String(orderIdNum) : null,
+        approvalStatus: 'approved',
+      },
+    });
+  } catch (error: any) {
+    console.error('❌ Error creating review:', error);
+    return NextResponse.json(
+      {
+        success: false,
+        error: 'An error occurred while creating the review',
+      },
+      { status: 500 }
+    );
+  }
+}
+

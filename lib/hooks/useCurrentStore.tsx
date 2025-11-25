@@ -55,6 +55,11 @@ export function CurrentStoreProvider({ children }: { children: ReactNode }) {
     }
   }, [currentStoreId])
 
+  // Note: currentStoreId can be either:
+  // 1. Numeric ID as string from database (e.g., "24") - used when restaurant is selected from StoreSelector
+  // 2. Slug from merchant-store-data (e.g., "philz-coffee") - used for initialization
+  // Components should handle both by finding the restaurant first
+
   const handleSetStoreId = (storeId: string) => {
     setCurrentStoreId(storeId)
     // Data will be loaded in useEffect

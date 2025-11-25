@@ -16,6 +16,8 @@ interface ReviewDialogProps {
   vendorId?: string;
   vendorLogo?: string;
   defaultRating?: number;
+  orderId?: string; // Optional order ID to associate review with order
+  onSubmit?: (rating: number, text: string, likedItems?: any[]) => void; // Optional callback for order page
 }
 
 export default function ReviewDialog({
@@ -25,6 +27,8 @@ export default function ReviewDialog({
   vendorId,
   vendorLogo,
   defaultRating,
+  orderId,
+  onSubmit,
 }: ReviewDialogProps) {
   const currentUser = useUserStore(state => state.currentUser);
   const { addReview } = useReviewStore();
@@ -126,22 +130,65 @@ export default function ReviewDialog({
     // Clear any errors if validation passes
     setError({ type: null, message: null });
 
-    // Add review to store if vendorId is provided
+    // Save review to database if vendorId and currentUser are provided
     if (vendorId && currentUser) {
-      addReview({
-        vendorId: vendorId,
-        vendorName: restaurantName,
-        vendorLogo: vendorLogo,
-        userId: currentUser.id,
-        userName: currentUser.name,
-        userEmail: currentUser.email,
-        userAvatar: currentUser.avatar,
-        rating: rating,
-        content: reviewText.trim(),
-        photos: [],
-        ratedHelpfulBy: [],
-        likedItems: [],
-      });
+      // Save to database via API
+      const saveReviewToDatabase = async () => {
+        try {
+          const response = await fetch('/api/reviews', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              storeId: vendorId,
+              userId: currentUser.id,
+              rating: rating,
+              content: reviewText.trim(),
+              storeCategory: 'restaurant', // Default to restaurant
+              orderId: orderId, // Associate review with order if provided
+            }),
+          });
+
+          const result = await response.json();
+
+          if (!response.ok || !result.success) {
+            throw new Error(result.error || 'Failed to save review');
+          }
+
+          console.log('✅ Review saved to database:', result.data);
+
+          // Also add to Zustand store for immediate UI update
+          addReview({
+            vendorId: vendorId,
+            vendorName: restaurantName,
+            vendorLogo: vendorLogo,
+            userId: currentUser.id,
+            userName: currentUser.name,
+            userEmail: currentUser.email,
+            userAvatar: currentUser.avatar,
+            rating: rating,
+            content: reviewText.trim(),
+            photos: [],
+            ratedHelpfulBy: [],
+            likedItems: [],
+          });
+
+          // Call onSubmit callback if provided (for order page)
+          if (onSubmit) {
+            onSubmit(rating, reviewText.trim(), []);
+          }
+        } catch (error) {
+          console.error('Error saving review:', error);
+          // Still show success message even if API call fails (optimistic UI)
+          // Call onSubmit callback even on error for UI consistency
+          if (onSubmit) {
+            onSubmit(rating, reviewText.trim(), []);
+          }
+        }
+      };
+
+      saveReviewToDatabase();
     }
 
     // Store submitted data for success message

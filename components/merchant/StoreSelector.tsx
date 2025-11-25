@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useMemo, useRef, useEffect } from "react"
+import { useRouter } from "next/navigation"
 import { Search, X } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { useCurrentStore } from "@/lib/hooks/useCurrentStore"
@@ -15,6 +16,7 @@ interface StoreSelectorProps {
 
 export default function StoreSelector({ isOpen, onClose, restaurants, isLoading = false }: StoreSelectorProps) {
   const { currentStoreId, setCurrentStoreId } = useCurrentStore()
+  const router = useRouter()
   const [searchValue, setSearchValue] = useState("")
   const dropdownRef = useRef<HTMLDivElement>(null)
 
@@ -134,6 +136,8 @@ export default function StoreSelector({ isOpen, onClose, restaurants, isLoading 
                       key={store.id}
                       onClick={() => {
                         setCurrentStoreId(store.id)
+                        // Navigate directly to merchant store route
+                        router.push(`/merchant/store/${store.id}`)
                         onClose()
                       }}
                       className={`w-full text-left px-3 py-2.5 rounded-md transition-colors ${

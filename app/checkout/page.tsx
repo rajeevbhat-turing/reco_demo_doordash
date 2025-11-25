@@ -552,18 +552,48 @@ export default function CheckoutPage() {
         discountValue: appliedDeal.discountValue,
       } : null,
       // Order metadata
-      orderDate: new Date().toLocaleDateString('en-US', {
-        weekday: 'short',
-        month: 'short',
-        day: 'numeric',
-      }),
+      orderDate: new Date().toISOString(), // Use ISO string for database compatibility
       status: 'Confirmed',
       orderType: 'Personal' as const, // Default to Personal
     };
 
     console.log('ORDER DATA:', orderData);
 
-    // Save order to store
+    // Save order to database via API
+    const saveOrderToDatabase = async () => {
+      try {
+        const userId = currentUser?.id;
+        const response = await fetch('/api/orders', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            ...orderData,
+            userId: userId || null,
+          }),
+        });
+
+        const result = await response.json();
+        if (result.success) {
+          console.log('✅ Order saved to database:', result.data.id);
+          // Update order ID with database ID
+          if (result.data.id) {
+            orderData.id = result.data.id;
+            orderData.orderId = result.data.id;
+          }
+        } else {
+          console.error('❌ Failed to save order to database:', result.message);
+        }
+      } catch (error) {
+        console.error('❌ Error saving order to database:', error);
+      }
+    };
+
+    // Save order to database (async, don't wait)
+    saveOrderToDatabase();
+
+    // Save order to store (for immediate UI update)
     addOrder(orderData);
 
     setOrderId(newOrderId);

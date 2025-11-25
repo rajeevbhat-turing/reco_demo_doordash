@@ -82,11 +82,29 @@ export async function GET(request: NextRequest) {
     // Get unique restaurant IDs from orders
     const restaurantIds = [...new Set(ordersRaw.map(o => o.store_id).filter(id => id))];
 
+    // Get unique user IDs from orders (for customer names in merchant portal)
+    const userIds = [...new Set(ordersRaw.map(o => o.user_id).filter(id => id))];
+
     // Fetch restaurant details
     const restaurantsRaw = restaurantIds.length > 0 ? await db.query<any>(
       `SELECT id, name, dash_pass FROM restaurants WHERE id IN (${restaurantIds.map(() => '?').join(',')})`,
       restaurantIds
     ) : [];
+
+    // Fetch user details for customer names (only if fetching by storeId for merchant portal)
+    const usersRaw = storeId && userIds.length > 0 ? await db.query<any>(
+      `SELECT id, name, email FROM users WHERE id IN (${userIds.map(() => '?').join(',')})`,
+      userIds
+    ) : [];
+
+    const usersMap = new Map<number, any>();
+    usersRaw.forEach((u: any) => {
+      usersMap.set(u.id, {
+        id: String(u.id),
+        name: u.name,
+        email: u.email,
+      });
+    });
 
     const restaurantsMap = new Map<number, any>();
     restaurantsRaw.forEach((r: any) => {
@@ -249,6 +267,7 @@ export async function GET(request: NextRequest) {
     // Transform orders to match Order interface
     const orders: Order[] = ordersRaw.map(order => {
       const restaurant = restaurantsMap.get(order.store_id);
+      const user = order.user_id ? usersMap.get(order.user_id) : undefined;
       const items = orderItemsMap.get(order.id) || [];
       const paymentCard = order.payment_method_id ? paymentMethodsMap.get(order.payment_method_id) : undefined;
       const deliveryAddress = order.address_id ? addressesMap.get(order.address_id) : undefined;
@@ -281,6 +300,10 @@ export async function GET(request: NextRequest) {
         status: order.status,
         orderType: 'Personal', // Default to Personal, can be enhanced later
         isDashPass: restaurant?.dashPass || false,
+        // Add user info for merchant portal
+        userId: order.user_id ? String(order.user_id) : undefined,
+        userName: user?.name || undefined,
+        userEmail: user?.email || undefined,
       };
     });
 
@@ -298,6 +321,236 @@ export async function GET(request: NextRequest) {
     console.error('❌ Error fetching orders:', error);
     return NextResponse.json(
       { success: false, message: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.json();
+    const {
+      storeId,
+      userId,
+      storeCategory,
+      items,
+      paymentCard,
+      deliveryAddress,
+      deliveryOption,
+      phoneNumber,
+      tipAmount = 0,
+      subtotal,
+      serviceFee,
+      deliveryFee,
+      total,
+      status = 'Confirmed',
+    } = body;
+
+    if (!storeId) {
+      return NextResponse.json(
+        { success: false, message: 'Store ID is required' },
+        { status: 400 }
+      );
+    }
+
+    // Convert storeId to number (database uses INTEGER)
+    const storeIdNum = parseInt(storeId, 10);
+    if (isNaN(storeIdNum)) {
+      return NextResponse.json(
+        { success: false, message: 'Invalid store ID' },
+        { status: 400 }
+      );
+    }
+
+    // Get or create user_id (can be null for guest orders)
+    let userIdNum: number | null = null;
+    if (userId) {
+      userIdNum = parseInt(userId, 10);
+      if (isNaN(userIdNum)) {
+        userIdNum = null;
+      }
+    }
+
+    // Get or create payment_method_id
+    let paymentMethodId: number | null = null;
+    if (paymentCard && paymentCard.lastFour) {
+      // Try to find existing payment method
+      const existingPaymentMethods = await db.query<any>(
+        `SELECT id FROM payment_methods WHERE last_four = ? AND user_id = ? LIMIT 1`,
+        [paymentCard.lastFour, userIdNum]
+      );
+      
+      if (existingPaymentMethods.length > 0) {
+        paymentMethodId = existingPaymentMethods[0].id;
+      } else if (userIdNum) {
+        // Create new payment method
+        const paymentResult = await db.query<any>(
+          `INSERT INTO payment_methods (user_id, type, last_four, expiry, zip_code, is_default)
+           VALUES (?, ?, ?, ?, ?, ?)`,
+          [
+            userIdNum,
+            paymentCard.type || 'credit',
+            paymentCard.lastFour,
+            paymentCard.expiry || '',
+            paymentCard.zipCode || '',
+            0 // Not default
+          ]
+        );
+        paymentMethodId = paymentResult.lastInsertRowid;
+      }
+    }
+
+    // Get or create address_id
+    let addressId: number | null = null;
+    if (deliveryAddress) {
+      // Try to find existing address
+      const existingAddresses = await db.query<any>(
+        `SELECT id FROM addresses 
+         WHERE street = ? AND city = ? AND state = ? AND zip_code = ? 
+         AND (user_id = ? OR user_id IS NULL)
+         LIMIT 1`,
+        [
+          deliveryAddress.street,
+          deliveryAddress.city,
+          deliveryAddress.state,
+          deliveryAddress.zipCode,
+          userIdNum
+        ]
+      );
+      
+      if (existingAddresses.length > 0) {
+        addressId = existingAddresses[0].id;
+      } else {
+        // Create new address
+        const addressResult = await db.query<any>(
+          `INSERT INTO addresses (
+            user_id, address_type, street, apartment_suite, business_name,
+            city, state, zip_code, latitude, longitude, delivery_instructions, is_default
+          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+          [
+            userIdNum,
+            deliveryAddress.type || 'home',
+            deliveryAddress.street,
+            deliveryAddress.aptSuiteOther || null,
+            deliveryAddress.businessName || null,
+            deliveryAddress.city,
+            deliveryAddress.state,
+            deliveryAddress.zipCode,
+            deliveryAddress.lat || null,
+            deliveryAddress.lng || null,
+            deliveryAddress.deliveryInstructions || null,
+            0 // Not default
+          ]
+        );
+        addressId = addressResult.lastInsertRowid;
+      }
+    }
+
+    // Insert order
+    const orderDate = new Date().toISOString();
+    const orderResult = await db.query<any>(
+      `INSERT INTO orders (
+        user_id, store_id, store_category, payment_method_id, address_id,
+        delivery_type, delivery_time_str, extra_fee, scheduled_date, scheduled_time_slot,
+        phone_country_code, phone_number, tip_amount, subtotal, service_fee, delivery_fee, total, order_date, status
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [
+        userIdNum,
+        storeIdNum,
+        storeCategory || 'restaurant',
+        paymentMethodId,
+        addressId,
+        deliveryOption?.type || 'standard',
+        deliveryOption?.deliveryTime || '25-35 min',
+        Math.round((deliveryOption?.extraFee || 0) * 100), // Convert to cents
+        deliveryOption?.scheduledDate ? new Date(deliveryOption.scheduledDate).toISOString().split('T')[0] : null,
+        deliveryOption?.scheduledTimeSlot || null,
+        phoneNumber?.countryCode || '+1',
+        phoneNumber?.number || '',
+        Math.round((tipAmount || 0) * 100), // Convert to cents
+        Math.round((subtotal || 0) * 100), // Convert to cents
+        Math.round((serviceFee || 0) * 100), // Convert to cents
+        Math.round((deliveryFee || 0) * 100), // Convert to cents
+        Math.round((total || 0) * 100), // Convert to cents
+        orderDate,
+        status
+      ]
+    );
+
+    const orderId = orderResult.lastInsertRowid;
+
+    // Insert order items
+    if (items && Array.isArray(items)) {
+      for (const item of items) {
+        const menuItemId = parseInt(item.id, 10);
+        if (isNaN(menuItemId)) {
+          console.warn(`Invalid menu item ID: ${item.id}`);
+          continue;
+        }
+
+        const orderItemResult = await db.query<any>(
+          `INSERT INTO order_items (order_id, menu_item_id, quantity) VALUES (?, ?, ?)`,
+          [orderId, menuItemId, item.quantity || 1]
+        );
+
+        const orderItemId = orderItemResult.lastInsertRowid;
+
+        // Insert modifications if any
+        if (item.modifications && Array.isArray(item.modifications)) {
+          for (const mod of item.modifications) {
+            const modificationId = parseInt(mod.modificationId, 10);
+            if (isNaN(modificationId)) {
+              continue;
+            }
+
+            const appliedModResult = await db.query<any>(
+              `INSERT INTO order_item_applied_modifications (order_item_id, modification_id, modification_desc)
+               VALUES (?, ?, ?)`,
+              [orderItemId, modificationId, mod.modificationDescription || '']
+            );
+
+            const appliedModId = appliedModResult.lastInsertRowid;
+
+            // Insert modification options
+            if (mod.options && Array.isArray(mod.options)) {
+              for (const option of mod.options) {
+                const optionId = parseInt(option.optionId, 10);
+                if (isNaN(optionId)) {
+                  continue;
+                }
+
+                await db.query(
+                  `INSERT INTO order_item_applied_options (
+                    order_item_applied_mod_id, option_id, option_name, price, quantity
+                  ) VALUES (?, ?, ?, ?, ?)`,
+                  [
+                    appliedModId,
+                    optionId,
+                    option.optionName || '',
+                    Math.round((option.price || 0) * 100), // Convert to cents
+                    option.quantity || 1
+                  ]
+                );
+              }
+            }
+          }
+        }
+      }
+    }
+
+    console.log(`✅ Order ${orderId} saved to database for store ${storeId}`);
+
+    return NextResponse.json({
+      success: true,
+      data: {
+        id: String(orderId),
+        orderId: String(orderId),
+      },
+    });
+  } catch (error: any) {
+    console.error('❌ Error saving order:', error);
+    return NextResponse.json(
+      { success: false, message: 'Internal server error', error: error.message },
       { status: 500 }
     );
   }

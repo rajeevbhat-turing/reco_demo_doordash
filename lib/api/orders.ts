@@ -21,3 +21,18 @@ export async function fetchUserOrders(userId: string): Promise<Order[]> {
   return result.data;
 }
 
+export async function fetchMerchantOrders(storeId: string): Promise<Order[]> {
+  const response = await fetch(`/api/orders?storeId=${storeId}`);
+  const result: OrdersResponse = await response.json();
+
+  if (!response.ok || !result.success) {
+    throw new Error(result.message || 'Failed to fetch merchant orders');
+  }
+
+  if (!result.data) {
+    return [];
+  }
+
+  return result.data;
+}
+

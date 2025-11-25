@@ -1,11 +1,13 @@
 'use client'
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo } from "react"
 import MerchantLayout from "@/components/merchant/MerchantLayout"
 import { Search, RefreshCw, ChevronLeft, ChevronRight, ChevronDown } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { useMerchantPersistedState } from "@/lib/hooks/useMerchantPersistedState"
 import { useCurrentStore } from "@/lib/hooks/useCurrentStore"
 import { useMerchantOrdersStore } from "@/store/merchant-orders-store"
+import { useMerchantOrders } from "@/lib/hooks/use-merchant-orders"
+import { useAllRestaurants } from "@/lib/hooks/use-restaurants"
 
 interface Order {
   customer: string
@@ -145,21 +147,73 @@ function FilterBar({ searchValue, onSearchChange }: { searchValue: string; onSea
 }
 
 export default function MerchantOrdersPage() {
-  const { currentStoreId, currentStoreData } = useCurrentStore()
-  const { orders, searchQuery, selectedFilter, activeTab, setOrders, setSearchQuery, setSelectedFilter, setActiveTab } = useMerchantOrdersStore()
+  const { currentStoreId } = useCurrentStore()
+  const { data: restaurants } = useAllRestaurants()
+  const { searchQuery, selectedFilter, activeTab, setSearchQuery, setSelectedFilter, setActiveTab } = useMerchantOrdersStore()
   const [searchValue, setSearchValue] = useState(searchQuery)
   const [lastUpdated, setLastUpdated] = useState(3)
 
-  // Load store-specific orders when store changes
-  useEffect(() => {
-    if (currentStoreData?.orders) {
-      setOrders(currentStoreData.orders.orders)
-      setSearchQuery(currentStoreData.orders.searchQuery)
-      setSelectedFilter(currentStoreData.orders.selectedFilter)
-      setActiveTab(currentStoreData.orders.activeTab)
-      setSearchValue(currentStoreData.orders.searchQuery)
+  // Find the current restaurant to get its numeric database ID
+  const currentRestaurant = useMemo(() => {
+    if (!restaurants || !currentStoreId) return null
+    // Try to find by ID first (numeric ID as string)
+    let restaurant = restaurants.find(r => r.id === currentStoreId)
+    // If not found, might be a slug from merchant-store-data, try to find by name
+    if (!restaurant) {
+      restaurant = restaurants.find(r => 
+        r.name.toLowerCase().replace(/\s+/g, '-') === currentStoreId.toLowerCase() ||
+        r.name === currentStoreId
+      )
     }
-  }, [currentStoreId, currentStoreData, setOrders, setSearchQuery, setSelectedFilter, setActiveTab])
+    return restaurant
+  }, [restaurants, currentStoreId])
+
+  // Use restaurant.id which is the numeric database ID as string (e.g., "24")
+  const numericStoreId = currentRestaurant?.id || currentStoreId || null
+
+  // Fetch orders from API for current store using numeric ID
+  const { data: apiOrders = [], isLoading } = useMerchantOrders(numericStoreId)
+
+  // Transform API orders to merchant order format
+  const orders = useMemo(() => {
+    return apiOrders.map((order: any) => {
+      // Parse order date - handle both ISO string and formatted string
+      let orderDate: Date
+      try {
+        if (order.orderDate && order.orderDate.includes(',')) {
+          // Already formatted date, try to parse it
+          orderDate = new Date(order.orderDate)
+        } else if (order.orderDate) {
+          // ISO string
+          orderDate = new Date(order.orderDate)
+        } else {
+          orderDate = new Date()
+        }
+      } catch {
+        orderDate = new Date()
+      }
+
+      // Get customer name - prioritize user name, then business name, then address
+      const customerName = order.userName || 
+                          order.deliveryAddress?.businessName || 
+                          order.deliveryAddress?.street || 
+                          'Customer'
+
+      return {
+        customer: customerName,
+        orderId: `DD-${order.id}`,
+        orderStatus: order.status === 'Confirmed' ? 'Active' : 
+                     order.status === 'Completed' ? 'Completed' :
+                     order.status === 'Cancelled' ? 'Cancelled - Not Paid' : 'Scheduled',
+        date: orderDate.toLocaleDateString('en-US', { month: 'numeric', day: 'numeric', year: 'numeric' }),
+        time: orderDate.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }),
+        fulfillmentStatus: order.status,
+        fulfillmentType: order.deliveryOption?.type === 'pickup' ? 'Customer pickup' : 'DashDoor delivery',
+        channel: 'DashDoor',
+        subtotal: `$${(order.subtotal || 0).toFixed(2)}`,
+      }
+    })
+  }, [apiOrders])
 
   // Sync search value with store
   useEffect(() => {
@@ -178,13 +232,32 @@ export default function MerchantOrdersPage() {
   }
 
   // Filter orders based on active tab and search
-  const filteredOrders = orders.filter(order => {
-    const matchesTab = activeTab === "History" || order.orderStatus === activeTab
-    const matchesSearch = searchValue === "" || 
-      order.customer.toLowerCase().includes(searchValue.toLowerCase()) ||
-      order.orderId.toLowerCase().includes(searchValue.toLowerCase())
-    return matchesTab && matchesSearch
-  })
+  const filteredOrders = useMemo(() => {
+    return orders.filter(order => {
+      // Tab filtering logic:
+      // - "Active": Show orders with status 'Active' (Confirmed orders)
+      // - "Scheduled": Show orders with status 'Scheduled'
+      // - "History": Show all orders (Completed, Cancelled, etc.)
+      let matchesTab = false
+      if (activeTab === "History") {
+        // History shows all orders except Active and Scheduled
+        matchesTab = order.orderStatus !== "Active" && order.orderStatus !== "Scheduled"
+      } else if (activeTab === "Active") {
+        // Active shows Confirmed orders
+        matchesTab = order.orderStatus === "Active"
+      } else if (activeTab === "Scheduled") {
+        // Scheduled shows scheduled orders
+        matchesTab = order.orderStatus === "Scheduled"
+      }
+
+      // Search filtering
+      const matchesSearch = searchValue === "" ||
+        order.customer.toLowerCase().includes(searchValue.toLowerCase()) ||
+        order.orderId.toLowerCase().includes(searchValue.toLowerCase())
+      
+      return matchesTab && matchesSearch
+    })
+  }, [orders, activeTab, searchValue])
 
   return (
     <MerchantLayout>

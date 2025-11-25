@@ -406,6 +406,7 @@ export default function Orders() {
           orderItems={convertOrderItemsToReviewItems(reviewingOrder)}
           orderDate={formatOrderDate(reviewingOrder)}
           vendorLogo={orderRestaurant?.logo || undefined}
+          orderId={reviewingOrder.id} // Pass order ID to associate review with order
           onSubmit={(rating, text, likedItems) => {
             updateOrderReview(reviewingOrder.id, rating, text);
             setReviewingOrder(null);
