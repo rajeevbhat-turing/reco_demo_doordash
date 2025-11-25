@@ -37,7 +37,16 @@ export default function OrderReceiptPage() {
 
   // Helper function to get store name (support both old and new field names)
   const getStoreName = (order: Order) => {
-    return order.storeName || order.restaurantName || 'Store';
+    // First, try to get store name from order
+    const storeName = order.storeName || order.restaurantName;
+    
+    // Validate storeName - check if it's valid (not empty, not a number, not "Unknown Store")
+    if (storeName && storeName.trim() !== '' && storeName !== 'Unknown Store' && !/^\d+$/.test(storeName)) {
+      return storeName;
+    }
+    
+    // Fallback - if storeName is a number or invalid, return a generic name
+    return 'Store';
   };
 
   // Helper function to get total (support both old and new field names)
@@ -69,14 +78,19 @@ export default function OrderReceiptPage() {
   // Calculate original subtotal (before free item discount) and final subtotal
   const originalSubtotal =
     order.items?.reduce((sum, item) => sum + item.price * item.quantity, 0) || 0;
-  const subtotal =
-    order.subtotal ||
-    order.items?.reduce((sum, item) => {
-      const itemPrice =
-        (item as any).final_price !== undefined ? (item as any).final_price : item.price;
-      return sum + itemPrice * item.quantity;
-    }, 0) ||
-    0;
+  
+  // Always use stored subtotal from order if available (most accurate)
+  // If not available, calculate using original prices and apply stored freeItemDiscount
+  let subtotal = order.subtotal || 0;
+  if (subtotal === 0 && order.items) {
+    // Calculate from original prices
+    const calculatedSubtotal = order.items.reduce((sum, item) => {
+      return sum + item.price * item.quantity;
+    }, 0);
+    // Apply free item discount if stored
+    const freeItemDiscount = (order as any).freeItemDiscount || 0;
+    subtotal = calculatedSubtotal - freeItemDiscount;
+  }
 
   // Check if there's a free item discount (original subtotal > final subtotal)
   const hasFreeItemDiscount = originalSubtotal > subtotal;
@@ -86,17 +100,19 @@ export default function OrderReceiptPage() {
   const deliveryFee = order.deliveryFee ?? order.deliveryOption?.extraFee ?? 0.99;
   const serviceFee = order.serviceFee || 3.0;
 
-  // Calculate tax from order data if available, otherwise calculate it
-  let estimatedTax = 0;
-  if ((order as any).estimatedTax !== undefined) {
-    estimatedTax = (order as any).estimatedTax;
-  } else if (order.deliveryAddress) {
-    // Calculate tax based on delivery address
+  // Always use stored tax from order to ensure consistency with checkout
+  // Only recalculate if absolutely necessary (should not happen in normal flow)
+  let estimatedTax = (order as any).estimatedTax ?? 0;
+  if (estimatedTax === 0 && order.deliveryAddress) {
+    // Fallback: recalculate only if tax was not stored (should not happen)
+    console.warn('Tax not stored in order, recalculating - this may cause inconsistency');
     const { calculateEstimatedTax } = require('@/lib/utils/fee-calculator');
     estimatedTax = calculateEstimatedTax(subtotal, deliveryFee, serviceFee, order.deliveryAddress);
   }
 
-  const dasherTip = order.tipAmount ?? 1.5;
+  // Use stored tip amount from order (should be 0 if not set in checkout)
+  // Don't default to 1.5 to maintain consistency with checkout
+  const dasherTip = order.tipAmount ?? 0;
 
   // Calculate original total (before discounts) and final total
   const originalTotal = originalSubtotal + serviceFee + deliveryFee + estimatedTax + dasherTip;

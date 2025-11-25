@@ -28,12 +28,20 @@ export default function AccountPopup({ isOpen, onClose, anchorElement }: Account
     }
   }, [anchorElement, isOpen]);
 
-  // Close popup when clicking outside
+  // Close popup when clicking outside (but not when clicking the anchor element)
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (popupRef.current && !popupRef.current.contains(event.target as Node)) {
-        onClose();
+      const target = event.target as Node;
+      // Don't close if clicking inside the popup
+      if (popupRef.current && popupRef.current.contains(target)) {
+        return;
       }
+      // Don't close if clicking on the anchor element (Account button) - let the toggle handle it
+      if (anchorElement && anchorElement.contains(target)) {
+        return;
+      }
+      // Close if clicking anywhere else
+      onClose();
     };
 
     if (isOpen) {
@@ -43,7 +51,7 @@ export default function AccountPopup({ isOpen, onClose, anchorElement }: Account
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [isOpen, onClose]);
+  }, [isOpen, onClose, anchorElement]);
 
   // Close popup on escape key
   useEffect(() => {
@@ -107,7 +115,9 @@ export default function AccountPopup({ isOpen, onClose, anchorElement }: Account
                 {currentUser?.name || 'User'}
               </span>
               {/* Display lock icon if the user is restricted */}
-              {currentUser?.is_restricted ? <Lock className="h-4 w-4 ml-1 text-[#191919ff]" /> : null}
+              {currentUser?.is_restricted ? (
+                <Lock className="h-4 w-4 ml-1 text-[#191919ff]" />
+              ) : null}
             </div>
             <div className="text-[16px] font-medium text-[#191919ff]">View Profile</div>
           </div>

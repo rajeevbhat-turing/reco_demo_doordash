@@ -702,6 +702,10 @@ export function useFilterOptions({
 
   const getRatingLabel = () => {
     if (filters.overRating) {
+      // If rating is 5, show "Over 4.5★" instead of "Over 5★"
+      if (filters.overRating === 5) {
+        return `Over 4.5★`
+      }
       return `Over ${filters.overRating}★`
     }
     return "Over 1★"

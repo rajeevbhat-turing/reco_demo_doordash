@@ -166,7 +166,19 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
   const getDisplayName = () => {
     // First, try to get store name from the current cart
     if (currentCart) {
-      return currentCart.storeName;
+      // Check if storeName is valid (not empty, not a number, not "Unknown Store")
+      const storeName = currentCart.storeName;
+      if (storeName && storeName.trim() !== '' && storeName !== 'Unknown Store' && !/^\d+$/.test(storeName)) {
+        return storeName;
+      }
+      
+      // If storeName is invalid or missing, try to look up from restaurants array
+      if (currentCart.storeCategory === 'restaurant' && currentCart.storeId && restaurants) {
+        const foundRestaurant = restaurants.find(r => r.id === currentCart.storeId);
+        if (foundRestaurant?.name) {
+          return foundRestaurant.name;
+        }
+      }
     }
     
     // Fallback to current page context
@@ -176,7 +188,15 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
       return store.name;
     }
     
-    // Fallback - only restaurants are supported now
+    // Fallback - try to look up restaurant from restaurants array
+    if (activeStoreId && restaurants) {
+      const foundRestaurant = restaurants.find(r => r.id === activeStoreId);
+      if (foundRestaurant?.name) {
+        return foundRestaurant.name;
+      }
+    }
+    
+    // Last resort fallback - only restaurants are supported now
     if (activeStoreId) {
       return `Store ${activeStoreId}`;
     }

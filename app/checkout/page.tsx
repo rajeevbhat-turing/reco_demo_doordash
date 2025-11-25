@@ -449,15 +449,18 @@ export default function CheckoutPage() {
   const handlePlaceOrder = () => {
     const newOrderId = generateOrderId();
 
+    // Get validated store name (ensures it's not a number)
+    const validatedStoreName = getStoreName();
+
     const orderData = {
       // 1. Order ID
       id: newOrderId,
 
       // 2. Cart fields extracted to root level (support both old and new field names)
       storeId: currentCart?.storeId,
-      storeName: currentCart?.storeName,
+      storeName: validatedStoreName, // Use validated store name
       restaurantId: currentCart?.storeId, // Old field name for backward compatibility
-      restaurantName: currentCart?.storeName, // Old field name for backward compatibility
+      restaurantName: validatedStoreName, // Use validated store name for backward compatibility
       storeCategory: currentCart?.storeCategory,
       items: (() => {
         // Track if ANY free item from the deal has been applied (only one free item total)
@@ -479,19 +482,12 @@ export default function CheckoutPage() {
             isFirstFreeItem = true;
           }
 
-          // Calculate final_price: price per item after free item discount
+          // Calculate final_price: keep original price per item
+          // The discount is already applied to subtotal via freeItemDiscount
+          // We keep the original price per item for accurate display and calculation
           let finalPrice = originalPrice;
-          if (isFreeItem && isFirstFreeItem) {
-            // First free item from deal: one quantity is free
-            if (item.quantity > 1) {
-              // Total price for remaining quantities divided by total quantity
-              finalPrice = (originalPrice * (item.quantity - 1)) / item.quantity;
-            } else {
-              // Only one quantity, so it's completely free
-              finalPrice = 0;
-            }
-          }
-          // If it's another free item or not a free item, finalPrice = originalPrice
+          // Note: The free item discount is handled at the subtotal level, not per-item
+          // This ensures accurate pricing display and calculations
 
           return {
             id: item.id.toString(),
@@ -556,6 +552,8 @@ export default function CheckoutPage() {
       serviceFee: serviceFee,
       deliveryFee: deliveryFee, // Already includes express surcharge if applicable
       discount: discountAmount,
+      freeItemDiscount: freeItemDiscount, // Store free item discount for receipt calculation
+      estimatedTax: estimatedTax, // Store tax for receipt to avoid recalculation
       total: getTotalWithExtras(),
       totalAmount: getTotalWithExtras(), // Old field name for backward compatibility
       // Deal/Promotion info
@@ -645,13 +643,27 @@ export default function CheckoutPage() {
   const getStoreName = () => {
     // First, try to get store name from the cart itself
     if (currentCart) {
-      return currentCart.storeName;
+      const storeName = currentCart.storeName;
+      // Validate storeName - check if it's valid (not empty, not a number, not "Unknown Store")
+      if (storeName && storeName.trim() !== '' && storeName !== 'Unknown Store' && !/^\d+$/.test(storeName)) {
+        return storeName;
+      }
+      
+      // If storeName is invalid or missing, try to look up from restaurants array
+      if (currentCart.storeCategory === 'restaurant' && currentCart.storeId && restaurants) {
+        const foundRestaurant = restaurants.find(r => r.id === currentCart.storeId);
+        if (foundRestaurant?.name) {
+          return foundRestaurant.name;
+        }
+      }
     }
 
     // Fallback to looking up by ID if we have the params
     if (currentCategory === 'restaurant' && currentStoreId) {
       const restaurant = getRestaurantById(restaurants, currentStoreId);
-      return restaurant?.name || 'Restaurant';
+      if (restaurant?.name) {
+        return restaurant.name;
+      }
     }
 
     return currentCategory === 'restaurant' ? 'Restaurant' : 'Store';
