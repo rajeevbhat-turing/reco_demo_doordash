@@ -8,6 +8,7 @@ import type { MenuItem } from "@/constants/menu-items"
 import { getDefaultRating } from "@/utils/rating-utils"
 import { Modification, ModificationOption, AppliedModification, AppliedModificationOption } from "@/types"
 import { cn } from "@/lib/utils"
+import { haveSameModifications, generateCartItemId } from "@/lib/utils/cart-merge"
 
 // Types for the menu item options
 interface MenuItemOption {
@@ -408,29 +409,37 @@ export default function MenuItemDialog({ isOpen, onClose, item }: MenuItemDialog
       }
     }
   
-    // Check if item already exists in cart (compare by ID and customizations)
+    // Check if item already exists in cart (compare by ID and modifications)
     const cart = findCart(item.restaurantId, "restaurant")
     const customizationsString = customizationText.join(" · ")
+    
+    // Generate unique cart item ID based on base ID + modifications
+    const uniqueCartItemId = generateCartItemId(
+      item.id,
+      formattedModifications.length > 0 ? formattedModifications : undefined
+    )
+    
+    // Create the cart item to compare
+    const cartItem = {
+      id: uniqueCartItemId, // Use unique ID that includes modifications
+      itemName: item.name,
+      price: singleItemPrice.toFixed(2),
+      image: item.image,
+      customizations: customizationsString,
+      appliedModifications: formattedModifications.length > 0 ? formattedModifications : undefined,
+    }
+    
+    // Use haveSameModifications to check if item with same modifications exists
     const existingItem = cart?.items.find((i) => 
-      i.id === item.id && 
-      i.customizations === customizationsString
+      haveSameModifications(i, cartItem as any)
     )
     
     if (existingItem) {
-      // Item exists with same customizations - update quantity by adding the dialog quantity
+      // Item exists with same modifications - update quantity by adding the dialog quantity
       const newQuantity = existingItem.quantity + quantity
       updateQuantity(existingItem.id, newQuantity)
     } else {
-      // Item doesn't exist or has different customizations - add it quantity times
-      const cartItem = {
-        id: item.id, // Use database ID directly
-        itemName: item.name,
-        price: singleItemPrice.toFixed(2),
-        image: item.image,
-        customizations: customizationsString,
-        appliedModifications: formattedModifications.length > 0 ? formattedModifications : undefined,
-      }
-      
+      // Item doesn't exist or has different modifications - add it quantity times
       // Add the item quantity times
       for (let i = 0; i < quantity; i++) {
         addItem(cartItem, "restaurant", undefined, item.restaurantId)
