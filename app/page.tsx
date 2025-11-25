@@ -2,21 +2,15 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import Image from 'next/image';
-import {
-  ArrowRight,
-  ChevronDown,
-  ChevronUp,
-  Star,
-  Search,
-  MapPin,
-  ChevronRight,
-  Plus,
-  Navigation,
-} from 'lucide-react';
+import { ArrowRight, Star, Search, MapPin, ChevronRight, Plus, Navigation } from 'lucide-react';
 import AuthenticationModal from '@/components/modals/authentication-modal';
 import AddNewAddressModal from '@/components/modals/landing-page/add-new-address-modal';
 import AddressReviewErrorModal from '@/components/modals/landing-page/address-review-error-modal';
 import AddressSearchModal from '@/components/modals/landing-page/address-search-modal';
+// import NeighbourhoodSection from '@/components/landing-page/neighbourhood-section';
+// import ContentSections from '@/components/landing-page/content-sections';
+// import AppPromo from '@/components/landing-page/app-promo';
+// import AppBanner from '@/components/landing-page/app-banner';
 import { DashDoorLogoMark, DashDoorWordMark } from '@/components/common/Icons';
 import { useIsMobile } from '@/lib/hooks/use-mobile';
 import addressesData from '@/data/addresses.json';
@@ -24,15 +18,10 @@ import { useUserStore } from '@/store/user-store';
 import { Address } from '@/lib/types/user-types';
 import { PersonIcon } from '@/lib/utils/icons';
 import { isValidEmail } from '@/lib/utils/helperFunctions';
-import { useTopChains, useTopCuisines, useTopCities } from '@/lib/hooks/use-top-chains';
 
 export default function LandingPage() {
   const [authModalMode, setAuthModalMode] = useState<'signin' | 'signup' | null>('signin');
   const [isScrolled, setIsScrolled] = useState(false);
-  const [activeTab, setActiveTab] = useState<'cities' | 'cuisines' | 'chains'>('cities');
-  const [showAllCities, setShowAllCities] = useState(false);
-  const [showAllCuisines, setShowAllCuisines] = useState(false);
-  const [showAllChains, setShowAllChains] = useState(false);
   const [imageOffset, setImageOffset] = useState(0);
   const [addressSearchQuery, setAddressSearchQuery] = useState('');
   const [showAddressDropdown, setShowAddressDropdown] = useState(false);
@@ -46,15 +35,6 @@ export default function LandingPage() {
 
   const { setTempAddress } = useUserStore();
   const isMobile = useIsMobile();
-
-  // Fetch top chains from API (restaurants with rating > 4.5)
-  const { data: topChains = [] } = useTopChains();
-
-  // Derive top cuisines from top chains (cuisines of restaurants with rating > 4.5)
-  const topCuisines = useTopCuisines();
-
-  // Derive top cities from top chains (cities of restaurants with rating > 4.5)
-  const topCities = useTopCities();
 
   useEffect(() => {
     let ticking = false;
@@ -106,7 +86,9 @@ export default function LandingPage() {
 
   // Handle address selection
   const handleSelectAddress = (address: (typeof addressesData)[0]) => {
-    setAddressSearchQuery(`${address.street}, ${address.city}, ${address.state} ${address.zipCode}`);
+    setAddressSearchQuery(
+      `${address.street}, ${address.city}, ${address.state} ${address.zipCode}`
+    );
     const tempAddress: Address = {
       id: 'temp-address',
       street: address.street,
@@ -239,51 +221,7 @@ export default function LandingPage() {
   return (
     <div className="bg-white">
       {/* App Banner - Mobile Only */}
-      <div className="w-full bg-white md:hidden">
-        <div className="w-full max-w-7xl mx-auto px-4 pb-3 pt-5 flex items-center justify-between gap-4">
-          {/* Left: App Icon and Text */}
-          <div className="flex items-center gap-2 flex-1 min-w-0">
-            {/* App Icon */}
-            <div className="flex-shrink-0">
-              <div className="w-16 h-16 rounded-xl flex items-center justify-center border border-gray-200">
-                <DashDoorLogoMark width={54} height={30} />
-              </div>
-            </div>
-
-            {/* Text Content */}
-            <div className="flex flex-col min-w-0 flex-1">
-              <h3 className="text-base font-bold text-[#191919ff] truncate">
-                Browse faster in the app
-              </h3>
-              <p className="text-sm text-[#606060ff] font-medium truncate">
-                $0 delivery fee on first order
-              </p>
-              <div className="flex items-center gap-1">
-                {[1, 2, 3, 4].map(star => (
-                  <Star
-                    key={star}
-                    className="w-3 h-3 fill-yellow-400 text-yellow-400"
-                    fill="currentColor"
-                  />
-                ))}
-                {/* Half star */}
-                <div className="relative w-4 h-4">
-                  <Star className="w-4 h-4 text-yellow-400 absolute" fill="transparent" />
-                  <div className="absolute overflow-hidden w-2 h-4">
-                    <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" fill="currentColor" />
-                  </div>
-                </div>
-                <span className="text-sm font-medium text-[#606060ff] ml-1">20M ratings</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Right: Open Button */}
-          <button className="bg-[#eb1700ff] text-white font-bold text-base px-3 py-1 rounded-[28px] flex-shrink-0 hover:bg-red-600">
-            Open
-          </button>
-        </div>
-      </div>
+      {/* <AppBanner /> */}
 
       {/* Transparent Header (at top) */}
       <div
@@ -321,9 +259,9 @@ export default function LandingPage() {
           >
             Login
           </button>
-          <button className="bg-[#d91400ff] text-white text-base font-bold px-3 py-2 hover:bg-red-700 rounded-[28px]">
+          {/* <button className="bg-[#d91400ff] text-white text-base font-bold px-3 py-2 hover:bg-red-700 rounded-[28px]">
             Open App
-          </button>
+          </button> */}
         </div>
       </div>
 
@@ -382,15 +320,17 @@ export default function LandingPage() {
           >
             Login
           </button>
-          <button className="bg-[#d91400ff] text-white text-sm font-bold px-1.5 py-2 hover:bg-red-700 rounded-[28px] sm:text-base sm:px-3 
-          sm:py-3.5">
+          {/* <button
+            className="bg-[#d91400ff] text-white text-sm font-bold px-1.5 py-2 hover:bg-red-700 rounded-[28px] sm:text-base sm:px-3 
+          sm:py-3.5"
+          >
             Open App
-          </button>
+          </button> */}
         </div>
       </div>
 
       {/* Top section */}
-      <div className="bg-[#2f477f] h-[650px] relative flex flex-col items-center justify-center mt-[-64px] overflow-hidden">
+      <div className="bg-[#2f477f] min-h-[100vh] relative flex flex-col items-center justify-center mt-[-64px] overflow-hidden">
         {/* Left image banner */}
         <div className="absolute top-0 bottom-0" style={{ left: `-${imageOffset}px` }}>
           <Image
@@ -459,14 +399,11 @@ export default function LandingPage() {
                 <p className="text-xs text-[#606060ff] mb-4 leading-relaxed font-bold">
                   By clicking on any "Continue" button, you agree to DoorDash's{' '}
                   {/* <a href="" className="text-[#1700ee] underline hover:text-blue-700"> */}
-                    Terms and Conditions
-                  {/* </a> */}
-                  {' '}
-                  and{' '}
+                  Terms and Conditions
+                  {/* </a> */} and{' '}
                   {/* <a href="" className="text-[#1700ee] underline hover:text-blue-700"> */}
-                    Privacy Policy
-                  {/* </a> */}
-                  .
+                  Privacy Policy
+                  {/* </a> */}.
                 </p>
 
                 {/* Continue Button */}
@@ -621,572 +558,13 @@ export default function LandingPage() {
       </div>
 
       {/* App Promo Card - Mobile Only */}
-      <div className="w-full px-4 pt-6 md:hidden">
-        <div className="w-full max-w-7xl mx-auto">
-          <div className="bg-[#f7f7f7ff] rounded-xl shadow-sm p-4 flex flex-col gap-4 border border-[#f5f5f5] max-w-[400px] mx-auto">
-            {/* Top Section: Icon and Text */}
-            <div className="flex items-start gap-3">
-              {/* App Icon */}
-              <div className="flex-shrink-0">
-                <div className="w-[60px] h-[60px] rounded-xl bg-white border border-gray-200 flex items-center justify-center">
-                  <DashDoorLogoMark width={44} height={20} />
-                </div>
-              </div>
+      {/* <AppPromo /> */}
 
-              {/* Text Content */}
-              <div className="flex flex-col flex-1 min-w-0">
-                <h3 className="text-lg font-bold text-[#191919ff]">Browse faster in the app</h3>
-                <p className="text-sm text-[#606060ff] font-medium mb-1">
-                  $0 delivery fee on first order
-                </p>
-                <div className="flex items-center gap-1">
-                  {[1, 2, 3, 4, 5].map(star => (
-                    <Star
-                      key={star}
-                      className="w-3 h-3 fill-yellow-400 text-yellow-400"
-                      fill="currentColor"
-                    />
-                  ))}
-                  <span className="text-sm font-medium text-[#606060ff] ml-1">20M ratings</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Button */}
-            <button className="w-full bg-[#eb1700ff] text-white font-bold text-base py-2 rounded-[28px] hover:bg-red-600">
-              Continue in app
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Content section 1 */}
-      <div className="w-full max-w-7xl mx-auto px-6 pt-20 pb-[120px] md:pb-20">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Become a Dasher */}
-          <div
-            className="flex flex-row lg:flex-col items-start lg:items-center text-left lg:text-center max-w-[400px] 
-          md:max-w-[450px] lg:max-w-[270px] mx-auto gap-8 md:gap-12 lg:gap-0"
-          >
-            <div className="mb-0 lg:mb-4 flex-shrink-0">
-              <Image
-                src="/landing-page/dasher.png"
-                alt="Dasher"
-                width={154}
-                height={154}
-                className="w-auto h-auto max-w-[88px] max-h-[88px] md:max-w-[154px] md:max-h-[154px]"
-              />
-            </div>
-            <div className="flex flex-col lg:items-center">
-              <h2 className="text-3xl font-bold text-[#191919ff] mb-3">Become a Dasher</h2>
-              <p className="text-[#191919ff] text-lg font-medium mb-3">
-                As a delivery driver, make money and work on your schedule. Sign up in minutes.
-              </p>
-              <a
-                href=""
-                className="text-red-600 font-bold text-sm lg:text-lg flex items-center gap-1"
-              >
-                Start earning
-                <ArrowRight className="h-4 w-4" strokeWidth={3} />
-              </a>
-            </div>
-          </div>
-
-          {/* Become a Merchant */}
-          <div
-            className="flex flex-row lg:flex-col items-start lg:items-center text-left lg:text-center max-w-[400px] 
-          md:max-w-[450px] lg:max-w-[270px] mx-auto gap-8 md:gap-12 lg:gap-0"
-          >
-            <div className="mb-0 lg:mb-4 flex-shrink-0">
-              <Image
-                src="/landing-page/merchant.png"
-                alt="Merchant"
-                width={154}
-                height={154}
-                className="w-auto h-auto max-w-[88px] max-h-[88px] md:max-w-[154px] md:max-h-[154px]"
-              />
-            </div>
-            <div className="flex flex-col lg:items-center">
-              <h2 className="text-3xl font-bold text-[#191919ff] mb-3">Become a Merchant</h2>
-              <p className="text-[#191919ff] text-lg font-medium mb-3">
-                Attract new customers and grow sales, starting with 0% commissions for up to 30
-                days.
-              </p>
-              <a
-                href=""
-                className="text-red-600 font-bold text-sm lg:text-lg flex items-center gap-1"
-              >
-                Sign up for DashDoor
-                <ArrowRight className="h-4 w-4" strokeWidth={3} />
-              </a>
-            </div>
-          </div>
-
-          {/* Get the best DashDoor experience */}
-          <div
-            className="flex flex-row lg:flex-col items-start lg:items-center text-left lg:text-center max-w-[400px] 
-          md:max-w-[450px] lg:max-w-[270px] mx-auto gap-8 md:gap-12 lg:gap-0"
-          >
-            <div className="mb-0 lg:mb-4 flex-shrink-0">
-              <Image
-                src="/landing-page/mobile.png"
-                alt="Mobile app"
-                width={154}
-                height={154}
-                className="w-auto h-auto max-w-[88px] max-h-[88px] md:max-w-[154px] md:max-h-[154px]"
-              />
-            </div>
-            <div className="flex flex-col lg:items-center">
-              <h2 className="text-3xl font-bold text-[#191919ff] mb-3">
-                Get the best DashDoor experience
-              </h2>
-              <p className="text-[#191919ff] text-lg font-medium mb-3">
-                Experience the best your neighborhood has to offer, all in one app.
-              </p>
-              <a
-                href=""
-                className="text-red-600 font-bold text-sm lg:text-lg flex items-center gap-1"
-              >
-                Get the app
-                <ArrowRight className="h-4 w-4" strokeWidth={3} />
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Content section 2 */}
-      <div className="relative pb-0">
-        <div className="w-full max-w-7xl mx-auto px-6 bg-[#fef1ee] md:bg-transparent">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-10 items-center">
-            {/* Left column - Text content */}
-            <div className="flex flex-col md:col-span-1 lg:col-span-1 order-2 md:order-1">
-              <h2 className="text-2xl md:text-[40px] font-bold text-[#191919ff] md:mb-4 leading-[40px]">
-                Everything you crave, delivered.
-              </h2>
-              <h3 className="text-lg md:text-xl font-bold text-[#191919ff] mb-2">
-                Your favorite local restaurants
-              </h3>
-              <p className="text-sm md:text-base font-medium text-[#191919ff] mb-6">
-                Get a slice of pizza or the whole pie delivered, or pick up house lo mein from the
-                Chinese takeout spot you've been meaning to try.
-              </p>
-              <button
-                className="bg-[#eb1700ff] text-white font-bold px-3 py-2 rounded-[28px] text-sm md:text-base 
-              hover:bg-red-600 w-fit"
-              >
-                Find restaurants
-              </button>
-            </div>
-
-            {/* Right column - Image */}
-            <div className="w-full relative z-10 md:col-span-1 lg:col-span-2 order-1 md:order-2 -mt-10 md:mt-0">
-              <Image
-                src="/landing-page/gallery-1.png"
-                alt="Person enjoying delivered food outdoors"
-                width={700}
-                height={500}
-                className="w-full h-[180px] md:h-[500px] md:w-auto object-cover"
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Content section 3 */}
-      <div className="bg-[#fef1ee] pt-10 md:pt-20 pb-6 lg:pt-24 relative z-0 md:-mt-10">
-        <div className="w-full max-w-7xl mx-auto px-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 items-center">
-            {/* Image - 1 column on md, 2 columns on lg */}
-            <div className="w-full relative z-10 md:col-span-1 lg:col-span-2">
-              <Image
-                src="/landing-page/gallery-2.png"
-                alt="DashPass food items"
-                width={700}
-                height={500}
-                className="w-full h-[180px] md:h-[500px] md:w-auto object-cover"
-              />
-            </div>
-
-            {/* Text content - 1 column on both md and lg */}
-            <div className="flex flex-col md:col-span-1 lg:col-span-1">
-              <h2 className="text-2xl md:text-[40px] font-bold text-[#191919ff] mb-2 md:mb-4 leading-tight">
-                DashPass is delivery for less
-              </h2>
-              <p className="text-sm md:text-base font-medium text-[#191919ff] mb-6">
-                Members get a $0 delivery fee on DashPass orders, 5% back on pickup orders, and so
-                much more. Plus, it's free for 30 days.
-              </p>
-              <button
-                className="bg-[#eb1700ff] text-white font-bold px-3 py-2 rounded-[28px] text-sm md:text-base 
-              hover:bg-red-600 w-fit"
-              >
-                Get DashPass
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-
-      {/* Content section 6 */}
-      <div className="bg-[#fef1ee] py-10 md:-mt-6 md:pt-20 md:pb-10">
-        <div className="w-full max-w-7xl mx-auto px-6">
-          <h2 className="text-2xl md:text-3xl font-bold text-center text-[#191919ff] mb-12 max-w-[320px] md:max-w-[450px] mx-auto">
-            Helping you with to-dos and gifting
-          </h2>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {/* Item 1: Beauty essentials */}
-            <div className="flex flex-col items-center text-center">
-              <div className="w-full mb-4">
-                <Image
-                  src="/landing-page/gallery-5.png"
-                  alt="Beauty essentials"
-                  width={600}
-                  height={400}
-                  className="w-full h-[180px] md:h-auto object-cover"
-                />
-              </div>
-              <h3 className="text-2xl md:text-[40px] font-bold text-[#191919ff] mb-2 md:mb-3 leading-[40px]">
-                Beauty essentials from top brands
-              </h3>
-              <p className="text-sm md:text-base font-medium text-[#191919ff] mb-4">
-                Get all your beauty and self-care needs delivered at home or on-the-go
-              </p>
-              <button
-                className="bg-[#eb1700ff] text-white font-bold px-3 py-2 rounded-[28px] text-sm md:text-base 
-              hover:bg-red-600 w-fit"
-              >
-                Shop beauty
-              </button>
-            </div>
-
-            {/* Item 2: Flowers */}
-            <div className="flex flex-col items-center text-center">
-              <div className="w-full mb-4">
-                <Image
-                  src="/landing-page/gallery-6.png"
-                  alt="Flowers"
-                  width={600}
-                  height={400}
-                  className="w-full h-[180px] md:h-auto object-cover"
-                />
-              </div>
-              <h3 className="text-2xl md:text-[40px] font-bold text-[#191919ff] mb-2 md:mb-3 leading-[40px]">
-                Flowers for any occasion
-              </h3>
-              <p className="text-sm md:text-base font-medium text-[#191919ff] mb-4">
-                Shop hand-picked and thoughtfully-arranged blooms from florists near you.
-              </p>
-              <button
-                className="bg-[#eb1700ff] text-white font-bold px-3 py-2 rounded-[28px] text-sm md:text-base 
-              hover:bg-red-600 w-fit"
-              >
-                Send Flowers
-              </button>
-            </div>
-
-            {/* Item 3: Restock the minibar */}
-            <div className="flex flex-col items-center text-center">
-              <div className="w-full mb-4">
-                <Image
-                  src="/landing-page/gallery-7.png"
-                  alt="Restock the minibar"
-                  width={600}
-                  height={400}
-                  className="w-full h-[180px] md:h-auto object-cover"
-                />
-              </div>
-              <h3 className="text-2xl md:text-[40px] font-bold text-[#191919ff] mb-2 md:mb-3 leading-[40px]">
-                Restock the minibar
-              </h3>
-              <p className="text-sm md:text-base font-medium text-[#191919ff] mb-4">
-                Hosting a get-together or need a special cocktail ingredient? Get liquor, beer,
-                mixers, champagne and wine delivered fast.*
-              </p>
-              <button
-                className="bg-[#eb1700ff] text-white font-bold px-3 py-2 rounded-[28px] text-sm md:text-base 
-              hover:bg-red-600 w-fit mb-3"
-              >
-                Shop Alcohol
-              </button>
-              <p className="text-xs md:text-sm font-medium text-[#191919ff]">
-                *Must be 21+. Enjoy responsibly.
-              </p>
-            </div>
-
-          </div>
-        </div>
-      </div>
-
-      {/* White bg on small screens */}
-      <div className="w-full h-[180px] md:h-0 md:w-0"></div>
-
-      {/* Content section 7 */}
-      <div className="relative pb-0">
-        <div className="w-full max-w-7xl mx-auto px-6 md:pt-16 bg-[#fef1ee] md:bg-transparent relative">
-          <div className="relative -top-[140px] md:top-0 mb-[-140px] md:mb-0">
-            <h2
-              className="text-2xl md:text-3xl font-bold text-center text-[#191919ff] mb-8 md:mb-12 max-w-[320px] 
-            md:max-w-[450px] mx-auto"
-            >
-              Unlocking opportunity for Dashers and businesses
-            </h2>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-10 items-center">
-              {/* Left column - Text content */}
-              <div className="flex flex-col md:col-span-1 lg:col-span-1 order-2 md:order-1">
-                <h2 className="text-2xl md:text-[40px] font-bold text-[#191919ff] md:mb-4 leading-[40px]">
-                  Sign up to dash and get paid
-                </h2>
-                <p className="text-sm md:text-base font-medium text-[#191919ff] mb-6">
-                  Deliver with the #1 Food and Drink App in the U.S. As a delivery driver, you'll
-                  make money and work on your schedule. Sign up in minutes.
-                </p>
-                <button
-                  className="bg-[#eb1700ff] text-white font-bold px-3 py-2 rounded-[28px] text-sm md:text-base 
-              hover:bg-red-600 w-fit"
-                >
-                  Become a Dasher
-                </button>
-              </div>
-
-              {/* Right column - Image */}
-              <div className="w-full relative z-10 md:col-span-1 lg:col-span-2 order-1 md:order-2">
-                <Image
-                  src="/landing-page/gallery-9.png"
-                  alt="Dasher delivery driver"
-                  width={700}
-                  height={500}
-                  className="w-full h-[180px] md:h-[500px] md:w-auto object-cover"
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Content section 8 */}
-      <div className="bg-[#fef1ee] pt-10 md:pt-20 pb-6 lg:pt-24 relative z-0 md:-mt-10">
-        <div className="w-full max-w-7xl mx-auto px-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 items-center">
-            {/* Image - 1 column on md, 2 columns on lg */}
-            <div className="w-full relative z-10 md:col-span-1 lg:col-span-2">
-              <Image
-                src="/landing-page/gallery-10.png"
-                alt="Business partner"
-                width={700}
-                height={500}
-                className="w-full h-[180px] md:h-[500px] md:w-auto object-cover"
-              />
-            </div>
-
-            {/* Text content - 1 column on both md and lg */}
-            <div className="flex flex-col md:col-span-1 lg:col-span-1">
-              <h2 className="text-2xl md:text-[40px] font-bold text-[#191919ff] mb-2 md:mb-4 leading-tight">
-                Grow your business with DashDoor
-              </h2>
-              <p className="text-sm md:text-base font-medium text-[#191919ff] mb-6">
-                Businesses large and small partner with DashDoor to reach new customers, increase
-                order volume, and drive more sales.
-              </p>
-              <button
-                className="bg-[#eb1700ff] text-white font-bold px-3 py-2 rounded-[28px] text-sm md:text-base 
-              hover:bg-red-600 w-fit"
-              >
-                Become a Partner
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
+      {/* Content sections */}
+      {/* <ContentSections /> */}
 
       {/* Get more from your neighborhood section */}
-      <div className="w-full bg-white py-12">
-        <div className="w-full max-w-7xl mx-auto px-6">
-          <h2 className="text-3xl font-bold text-center text-[#191919ff] mb-6">
-            Get more from your neighborhood
-          </h2>
-
-          {/* Tabs */}
-          <div className="grid grid-cols-3 mb-6 border-b border-gray-200 w-full">
-            <button
-              onClick={() => setActiveTab('cities')}
-              className={`py-2 text-base transition-colors border-b-[3px] hover:bg-gray-50 ${
-                activeTab === 'cities'
-                  ? 'text-[#191919ff] border-[#191919ff] font-bold'
-                  : 'text-[#606060ff] font-medium border-transparent'
-              }`}
-            >
-              Top Cities
-            </button>
-            <button
-              onClick={() => setActiveTab('cuisines')}
-              className={`py-2 text-base transition-colors border-b-[3px] hover:bg-gray-50 ${
-                activeTab === 'cuisines'
-                  ? 'text-[#191919ff] border-[#191919ff] font-bold'
-                  : 'text-[#606060ff] font-medium border-transparent'
-              }`}
-            >
-              Top Cuisines
-            </button>
-            <button
-              onClick={() => setActiveTab('chains')}
-              className={`py-2 text-base transition-colors border-b-[3px] hover:bg-gray-50 ${
-                activeTab === 'chains'
-                  ? 'text-[#191919ff] border-[#191919ff] font-bold'
-                  : 'text-[#606060ff] font-medium border-transparent'
-              }`}
-            >
-              Top Chains
-            </button>
-          </div>
-
-          {/* Content */}
-          <div className="mb-8">
-            {activeTab === 'cities' && (
-              <div>
-                <div
-                  className={`grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 ${
-                    !showAllCities ? 'mb-6' : ''
-                  }`}
-                >
-                  {(showAllCities ? topCities : topCities.slice(0, 15)).map((city, index) => (
-                    <div
-                      key={`city-${city.name}-${index}`}
-                      className="text-base font-medium text-[#191919ff] hover:underline"
-                    >
-                      {city.name}
-                    </div>
-                  ))}
-                </div>
-                {topCities.length > 15 && (
-                  <div className="flex justify-center mt-6">
-                    <div className="flex items-center gap-2 text-[#191919ff]">
-                      {showAllCities ? (
-                        <>
-                          <span className="font-bold text-xl">See less</span>
-                          <button
-                            className="flex items-center justify-center p-2.5 rounded-full bg-[#f1f1f1] hover:bg-gray-200"
-                            onClick={() => setShowAllCities(false)}
-                          >
-                            <ChevronUp className="h-5 w-5" strokeWidth={2} />
-                          </button>
-                        </>
-                      ) : (
-                        <>
-                          <span className="font-bold text-xl">See more</span>
-                          <button
-                            className="flex items-center justify-center p-2.5 rounded-full bg-[#f1f1f1] hover:bg-gray-200"
-                            onClick={() => setShowAllCities(true)}
-                          >
-                            <ChevronDown className="h-5 w-5" strokeWidth={2} />
-                          </button>
-                        </>
-                      )}
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {activeTab === 'cuisines' && (
-              <div>
-                <div
-                  className={`grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 ${
-                    !showAllCuisines ? 'mb-6' : ''
-                  }`}
-                >
-                  {(showAllCuisines ? topCuisines : topCuisines.slice(0, 15)).map(
-                    (cuisine, index) => (
-                      <div
-                        key={`cuisine-${cuisine.name}-${index}`}
-                        className="text-base font-medium text-[#191919ff] hover:underline"
-                      >
-                        {cuisine.name}
-                      </div>
-                    )
-                  )}
-                </div>
-                {topCuisines.length > 15 && (
-                  <div className="flex justify-center mt-6">
-                    <div className="flex items-center gap-2 text-[#191919ff]">
-                      {showAllCuisines ? (
-                        <>
-                          <span className="font-bold text-xl">See less</span>
-                          <button
-                            className="flex items-center justify-center p-2.5 rounded-full bg-[#f1f1f1] hover:bg-gray-200"
-                            onClick={() => setShowAllCuisines(false)}
-                          >
-                            <ChevronUp className="h-5 w-5" strokeWidth={2} />
-                          </button>
-                        </>
-                      ) : (
-                        <>
-                          <span className="font-bold text-xl">See more</span>
-                          <button
-                            className="flex items-center justify-center p-2.5 rounded-full bg-[#f1f1f1] hover:bg-gray-200"
-                            onClick={() => setShowAllCuisines(true)}
-                          >
-                            <ChevronDown className="h-5 w-5" strokeWidth={2} />
-                          </button>
-                        </>
-                      )}
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {activeTab === 'chains' && (
-              <div>
-                <div
-                  className={`grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 ${
-                    !showAllChains ? 'mb-6' : ''
-                  }`}
-                >
-                  {(showAllChains ? topChains : topChains.slice(0, 15)).map((chain, index) => (
-                    <div
-                      key={`chain-${chain.id}-${index}`}
-                      className="text-base font-medium text-[#191919ff] hover:underline"
-                    >
-                      {chain.name}
-                    </div>
-                  ))}
-                </div>
-                {topChains.length > 15 && (
-                  <div className="flex justify-center mt-6">
-                    <div className="flex items-center gap-2 text-[#191919ff]">
-                      {showAllChains ? (
-                        <>
-                          <span className="font-bold text-xl">See less</span>
-                          <button
-                            className="flex items-center justify-center p-2.5 rounded-full bg-[#f1f1f1] hover:bg-gray-200"
-                            onClick={() => setShowAllChains(false)}
-                          >
-                            <ChevronUp className="h-5 w-5" strokeWidth={2} />
-                          </button>
-                        </>
-                      ) : (
-                        <>
-                          <span className="font-bold text-xl">See more</span>
-                          <button
-                            className="flex items-center justify-center p-2.5 rounded-full bg-[#f1f1f1] hover:bg-gray-200"
-                            onClick={() => setShowAllChains(true)}
-                          >
-                            <ChevronDown className="h-5 w-5" strokeWidth={2} />
-                          </button>
-                        </>
-                      )}
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
+      {/* <NeighbourhoodSection /> */}
 
       {/* Authentication Modal */}
       {authModalMode && (

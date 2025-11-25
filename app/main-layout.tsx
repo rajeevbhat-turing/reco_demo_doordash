@@ -3,7 +3,7 @@
 import { useEffect, useSyncExternalStore, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import Header from '@/components/header';
-import LandingPageFooter from '@/components/landing-page-footer';
+// import LandingPageFooter from '@/components/landing-page-footer';
 import LayoutWrapper from '@/components/layout-wrapper';
 import Snackbar from '@/components/snackbar';
 import { useUserStore } from '@/store/user-store';
@@ -81,7 +81,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
       <div className="flex flex-col min-h-screen">
         <StateWindowInitializer />
         <main className="flex-1">{children}</main>
-        <LandingPageFooter />
+        {/* <LandingPageFooter /> */}
         <Snackbar />
       </div>
     );

@@ -3,7 +3,16 @@
 import { useEffect, useState, useRef, useCallback, useMemo } from 'react';
 import Image from 'next/image';
 import { useParams } from 'next/navigation';
-import { ChevronDown, Info, ChevronLeft, ChevronRight, Heart, Search, X, ThumbsUp } from 'lucide-react';
+import {
+  ChevronDown,
+  Info,
+  ChevronLeft,
+  ChevronRight,
+  Heart,
+  Search,
+  X,
+  ThumbsUp,
+} from 'lucide-react';
 import { useRestaurants } from '@/lib/hooks/use-restaurants';
 import { useRestaurant } from '@/lib/hooks/use-restaurant';
 import { useRestaurantMenu } from '@/lib/hooks/use-restaurant-menu';
@@ -19,30 +28,38 @@ import { useVerifierStore } from '@/store/verifier-store';
 import MenuItemDialog from '@/components/menu-item-dialog';
 import GroupOrderDialog from '@/components/group-order-dialog';
 import StoreDetailsDialog from '@/components/store-details-dialog';
+import OutsideDeliveryAreaModal from '@/components/modals/outside-delivery-area-modal';
 import { Reviews } from '@/components/reviews';
 import { type Deal } from '@/types/deal-types';
 import { useDealsByRestaurantId } from '@/lib/hooks/use-deals';
 import { Deals } from '@/components/deals';
 import ServiceFeesInfo from '@/components/service-fees-info';
 import { getDefaultRating } from '@/utils/rating-utils';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+  TooltipArrow,
+} from '@/components/ui/tooltip';
 
-const menuTypes = [
-  {
-    id: 'overnight',
-    name: 'Overnight Menu',
-    hours: '12:00 AM - 3:59 AM',
-  },
-  {
-    id: 'regular',
-    name: 'Regular Menu',
-    hours: '10:30 AM - 11:59 PM',
-  },
-  {
-    id: 'breakfast',
-    name: 'Breakfast Menu',
-    hours: '4:00 AM - 10:29 AM',
-  },
-];
+// const menuTypes = [
+//   {
+//     id: 'overnight',
+//     name: 'Overnight Menu',
+//     hours: '12:00 AM - 3:59 AM',
+//   },
+//   {
+//     id: 'regular',
+//     name: 'Regular Menu',
+//     hours: '10:30 AM - 11:59 PM',
+//   },
+//   {
+//     id: 'breakfast',
+//     name: 'Breakfast Menu',
+//     hours: '4:00 AM - 10:29 AM',
+//   },
+// ];
 
 function SearchBar({
   restaurantName,
@@ -104,7 +121,7 @@ export default function RestaurantPage() {
   // Fetch the specific restaurant directly (optimization: don't wait for nearby restaurants list)
   const currentUser = useUserStore(state => state.currentUser);
   const defaultAddress = currentUser?.addresses.find(a => a.default);
-  
+
   // Fetch this specific restaurant immediately - we have the ID from URL
   const { data: specificRestaurant, isLoading: isLoadingRestaurant } = useRestaurant(id);
 
@@ -122,6 +139,13 @@ export default function RestaurantPage() {
   // Check if restaurant is in nearby results (for delivery area validation)
   const restaurantInNearby = restaurants ? getRestaurantById(restaurants, id) : null;
 
+  // Show modal when restaurant is outside delivery area
+  useEffect(() => {
+    if (restaurant && restaurants !== undefined && !restaurantInNearby) {
+      setOutsideDeliveryAreaModalOpen(true);
+    }
+  }, [restaurant, restaurants, restaurantInNearby]);
+
   // Set the category to restaurant when the page loads
   useEffect(() => {
     cartStore.setCategory('restaurant');
@@ -135,6 +159,7 @@ export default function RestaurantPage() {
   const [storeDetailsDialogOpen, setStoreDetailsDialogOpen] = useState(false);
   const [serviceFeesInfoOpen, setServiceFeesInfoOpen] = useState(false);
   const [menuDropdownOpen, setMenuDropdownOpen] = useState(false);
+  const [outsideDeliveryAreaModalOpen, setOutsideDeliveryAreaModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearching, setIsSearching] = useState(false);
 
@@ -552,8 +577,14 @@ export default function RestaurantPage() {
     setMenuDropdownOpen(false);
   };
 
+  // Handle clear search
+  const handleClearSearch = () => {
+    setSearchQuery('');
+    setIsSearching(false);
+  };
+
   // Find the selected menu type object
-  const selectedMenuTypeObj = menuTypes.find(menu => menu.name === selectedMenuType);
+  // const selectedMenuTypeObj = menuTypes.find(menu => menu.name === selectedMenuType);
 
   // Show loading state
   if (isLoadingMenu || isLoadingRestaurant || !restaurant) {
@@ -717,7 +748,7 @@ export default function RestaurantPage() {
 
         <div className="flex flex-wrap mb-6">
           <div className="w-full md:w-1/4 mb-4 md:mb-0">
-            <div className="bg-white rounded-lg p-4 pl-0 pt-0">
+            <div className="bg-white p-4 pl-0 pt-0 border-b border-gray-200">
               <svg
                 width="20"
                 height="20"
@@ -803,7 +834,7 @@ export default function RestaurantPage() {
               }
             >
               <div ref={menuRef} className="overflow-hidden">
-                <div className="p-4 relative" ref={menuDropdownRef}>
+                {/* <div className="p-4 relative" ref={menuDropdownRef}>
                   <button
                     className="w-full flex items-center justify-between font-medium"
                     onClick={toggleMenuDropdown}
@@ -813,7 +844,6 @@ export default function RestaurantPage() {
                   </button>
                   <div className="text-sm text-gray-600 mt-1">{selectedMenuTypeObj?.hours}</div>
 
-                  {/* Menu Type Dropdown */}
                   {menuDropdownOpen && (
                     <div className="absolute left-0 top-full mt-1 w-[350px] bg-white rounded-lg shadow-lg z-20 py-2">
                       {menuTypes.map(menuType => (
@@ -841,7 +871,14 @@ export default function RestaurantPage() {
                       ))}
                     </div>
                   )}
-                </div>
+                </div> */}
+
+                {/* Displaying full menu since time based menu is not available */}
+                <p className="text-lg font-bold text-[#191919ff]">Full Menu</p>
+                <p className="text-sm font-medium text-[#191919ff] lowercase mb-2">
+                  {restaurant?.openingHours}
+                </p>
+
                 <div className="p-2 max-h-[calc(100vh-200px)] overflow-y-auto">
                   <ul className="space-y-1">
                     {/* Featured Items section */}
@@ -957,7 +994,7 @@ export default function RestaurantPage() {
                     ) : (
                       <div className="col-span-2 py-8 text-center">
                         <p className="text-gray-500">No items found matching "{searchQuery}"</p>
-                        <button className="mt-2 text-red-600" onClick={() => setSearchQuery('')}>
+                        <button className="mt-2 text-red-600" onClick={handleClearSearch}>
                           Clear search
                         </button>
                       </div>
@@ -991,10 +1028,35 @@ export default function RestaurantPage() {
                         </div>
                       </div>
                     </div>
-                    <div className="text-right">
-                      <div className="font-medium">{deliveryTime}</div>
-                      <div className="text-sm text-gray-600">delivery time</div>
-                    </div>
+                    {restaurantInNearby ? (
+                      <div className="text-right">
+                        <div className="font-medium">{deliveryTime}</div>
+                        <div className="text-sm text-gray-600">delivery time</div>
+                      </div>
+                    ) : (
+                      <div className="text-center">
+                        <div className="font-medium text-[#191919ff] text-sm">Unavailable</div>
+                        <div className="text-sm text-[#606060ff] font-medium flex items-center gap-1 justify-center">
+                          <span>Too far away</span>
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Info className="w-3.5 h-3.5" />
+                              </TooltipTrigger>
+                              <TooltipContent
+                                side="bottom"
+                                className="bg-[#191919ff] text-white p-3 max-w-[250px] text-left rounded-lg"
+                              >
+                                <TooltipArrow className="fill-[#191919ff]" />
+                                <p className="text-sm">
+                                  Your address is not in the store's delivery area
+                                </p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -1044,7 +1106,9 @@ export default function RestaurantPage() {
                         >
                           <div className="relative h-40">
                             <Image
-                              src={item.image || '/placeholder.svg?height=160&width=200&query=burger'}
+                              src={
+                                item.image || '/placeholder.svg?height=160&width=200&query=burger'
+                              }
                               alt={item.name}
                               fill
                               className="object-cover"
@@ -1146,7 +1210,8 @@ export default function RestaurantPage() {
                   .filter(category => !['Featured Items', 'Most Ordered'].includes(category.name))
                   .filter(category => {
                     // Only show categories that have items
-                    const categoryItems = menuData?.menuItems.filter(item => item.category === category.name) || [];
+                    const categoryItems =
+                      menuData?.menuItems.filter(item => item.category === category.name) || [];
                     return categoryItems.length > 0;
                   })
                   .map(category => (
@@ -1224,6 +1289,11 @@ export default function RestaurantPage() {
       />
       {/* Service Fees Info Dialog */}
       <ServiceFeesInfo isOpen={serviceFeesInfoOpen} onClose={() => setServiceFeesInfoOpen(false)} />
+      {/* Outside Delivery Area Modal */}
+      <OutsideDeliveryAreaModal
+        isOpen={outsideDeliveryAreaModalOpen}
+        onClose={() => setOutsideDeliveryAreaModalOpen(false)}
+      />
 
       {/* Deal Banner */}
       {firstDeal && (
