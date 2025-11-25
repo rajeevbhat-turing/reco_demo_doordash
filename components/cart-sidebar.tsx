@@ -78,6 +78,7 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
   const [store, setStore] = useState<any>(null);
   const [complementItems, setComplementItems] = useState<any[]>([]);
   const complementScrollRef = useRef<HTMLDivElement>(null);
+  const sidebarRef = useRef<HTMLDivElement>(null);
   const [menuItemDialogOpen, setMenuItemDialogOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null);
 
