@@ -257,7 +257,8 @@ export default function OTPVerificationModal({
             <div className="border-t border-gray-200 mb-4"></div>
 
             {/* Get Help Button */}
-            <div className="px-4 pb-4">
+            {/* Get Help button hidden for now. */}
+            {/* <div className="px-4 pb-4">
               <button
                 onClick={handleGetHelp}
                 className="w-full py-2 px-4 bg-red-600 hover:bg-red-700 text-white font-semibold text-[16px] rounded-lg transition-colors"
@@ -265,7 +266,7 @@ export default function OTPVerificationModal({
               >
                 Get Help
               </button>
-            </div>
+            </div> */}
           </>
         )}
       </div>

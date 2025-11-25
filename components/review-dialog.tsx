@@ -348,11 +348,12 @@ export default function ReviewDialog({
             // Review Form View
             <>
               {/* Get Help button - Only show when orderItems is provided */}
-              {orderItems && orderItems.length > 0 && (
+              {/* Get Help button hidden for now. */}
+              {/* {orderItems && orderItems.length > 0 && (
                 <button className="text-sm font-medium text-[#191919ff] hover:underline absolute right-6 top-8">
                   Get Help
                 </button>
-              )}
+              )} */}
 
               {/* Store Details Header - Only show when orderItems is provided */}
               {orderItems && orderItems.length > 0 && (

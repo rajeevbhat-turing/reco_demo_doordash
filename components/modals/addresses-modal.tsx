@@ -80,7 +80,7 @@ export default function AddressesModal({
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
       <div
         ref={dialogRef}
-        className="relative bg-white rounded-2xl w-full max-w-md mx-4 max-h-[90vh] flex flex-col overflow-hidden"
+        className="relative bg-white rounded-2xl w-full max-w-md mx-4 max-h-[90vh] flex flex-col overflow-hidden pb-4"
       >
         <div className="p-6 pb-0 flex-shrink-0">
           {/* Close button */}

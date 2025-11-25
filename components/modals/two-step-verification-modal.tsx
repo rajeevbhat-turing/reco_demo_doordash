@@ -97,7 +97,9 @@ export default function TwoStepVerificationModal({
     e.preventDefault();
 
     // Verify the entered code against generated code
-    if (code !== generatedCode.current) {
+    // For now, we are only checking if the code is 6 digits long.
+    // if (code !== generatedCode.current) {
+    if (code.length !== 6) {
       const newAttemptsLeft = attemptsLeft - 1;
       setAttemptsLeft(newAttemptsLeft);
 
@@ -278,12 +280,13 @@ export default function TwoStepVerificationModal({
                 className="rounded-full"
                 style={{ backgroundColor: '#191919ff', width: '3px', height: '3px' }}
               ></div>
-              <button
+              {/* Get Help button hidden for now. */}
+              {/* <button
                 onClick={handleGetHelp}
                 className="underline font-semibold text-sm text-[#191919ff] hover:text-gray-700"
               >
                 Get Help
-              </button>
+              </button> */}
             </div>
 
             {/* Submit Button */}
@@ -316,7 +319,8 @@ export default function TwoStepVerificationModal({
             <div className="border-t border-gray-200 mb-4"></div>
 
             {/* Get Help Button */}
-            <div className="px-4 pb-4">
+            {/* Get Help button hidden for now. */}
+            {/* <div className="px-4 pb-4">
               <button
                 onClick={handleGetHelp}
                 className="w-full py-2 px-4 bg-red-600 hover:bg-red-700 text-white font-semibold text-[16px] rounded-lg transition-colors"
@@ -324,7 +328,7 @@ export default function TwoStepVerificationModal({
               >
                 Get Help
               </button>
-            </div>
+            </div> */}
           </>
         )}
       </div>

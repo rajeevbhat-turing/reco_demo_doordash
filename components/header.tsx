@@ -61,6 +61,9 @@ export default function Header() {
   // Checking if current path is auth flow
   const isAuthFlow = pathname.startsWith('/auth');
 
+  // Check if it's an order detail page (e.g., /orders/123) but not the order list page (/orders)
+  const isOrderDetailPage = pathname?.startsWith('/orders/') && pathname !== '/orders';
+
   const { getAddresses, addAddress, updateAddress, setDefaultAddress, setTempAddress } =
     useUserStore();
   const shouldOpenCart = useCartStore(state => state.shouldOpenCart);
@@ -437,360 +440,361 @@ export default function Header() {
                 </Link>
 
                 {/* Search - grows to take remaining space */}
-                {!isStoreOrReviews && (
+                {!isStoreOrReviews && !isOrderDetailPage && (
                   <div className="flex-grow">
                     <SearchBar />
                   </div>
                 )}
               </div>
 
-              <div className="flex">
-                {/* Location */}
-                <div className="relative">
-                  <button
-                    onClick={() => {
-                      if (isAuthenticated) {
-                        setShowAddressesModal(true);
-                      } else {
-                        setShowAddressPopover(!showAddressPopover);
-                      }
-                    }}
-                    className="flex items-center mr-4 bg-[#f1f1f1] rounded-full px-5 h-8 hover:bg-gray-200 transition-colors cursor-pointer"
-                  >
-                    {displayAddress && <MapPin className="h-5 w-5 text-gray-700 mr-1" />}
-                    <span className="text-sm font-medium mr-1">
-                      {displayAddress ? (
-                        displayAddress
-                      ) : (
-                        <>
-                          + Your address
-                          <ChevronDown className="h-4 w-4 text-gray-700 inline-block ml-1" />
-                        </>
-                      )}
-                    </span>
-                    {displayAddress && <ChevronDown className="h-4 w-4 text-gray-700" />}
-                  </button>
-
-                  {/* Address Popover for non-authenticated users */}
-                  {showAddressPopover && !isAuthenticated && (
-                    <>
-                      {/* Backdrop */}
-                      <div
-                        className="fixed inset-0 z-40"
-                        onClick={() => {
-                          setShowAddressPopover(false);
-                          setShowManualEntry(false);
-                          setShowManualEntryError(false);
-                          setSelectedPopoverAddress(null);
-                        }}
-                      />
-
-                      {/* Popover */}
-                      <div className="absolute top-full left-0 mt-2 w-[400px] bg-white rounded-lg shadow-lg border border-gray-200 z-50">
-                        {showManualEntryError ? (
+              {!isOrderDetailPage && (
+                <div className="flex">
+                  {/* Location */}
+                  <div className="relative">
+                    <button
+                      onClick={() => {
+                        if (isAuthenticated) {
+                          setShowAddressesModal(true);
+                        } else {
+                          setShowAddressPopover(!showAddressPopover);
+                        }
+                      }}
+                      className="flex items-center mr-4 bg-[#f1f1f1] rounded-full px-5 h-8 hover:bg-gray-200 transition-colors cursor-pointer"
+                    >
+                      {displayAddress && <MapPin className="h-5 w-5 text-gray-700 mr-1" />}
+                      <span className="text-sm font-medium mr-1">
+                        {displayAddress ? (
+                          displayAddress
+                        ) : (
                           <>
-                            {/* Address review error view */}
-                            <div className="p-6">
-                              <h2 className="text-2xl font-bold text-gray-900 mb-4">
-                                We can't add this address at the moment
-                              </h2>
-
-                              <p className="text-gray-900 mb-8">
-                                We're currently reviewing the address. Please check for any typos
-                                and re-enter your address.
-                              </p>
-
-                              <div className="space-y-3">
-                                <button
-                                  onClick={handleReviewManualAddress}
-                                  className="w-full py-3 px-6 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 transition-colors"
-                                >
-                                  Review address
-                                </button>
-                                <button
-                                  onClick={handleEnterNewManualAddress}
-                                  className="w-full py-3 px-6 bg-gray-300 text-gray-900 rounded-lg font-medium hover:bg-gray-400 transition-colors"
-                                >
-                                  Enter new address
-                                </button>
-                              </div>
-                            </div>
+                            + Your address
+                            <ChevronDown className="h-4 w-4 text-gray-700 inline-block ml-1" />
                           </>
-                        ) : showManualEntry ? (
-                          <>
-                            {/* Manual entry form view */}
-                            <div className="p-4">
-                              <h3 className="text-lg font-bold text-gray-900 mb-4">
-                                Add new address
-                              </h3>
+                        )}
+                      </span>
+                      {displayAddress && <ChevronDown className="h-4 w-4 text-gray-700" />}
+                    </button>
 
-                              {/* Country */}
-                              <div className="mb-4">
-                                <label className="block text-sm font-semibold text-gray-900 mb-2">
-                                  Country
-                                </label>
-                                <div className="relative">
-                                  <select
-                                    value={manualCountry}
-                                    onChange={e => setManualCountry(e.target.value)}
-                                    className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-red-500 text-sm"
+                    {/* Address Popover for non-authenticated users */}
+                    {showAddressPopover && !isAuthenticated && (
+                      <>
+                        {/* Backdrop */}
+                        <div
+                          className="fixed inset-0 z-40"
+                          onClick={() => {
+                            setShowAddressPopover(false);
+                            setShowManualEntry(false);
+                            setShowManualEntryError(false);
+                            setSelectedPopoverAddress(null);
+                          }}
+                        />
+
+                        {/* Popover */}
+                        <div className="absolute top-full left-0 mt-2 w-[400px] bg-white rounded-lg shadow-lg border border-gray-200 z-50">
+                          {showManualEntryError ? (
+                            <>
+                              {/* Address review error view */}
+                              <div className="p-6">
+                                <h2 className="text-2xl font-bold text-gray-900 mb-4">
+                                  We can't add this address at the moment
+                                </h2>
+
+                                <p className="text-gray-900 mb-8">
+                                  We're currently reviewing the address. Please check for any typos
+                                  and re-enter your address.
+                                </p>
+
+                                <div className="space-y-3">
+                                  <button
+                                    onClick={handleReviewManualAddress}
+                                    className="w-full py-3 px-6 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 transition-colors"
                                   >
-                                    <option value="United States">United States</option>
-                                  </select>
-                                  <ChevronDown className="absolute right-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-600 pointer-events-none" />
+                                    Review address
+                                  </button>
+                                  <button
+                                    onClick={handleEnterNewManualAddress}
+                                    className="w-full py-3 px-6 bg-gray-300 text-gray-900 rounded-lg font-medium hover:bg-gray-400 transition-colors"
+                                  >
+                                    Enter new address
+                                  </button>
                                 </div>
                               </div>
+                            </>
+                          ) : showManualEntry ? (
+                            <>
+                              {/* Manual entry form view */}
+                              <div className="p-4">
+                                <h3 className="text-lg font-bold text-gray-900 mb-4">
+                                  Add new address
+                                </h3>
 
-                              {/* Street Address */}
-                              <div className="mb-4">
-                                <label className="block text-sm font-semibold text-gray-900 mb-2">
-                                  Street Address
-                                </label>
-                                <input
-                                  type="text"
-                                  value={manualStreet}
-                                  onChange={e => setManualStreet(e.target.value)}
-                                  className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 text-sm"
-                                />
-                              </div>
-
-                              {/* Apartment/Suite and City */}
-                              <div className="grid grid-cols-2 gap-3 mb-4">
-                                <div>
+                                {/* Country */}
+                                <div className="mb-4">
                                   <label className="block text-sm font-semibold text-gray-900 mb-2">
-                                    Apartment/Suite
-                                  </label>
-                                  <input
-                                    type="text"
-                                    value={manualApartment}
-                                    onChange={e => setManualApartment(e.target.value)}
-                                    className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 text-sm"
-                                  />
-                                </div>
-                                <div>
-                                  <label className="block text-sm font-semibold text-gray-900 mb-2">
-                                    City
-                                  </label>
-                                  <input
-                                    type="text"
-                                    value={manualCity}
-                                    onChange={e => setManualCity(e.target.value)}
-                                    className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 text-sm"
-                                  />
-                                </div>
-                              </div>
-
-                              {/* State and Zip code */}
-                              <div className="grid grid-cols-2 gap-3 mb-6">
-                                <div>
-                                  <label className="block text-sm font-semibold text-gray-900 mb-2">
-                                    State
+                                    Country
                                   </label>
                                   <div className="relative">
                                     <select
-                                      value={manualState}
-                                      onChange={e => setManualState(e.target.value)}
+                                      value={manualCountry}
+                                      onChange={e => setManualCountry(e.target.value)}
                                       className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-red-500 text-sm"
                                     >
-                                      <option value="Alabama">Alabama</option>
-                                      <option value="Alaska">Alaska</option>
-                                      <option value="Arizona">Arizona</option>
-                                      <option value="Arkansas">Arkansas</option>
-                                      <option value="California">California</option>
-                                      <option value="Colorado">Colorado</option>
-                                      <option value="Connecticut">Connecticut</option>
-                                      <option value="Delaware">Delaware</option>
-                                      <option value="Florida">Florida</option>
-                                      <option value="Georgia">Georgia</option>
-                                      <option value="Hawaii">Hawaii</option>
-                                      <option value="Idaho">Idaho</option>
-                                      <option value="Illinois">Illinois</option>
-                                      <option value="Indiana">Indiana</option>
-                                      <option value="Iowa">Iowa</option>
-                                      <option value="Kansas">Kansas</option>
-                                      <option value="Kentucky">Kentucky</option>
-                                      <option value="Louisiana">Louisiana</option>
-                                      <option value="Maine">Maine</option>
-                                      <option value="Maryland">Maryland</option>
-                                      <option value="Massachusetts">Massachusetts</option>
-                                      <option value="Michigan">Michigan</option>
-                                      <option value="Minnesota">Minnesota</option>
-                                      <option value="Mississippi">Mississippi</option>
-                                      <option value="Missouri">Missouri</option>
-                                      <option value="Montana">Montana</option>
-                                      <option value="Nebraska">Nebraska</option>
-                                      <option value="Nevada">Nevada</option>
-                                      <option value="New Hampshire">New Hampshire</option>
-                                      <option value="New Jersey">New Jersey</option>
-                                      <option value="New Mexico">New Mexico</option>
-                                      <option value="New York">New York</option>
-                                      <option value="North Carolina">North Carolina</option>
-                                      <option value="North Dakota">North Dakota</option>
-                                      <option value="Ohio">Ohio</option>
-                                      <option value="Oklahoma">Oklahoma</option>
-                                      <option value="Oregon">Oregon</option>
-                                      <option value="Pennsylvania">Pennsylvania</option>
-                                      <option value="Rhode Island">Rhode Island</option>
-                                      <option value="South Carolina">South Carolina</option>
-                                      <option value="South Dakota">South Dakota</option>
-                                      <option value="Tennessee">Tennessee</option>
-                                      <option value="Texas">Texas</option>
-                                      <option value="Utah">Utah</option>
-                                      <option value="Vermont">Vermont</option>
-                                      <option value="Virginia">Virginia</option>
-                                      <option value="Washington">Washington</option>
-                                      <option value="West Virginia">West Virginia</option>
-                                      <option value="Wisconsin">Wisconsin</option>
-                                      <option value="Wyoming">Wyoming</option>
+                                      <option value="United States">United States</option>
                                     </select>
                                     <ChevronDown className="absolute right-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-600 pointer-events-none" />
                                   </div>
                                 </div>
-                                <div>
+
+                                {/* Street Address */}
+                                <div className="mb-4">
                                   <label className="block text-sm font-semibold text-gray-900 mb-2">
-                                    Zip code
+                                    Street Address
                                   </label>
                                   <input
                                     type="text"
-                                    value={manualZipCode}
-                                    onChange={e => setManualZipCode(e.target.value)}
+                                    value={manualStreet}
+                                    onChange={e => setManualStreet(e.target.value)}
                                     className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 text-sm"
                                   />
                                 </div>
-                              </div>
 
-                              {/* Continue Button */}
-                              <button
-                                onClick={handleManualEntryContinue}
-                                className="w-full py-3 px-6 bg-red-600 text-white rounded-full font-semibold hover:bg-red-700 transition-colors mb-3"
-                              >
-                                Continue
-                              </button>
-
-                              {/* Back Button */}
-                              <button
-                                onClick={handleBackFromManualEntry}
-                                className="w-full py-3 px-6 text-gray-900 font-medium hover:bg-gray-100 rounded-full transition-colors"
-                              >
-                                Back
-                              </button>
-                            </div>
-                          </>
-                        ) : !selectedPopoverAddress ? (
-                          <>
-                            {/* Initial view - address search */}
-                            <div className="p-4 pb-3">
-                              <h3 className="text-lg font-bold text-gray-900 mb-4">
-                                Enter Your Address
-                              </h3>
-
-                              {/* Address Input */}
-                              <div className="flex items-center border border-gray-300 rounded-lg px-4 py-3 hover:border-gray-400 transition-colors">
-                                <MapPin className="h-5 w-5 text-gray-500 mr-2" />
-                                <input
-                                  type="text"
-                                  placeholder="Address"
-                                  value={addressSearchQuery}
-                                  onChange={e => setAddressSearchQuery(e.target.value)}
-                                  className="flex-1 outline-none text-sm text-gray-900 placeholder-gray-500"
-                                />
-                              </div>
-                              {/* Address Search Results Section - shown when there's input */}
-                              {addressSearchQuery.trim() && (
-                                <div className="border border-gray-300 w-full mt-2 rounded-lg">
-                                  <div className="max-h-80 overflow-y-auto">
-                                    {filteredAddresses.map((address, index) => (
-                                      <div key={address.id} className="w-full">
-                                        <div
-                                          onClick={() => handlePopoverAddressSelect(address)}
-                                          className="flex items-center justify-between px-4 py-3 hover:bg-gray-50 cursor-pointer transition-colors w-full"
-                                        >
-                                          <div className="flex-1 min-w-0">
-                                            <p className="text-sm font-medium text-gray-900">
-                                              {address.street}
-                                            </p>
-                                            <p className="text-xs text-gray-500 mt-0.5">
-                                              {address.city} {address.state} {address.zipCode}
-                                            </p>
-                                          </div>
-                                          <ChevronRight className="w-5 h-5 text-gray-400 flex-shrink-0 ml-2" />
-                                        </div>
-                                        {index < filteredAddresses.length - 1 && (
-                                          <div className="border-t border-gray-300" />
-                                        )}
-                                      </div>
-                                    ))}
-
-                                    {/* Separator before manual entry */}
-                                    {filteredAddresses.length > 0 && (
-                                      <div className="border-t border-gray-100" />
-                                    )}
-
-                                    {/* Enter address manually option */}
-                                    <div
-                                      onClick={handleManualEntryClick}
-                                      className="flex items-center justify-between px-4 py-3 hover:bg-gray-50 cursor-pointer transition-colors w-full"
-                                    >
-                                      <div className="flex items-center min-w-0 flex-1">
-                                        <div className="w-8 h-8 bg-black rounded-full flex items-center justify-center mr-3 flex-shrink-0">
-                                          <Plus className="w-4 h-4 text-white" />
-                                        </div>
-                                        <div className="min-w-0">
-                                          <p className="text-sm font-medium text-gray-900">
-                                            Add a new address
-                                          </p>
-                                          <p className="text-xs text-gray-500">
-                                            Enter address manually
-                                          </p>
-                                        </div>
-                                      </div>
-                                      <ChevronRight className="w-5 h-5 text-gray-400 flex-shrink-0 ml-2" />
-                                    </div>
+                                {/* Apartment/Suite and City */}
+                                <div className="grid grid-cols-2 gap-3 mb-4">
+                                  <div>
+                                    <label className="block text-sm font-semibold text-gray-900 mb-2">
+                                      Apartment/Suite
+                                    </label>
+                                    <input
+                                      type="text"
+                                      value={manualApartment}
+                                      onChange={e => setManualApartment(e.target.value)}
+                                      className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 text-sm"
+                                    />
+                                  </div>
+                                  <div>
+                                    <label className="block text-sm font-semibold text-gray-900 mb-2">
+                                      City
+                                    </label>
+                                    <input
+                                      type="text"
+                                      value={manualCity}
+                                      onChange={e => setManualCity(e.target.value)}
+                                      className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 text-sm"
+                                    />
                                   </div>
                                 </div>
-                              )}
-                            </div>
 
-                            {/* Sign in button - always show at bottom */}
-                            <div className="p-4 pt-3">
-                              <button
-                                onClick={() => {
-                                  setShowAddressPopover(false);
-                                  setAuthModalMode('signin');
-                                }}
-                                className="w-auto flex items-center py-1.5 px-3 text-xs font-medium text-black bg-gray-100 hover:bg-gray-200 rounded-full transition-colors border border-gray-200"
-                              >
-                                <svg
-                                  className="w-4 h-4 mr-1 flex-shrink-0"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  viewBox="0 0 24 24"
+                                {/* State and Zip code */}
+                                <div className="grid grid-cols-2 gap-3 mb-6">
+                                  <div>
+                                    <label className="block text-sm font-semibold text-gray-900 mb-2">
+                                      State
+                                    </label>
+                                    <div className="relative">
+                                      <select
+                                        value={manualState}
+                                        onChange={e => setManualState(e.target.value)}
+                                        className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-red-500 text-sm"
+                                      >
+                                        <option value="Alabama">Alabama</option>
+                                        <option value="Alaska">Alaska</option>
+                                        <option value="Arizona">Arizona</option>
+                                        <option value="Arkansas">Arkansas</option>
+                                        <option value="California">California</option>
+                                        <option value="Colorado">Colorado</option>
+                                        <option value="Connecticut">Connecticut</option>
+                                        <option value="Delaware">Delaware</option>
+                                        <option value="Florida">Florida</option>
+                                        <option value="Georgia">Georgia</option>
+                                        <option value="Hawaii">Hawaii</option>
+                                        <option value="Idaho">Idaho</option>
+                                        <option value="Illinois">Illinois</option>
+                                        <option value="Indiana">Indiana</option>
+                                        <option value="Iowa">Iowa</option>
+                                        <option value="Kansas">Kansas</option>
+                                        <option value="Kentucky">Kentucky</option>
+                                        <option value="Louisiana">Louisiana</option>
+                                        <option value="Maine">Maine</option>
+                                        <option value="Maryland">Maryland</option>
+                                        <option value="Massachusetts">Massachusetts</option>
+                                        <option value="Michigan">Michigan</option>
+                                        <option value="Minnesota">Minnesota</option>
+                                        <option value="Mississippi">Mississippi</option>
+                                        <option value="Missouri">Missouri</option>
+                                        <option value="Montana">Montana</option>
+                                        <option value="Nebraska">Nebraska</option>
+                                        <option value="Nevada">Nevada</option>
+                                        <option value="New Hampshire">New Hampshire</option>
+                                        <option value="New Jersey">New Jersey</option>
+                                        <option value="New Mexico">New Mexico</option>
+                                        <option value="New York">New York</option>
+                                        <option value="North Carolina">North Carolina</option>
+                                        <option value="North Dakota">North Dakota</option>
+                                        <option value="Ohio">Ohio</option>
+                                        <option value="Oklahoma">Oklahoma</option>
+                                        <option value="Oregon">Oregon</option>
+                                        <option value="Pennsylvania">Pennsylvania</option>
+                                        <option value="Rhode Island">Rhode Island</option>
+                                        <option value="South Carolina">South Carolina</option>
+                                        <option value="South Dakota">South Dakota</option>
+                                        <option value="Tennessee">Tennessee</option>
+                                        <option value="Texas">Texas</option>
+                                        <option value="Utah">Utah</option>
+                                        <option value="Vermont">Vermont</option>
+                                        <option value="Virginia">Virginia</option>
+                                        <option value="Washington">Washington</option>
+                                        <option value="West Virginia">West Virginia</option>
+                                        <option value="Wisconsin">Wisconsin</option>
+                                        <option value="Wyoming">Wyoming</option>
+                                      </select>
+                                      <ChevronDown className="absolute right-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-600 pointer-events-none" />
+                                    </div>
+                                  </div>
+                                  <div>
+                                    <label className="block text-sm font-semibold text-gray-900 mb-2">
+                                      Zip code
+                                    </label>
+                                    <input
+                                      type="text"
+                                      value={manualZipCode}
+                                      onChange={e => setManualZipCode(e.target.value)}
+                                      className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 text-sm"
+                                    />
+                                  </div>
+                                </div>
+
+                                {/* Continue Button */}
+                                <button
+                                  onClick={handleManualEntryContinue}
+                                  className="w-full py-3 px-6 bg-red-600 text-white rounded-full font-semibold hover:bg-red-700 transition-colors mb-3"
                                 >
-                                  <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth="2"
-                                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                                  />
-                                </svg>
-                                <span>Sign in for saved address</span>
-                              </button>
-                            </div>
-                          </>
-                        ) : (
-                          <>
-                            {/* Address details view */}
-                            <div className="p-4">
-                              <h3 className="text-lg font-bold text-gray-900 mb-2">
-                                {selectedPopoverAddress.street}
-                              </h3>
-                              <p className="text-sm text-gray-600 mb-4">
-                                {selectedPopoverAddress.city} {selectedPopoverAddress.state}{' '}
-                                {selectedPopoverAddress.zipCode}
-                              </p>
+                                  Continue
+                                </button>
 
-                              {/* Map */}
-                              {/* <div className="mb-4">
+                                {/* Back Button */}
+                                <button
+                                  onClick={handleBackFromManualEntry}
+                                  className="w-full py-3 px-6 text-gray-900 font-medium hover:bg-gray-100 rounded-full transition-colors"
+                                >
+                                  Back
+                                </button>
+                              </div>
+                            </>
+                          ) : !selectedPopoverAddress ? (
+                            <>
+                              {/* Initial view - address search */}
+                              <div className="p-4 pb-3">
+                                <h3 className="text-lg font-bold text-gray-900 mb-4">
+                                  Enter Your Address
+                                </h3>
+
+                                {/* Address Input */}
+                                <div className="flex items-center border border-gray-300 rounded-lg px-4 py-3 hover:border-gray-400 transition-colors">
+                                  <MapPin className="h-5 w-5 text-gray-500 mr-2" />
+                                  <input
+                                    type="text"
+                                    placeholder="Address"
+                                    value={addressSearchQuery}
+                                    onChange={e => setAddressSearchQuery(e.target.value)}
+                                    className="flex-1 outline-none text-sm text-gray-900 placeholder-gray-500"
+                                  />
+                                </div>
+                                {/* Address Search Results Section - shown when there's input */}
+                                {addressSearchQuery.trim() && (
+                                  <div className="border border-gray-300 w-full mt-2 rounded-lg">
+                                    <div className="max-h-80 overflow-y-auto">
+                                      {filteredAddresses.map((address, index) => (
+                                        <div key={address.id} className="w-full">
+                                          <div
+                                            onClick={() => handlePopoverAddressSelect(address)}
+                                            className="flex items-center justify-between px-4 py-3 hover:bg-gray-50 cursor-pointer transition-colors w-full"
+                                          >
+                                            <div className="flex-1 min-w-0">
+                                              <p className="text-sm font-medium text-gray-900">
+                                                {address.street}
+                                              </p>
+                                              <p className="text-xs text-gray-500 mt-0.5">
+                                                {address.city} {address.state} {address.zipCode}
+                                              </p>
+                                            </div>
+                                            <ChevronRight className="w-5 h-5 text-gray-400 flex-shrink-0 ml-2" />
+                                          </div>
+                                          {index < filteredAddresses.length - 1 && (
+                                            <div className="border-t border-gray-300" />
+                                          )}
+                                        </div>
+                                      ))}
+
+                                      {/* Separator before manual entry */}
+                                      {filteredAddresses.length > 0 && (
+                                        <div className="border-t border-gray-100" />
+                                      )}
+
+                                      {/* Enter address manually option */}
+                                      <div
+                                        onClick={handleManualEntryClick}
+                                        className="flex items-center justify-between px-4 py-3 hover:bg-gray-50 cursor-pointer transition-colors w-full"
+                                      >
+                                        <div className="flex items-center min-w-0 flex-1">
+                                          <div className="w-8 h-8 bg-black rounded-full flex items-center justify-center mr-3 flex-shrink-0">
+                                            <Plus className="w-4 h-4 text-white" />
+                                          </div>
+                                          <div className="min-w-0">
+                                            <p className="text-sm font-medium text-gray-900">
+                                              Add a new address
+                                            </p>
+                                            <p className="text-xs text-gray-500">
+                                              Enter address manually
+                                            </p>
+                                          </div>
+                                        </div>
+                                        <ChevronRight className="w-5 h-5 text-gray-400 flex-shrink-0 ml-2" />
+                                      </div>
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
+
+                              {/* Sign in button - always show at bottom */}
+                              <div className="p-4 pt-3">
+                                <button
+                                  onClick={() => {
+                                    setShowAddressPopover(false);
+                                    setAuthModalMode('signin');
+                                  }}
+                                  className="w-auto flex items-center py-1.5 px-3 text-xs font-medium text-black bg-gray-100 hover:bg-gray-200 rounded-full transition-colors border border-gray-200"
+                                >
+                                  <svg
+                                    className="w-4 h-4 mr-1 flex-shrink-0"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                  >
+                                    <path
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      strokeWidth="2"
+                                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                                    />
+                                  </svg>
+                                  <span>Sign in for saved address</span>
+                                </button>
+                              </div>
+                            </>
+                          ) : (
+                            <>
+                              {/* Address details view */}
+                              <div className="p-4">
+                                <h3 className="text-lg font-bold text-gray-900 mb-2">
+                                  {selectedPopoverAddress.street}
+                                </h3>
+                                <p className="text-sm text-gray-600 mb-4">
+                                  {selectedPopoverAddress.city} {selectedPopoverAddress.state}{' '}
+                                  {selectedPopoverAddress.zipCode}
+                                </p>
+
+                                {/* Map */}
+                                {/* <div className="mb-4">
                                 <div className="relative h-32 bg-gray-100 rounded-lg overflow-hidden">
                                   <div className="absolute inset-0 bg-gradient-to-br from-gray-200 to-gray-300">
                                     <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-full">
@@ -807,144 +811,145 @@ export default function Header() {
                                 </div>
                               </div> */}
 
-                              {/* Apartment Number or Suite */}
-                              <div className="mb-4">
-                                <label className="block text-sm font-semibold text-gray-900 mb-2">
-                                  Apartment Number or Suite
-                                </label>
-                                <input
-                                  type="text"
-                                  value={apartmentSuite}
-                                  onChange={e => setApartmentSuite(e.target.value)}
-                                  placeholder="Apartment Number or Suite"
-                                  className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 text-sm"
-                                />
-                              </div>
+                                {/* Apartment Number or Suite */}
+                                <div className="mb-4">
+                                  <label className="block text-sm font-semibold text-gray-900 mb-2">
+                                    Apartment Number or Suite
+                                  </label>
+                                  <input
+                                    type="text"
+                                    value={apartmentSuite}
+                                    onChange={e => setApartmentSuite(e.target.value)}
+                                    placeholder="Apartment Number or Suite"
+                                    className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 text-sm"
+                                  />
+                                </div>
 
-                              {/* Drop-off Options */}
-                              <div className="mb-4">
-                                <label className="block text-sm font-semibold text-gray-900 mb-3">
-                                  Drop-off Options
-                                </label>
-                                <div className="space-y-3">
-                                  <label className="flex items-center cursor-pointer">
-                                    <div className="relative">
-                                      <input
-                                        type="radio"
-                                        name="dropoff"
-                                        value="hand"
-                                        checked={dropOffOption === 'hand'}
-                                        onChange={() => setDropOffOption('hand')}
-                                        className="sr-only"
-                                      />
-                                      <div
-                                        className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
-                                          dropOffOption === 'hand'
-                                            ? 'border-black'
-                                            : 'border-gray-300'
-                                        }`}
-                                      >
-                                        {dropOffOption === 'hand' && (
-                                          <div className="w-3 h-3 bg-black rounded-full"></div>
-                                        )}
-                                      </div>
-                                    </div>
-                                    <span className="ml-3 text-sm font-medium text-gray-900">
-                                      Hand it to me
-                                    </span>
+                                {/* Drop-off Options */}
+                                <div className="mb-4">
+                                  <label className="block text-sm font-semibold text-gray-900 mb-3">
+                                    Drop-off Options
                                   </label>
-                                  <label className="flex items-center cursor-pointer">
-                                    <div className="relative">
-                                      <input
-                                        type="radio"
-                                        name="dropoff"
-                                        value="door"
-                                        checked={dropOffOption === 'door'}
-                                        onChange={() => setDropOffOption('door')}
-                                        className="sr-only"
-                                      />
-                                      <div
-                                        className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
-                                          dropOffOption === 'door'
-                                            ? 'border-black'
-                                            : 'border-gray-300'
-                                        }`}
-                                      >
-                                        {dropOffOption === 'door' && (
-                                          <div className="w-3 h-3 bg-black rounded-full"></div>
-                                        )}
+                                  <div className="space-y-3">
+                                    <label className="flex items-center cursor-pointer">
+                                      <div className="relative">
+                                        <input
+                                          type="radio"
+                                          name="dropoff"
+                                          value="hand"
+                                          checked={dropOffOption === 'hand'}
+                                          onChange={() => setDropOffOption('hand')}
+                                          className="sr-only"
+                                        />
+                                        <div
+                                          className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                                            dropOffOption === 'hand'
+                                              ? 'border-black'
+                                              : 'border-gray-300'
+                                          }`}
+                                        >
+                                          {dropOffOption === 'hand' && (
+                                            <div className="w-3 h-3 bg-black rounded-full"></div>
+                                          )}
+                                        </div>
                                       </div>
-                                    </div>
-                                    <span className="ml-3 text-sm font-medium text-gray-900">
-                                      Leave it at my door
-                                    </span>
-                                  </label>
+                                      <span className="ml-3 text-sm font-medium text-gray-900">
+                                        Hand it to me
+                                      </span>
+                                    </label>
+                                    <label className="flex items-center cursor-pointer">
+                                      <div className="relative">
+                                        <input
+                                          type="radio"
+                                          name="dropoff"
+                                          value="door"
+                                          checked={dropOffOption === 'door'}
+                                          onChange={() => setDropOffOption('door')}
+                                          className="sr-only"
+                                        />
+                                        <div
+                                          className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                                            dropOffOption === 'door'
+                                              ? 'border-black'
+                                              : 'border-gray-300'
+                                          }`}
+                                        >
+                                          {dropOffOption === 'door' && (
+                                            <div className="w-3 h-3 bg-black rounded-full"></div>
+                                          )}
+                                        </div>
+                                      </div>
+                                      <span className="ml-3 text-sm font-medium text-gray-900">
+                                        Leave it at my door
+                                      </span>
+                                    </label>
+                                  </div>
+                                </div>
+
+                                {/* Delivery Instructions */}
+                                <div className="mb-4">
+                                  <textarea
+                                    value={deliveryInstructions}
+                                    placeholder="e.g. ring the bell after dropoff, leave next to the porch, call upon arrival, etc."
+                                    onChange={e => setDeliveryInstructions(e.target.value)}
+                                    rows={3}
+                                    className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 resize-none text-sm"
+                                  />
+                                </div>
+
+                                {/* Action Buttons */}
+                                <div className="flex gap-3">
+                                  <button
+                                    onClick={handleCancelPopoverAddress}
+                                    className="flex-1 py-3 px-6 text-gray-900 font-medium hover:bg-gray-100 rounded-full transition-colors border border-gray-300"
+                                  >
+                                    Cancel
+                                  </button>
+                                  <button
+                                    onClick={handleSavePopoverAddress}
+                                    className="flex-1 py-3 px-6 bg-red-600 text-white rounded-full font-medium hover:bg-red-700 transition-colors"
+                                  >
+                                    Save
+                                  </button>
                                 </div>
                               </div>
+                            </>
+                          )}
+                        </div>
+                      </>
+                    )}
+                  </div>
+                  
+                  {/* Cart */}
+                  <div className="ml-4">
+                    <button
+                      className="relative h-8 w-14 rounded-full bg-[#2563EB] text-white text-sm font-semibold flex items-center justify-center"
+                      onClick={toggleCart}
+                    >
+                      <ShoppingCart className="h-4 w-4 text-white mr-1" />
+                      <span className="font-medium">{cartItemCount}</span>
+                    </button>
+                  </div>
 
-                              {/* Delivery Instructions */}
-                              <div className="mb-4">
-                                <textarea
-                                  value={deliveryInstructions}
-                                  placeholder="e.g. ring the bell after dropoff, leave next to the porch, call upon arrival, etc."
-                                  onChange={e => setDeliveryInstructions(e.target.value)}
-                                  rows={3}
-                                  className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 resize-none text-sm"
-                                />
-                              </div>
-
-                              {/* Action Buttons */}
-                              <div className="flex gap-3">
-                                <button
-                                  onClick={handleCancelPopoverAddress}
-                                  className="flex-1 py-3 px-6 text-gray-900 font-medium hover:bg-gray-100 rounded-full transition-colors border border-gray-300"
-                                >
-                                  Cancel
-                                </button>
-                                <button
-                                  onClick={handleSavePopoverAddress}
-                                  className="flex-1 py-3 px-6 bg-red-600 text-white rounded-full font-medium hover:bg-red-700 transition-colors"
-                                >
-                                  Save
-                                </button>
-                              </div>
-                            </div>
-                          </>
-                        )}
-                      </div>
-                    </>
+                  {/* Sign In and Sign Up */}
+                  {!isAuthenticated && (
+                    <div className="flex items-center space-x-2 ml-4">
+                      <Button
+                        onClick={() => setAuthModalMode('signin')}
+                        className="bg-transparent text-gray-900 hover:bg-gray-100 rounded-full px-4 h-8 text-sm font-semibold"
+                      >
+                        Sign In
+                      </Button>
+                      <Button
+                        onClick={() => setAuthModalMode('signup')}
+                        className="bg-gray-300 text-gray-900 hover:bg-gray-300 rounded-full px-4 h-8 text-sm font-semibold"
+                      >
+                        Sign Up
+                      </Button>
+                    </div>
                   )}
                 </div>
-                
-                {/* Cart */}
-                <div className="ml-4">
-                  <button
-                    className="relative h-8 w-14 rounded-full bg-[#2563EB] text-white text-sm font-semibold flex items-center justify-center"
-                    onClick={toggleCart}
-                  >
-                    <ShoppingCart className="h-4 w-4 text-white mr-1" />
-                    <span className="font-medium">{cartItemCount}</span>
-                  </button>
-                </div>
-
-                {/* Sign In and Sign Up */}
-                {!isAuthenticated && (
-                  <div className="flex items-center space-x-2 ml-4">
-                    <Button
-                      onClick={() => setAuthModalMode('signin')}
-                      className="bg-transparent text-gray-900 hover:bg-gray-100 rounded-full px-4 h-8 text-sm font-semibold"
-                    >
-                      Sign In
-                    </Button>
-                    <Button
-                      onClick={() => setAuthModalMode('signup')}
-                      className="bg-gray-300 text-gray-900 hover:bg-gray-300 rounded-full px-4 h-8 text-sm font-semibold"
-                    >
-                      Sign Up
-                    </Button>
-                  </div>
-                )}
-              </div>
+              )}
             </>
           )}
         </div>

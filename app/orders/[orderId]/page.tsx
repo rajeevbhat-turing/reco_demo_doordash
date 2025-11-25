@@ -2,21 +2,33 @@
 
 import { useParams, useRouter } from 'next/navigation';
 import { useOrdersStore } from '@/store/orders-store';
-import { ChevronLeft, Phone, Download, Home } from 'lucide-react';
+import { Phone, Download, Home, ArrowLeft } from 'lucide-react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { useState, useEffect } from 'react';
 import { Order } from '@/constants/order-data';
+import ReviewDialog from '@/components/review-dialog';
+import { useRestaurant } from '@/lib/hooks/use-restaurant';
+import { useRestaurantMenu } from '@/lib/hooks/use-restaurant-menu';
+import { OrderItem as ReviewOrderItem } from '@/types/review-types';
 import './print.css';
 
 export default function OrderReceiptPage() {
   const params = useParams();
   const router = useRouter();
-  const { orders } = useOrdersStore();
+  const { orders, updateOrderReview } = useOrdersStore();
   const [mounted, setMounted] = useState(false);
+  const [showReviewDialog, setShowReviewDialog] = useState(false);
 
   const orderId = params.orderId as string;
   const order = orders.find(o => o.id === orderId);
+
+  // Get restaurant ID for the order
+  const restaurantId = order?.storeId || order?.restaurantId || undefined;
+
+  // Fetch restaurant and menu data for review dialog
+  const { data: orderRestaurant } = useRestaurant(restaurantId);
+  const { data: orderMenuData } = useRestaurantMenu(restaurantId);
 
   // Fix hydration
   useEffect(() => {
@@ -129,23 +141,64 @@ export default function OrderReceiptPage() {
     window.print();
   };
 
-  return (
-    <div className="h-screen flex flex-col bg-gray-50">
-      {/* Header */}
-      <div className="bg-white border-b border-gray-200 px-4 py-3 flex items-center gap-4 flex-shrink-0 no-print">
-        <button
-          onClick={() => router.push('/orders')}
-          className="p-1.5 hover:bg-gray-100 rounded-full transition-colors"
-        >
-          <ChevronLeft className="w-5 h-5" />
-        </button>
-        <div className="ml-auto">
-          <Button variant="ghost" size="sm" className="text-sm">
-            Help
-          </Button>
-        </div>
-      </div>
+  // Convert order items to review OrderItem format
+  const convertOrderItemsToReviewItems = (order: Order): ReviewOrderItem[] => {
+    if (!order.items || order.items.length === 0) return [];
+    const restaurantId = order.storeId || order.restaurantId || '';
 
+    return order.items.map(item => {
+      // Try to find matching menu item by name to get image
+      const menuItem = orderMenuData?.menuItems.find(
+        mi => mi.id?.toString() === item.id?.toString()
+      );
+
+      return {
+        id: item.id,
+        name: item.name,
+        restaurantId: restaurantId,
+        image: menuItem?.image || (item as any).image || null,
+        menuItemId: menuItem?.id || (item as any).menuItemId,
+        price: item.price,
+      };
+    });
+  };
+
+  // Format order date for display
+  const formatOrderDate = (order: Order): string => {
+    if (order.orderDate) {
+      // If orderDate is already formatted, return it
+      if (order.orderDate.includes(',')) {
+        return order.orderDate;
+      }
+      // Otherwise, try to format it
+      try {
+        const date = new Date(order.orderDate);
+        return date.toLocaleDateString('en-US', {
+          month: 'short',
+          day: 'numeric',
+          year: 'numeric',
+          hour: 'numeric',
+          minute: '2-digit',
+        });
+      } catch {
+        return order.orderDate;
+      }
+    }
+    return '';
+  };
+
+  // Check if order has been reviewed
+  const isOrderReviewed = order?.rating && order?.reviewDate;
+
+  // Handle rate store button click
+  const handleRateStore = () => {
+    if (!isOrderReviewed) {
+      setShowReviewDialog(true);
+    }
+  };
+
+  return (
+    <div className="h-screen flex flex-col bg-gray-50 mt-16">
       {/* Main Layout: Map + Sidebar */}
       <div className="flex-1 flex overflow-hidden">
         {/* Map Section */}
@@ -166,6 +219,19 @@ export default function OrderReceiptPage() {
               </svg>
               <p className="text-sm">Map View (To be implemented)</p>
             </div>
+
+            {/* Back button */}
+            <button
+              className="p-2.5 bg-white hover:bg-gray-50 rounded-full transition-colors absolute top-5 left-5 shadow-md"
+              onClick={() => router.replace('/orders')}
+            >
+              <ArrowLeft className="w-5.5 h-5.5" />
+            </button>
+
+            {/* Help button */}
+            {/* <button className="px-3 py-1.5 bg-white hover:bg-gray-50 rounded-2xl shadow-md absolute top-5 right-5 text-sm font-bold text-[#191919ff]">
+              Help
+            </button> */}
           </div>
 
           {/* Map Controls */}
@@ -300,29 +366,41 @@ export default function OrderReceiptPage() {
                     <p className="font-semibold text-sm">{dasherName}</p>
                   </div>
                 </div>
-                <button className="p-1.5 hover:bg-gray-100 rounded-full transition-colors">
+                {/* <button className="p-1.5 hover:bg-gray-100 rounded-full transition-colors">
                   <Phone className="w-4 h-4" />
-                </button>
+                </button> */}
               </div>
             </div>
 
             {/* Store and Items */}
             <div className="px-4 py-3 border-b border-gray-200">
-              <div className="flex items-center gap-2 mb-3">
-                <div className="w-10 h-10 bg-gray-100 rounded flex items-center justify-center">
-                  <Image
-                    src="/placeholder-logo.svg"
-                    alt={getStoreName(order)}
-                    width={24}
-                    height={24}
-                  />
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-2">
+                  <div className="w-10 h-10 bg-gray-100 rounded flex items-center justify-center">
+                    <Image
+                      src="/placeholder-logo.svg"
+                      alt={getStoreName(order)}
+                      width={24}
+                      height={24}
+                    />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-sm">{getStoreName(order)}</h3>
+                    <p className="text-xs text-gray-600">
+                      {order.items?.length || 0} Item{(order.items?.length || 0) > 1 ? 's' : ''}
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="font-semibold text-sm">{getStoreName(order)}</h3>
-                  <p className="text-xs text-gray-600">
-                    {order.items?.length || 0} Item{(order.items?.length || 0) > 1 ? 's' : ''}
-                  </p>
-                </div>
+
+                {/* Rate store button - only show if order is not reviewed */}
+                {!isOrderReviewed && (
+                  <button
+                    onClick={handleRateStore}
+                    className="px-3 py-1.5 bg-gray-200 hover:bg-gray-300 rounded-2xl shadow-sm text-sm font-bold text-[#191919ff]"
+                  >
+                    Rate store
+                  </button>
+                )}
               </div>
 
               {/* Order Items */}
@@ -505,6 +583,24 @@ export default function OrderReceiptPage() {
           </div>
         </div>
       </div>
+
+      {/* Review Dialog */}
+      {order && (
+        <ReviewDialog
+          isOpen={showReviewDialog}
+          onClose={() => setShowReviewDialog(false)}
+          restaurantName={getStoreName(order)}
+          vendorId={order.storeId || order.restaurantId}
+          defaultRating={0}
+          orderItems={convertOrderItemsToReviewItems(order)}
+          orderDate={formatOrderDate(order)}
+          vendorLogo={orderRestaurant?.logo || undefined}
+          onSubmit={(rating, text, likedItems) => {
+            updateOrderReview(order.id, rating, text);
+            setShowReviewDialog(false);
+          }}
+        />
+      )}
     </div>
   );
 }

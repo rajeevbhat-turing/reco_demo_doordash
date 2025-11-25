@@ -610,7 +610,8 @@ export default function AccountSettingsPage() {
       </div>
 
       {/* Business Profile Section */}
-      <div className="bg-white border border-gray-200 rounded-lg mb-6">
+      {/* Hidden business profile section for now since they are not implemented yet */}
+      {/* <div className="bg-white border border-gray-200 rounded-lg mb-6">
         <div className="p-6 border-b border-gray-200">
           <h2 className="text-xl font-semibold">Business profile</h2>
         </div>
@@ -636,7 +637,7 @@ export default function AccountSettingsPage() {
             </button>
           </div>
         </div>
-      </div>
+      </div> */}
 
       {/* Privacy Section */}
       <div className="bg-white border border-gray-200 rounded-lg mb-6">
@@ -648,13 +649,15 @@ export default function AccountSettingsPage() {
           <p className="text-gray-700 mb-2">
             DashDoor protects your privacy and personal information. You can choose to share your
             information with businesses so they can send you promotions and emails.
-            <span className="text-red-500 ml-1 font-medium">Learn More</span>
+            {/* Hidden learn more link for now since it is not implemented yet. */}
+            {/* <span className="text-red-500 ml-1 font-medium">Learn More</span> */}
           </p>
 
           <h3 className="text-lg font-semibold mt-6 mb-2">Marketing Choices</h3>
           <p className="text-gray-700">
             Learn about and control personalized ads.
-            <span className="text-red-500 ml-1 font-medium">Learn More</span>
+            {/* Hidden learn more link for now since it is not implemented yet. */}
+            {/* <span className="text-red-500 ml-1 font-medium">Learn More</span> */}
           </p>
         </div>
       </div>
