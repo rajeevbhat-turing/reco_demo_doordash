@@ -115,7 +115,9 @@ export default function AccountPopup({ isOpen, onClose, anchorElement }: Account
                 {currentUser?.name || 'User'}
               </span>
               {/* Display lock icon if the user is restricted */}
-              {currentUser?.is_restricted ? <Lock className="h-4 w-4 ml-1 text-[#191919ff]" /> : null}
+              {currentUser?.is_restricted ? (
+                <Lock className="h-4 w-4 ml-1 text-[#191919ff]" />
+              ) : null}
             </div>
             <div className="text-[16px] font-medium text-[#191919ff]">View Profile</div>
           </div>
@@ -235,7 +237,13 @@ export default function AccountPopup({ isOpen, onClose, anchorElement }: Account
           </Link>
 
           {/* Payment */}
-          <div className="px-4 py-[10px]">
+          <div
+            className="hover:bg-gray-100 cursor-pointer px-4 py-[10px]"
+            onClick={() => {
+              router.push('/payment');
+              onClose();
+            }}
+          >
             <div className="text-[15px] font-medium text-[#191919ff]">Payment</div>
           </div>
 
