@@ -192,15 +192,6 @@ export default function OutsideDeliveryAreaModal({
                 </button>
               </div>
 
-              {/* Map Placeholder */}
-              <div className="mb-6">
-                <div className="w-full h-64 bg-gray-200 rounded-lg flex items-center justify-center">
-                  <div className="text-center">
-                    <p className="text-sm text-gray-500">Map placeholder</p>
-                  </div>
-                </div>
-              </div>
-
               {/* Action Button */}
               <div className="border-t border-gray-200 p-4 -ml-4 w-[calc(100%+32px)] flex items-center justify-end">
                 <button
