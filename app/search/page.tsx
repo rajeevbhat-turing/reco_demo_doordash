@@ -430,20 +430,27 @@ export default function SearchPage() {
   };
 
   // Check scroll position for arrows
-  useEffect(() => {
-    const checkScroll = () => {
-      if (dishesScrollRef.current) {
-        const { scrollLeft, scrollWidth, clientWidth } = dishesScrollRef.current;
-        setShowLeftArrow(scrollLeft > 0);
-        setShowRightArrow(scrollLeft < scrollWidth - clientWidth - 10);
-      }
-    };
+  const checkScroll = () => {
+    if (dishesScrollRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } = dishesScrollRef.current;
+      setShowLeftArrow(scrollLeft > 0);
+      setShowRightArrow(scrollLeft < scrollWidth - clientWidth - 10);
+    }
+  };
 
+  useEffect(() => {
     const scrollContainer = dishesScrollRef.current;
     if (scrollContainer) {
+      // Initial check
       checkScroll();
+      // Listen for scroll events
       scrollContainer.addEventListener('scroll', checkScroll);
-      return () => scrollContainer.removeEventListener('scroll', checkScroll);
+      // Also listen for scrollend event if available (for smooth scrolling)
+      scrollContainer.addEventListener('scrollend', checkScroll);
+      return () => {
+        scrollContainer.removeEventListener('scroll', checkScroll);
+        scrollContainer.removeEventListener('scrollend', checkScroll);
+      };
     }
   }, [matchedMenuItems]);
 
@@ -454,6 +461,20 @@ export default function SearchPage() {
         left: direction === 'left' ? -scrollAmount : scrollAmount,
         behavior: 'smooth',
       });
+      
+      // Check scroll position immediately and after animation
+      // This ensures arrow states update even if scroll events don't fire reliably
+      checkScroll();
+      
+      // Check again after a short delay to catch the position during smooth scroll
+      setTimeout(() => {
+        checkScroll();
+      }, 50);
+      
+      // Final check after smooth scroll animation should complete (typically 300-500ms)
+      setTimeout(() => {
+        checkScroll();
+      }, 500);
     }
   };
 
@@ -559,6 +580,19 @@ export default function SearchPage() {
                     const priceStr = item.price.startsWith('$') ? item.price.slice(1) : item.price;
                     const price = parseFloat(priceStr);
                     
+                    // Ensure we have a valid restaurant name
+                    // If restaurantName is missing, try to get it from the restaurants array
+                    let restaurantName = item.restaurantName;
+                    if (!restaurantName || restaurantName.trim() === '') {
+                      const restaurantId = item.restaurant_id || item.restaurantId;
+                      if (restaurantId && restaurants) {
+                        const restaurant = restaurants.find(r => r.id === restaurantId);
+                        restaurantName = restaurant?.name || 'Restaurant';
+                      } else {
+                        restaurantName = 'Restaurant';
+                      }
+                    }
+                    
                     // No modifications - add directly to cart
                     addItem(
                       {
@@ -568,7 +602,7 @@ export default function SearchPage() {
                         image: item.image || '/placeholder.svg',
                       },
                       'restaurant',
-                      item.restaurantName || 'Restaurant',
+                      restaurantName, // Use the resolved restaurant name
                       item.restaurant_id || item.restaurantId || ''
                     );
                     
@@ -579,7 +613,7 @@ export default function SearchPage() {
                   return (
                     <div
                       key={item.id}
-                      className="flex-shrink-0 w-[180px] cursor-pointer hover:shadow-lg transition-shadow"
+                      className="flex-shrink-0 w-[220px] cursor-pointer hover:shadow-lg transition-shadow flex flex-col"
                       onClick={() => router.push(`/store/${item.restaurant_id || item.restaurantId}`)}
                     >
                       <div className="relative h-[180px] bg-gray-100 rounded-lg overflow-hidden mb-2">
@@ -590,10 +624,10 @@ export default function SearchPage() {
                           className="object-cover"
                         />
                       </div>
-                      <div className="px-1">
+                      <div className="px-1 flex flex-col flex-1">
                         <h3 className="font-semibold text-sm line-clamp-2 mb-1">{item.name}</h3>
                         <p className="text-xs text-gray-600 mb-1">{item.restaurantName}</p>
-                        <div className="flex items-center justify-between">
+                        <div className="flex items-center justify-between mt-auto">
                           <span className="text-sm font-bold">
                             {item.price.startsWith('$') ? item.price : `$${item.price}`}
                           </span>

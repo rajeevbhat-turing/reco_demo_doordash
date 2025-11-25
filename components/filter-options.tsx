@@ -277,7 +277,12 @@ const FilterOptions = forwardRef<FilterOptionsRef, FilterOptionsProps>(
               >
                 <h3 className="text-xl font-bold mb-6">Ratings</h3>
                 <div className="mb-6">
-                  <div className="font-medium mb-4">{selectedRating ? `Over ${selectedRating}` : "Over 1"}</div>
+                  <div className="font-medium mb-4">
+                    {selectedRating 
+                      ? (selectedRating === 5 ? `Over 4.5` : `Over ${selectedRating}`)
+                      : "Over 1"
+                    }
+                  </div>
                   <div className="relative flex items-center justify-between mb-2">
                     <div className="absolute w-full h-[2px] bg-gray-300"></div>
                     {[1, 2, 3, 4, 5].map((rating) => (
@@ -297,7 +302,7 @@ const FilterOptions = forwardRef<FilterOptionsRef, FilterOptionsProps>(
                     <span>2</span>
                     <span>3</span>
                     <span>4</span>
-                    <span>5</span>
+                    <span>4.5</span>
                   </div>
                 </div>
                 <div className="flex justify-between">

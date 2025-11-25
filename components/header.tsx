@@ -915,17 +915,7 @@ export default function Header() {
                     </>
                   )}
                 </div>
-
-                {/* Delivery/Pickup - Hide in account flow */}
-                {!isAccountFlow && !isStoreOrReviews && (
-                  <div className="flex items-center space-x-2 mr-3">
-                    <button className="bg-gray-900 text-white px-4 h-8 rounded-full text-sm font-medium">
-                      Delivery
-                    </button>
-                    {/* <button className="text-gray-900 px-4 bg-[#f1f1f1] py-2 rounded-full text-sm font-medium">Pickup</button> */}
-                  </div>
-                )}
-
+                
                 {/* Cart */}
                 <div className="ml-4">
                   <button

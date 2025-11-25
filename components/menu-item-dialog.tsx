@@ -94,19 +94,24 @@ export default function MenuItemDialog({ isOpen, onClose, item }: MenuItemDialog
             // Root level modifications start expanded
             initialExpanded.add(mod.id)
 
-            // Set default selections
-            const defaults = mod.options
-              .filter((opt) => opt.is_default)
-              .map((opt) => ({
-                optionId: opt.id,
-                optionName: opt.name,
-                price: opt.price,
-                quantity: 1,
-              }))
+            // Set default selections ONLY for required modifications
+            // Optional modifications should not have pre-selected defaults
+            // This ensures users explicitly choose optional add-ons and aren't charged unexpectedly
+            if (mod.is_required) {
+              const defaults = mod.options
+                .filter((opt) => opt.is_default)
+                .map((opt) => ({
+                  optionId: opt.id,
+                  optionName: opt.name,
+                  price: opt.price,
+                  quantity: 1,
+                }))
 
-            if (defaults.length > 0) {
-              defaultSelections.set(mod.id, defaults)
+              if (defaults.length > 0) {
+                defaultSelections.set(mod.id, defaults)
+              }
             }
+            // For optional modifications, do not set any defaults - user must explicitly select
           }
         })
       }
