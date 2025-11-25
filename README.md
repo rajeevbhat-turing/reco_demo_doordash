@@ -14,15 +14,10 @@ npm run dev
 All project documentation has been moved to the `docs/` folder for better organization:
 
 - [Main Documentation](./docs/README.md)
-- [API Verifier Guide](./docs/API_VERIFIER_README.md)
 - [Testing Framework](./docs/TESTING_FRAMEWORK.md)
 - [User Guide](./docs/USER_GUIDE.md)
-- [Verifier API Reference](./docs/VERIFIER_API.md)
 - [Navigation Testing](./docs/NAVIGATION_TESTING.md)
-- [POC Documentation](./docs/POC_README.md)
 - [Agent Usage](./docs/AGENT_USAGE.md)
-- [Verifier Reference](./docs/VERIFIER_REFERENCE.md)
-- [Verifier Testing Strategy](./docs/VERIFIER_TESTING_STRATEGY.md)
 
 ## Project Structure
 

@@ -1,6 +1,7 @@
 import { CartCategory, CartItem } from "@/store/cart-store"
 import { Order, OrderItem } from "@/constants/order-data"
 import type { Restaurant } from "@/constants/restaurants"
+import type { OrderModification, AppliedModification } from "@/types"
 
 /**
  * Detects the category from a restaurantId or storeId
@@ -69,6 +70,27 @@ function findMenuItemImage(
  * @param category - Category of the store
  * @param menuItems - Optional array of menu items for this restaurant
  */
+/**
+ * Converts OrderModification to AppliedModification format
+ */
+function convertOrderModificationsToApplied(
+  orderModifications?: OrderModification[]
+): AppliedModification[] | undefined {
+  if (!orderModifications || orderModifications.length === 0) {
+    return undefined
+  }
+
+  return orderModifications.map(mod => ({
+    ...mod,
+    appliedOptions: mod.options.map(opt => ({
+      optionId: opt.optionId,
+      optionName: opt.optionName,
+      price: opt.price,
+      quantity: opt.quantity,
+    })),
+  }))
+}
+
 export function convertOrderItemsToCartItems(
   orderItems: OrderItem[],
   restaurantId: string,
@@ -87,7 +109,7 @@ export function convertOrderItemsToCartItems(
       quantity: item.quantity,
       // Try to fetch the actual image, fallback to placeholder
       image: findMenuItemImage(item.name, restaurantId, category, menuItems),
-      appliedModifications: item.modifications,
+      appliedModifications: convertOrderModificationsToApplied(item.modifications),
     }
 
     console.log(`[REORDER] Created cart item:`, {

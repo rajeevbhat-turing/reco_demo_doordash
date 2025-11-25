@@ -3,6 +3,33 @@ import { db } from '@/lib/db';
 import { Order, OrderItem } from '@/constants/order-data';
 import { OrderModification, OrderModificationOption } from '@/types';
 
+/**
+ * Safely converts cents to dollars, handling null/undefined/zero values and string inputs
+ * @param cents - Value in cents (can be null, undefined, number, or string)
+ * @returns Value in dollars, or 0 if input is invalid
+ */
+function centsToDollars(cents: number | string | null | undefined): number {
+  if (cents === null || cents === undefined) {
+    return 0;
+  }
+  
+  // Handle string inputs
+  if (typeof cents === 'string') {
+    const parsed = parseFloat(cents);
+    if (isNaN(parsed)) {
+      return 0;
+    }
+    return parsed / 100;
+  }
+  
+  // Handle number inputs
+  if (typeof cents !== 'number' || isNaN(cents)) {
+    return 0;
+  }
+  
+  return cents / 100;
+}
+
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const userId = searchParams.get('userId');
@@ -145,7 +172,7 @@ export async function GET(request: NextRequest) {
         options: options.map(opt => ({
           optionId: String(opt.option_id),
           optionName: opt.option_name,
-          price: opt.price / 100, // Convert cents to dollars
+          price: centsToDollars(opt.price), // Convert cents to dollars
           quantity: opt.quantity,
           isCounter: false, // We'll determine this from the DB if needed
         })),
@@ -171,7 +198,7 @@ export async function GET(request: NextRequest) {
         id: String(oi.menu_item_id), // Use menu_item_id as the item ID
         name: menuItem.name,
         quantity: oi.quantity,
-        price: menuItem.price / 100, // Convert cents to dollars
+        price: centsToDollars(menuItem.price), // Convert cents to dollars
         modifications: appliedModifications.length > 0 ? appliedModifications : undefined,
       });
     });
@@ -260,7 +287,7 @@ export async function GET(request: NextRequest) {
         deliveryOption: {
           type: order.delivery_type,
           deliveryTime: order.delivery_time_str,
-          extraFee: order.extra_fee / 100, // Convert cents to dollars
+          extraFee: centsToDollars(order.extra_fee), // Convert cents to dollars
           scheduledDate: order.scheduled_date ? new Date(order.scheduled_date) : null,
           scheduledTimeSlot: order.scheduled_time_slot,
         },
@@ -268,11 +295,11 @@ export async function GET(request: NextRequest) {
           countryCode: order.phone_country_code,
           number: order.phone_number,
         },
-        tipAmount: order.tip_amount / 100, // Convert cents to dollars
-        subtotal: order.subtotal / 100, // Convert cents to dollars
-        serviceFee: order.service_fee / 100, // Convert cents to dollars
-        deliveryFee: order.delivery_fee / 100, // Convert cents to dollars
-        total: order.total / 100, // Convert cents to dollars
+        tipAmount: centsToDollars(order.tip_amount), // Convert cents to dollars
+        subtotal: centsToDollars(order.subtotal), // Convert cents to dollars
+        serviceFee: centsToDollars(order.service_fee), // Convert cents to dollars
+        deliveryFee: centsToDollars(order.delivery_fee), // Convert cents to dollars
+        total: centsToDollars(order.total), // Convert cents to dollars
         orderDate: order.order_date,
         status: order.status,
         orderType: 'Personal', // Default to Personal, can be enhanced later

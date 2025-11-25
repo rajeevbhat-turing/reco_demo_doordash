@@ -34,7 +34,7 @@ export default function UserProfilePage() {
   const { data: user, isLoading: isLoadingUser } = useUser(userId);
 
   // Fetch restaurants near user's address
-  const defaultAddress = currentUser?.addresses.find(a => a.default);
+  const defaultAddress = currentUser?.addresses?.find(a => a.default);
   const { data: restaurants } = useRestaurants(
     defaultAddress?.lat,
     defaultAddress?.lng,
@@ -57,7 +57,9 @@ export default function UserProfilePage() {
       if (!vendorMap.has(review.vendorId)) {
         const vendorReviews = allReviews.filter(r => r.vendorId === review.vendorId);
         const avgRating =
-          vendorReviews.reduce((sum, r) => sum + r.rating, 0) / vendorReviews.length;
+          vendorReviews?.length > 0
+            ? vendorReviews.reduce((sum, r) => sum + r.rating, 0) / vendorReviews.length
+            : 0;
         vendorMap.set(review.vendorId, {
           vendorId: review.vendorId,
           vendorName: review.vendorName,

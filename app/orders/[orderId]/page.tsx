@@ -477,7 +477,8 @@ export default function OrderReceiptPage() {
                 <div className="flex justify-between items-center">
                   <span className="text-gray-600 flex items-center gap-1">
                     Service Fee
-                    <button className="text-gray-400 hover:text-gray-600">
+                    {/* Hidden for now */}
+                    {/* <button className="text-gray-400 hover:text-gray-600">
                       <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                         <path
                           fillRule="evenodd"
@@ -485,14 +486,15 @@ export default function OrderReceiptPage() {
                           clipRule="evenodd"
                         />
                       </svg>
-                    </button>
+                    </button> */}
                   </span>
                   <span>${serviceFee.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-gray-600 flex items-center gap-1">
                     Estimated Tax
-                    <button className="text-gray-400 hover:text-gray-600">
+                    {/* Hidden for now */}
+                    {/* <button className="text-gray-400 hover:text-gray-600">
                       <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                         <path
                           fillRule="evenodd"
@@ -500,7 +502,7 @@ export default function OrderReceiptPage() {
                           clipRule="evenodd"
                         />
                       </svg>
-                    </button>
+                    </button> */}
                   </span>
                   <span>${estimatedTax.toFixed(2)}</span>
                 </div>

@@ -21,6 +21,30 @@ const categoryConfigs: Record<CartCategory, CategoryConfig> = {
     serviceFeePercentage: 0.15,
     minServiceFee: 4.99,
   },
+  grocery: {
+    freeDeliveryThreshold: 30,
+    defaultDeliveryFee: 5.99,
+    serviceFeePercentage: 0.15,
+    minServiceFee: 4.99,
+  },
+  retail: {
+    freeDeliveryThreshold: 30,
+    defaultDeliveryFee: 5.99,
+    serviceFeePercentage: 0.15,
+    minServiceFee: 4.99,
+  },
+  convenience: {
+    freeDeliveryThreshold: 30,
+    defaultDeliveryFee: 5.99,
+    serviceFeePercentage: 0.15,
+    minServiceFee: 4.99,
+  },
+  pets: {
+    freeDeliveryThreshold: 30,
+    defaultDeliveryFee: 5.99,
+    serviceFeePercentage: 0.15,
+    minServiceFee: 4.99,
+  },
 };
 
 // Distance-based surcharge tiers
@@ -36,6 +60,38 @@ const distanceTiers: Record<CartCategory, { free: number; tiers: DistanceTier[] 
       { max: 5, rate: 0.50 },   // $0.50/mile for 2-5 miles
       { max: 10, rate: 0.75 },  // $0.75/mile for 5-10 miles
       { max: null, rate: 1.00 }, // $1.00/mile for 10+ miles
+    ],
+  },
+  grocery: {
+    free: 2,
+    tiers: [
+      { max: 5, rate: 0.50 },
+      { max: 10, rate: 0.75 },
+      { max: null, rate: 1.00 },
+    ],
+  },
+  retail: {
+    free: 2,
+    tiers: [
+      { max: 5, rate: 0.50 },
+      { max: 10, rate: 0.75 },
+      { max: null, rate: 1.00 },
+    ],
+  },
+  convenience: {
+    free: 2,
+    tiers: [
+      { max: 5, rate: 0.50 },
+      { max: 10, rate: 0.75 },
+      { max: null, rate: 1.00 },
+    ],
+  },
+  pets: {
+    free: 2,
+    tiers: [
+      { max: 5, rate: 0.50 },
+      { max: 10, rate: 0.75 },
+      { max: null, rate: 1.00 },
     ],
   },
 };

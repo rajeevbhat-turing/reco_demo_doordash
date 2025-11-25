@@ -48,7 +48,7 @@ export default function Home() {
 
   // Get user's address for location-based filtering
   const currentUser = useUserStore(state => state.currentUser);
-  const defaultAddress = currentUser?.addresses.find(a => a.default);
+  const defaultAddress = currentUser?.addresses?.find(a => a.default);
 
   // Get temp address for guest users
   const tempAddress = useSyncExternalStore(
@@ -83,7 +83,7 @@ export default function Home() {
 
   // Get active address (selected address for authenticated users, temp address for non-authenticated)
   const selectedAddress = useMemo(() => {
-    if (userIsAuthenticated && addresses.length > 0) {
+    if (userIsAuthenticated && addresses?.length > 0) {
       // Find default address or use first address
       return addresses.find(a => a.default) || addresses[0] || null;
     }

@@ -74,11 +74,8 @@ export default function ProductDisplay({
   
   // Handle adding product to cart
   const handleAddToCart = (product: Product) => {
-    // Get store name based on category and storeId
-    let resolvedStoreName = storeName
-    if (!resolvedStoreName && category === 'convenience' && storeId) {
-      resolvedStoreName = convenienceStores[storeId]?.name || `Store ${storeId}`
-    }
+    // Get store name - use provided storeName or fallback to formatted storeId
+    const resolvedStoreName = storeName || (storeId ? `Store ${storeId}` : 'Store')
     
     const cartItem = {
       id: product.id,

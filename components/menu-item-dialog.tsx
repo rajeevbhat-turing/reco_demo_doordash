@@ -146,7 +146,7 @@ export default function MenuItemDialog({ isOpen, onClose, item }: MenuItemDialog
   useEffect(() => {
     if (!item) return
     const menuItem = item as MenuItem
-    if (!menuItem.modifications) {
+    if (!menuItem.modifications || !Array.isArray(menuItem.modifications)) {
       setVisibleModifications([])
       return
     }

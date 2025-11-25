@@ -53,7 +53,7 @@ export default function ProductCard({
     // Get store name for convenience stores
     let storeName: string | undefined
     if (category === 'convenience' && storeId) {
-      storeName = convenienceStores[storeId]?.name || `Store ${storeId}`
+      storeName = `Store ${storeId}`
     }
     
     const cartItem = {

@@ -95,7 +95,7 @@ export default function CheckoutPage() {
 
   // Only fetch restaurants if this is a restaurant order (optimization: avoid unnecessary API calls)
   // Use categoryParam directly for faster check without waiting for cart lookup
-  const defaultAddress = currentUser?.addresses.find(a => a.default);
+  const defaultAddress = currentUser?.addresses?.find(a => a.default);
   const shouldFetchRestaurants =
     categoryParam === 'restaurant' && defaultAddress?.lat && defaultAddress?.lng;
   const { data: restaurants } = useRestaurants(
@@ -281,12 +281,12 @@ export default function CheckoutPage() {
   const [addressToLabel, setAddressToLabel] = useState<string>('');
   const [selectedAddressId, setSelectedAddressId] = useState(() => {
     // Find default address or use first address
-    const defaultAddress = addresses.find(a => a.default);
-    return defaultAddress?.id || addresses[0]?.id || '';
+    const defaultAddress = addresses?.find(a => a.default);
+    return defaultAddress?.id || addresses?.[0]?.id || '';
   });
 
   // Get the selected address object (needed for fee calculation)
-  const selectedAddress = addresses.find(a => a.id === selectedAddressId) || tempAddress || null;
+  const selectedAddress = addresses?.find(a => a.id === selectedAddressId) || tempAddress || null;
 
   // Calculate actual distance from customer address to restaurant
   const deliveryDistance = useMemo(() => {
@@ -403,10 +403,10 @@ export default function CheckoutPage() {
 
   // Always sync with default address when addresses change
   useEffect(() => {
-    if (addresses.length > 0) {
+    if (addresses?.length > 0) {
       // Find default address
       const defaultAddress = addresses.find(a => a.default);
-      const defaultAddressId = defaultAddress?.id || addresses[0].id;
+      const defaultAddressId = defaultAddress?.id || addresses[0]?.id;
 
       // If there's a default address and it's different from current selection, update it
       if (defaultAddressId !== selectedAddressId) {
@@ -1922,7 +1922,8 @@ export default function CheckoutPage() {
                 <div className="flex justify-between text-sm">
                   <div className="flex items-center">
                     <span className="text-gray-700">Delivery Fee</span>
-                    <svg
+                    {/* Hidden for now */}
+                    {/* <svg
                       className="w-4 h-4 ml-1 text-gray-400"
                       fill="none"
                       stroke="currentColor"
@@ -1935,14 +1936,15 @@ export default function CheckoutPage() {
                         strokeWidth="2"
                         d="M12 16v-4m0-4h.01"
                       />
-                    </svg>
+                    </svg> */}
                   </div>
                   <span className="text-gray-900 font-medium">${deliveryFee.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <div className="flex items-center">
                     <span className="text-gray-700">Fees & Estimated Tax</span>
-                    <svg
+                    {/* Hidden for now */}
+                    {/* <svg
                       className="w-4 h-4 ml-1 text-gray-400"
                       fill="none"
                       stroke="currentColor"
@@ -1955,7 +1957,7 @@ export default function CheckoutPage() {
                         strokeWidth="2"
                         d="M12 16v-4m0-4h.01"
                       />
-                    </svg>
+                    </svg> */}
                   </div>
                   <span className="text-gray-900 font-medium">
                     ${(serviceFee + estimatedTax).toFixed(2)}
@@ -2076,7 +2078,7 @@ export default function CheckoutPage() {
       <ChooseLabelModal
         isOpen={showChooseLabelModal}
         onClose={() => setShowChooseLabelModal(false)}
-        currentLabel={addresses.find(a => a.id === addressToLabel)?.personalLabel}
+        currentLabel={addresses?.find(a => a.id === addressToLabel)?.personalLabel}
         onSave={label => {
           if (addressToLabel) {
             updateAddress(addressToLabel, { personalLabel: label });

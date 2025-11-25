@@ -1,1 +1,0 @@
-This folder is to store all the static data for this website

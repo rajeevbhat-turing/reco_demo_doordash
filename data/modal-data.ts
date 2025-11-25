@@ -58,7 +58,7 @@ export const recommendedProducts: RecommendedProduct[] = [
 ]
 
 // Default nutrition information for products
-export const defaultNutritionInfo: Record<number, NutritionInfo> = {
+export const defaultNutritionInfo: Record<number | string, NutritionInfo> = {
   // Bananas
   101: {
     servingSize: "1 medium (118g)",

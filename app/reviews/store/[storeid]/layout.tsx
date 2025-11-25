@@ -15,7 +15,7 @@ export default function StoreReviewsLayout({ children }: { children: ReactNode }
     // If not authenticated, save current path and redirect to auth page
     if (currentUser === null) {
       setRouteBeforeAuth(pathname);
-      router.push('/auth');
+      router.replace('/auth');
     }
   }, [currentUser, router, pathname, setRouteBeforeAuth]);
 

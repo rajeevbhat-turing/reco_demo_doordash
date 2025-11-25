@@ -281,11 +281,24 @@ export default function DealModal({ isOpen, onClose, deal }: DealModalProps) {
       </div>
 
       {/* Menu Item Dialog */}
-      <MenuItemDialog
-        isOpen={menuItemDialogOpen}
-        onClose={() => setMenuItemDialogOpen(false)}
-        item={selectedItem}
-      />
+      {selectedItem && (
+        <MenuItemDialog
+          isOpen={menuItemDialogOpen}
+          onClose={() => setMenuItemDialogOpen(false)}
+          item={{
+            ...selectedItem,
+            image: selectedItem.image || '',
+            description: selectedItem.description || undefined,
+            rating:
+              typeof selectedItem.rating === 'number'
+                ? selectedItem.rating
+                : typeof selectedItem.rating === 'string'
+                ? parseFloat(selectedItem.rating) || undefined
+                : undefined,
+            ratingCount: selectedItem.ratingCount ?? undefined,
+          }}
+        />
+      )}
     </div>
   );
 }

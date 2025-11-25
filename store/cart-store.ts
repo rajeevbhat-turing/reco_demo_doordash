@@ -6,7 +6,7 @@ import { useAppStore } from "./app-store"
 import { checkDealCriteriaBoolean, fetchDealById } from "@/lib/utils/deal-utils"
 
 // Define supported cart categories
-export type CartCategory = "restaurant"
+export type CartCategory = "restaurant" | "grocery" | "retail" | "convenience" | "pets"
 
 // Base cart item interface (simplified - no vendor info)
 export interface CartItem {
@@ -40,6 +40,31 @@ interface CategoryConfig {
 // Default configuration by category
 const categoryConfigs: Record<CartCategory, CategoryConfig> = {
   restaurant: {
+    freeDeliveryThreshold: 30,
+    defaultDeliveryFee: 5.99,
+    serviceFeePercentage: 0.15,
+    minServiceFee: 4.99,
+  },
+  // For now, keep the same config for all categories
+  grocery: {
+    freeDeliveryThreshold: 30,
+    defaultDeliveryFee: 5.99,
+    serviceFeePercentage: 0.15,
+    minServiceFee: 4.99,
+  },
+  retail: {
+    freeDeliveryThreshold: 30,
+    defaultDeliveryFee: 5.99,
+    serviceFeePercentage: 0.15,
+    minServiceFee: 4.99,
+  },
+  convenience: {
+    freeDeliveryThreshold: 30,
+    defaultDeliveryFee: 5.99,
+    serviceFeePercentage: 0.15,
+    minServiceFee: 4.99,
+  },
+  pets: {
     freeDeliveryThreshold: 30,
     defaultDeliveryFee: 5.99,
     serviceFeePercentage: 0.15,

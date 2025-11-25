@@ -76,6 +76,10 @@ export class AssertionEngine {
         const index = parseInt(key.substring(key.indexOf('[') + 1, key.indexOf(']')))
         
         if (current[arrayKey] && Array.isArray(current[arrayKey])) {
+          // Validate array index bounds to prevent crashes
+          if (isNaN(index) || index < 0 || index >= current[arrayKey].length) {
+            return null
+          }
           current = current[arrayKey][index]
         } else {
           return null

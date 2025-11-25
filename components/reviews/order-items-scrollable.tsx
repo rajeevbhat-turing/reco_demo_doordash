@@ -34,6 +34,7 @@ export default function OrderItemsScrollable({
     if (!orderItem.menuItemId) {
       return null;
     }
+    console.log('menuItems', menuItems, 'orderItem.menuItemId', orderItem.menuItemId);
     
     return menuItems.find(item => item.id === orderItem.menuItemId) || null;
   };

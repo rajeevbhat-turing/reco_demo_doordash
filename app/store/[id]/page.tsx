@@ -120,7 +120,7 @@ export default function RestaurantPage() {
 
   // Fetch the specific restaurant directly (optimization: don't wait for nearby restaurants list)
   const currentUser = useUserStore(state => state.currentUser);
-  const defaultAddress = currentUser?.addresses.find(a => a.default);
+  const defaultAddress = currentUser?.addresses?.find(a => a.default);
 
   // Fetch this specific restaurant immediately - we have the ID from URL
   const { data: specificRestaurant, isLoading: isLoadingRestaurant } = useRestaurant(id);
@@ -261,11 +261,15 @@ export default function RestaurantPage() {
       }
       setRestaurant(restaurantData);
 
+      // Safely access menuItems and categories with null checks to prevent crashes
+      const menuItems = menuData?.menuItems || [];
+      const categories = menuData?.categories || [];
+
       // Get featured items using the featured flag from database
-      const featuredItemsData = menuData.menuItems.filter(item => item.featured === true);
+      const featuredItemsData = menuItems.filter(item => item.featured === true);
 
       // Get most ordered items - prioritize popular flag, then sort by rating_count
-      const mostOrderedItemsData = menuData.menuItems
+      const mostOrderedItemsData = menuItems
         .filter(item => item.popular === true || (item.ratingCount && item.ratingCount > 0))
         .sort((a, b) => {
           // First prioritize items with popular flag
@@ -278,13 +282,13 @@ export default function RestaurantPage() {
         })
         .slice(0, 5); // Take top 5
 
-      const familySharingItemsData = menuData.menuItems.filter(
+      const familySharingItemsData = menuItems.filter(
         item => item.category === 'Family & Sharing'
       );
-      const beefItemsData = menuData.menuItems.filter(item => item.category === 'Beef');
+      const beefItemsData = menuItems.filter(item => item.category === 'Beef');
 
       // Transform categories to match expected format
-      const menuCategoriesData = menuData.categories.map(cat => ({
+      const menuCategoriesData = categories.map(cat => ({
         id: cat.id,
         name: cat.name,
         description: cat.description,

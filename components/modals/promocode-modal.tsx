@@ -47,6 +47,11 @@ export default function PromoCodeModal({
   // Get deals from API: restaurant-specific + common deals (no DashPass deal)
   const { data: allDeals, isLoading: isLoadingDeals } = useCheckoutDeals(restaurantId);
 
+  // Filter out free item deals for now
+  const availableDeals = useMemo(() => {
+    return allDeals.filter(deal => !deal.freeItems || deal?.freeItems?.length === 0);
+  }, [allDeals]);
+
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
@@ -80,8 +85,8 @@ export default function PromoCodeModal({
 
     setError({ promocode: null, giftCard: null, deals: null });
 
-    // Find deal by promocode
-    const deal = allDeals.find(d => d.promocode?.toUpperCase() === promoCode.trim().toUpperCase());
+    // Find deal by promocode (only search in available deals, excluding free item deals for now)
+    const deal = availableDeals.find(d => d.promocode?.toUpperCase() === promoCode.trim().toUpperCase());
 
     if (!deal) {
       setError({ promocode: 'Invalid promo code', giftCard: null, deals: null });
@@ -340,7 +345,7 @@ export default function PromoCodeModal({
           <div className="mb-4">
             <h3 className="text-base font-bold text-[#191919ff] mb-3">Rewards & Deals</h3>
             <div className="space-y-3">
-              {allDeals.map(deal => (
+              {availableDeals.map(deal => (
                 <div key={deal.id}>
                   <div
                     className={`border rounded-lg p-4 border-text-gray-200 ${

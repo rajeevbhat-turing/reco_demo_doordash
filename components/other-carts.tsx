@@ -121,7 +121,7 @@ export default function OtherCarts({ carts, onRemoveCart, onClose, restaurants }
               {/* Item images */}
               <div className="flex space-x-2">
                 {cart.items.slice(0, 3).map((item, idx) => (
-                  <div key={idx} className="relative w-16 h-16 rounded-md overflow-hidden bg-gray-100">
+                  <div key={`${item?.itemName}-${idx}`} className="relative w-16 h-16 rounded-md overflow-hidden bg-gray-100">
                     <Image
                       src={item.image || '/placeholder.svg'}
                       alt={item.itemName}

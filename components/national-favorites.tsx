@@ -47,7 +47,7 @@ export default function NationalFavorites({ activeFilters }: NationalFavoritesPr
     }
 
     if (activeFilters.overRating) {
-      filteredRestaurants = filteredRestaurants.filter((restaurant) => restaurant.rating >= activeFilters.overRating!)
+      filteredRestaurants = filteredRestaurants.filter((restaurant) => restaurant?.rating && restaurant.rating >= activeFilters.overRating!)
     }
 
     if (activeFilters.price && activeFilters.price.length > 0) {

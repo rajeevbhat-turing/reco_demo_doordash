@@ -16,7 +16,7 @@ function AllItemsContent() {
 
   // Get user's address for location-based filtering
   const currentUser = useUserStore(state => state.currentUser);
-  const defaultAddress = currentUser?.addresses.find(a => a.default);
+  const defaultAddress = currentUser?.addresses?.find(a => a.default);
 
   // Fetch restaurants near user's address
   const { data: restaurants, isLoading } = useRestaurants(
@@ -25,16 +25,16 @@ function AllItemsContent() {
     10 // 10 mile radius
   );
 
-  // Only fetch all deals when needed for "deals-for-you" section (optimization)
-  const shouldFetchDeals = section === 'deals-for-you';
-  const { data: allDeals } = useAllDeals(shouldFetchDeals);
-
   // Get parameters from the URL
   const title = decodeURIComponent(searchParams.get('title') || 'All Items');
   const type = searchParams.get('type') || 'restaurant';
   const section = searchParams.get('section')
     ? decodeURIComponent(searchParams.get('section') || '')
     : '';
+
+  // Only fetch all deals when needed for "deals-for-you" section (optimization)
+  const shouldFetchDeals = section === 'deals-for-you';
+  const { data: allDeals } = useAllDeals(shouldFetchDeals);
 
   // Function to check if an image URL is valid (not placeholder/empty)
   const hasValidLogo = (logoUrl: string | undefined): boolean => {

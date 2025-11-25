@@ -84,10 +84,10 @@ export default function Header() {
 
   // Always sync with default address when addresses change
   useEffect(() => {
-    if (addresses.length > 0) {
+    if (addresses && addresses?.length > 0) {
       // Find default address
       const defaultAddress = addresses.find(a => a.default);
-      const defaultAddressId = defaultAddress?.id || addresses[0].id;
+      const defaultAddressId = defaultAddress?.id || addresses[0]?.id;
 
       // If there's a default address and it's different from current selection, update it
       if (defaultAddressId !== selectedAddressId) {
