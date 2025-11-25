@@ -28,12 +28,20 @@ export default function AccountPopup({ isOpen, onClose, anchorElement }: Account
     }
   }, [anchorElement, isOpen]);
 
-  // Close popup when clicking outside
+  // Close popup when clicking outside (but not when clicking the anchor element)
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (popupRef.current && !popupRef.current.contains(event.target as Node)) {
-        onClose();
+      const target = event.target as Node;
+      // Don't close if clicking inside the popup
+      if (popupRef.current && popupRef.current.contains(target)) {
+        return;
       }
+      // Don't close if clicking on the anchor element (Account button) - let the toggle handle it
+      if (anchorElement && anchorElement.contains(target)) {
+        return;
+      }
+      // Close if clicking anywhere else
+      onClose();
     };
 
     if (isOpen) {
@@ -43,7 +51,7 @@ export default function AccountPopup({ isOpen, onClose, anchorElement }: Account
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [isOpen, onClose]);
+  }, [isOpen, onClose, anchorElement]);
 
   // Close popup on escape key
   useEffect(() => {
@@ -227,13 +235,7 @@ export default function AccountPopup({ isOpen, onClose, anchorElement }: Account
           </Link>
 
           {/* Payment */}
-          <div
-            className="hover:bg-gray-100 cursor-pointer px-4 py-[10px]"
-            onClick={() => {
-              router.push('/payment');
-              onClose();
-            }}
-          >
+          <div className="px-4 py-[10px]">
             <div className="text-[15px] font-medium text-[#191919ff]">Payment</div>
           </div>
 

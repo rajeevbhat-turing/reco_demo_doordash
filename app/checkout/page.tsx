@@ -449,15 +449,18 @@ export default function CheckoutPage() {
   const handlePlaceOrder = () => {
     const newOrderId = generateOrderId();
 
+    // Get validated store name (ensures it's not a number)
+    const validatedStoreName = getStoreName();
+
     const orderData = {
       // 1. Order ID
       id: newOrderId,
 
       // 2. Cart fields extracted to root level (support both old and new field names)
       storeId: currentCart?.storeId,
-      storeName: currentCart?.storeName,
+      storeName: validatedStoreName, // Use validated store name
       restaurantId: currentCart?.storeId, // Old field name for backward compatibility
-      restaurantName: currentCart?.storeName, // Old field name for backward compatibility
+      restaurantName: validatedStoreName, // Use validated store name for backward compatibility
       storeCategory: currentCart?.storeCategory,
       items: (() => {
         // Track if ANY free item from the deal has been applied (only one free item total)
@@ -645,13 +648,27 @@ export default function CheckoutPage() {
   const getStoreName = () => {
     // First, try to get store name from the cart itself
     if (currentCart) {
-      return currentCart.storeName;
+      const storeName = currentCart.storeName;
+      // Validate storeName - check if it's valid (not empty, not a number, not "Unknown Store")
+      if (storeName && storeName.trim() !== '' && storeName !== 'Unknown Store' && !/^\d+$/.test(storeName)) {
+        return storeName;
+      }
+      
+      // If storeName is invalid or missing, try to look up from restaurants array
+      if (currentCart.storeCategory === 'restaurant' && currentCart.storeId && restaurants) {
+        const foundRestaurant = restaurants.find(r => r.id === currentCart.storeId);
+        if (foundRestaurant?.name) {
+          return foundRestaurant.name;
+        }
+      }
     }
 
     // Fallback to looking up by ID if we have the params
     if (currentCategory === 'restaurant' && currentStoreId) {
       const restaurant = getRestaurantById(restaurants, currentStoreId);
-      return restaurant?.name || 'Restaurant';
+      if (restaurant?.name) {
+        return restaurant.name;
+      }
     }
 
     return currentCategory === 'restaurant' ? 'Restaurant' : 'Store';

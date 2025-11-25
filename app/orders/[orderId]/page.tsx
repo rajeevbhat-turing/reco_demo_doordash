@@ -25,7 +25,16 @@ export default function OrderReceiptPage() {
 
   // Helper function to get store name (support both old and new field names)
   const getStoreName = (order: Order) => {
-    return order.storeName || order.restaurantName || 'Store';
+    // First, try to get store name from order
+    const storeName = order.storeName || order.restaurantName;
+    
+    // Validate storeName - check if it's valid (not empty, not a number, not "Unknown Store")
+    if (storeName && storeName.trim() !== '' && storeName !== 'Unknown Store' && !/^\d+$/.test(storeName)) {
+      return storeName;
+    }
+    
+    // Fallback - if storeName is a number or invalid, return a generic name
+    return 'Store';
   };
 
   // Helper function to get total (support both old and new field names)
