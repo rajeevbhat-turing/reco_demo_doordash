@@ -1,8 +1,10 @@
 'use client'
-import { Check, Lock } from "lucide-react"
+import { useState, useMemo, useRef, useEffect } from "react"
+import { Check, Lock, ChevronDown, X } from "lucide-react"
 import { DashDoorLogoMark } from "@/components/common/Icons"
 import { useCurrentStore } from "@/lib/hooks/useCurrentStore"
 import { useAllRestaurants } from "@/lib/hooks/use-restaurants"
+import type { Restaurant } from "@/constants/restaurants"
 
 interface OnboardingStep {
   number: number
@@ -18,10 +20,45 @@ interface OnboardingSidebarProps {
 }
 
 export default function OnboardingSidebar({ currentStep, completedSteps }: OnboardingSidebarProps) {
-  const { currentStoreId } = useCurrentStore()
-  const { data: restaurants, isLoading } = useAllRestaurants()
+  const { currentStoreId, setCurrentStoreId } = useCurrentStore()
+  const { data: restaurants = [], isLoading } = useAllRestaurants()
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+  const [searchValue, setSearchValue] = useState("")
+  const dropdownRef = useRef<HTMLDivElement>(null)
   
   const currentStore = restaurants?.find(r => r.id === currentStoreId) || restaurants?.[0]
+
+  const filteredRestaurants = useMemo(() => {
+    if (!searchValue.trim()) {
+      return restaurants
+    }
+    const searchLower = searchValue.toLowerCase()
+    return restaurants.filter(restaurant =>
+      restaurant.name.toLowerCase().includes(searchLower) ||
+      `${restaurant.street}, ${restaurant.city}, ${restaurant.state} ${restaurant.zipCode}`.toLowerCase().includes(searchLower)
+    )
+  }, [searchValue, restaurants])
+
+  const formatAddress = (restaurant: Restaurant) => {
+    return `${restaurant.street}, ${restaurant.city}, ${restaurant.state} ${restaurant.zipCode}, USA`
+  }
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsDropdownOpen(false)
+        setSearchValue("")
+      }
+    }
+
+    if (isDropdownOpen) {
+      document.addEventListener('mousedown', handleClickOutside)
+      return () => {
+        document.removeEventListener('mousedown', handleClickOutside)
+      }
+    }
+  }, [isDropdownOpen])
 
   const steps: OnboardingStep[] = [
     { number: 1, label: "Order method", step: "order-protocol", completed: completedSteps.includes("order-protocol"), locked: false },
@@ -47,11 +84,109 @@ export default function OnboardingSidebar({ currentStep, completedSteps }: Onboa
           </svg>
         </div>
         <div className="text-xs text-gray-500 uppercase tracking-wide mb-1">Create new store</div>
-        <div className="px-3 py-2 bg-gray-50 border border-gray-200 rounded-md">
-          <div className="text-sm font-medium">
-            {isLoading ? 'Loading...' : currentStore?.name || 'The Draft House'}
-          </div>
-          <div className="text-xs text-gray-500">Store</div>
+        <div className="relative" ref={dropdownRef}>
+          <button
+            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+            disabled={isLoading || !currentStore}
+            className="w-full flex items-end justify-between px-3 py-2 bg-gray-50 border border-gray-200 rounded-md cursor-pointer hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <div className="flex items-end gap-2">
+              <div className="text-sm font-medium">
+                {isLoading ? 'Loading...' : currentStore?.name || 'No store selected'}
+              </div>
+              <div className="text-xs text-gray-500 mb-0.5">Store</div>
+            </div>
+            <ChevronDown className={`h-4 w-4 text-gray-500 mb-0.5 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
+          </button>
+
+          {isDropdownOpen && (
+            <>
+              {/* Overlay backdrop */}
+              <div 
+                className="fixed inset-0 bg-black/20 z-40"
+                onClick={() => {
+                  setIsDropdownOpen(false)
+                  setSearchValue("")
+                }}
+              />
+              
+              {/* Dropdown Panel */}
+              <div 
+                className="absolute left-0 top-full mt-1 w-[400px] max-h-[400px] bg-white z-50 shadow-2xl rounded-lg flex flex-col border border-gray-200"
+              >
+                {/* Header Section */}
+                <div className="p-4 border-b border-gray-200 flex-shrink-0">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="text-sm font-semibold text-gray-900">{currentStore?.name || 'Select a store'}</div>
+                    <button
+                      onClick={() => {
+                        setIsDropdownOpen(false)
+                        setSearchValue("")
+                      }}
+                      className="p-1 hover:bg-gray-100 rounded"
+                      aria-label="Close"
+                    >
+                      <X className="h-4 w-4 text-gray-500" />
+                    </button>
+                  </div>
+                  {/* Search input */}
+                  <input
+                    type="text"
+                    placeholder="Search stores..."
+                    value={searchValue}
+                    onChange={(e) => setSearchValue(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                </div>
+
+                {/* Scrollable Restaurants List */}
+                <div className="flex-1 overflow-y-auto">
+                  <div className="p-4">
+                    {isLoading ? (
+                      <div className="text-sm text-gray-500 py-4">Loading stores...</div>
+                    ) : filteredRestaurants.length === 0 ? (
+                      <div className="text-sm text-gray-500 py-4">No stores found</div>
+                    ) : (
+                      <div className="space-y-0">
+                        {filteredRestaurants.map((restaurant) => {
+                          const isSelected = currentStoreId === restaurant.id
+                          return (
+                            <button
+                              key={restaurant.id}
+                              onClick={() => {
+                                setCurrentStoreId(restaurant.id)
+                                setIsDropdownOpen(false)
+                                setSearchValue("")
+                              }}
+                              className={`w-full text-left px-3 py-2.5 rounded-md transition-colors ${
+                                isSelected
+                                  ? "bg-gray-100"
+                                  : "hover:bg-gray-50"
+                              }`}
+                            >
+                              <div className="flex items-start gap-2.5">
+                                <div className={`w-2.5 h-2.5 rounded-full mt-1 flex-shrink-0 ${
+                                  isSelected ? "bg-green-500" : "bg-gray-300"
+                                }`} />
+                                <div className="flex-1 min-w-0">
+                                  <div className="text-sm font-medium text-gray-900">
+                                    {restaurant.name}
+                                  </div>
+                                  <div className="text-xs text-gray-500 mt-0.5 leading-relaxed">
+                                    {formatAddress(restaurant)}
+                                  </div>
+                                </div>
+                              </div>
+                            </button>
+                          )
+                        })}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
         </div>
       </div>
 
