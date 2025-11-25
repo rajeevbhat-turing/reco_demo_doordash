@@ -1,9 +1,9 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Star, ChevronRight, ArrowRight } from 'lucide-react';
+import { Star, ChevronRight, ArrowRight, ChevronLeft } from 'lucide-react';
 import { format } from 'date-fns';
 import Image from 'next/image';
 import UserRatingsModal from '@/components/modals/user-ratings-modal';
@@ -19,6 +19,7 @@ import { LockIcon, OfferIcon } from '@/lib/utils/icons';
 
 export default function UserProfilePage() {
   const params = useParams();
+  const router = useRouter();
   const userId = params.id as string;
   const [ratingsModalOpen, setRatingsModalOpen] = useState(false);
   const [displayEditProile, setDisplayEditProile] = useState(false);
@@ -122,14 +123,23 @@ export default function UserProfilePage() {
               ? 'C'
               : userInitials}
           </div>
-          <div className="flex flex-col">
-            <h1 className="text-3xl font-bold text-[#191919ff]">
-              {isCurrentUser &&
-              Object.keys(currentUser)?.includes('firstName') &&
-              currentUser?.firstName?.length === 0
-                ? 'Creator Profile'
-                : user.name}
-            </h1>
+          <div className="flex flex-col flex-1">
+            <div className="flex items-center gap-2">
+              <h1 className="text-3xl font-bold text-[#191919ff]">
+                {isCurrentUser &&
+                Object.keys(currentUser)?.includes('firstName') &&
+                currentUser?.firstName?.length === 0
+                  ? 'Creator Profile'
+                  : user.name}
+              </h1>
+              <button
+                onClick={() => router.back()}
+                className="p-2 bg-[#f1f1f1] rounded-full hover:bg-gray-200 transition-colors ml-auto"
+                aria-label="Go back"
+              >
+                <ChevronLeft className="w-5 h-5 text-[#191919ff]" strokeWidth={3} />
+              </button>
+            </div>
             {isCurrentUser && (
               <button
                 onClick={() => setProfileBadgesModalOpen(true)}

@@ -579,7 +579,7 @@ export default function SearchPage() {
                   return (
                     <div
                       key={item.id}
-                      className="flex-shrink-0 w-[180px] cursor-pointer hover:shadow-lg transition-shadow"
+                      className="flex-shrink-0 w-[220px] cursor-pointer hover:shadow-lg transition-shadow flex flex-col"
                       onClick={() => router.push(`/store/${item.restaurant_id || item.restaurantId}`)}
                     >
                       <div className="relative h-[180px] bg-gray-100 rounded-lg overflow-hidden mb-2">
@@ -590,10 +590,10 @@ export default function SearchPage() {
                           className="object-cover"
                         />
                       </div>
-                      <div className="px-1">
+                      <div className="px-1 flex flex-col flex-1">
                         <h3 className="font-semibold text-sm line-clamp-2 mb-1">{item.name}</h3>
                         <p className="text-xs text-gray-600 mb-1">{item.restaurantName}</p>
-                        <div className="flex items-center justify-between">
+                        <div className="flex items-center justify-between mt-auto">
                           <span className="text-sm font-bold">
                             {item.price.startsWith('$') ? item.price : `$${item.price}`}
                           </span>
