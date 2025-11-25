@@ -1296,7 +1296,7 @@ export default function RestaurantPage() {
       />
 
       {/* Deal Banner */}
-      {firstDeal && (
+      {/* {firstDeal && (
         <div
           className="fixed bottom-0 left-0 md:left-[220px] right-0 bg-[#fef0ed] px-4 py-2 flex items-center justify-center gap-3 z-40 
         border-t border-gray-200"
@@ -1316,7 +1316,7 @@ export default function RestaurantPage() {
             </span>
           </div>
         </div>
-      )}
+      )} */}
     </div>
   );
 }
