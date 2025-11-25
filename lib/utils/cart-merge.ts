@@ -2,6 +2,47 @@ import type { Cart, CartItem } from '@/store/cart-store';
 import type { AppliedModification, AppliedModificationOption } from '@/types';
 
 /**
+ * Generates a unique cart item ID based on item ID and modifications
+ * Items with the same base ID but different modifications will have different cart IDs
+ */
+export function generateCartItemId(
+  baseItemId: string | number,
+  modifications?: AppliedModification[]
+): string {
+  if (!modifications || modifications.length === 0) {
+    return String(baseItemId);
+  }
+
+  // Sort modifications by ID for consistent hashing
+  const sortedMods = [...modifications].sort((a, b) => 
+    a.modificationId.localeCompare(b.modificationId)
+  );
+
+  // Create a hash string from modifications
+  const modHash = sortedMods.map(mod => {
+    // Sort options by ID for consistency
+    const sortedOptions = [...mod.appliedOptions].sort((a, b) => 
+      a.optionId.localeCompare(b.optionId)
+    );
+    const optionsHash = sortedOptions.map(opt => 
+      `${opt.optionId}:${opt.quantity}`
+    ).join(',');
+    return `${mod.modificationId}[${optionsHash}]`;
+  }).join('|');
+
+  // Generate a simple hash from the modifications string
+  let hash = 0;
+  for (let i = 0; i < modHash.length; i++) {
+    const char = modHash.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash = hash & hash; // Convert to 32-bit integer
+  }
+
+  // Return base ID + hash (use absolute value and convert to base36 for shorter string)
+  return `${baseItemId}-${Math.abs(hash).toString(36)}`;
+}
+
+/**
  * Checks if two AppliedModificationOptions are identical
  */
 function areAppliedOptionsEqual(
@@ -41,14 +82,30 @@ function areModificationsEqual(
 }
 
 /**
+ * Extracts the base item ID from a cart item ID
+ * Handles both base IDs (e.g., "123") and unique IDs with modifications (e.g., "123-abc")
+ */
+function getBaseItemId(id: string | number): string {
+  const idStr = String(id);
+  // If ID contains a dash, it's a unique ID with modifications hash
+  // Extract the base ID (part before the dash)
+  const dashIndex = idStr.indexOf('-');
+  return dashIndex > 0 ? idStr.substring(0, dashIndex) : idStr;
+}
+
+/**
  * Checks if two cart items have the same modifications
  * Two items are considered to have the same modifications if:
- * 1. They have the same item ID
+ * 1. They have the same base item ID
  * 2. They have identical modifications (or both have no modifications)
  */
 export function haveSameModifications(item1: CartItem, item2: CartItem): boolean {
-  // Items must have the same ID
-  if (item1.id !== item2.id) return false;
+  // Extract base IDs (handles both base IDs and unique IDs with modifications)
+  const baseId1 = getBaseItemId(item1.id);
+  const baseId2 = getBaseItemId(item2.id);
+  
+  // Items must have the same base ID
+  if (baseId1 !== baseId2) return false;
   
   // If both have no modifications, they're the same
   const mods1 = item1.appliedModifications || [];

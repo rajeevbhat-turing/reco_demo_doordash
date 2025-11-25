@@ -178,7 +178,22 @@ export function calculateDeliveryFee(params: FeeCalculationParams): {
   let dealDiscount = 0;
   
   // Priority 1: Restaurant offers free delivery
+  // Free delivery only applies to standard delivery, not express
   if (params.restaurant?.isFreeDelivery) {
+    // If express delivery, still charge the express surcharge
+    if (params.deliveryOption === 'express') {
+      expressSurcharge = 2.99;
+      return {
+        fee: expressSurcharge,
+        breakdown: {
+          baseDeliveryFee: 0,
+          distanceSurcharge: 0,
+          expressSurcharge,
+          dealDiscount: 0,
+        },
+      };
+    }
+    // Standard delivery is free
     return {
       fee: 0,
       breakdown: {
@@ -191,17 +206,28 @@ export function calculateDeliveryFee(params: FeeCalculationParams): {
   }
   
   // Priority 2: Subtotal threshold (category-specific)
+  // Free delivery only applies to standard delivery, not express
   if (params.subtotal >= config.freeDeliveryThreshold) {
     // Free delivery, but express surcharge still applies
     if (params.deliveryOption === 'express') {
       expressSurcharge = 2.99;
+      return {
+        fee: expressSurcharge,
+        breakdown: {
+          baseDeliveryFee: 0,
+          distanceSurcharge: 0,
+          expressSurcharge,
+          dealDiscount: 0,
+        },
+      };
     }
+    // Standard delivery is free
     return {
-      fee: expressSurcharge,
+      fee: 0,
       breakdown: {
         baseDeliveryFee: 0,
         distanceSurcharge: 0,
-        expressSurcharge,
+        expressSurcharge: 0,
         dealDiscount: 0,
       },
     };

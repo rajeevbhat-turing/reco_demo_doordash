@@ -4,6 +4,7 @@ import type { Product, AppliedModification } from "@/types"
 import { useVerifierStore } from "./verifier-store"
 import { useAppStore } from "./app-store"
 import { checkDealCriteriaBoolean, fetchDealById } from "@/lib/utils/deal-utils"
+import { haveSameModifications, generateCartItemId } from "@/lib/utils/cart-merge"
 
 // Define supported cart categories
 export type CartCategory = "restaurant" | "grocery" | "retail" | "convenience" | "pets"
@@ -282,25 +283,39 @@ export const useCartStore = create<CartStore>()(
           }
 
           // Cart exists for this vendor - add or update item
-          const existingItemIndex = existingCart.items.findIndex((i) => i.id === item.id)
+          // Generate unique cart item ID based on base ID + modifications
+          const uniqueCartItemId = generateCartItemId(
+            item.id,
+            item.appliedModifications
+          )
+          
+          // Compare by ID AND modifications - items with same ID but different modifications are separate
+          const existingItemIndex = existingCart.items.findIndex((i) => 
+            haveSameModifications(i, item as CartItem)
+          )
           let newItems: CartItem[]
 
           if (existingItemIndex >= 0) {
-            // Increment quantity if item already exists
+            // Increment quantity if item already exists with same modifications
+            // Also update ID to unique ID if it's still using base ID (for consistency)
             newItems = existingCart.items.map((i, idx) =>
-              idx === existingItemIndex ? { ...i, quantity: i.quantity + 1 } : i
+              idx === existingItemIndex 
+                ? { ...i, id: uniqueCartItemId, quantity: i.quantity + 1 }
+                : i
             )
             console.log(`[CART] Updated item quantity to ${newItems[existingItemIndex].quantity}`)
           } else {
-            // Add new item with quantity 1
+            // Add new item with quantity 1 (different modifications = different cart item)
+            // Use unique cart item ID instead of base item ID
             newItems = [
               ...existingCart.items,
               {
                 ...item,
+                id: uniqueCartItemId, // Use unique ID that includes modifications
                 quantity: 1,
               }
             ]
-            console.log(`[CART] Added new item to existing cart`)
+            console.log(`[CART] Added new item to existing cart (different modifications) with ID: ${uniqueCartItemId}`)
           }
 
           const newTotalItems = newItems.reduce((total, cartItem) => total + cartItem.quantity, 0)
