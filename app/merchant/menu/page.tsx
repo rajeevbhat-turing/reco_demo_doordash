@@ -9,6 +9,10 @@ import RestaurantSelector from "@/components/merchant/RestaurantSelector"
 import ItemEditorPanel from "@/components/merchant/ItemEditorPanel"
 import { MenuItem } from "@/store/merchant-menu-store"
 import { useMerchantPersistedState } from "@/lib/hooks/useMerchantPersistedState"
+import { useMerchantMenu } from "@/lib/hooks/use-merchant-menu"
+import { useCurrentStore } from "@/lib/hooks/useCurrentStore"
+import { useAllRestaurants } from "@/lib/hooks/use-restaurants"
+import { useEffect, useMemo, useState } from "react"
 
 export default function MerchantMenuPage() {
   const [searchValue, setSearchValue] = useMerchantPersistedState('menu', 'filters', 'searchQuery', '')
@@ -17,17 +21,56 @@ export default function MerchantMenuPage() {
   const [selectedRestaurantId, setSelectedRestaurantId] = useMerchantPersistedState('menu', 'selector', 'selectedRestaurantId', 'philz-coffee')
   const [selectedItem, setSelectedItem] = useMerchantPersistedState<MenuItem | null>('menu', 'editor', 'selectedItem', null)
   const [isItemEditorOpen, setIsItemEditorOpen] = useMerchantPersistedState('menu', 'editor', 'isOpen', false)
+  const [isMounted, setIsMounted] = useState(false)
+  
+  const { currentStoreId } = useCurrentStore()
+  const { data: restaurants } = useAllRestaurants()
+  
+  // Find the current restaurant to get its numeric database ID
+  const currentRestaurant = useMemo(() => {
+    if (!restaurants || !currentStoreId) return null
+    return restaurants.find(r => r.id === currentStoreId) || restaurants.find(r => 
+      r.name.toLowerCase().replace(/\s+/g, '-') === currentStoreId.toLowerCase() ||
+      r.name === currentStoreId
+    )
+  }, [restaurants, currentStoreId])
+  
+  const numericStoreId = currentRestaurant?.id || currentStoreId || null
+  
+  // Fetch menu items from database (only after mount to prevent hydration issues)
+  const { categories: dbCategories, isLoading: isLoadingMenu } = useMerchantMenu(isMounted ? numericStoreId : null)
   
   const {
-    categories,
+    categories: storeCategories,
     expandedCategories,
     showBanner,
     toggleCategory,
     setShowBanner,
+    setCategories,
     updateItemStatus,
     updateItem,
     deleteItem
   } = useMerchantMenuStore()
+  
+  // Set mounted flag after hydration
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
+  
+  // Use database categories if available and mounted, otherwise fall back to store categories
+  const categories = useMemo(() => {
+    if (!isMounted) {
+      return storeCategories // Use store categories during SSR/initial render
+    }
+    return dbCategories.length > 0 ? dbCategories : storeCategories
+  }, [isMounted, dbCategories, storeCategories])
+  
+  // Update store when database categories change (only after mount)
+  useEffect(() => {
+    if (isMounted && dbCategories.length > 0) {
+      setCategories(dbCategories)
+    }
+  }, [isMounted, dbCategories, setCategories])
 
   const filteredCategories = categories.map(category => ({
     ...category,
@@ -138,10 +181,13 @@ export default function MerchantMenuPage() {
       </div>
 
       {/* Menu Categories */}
-      <div className="space-y-6">
-        {filteredCategories.map((category) => {
-          const isExpanded = expandedCategories.has(category.id)
-          const itemCount = category.items.length
+      {isLoadingMenu && isMounted ? (
+        <div className="text-center py-8 text-gray-500">Loading menu...</div>
+      ) : (
+        <div className="space-y-6">
+          {filteredCategories.map((category) => {
+            const isExpanded = expandedCategories.has(category.id)
+            const itemCount = category.items.length
 
           return (
             <div key={category.id} className="border border-gray-200 rounded-lg bg-white overflow-hidden">
@@ -236,7 +282,8 @@ export default function MerchantMenuPage() {
             </div>
           )
         })}
-      </div>
+        </div>
+      )}
 
       {/* Item Editor Panel */}
       <ItemEditorPanel

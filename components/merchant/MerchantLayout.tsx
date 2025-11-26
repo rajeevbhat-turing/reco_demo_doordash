@@ -6,7 +6,8 @@ import { CurrentStoreProvider } from "@/lib/hooks/useCurrentStore"
 export default function MerchantLayout({ children }: { children: React.ReactNode }) {
   return (
     <CurrentStoreProvider>
-      <div className="min-h-screen bg-gray-50">
+      {/* suppressHydrationWarning: Content may differ between server/client due to localStorage hydration */}
+      <div className="min-h-screen bg-gray-50" suppressHydrationWarning>
         {/* Left navigation */}
         <MerchantSidebar />
 

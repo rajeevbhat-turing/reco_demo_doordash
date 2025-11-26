@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, createContext, useContext, ReactNode, useMemo } from 'react'
+import { useState, useEffect, createContext, useContext, ReactNode, useMemo, useCallback } from 'react'
 import { useMerchantPersistedState } from './useMerchantPersistedState'
 import { merchantStoreData, StoreMerchantData } from '@/constants/merchant-store-data'
 import { initializeStoreData, loadStoreDataIntoStores } from '@/lib/utils/store-data-loader'
@@ -27,15 +27,24 @@ const CurrentStoreContext = createContext<CurrentStoreContextType>({
 })
 
 export function CurrentStoreProvider({ children }: { children: ReactNode }) {
+  const [isMounted, setIsMounted] = useState(false)
+  // Use default value initially to prevent hydration mismatch
   const [currentStoreId, setCurrentStoreId] = useMerchantPersistedState('app', 'store', 'currentStoreId', DEFAULT_STORE_ID)
   
-  // Initialize store data immediately with default, then update in useEffect
+  // Always initialize with default store data to ensure server/client consistency
   const [currentStoreData, setCurrentStoreData] = useState<StoreMerchantData | null>(() => {
-    // Initialize with default store data immediately
-    return getDefaultStoreData(currentStoreId)
+    return getDefaultStoreData(DEFAULT_STORE_ID)
   })
 
+  // Set mounted flag after hydration
   useEffect(() => {
+    setIsMounted(true)
+  }, [])
+
+  useEffect(() => {
+    // Only run after mount to prevent hydration issues
+    if (!isMounted) return
+    
     // Initialize store data in localStorage if needed
     initializeStoreData(currentStoreId)
     
@@ -53,24 +62,35 @@ export function CurrentStoreProvider({ children }: { children: ReactNode }) {
         loadStoreDataIntoStores(DEFAULT_STORE_ID)
       }
     }
-  }, [currentStoreId])
+  }, [currentStoreId, isMounted])
 
   // Note: currentStoreId can be either:
   // 1. Numeric ID as string from database (e.g., "24") - used when restaurant is selected from StoreSelector
   // 2. Slug from merchant-store-data (e.g., "philz-coffee") - used for initialization
   // Components should handle both by finding the restaurant first
 
-  const handleSetStoreId = (storeId: string) => {
+  const handleSetStoreId = useCallback((storeId: string) => {
     setCurrentStoreId(storeId)
     // Data will be loaded in useEffect
-  }
+  }, [setCurrentStoreId])
 
   // Memoize context value to prevent unnecessary re-renders
-  const contextValue = useMemo(() => ({
-    currentStoreId,
-    setCurrentStoreId: handleSetStoreId,
-    currentStoreData
-  }), [currentStoreId, currentStoreData])
+  // Use default values during SSR to prevent hydration mismatch
+  const contextValue = useMemo(() => {
+    // During SSR (before mount), use default values
+    if (!isMounted) {
+      return {
+        currentStoreId: DEFAULT_STORE_ID,
+        setCurrentStoreId: handleSetStoreId,
+        currentStoreData: getDefaultStoreData(DEFAULT_STORE_ID)
+      }
+    }
+    return {
+      currentStoreId,
+      setCurrentStoreId: handleSetStoreId,
+      currentStoreData
+    }
+  }, [currentStoreId, currentStoreData, isMounted, handleSetStoreId])
 
   return (
     <CurrentStoreContext.Provider value={contextValue}>

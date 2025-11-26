@@ -9,6 +9,9 @@ import { useStoreApprovedReviews } from "@/lib/hooks/use-reviews"
 import { useCurrentStore } from '@/lib/hooks/useCurrentStore'
 import { useMerchantHomeStore } from "@/store/merchant-home-store"
 import { useMerchantMetrics } from "@/lib/hooks/use-merchant-metrics"
+import { useMerchantOperations } from "@/lib/hooks/use-merchant-operations"
+import { useMerchantCustomers } from "@/lib/hooks/use-merchant-customers"
+import { useMerchantOrders } from "@/lib/hooks/use-merchant-orders"
 import { useAllRestaurants } from '@/lib/hooks/use-restaurants'
 
 function Stat({ label, value }: { label: string; value: string }) {
@@ -179,6 +182,7 @@ export default function MerchantStorePage() {
   const { metrics: storedMetrics, setMetrics } = useMerchantHomeStore()
   const [activeFilter, setActiveFilter] = useState("All")
   const [storeSet, setStoreSet] = useState(false)
+  const [salesPeriod, setSalesPeriod] = useState<"This month" | "Last month" | "This year">("This month")
 
   const storeIdParam = params.id as string
 
@@ -242,6 +246,9 @@ export default function MerchantStorePage() {
   // Fallback to storeIdParam if restaurant not found yet
   const numericStoreId = currentRestaurant?.id || storeIdParam || null
 
+  // Get orders for calculations
+  const { data: orders = [] } = useMerchantOrders(numericStoreId)
+
   // Calculate metrics from actual orders using numeric store ID
   const { metrics: calculatedMetrics } = useMerchantMetrics(numericStoreId)
 
@@ -260,8 +267,143 @@ export default function MerchantStorePage() {
     }
   }, [calculatedMetrics, setMetrics])
 
-  // Sample sales data for the chart
-  const salesData = [800, 1200, 950, 1400, 1100, 1600, 1800, 1500, 1700, 1900, 1600, 2000, 1800, 1900]
+  // Calculate sales data for the chart based on selected period
+  const salesData = useMemo(() => {
+    if (!orders || orders.length === 0) {
+      return Array(14).fill(0) // Return array of zeros if no orders
+    }
+
+    const now = new Date()
+    let startDate: Date
+    let daysInPeriod: number
+
+    switch (salesPeriod) {
+      case "This month":
+        startDate = new Date(now.getFullYear(), now.getMonth(), 1)
+        daysInPeriod = now.getDate()
+        break
+      case "Last month":
+        const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1)
+        startDate = lastMonth
+        daysInPeriod = new Date(now.getFullYear(), now.getMonth(), 0).getDate()
+        break
+      case "This year":
+        startDate = new Date(now.getFullYear(), 0, 1)
+        daysInPeriod = Math.floor((now.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24))
+        break
+      default:
+        startDate = new Date(now.getFullYear(), now.getMonth(), 1)
+        daysInPeriod = now.getDate()
+    }
+
+    // Group orders by date and calculate daily sales
+    const dailySales = new Map<string, number>()
+    
+    orders.forEach((order: any) => {
+      const orderDate = new Date(order.orderDate)
+      // For "Last month", filter orders within that month
+      if (salesPeriod === "Last month") {
+        const lastMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1)
+        const lastMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59)
+        if (orderDate >= lastMonthStart && orderDate <= lastMonthEnd) {
+          const dateKey = orderDate.toISOString().split('T')[0]
+          dailySales.set(dateKey, (dailySales.get(dateKey) || 0) + (order.total || 0))
+        }
+      } else if (orderDate >= startDate && orderDate <= now) {
+        const dateKey = orderDate.toISOString().split('T')[0]
+        dailySales.set(dateKey, (dailySales.get(dateKey) || 0) + (order.total || 0))
+      }
+    })
+
+    // Create array of sales data (14 data points)
+    const dataPoints = 14
+    const data: number[] = []
+    
+    // For "This year", use monthly aggregation
+    if (salesPeriod === "This year") {
+      const monthlySales = new Map<number, number>()
+      dailySales.forEach((sales, dateKey) => {
+        const date = new Date(dateKey)
+        const month = date.getMonth()
+        monthlySales.set(month, (monthlySales.get(month) || 0) + sales)
+      })
+      
+      // Fill 12 months of data
+      for (let i = 0; i < 12; i++) {
+        data.push(monthlySales.get(i) || 0)
+      }
+      // Pad to 14 data points
+      while (data.length < dataPoints) {
+        data.push(0)
+      }
+    } else {
+      // For monthly periods, use daily aggregation
+      const interval = Math.max(1, Math.floor(daysInPeriod / dataPoints))
+      
+      for (let i = 0; i < dataPoints; i++) {
+        const date = new Date(startDate)
+        date.setDate(date.getDate() + (i * interval))
+        const dateKey = date.toISOString().split('T')[0]
+        data.push(dailySales.get(dateKey) || 0)
+      }
+    }
+
+    return data
+  }, [orders, salesPeriod])
+
+  // Calculate sales metrics for the selected period
+  const periodMetrics = useMemo(() => {
+    if (!orders || orders.length === 0) {
+      return { totalSales: 0, totalOrders: 0, avgTicketSize: 0 }
+    }
+
+    const now = new Date()
+    let startDate: Date
+
+    switch (salesPeriod) {
+      case "This month":
+        startDate = new Date(now.getFullYear(), now.getMonth(), 1)
+        break
+      case "Last month":
+        startDate = new Date(now.getFullYear(), now.getMonth() - 1, 1)
+        const endDate = new Date(now.getFullYear(), now.getMonth(), 0)
+        const filteredOrders = orders.filter((order: any) => {
+          const orderDate = new Date(order.orderDate)
+          return orderDate >= startDate && orderDate <= endDate
+        })
+        const totalSales = filteredOrders.reduce((sum: number, order: any) => sum + (order.total || 0), 0)
+        const totalOrders = filteredOrders.length
+        return {
+          totalSales,
+          totalOrders,
+          avgTicketSize: totalOrders > 0 ? totalSales / totalOrders : 0
+        }
+      case "This year":
+        startDate = new Date(now.getFullYear(), 0, 1)
+        break
+      default:
+        startDate = new Date(now.getFullYear(), now.getMonth(), 1)
+    }
+
+    const filteredOrders = orders.filter((order: any) => {
+      const orderDate = new Date(order.orderDate)
+      return orderDate >= startDate && orderDate <= now
+    })
+
+    const totalSales = filteredOrders.reduce((sum: number, order: any) => sum + (order.total || 0), 0)
+    const totalOrders = filteredOrders.length
+    return {
+      totalSales,
+      totalOrders,
+      avgTicketSize: totalOrders > 0 ? totalSales / totalOrders : 0
+    }
+  }, [orders, salesPeriod])
+
+  // Get operations metrics
+  const operationsMetrics = useMerchantOperations(numericStoreId)
+
+  // Get customer segments
+  const customerSegments = useMerchantCustomers(numericStoreId)
   
   // Filter logic
   const showGrowth = activeFilter === "All" || activeFilter === "Growth"
@@ -393,19 +535,25 @@ export default function MerchantStorePage() {
           <div className="rounded-lg border border-gray-200 bg-white p-4 mb-4">
             <div className="flex items-center justify-between mb-2">
               <div className="font-semibold">Gross sales</div>
-              <select className="text-xs text-gray-500 border-0 bg-transparent cursor-pointer">
+              <select 
+                value={salesPeriod}
+                onChange={(e) => setSalesPeriod(e.target.value as "This month" | "Last month" | "This year")}
+                className="text-xs text-gray-500 border-0 bg-transparent cursor-pointer"
+              >
                 <option>This month</option>
                 <option>Last month</option>
                 <option>This year</option>
               </select>
             </div>
-            <div className="text-2xl font-bold mb-2">$6,035.64</div>
+            <div className="text-2xl font-bold mb-2">
+              ${periodMetrics.totalSales.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            </div>
             <div className="mb-3">
               <SalesChart data={salesData} />
             </div>
             <div className="grid grid-cols-3 gap-2 mt-3 text-sm">
-              <div><div className="text-gray-500">Total orders</div><div className="font-medium">287</div></div>
-              <div><div className="text-gray-500">Avg ticket size</div><div className="font-medium">$21.03</div></div>
+              <div><div className="text-gray-500">Total orders</div><div className="font-medium">{periodMetrics.totalOrders}</div></div>
+              <div><div className="text-gray-500">Avg ticket size</div><div className="font-medium">${periodMetrics.avgTicketSize.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div></div>
               <div></div>
             </div>
             <button className="mt-3 w-full rounded-md border border-gray-300 text-sm py-2">View sales insights</button>
@@ -414,11 +562,11 @@ export default function MerchantStorePage() {
           <div className="rounded-lg border border-gray-200 bg-white p-4 mb-4">
             <div className="font-semibold mb-2">Operations</div>
             <div className="space-y-2 text-sm">
-              <div className="flex justify-between"><span className="text-gray-600">Avoidable cancellations rate</span><span>0.0%</span></div>
-              <div className="flex justify-between"><span className="text-gray-600">Average wait</span><span>0 mins</span></div>
-              <div className="flex justify-between"><span className="text-gray-600">Missing & incorrect rate</span><span>0.0%</span></div>
-              <div className="flex justify-between"><span className="text-gray-600">Downtime</span><span>0.0%</span></div>
-              <div className="flex justify-between"><span className="text-gray-600">Ratings</span><span>4.6/5</span></div>
+              <div className="flex justify-between"><span className="text-gray-600">Avoidable cancellations rate</span><span>{operationsMetrics.avoidableCancellationsRate.toFixed(1)}%</span></div>
+              <div className="flex justify-between"><span className="text-gray-600">Average wait</span><span>{operationsMetrics.averageWait} mins</span></div>
+              <div className="flex justify-between"><span className="text-gray-600">Missing & incorrect rate</span><span>{operationsMetrics.missingIncorrectRate.toFixed(1)}%</span></div>
+              <div className="flex justify-between"><span className="text-gray-600">Downtime</span><span>{operationsMetrics.downtime.toFixed(1)}%</span></div>
+              <div className="flex justify-between"><span className="text-gray-600">Ratings</span><span>{operationsMetrics.ratings > 0 ? `${operationsMetrics.ratings.toFixed(1)}/5` : 'N/A'}</span></div>
             </div>
             <button className="mt-3 w-full rounded-md border border-gray-300 text-sm py-2">View operations insights</button>
           </div>
@@ -426,9 +574,9 @@ export default function MerchantStorePage() {
           <div className="rounded-lg border border-gray-200 bg-white p-4">
             <div className="font-semibold mb-2">Customers</div>
             <div className="space-y-1 text-sm">
-              <div className="flex justify-between"><span className="text-gray-600">New</span><span>0</span></div>
-              <div className="flex justify-between"><span className="text-gray-600">Occasional</span><span>0</span></div>
-              <div className="flex justify-between"><span className="text-gray-600">Returning</span><span>0</span></div>
+              <div className="flex justify-between"><span className="text-gray-600">New</span><span>{customerSegments.new}</span></div>
+              <div className="flex justify-between"><span className="text-gray-600">Occasional</span><span>{customerSegments.occasional}</span></div>
+              <div className="flex justify-between"><span className="text-gray-600">Returning</span><span>{customerSegments.returning}</span></div>
             </div>
             <button className="mt-3 w-full rounded-md border border-gray-300 text-sm py-2">View customers insights</button>
           </div>

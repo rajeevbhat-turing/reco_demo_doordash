@@ -8,6 +8,8 @@ export async function GET(
 ) {
   try {
     const { id: restaurantId } = await params;
+    const { searchParams } = new URL(request.url);
+    const includeUnavailable = searchParams.get('includeUnavailable') === 'true';
 
     if (!restaurantId) {
       return NextResponse.json(
@@ -15,6 +17,9 @@ export async function GET(
         { status: 400 }
       );
     }
+
+    // Build WHERE clause - include unavailable items for merchant view
+    const availabilityFilter = includeUnavailable ? '' : 'AND mi.is_available = 1';
 
     // Fetch menu items with their categories
     const menuItemsRaw = await db.query<any>(
@@ -36,7 +41,7 @@ export async function GET(
         mc.name AS category_name
       FROM menu_items mi
       JOIN menu_categories mc ON mi.category_id = mc.id
-      WHERE mi.restaurant_id = ? AND mi.is_available = 1
+      WHERE mi.restaurant_id = ? ${availabilityFilter}
       ORDER BY mc.display_order, mi.display_order`,
       [restaurantId]
     );
@@ -152,6 +157,7 @@ export async function GET(
         ratingCount: item.rating_count || null,
         popular: item.popular === 1,
         featured: item.featured === 1,
+        isAvailable: item.is_available === 1,
         discount: item.discount_percentage 
           ? `${item.discount_percentage}% off up to $${(item.discount_cap / 100).toFixed(2)}`
           : undefined,
