@@ -10,6 +10,7 @@ import { useUserStore } from '@/store/user-store';
 import { useCarts } from '@/lib/hooks/use-carts';
 import { useOrders } from '@/lib/hooks/use-orders';
 import { StateWindowInitializer } from '@/components/state-window-initializer';
+import NavigationLoader from '@/components/navigation-loader';
 
 // Cached server snapshots to avoid infinite loops
 const SERVER_SNAPSHOT_FALSE = false;
@@ -80,6 +81,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
     return (
       <div className="flex flex-col min-h-screen">
         <StateWindowInitializer />
+        <NavigationLoader />
         <main className="flex-1">{children}</main>
         {/* <LandingPageFooter /> */}
         <Snackbar />
@@ -90,6 +92,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
   return (
     <div className="flex flex-col min-h-screen">
       <StateWindowInitializer />
+      <NavigationLoader />
       <Header />
       <LayoutWrapper>{children}</LayoutWrapper>
       <Snackbar />
