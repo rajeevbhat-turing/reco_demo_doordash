@@ -541,6 +541,8 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
                     width={96}
                     height={96}
                     className="object-cover rounded-md"
+                    loading="lazy"
+                    sizes="56px"
                   />
                 </div>
                 <div className="flex-1">
@@ -645,6 +647,8 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
                           alt={item.name || 'Item Image'}
                           fill
                           className="object-cover rounded-lg"
+                          loading="lazy"
+                          sizes="80px"
                         />
                         <button
                           className="absolute bottom-1 right-1 bg-white rounded-full p-1 shadow-md hover:bg-gray-50 transition-colors"

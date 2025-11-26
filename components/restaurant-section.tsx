@@ -107,6 +107,8 @@ export default function RestaurantSection({
                   width={64}
                   height={64}
                   className="object-cover"
+                  loading="lazy"
+                  sizes="64px"
                   style={{ width: 'auto', height: 'auto' }}
                   onError={e => {
                     // Fallback to placeholder if image fails to load

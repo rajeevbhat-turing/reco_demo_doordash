@@ -35,6 +35,8 @@ export default function StoreCard({ id, name, image, openTime, deliveryTime, dis
               width={64}
               height={64}
               className="object-cover"
+              loading="lazy"
+              sizes="64px"
               onError={() => setImageError(true)}
             />}
           </div>
@@ -46,7 +48,7 @@ export default function StoreCard({ id, name, image, openTime, deliveryTime, dis
               <div>
                 <div className="flex items-center gap-2">
                 {isDashPass && (
-                    <Image src="/dashpass-icon.svg" alt="DashPass" width={16} height={16} />
+                    <Image src="/dashpass-icon.svg" alt="DashPass" width={16} height={16} loading="lazy" sizes="16px" />
                   )}
                   <h3 className="font-medium text-gray-900 truncate">{name}</h3>
                 </div>

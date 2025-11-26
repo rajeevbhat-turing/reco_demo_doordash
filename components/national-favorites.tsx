@@ -127,6 +127,8 @@ export default function NationalFavorites({ activeFilters }: NationalFavoritesPr
                     alt={restaurant.name}
                     fill
                     className="object-cover"
+                    loading="lazy"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     style={{ width: 'auto', height: 'auto' }}
                     onError={(e) => {
                       // Fallback to placeholder if image fails to load

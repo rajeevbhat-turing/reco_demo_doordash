@@ -93,6 +93,8 @@ export default function ProductCard({
           width={140}
           height={140}
           className="rounded-lg object-cover aspect-square"
+          loading="lazy"
+          sizes="140px"
         />
 
         {quantity > 0 ? (

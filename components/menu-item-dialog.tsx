@@ -492,6 +492,8 @@ export default function MenuItemDialog({ isOpen, onClose, item }: MenuItemDialog
                 alt={item.name}
                 fill
                 className="object-cover"
+                priority
+                sizes="(max-width: 768px) 100vw, 672px"
               />
             </div>
           </div>

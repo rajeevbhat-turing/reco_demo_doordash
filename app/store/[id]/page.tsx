@@ -633,6 +633,8 @@ export default function RestaurantPage() {
           alt={`${restaurant.name}'s Banner`}
           fill
           className="object-cover"
+          priority
+          sizes="100vw"
         />
         {restaurant.logo && (
           <div className="absolute left-6 bottom-6 z-10">
@@ -643,6 +645,8 @@ export default function RestaurantPage() {
                 width={80}
                 height={80}
                 className="object-contain"
+                priority
+                sizes="80px"
               />
             </div>
           </div>
@@ -980,6 +984,8 @@ export default function RestaurantPage() {
                                 alt={item.name}
                                 fill
                                 className="object-cover rounded-lg"
+                                loading="lazy"
+                                sizes="96px"
                               />
                               <button
                                 className="absolute bottom-1 right-1 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-md hover:bg-gray-50 transition-colors"
@@ -1171,6 +1177,8 @@ export default function RestaurantPage() {
                               alt={item.name}
                               fill
                               className="object-cover"
+                              loading="lazy"
+                              sizes="(max-width: 768px) 100vw, 33vw"
                             />
                             <button
                               className="absolute bottom-3 right-3 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-md hover:bg-gray-50 transition-colors"
@@ -1311,6 +1319,9 @@ export default function RestaurantPage() {
                 src="/offer-icon.svg"
                 alt="Deal"
                 width={24}
+                height={24}
+                loading="lazy"
+                sizes="24px"
                 height={24}
                 className="object-contain"
               />
