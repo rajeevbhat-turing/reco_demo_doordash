@@ -133,9 +133,17 @@ export async function GET(
 
     // Transform menu items and attach modifications
     const menuItems = menuItemsRaw.map((item: any) => {
-      // Format price
+      // Get modifications for this item
+      const itemModifications = modificationsMap.get(item.id) || [];
+      
+      // Check if there are any required modifications
+      const hasRequiredModifications = itemModifications.some(
+        (mod: any) => mod.is_required === true
+      );
+      
+      // Format price - add "+" if there are required modifications
       const priceInDollars = (item.price / 100).toFixed(2);
-      const priceDisplay = item.discount_percentage 
+      const priceDisplay = hasRequiredModifications 
         ? `$${priceInDollars}+` 
         : `$${priceInDollars}`;
 
@@ -155,7 +163,7 @@ export async function GET(
         discount: item.discount_percentage 
           ? `${item.discount_percentage}% off up to $${(item.discount_cap / 100).toFixed(2)}`
           : undefined,
-        modifications: modificationsMap.get(item.id) || [],
+        modifications: itemModifications,
       };
     });
 
