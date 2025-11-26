@@ -8,6 +8,7 @@ import { DashDoorLogoMark, DashDoorWordMark } from "@/components/common/Icons"
 import StoreSelector from "./StoreSelector"
 import { useCurrentStore } from "@/lib/hooks/useCurrentStore"
 import { useAllRestaurants } from "@/lib/hooks/use-restaurants"
+import { useUserStore } from "@/store/user-store"
 
 function NavItem({ href, label, active, icon: Icon, highlightRed, highlightOrange, disabled }: { href: string; label: string; active: boolean; icon: React.ComponentType<any>; highlightRed?: boolean; highlightOrange?: boolean; disabled?: boolean }) {
   const activeClass = highlightOrange && active 
@@ -42,11 +43,24 @@ export default function MerchantSidebar() {
   const { currentStoreId: contextStoreId } = useCurrentStore()
   const { data: restaurants, isLoading: isLoadingRestaurants } = useAllRestaurants()
   
+  // Get current user for displaying name
+  const currentUser = useUserStore(state => state.currentUser)
+  
+  // Format user name: FirstName L. (first name + first letter of last name)
+  const userDisplayName = useMemo(() => {
+    if (!currentUser?.name) return 'User'
+    const nameParts = currentUser.name.trim().split(/\s+/)
+    if (nameParts.length === 1) return nameParts[0]
+    const firstName = nameParts[0]
+    const lastInitial = nameParts[nameParts.length - 1].charAt(0).toUpperCase()
+    return `${firstName} ${lastInitial}.`
+  }, [currentUser?.name])
+
   // Auto-expand based on current pathname
   const [settingsExpanded, setSettingsExpanded] = useState(pathname?.startsWith("/merchant/settings") || false)
-  const [customersExpanded, setCustomersExpanded] = useState(pathname?.startsWith("/merchant/customers") || false)
+  const [customersExpanded, setCustomersExpanded] = useState((pathname?.startsWith("/merchant/store/") && pathname?.includes("/customers")) || pathname?.startsWith("/merchant/customers") || false)
   const [financialsExpanded, setFinancialsExpanded] = useState(pathname?.startsWith("/merchant/financials") || false)
-  const [menuExpanded, setMenuExpanded] = useState(pathname?.startsWith("/merchant/menu") || false)
+  const [menuExpanded, setMenuExpanded] = useState((pathname?.startsWith("/merchant/store/") && pathname?.includes("/menu")) || pathname?.startsWith("/merchant/menu") || false)
   const [marketingExpanded, setMarketingExpanded] = useState(pathname?.startsWith("/merchant/marketing") || false)
   const [insightsExpanded, setInsightsExpanded] = useState(pathname?.startsWith("/merchant/insights") || false)
   const [isStoreSelectorOpen, setIsStoreSelectorOpen] = useState(false)
@@ -84,11 +98,21 @@ export default function MerchantSidebar() {
     return restaurants[0] || null
   }, [restaurants, urlStoreId, contextStoreId])
   const isSettingsPage = pathname?.startsWith("/merchant/settings") || false
-  const isCustomersPage = pathname?.startsWith("/merchant/customers") || false
+  const isCustomersPage = (pathname?.startsWith("/merchant/store/") && pathname?.includes("/customers")) || pathname?.startsWith("/merchant/customers") || false
   const isFinancialsPage = pathname?.startsWith("/merchant/financials") || false
-  const isMenuPage = pathname?.startsWith("/merchant/menu") || false
+  const isMenuPage = pathname?.startsWith("/merchant/store/") && pathname?.includes("/menu") || pathname?.startsWith("/merchant/menu") || false
+  const isOrdersPage = pathname?.startsWith("/merchant/store/") && pathname?.includes("/orders") || pathname?.startsWith("/merchant/orders") || false
   const isMarketingPage = pathname?.startsWith("/merchant/marketing") || false
   const isInsightsPage = pathname?.startsWith("/merchant/insights") || false
+  
+  // Build menu URLs with store ID
+  const menuManagerUrl = effectiveStoreId ? `/merchant/store/${effectiveStoreId}/menu` : '/merchant/menu'
+  const menuPricingUrl = effectiveStoreId ? `/merchant/store/${effectiveStoreId}/menu/pricing` : '/merchant/menu/pricing'
+  // Build orders URL with store ID
+  const ordersUrl = effectiveStoreId ? `/merchant/store/${effectiveStoreId}/orders` : '/merchant/orders'
+  // Build customer URLs with store ID
+  const customersInsightsUrl = effectiveStoreId ? `/merchant/store/${effectiveStoreId}/customers/insights` : '/merchant/customers/insights'
+  const customersRatingsUrl = effectiveStoreId ? `/merchant/store/${effectiveStoreId}/customers/ratings-reviews` : '/merchant/customers/ratings-reviews'
 
   return (
     <>
@@ -187,23 +211,23 @@ export default function MerchantSidebar() {
             {customersExpanded && (
               <div className="mt-1 ml-2 space-y-1">
                 <NavItem 
-                  href="/merchant/customers/insights" 
+                  href={customersInsightsUrl} 
                   label="Customer Insights" 
                   icon={Users} 
-                  active={pathname === "/merchant/customers/insights"}
-                  highlightRed={pathname === "/merchant/customers/insights"}
+                  active={pathname === customersInsightsUrl || (pathname?.startsWith("/merchant/store/") && pathname?.endsWith("/customers/insights"))}
+                  highlightRed={pathname === customersInsightsUrl || (pathname?.startsWith("/merchant/store/") && pathname?.endsWith("/customers/insights"))}
                 />
                 <NavItem 
-                  href="/merchant/customers/ratings-reviews" 
+                  href={customersRatingsUrl} 
                   label="Ratings & Reviews" 
                   icon={Star} 
-                  active={pathname === "/merchant/customers/ratings-reviews"}
-                  highlightRed={pathname === "/merchant/customers/ratings-reviews"}
+                  active={pathname === customersRatingsUrl || (pathname?.startsWith("/merchant/store/") && pathname?.includes("/customers/ratings-reviews"))}
+                  highlightRed={pathname === customersRatingsUrl || (pathname?.startsWith("/merchant/store/") && pathname?.includes("/customers/ratings-reviews"))}
                 />
               </div>
             )}
           </div>
-          <NavItem href="/merchant/orders" label="Orders" icon={Receipt} active={pathname?.startsWith("/merchant/orders") || false} />
+          <NavItem href={ordersUrl} label="Orders" icon={Receipt} active={isOrdersPage} />
           
           {/* Marketing Section */}
           <div>
@@ -263,18 +287,18 @@ export default function MerchantSidebar() {
             {menuExpanded && (
               <div className="mt-1 ml-2 space-y-1">
                 <NavItem 
-                  href="/merchant/menu" 
+                  href={menuManagerUrl} 
                   label="Menu Manager" 
                   icon={Utensils} 
-                  active={pathname === "/merchant/menu"}
-                  highlightRed={pathname === "/merchant/menu"}
+                  active={pathname === menuManagerUrl || (pathname?.startsWith("/merchant/store/") && pathname?.endsWith("/menu") && !pathname?.includes("/menu/pricing"))}
+                  highlightRed={pathname === menuManagerUrl || (pathname?.startsWith("/merchant/store/") && pathname?.endsWith("/menu") && !pathname?.includes("/menu/pricing"))}
                 />
                 <NavItem 
-                  href="/merchant/menu/pricing" 
+                  href={menuPricingUrl} 
                   label="Pricing" 
                   icon={DollarSign} 
-                  active={pathname === "/merchant/menu/pricing"}
-                  highlightRed={pathname === "/merchant/menu/pricing"}
+                  active={pathname === menuPricingUrl || (pathname?.startsWith("/merchant/store/") && pathname?.includes("/menu/pricing"))}
+                  highlightRed={pathname === menuPricingUrl || (pathname?.startsWith("/merchant/store/") && pathname?.includes("/menu/pricing"))}
                 />
               </div>
             )}
@@ -402,7 +426,7 @@ export default function MerchantSidebar() {
 
         <div className="px-3 pb-4 mt-auto">
           <button className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm text-gray-700 hover:bg-gray-50">Report an Issue</button>
-          <div className="mt-3 text-sm text-gray-600">Kyle McCarney ▾</div>
+          <div className="mt-3 text-sm text-gray-600">{userDisplayName} ▾</div>
         </div>
       </nav>
       </aside>

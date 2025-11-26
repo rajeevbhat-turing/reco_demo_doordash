@@ -13,6 +13,7 @@ import { useMerchantOperations } from "@/lib/hooks/use-merchant-operations"
 import { useMerchantCustomers } from "@/lib/hooks/use-merchant-customers"
 import { useMerchantOrders } from "@/lib/hooks/use-merchant-orders"
 import { useAllRestaurants } from '@/lib/hooks/use-restaurants'
+import { useUserStore } from '@/store/user-store'
 
 function Stat({ label, value }: { label: string; value: string }) {
   return (
@@ -183,6 +184,19 @@ export default function MerchantStorePage() {
   const [activeFilter, setActiveFilter] = useState("All")
   const [storeSet, setStoreSet] = useState(false)
   const [salesPeriod, setSalesPeriod] = useState<"This month" | "Last month" | "This year">("This month")
+  
+  // Get current user for displaying name
+  const currentUser = useUserStore(state => state.currentUser)
+  
+  // Format user name: FirstName L. (first name + first letter of last name)
+  const userDisplayName = useMemo(() => {
+    if (!currentUser?.name) return 'User'
+    const nameParts = currentUser.name.trim().split(/\s+/)
+    if (nameParts.length === 1) return nameParts[0]
+    const firstName = nameParts[0]
+    const lastInitial = nameParts[nameParts.length - 1].charAt(0).toUpperCase()
+    return `${firstName} ${lastInitial}.`
+  }, [currentUser?.name])
 
   const storeIdParam = params.id as string
 
@@ -427,7 +441,7 @@ export default function MerchantStorePage() {
       <div className="grid grid-cols-12 gap-6">
         {/* Main content */}
         <div className="col-span-12 lg:col-span-8">
-          <div className="mb-2 text-sm text-gray-600">Welcome back, Kyle</div>
+          <div className="mb-2 text-sm text-gray-600">Welcome back, {userDisplayName}</div>
           <h1 className="text-2xl font-extrabold mb-4">Today's overview</h1>
 
           {/* Stats */}

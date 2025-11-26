@@ -1,5 +1,6 @@
 import { createClient, Client } from '@libsql/client';
 import { getRequiredEnv } from '@/lib/env';
+import path from 'path';
 
 /**
  * Database Connection Layer
@@ -19,7 +20,20 @@ class DatabaseConnection {
     if (this.client) return this.client;
 
     try {
-      const url = getRequiredEnv('LIBSQL_URL');
+      let url = getRequiredEnv('LIBSQL_URL');
+      
+      // If it's a file URL with a relative path, resolve it to an absolute path
+      if (url.startsWith('file:./') || url.startsWith('file:../')) {
+        // Remove 'file:' prefix and resolve the path
+        const relativePath = url.replace(/^file:/, '');
+        const absolutePath = path.resolve(process.cwd(), relativePath);
+        url = `file:${absolutePath}`;
+      } else if (url.startsWith('file:') && !path.isAbsolute(url.replace(/^file:/, ''))) {
+        // Handle file: paths that aren't absolute
+        const relativePath = url.replace(/^file:/, '');
+        const absolutePath = path.resolve(process.cwd(), relativePath);
+        url = `file:${absolutePath}`;
+      }
       
       console.log(`📂 Connecting to libsql server: ${url}`);
       
