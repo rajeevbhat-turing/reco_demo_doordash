@@ -136,6 +136,8 @@ export default function MerchantStoreOrdersPage() {
 
   // Transform API orders to merchant order format
   const orders = useMemo(() => {
+    const now = new Date()
+    
     return apiOrders.map((order: any) => {
       // Parse order date - handle both ISO string and formatted string
       let orderDate: Date
@@ -153,6 +155,44 @@ export default function MerchantStoreOrdersPage() {
         orderDate = new Date()
       }
 
+      // Check if order is in the past
+      const isPastOrder = orderDate < now
+
+      // Check if there's a scheduled date in the future
+      let scheduledDate: Date | null = null
+      if (order.deliveryOption?.scheduledDate) {
+        try {
+          scheduledDate = new Date(order.deliveryOption.scheduledDate)
+        } catch {
+          scheduledDate = null
+        }
+      }
+      const isFutureScheduled = scheduledDate && scheduledDate > now
+
+      // Determine order status based on database status and date
+      // Priority: Past orders always go to History, unless explicitly future scheduled
+      let orderStatus: "Active" | "Scheduled" | "Completed" | "Cancelled - Not Paid"
+      
+      if (order.status === 'Completed') {
+        orderStatus = 'Completed'
+      } else if (order.status === 'Cancelled') {
+        orderStatus = 'Cancelled - Not Paid'
+      } else if (isPastOrder && !isFutureScheduled) {
+        // Past orders (regardless of status) should be in History
+        // Exception: if there's a future scheduled date, it stays Scheduled
+        orderStatus = 'Completed'
+      } else if (order.status === 'Confirmed') {
+        // Current/future confirmed orders are Active
+        orderStatus = 'Active'
+      } else if (isFutureScheduled) {
+        // Future scheduled orders
+        orderStatus = 'Scheduled'
+      } else {
+        // Default: if not in past and no explicit status, treat as Scheduled
+        // But this should rarely happen
+        orderStatus = 'Scheduled'
+      }
+
       // Get customer name - prioritize user name, then business name, then address
       const customerName = order.userName || 
                           order.deliveryAddress?.businessName || 
@@ -162,15 +202,14 @@ export default function MerchantStoreOrdersPage() {
       return {
         customer: customerName,
         orderId: `DD-${order.id}`,
-        orderStatus: order.status === 'Confirmed' ? 'Active' : 
-                     order.status === 'Completed' ? 'Completed' :
-                     order.status === 'Cancelled' ? 'Cancelled - Not Paid' : 'Scheduled',
+        orderStatus,
         date: orderDate.toLocaleDateString('en-US', { month: 'numeric', day: 'numeric', year: 'numeric' }),
         time: orderDate.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }),
         fulfillmentStatus: order.status,
         fulfillmentType: order.deliveryOption?.type === 'pickup' ? 'Customer pickup' : 'DashDoor delivery',
         channel: 'DashDoor',
         subtotal: `$${((order.subtotal || 0) / 100).toFixed(2)}`, // Convert from cents to dollars
+        rawOrderDate: orderDate, // Keep for sorting/filtering
       }
     })
   }, [apiOrders])
@@ -195,21 +234,32 @@ export default function MerchantStoreOrdersPage() {
 
   // Filter orders based on active tab and search
   const filteredOrders = useMemo(() => {
+    const now = new Date()
+    
     return orders.filter(order => {
       // Tab filtering logic:
-      // - "Active": Show orders with status 'Active' (Confirmed orders)
-      // - "Scheduled": Show orders with status 'Scheduled'
-      // - "History": Show all orders (Completed, Cancelled, etc.)
+      // - "Active": Show orders with status 'Active' (current Confirmed orders)
+      // - "Scheduled": Show orders with status 'Scheduled' (future scheduled orders)
+      // - "History": Show all past/completed orders (Completed, Cancelled, past orders)
       let matchesTab = false
+      
       if (activeTab === "History") {
-        // History shows all orders except Active and Scheduled
-        matchesTab = order.orderStatus !== "Active" && order.orderStatus !== "Scheduled"
+        // History shows:
+        // - Completed orders
+        // - Cancelled orders
+        // - Past orders (regardless of status, if they're in the past)
+        const isPastOrder = order.rawOrderDate && order.rawOrderDate < now
+        matchesTab = order.orderStatus === "Completed" || 
+                     order.orderStatus === "Cancelled - Not Paid" ||
+                     (isPastOrder && order.orderStatus !== "Active" && order.orderStatus !== "Scheduled")
       } else if (activeTab === "Active") {
-        // Active shows Confirmed orders
-        matchesTab = order.orderStatus === "Active"
+        // Active shows current Confirmed orders (not in the past)
+        const isPastOrder = order.rawOrderDate && order.rawOrderDate < now
+        matchesTab = order.orderStatus === "Active" && !isPastOrder
       } else if (activeTab === "Scheduled") {
-        // Scheduled shows scheduled orders
-        matchesTab = order.orderStatus === "Scheduled"
+        // Scheduled shows only future scheduled orders
+        const isPastOrder = order.rawOrderDate && order.rawOrderDate < now
+        matchesTab = order.orderStatus === "Scheduled" && !isPastOrder
       }
 
       // Search filtering

@@ -1,10 +1,11 @@
 'use client'
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo } from "react"
 import { useParams } from "next/navigation"
 import MerchantLayout from "@/components/merchant/MerchantLayout"
 import { ChevronDown, MessageSquare, Star } from "lucide-react"
 import { useCurrentStore } from "@/lib/hooks/useCurrentStore"
 import { useAllRestaurants } from "@/lib/hooks/use-restaurants"
+import { useQuery } from "@tanstack/react-query"
 
 /**
  * Route: /merchant/store/[id]/customers/ratings-reviews
@@ -16,9 +17,62 @@ export default function RatingsReviewsPage() {
   const { setCurrentStoreId, currentStoreId: contextStoreId } = useCurrentStore()
   const { data: restaurants, isLoading } = useAllRestaurants()
   const [storeSet, setStoreSet] = useState(false)
+  const [mounted, setMounted] = useState(false)
   const [selectedTimeframe, setSelectedTimeframe] = useState("Last 7 days")
 
   const storeIdParam = params.id as string
+
+  // Track mounted state to avoid hydration issues
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  // Fetch reviews for this store
+  const { data: reviewsData, isLoading: isLoadingReviews } = useQuery({
+    queryKey: ['store-reviews', storeIdParam],
+    queryFn: async () => {
+      const response = await fetch(`/api/reviews/${storeIdParam}?approvalStatus=approved`)
+      if (!response.ok) throw new Error('Failed to fetch reviews')
+      const result = await response.json()
+      return result.data
+    },
+    enabled: !!storeIdParam && storeSet && mounted,
+  })
+
+  // Calculate ratings statistics
+  const ratingsStats = useMemo(() => {
+    if (!reviewsData || reviewsData.length === 0) {
+      return {
+        averageRating: 0,
+        totalRatings: 0,
+        ratingBreakdown: {
+          5: 0,
+          4: 0,
+          3: 0,
+          2: 0,
+          1: 0,
+        },
+      }
+    }
+
+    const totalRatings = reviewsData.length
+    const sumRatings = reviewsData.reduce((sum: number, review: any) => sum + review.rating, 0)
+    const averageRating = sumRatings / totalRatings
+
+    const breakdown = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 }
+    reviewsData.forEach((review: any) => {
+      const rating = Math.round(review.rating)
+      if (rating >= 1 && rating <= 5) {
+        breakdown[rating as keyof typeof breakdown]++
+      }
+    })
+
+    return {
+      averageRating,
+      totalRatings,
+      ratingBreakdown: breakdown,
+    }
+  }, [reviewsData])
 
   // Set the store ID when component mounts or storeIdParam changes
   useEffect(() => {
@@ -51,8 +105,8 @@ export default function RatingsReviewsPage() {
     }
   }, [storeIdParam, restaurants, isLoading, setCurrentStoreId, contextStoreId, storeSet])
 
-  // Show loading state while finding store
-  if (isLoading) {
+  // Show loading state while finding store or not mounted
+  if (isLoading || !mounted) {
     return (
       <MerchantLayout>
         <div className="min-h-screen flex items-center justify-center">
@@ -86,13 +140,60 @@ export default function RatingsReviewsPage() {
               </div>
             </div>
 
-            {/* Empty State */}
-            <div className="bg-white border border-gray-200 rounded-lg p-12 text-center">
-              <MessageSquare className="h-24 w-24 text-gray-300 mx-auto mb-4" />
-              <p className="text-lg text-gray-600">
-                You didn't receive any ratings for the selected store(s) and timeframe.
-              </p>
-            </div>
+            {/* Reviews List or Empty State */}
+            {isLoadingReviews ? (
+              <div className="bg-white border border-gray-200 rounded-lg p-12 text-center">
+                <p className="text-lg text-gray-600">Loading reviews...</p>
+              </div>
+            ) : reviewsData && reviewsData.length > 0 ? (
+              <div className="space-y-4">
+                {reviewsData.map((review: any) => (
+                  <div key={review.id} className="bg-white border border-gray-200 rounded-lg p-6">
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
+                          <span className="text-sm font-medium text-gray-700">
+                            {review.userName?.charAt(0).toUpperCase() || 'U'}
+                          </span>
+                        </div>
+                        <div>
+                          <p className="font-medium text-gray-900">{review.userName || 'Anonymous'}</p>
+                          <p className="text-sm text-gray-500">
+                            {mounted && review.timestamp
+                              ? new Date(review.timestamp).toLocaleDateString('en-US', {
+                                  year: 'numeric',
+                                  month: 'short',
+                                  day: 'numeric',
+                                })
+                              : '—'}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        {[1, 2, 3, 4, 5].map((star) => (
+                          <Star
+                            key={star}
+                            className={`h-5 w-5 ${
+                              star <= Math.round(review.rating)
+                                ? 'fill-yellow-400 text-yellow-400'
+                                : 'text-gray-300'
+                            }`}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                    <p className="text-gray-700">{review.content}</p>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="bg-white border border-gray-200 rounded-lg p-12 text-center">
+                <MessageSquare className="h-24 w-24 text-gray-300 mx-auto mb-4" />
+                <p className="text-lg text-gray-600">
+                  You didn't receive any ratings for the selected store(s) and timeframe.
+                </p>
+              </div>
+            )}
           </div>
 
           {/* Right Sidebar */}
@@ -100,10 +201,30 @@ export default function RatingsReviewsPage() {
             {/* Ratings During This Period */}
             <div className="bg-white border border-gray-200 rounded-lg p-5">
               <h3 className="text-lg font-semibold text-gray-900 mb-3">Ratings during this period</h3>
-              <p className="text-sm text-gray-600 mb-4">Data between 4/9/2025 - 4/15/2025.</p>
-              <div className="text-4xl font-bold text-gray-900 mb-2">NA</div>
-              <p className="text-sm text-gray-600 mb-2">Not available due to 0 ratings</p>
-              <p className="text-sm text-gray-500">0 ratings</p>
+              <p className="text-sm text-gray-600 mb-4">
+                {selectedTimeframe === 'Last 7 days'
+                  ? 'Data from the last 7 days.'
+                  : selectedTimeframe === 'Last 30 days'
+                  ? 'Data from the last 30 days.'
+                  : 'Recent ratings data.'}
+              </p>
+              {isLoadingReviews ? (
+                <div className="text-4xl font-bold text-gray-900 mb-2">...</div>
+              ) : ratingsStats.totalRatings > 0 ? (
+                <>
+                  <div className="text-4xl font-bold text-gray-900 mb-2">
+                    {ratingsStats.averageRating.toFixed(1)}
+                  </div>
+                  <p className="text-sm text-gray-600 mb-2">Average rating</p>
+                  <p className="text-sm text-gray-500">{ratingsStats.totalRatings} {ratingsStats.totalRatings === 1 ? 'rating' : 'ratings'}</p>
+                </>
+              ) : (
+                <>
+                  <div className="text-4xl font-bold text-gray-900 mb-2">NA</div>
+                  <p className="text-sm text-gray-600 mb-2">Not available due to 0 ratings</p>
+                  <p className="text-sm text-gray-500">0 ratings</p>
+                </>
+              )}
             </div>
 
             {/* Lifetime Rating */}
@@ -115,44 +236,61 @@ export default function RatingsReviewsPage() {
               
               {/* Overall Rating */}
               <div className="mb-4">
-                <div className="text-4xl font-bold text-gray-900 mb-2">4.8 / 5 stars</div>
-                <div className="flex items-center gap-1">
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <Star
-                      key={star}
-                      className={`h-6 w-6 ${
-                        star <= 4
-                          ? "fill-yellow-400 text-yellow-400"
-                          : star === 5
-                          ? "fill-yellow-200 text-yellow-200"
-                          : "text-gray-300"
-                      }`}
-                    />
-                  ))}
-                </div>
+                {isLoadingReviews ? (
+                  <div className="text-4xl font-bold text-gray-900 mb-2">...</div>
+                ) : ratingsStats.totalRatings > 0 ? (
+                  <>
+                    <div className="text-4xl font-bold text-gray-900 mb-2">
+                      {ratingsStats.averageRating.toFixed(1)} / 5 stars
+                    </div>
+                    <div className="flex items-center gap-1">
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <Star
+                          key={star}
+                          className={`h-6 w-6 ${
+                            star <= Math.round(ratingsStats.averageRating)
+                              ? star <= Math.floor(ratingsStats.averageRating)
+                                ? 'fill-yellow-400 text-yellow-400'
+                                : 'fill-yellow-200 text-yellow-200'
+                              : 'text-gray-300'
+                          }`}
+                        />
+                      ))}
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="text-4xl font-bold text-gray-900 mb-2">0 / 5 stars</div>
+                    <div className="flex items-center gap-1">
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <Star key={star} className="h-6 w-6 text-gray-300" />
+                      ))}
+                    </div>
+                  </>
+                )}
               </div>
 
               {/* Rating Breakdown */}
-              <div className="space-y-2">
-                {[
-                  { stars: 5, percentage: 94.8 },
-                  { stars: 4, percentage: 1.86 },
-                  { stars: 3, percentage: 1.12 },
-                  { stars: 2, percentage: 0.37 },
-                  { stars: 1, percentage: 1.86 }
-                ].map(({ stars, percentage }) => (
-                  <div key={stars} className="flex items-center gap-3">
-                    <div className="text-sm text-gray-600 w-12">{stars} stars</div>
-                    <div className="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
-                      <div
-                        className="h-full bg-gray-700"
-                        style={{ width: `${percentage}%` }}
-                      />
-                    </div>
-                    <div className="text-sm text-gray-600 w-16 text-right">{percentage}%</div>
-                  </div>
-                ))}
-              </div>
+              {ratingsStats.totalRatings > 0 && (
+                <div className="space-y-2">
+                  {[5, 4, 3, 2, 1].map((stars) => {
+                    const count = ratingsStats.ratingBreakdown[stars as keyof typeof ratingsStats.ratingBreakdown]
+                    const percentage = (count / ratingsStats.totalRatings) * 100
+                    return (
+                      <div key={stars} className="flex items-center gap-3">
+                        <div className="text-sm text-gray-600 w-12">{stars} stars</div>
+                        <div className="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
+                          <div
+                            className="h-full bg-gray-700"
+                            style={{ width: `${percentage}%` }}
+                          />
+                        </div>
+                        <div className="text-sm text-gray-600 w-16 text-right">{percentage.toFixed(1)}%</div>
+                      </div>
+                    )
+                  })}
+                </div>
+              )}
             </div>
           </div>
         </div>
