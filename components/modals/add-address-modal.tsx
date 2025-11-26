@@ -5,6 +5,13 @@ import { X, ChevronDown } from 'lucide-react';
 import { Address } from '@/lib/types/user-types';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import countriesData from '@/lib/utils/countries.json';
 
 interface AddAddressModalProps {
@@ -52,7 +59,15 @@ export default function AddAddressModal({
     };
 
     const handleClickOutside = (event: MouseEvent) => {
-      if (dialogRef.current && !dialogRef.current.contains(event.target as Node)) {
+      const target = event.target as HTMLElement;
+      // Don't close if clicking inside the modal or inside a Select dropdown (Radix UI Portal)
+      if (
+        dialogRef.current &&
+        !dialogRef.current.contains(target) &&
+        !target.closest('[data-radix-select-content]') &&
+        !target.closest('[data-radix-select-viewport]') &&
+        !target.closest('[data-radix-select-item]')
+      ) {
         onClose();
       }
     };
@@ -60,7 +75,7 @@ export default function AddAddressModal({
     if (isOpen) {
       document.body.style.overflow = 'hidden';
       document.addEventListener('keydown', handleEscapeKey);
-      document.addEventListener('mousedown', handleClickOutside);
+      // document.addEventListener('mousedown', handleClickOutside);
     } else {
       document.body.style.overflow = 'auto';
     }
@@ -68,7 +83,7 @@ export default function AddAddressModal({
     return () => {
       document.body.style.overflow = 'auto';
       document.removeEventListener('keydown', handleEscapeKey);
-      document.removeEventListener('mousedown', handleClickOutside);
+      // document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [isOpen, onClose]);
 
@@ -228,23 +243,22 @@ export default function AddAddressModal({
               <Label htmlFor="country" className="text-[15px] font-bold text-gray-900 mb-2 block">
                 Country
               </Label>
-              <div className="relative">
-                <select
-                  id="country"
-                  value={country}
-                  onChange={e => setCountry(e.target.value)}
+              <Select value={country} onValueChange={setCountry}>
+                <SelectTrigger
                   className="w-full px-4 py-2 border-2 border-transparent focus:outline-none focus:ring-0 focus:ring-offset-0 
                   focus-visible:ring-0 focus-visible:ring-offset-0 rounded-lg focus:border-[#191919ff] 
-                  focus-visible:border-[#191919ff] bg-[#f7f7f7] appearance-none text-sm"
+                  focus-visible:border-[#191919ff] bg-[#f7f7f7] text-sm h-auto"
                 >
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="z-[70]">
                   {countries.map(c => (
-                    <option key={c.name} value={c.name}>
+                    <SelectItem key={c.name} value={c.name}>
                       {c.name}
-                    </option>
+                    </SelectItem>
                   ))}
-                </select>
-                <ChevronDown className="absolute right-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-600 pointer-events-none" />
-              </div>
+                </SelectContent>
+              </Select>
             </div>
 
             {/* Street Address */}
@@ -321,23 +335,22 @@ export default function AddAddressModal({
                 <Label htmlFor="state" className="text-[15px] font-bold text-gray-900 mb-2 block">
                   State
                 </Label>
-                <div className="relative">
-                  <select
-                    id="state"
-                    value={state}
-                    onChange={e => setState(e.target.value)}
+                <Select value={state} onValueChange={setState}>
+                  <SelectTrigger
                     className="w-full px-4 py-2 border-2 border-transparent focus:outline-none focus:ring-0 focus:ring-offset-0 
                     focus-visible:ring-0 focus-visible:ring-offset-0 rounded-lg focus:border-[#191919ff] 
-                    focus-visible:border-[#191919ff] bg-[#f7f7f7] appearance-none text-sm"
+                    focus-visible:border-[#191919ff] bg-[#f7f7f7] text-sm h-auto"
                   >
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="z-[70]">
                     {states.map((stateName: string) => (
-                      <option key={stateName} value={stateName}>
+                      <SelectItem key={stateName} value={stateName}>
                         {stateName}
-                      </option>
+                      </SelectItem>
                     ))}
-                  </select>
-                  <ChevronDown className="absolute right-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-600 pointer-events-none" />
-                </div>
+                  </SelectContent>
+                </Select>
               </div>
               <div>
                 <Label htmlFor="zipCode" className="text-[15px] font-bold text-gray-900 mb-2 block">

@@ -59,13 +59,16 @@ export default function AddressSelectionModal({
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
       if (
         searchQuery.trim() &&
         dropdownRef.current &&
         inputContainerRef.current &&
-        !dropdownRef.current.contains(event.target as Node) &&
-        !inputContainerRef.current.contains(event.target as Node)
+        !dropdownRef.current.contains(target) &&
+        !inputContainerRef.current.contains(target)
       ) {
+        // Close dropdown if clicking outside the dropdown and input, 
+        // including when clicking inside other modals
         setSearchQuery('');
       }
     };
@@ -87,11 +90,16 @@ export default function AddressSelectionModal({
     };
 
     const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      // Don't close if clicking inside the modal, input container, dropdown, or Select dropdown (Radix UI Portal)
       if (
         dialogRef.current &&
-        !dialogRef.current.contains(event.target as Node) &&
-        !inputContainerRef.current?.contains(event.target as Node) &&
-        !dropdownRef.current?.contains(event.target as Node) &&
+        !dialogRef.current.contains(target) &&
+        !inputContainerRef.current?.contains(target) &&
+        !dropdownRef.current?.contains(target) &&
+        !target.closest('[data-radix-select-content]') &&
+        !target.closest('[data-radix-select-viewport]') &&
+        !target.closest('[data-radix-select-item]') &&
         onClose
       ) {
         onClose();
@@ -304,5 +312,3 @@ export default function AddressSelectionModal({
     </div>
   );
 }
-
-
