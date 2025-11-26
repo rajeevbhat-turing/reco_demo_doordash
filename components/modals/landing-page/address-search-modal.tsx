@@ -30,13 +30,10 @@ export default function AddressSearchModal({
 
     const query = searchQuery.toLowerCase();
     return addressesData
-      .filter(
-        address =>
-          address.street.toLowerCase().includes(query) ||
-          address.city.toLowerCase().includes(query) ||
-          address.state.toLowerCase().includes(query) ||
-          address.zipCode.includes(query)
-      )
+      .filter(address => {
+        const fullAddress = `${address.street}, ${address.city}, ${address.state} ${address.zipCode}`.toLowerCase();
+        return fullAddress.includes(query);
+      })
       .slice(0, 3); // Limit to 3 results
   }, [searchQuery]);
 

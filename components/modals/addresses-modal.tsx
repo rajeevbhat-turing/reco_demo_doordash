@@ -66,8 +66,7 @@ export default function AddressesModal({
     }
     const query = searchQuery.toLowerCase();
     return (addressesData as Address[]).filter(address => {
-      const fullAddress =
-        `${address.street} ${address.city} ${address.state} ${address.zipCode}`.toLowerCase();
+      const fullAddress = `${address.street}, ${address.city}, ${address.state} ${address.zipCode}`.toLowerCase();
       return fullAddress.includes(query);
     });
   }, [searchQuery]);
