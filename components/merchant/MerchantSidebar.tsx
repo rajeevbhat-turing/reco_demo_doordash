@@ -97,13 +97,13 @@ export default function MerchantSidebar() {
     // Fallback to first restaurant
     return restaurants[0] || null
   }, [restaurants, urlStoreId, contextStoreId])
-  const isSettingsPage = pathname?.startsWith("/merchant/settings") || false
+  const isSettingsPage = (pathname?.startsWith("/merchant/store/") && pathname?.includes("/settings")) || pathname?.startsWith("/merchant/settings") || false
   const isCustomersPage = (pathname?.startsWith("/merchant/store/") && pathname?.includes("/customers")) || pathname?.startsWith("/merchant/customers") || false
-  const isFinancialsPage = pathname?.startsWith("/merchant/financials") || false
+  const isFinancialsPage = (pathname?.startsWith("/merchant/store/") && pathname?.includes("/financials")) || pathname?.startsWith("/merchant/financials") || false
   const isMenuPage = pathname?.startsWith("/merchant/store/") && pathname?.includes("/menu") || pathname?.startsWith("/merchant/menu") || false
   const isOrdersPage = pathname?.startsWith("/merchant/store/") && pathname?.includes("/orders") || pathname?.startsWith("/merchant/orders") || false
-  const isMarketingPage = pathname?.startsWith("/merchant/marketing") || false
-  const isInsightsPage = pathname?.startsWith("/merchant/insights") || false
+  const isMarketingPage = (pathname?.startsWith("/merchant/store/") && pathname?.includes("/marketing")) || pathname?.startsWith("/merchant/marketing") || false
+  const isInsightsPage = (pathname?.startsWith("/merchant/store/") && pathname?.includes("/insights")) || pathname?.startsWith("/merchant/insights") || false
   
   // Build menu URLs with store ID
   const menuManagerUrl = effectiveStoreId ? `/merchant/store/${effectiveStoreId}/menu` : '/merchant/menu'
@@ -113,6 +113,28 @@ export default function MerchantSidebar() {
   // Build customer URLs with store ID
   const customersInsightsUrl = effectiveStoreId ? `/merchant/store/${effectiveStoreId}/customers/insights` : '/merchant/customers/insights'
   const customersRatingsUrl = effectiveStoreId ? `/merchant/store/${effectiveStoreId}/customers/ratings-reviews` : '/merchant/customers/ratings-reviews'
+  // Build financials URLs with store ID
+  const financialsTransactionsUrl = effectiveStoreId ? `/merchant/store/${effectiveStoreId}/financials/transactions` : '/merchant/financials/transactions'
+  const financialsPayoutsUrl = effectiveStoreId ? `/merchant/store/${effectiveStoreId}/financials/payouts` : '/merchant/financials/payouts'
+  const financialsStatementsUrl = effectiveStoreId ? `/merchant/store/${effectiveStoreId}/financials/statements` : '/merchant/financials/statements'
+  // Build insights URLs with store ID
+  const insightsOptimizationUrl = effectiveStoreId ? `/merchant/store/${effectiveStoreId}/insights/optimization-score` : '/merchant/insights/optimization-score'
+  const insightsSalesUrl = effectiveStoreId ? `/merchant/store/${effectiveStoreId}/insights/sales` : '/merchant/insights/sales'
+  const insightsProductMixUrl = effectiveStoreId ? `/merchant/store/${effectiveStoreId}/insights/product-mix` : '/merchant/insights/product-mix'
+  const insightsOperationsUrl = effectiveStoreId ? `/merchant/store/${effectiveStoreId}/insights/operations-quality` : '/merchant/insights/operations-quality'
+  // Build reports URL with store ID
+  const reportsUrl = effectiveStoreId ? `/merchant/store/${effectiveStoreId}/reports` : '/merchant/reports'
+  // Build marketing URLs with store ID
+  const marketingRunCampaignUrl = effectiveStoreId ? `/merchant/store/${effectiveStoreId}/marketing/run-campaign` : '/merchant/marketing/run-campaign'
+  const marketingCampaignsUrl = effectiveStoreId ? `/merchant/store/${effectiveStoreId}/marketing/campaigns` : '/merchant/marketing/campaigns'
+  const marketingLoyaltyUrl = effectiveStoreId ? `/merchant/store/${effectiveStoreId}/marketing/loyalty` : '/merchant/marketing/loyalty'
+  // Build settings URLs with store ID
+  const settingsAccountUrl = effectiveStoreId ? `/merchant/store/${effectiveStoreId}/settings/account` : '/merchant/settings/account'
+  const settingsPricingUrl = effectiveStoreId ? `/merchant/store/${effectiveStoreId}/settings/pricing` : '/merchant/settings/pricing'
+  const settingsStoreUrl = effectiveStoreId ? `/merchant/store/${effectiveStoreId}/settings/store` : '/merchant/settings/store'
+  const settingsStoreCommUrl = effectiveStoreId ? `/merchant/store/${effectiveStoreId}/settings/store-communications` : '/merchant/settings/store-communications'
+  const settingsBankUrl = effectiveStoreId ? `/merchant/store/${effectiveStoreId}/settings/bank-account` : '/merchant/settings/bank-account'
+  const usersUrl = effectiveStoreId ? `/merchant/store/${effectiveStoreId}/users` : '/merchant/users'
 
   return (
     <>
@@ -142,7 +164,7 @@ export default function MerchantSidebar() {
 
       <nav className="px-2 space-y-6">
         <div>
-          <NavItem href="/merchant" label="Home" icon={Home} active={pathname === "/merchant"} />
+          <NavItem href={effectiveStoreId ? `/merchant/store/${effectiveStoreId}` : '/merchant'} label="Home" icon={Home} active={pathname === (effectiveStoreId ? `/merchant/store/${effectiveStoreId}` : '/merchant') || pathname === '/merchant'} />
           
           {/* Insights Section */}
           <div>
@@ -161,38 +183,38 @@ export default function MerchantSidebar() {
             {insightsExpanded && (
               <div className="mt-1 ml-2 space-y-1">
                 <NavItem 
-                  href="/merchant/insights/optimization-score" 
+                  href={insightsOptimizationUrl} 
                   label="Optimization score" 
                   icon={TrendingUp} 
-                  active={pathname === "/merchant/insights/optimization-score"}
-                  highlightRed={pathname === "/merchant/insights/optimization-score"}
+                  active={pathname === insightsOptimizationUrl || (pathname?.startsWith("/merchant/store/") && pathname?.includes("/insights/optimization-score"))}
+                  highlightRed={pathname === insightsOptimizationUrl || (pathname?.startsWith("/merchant/store/") && pathname?.includes("/insights/optimization-score"))}
                 />
                 <NavItem 
-                  href="/merchant/insights/sales" 
+                  href={insightsSalesUrl} 
                   label="Sales" 
                   icon={BarChart2} 
-                  active={pathname === "/merchant/insights/sales"}
-                  highlightRed={pathname === "/merchant/insights/sales"}
+                  active={pathname === insightsSalesUrl || (pathname?.startsWith("/merchant/store/") && pathname?.includes("/insights/sales"))}
+                  highlightRed={pathname === insightsSalesUrl || (pathname?.startsWith("/merchant/store/") && pathname?.includes("/insights/sales"))}
                 />
                 <NavItem 
-                  href="/merchant/insights/product-mix" 
+                  href={insightsProductMixUrl} 
                   label="Product mix" 
                   icon={Package} 
-                  active={pathname === "/merchant/insights/product-mix"}
-                  highlightRed={pathname === "/merchant/insights/product-mix"}
+                  active={pathname === insightsProductMixUrl || (pathname?.startsWith("/merchant/store/") && pathname?.includes("/insights/product-mix"))}
+                  highlightRed={pathname === insightsProductMixUrl || (pathname?.startsWith("/merchant/store/") && pathname?.includes("/insights/product-mix"))}
                 />
                 <NavItem 
-                  href="/merchant/insights/operations-quality" 
+                  href={insightsOperationsUrl} 
                   label="Operations quality" 
                   icon={CheckCircle} 
-                  active={pathname === "/merchant/insights/operations-quality"}
-                  highlightRed={pathname === "/merchant/insights/operations-quality"}
+                  active={pathname === insightsOperationsUrl || (pathname?.startsWith("/merchant/store/") && pathname?.includes("/insights/operations-quality"))}
+                  highlightRed={pathname === insightsOperationsUrl || (pathname?.startsWith("/merchant/store/") && pathname?.includes("/insights/operations-quality"))}
                 />
               </div>
             )}
           </div>
           
-          <NavItem href="/merchant/reports" label="Reports" icon={FileText} active={pathname?.startsWith("/merchant/reports") || false} />
+          <NavItem href={reportsUrl} label="Reports" icon={FileText} active={pathname === reportsUrl || pathname?.startsWith("/merchant/store/") && pathname?.includes("/reports") || pathname?.startsWith("/merchant/reports") || false} />
           
           {/* Customers Section */}
           <div>
@@ -246,25 +268,25 @@ export default function MerchantSidebar() {
             {marketingExpanded && (
               <div className="mt-1 ml-2 space-y-1">
                 <NavItem 
-                  href="/merchant/marketing/run-campaign" 
+                  href={marketingRunCampaignUrl} 
                   label="Run a campaign" 
                   icon={Target} 
-                  active={pathname === "/merchant/marketing/run-campaign"}
-                  highlightRed={pathname === "/merchant/marketing/run-campaign"}
+                  active={pathname === marketingRunCampaignUrl || (pathname?.startsWith("/merchant/store/") && pathname?.includes("/marketing/run-campaign"))}
+                  highlightRed={pathname === marketingRunCampaignUrl || (pathname?.startsWith("/merchant/store/") && pathname?.includes("/marketing/run-campaign"))}
                 />
                 <NavItem 
-                  href="/merchant/marketing/campaigns" 
+                  href={marketingCampaignsUrl} 
                   label="Campaigns" 
                   icon={Target} 
-                  active={pathname === "/merchant/marketing/campaigns" || pathname?.startsWith("/merchant/marketing/campaigns/")}
-                  highlightRed={pathname === "/merchant/marketing/campaigns" || pathname?.startsWith("/merchant/marketing/campaigns/")}
+                  active={pathname === marketingCampaignsUrl || pathname?.startsWith("/merchant/store/") && pathname?.includes("/marketing/campaigns") || pathname?.startsWith("/merchant/marketing/campaigns")}
+                  highlightRed={pathname === marketingCampaignsUrl || pathname?.startsWith("/merchant/store/") && pathname?.includes("/marketing/campaigns") || pathname?.startsWith("/merchant/marketing/campaigns")}
                 />
                 <NavItem 
-                  href="/merchant/marketing/loyalty" 
+                  href={marketingLoyaltyUrl} 
                   label="Loyalty" 
                   icon={Star} 
-                  active={pathname === "/merchant/marketing/loyalty"}
-                  highlightRed={pathname === "/merchant/marketing/loyalty"}
+                  active={pathname === marketingLoyaltyUrl || (pathname?.startsWith("/merchant/store/") && pathname?.includes("/marketing/loyalty"))}
+                  highlightRed={pathname === marketingLoyaltyUrl || (pathname?.startsWith("/merchant/store/") && pathname?.includes("/marketing/loyalty"))}
                 />
               </div>
             )}
@@ -305,11 +327,11 @@ export default function MerchantSidebar() {
           </div>
           
           <NavItem 
-            href="/merchant/store-availability" 
+            href={effectiveStoreId ? `/merchant/store/${effectiveStoreId}/store-availability` : '/merchant/store-availability'} 
             label="Store Availability" 
             icon={Clock} 
-            active={pathname === "/merchant/store-availability"}
-            highlightRed={pathname === "/merchant/store-availability"}
+            active={pathname === (effectiveStoreId ? `/merchant/store/${effectiveStoreId}/store-availability` : '/merchant/store-availability') || (pathname?.startsWith("/merchant/store/") && pathname?.includes("/store-availability"))}
+            highlightRed={pathname === (effectiveStoreId ? `/merchant/store/${effectiveStoreId}/store-availability` : '/merchant/store-availability') || (pathname?.startsWith("/merchant/store/") && pathname?.includes("/store-availability"))}
           />
           
           {/* Financials Section */}
@@ -329,35 +351,35 @@ export default function MerchantSidebar() {
             {financialsExpanded && (
               <div className="mt-1 ml-2 space-y-1">
                 <NavItem 
-                  href="/merchant/financials/transactions" 
+                  href={financialsTransactionsUrl} 
                   label="Transactions" 
                   icon={FileText} 
-                  active={pathname === "/merchant/financials/transactions"}
-                  highlightOrange={pathname === "/merchant/financials/transactions"}
+                  active={pathname === financialsTransactionsUrl || (pathname?.startsWith("/merchant/store/") && pathname?.includes("/financials/transactions"))}
+                  highlightOrange={pathname === financialsTransactionsUrl || (pathname?.startsWith("/merchant/store/") && pathname?.includes("/financials/transactions"))}
                 />
                 <NavItem 
-                  href="/merchant/financials/payouts" 
+                  href={financialsPayoutsUrl} 
                   label="Payouts" 
                   icon={DollarSign} 
-                  active={pathname === "/merchant/financials/payouts"}
-                  highlightOrange={pathname === "/merchant/financials/payouts"}
+                  active={pathname === financialsPayoutsUrl || (pathname?.startsWith("/merchant/store/") && pathname?.includes("/financials/payouts"))}
+                  highlightOrange={pathname === financialsPayoutsUrl || (pathname?.startsWith("/merchant/store/") && pathname?.includes("/financials/payouts"))}
                 />
                 <NavItem 
-                  href="/merchant/financials/statements" 
+                  href={financialsStatementsUrl} 
                   label="Statements" 
                   icon={FileText} 
-                  active={pathname === "/merchant/financials/statements"}
-                  highlightOrange={pathname === "/merchant/financials/statements"}
+                  active={pathname === financialsStatementsUrl || (pathname?.startsWith("/merchant/store/") && pathname?.includes("/financials/statements"))}
+                  highlightOrange={pathname === financialsStatementsUrl || (pathname?.startsWith("/merchant/store/") && pathname?.includes("/financials/statements"))}
                 />
               </div>
             )}
           </div>
           <NavItem 
-            href="/merchant/request-delivery" 
+            href={effectiveStoreId ? `/merchant/store/${effectiveStoreId}/request-delivery` : '/merchant/request-delivery'} 
             label="Request a Delivery" 
             icon={Truck} 
-            active={pathname === "/merchant/request-delivery"}
-            highlightRed={pathname === "/merchant/request-delivery"}
+            active={pathname === (effectiveStoreId ? `/merchant/store/${effectiveStoreId}/request-delivery` : '/merchant/request-delivery') || (pathname?.startsWith("/merchant/store/") && pathname?.includes("/request-delivery"))}
+            highlightRed={pathname === (effectiveStoreId ? `/merchant/store/${effectiveStoreId}/request-delivery` : '/merchant/request-delivery') || (pathname?.startsWith("/merchant/store/") && pathname?.includes("/request-delivery"))}
           />
           
           {/* Settings with expandable submenu */}
@@ -377,40 +399,40 @@ export default function MerchantSidebar() {
                 {settingsExpanded && (
                   <div className="mt-1 ml-2 space-y-1">
                     <NavItem 
-                      href="/merchant/settings/account" 
+                      href={settingsAccountUrl} 
                       label="Account settings" 
                       icon={UserCog} 
-                      active={pathname === "/merchant/settings/account"}
-                      highlightRed={pathname === "/merchant/settings/account"}
+                      active={pathname === settingsAccountUrl || (pathname?.startsWith("/merchant/store/") && pathname?.includes("/settings/account"))}
+                      highlightRed={pathname === settingsAccountUrl || (pathname?.startsWith("/merchant/store/") && pathname?.includes("/settings/account"))}
                     />
                     <NavItem 
-                      href="/merchant/settings/pricing" 
+                      href={settingsPricingUrl} 
                       label="Pricing plans" 
                       icon={DollarSign} 
-                      active={pathname === "/merchant/settings/pricing"}
-                      highlightRed={pathname === "/merchant/settings/pricing"}
+                      active={pathname === settingsPricingUrl || (pathname?.startsWith("/merchant/store/") && pathname?.includes("/settings/pricing"))}
+                      highlightRed={pathname === settingsPricingUrl || (pathname?.startsWith("/merchant/store/") && pathname?.includes("/settings/pricing"))}
                     />
                     <NavItem 
-                      href="/merchant/settings/store" 
+                      href={settingsStoreUrl} 
                       label="Store settings" 
                       icon={Building2} 
-                      active={pathname === "/merchant/settings/store"}
-                      highlightRed={pathname === "/merchant/settings/store"}
+                      active={pathname === settingsStoreUrl || (pathname?.startsWith("/merchant/store/") && pathname?.includes("/settings/store"))}
+                      highlightRed={pathname === settingsStoreUrl || (pathname?.startsWith("/merchant/store/") && pathname?.includes("/settings/store"))}
                     />
-                    <NavItem href="/merchant/users" label="Manage Users" icon={Users} active={pathname?.startsWith("/merchant/users") || false} />
+                    <NavItem href={usersUrl} label="Manage Users" icon={Users} active={pathname === usersUrl || pathname?.startsWith("/merchant/store/") && pathname?.includes("/users") || pathname?.startsWith("/merchant/users") || false} />
                     <NavItem 
-                      href="/merchant/settings/store-communications" 
+                      href={settingsStoreCommUrl} 
                       label="Store communications" 
                       icon={Mail} 
-                      active={pathname === "/merchant/settings/store-communications"}
-                      highlightRed={pathname === "/merchant/settings/store-communications"}
+                      active={pathname === settingsStoreCommUrl || (pathname?.startsWith("/merchant/store/") && pathname?.includes("/settings/store-communications"))}
+                      highlightRed={pathname === settingsStoreCommUrl || (pathname?.startsWith("/merchant/store/") && pathname?.includes("/settings/store-communications"))}
                     />
                     <NavItem 
-                      href="/merchant/settings/bank-account" 
+                      href={settingsBankUrl} 
                       label="Bank account" 
                       icon={CreditCard} 
-                      active={pathname === "/merchant/settings/bank-account"}
-                      highlightOrange={pathname === "/merchant/settings/bank-account"}
+                      active={pathname === settingsBankUrl || (pathname?.startsWith("/merchant/store/") && pathname?.includes("/settings/bank-account"))}
+                      highlightOrange={pathname === settingsBankUrl || (pathname?.startsWith("/merchant/store/") && pathname?.includes("/settings/bank-account"))}
                     />
                     <NavItem href="#" label="Integrations" icon={Plug} active={false} disabled={true} />
                   </div>
