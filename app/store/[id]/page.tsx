@@ -973,13 +973,11 @@ export default function RestaurantPage() {
                               <p className="text-gray-900 mt-1">{item.price}</p>
                             </div>
                             <div className="relative w-24 h-24">
-                              <Image
+                              <img
                                 src={item.image || '/placeholder.svg'}
                                 alt={item.name}
-                                fill
-                                className="object-cover rounded-lg"
+                                className="w-full h-full object-cover rounded-lg"
                                 loading="lazy"
-                                sizes="96px"
                               />
                               <button
                                 className="absolute bottom-1 right-1 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-md hover:bg-gray-50 transition-colors"
@@ -1109,16 +1107,13 @@ export default function RestaurantPage() {
                           onClick={() => openItemDialog(item)}
                         >
                           <div className="relative h-40">
-                            <Image
+                            <img
                               src={
                                 item.image || '/placeholder.svg?height=160&width=200&query=burger'
                               }
                               alt={item.name}
-                              fill
-                              className="object-cover"
+                              className="w-full h-full object-cover"
                               loading="lazy"
-                              priority={false}
-                              sizes="(max-width: 768px) 200px, 200px"
                             />
                             <button
                               className="absolute bottom-3 right-3 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-md hover:bg-gray-50 transition-colors"
@@ -1166,13 +1161,11 @@ export default function RestaurantPage() {
                           onClick={() => openItemDialog(item)}
                         >
                           <div className="relative h-40">
-                            <Image
+                            <img
                               src={item.image || '/placeholder.svg'}
                               alt={item.name}
-                              fill
-                              className="object-cover"
+                              className="w-full h-full object-cover"
                               loading="lazy"
-                              sizes="(max-width: 768px) 100vw, 33vw"
                             />
                             <button
                               className="absolute bottom-3 right-3 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-md hover:bg-gray-50 transition-colors"
@@ -1248,11 +1241,10 @@ export default function RestaurantPage() {
                                 <p className="text-gray-900 mt-1">{item.price}</p>
                               </div>
                               <div className="relative w-24 h-24">
-                                <Image
+                                <img
                                   src={item.image || '/placeholder.svg'}
                                   alt={item.name}
-                                  fill
-                                  className="object-cover rounded-lg"
+                                  className="w-full h-full object-cover rounded-lg"
                                 />
                                 <button
                                   className="absolute bottom-1 right-1 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-md hover:bg-gray-50 transition-colors"

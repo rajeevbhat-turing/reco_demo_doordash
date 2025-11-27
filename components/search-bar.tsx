@@ -453,7 +453,7 @@ const SearchBar = () => {
                 >
                   <div className="flex items-start">
                     <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-100 mr-3 flex-shrink-0">
-                      <Image
+                      <img
                         src={result.logo || "/placeholder.svg?height=40&width=40&query=restaurant logo"}
                         alt={result.name}
                         width={40}

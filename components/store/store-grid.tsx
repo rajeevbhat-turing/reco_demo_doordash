@@ -156,7 +156,7 @@ export default function StoreGrid({
                   <div className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
                     <div className="flex gap-4">
                       <div className="relative w-16 h-16 rounded-full overflow-hidden bg-gray-100 flex-shrink-0">
-                        <Image
+                        <img
                           src={store.image || "/placeholder.svg"}
                           alt={store.name}
                           width={64}
