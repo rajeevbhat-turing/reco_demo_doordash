@@ -289,10 +289,9 @@ export default function ReviewDialog({
                       {getUserDisplayName()}
                     </span>
                     {/* Pending Badge */}
-                    <div className="flex items-center gap-1 p-1 bg-[#e7e7e7] rounded-md flex-shrink-0">
-                      {/* <Info className="h-4 w-4 text-[#191919ff]" /> */}
+                    {/* <div className="flex items-center gap-1 p-1 bg-[#e7e7e7] rounded-md flex-shrink-0">
                       <span className="text-xs font-bold text-[#191919ff]">Pending</span>
-                    </div>
+                    </div> */}
                   </div>
                   <div className="flex items-center gap-2">
                     <div className="flex items-center">
@@ -327,11 +326,11 @@ export default function ReviewDialog({
               </div>
 
               {/* Information Text */}
-              <p className="text-base font-medium text-[#191919ff] mb-2 px-4">
+              {/* <p className="text-base font-medium text-[#191919ff] mb-2 px-4">
                 Your review has been submitted. We'll check your store review to ensure it meets our{' '}
                 <span className="text-red-600">Review Guidelines</span>. You'll receive an email
                 when your store review is approved and added to this store's page.
-              </p>
+              </p> */}
 
               {/* Done Button */}
               <div className="flex justify-end px-4 border-t border-gray-200 pt-4">

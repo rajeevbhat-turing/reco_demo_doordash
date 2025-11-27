@@ -47,7 +47,7 @@ export const useReviewStore = create<ReviewStore>()(
             ...review,
             id: `review-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
             timestamp: new Date().toISOString(),
-            approvalStatus: 'pending'
+            approvalStatus: 'approved'
           };
 
           set((state) => ({
