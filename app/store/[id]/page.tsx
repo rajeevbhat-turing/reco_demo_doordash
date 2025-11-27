@@ -1301,14 +1301,12 @@ export default function RestaurantPage() {
         >
           <div className="flex items-center gap-3">
             <div className="flex-shrink-0">
-              <Image
+              <img
                 src="/offer-icon.svg"
                 alt="Deal"
                 width={24}
                 height={24}
                 loading="lazy"
-                sizes="24px"
-                height={24}
                 className="object-contain"
               />
             </div>
