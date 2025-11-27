@@ -1,7 +1,6 @@
 "use client"
 
 import React, { useState, useMemo } from "react"
-import Image from "next/image"
 import Link from "next/link"
 import { Heart, ChevronLeft, Star, Info } from "lucide-react"
 import type { Restaurant } from "@/constants/restaurants"
@@ -88,12 +87,10 @@ export default function VerticalListPage({
           >
             {/* Item Image */}
             <div className="w-full h-40 relative rounded-lg overflow-hidden">
-              <Image 
+              <img 
                 src={item.banner || item.image || "/placeholder.svg"}
                 alt={item.name}
-                fill
-                className="object-cover"
-                style={{ width: 'auto', height: 'auto' }}
+                className="w-full h-full object-cover"
               />
             </div>
 
@@ -106,7 +103,7 @@ export default function VerticalListPage({
                   <div className="flex items-center mt-1 text-sm text-gray-700 flex-wrap gap-y-1">
                     {item.dashPass && (
                       <span className="bg-blue-50 text-blue-600 px-2 py-0.5 rounded-sm mr-2 flex items-center">
-                        <Image
+                        <img
                           src="/dashpass-icon.svg"
                           alt="DashPass"
                           width={16}

@@ -2,7 +2,6 @@
 
 import { useEffect, useRef } from 'react';
 import { X } from 'lucide-react';
-import Image from 'next/image';
 import { format } from 'date-fns';
 import { generateAvatarColor } from '@/lib/utils/helperFunctions';
 
@@ -89,7 +88,7 @@ export default function PhotoViewerModal({
 
         {/* Image Container */}
         <div className="bg-black relative h-[400px] w-[420px] mx-4 rounded-xl overflow-hidden">
-          <Image src={photo} alt={`Photo by ${userName}`} layout="fill" objectFit="contain" />
+          <img src={photo} alt={`Photo by ${userName}`} className="w-full h-full object-contain" />
         </div>
 
         {/* Done Button */}

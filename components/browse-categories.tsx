@@ -1,4 +1,3 @@
-import Image from "next/image"
 import Link from "next/link"
 
 const categories = [
@@ -22,7 +21,7 @@ export default function BrowseCategories() {
           className="flex flex-col items-center gap-2"
         >
           <div className="w-16 h-16 flex items-center justify-center">
-            <Image
+            <img
               src="/placeholder.svg?height=64&width=64"
               alt={category.name}
               width={64}

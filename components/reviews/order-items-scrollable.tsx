@@ -2,7 +2,6 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { ThumbsUp, ChevronLeft, ChevronRight } from 'lucide-react';
-import Image from 'next/image';
 import { OrderItem } from '@/types/review-types';
 import MenuItemDialog from '@/components/menu-item-dialog';
 import type { MenuItem } from '@/constants/menu-items';
@@ -127,7 +126,7 @@ export default function OrderItemsScrollable({
             {/* Right Section - Image */}
             {item.image && (
               <div className="w-20 h-20 relative rounded-r-lg overflow-hidden flex-shrink-0">
-                <Image src={item.image} alt={item.name} fill className="object-cover" />
+                <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
               </div>
             )}
           </div>

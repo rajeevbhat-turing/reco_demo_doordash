@@ -1,5 +1,4 @@
 "use client"
-import Image from "next/image"
 import { useState } from "react"
 
 const DEFAULT_STORE_LOGO = "/store-logos/default-store.svg"
@@ -29,14 +28,13 @@ export default function StoreCard({ id, name, image, openTime, deliveryTime, dis
       >
         <div className="flex items-start gap-4">
           <div className="relative w-16 h-16 rounded-full overflow-hidden bg-gray-100">
-            {image && <Image
+            {image && <img
               src={imageError ? DEFAULT_STORE_LOGO : image}
               alt={name}
               width={64}
               height={64}
               className="object-cover"
               loading="lazy"
-              sizes="64px"
               onError={() => setImageError(true)}
             />}
           </div>
@@ -48,7 +46,7 @@ export default function StoreCard({ id, name, image, openTime, deliveryTime, dis
               <div>
                 <div className="flex items-center gap-2">
                 {isDashPass && (
-                    <Image src="/dashpass-icon.svg" alt="DashPass" width={16} height={16} loading="lazy" sizes="16px" />
+                    <img src="/dashpass-icon.svg" alt="DashPass" width={16} height={16} loading="lazy" />
                   )}
                   <h3 className="font-medium text-gray-900 truncate">{name}</h3>
                 </div>

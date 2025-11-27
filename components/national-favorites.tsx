@@ -1,7 +1,6 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import Image from "next/image"
 import Link from "next/link"
 import { Heart, Star } from "lucide-react"
 import { useRestaurants } from "@/lib/hooks/use-restaurants"
@@ -120,16 +119,13 @@ export default function NationalFavorites({ activeFilters }: NationalFavoritesPr
             <div key={restaurant.id} className="restaurant-card overflow-hidden">
               <Link href={`/store/${restaurant.id}`} className="block" prefetch={false}>
                 <div className="relative h-[200px] bg-gray-100">
-                  <Image
+                  <img
                     src={
                       restaurant.banner || `/placeholder.svg?height=200&width=400&query=${restaurant.name} restaurant`
                     }
                     alt={restaurant.name}
-                    fill
-                    className="object-cover"
+                    className="w-full h-full object-cover"
                     loading="lazy"
-                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                    style={{ width: 'auto', height: 'auto' }}
                     onError={(e) => {
                       // Fallback to placeholder if image fails to load
                       const target = e.target as HTMLImageElement;

@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import Image from 'next/image';
 import {
   ChevronRight,
   X,
@@ -1708,7 +1707,7 @@ export default function CheckoutPage() {
                   <div className="flex items-start justify-between gap-1">
                     {/* Piggy Bank Icon */}
                     <div className="flex items-center justify-center flex-shrink-0">
-                      <Image src="/piggy-bank.png" alt="Piggy Bank" width={80} height={100} />
+                      <img src="/piggy-bank.png" alt="Piggy Bank" width={80} height={100} />
                     </div>
                     <div className="py-4 flex-1 flex flex-col items-center">
                       <div className="text-sm text-[#191919ff]">You're saving</div>
@@ -1722,7 +1721,7 @@ export default function CheckoutPage() {
                     </div>
                     {/* Person with coins icon */}
                     <div className="w-16 h-16 flex items-center justify-center mt-4">
-                      <Image src="/coins.png" alt="Coins" width={80} height={100} />
+                      <img src="/coins.png" alt="Coins" width={80} height={100} />
                     </div>
                   </div>
                 </div>
@@ -1800,11 +1799,10 @@ export default function CheckoutPage() {
                           return (
                             <div key={item.id} className="flex gap-3">
                               <div className="relative w-16 h-16 flex-shrink-0 rounded-lg overflow-hidden bg-gray-100">
-                                <Image
+                                <img
                                   src={item.image || '/placeholder.svg'}
                                   alt={item.itemName}
-                                  fill
-                                  className="object-cover"
+                                  className="w-full h-full object-cover"
                                 />
                               </div>
                               <div className="flex w-full gap-2 justify-between">

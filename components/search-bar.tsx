@@ -1,7 +1,6 @@
 "use client"
 
 import React, { useState, useRef, useEffect, useSyncExternalStore } from "react"
-import Image from "next/image"
 import { Search, X, ArrowLeft, ChevronRight, Clock } from "lucide-react"
 import { useRouter, usePathname } from "next/navigation"
 import { useRestaurants } from "@/lib/hooks/use-restaurants"

@@ -1,7 +1,6 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
-import Image from "next/image"
 import { X, ChevronDown, ChevronUp, Minus, Plus } from "lucide-react"
 import { useCartStore } from "@/store/cart-store"
 import type { MenuItem } from "@/constants/menu-items"
@@ -487,13 +486,10 @@ export default function MenuItemDialog({ isOpen, onClose, item }: MenuItemDialog
 
           <div className="mt-4 relative">
             <div className="w-full h-64 relative rounded-lg overflow-hidden">
-              <Image
+              <img
                 src={item.image || "/placeholder.svg?height=256&width=400&query=burger+meal"}
                 alt={item.name}
-                fill
-                className="object-cover"
-                priority
-                sizes="(max-width: 768px) 100vw, 672px"
+                className="w-full h-full object-cover"
               />
             </div>
           </div>
@@ -787,7 +783,7 @@ function ModificationOptionCard({
           </button>
           {option.image && (
             <div className="ml-2 flex-shrink-0">
-              <Image
+              <img
                 src={option.image}
                 alt={option.name}
                 width={48}
@@ -857,7 +853,7 @@ function ModificationOptionCard({
       {/* Optional Image on the far right */}
       {option.image && (
         <div className="flex-shrink-0">
-          <Image
+          <img
             src={option.image}
             alt={option.name}
             width={48}

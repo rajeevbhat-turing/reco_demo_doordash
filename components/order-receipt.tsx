@@ -1,6 +1,5 @@
 'use client'
 
-import Image from "next/image"
 import { Phone, MessageSquare, Home, Briefcase } from "lucide-react"
 import { Order } from "@/constants/order-data"
 
@@ -65,7 +64,7 @@ export default function OrderReceipt({
             <p className="text-gray-600">{finalCompletionDate}</p>
           </div>
           <div className="w-14 h-14 bg-gray-100 rounded-lg flex items-center justify-center">
-            <Image 
+            <img 
               src="/placeholder-logo.svg" 
               alt="Store" 
               width={40} 
@@ -105,7 +104,7 @@ export default function OrderReceipt({
       <div className="border-t border-gray-300 py-5">
         <div className="flex items-center gap-4 mb-5">
           <div className="w-14 h-14 bg-gray-100 rounded-lg flex items-center justify-center">
-            <Image 
+            <img 
               src="/placeholder-logo.svg" 
               alt={getStoreName()} 
               width={40} 
@@ -124,7 +123,7 @@ export default function OrderReceipt({
             {order.items.map((item) => (
               <div key={item.id} className="flex items-start gap-4">
                 <div className="w-14 h-14 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <Image 
+                  <img 
                     src="/placeholder.svg" 
                     alt={item.name} 
                     width={40} 

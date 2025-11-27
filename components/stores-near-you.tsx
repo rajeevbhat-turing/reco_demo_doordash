@@ -1,4 +1,3 @@
-import Image from "next/image"
 import { Heart, Info } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
@@ -27,13 +26,11 @@ export default function StoresNearYou({ stores }: StoresNearYouProps) {
           <div key={`${store.name}-${index}`} className="border border-gray-200 rounded-lg p-4">
             <div className="flex gap-4">
               <div className="relative w-16 h-16 rounded-full overflow-hidden bg-gray-100">
-                <Image 
+                <img 
                   src={store.image || "/placeholder.svg"} 
                   alt={store.name} 
-                  fill 
-                  className="object-cover"
+                  className="w-full h-full object-cover"
                   loading="lazy"
-                  sizes="64px"
                 />
               </div>
 

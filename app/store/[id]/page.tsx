@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState, useRef, useCallback, useMemo } from 'react';
-import Image from 'next/image';
 import { useParams } from 'next/navigation';
 import {
   ChevronDown,
@@ -628,25 +627,20 @@ export default function RestaurantPage() {
     <div className="px-8 py-16">
       {/* Banner Image */}
       <div className="relative w-full h-[220px] rounded-bl-xl rounded-br-xl overflow-hidden">
-        <Image
+        <img
           src={restaurant.detailsBanner}
           alt={`${restaurant.name}'s Banner`}
-          fill
-          className="object-cover"
-          priority
-          sizes="100vw"
+          className="w-full h-full object-cover"
         />
         {restaurant.logo && (
           <div className="absolute left-6 bottom-6 z-10">
             <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-white shadow-md bg-red-600">
-              <Image
+              <img
                 src={restaurant.logo}
                 alt={restaurant.name}
                 width={80}
                 height={80}
                 className="object-contain"
-                priority
-                sizes="80px"
               />
             </div>
           </div>

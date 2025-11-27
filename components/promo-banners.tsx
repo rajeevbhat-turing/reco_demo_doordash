@@ -1,7 +1,6 @@
 "use client"
 
 import { useRef, useState, useEffect } from "react"
-import Image from "next/image"
 import Link from "next/link"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 
@@ -203,13 +202,12 @@ export default function PromoBanners() {
                 </div>
               </div>
               <div className="relative w-48 h-auto flex items-center justify-center">
-                <Image
+                <img
                   src={banner.image}
                   alt={banner.restaurantName}
                   width={120}
                   height={120}
                   className="object-contain rounded-full"
-                  style={{ width: 'auto', height: 'auto' }}
                   onError={(e) => {
                     // Fallback to placeholder if image fails to load
                     const target = e.target as HTMLImageElement;

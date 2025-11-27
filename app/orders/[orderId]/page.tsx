@@ -3,7 +3,6 @@
 import { useParams, useRouter } from 'next/navigation';
 import { useOrdersStore } from '@/store/orders-store';
 import { Phone, Download, Home, ArrowLeft } from 'lucide-react';
-import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { useState, useEffect } from 'react';
 import { Order } from '@/constants/order-data';
@@ -301,7 +300,7 @@ export default function OrderReceiptPage() {
                   <p className="text-gray-600 text-xs">{completionDate}</p>
                 </div>
                 <div className="w-10 h-10 bg-gray-100 rounded flex items-center justify-center">
-                  <Image src="/placeholder-logo.svg" alt="Store" width={24} height={24} />
+                  <img src="/placeholder-logo.svg" alt="Store" width={24} height={24} />
                 </div>
               </div>
 
@@ -377,7 +376,7 @@ export default function OrderReceiptPage() {
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
                   <div className="w-10 h-10 bg-gray-100 rounded flex items-center justify-center">
-                    <Image
+                    <img
                       src="/placeholder-logo.svg"
                       alt={getStoreName(order)}
                       width={24}
@@ -409,7 +408,7 @@ export default function OrderReceiptPage() {
                   {order.items.map(item => (
                     <div key={item.id} className="flex items-start gap-2">
                       <div className="w-10 h-10 bg-gray-100 rounded flex items-center justify-center flex-shrink-0">
-                        <Image src="/placeholder.svg" alt={item.name} width={24} height={24} />
+                        <img src="/placeholder.svg" alt={item.name} width={24} height={24} />
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex justify-between items-start gap-2">

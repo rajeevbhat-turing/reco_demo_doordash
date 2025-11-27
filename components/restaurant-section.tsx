@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import Image from 'next/image';
 import Link from 'next/link';
 import { Heart, ChevronLeft, ChevronRight, Star } from 'lucide-react';
 import type { Restaurant } from '@/constants/restaurants';
@@ -101,15 +100,13 @@ export default function RestaurantSection({
           >
             <div className="flex gap-4">
               <div className="relative w-16 h-16 rounded-full overflow-hidden bg-gray-100">
-                <Image
+                <img
                   src={restaurant.logo || '/placeholder-logo.svg'}
                   alt={restaurant.name}
                   width={64}
                   height={64}
                   className="object-cover"
                   loading="lazy"
-                  sizes="64px"
-                  style={{ width: 'auto', height: 'auto' }}
                   onError={e => {
                     // Fallback to placeholder if image fails to load
                     const target = e.target as HTMLImageElement;

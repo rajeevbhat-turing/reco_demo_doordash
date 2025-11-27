@@ -2,7 +2,6 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import Image from 'next/image';
 
 interface PhotoInfo {
   photo: string;
@@ -85,7 +84,7 @@ export default function ReviewPhotosScrollable({
               });
             }}
           >
-            <Image src={photo} alt={`Review photo ${index + 1}`} fill className="object-cover" />
+            <img src={photo} alt={`Review photo ${index + 1}`} className="w-full h-full object-cover" />
           </div>
         ))}
       </div>
