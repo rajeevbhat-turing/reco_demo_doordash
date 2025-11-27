@@ -8,7 +8,8 @@ import { useUserStore } from '@/store/user-store';
 export default function LayoutWrapper({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const isCheckoutPage = pathname === '/checkout';
-  const isAuthPage = pathname?.startsWith('/auth');
+  const isAuthPage = pathname?.startsWith('/auth') || pathname?.startsWith('/password_reset');
+
   // Check if it's an order detail page (e.g., /orders/123) but not the order list page (/orders)
   const isOrderDetailPage = pathname?.startsWith('/orders/') && pathname !== '/orders';
 

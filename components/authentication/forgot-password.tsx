@@ -1,16 +1,19 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { isValidEmail } from '@/lib/utils/helperFunctions';
+import { useUserByEmail } from '@/lib/hooks/use-user';
 
 interface ForgotPasswordProps {
   onBackToSignIn: () => void;
   email?: string;
   onSuccessStateChange?: (showSuccess: boolean) => void;
   onSuccess?: () => void;
+  setMode?: (mode: 'signin' | 'signup' | 'forgot-password', email?: string) => void;
 }
 
 const IllustrationImage = () => (
@@ -299,14 +302,53 @@ const SuccessIllustration = () => (
   </svg>
 );
 
-export default function ForgotPassword({ onBackToSignIn, email, onSuccessStateChange, onSuccess }: ForgotPasswordProps) {
+export default function ForgotPassword({
+  onBackToSignIn,
+  email,
+  onSuccessStateChange,
+  onSuccess,
+  setMode,
+}: ForgotPasswordProps) {
+  const router = useRouter();
   const [formData, setFormData] = useState({
     email: email || '',
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [showSuccess, setShowSuccess] = useState(false);
   const [showResendNotification, setShowResendNotification] = useState(false);
+  const [shouldFetchUser, setShouldFetchUser] = useState(false);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Use the hook to fetch user by email when shouldFetchUser is true
+  const {
+    data: user,
+    isLoading,
+    isError,
+    error,
+  } = useUserByEmail(shouldFetchUser && formData.email ? formData.email : '');
+
+  // Handle user fetch result
+  useEffect(() => {
+    if (shouldFetchUser && !isLoading) {
+      if (user) {
+        // User exists - navigate to password reset page
+        setShouldFetchUser(false);
+        router.push(`/password_reset/${user.id}`);
+      } else if (isError) {
+        // User doesn't exist - show error
+        const errMsg =
+          "We couldn't find an account with the email you entered. Try a different email or sign up.";
+        setErrors({
+          general: error?.message
+            ? error.message === 'User not found'
+              ? errMsg
+              : error.message
+            : errMsg,
+        });
+        setShouldFetchUser(false);
+      }
+    }
+  }, [shouldFetchUser, isLoading, user, isError, error, router]);
 
   // Clear timeout when component unmounts
   useEffect(
@@ -331,6 +373,10 @@ export default function ForgotPassword({ onBackToSignIn, email, onSuccessStateCh
     // Clear field error when user types
     if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: '' }));
+    }
+    // Clear general error when user types
+    if (errors.general) {
+      setErrors(prev => ({ ...prev, general: '' }));
     }
     // Validate email format on change
     if (field === 'email' && value.trim() && !isValidEmail(value)) {
@@ -361,12 +407,11 @@ export default function ForgotPassword({ onBackToSignIn, email, onSuccessStateCh
       return;
     }
 
-    // Show success screen
-    setShowSuccess(true);
-    // Call onSuccess callback if provided
-    if (onSuccess) {
-      onSuccess();
-    }
+    // Clear previous errors
+    setErrors({});
+
+    // Trigger user fetch
+    setShouldFetchUser(true);
   };
 
   // Handles resend email button click
@@ -472,12 +517,48 @@ export default function ForgotPassword({ onBackToSignIn, email, onSuccessStateCh
         )}
       </div>
 
+      {/* General Error Message */}
+      {errors.general && (
+        <div className="p-3 rounded-xl bg-[#fef6d4] mb-6">
+          <div className="flex">
+            <div className="h-8 w-8 mr-2 flex-shrink-0 text-[#a36500]">
+              <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+                <path
+                  fillRule="evenodd"
+                  d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            </div>
+            <div>
+              <p className="text-[16px] font-bold text-[#191919ff] text-center">Incorrect email</p>
+              <p className="text-[15px] font-medium text-[#191919ff]">{errors.general}</p>
+              <button
+                type="button"
+                onClick={() => {
+                  if (setMode) {
+                    setMode('signup');
+                  } else {
+                    router.push('/auth/user/signup');
+                  }
+                }}
+                className="mt-2 px-4 py-2 rounded-[24px] text-[#191919ff] 
+                font-bold text-sm hover:bg-gray-50 transition-colors bg-white shadow-md"
+              >
+                Create an account
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Reset Password Button */}
       <Button
         type="submit"
-        className="w-full bg-red-600 hover:bg-red-700 text-white font-bold text-[15px] py-3 rounded-3xl mb-3"
+        disabled={isLoading}
+        className="w-full bg-red-600 hover:bg-red-700 text-white font-bold text-[15px] py-3 rounded-3xl mb-3 disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        Reset Password
+        {isLoading ? 'Checking...' : 'Reset Password'}
       </Button>
 
       {/* Back to Sign In Button */}
