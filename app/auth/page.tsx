@@ -37,8 +37,9 @@ export default function AuthPage() {
       }
     } else if (newMode === 'signin') {
       setMode('signin');
+    } else if (newMode === 'signup') {
+      router.replace('/auth/user/signup');
     }
-    // Ignore signup mode since it's handled by the signup button
   };
 
   return (
