@@ -2,7 +2,6 @@
 
 import type React from "react"
 import { useEffect } from "react"
-import Image from "next/image"
 import { Plus, Trash2, Minus } from "lucide-react"
 import type { Product } from "@/types"
 import { CartCategory, useCartStore } from "@/store/cart-store"
@@ -87,14 +86,13 @@ export default function ProductCard({
   return (
     <div className="min-w-[140px] max-w-[140px] flex-shrink-0 cursor-pointer" onClick={() => onProductClick(product)}>
       <div className="relative mb-2">
-        <Image
+        <img
           src={product.image || "/placeholder.svg"}
           alt={product.name}
           width={140}
           height={140}
           className="rounded-lg object-cover aspect-square"
           loading="lazy"
-          sizes="140px"
         />
 
         {quantity > 0 ? (

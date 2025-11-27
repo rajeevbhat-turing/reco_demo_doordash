@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
-import Image from 'next/image';
 import { ArrowRight, Star, Search, MapPin, ChevronRight, Plus, Navigation } from 'lucide-react';
 import AuthenticationModal from '@/components/modals/authentication-modal';
 import AddNewAddressModal from '@/components/modals/landing-page/add-new-address-modal';
@@ -330,7 +329,7 @@ export default function LandingPage() {
       <div className="bg-[#2f477f] min-h-[100vh] relative flex flex-col items-center justify-center mt-[-64px] overflow-hidden">
         {/* Left image banner */}
         <div className="absolute top-0 bottom-0" style={{ left: `-${imageOffset}px` }}>
-          <Image
+          <img
             src="/landing-page/food-image-1.png"
             alt="Landing page left banner"
             width={500}
@@ -341,7 +340,7 @@ export default function LandingPage() {
 
         {/* Right image banner */}
         <div className="absolute top-0 bottom-0" style={{ right: `-${imageOffset}px` }}>
-          <Image
+          <img
             src="/landing-page/food-image-2.png"
             alt="Landing page right banner"
             width={500}

@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useMemo, useState } from 'react';
 import { X } from 'lucide-react';
-import Image from 'next/image';
 import Link from 'next/link';
 import { Star } from 'lucide-react';
 import { UserReview } from '@/types/review-types';
@@ -225,7 +224,7 @@ export default function UserRatingsModal({
                     {/* Vendor Logo */}
                     <div className="w-10 h-10 rounded-full overflow-hidden bg-white flex-shrink-0 border border-[#e5e5e5]">
                       {vendor.vendorLogo ? (
-                        <Image
+                        <img
                           src={vendor.vendorLogo}
                           alt={vendor.vendorName}
                           width={48}

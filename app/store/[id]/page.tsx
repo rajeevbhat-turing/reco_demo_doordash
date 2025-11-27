@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState, useRef, useCallback, useMemo } from 'react';
-import Image from 'next/image';
 import { useParams } from 'next/navigation';
 import {
   ChevronDown,
@@ -628,25 +627,20 @@ export default function RestaurantPage() {
     <div className="px-8 py-16">
       {/* Banner Image */}
       <div className="relative w-full h-[220px] rounded-bl-xl rounded-br-xl overflow-hidden">
-        <Image
+        <img
           src={restaurant.detailsBanner}
           alt={`${restaurant.name}'s Banner`}
-          fill
-          className="object-cover"
-          priority
-          sizes="100vw"
+          className="w-full h-full object-cover"
         />
         {restaurant.logo && (
           <div className="absolute left-6 bottom-6 z-10">
             <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-white shadow-md bg-red-600">
-              <Image
+              <img
                 src={restaurant.logo}
                 alt={restaurant.name}
                 width={80}
                 height={80}
                 className="object-contain"
-                priority
-                sizes="80px"
               />
             </div>
           </div>
@@ -979,13 +973,11 @@ export default function RestaurantPage() {
                               <p className="text-gray-900 mt-1">{item.price}</p>
                             </div>
                             <div className="relative w-24 h-24">
-                              <Image
+                              <img
                                 src={item.image || '/placeholder.svg'}
                                 alt={item.name}
-                                fill
-                                className="object-cover rounded-lg"
+                                className="w-full h-full object-cover rounded-lg"
                                 loading="lazy"
-                                sizes="96px"
                               />
                               <button
                                 className="absolute bottom-1 right-1 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-md hover:bg-gray-50 transition-colors"
@@ -1115,16 +1107,13 @@ export default function RestaurantPage() {
                           onClick={() => openItemDialog(item)}
                         >
                           <div className="relative h-40">
-                            <Image
+                            <img
                               src={
                                 item.image || '/placeholder.svg?height=160&width=200&query=burger'
                               }
                               alt={item.name}
-                              fill
-                              className="object-cover"
+                              className="w-full h-full object-cover"
                               loading="lazy"
-                              priority={false}
-                              sizes="(max-width: 768px) 200px, 200px"
                             />
                             <button
                               className="absolute bottom-3 right-3 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-md hover:bg-gray-50 transition-colors"
@@ -1172,13 +1161,11 @@ export default function RestaurantPage() {
                           onClick={() => openItemDialog(item)}
                         >
                           <div className="relative h-40">
-                            <Image
+                            <img
                               src={item.image || '/placeholder.svg'}
                               alt={item.name}
-                              fill
-                              className="object-cover"
+                              className="w-full h-full object-cover"
                               loading="lazy"
-                              sizes="(max-width: 768px) 100vw, 33vw"
                             />
                             <button
                               className="absolute bottom-3 right-3 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-md hover:bg-gray-50 transition-colors"
@@ -1254,11 +1241,10 @@ export default function RestaurantPage() {
                                 <p className="text-gray-900 mt-1">{item.price}</p>
                               </div>
                               <div className="relative w-24 h-24">
-                                <Image
+                                <img
                                   src={item.image || '/placeholder.svg'}
                                   alt={item.name}
-                                  fill
-                                  className="object-cover rounded-lg"
+                                  className="w-full h-full object-cover rounded-lg"
                                 />
                                 <button
                                   className="absolute bottom-1 right-1 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-md hover:bg-gray-50 transition-colors"
@@ -1315,14 +1301,12 @@ export default function RestaurantPage() {
         >
           <div className="flex items-center gap-3">
             <div className="flex-shrink-0">
-              <Image
+              <img
                 src="/offer-icon.svg"
                 alt="Deal"
                 width={24}
                 height={24}
                 loading="lazy"
-                sizes="24px"
-                height={24}
                 className="object-contain"
               />
             </div>

@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react"
 import { ChevronDown, ChevronUp, Minus, Plus } from "lucide-react"
-import Image from "next/image"
 import type { Product } from "@/types"
 import { useCartStore } from "@/store/cart-store"
 import Modal from "@/components/ui/modal"
@@ -77,7 +76,7 @@ export default function ProductDetailModal({ product, onClose, storeId, category
         {/* Product image */}
         <div className="md:w-1/2">
           <div className="rounded-lg overflow-hidden">
-            <Image
+            <img
               src={product.image || "/placeholder.svg"}
               alt={product.name}
               width={500}

@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useRef, useEffect, useCallback } from 'react';
-import Image from 'next/image';
 import { ChevronRight, ChevronLeft, ExternalLink } from 'lucide-react';
 import DealsModal from '../modals/deals-modal';
 import DealModal from '../modals/deal-modal';
@@ -163,7 +162,7 @@ export default function Deals({ restaurantId }: DealsProps) {
             <div className="flex-shrink-0">
               <div className="w-12 h-12 flex items-center justify-center">
                 {deal.id === 'dashpass-delivery-fee' ? (
-                  <Image
+                  <img
                     src="/dashpass-icon-green.svg"
                     alt={deal.title}
                     width={30}
@@ -171,7 +170,7 @@ export default function Deals({ restaurantId }: DealsProps) {
                     className="object-contain"
                   />
                 ) : (
-                  <Image
+                  <img
                     src="/offer-icon.svg"
                     alt={deal.title}
                     width={30}

@@ -1,6 +1,5 @@
 'use client';
 import { Button } from '@/components/ui/button';
-import Image from 'next/image';
 import { Order } from '@/constants/order-data';
 import { useOrdersStore } from '@/store/orders-store';
 import { useState, useEffect } from 'react';
@@ -276,7 +275,7 @@ export default function Orders() {
                         <div className="flex items-center gap-2">
                           <h4 className="text-base font-semibold">{getStoreName(order)}</h4>
                           {order.isDashPass && (
-                            <Image src="/dashpass-icon.svg" alt="DashPass" width={16} height={16} />
+                            <img src="/dashpass-icon.svg" alt="DashPass" width={16} height={16} />
                           )}
                         </div>
                         <ChevronRight className="w-5 h-5 text-gray-400" />
@@ -286,7 +285,7 @@ export default function Orders() {
                         <div className="flex items-center gap-2">
                           <h4 className="text-base font-semibold">{getStoreName(order)}</h4>
                           {order.isDashPass && (
-                            <Image src="/dashpass-icon.svg" alt="DashPass" width={16} height={16} />
+                            <img src="/dashpass-icon.svg" alt="DashPass" width={16} height={16} />
                           )}
                         </div>
                         <ChevronRight className="w-5 h-5 text-gray-400" />

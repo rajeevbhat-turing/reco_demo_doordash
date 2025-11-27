@@ -1,6 +1,5 @@
 "use client"
 
-import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { Trash2 } from "lucide-react"
 import type { Cart } from "@/store/cart-store"
@@ -122,11 +121,10 @@ export default function OtherCarts({ carts, onRemoveCart, onClose, restaurants }
               <div className="flex space-x-2">
                 {cart.items.slice(0, 3).map((item, idx) => (
                   <div key={`${item?.itemName}-${idx}`} className="relative w-16 h-16 rounded-md overflow-hidden bg-gray-100">
-                    <Image
+                    <img
                       src={item.image || '/placeholder.svg'}
                       alt={item.itemName}
-                      fill
-                      className="object-cover"
+                      className="w-full h-full object-cover"
                     />
                   </div>
                 ))}

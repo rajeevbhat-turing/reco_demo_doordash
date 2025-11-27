@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { X, MapPin, Clock, Phone, ChevronDown, ChevronUp } from 'lucide-react';
-import Image from 'next/image';
 
 interface StoreDetailsDialogProps {
   isOpen: boolean;
@@ -71,7 +70,7 @@ export default function StoreDetailsDialog({ isOpen, onClose, store }: StoreDeta
           <div className="flex items-center mb-6">
             {store.logo && (
               <div className="mr-3 w-12 h-12 rounded-full overflow-hidden border-2 border-gray-200">
-                <Image
+                <img
                   src={store.logo}
                   alt={store.name}
                   width={48}

@@ -7,7 +7,6 @@ import { X, Star, Info, ThumbsUp, ThumbsDown } from 'lucide-react';
 import { useUserStore } from '@/store/user-store';
 import { useReviewStore } from '@/store/review-store';
 import { FilledLightbulbIcon } from '@/lib/utils/icons';
-import Image from 'next/image';
 import { OrderItem } from '@/types/review-types';
 
 interface ReviewDialogProps {
@@ -310,7 +309,7 @@ export default function ReviewDialog({
                     </div>
                     <span className="text-sm text-[#191919ff] font-medium">
                       today • Reviewed on{' '}
-                      <Image
+                      <img
                         src="/dashpass-icon.svg"
                         alt="DoorDash"
                         width={24}
@@ -367,11 +366,10 @@ export default function ReviewDialog({
                     </div>
                     {vendorLogo && (
                       <div className="w-16 h-16 relative rounded-lg overflow-hidden flex-shrink-0">
-                        <Image
+                        <img
                           src={vendorLogo}
                           alt={restaurantName}
-                          fill
-                          className="object-contain"
+                          className="w-full h-full object-contain"
                         />
                       </div>
                     )}
@@ -504,11 +502,10 @@ export default function ReviewDialog({
                           {/* Item Image */}
                           {item.image && (
                             <div className="w-16 h-16 relative rounded-lg overflow-hidden flex-shrink-0">
-                              <Image
+                              <img
                                 src={item.image}
                                 alt={item.name}
-                                fill
-                                className="object-cover"
+                                className="w-full h-full object-cover"
                               />
                             </div>
                           )}

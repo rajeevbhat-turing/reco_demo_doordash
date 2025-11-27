@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { X, ExternalLink, ChevronRight } from 'lucide-react';
-import Image from 'next/image';
 import DealModal from './deal-modal';
 import { type Deal } from '@/types/deal-types';
 import { DashDoorLogoMark } from '../common/Icons';
@@ -188,7 +187,7 @@ function DealCard({
       <div className="flex-shrink-0">
         <div className="w-12 h-12 flex items-center justify-center">
           {deal.id === 'dashpass-delivery-fee' ? (
-            <Image
+            <img
               src="/dashpass-icon-green.svg"
               alt={deal.title}
               width={30}
@@ -196,7 +195,7 @@ function DealCard({
               className="object-contain"
             />
           ) : (
-            <Image
+            <img
               src="/offer-icon.svg"
               alt={deal.title}
               width={30}

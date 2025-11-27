@@ -5,7 +5,6 @@ import { ChevronLeft, ChevronRight, Plus, Trash2, Minus } from "lucide-react"
 import ProductCard from "@/components/product-card"
 import type { Product } from "@/types"
 import Link from "next/link"
-import Image from "next/image"
 import { CartCategory, useCartStore } from "@/store/cart-store"
 
 interface ProductDisplayProps {
@@ -133,7 +132,7 @@ export default function ProductDisplay({
         <div className="flex items-center gap-3">
           {storeImage && (
             <div className="w-14 h-14 rounded-full overflow-hidden bg-gray-100 border border-gray-200 flex-shrink-0">
-              <Image
+              <img
                 src={storeImage || "/placeholder.svg"}
                 alt={storeName || "Store"}
                 width={56}
@@ -206,7 +205,7 @@ export default function ProductDisplay({
                 return (
                   <div key={product.id} className="border border-gray-200 rounded-lg overflow-hidden min-w-[200px] md:min-w-[220px] snap-start">
                     <div className="relative h-32 w-full flex items-center justify-center">
-                      <Image
+                      <img
                         src={product.image || "/placeholder.svg"}
                         alt={product.name}
                         width={128}

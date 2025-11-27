@@ -1,4 +1,3 @@
-import Image from 'next/image';
 import { ArrowRight } from 'lucide-react';
 
 export default function ContentSections() {
@@ -13,7 +12,7 @@ export default function ContentSections() {
           md:max-w-[450px] lg:max-w-[270px] mx-auto gap-8 md:gap-12 lg:gap-0"
           >
             <div className="mb-0 lg:mb-4 flex-shrink-0">
-              <Image
+              <img
                 src="/landing-page/dasher.png"
                 alt="Dasher"
                 width={154}
@@ -42,7 +41,7 @@ export default function ContentSections() {
           md:max-w-[450px] lg:max-w-[270px] mx-auto gap-8 md:gap-12 lg:gap-0"
           >
             <div className="mb-0 lg:mb-4 flex-shrink-0">
-              <Image
+              <img
                 src="/landing-page/merchant.png"
                 alt="Merchant"
                 width={154}
@@ -72,7 +71,7 @@ export default function ContentSections() {
           md:max-w-[450px] lg:max-w-[270px] mx-auto gap-8 md:gap-12 lg:gap-0"
           >
             <div className="mb-0 lg:mb-4 flex-shrink-0">
-              <Image
+              <img
                 src="/landing-page/mobile.png"
                 alt="Mobile app"
                 width={154}
@@ -125,7 +124,7 @@ export default function ContentSections() {
 
             {/* Right column - Image */}
             <div className="w-full relative z-10 md:col-span-1 lg:col-span-2 order-1 md:order-2 -mt-10 md:mt-0">
-              <Image
+              <img
                 src="/landing-page/gallery-1.png"
                 alt="Person enjoying delivered food outdoors"
                 width={700}
@@ -143,7 +142,7 @@ export default function ContentSections() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 items-center">
             {/* Image - 1 column on md, 2 columns on lg */}
             <div className="w-full relative z-10 md:col-span-1 lg:col-span-2">
-              <Image
+              <img
                 src="/landing-page/gallery-2.png"
                 alt="DashPass food items"
                 width={700}
@@ -183,7 +182,7 @@ export default function ContentSections() {
             {/* Item 1: Beauty essentials */}
             <div className="flex flex-col items-center text-center">
               <div className="w-full mb-4">
-                <Image
+                <img
                   src="/landing-page/gallery-5.png"
                   alt="Beauty essentials"
                   width={600}
@@ -208,7 +207,7 @@ export default function ContentSections() {
             {/* Item 2: Flowers */}
             <div className="flex flex-col items-center text-center">
               <div className="w-full mb-4">
-                <Image
+                <img
                   src="/landing-page/gallery-6.png"
                   alt="Flowers"
                   width={600}
@@ -233,7 +232,7 @@ export default function ContentSections() {
             {/* Item 3: Restock the minibar */}
             <div className="flex flex-col items-center text-center">
               <div className="w-full mb-4">
-                <Image
+                <img
                   src="/landing-page/gallery-7.png"
                   alt="Restock the minibar"
                   width={600}
@@ -296,7 +295,7 @@ export default function ContentSections() {
 
               {/* Right column - Image */}
               <div className="w-full relative z-10 md:col-span-1 lg:col-span-2 order-1 md:order-2">
-                <Image
+                <img
                   src="/landing-page/gallery-9.png"
                   alt="Dasher delivery driver"
                   width={700}
@@ -315,7 +314,7 @@ export default function ContentSections() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 items-center">
             {/* Image - 1 column on md, 2 columns on lg */}
             <div className="w-full relative z-10 md:col-span-1 lg:col-span-2">
-              <Image
+              <img
                 src="/landing-page/gallery-10.png"
                 alt="Business partner"
                 width={700}

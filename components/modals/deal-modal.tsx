@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useMemo } from 'react';
 import { X, Plus, ThumbsUp } from 'lucide-react';
-import Image from 'next/image';
 import { type Deal } from '@/types/deal-types';
 import { type MenuItem } from '@/constants/menu-items';
 import { useCartStore } from '@/store/cart-store';
@@ -240,11 +239,10 @@ export default function DealModal({ isOpen, onClose, deal }: DealModalProps) {
                   {/* Item Image */}
                   <div className="flex-shrink-0 w-[100px] h-[100px] relative">
                     {item.image ? (
-                      <Image
+                      <img
                         src={item.image}
                         alt={item.name}
-                        fill
-                        className="object-cover rounded-md"
+                        className="w-full h-full object-cover rounded-md"
                       />
                     ) : (
                       <div className="w-[100px] h-[100px] bg-gray-200 rounded-md flex items-center justify-center">

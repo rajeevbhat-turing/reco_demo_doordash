@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from "react"
 import { X, ChevronRight, ArrowLeft, Copy, Check } from "lucide-react"
-import Image from "next/image"
 import { useCartStore } from "@/store/cart-store"
 
 interface GroupOrderDialogProps {
@@ -145,7 +144,7 @@ export default function GroupOrderDialog({ isOpen, onClose }: GroupOrderDialogPr
 
             <div className="p-6 pt-16">
               <div className="flex justify-center mb-6">
-                <Image
+                <img
                   src="https://img.cdn4dd.com/s/managed/consumer/group-orders/group-order-people.svg"
                   alt="Group order illustration"
                   width={160}

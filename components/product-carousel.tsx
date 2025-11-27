@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect } from "react"
-import Image from "next/image"
 import { ChevronLeft, ChevronRight, Plus } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useCartStore } from "@/store/cart-store"
@@ -39,13 +38,12 @@ export default function ProductCarousel({
       </div>
       <div className="flex items-start mb-4">
         <div className="relative w-12 h-12 rounded-full overflow-hidden bg-gray-100 mr-4">
-          <Image
+          <img
             src={storeImage}
             alt={storeName}
             width={48}
             height={48}
             className="object-cover"
-            unoptimized // Add this to prevent optimization issues with external URLs
           />
         </div>
 
@@ -89,13 +87,10 @@ export default function ProductCarousel({
             <div className="group relative h-40 w-full bg-gray-50 flex items-center justify-center">
               {/* Product image */}
               <div className="relative h-28 w-28">
-                <Image
+                <img
                   src={product.image}
                   alt={product.name}
-                  fill
-                  sizes="(max-width: 768px) 100vw, 33vw"
-                  className="object-contain"
-                  unoptimized // Prevents Next.js image optimization issues
+                  className="w-full h-full object-contain"
                 />
               </div>
 

@@ -3,7 +3,6 @@
 import { useState, useMemo, useRef, useEffect } from 'react';
 import { X, ChevronRight, Plus, MapPin } from 'lucide-react';
 import addressesData from '@/data/addresses.json';
-import Image from 'next/image';
 import { useUserStore } from '@/store/user-store';
 
 interface AddressSelectionModalProps {
@@ -181,7 +180,7 @@ export default function AddressSelectionModal({
             {/* Top Section - Food Icons */}
             <div className="flex items-center justify-center gap-3 mb-4">
               <div className="w-24 h-24 rounded-xl flex items-center justify-center overflow-hidden">
-                <Image
+                <img
                   src="/address-selection-image-1.png"
                   alt="Food item 1"
                   width={96}
@@ -190,7 +189,7 @@ export default function AddressSelectionModal({
                 />
               </div>
               <div className="w-24 h-24 rounded-xl flex items-center justify-center overflow-hidden">
-                <Image
+                <img
                   src="/address-selection-image-2.png"
                   alt="Food item 2"
                   width={96}
@@ -199,7 +198,7 @@ export default function AddressSelectionModal({
                 />
               </div>
               <div className="w-24 h-24 rounded-xl flex items-center justify-center overflow-hidden">
-                <Image
+                <img
                   src="/address-selection-image-3.png"
                   alt="Food item 3"
                   width={96}

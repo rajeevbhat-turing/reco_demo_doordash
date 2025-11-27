@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useMemo, useRef, useSyncExternalStore } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import Image from 'next/image';
 import Link from 'next/link';
 import { Heart, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useRestaurants } from '@/lib/hooks/use-restaurants';
@@ -614,11 +613,10 @@ export default function SearchPage() {
                       }
                     >
                       <div className="relative h-[180px] bg-gray-100 rounded-lg overflow-hidden mb-2">
-                        <Image
+                        <img
                           src={item.image || '/placeholder.svg?height=180&width=180'}
                           alt={item.name}
-                          fill
-                          className="object-cover"
+                          className="w-full h-full object-cover"
                         />
                       </div>
                       <div className="px-1 flex flex-col flex-1">

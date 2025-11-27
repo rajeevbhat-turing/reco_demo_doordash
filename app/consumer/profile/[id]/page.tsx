@@ -5,7 +5,6 @@ import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Star, ChevronRight, ArrowRight, ChevronLeft } from 'lucide-react';
 import { format } from 'date-fns';
-import Image from 'next/image';
 import UserRatingsModal from '@/components/modals/user-ratings-modal';
 import ProfileBadgesModal from '@/components/modals/profile-badges-modal';
 import EditProfile from '@/components/profile/EditProfile';
@@ -219,7 +218,7 @@ export default function UserProfilePage() {
                     >
                       <div className="w-16 h-16 rounded-full overflow-hidden mb-2 border border-[#e5e5e5]">
                         {vendor.vendorLogo ? (
-                          <Image
+                          <img
                             src={vendor.vendorLogo}
                             alt={vendor.vendorName}
                             width={64}

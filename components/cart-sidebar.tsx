@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
-import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { X, ChevronRight, ChevronLeft, Plus, Minus } from 'lucide-react';
 import { useCartStore } from '@/store/cart-store';
@@ -535,14 +534,13 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
             {items.map(item => (
               <div key={item.id} className="p-4 flex">
                 <div className="relative h-14 w-14 mr-4 flex-shrink-0">
-                  <Image
+                  <img
                     src={item.image?.trim() || '/placeholder.svg'}
                     alt={item.itemName || 'Item Image'}
                     width={96}
                     height={96}
                     className="object-cover rounded-md"
                     loading="lazy"
-                    sizes="56px"
                   />
                 </div>
                 <div className="flex-1">
@@ -642,13 +640,11 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
                   {complementItems.map(item => (
                     <div key={item.id} className="flex flex-col items-center min-w-[100px]">
                       <div className="relative w-20 h-20 mb-2">
-                        <Image
+                        <img
                           src={item.image || '/placeholder.svg'}
                           alt={item.name || 'Item Image'}
-                          fill
-                          className="object-cover rounded-lg"
+                          className="w-full h-full object-cover rounded-lg"
                           loading="lazy"
-                          sizes="80px"
                         />
                         <button
                           className="absolute bottom-1 right-1 bg-white rounded-full p-1 shadow-md hover:bg-gray-50 transition-colors"

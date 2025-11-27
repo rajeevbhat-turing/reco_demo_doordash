@@ -2,7 +2,6 @@
 
 import { useEffect, useRef } from 'react';
 import { X, Store, Users, CheckCircle, CircleCheck } from 'lucide-react';
-import Image from 'next/image';
 import { FollowersIcon, MarketIcon } from '@/lib/utils/icons';
 
 interface ReviewsInfoModalProps {
@@ -63,11 +62,10 @@ export default function ReviewsInfoModal({ isOpen, onClose }: ReviewsInfoModalPr
 
         {/* Illustration Section */}
         <div className="relative w-[80%] h-[280px] mt-3 mx-auto">
-          <Image
+          <img
             src="/review-info.png"
             alt="Public reviews illustration"
-            fill
-            className="object-cover"
+            className="w-full h-full object-cover"
           />
         </div>
 

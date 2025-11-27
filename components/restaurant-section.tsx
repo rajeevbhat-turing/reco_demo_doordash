@@ -1,8 +1,8 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Heart, ChevronLeft, ChevronRight, Star } from 'lucide-react';
 import type { Restaurant } from '@/constants/restaurants';
 import { getDefaultRating } from '@/utils/rating-utils';
@@ -18,6 +18,7 @@ export default function RestaurantSection({
   restaurants,
   seeAllLink = '/all-items',
 }: RestaurantSectionProps) {
+  const router = useRouter();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [showLeftArrow, setShowLeftArrow] = useState(false);
   const [showRightArrow, setShowRightArrow] = useState(true);
@@ -97,19 +98,21 @@ export default function RestaurantSection({
             href={`/store/${restaurant.id}`}
             key={restaurant.id}
             className="block border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
-            prefetch={false}
+            prefetch={true}
+            onMouseEnter={() => {
+              // Prefetch on hover for even faster navigation
+              router.prefetch(`/store/${restaurant.id}`);
+            }}
           >
             <div className="flex gap-4">
               <div className="relative w-16 h-16 rounded-full overflow-hidden bg-gray-100">
-                <Image
+                <img
                   src={restaurant.logo || '/placeholder-logo.svg'}
                   alt={restaurant.name}
                   width={64}
                   height={64}
                   className="object-cover"
                   loading="lazy"
-                  sizes="64px"
-                  style={{ width: 'auto', height: 'auto' }}
                   onError={e => {
                     // Fallback to placeholder if image fails to load
                     const target = e.target as HTMLImageElement;
