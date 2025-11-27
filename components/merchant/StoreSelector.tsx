@@ -2,8 +2,6 @@
 
 import { useState, useMemo, useRef, useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { Search, X } from "lucide-react"
-import { Input } from "@/components/ui/input"
 import { useCurrentStore } from "@/lib/hooks/useCurrentStore"
 import type { Restaurant } from "@/constants/restaurants"
 
@@ -14,11 +12,37 @@ interface StoreSelectorProps {
   isLoading?: boolean
 }
 
+const SearchIcon = () => (
+  <svg
+    className="flex-shrink-0"
+    height="24"
+    width="24"
+    aria-hidden="true"
+    fill="none"
+    viewBox="0 0 24 24"
+    xmlns="http://www.w3.org/2000/svg"
+    style={{ boxSizing: "inherit", overflow: "hidden" }}
+  >
+    <path
+      clipRule="evenodd"
+      d="M14.1922 15.6064C13.0236 16.4816 11.5723 17 10 17C6.13401 17 3 13.866 3 10C3 6.13401 6.13401 3 10 3C13.866 3 17 6.13401 17 10C17 11.5723 16.4816 13.0236 15.6064 14.1922L20.7071 19.2929C21.0976 19.6834 21.0976 20.3166 20.7071 20.7071C20.3166 21.0976 19.6834 21.0976 19.2929 20.7071L14.1922 15.6064ZM15 10C15 12.7614 12.7614 15 10 15C7.23858 15 5 12.7614 5 10C5 7.23858 7.23858 5 10 5C12.7614 5 15 7.23858 15 10Z"
+      fill="currentColor"
+      fillRule="evenodd"
+      style={{ boxSizing: "inherit" }}
+    />
+  </svg>
+)
+
 export default function StoreSelector({ isOpen, onClose, restaurants, isLoading = false }: StoreSelectorProps) {
   const { currentStoreId, setCurrentStoreId } = useCurrentStore()
   const router = useRouter()
   const [searchValue, setSearchValue] = useState("")
   const dropdownRef = useRef<HTMLDivElement>(null)
+
+  const currentStore = useMemo(() => {
+    if (!restaurants || restaurants.length === 0) return null
+    return restaurants.find(r => r.id === currentStoreId) || restaurants[0] || null
+  }, [restaurants, currentStoreId])
 
   const filteredStores = useMemo(() => {
     if (!restaurants || restaurants.length === 0) {
@@ -35,7 +59,8 @@ export default function StoreSelector({ isOpen, onClose, restaurants, isLoading 
   }, [searchValue, restaurants])
 
   const formatAddress = (store: Restaurant) => {
-    return `${store.street || ''}, ${store.city || ''}, ${store.state || ''} ${store.zipCode || ''}, USA`
+    const parts = [store.street, store.city, store.state, store.zipCode].filter(Boolean)
+    return parts.length > 0 ? `${parts.join(', ')}, ${store.country || 'USA'}` : ''
   }
 
   // Close dropdown when clicking outside
@@ -67,68 +92,116 @@ export default function StoreSelector({ isOpen, onClose, restaurants, isLoading 
       {/* Dropdown Panel */}
       <div 
         ref={dropdownRef}
-        className="fixed left-[16px] top-[88px] w-[400px] max-h-[calc(100vh-120px)] bg-white z-50 shadow-2xl rounded-lg flex flex-col border border-gray-200"
+        className="fixed left-[16px] top-[88px] w-[400px] max-h-[calc(100vh-120px)] bg-white z-50 shadow-2xl rounded-lg flex flex-col border border-gray-200 overflow-hidden"
       >
-        {/* Header Section - Fixed */}
+        {/* Search Bar */}
         <div className="p-4 border-b border-gray-200 flex-shrink-0">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-1.5">
-              <div className="text-sm font-semibold text-gray-900">Frosty Bear test</div>
-              <div className="w-4 h-4 rounded-full bg-green-500 flex items-center justify-center text-[10px] text-white font-bold">G</div>
-              <div className="text-xs text-gray-500">NCP</div>
-              <span className="text-xs">🐻</span>
-              <span className="text-xs">🫘</span>
-              <span className="text-xs">🫘</span>
-              <span className="text-xs">🫘</span>
+          <div className="flex items-center gap-2" style={{ font: 'inherit', boxSizing: 'inherit' }}>
+            <div className="flex-shrink-0" style={{ color: 'var(--usage-color-icon-default, #606060)' }}>
+              <SearchIcon />
             </div>
-            <button
-              onClick={onClose}
-              className="p-1 hover:bg-gray-100 rounded"
-              aria-label="Close"
-            >
-              <X className="h-4 w-4 text-gray-500" />
-            </button>
-          </div>
-          
-          {/* Search Bar */}
-          <div className="relative mb-3">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-            <Input
-              type="text"
+            <input
+              type="search"
               placeholder="Search for a store"
               value={searchValue}
               onChange={(e) => setSearchValue(e.target.value)}
-              className="pl-9 pr-3 py-2 w-full border border-gray-300 rounded-md text-sm bg-white"
+              className="flex-1 outline-none border-none bg-transparent text-sm"
+              style={{
+                font: "inherit",
+                color: "inherit",
+                fontSize: "inherit",
+                fontFamily: "inherit",
+                lineHeight: "normal",
+                appearance: "textfield",
+                boxSizing: "content-box",
+              }}
             />
           </div>
-
-          {/* Frosty Bear test section */}
-          <div className="mb-3">
-            <div className="flex items-center gap-2 text-sm font-medium text-gray-900 mb-2">
-              <span>Frosty Bear test</span>
-              <span>🐻</span>
-            </div>
-            <a href="#" className="text-sm text-blue-600 hover:underline">
-              View dashboard
-            </a>
-          </div>
-
-          {/* Add Store Button */}
-          <button className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 bg-white">
-            Add store or business
-          </button>
         </div>
 
-        {/* Scrollable Stores List */}
+        {/* Current Store Section */}
+        <div className="p-4 flex-shrink-0">
+          <div className="mb-2">
+            <span 
+              className="text-sm font-medium text-gray-900"
+              style={{
+                fontFamily: 'TT Norms, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
+                fontSize: '14px',
+                fontWeight: 400,
+                lineHeight: '20px',
+                letterSpacing: '-0.01px',
+              }}
+            >
+              {currentStore?.name || 'No store selected'}
+            </span>
+          </div>
+          
+          <div className="mb-2" />
+          
+          {/* Add Store Button */}
+          <a
+            href="/merchant/onboarding/choose-additional-store-or-business"
+            className="block"
+            style={{
+              textDecoration: 'none',
+              color: 'inherit',
+            }}
+          >
+            <button
+              type="button"
+              className="w-full rounded-full border bg-white text-gray-900 text-sm font-bold py-2.5 px-3 hover:bg-gray-50 transition-colors"
+              style={{
+                minHeight: '40px',
+                boxShadow: 'inset 0 0 0 1px #d6d6d6',
+                border: 'none',
+                fontFamily: 'TT Norms, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
+                fontSize: '14px',
+                fontWeight: 700,
+                lineHeight: '20px',
+                letterSpacing: '-0.01px',
+              }}
+            >
+              Add store or business
+            </button>
+          </a>
+          
+          <div className="my-4" />
+          
+          {/* Divider */}
+          <hr 
+            className="border-t h-px m-0 w-full" 
+            style={{
+              border: 'none',
+              background: '#e7e7e7',
+              height: '1px',
+            }}
+          />
+        </div>
+
+        {/* Your Stores Section */}
         <div className="flex-1 overflow-y-auto">
           <div className="p-4">
-            <h3 className="text-sm font-semibold text-gray-900 mb-2">Your stores</h3>
+            <div className="mb-4">
+              <span 
+                className="text-sm font-medium text-gray-600"
+                style={{
+                  fontFamily: 'TT Norms, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
+                  fontSize: '14px',
+                  fontWeight: 400,
+                  lineHeight: '20px',
+                  letterSpacing: '-0.01px',
+                }}
+              >
+                Your stores
+              </span>
+            </div>
+            
             {isLoading ? (
               <div className="text-sm text-gray-500 py-4">Loading stores...</div>
             ) : filteredStores.length === 0 ? (
               <div className="text-sm text-gray-500 py-4">No stores found</div>
             ) : (
-              <div className="space-y-0">
+              <div className="space-y-2">
                 {filteredStores.map((store) => {
                   const isSelected = currentStoreId === store.id
                   return (
@@ -136,25 +209,60 @@ export default function StoreSelector({ isOpen, onClose, restaurants, isLoading 
                       key={store.id}
                       onClick={() => {
                         setCurrentStoreId(store.id)
-                        // Navigate directly to merchant store route
                         router.push(`/merchant/store/${store.id}`)
                         onClose()
                       }}
-                      className={`w-full text-left px-3 py-2.5 rounded-md transition-colors ${
-                        isSelected
-                          ? "bg-gray-100"
-                          : "hover:bg-gray-50"
-                      }`}
+                      className="w-full text-left p-2 border-none bg-transparent cursor-pointer hover:bg-gray-50 transition-colors rounded"
+                      style={{
+                        font: "inherit",
+                        outline: "none",
+                        margin: "0px",
+                        color: "inherit",
+                        fontSize: "inherit",
+                        lineHeight: "inherit",
+                        fontFamily: "inherit",
+                        overflow: "visible",
+                        textTransform: "none",
+                        appearance: "button",
+                        userSelect: "none",
+                      }}
                     >
-                      <div className="flex items-start gap-2.5">
-                        <div className={`w-2.5 h-2.5 rounded-full mt-1 flex-shrink-0 ${
-                          isSelected ? "bg-green-500" : "bg-gray-300"
-                        }`} />
+                      <div className="flex items-start gap-3">
+                        {/* Status Icon */}
+                        <div className="flex-shrink-0 pt-1">
+                          <img
+                            height={12}
+                            width={12}
+                            alt="Store status"
+                            src="/status-inactive-2.svg"
+                            className="h-3 w-3"
+                          />
+                        </div>
+                        
+                        {/* Store Info */}
                         <div className="flex-1 min-w-0">
-                          <div className="text-sm font-medium text-gray-900">
+                          <div 
+                            className="text-sm font-medium text-gray-900 mb-0.5"
+                            style={{
+                              fontFamily: 'TT Norms, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
+                              fontSize: '14px',
+                              fontWeight: 400,
+                              lineHeight: '20px',
+                              letterSpacing: '-0.01px',
+                            }}
+                          >
                             {store.name}
                           </div>
-                          <div className="text-xs text-gray-500 mt-0.5 leading-relaxed">
+                          <div 
+                            className="text-sm text-gray-600"
+                            style={{
+                              fontFamily: 'TT Norms, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
+                              fontSize: '14px',
+                              fontWeight: 400,
+                              lineHeight: '20px',
+                              letterSpacing: '-0.01px',
+                            }}
+                          >
                             {formatAddress(store)}
                           </div>
                         </div>
@@ -166,9 +274,7 @@ export default function StoreSelector({ isOpen, onClose, restaurants, isLoading 
             )}
           </div>
         </div>
-
       </div>
     </>
   )
 }
-

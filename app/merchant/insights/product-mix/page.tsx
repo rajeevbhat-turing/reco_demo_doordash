@@ -1,8 +1,7 @@
 'use client'
 import { useState } from "react"
 import MerchantLayout from "@/components/merchant/MerchantLayout"
-import { Search, ChevronDown } from "lucide-react"
-import { Input } from "@/components/ui/input"
+import { ChevronDown } from "lucide-react"
 
 export default function ProductMixPage() {
   const [dateRange, setDateRange] = useState<"last7days" | "7daysPrior">("last7days")
@@ -10,6 +9,7 @@ export default function ProductMixPage() {
 
   // Mock data - empty for now
   const items: any[] = []
+  const hasError = true // Set to false when data loads successfully
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('en-US', {
@@ -22,7 +22,7 @@ export default function ProductMixPage() {
 
   return (
     <MerchantLayout>
-      <div className="max-w-7xl">
+      <div className="max-w-7xl" style={{ padding: '48px 0px' }}>
         {/* Header */}
         <div className="mb-6">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Product mix</h1>
@@ -55,82 +55,346 @@ export default function ProductMixPage() {
         </div>
 
         {/* Table Container */}
-        <div className="bg-white border border-gray-200 rounded-lg">
+        <div className="flex flex-col">
           {/* Search Bar */}
-          <div className="p-4 border-b border-gray-200">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-              <Input
-                type="text"
-                placeholder="Search for an item"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10"
-              />
+          <div
+            className="border border-gray-200 rounded-t-lg p-4 bg-white flex items-center"
+            style={{
+              borderBottom: 'none',
+            }}
+          >
+            <div className="w-full max-w-[343px]">
+              <div className="relative">
+                <div
+                  className="flex items-center min-h-[40px] rounded-full px-4 border border-gray-200 bg-white"
+                  style={{
+                    borderRadius: 'calc(40px / 2)',
+                    padding: '0px calc(12px + 4px)',
+                  }}
+                >
+                  <div className="mr-3 flex items-center justify-center h-6 w-6 pointer-events-none">
+                    <svg
+                      height="24"
+                      width="24"
+                      aria-hidden="true"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="flex-shrink-0 overflow-hidden"
+                    >
+                      <path
+                        clipRule="evenodd"
+                        d="M14.1922 15.6064C13.0236 16.4816 11.5723 17 10 17C6.13401 17 3 13.866 3 10C3 6.13401 6.13401 3 10 3C13.866 3 17 6.13401 17 10C17 11.5723 16.4816 13.0236 15.6064 14.1922L20.7071 19.2929C21.0976 19.6834 21.0976 20.3166 20.7071 20.7071C20.3166 21.0976 19.6834 21.0976 19.2929 20.7071L14.1922 15.6064ZM15 10C15 12.7614 12.7614 15 10 15C7.23858 15 5 12.7614 5 10C5 7.23858 7.23858 5 10 5C12.7614 5 15 7.23858 15 10Z"
+                        fill="currentColor"
+                        fillRule="evenodd"
+                        style={{ color: '#191919' }}
+                      />
+                    </svg>
+                  </div>
+                  <input
+                    type="search"
+                    placeholder="Search for an item"
+                    aria-label="Search for an item"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="flex-1 bg-transparent border-none outline-none text-sm text-gray-900 w-full"
+                    style={{
+                      fontFamily: 'TT Norms, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
+                      fontSize: '14px',
+                      lineHeight: '20px',
+                      letterSpacing: '-0.01px',
+                      fontWeight: 400,
+                    }}
+                  />
+                </div>
+              </div>
             </div>
           </div>
 
           {/* Table */}
-          {items.length === 0 ? (
-            <div className="p-12 flex flex-col items-center justify-center">
-              {/* Empty State Illustration */}
-              <div className="mb-4 w-48 h-48 flex items-center justify-center">
-                <svg width="192" height="192" viewBox="0 0 192 192" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  {/* Simplified illustration - orange hand holding purple circle */}
-                  <circle cx="96" cy="96" r="40" fill="#9333EA" opacity="0.3" />
-                  <circle cx="96" cy="96" r="30" fill="#9333EA" />
-                  <circle cx="90" cy="92" r="4" fill="white" />
-                  <circle cx="102" cy="92" r="4" fill="white" />
-                  <ellipse cx="96" cy="100" rx="8" ry="4" fill="white" />
-                  {/* Hand shape */}
-                  <path d="M60 120 Q50 110 50 130 Q50 150 60 150 Q70 150 75 140 L80 130 Q85 120 80 110 Q75 100 70 105 L65 110 Q60 115 60 120 Z" fill="#F97316" />
-                </svg>
+          <div className="relative" style={{ height: '424px' }}>
+            <div className="flex flex-col items-center">
+              <div
+                className="border-t-0 rounded-b-lg overflow-auto w-full"
+                style={{
+                  borderRadius: '0 0 8px 8px',
+                  height: '424px',
+                  maxHeight: 'calc(-100px + 90vh)',
+                  minHeight: '424px',
+                  outline: 'none',
+                }}
+              >
+                <div>
+                  <table
+                    role="table"
+                    className="w-full border-collapse"
+                    style={{
+                      borderSpacing: '0px',
+                      marginBottom: 'calc(40px * 2)',
+                    }}
+                  >
+                    <thead>
+                      <tr role="row" style={{ height: '48px' }}>
+                        <th
+                          className="text-left sticky top-0 z-[2] bg-white align-middle px-4 whitespace-nowrap"
+                          role="columnheader"
+                          style={{
+                            minWidth: '320px',
+                            width: '320px',
+                            maxWidth: '320px',
+                            boxShadow: '0 calc(-1 * 2px) 0 0 #e7e7e7ff inset',
+                            left: '0px',
+                          }}
+                        >
+                          <div className="flex items-center justify-start flex-row">
+                            <span
+                              className="block text-gray-900"
+                              style={{
+                                fontFamily: 'TT Norms, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
+                                fontSize: '12px',
+                                fontWeight: 500,
+                                lineHeight: '18px',
+                                letterSpacing: '0px',
+                              }}
+                            >
+                              Items
+                            </span>
+                          </div>
+                        </th>
+                        <th
+                          className="text-left sticky top-0 z-[2] bg-white align-middle px-4 whitespace-nowrap"
+                          role="columnheader"
+                          style={{
+                            boxShadow: '0 calc(-1 * 2px) 0 0 #e7e7e7ff inset',
+                          }}
+                        >
+                          <div className="flex items-center justify-start flex-row">
+                            <span
+                              className="block text-gray-900"
+                              style={{
+                                fontFamily: 'TT Norms, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
+                                fontSize: '12px',
+                                fontWeight: 500,
+                                lineHeight: '18px',
+                                letterSpacing: '0px',
+                              }}
+                            >
+                              Total sold
+                            </span>
+                          </div>
+                        </th>
+                        <th
+                          className="text-left sticky top-0 z-[2] bg-white align-middle px-4 whitespace-nowrap"
+                          role="columnheader"
+                          style={{
+                            boxShadow: '0 calc(-1 * 2px) 0 0 #e7e7e7ff inset',
+                          }}
+                        >
+                          <div className="flex items-center justify-start flex-row">
+                            <span
+                              className="block text-gray-900"
+                              style={{
+                                fontFamily: 'TT Norms, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
+                                fontSize: '12px',
+                                fontWeight: 500,
+                                lineHeight: '18px',
+                                letterSpacing: '0px',
+                              }}
+                            >
+                              Change
+                            </span>
+                          </div>
+                        </th>
+                        <th
+                          className="text-left sticky top-0 z-[2] bg-white align-middle px-4 whitespace-nowrap"
+                          role="columnheader"
+                          style={{
+                            boxShadow: '0 calc(-1 * 2px) 0 0 #e7e7e7ff inset',
+                          }}
+                        >
+                          <div className="flex items-center justify-start flex-row">
+                            <span
+                              className="block text-gray-900"
+                              style={{
+                                fontFamily: 'TT Norms, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
+                                fontSize: '12px',
+                                fontWeight: 500,
+                                lineHeight: '18px',
+                                letterSpacing: '0px',
+                              }}
+                            >
+                              Gross sales
+                            </span>
+                          </div>
+                        </th>
+                        <th
+                          className="text-left sticky top-0 z-[2] bg-white align-middle px-4 whitespace-nowrap"
+                          role="columnheader"
+                          style={{
+                            boxShadow: '0 calc(-1 * 2px) 0 0 #e7e7e7ff inset',
+                          }}
+                        >
+                          <div className="flex items-center justify-start flex-row">
+                            <span
+                              className="block text-gray-900"
+                              style={{
+                                fontFamily: 'TT Norms, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
+                                fontSize: '12px',
+                                fontWeight: 500,
+                                lineHeight: '18px',
+                                letterSpacing: '0px',
+                              }}
+                            >
+                              Change
+                            </span>
+                          </div>
+                        </th>
+                        <th
+                          className="text-left sticky top-0 z-[2] bg-white align-middle px-4 whitespace-nowrap"
+                          role="columnheader"
+                          style={{
+                            boxShadow: '0 calc(-1 * 2px) 0 0 #e7e7e7ff inset',
+                          }}
+                        >
+                          <div className="flex items-center justify-start flex-row">
+                            <div className="flex-1">
+                              <div className="inline">
+                                <span
+                                  className="block text-gray-900 underline cursor-pointer"
+                                  style={{
+                                    fontFamily: 'TT Norms, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
+                                    fontSize: '12px',
+                                    fontWeight: 500,
+                                    lineHeight: '18px',
+                                    letterSpacing: '0px',
+                                    textDecorationLine: 'underline',
+                                    textDecorationStyle: 'dashed',
+                                    textDecorationColor: '#d6d6d6ff',
+                                    textUnderlineOffset: '4px',
+                                  }}
+                                >
+                                  Item errors
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        </th>
+                        <th
+                          className="text-left sticky top-0 z-[2] bg-white align-middle px-4 whitespace-nowrap"
+                          role="columnheader"
+                          style={{
+                            boxShadow: '0 calc(-1 * 2px) 0 0 #e7e7e7ff inset',
+                          }}
+                        >
+                          <div className="flex items-center justify-start flex-row">
+                            <div className="flex-1">
+                              <div className="inline">
+                                <span
+                                  className="block text-gray-900 underline cursor-pointer"
+                                  style={{
+                                    fontFamily: 'TT Norms, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
+                                    fontSize: '12px',
+                                    fontWeight: 500,
+                                    lineHeight: '18px',
+                                    letterSpacing: '0px',
+                                    textDecorationLine: 'underline',
+                                    textDecorationStyle: 'dashed',
+                                    textDecorationColor: '#d6d6d6ff',
+                                    textUnderlineOffset: '4px',
+                                  }}
+                                >
+                                  Error charges
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        </th>
+                        <th
+                          className="text-left sticky top-0 z-[2] bg-white align-middle px-4 whitespace-nowrap"
+                          role="columnheader"
+                          style={{
+                            boxShadow: '0 calc(-1 * 2px) 0 0 #e7e7e7ff inset',
+                          }}
+                        >
+                          <div className="flex items-center justify-start flex-row">
+                            <div className="flex-1">
+                              <div className="inline">
+                                <span
+                                  className="block text-gray-900 underline cursor-pointer"
+                                  style={{
+                                    fontFamily: 'TT Norms, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
+                                    fontSize: '12px',
+                                    fontWeight: 500,
+                                    lineHeight: '18px',
+                                    letterSpacing: '0px',
+                                    textDecorationLine: 'underline',
+                                    textDecorationStyle: 'dashed',
+                                    textDecorationColor: '#d6d6d6ff',
+                                    textUnderlineOffset: '4px',
+                                  }}
+                                >
+                                  Customer discounts
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody role="rowgroup" />
+                  </table>
+                </div>
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">No results found</h3>
-              <p className="text-sm text-gray-600 text-center max-w-md">
-                Adjust your filters or clear your search and try again.
-              </p>
             </div>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b border-gray-200 bg-gray-50">
-                    <th className="text-left py-3 px-4 text-sm font-medium text-gray-900">Items</th>
-                    <th className="text-right py-3 px-4 text-sm font-medium text-gray-900">Total sold</th>
-                    <th className="text-right py-3 px-4 text-sm font-medium text-gray-900">Change</th>
-                    <th className="text-right py-3 px-4 text-sm font-medium text-gray-900">Gross sales</th>
-                    <th className="text-right py-3 px-4 text-sm font-medium text-gray-900">Change</th>
-                    <th className="text-right py-3 px-4 text-sm font-medium text-gray-900">Item errors</th>
-                    <th className="text-right py-3 px-4 text-sm font-medium text-gray-900">Error charges</th>
-                    <th className="text-right py-3 px-4 text-sm font-medium text-gray-900">Customer discounts</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {items.map((item, index) => (
-                    <tr key={index} className="border-b border-gray-100 hover:bg-gray-50">
-                      <td className="py-3 px-4 text-sm text-gray-900">{item.name}</td>
-                      <td className="py-3 px-4 text-sm text-gray-900 text-right">{item.totalSold}</td>
-                      <td className="py-3 px-4 text-sm text-right">
-                        <span className={item.change >= 0 ? "text-green-600" : "text-red-600"}>
-                          {item.change >= 0 ? "+" : ""}{item.change}%
-                        </span>
-                      </td>
-                      <td className="py-3 px-4 text-sm text-gray-900 text-right">{formatCurrency(item.grossSales)}</td>
-                      <td className="py-3 px-4 text-sm text-right">
-                        <span className={item.salesChange >= 0 ? "text-green-600" : "text-red-600"}>
-                          {item.salesChange >= 0 ? "+" : ""}{item.salesChange}%
-                        </span>
-                      </td>
-                      <td className="py-3 px-4 text-sm text-gray-900 text-right">{item.itemErrors}</td>
-                      <td className="py-3 px-4 text-sm text-gray-900 text-right">{formatCurrency(item.errorCharges)}</td>
-                      <td className="py-3 px-4 text-sm text-gray-900 text-right">{formatCurrency(item.customerDiscounts)}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
+
+            {/* Error State Overlay */}
+            {hasError && (
+              <div
+                className="absolute rounded-b-lg border-b border-gray-200 flex items-center justify-center bg-white z-10"
+                style={{
+                  top: '48px',
+                  left: '1px',
+                  right: '1px',
+                  height: '376px',
+                }}
+              >
+                <div className="flex-1 flex flex-col items-center justify-center gap-12" style={{ height: '60vh' }}>
+                  <img
+                    height={200}
+                    alt="error occurred"
+                    src="/error-empty-state.svg"
+                  />
+                  <div className="block">
+                    <span
+                      className="block text-gray-900 text-center"
+                      style={{
+                        fontFamily: 'TT Norms, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
+                        fontSize: '20px',
+                        fontWeight: 700,
+                        lineHeight: '24px',
+                        letterSpacing: '-0.01px',
+                      }}
+                    >
+                      Error loading items
+                    </span>
+                    <span
+                      className="block text-gray-900 text-center mt-1"
+                      style={{
+                        fontFamily: 'TT Norms, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
+                        fontSize: '14px',
+                        fontWeight: 400,
+                        lineHeight: '20px',
+                        letterSpacing: '0px',
+                        marginTop: '4px',
+                      }}
+                    >
+                      An error occurred. Please try again later.
+                    </span>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </MerchantLayout>
