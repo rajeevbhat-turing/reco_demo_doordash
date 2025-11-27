@@ -25,6 +25,8 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
   const router = useRouter();
   const [isMounted, setIsMounted] = useState(false);
 
+  const isPasswordResetPage = pathname?.startsWith('/password_reset');
+
   // Get authentication status
   const isAuthenticated = useSyncExternalStore(
     useUserStore.subscribe,
@@ -70,7 +72,8 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
       !isAuthenticated &&
       !tempAddress &&
       pathname !== '/' &&
-      !pathname.startsWith('/auth')
+      !pathname.startsWith('/auth') &&
+      !isPasswordResetPage
     ) {
       // If user is not logged in, has no temp address, and is not on "/" or "/auth" paths, redirect to "/"
       router.replace('/');
@@ -93,7 +96,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
     <div className="flex flex-col min-h-screen">
       <StateWindowInitializer />
       <NavigationLoader />
-      <Header />
+      {!isPasswordResetPage && <Header />}
       <LayoutWrapper>{children}</LayoutWrapper>
       <Snackbar />
     </div>

@@ -364,6 +364,7 @@ export default function AuthenticationModal({
               <ForgotPassword
                 onBackToSignIn={() => setMode('signin')}
                 email={forgotPasswordEmail}
+                setMode={handleSetMode}
               />
             )}
           </div>

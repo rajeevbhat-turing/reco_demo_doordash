@@ -35,6 +35,7 @@ import ChooseAddressLabelModal from '@/components/modals/choose-address-label-mo
 import ChooseLabelModal from '@/components/modals/choose-label-modal';
 import SignIn from '@/components/authentication/sign-in';
 import SignUp from '@/components/authentication/sign-up';
+import ForgotPassword from '@/components/authentication/forgot-password';
 import OTPVerificationModal from '@/components/modals/otp-verification-modal';
 import CountryCodeDropdown from '@/components/modals/country-code-dropdown';
 import PromoCodeModal from '@/components/modals/promocode-modal';
@@ -91,6 +92,7 @@ export default function CheckoutPage() {
   const items = currentCart?.items || [];
   const currentCategory = currentCart?.storeCategory || categoryParam; // Use categoryParam as fallback for faster access
   const currentStoreId = currentCart?.storeId || null;
+  const [forgotPasswordEmail, setForgotPasswordEmail] = useState('');
 
   // Only fetch restaurants if this is a restaurant order (optimization: avoid unnecessary API calls)
   // Use categoryParam directly for faster check without waiting for cart lookup
@@ -109,7 +111,7 @@ export default function CheckoutPage() {
   const userIsAuthenticated = isAuthenticated();
 
   // Auth state for non-authenticated users
-  const [authMode, setAuthMode] = useState<'signin' | 'signup'>('signin');
+  const [authMode, setAuthMode] = useState<'signin' | 'signup' | 'forgot-password'>('signin');
 
   // OTP state for sign up
   const [showOtpModal, setShowOtpModal] = useState(false);
@@ -1030,9 +1032,12 @@ export default function CheckoutPage() {
   };
 
   // Handler for changing auth mode
-  const handleSetMode = (mode: 'signin' | 'signup' | 'forgot-password') => {
+  const handleSetMode = (mode: 'signin' | 'signup' | 'forgot-password', email?: string) => {
     if (mode !== 'forgot-password') {
       setAuthMode(mode);
+    } else {
+      setForgotPasswordEmail(email || '');
+      setAuthMode('forgot-password');
     }
   };
 
@@ -1108,59 +1113,69 @@ export default function CheckoutPage() {
                 <h2 className="text-lg font-semibold mb-4">1. Sign in or sign up to place order</h2>
 
                 {/* Info banner */}
-                <div className="bg-cyan-50 border border-cyan-200 rounded-lg p-3 mb-4 flex items-center">
-                  <svg
-                    className="w-5 h-5 text-cyan-600 mr-2 flex-shrink-0"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M13 10V3L4 14h7v7l9-11h-7z"
-                    />
-                  </svg>
-                  <span className="text-sm text-gray-900">
-                    Sign in to access your credits and discounts
-                  </span>
-                </div>
+                {authMode !== "forgot-password" && (
+                  <div className="bg-cyan-50 border border-cyan-200 rounded-lg p-3 mb-4 flex items-center">
+                    <svg
+                      className="w-5 h-5 text-cyan-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M13 10V3L4 14h7v7l9-11h-7z"
+                      />
+                    </svg>
+                    <span className="text-sm text-gray-900">
+                      Sign in to access your credits and discounts
+                    </span>
+                  </div>
+                )}
 
                 {/* Sign In / Sign Up Tabs */}
-                <div className="flex justify-center mb-6">
-                  <div className="inline-flex bg-gray-100 rounded-full p-1">
-                    <button
-                      onClick={() => setAuthMode('signin')}
-                      className={`px-6 py-2 rounded-full text-sm font-semibold transition-colors ${
-                        authMode === 'signin'
-                          ? 'bg-gray-900 text-white'
-                          : 'text-gray-700 hover:text-gray-900'
-                      }`}
-                    >
-                      Sign In
-                    </button>
-                    <button
-                      onClick={() => setAuthMode('signup')}
-                      className={`px-6 py-2 rounded-full text-sm font-semibold transition-colors ${
-                        authMode === 'signup'
-                          ? 'bg-gray-900 text-white'
-                          : 'text-gray-700 hover:text-gray-900'
-                      }`}
-                    >
-                      Sign Up
-                    </button>
+                {authMode !== "forgot-password" && (
+                  <div className="flex justify-center mb-6">
+                    <div className="inline-flex bg-gray-100 rounded-full p-1">
+                      <button
+                        onClick={() => setAuthMode('signin')}
+                        className={`px-6 py-2 rounded-full text-sm font-semibold transition-colors ${
+                          authMode === 'signin'
+                            ? 'bg-gray-900 text-white'
+                            : 'text-gray-700 hover:text-gray-900'
+                        }`}
+                      >
+                        Sign In
+                      </button>
+                      <button
+                        onClick={() => setAuthMode('signup')}
+                        className={`px-6 py-2 rounded-full text-sm font-semibold transition-colors ${
+                          authMode === 'signup'
+                            ? 'bg-gray-900 text-white'
+                            : 'text-gray-700 hover:text-gray-900'
+                        }`}
+                      >
+                        Sign Up
+                      </button>
+                    </div>
                   </div>
-                </div>
+                )}
 
                 {/* Authentication Forms */}
                 {authMode === 'signin' ? (
                   <SignIn onSuccess={handleAuthSuccess} setMode={handleSetMode} />
-                ) : (
+                ) : authMode === 'signup' ? (
                   <SignUp
                     onShowOTP={handleShowOTP}
                     selectedCountry={selectedCountry}
                     setShowCountryDropdown={setShowCountryDropdown}
+                  />
+                ) : (
+                  <ForgotPassword
+                    onBackToSignIn={() => setAuthMode('signin')}
+                    email={forgotPasswordEmail}
+                    setMode={handleSetMode}
                   />
                 )}
               </div>
