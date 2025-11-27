@@ -68,11 +68,11 @@ export default function PasswordResetPage() {
   const validateConfirmPassword = (confirmPassword: string, password: string) => {
     // If password has content and confirmPassword is empty, show error
     if (password.trim() && !confirmPassword.trim()) {
-      return 'The passwords donot match';
+      return 'The passwords do not match';
     }
     // If confirmPassword has content and doesn't match password, show error
     if (confirmPassword && confirmPassword !== password) {
-      return 'The passwords donot match';
+      return 'The passwords do not match';
     }
     return '';
   };
@@ -220,12 +220,14 @@ export default function PasswordResetPage() {
           </div>
 
           {/* Sign In Button */}
-          <Button
-            onClick={() => router.push('/auth')}
-            className="w-full py-3 rounded-[28px] text-[15px] font-bold transition-colors bg-red-600 hover:bg-red-700 text-white !mt-[25vh]"
-          >
-            Sign In
-          </Button>
+          <div className="flex justify-center">
+            <Button
+              onClick={() => router.push('/auth')}
+              className="w-full py-3 rounded-[28px] max-w-[375px] mx-auto text-[15px] font-bold transition-colors bg-red-600 hover:bg-red-700 text-white !mt-[25vh]"
+            >
+              Sign In
+            </Button>
+          </div>
         </div>
       </div>
     );
