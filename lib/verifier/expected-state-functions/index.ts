@@ -1,4 +1,4 @@
-export { get_default_payment_method } from './get-default-payment-method';
+export { get_user_payment_method } from './get-user-payment-method';
 export { get_deal } from './get-deal';
 export type { Deal } from './get-deal';
 export { get_user_address } from './get-user-address';
