@@ -553,7 +553,7 @@ export default function CheckoutPage() {
       } : null,
       // Order metadata
       orderDate: new Date().toISOString(), // Use ISO string for database compatibility
-      status: 'Confirmed',
+      status: 'pending', // Start as pending for merchant portal
       orderType: 'Personal' as const, // Default to Personal
     };
 
@@ -584,6 +584,8 @@ export default function CheckoutPage() {
           }
         } else {
           console.error('❌ Failed to save order to database:', result.message);
+          console.error('❌ Error details:', result.error);
+          console.error('❌ Full response:', result);
         }
       } catch (error) {
         console.error('❌ Error saving order to database:', error);

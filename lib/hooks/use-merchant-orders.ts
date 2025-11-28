@@ -9,8 +9,8 @@ export function useMerchantOrders(storeId: string | null) {
     queryKey: ['merchant-orders', storeId],
     queryFn: () => fetchMerchantOrders(storeId!),
     enabled: !!storeId,
-    staleTime: 1000 * 30, // 30 seconds
-    refetchInterval: 1000 * 30, // Refetch every 30 seconds
+    staleTime: 1000 * 5, // 5 seconds - more frequent updates
+    refetchInterval: 1000 * 10, // Refetch every 10 seconds for real-time feel
   });
 }
 

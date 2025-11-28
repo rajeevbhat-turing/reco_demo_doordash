@@ -237,12 +237,12 @@ function NavItem({ href, label, active, icon: Icon, isSubItem = false, onClick, 
       </div>
     )
   }
-
+  
   if (href) {
-    return (
+  return (
       <Link href={href} className={`${baseClasses} ${paddingClasses} ${marginClasses} ${colorClasses} ${activeBgClasses}`}>
         {content}
-      </Link>
+    </Link>
     )
   }
   
@@ -362,16 +362,16 @@ export default function MerchantSidebar() {
                 <span className="ml-2 text-lg font-bold text-gray-900" style={{ fontSize: '18px', lineHeight: '20px', letterSpacing: '-0.01px' }}>
                   Merchant
                 </span>
-              </div>
+            </div>
             </Link>
-        </div>
+          </div>
 
           {/* Store Selector */}
           <div className="mx-2 mb-6" style={{ marginTop: 'calc(4px * 5)' }}>
-            <button
-              onClick={() => setIsStoreSelectorOpen(true)}
+          <button
+            onClick={() => setIsStoreSelectorOpen(true)}
               className="w-full flex items-center px-3 py-2 rounded-full hover:bg-gray-50 transition-colors text-left"
-              disabled={isLoadingRestaurants || !currentStore}
+            disabled={isLoadingRestaurants || !currentStore}
               style={{
                 minHeight: '40px',
               }}
@@ -401,7 +401,7 @@ export default function MerchantSidebar() {
                       whiteSpace: 'normal',
                     }}
                   >
-                    {isLoadingRestaurants ? 'Loading...' : currentStore?.name || 'No store selected'}
+                {isLoadingRestaurants ? 'Loading...' : currentStore?.name || 'No store selected'}
                   </span>
                   <svg
                     className="flex-shrink-0 mt-0.5"
@@ -419,7 +419,7 @@ export default function MerchantSidebar() {
                       style={{ color: '#191919' }}
                     />
                   </svg>
-                </div>
+              </div>
                 <span
                   className="text-gray-900 block"
                   style={{
@@ -431,9 +431,9 @@ export default function MerchantSidebar() {
                 >
                   Store
                 </span>
-              </div>
-            </button>
-          </div>
+            </div>
+          </button>
+        </div>
 
           {/* Navigation Items */}
           <div className="flex-1 overflow-y-auto overflow-x-hidden" style={{ overflowX: 'hidden', width: '256px' }}>
@@ -454,37 +454,37 @@ export default function MerchantSidebar() {
                   icon={InsightsIcon}
                   hasChevron
                   chevronExpanded={insightsExpanded}
-                  onClick={() => setInsightsExpanded(!insightsExpanded)}
+              onClick={() => setInsightsExpanded(!insightsExpanded)}
                 />
-                {insightsExpanded && (
+            {insightsExpanded && (
                   <>
-                    <NavItem 
-                      href={insightsOptimizationUrl} 
-                      label="Optimization score" 
-                      active={pathname === insightsOptimizationUrl || (pathname?.startsWith("/merchant/store/") && pathname?.includes("/insights/optimization-score"))}
+                <NavItem 
+                  href={insightsOptimizationUrl} 
+                  label="Optimization score" 
+                  active={pathname === insightsOptimizationUrl || (pathname?.startsWith("/merchant/store/") && pathname?.includes("/insights/optimization-score"))}
                       isSubItem
-                    />
-                    <NavItem 
-                      href={insightsSalesUrl} 
-                      label="Sales" 
-                      active={pathname === insightsSalesUrl || (pathname?.startsWith("/merchant/store/") && pathname?.includes("/insights/sales"))}
+                />
+                <NavItem 
+                  href={insightsSalesUrl} 
+                  label="Sales" 
+                  active={pathname === insightsSalesUrl || (pathname?.startsWith("/merchant/store/") && pathname?.includes("/insights/sales"))}
                       isSubItem
-                    />
-                    <NavItem 
-                      href={insightsProductMixUrl} 
-                      label="Product mix" 
-                      active={pathname === insightsProductMixUrl || (pathname?.startsWith("/merchant/store/") && pathname?.includes("/insights/product-mix"))}
+                />
+                <NavItem 
+                  href={insightsProductMixUrl} 
+                  label="Product mix" 
+                  active={pathname === insightsProductMixUrl || (pathname?.startsWith("/merchant/store/") && pathname?.includes("/insights/product-mix"))}
                       isSubItem
-                    />
-                    <NavItem 
-                      href={insightsOperationsUrl} 
-                      label="Operations quality" 
-                      active={pathname === insightsOperationsUrl || (pathname?.startsWith("/merchant/store/") && pathname?.includes("/insights/operations-quality"))}
+                />
+                <NavItem 
+                  href={insightsOperationsUrl} 
+                  label="Operations quality" 
+                  active={pathname === insightsOperationsUrl || (pathname?.startsWith("/merchant/store/") && pathname?.includes("/insights/operations-quality"))}
                       isSubItem
-                    />
+                />
                   </>
-                )}
-              </div>
+            )}
+          </div>
           
               {/* Reports */}
               <NavItem
@@ -503,28 +503,28 @@ export default function MerchantSidebar() {
                   hasChevron
                   chevronExpanded={customersExpanded}
                   highlightBlue={isCustomersActive}
-                  onClick={() => setCustomersExpanded(!customersExpanded)}
+              onClick={() => setCustomersExpanded(!customersExpanded)}
                 />
-                {customersExpanded && (
+            {customersExpanded && (
                   <>
-                    <NavItem
-                      href={customersInsightsUrl}
+                <NavItem 
+                  href={customersInsightsUrl} 
                       label="Customer insights"
                       active={isCustomersInsightsActive}
                       isSubItem
-                    />
-                    <NavItem
-                      href={customersRatingsUrl}
+                />
+                <NavItem 
+                  href={customersRatingsUrl} 
                       label="Ratings & reviews"
-                      active={pathname === customersRatingsUrl || (pathname?.startsWith("/merchant/store/") && pathname?.includes("/customers/ratings-reviews"))}
+                  active={pathname === customersRatingsUrl || (pathname?.startsWith("/merchant/store/") && pathname?.includes("/customers/ratings-reviews"))}
                       isSubItem
-                    />
+                />
                   </>
-                )}
-              </div>
+            )}
+          </div>
 
               {/* Orders */}
-              <NavItem
+                <NavItem 
                 href={ordersUrl}
                 label="Orders"
                 active={isOrdersActive}
@@ -533,7 +533,7 @@ export default function MerchantSidebar() {
 
               {/* Menu */}
               <div className="w-[256px]">
-                <NavItem
+                <NavItem 
                   label="Menu"
                   active={isMenuActive}
                   icon={MenuIcon}
@@ -541,26 +541,26 @@ export default function MerchantSidebar() {
                   chevronExpanded={menuExpanded}
                   onClick={() => setMenuExpanded(!menuExpanded)}
                 />
-                {menuExpanded && (
+            {menuExpanded && (
                   <>
-                    <NavItem
-                      href={menuManagerUrl}
-                      label="Menu Manager"
-                      active={pathname === menuManagerUrl || (pathname?.startsWith("/merchant/store/") && pathname?.endsWith("/menu") && !pathname?.includes("/menu/pricing"))}
+                <NavItem 
+                  href={menuManagerUrl} 
+                  label="Menu Manager" 
+                  active={pathname === menuManagerUrl || (pathname?.startsWith("/merchant/store/") && pathname?.endsWith("/menu") && !pathname?.includes("/menu/pricing"))}
                       isSubItem
-                    />
-                    <NavItem
-                      href={menuPricingUrl}
-                      label="Pricing"
-                      active={pathname === menuPricingUrl || (pathname?.startsWith("/merchant/store/") && pathname?.includes("/menu/pricing"))}
+                />
+                <NavItem 
+                  href={menuPricingUrl} 
+                  label="Pricing" 
+                  active={pathname === menuPricingUrl || (pathname?.startsWith("/merchant/store/") && pathname?.includes("/menu/pricing"))}
                       isSubItem
-                    />
+                />
                   </>
-                )}
-              </div>
-
+            )}
+          </div>
+          
               {/* Store Availability */}
-              <NavItem 
+          <NavItem 
                 href={storeAvailabilityUrl}
                 label="Store availability"
                 active={isStoreAvailabilityActive}
@@ -575,35 +575,35 @@ export default function MerchantSidebar() {
                   icon={FinancialsIcon}
                   hasChevron
                   chevronExpanded={financialsExpanded}
-                  onClick={() => setFinancialsExpanded(!financialsExpanded)}
+              onClick={() => setFinancialsExpanded(!financialsExpanded)}
                 />
-                {financialsExpanded && (
+            {financialsExpanded && (
                   <>
-                    <NavItem
-                      href={financialsTransactionsUrl}
-                      label="Transactions"
-                      active={pathname === financialsTransactionsUrl || (pathname?.startsWith("/merchant/store/") && pathname?.includes("/financials/transactions"))}
+                <NavItem 
+                  href={financialsTransactionsUrl} 
+                  label="Transactions" 
+                  active={pathname === financialsTransactionsUrl || (pathname?.startsWith("/merchant/store/") && pathname?.includes("/financials/transactions"))}
                       isSubItem
-                    />
-                    <NavItem
-                      href={financialsPayoutsUrl}
-                      label="Payouts"
-                      active={pathname === financialsPayoutsUrl || (pathname?.startsWith("/merchant/store/") && pathname?.includes("/financials/payouts"))}
+                />
+                <NavItem 
+                  href={financialsPayoutsUrl} 
+                  label="Payouts" 
+                  active={pathname === financialsPayoutsUrl || (pathname?.startsWith("/merchant/store/") && pathname?.includes("/financials/payouts"))}
                       isSubItem
-                    />
-                    <NavItem
-                      href={financialsStatementsUrl}
-                      label="Statements"
-                      active={pathname === financialsStatementsUrl || (pathname?.startsWith("/merchant/store/") && pathname?.includes("/financials/statements"))}
+                />
+                <NavItem 
+                  href={financialsStatementsUrl} 
+                  label="Statements" 
+                  active={pathname === financialsStatementsUrl || (pathname?.startsWith("/merchant/store/") && pathname?.includes("/financials/statements"))}
                       isSubItem
-                    />
+                />
                   </>
-                )}
-              </div>
+            )}
+          </div>
           
               {/* Settings */}
               <div className="w-[256px]">
-                <NavItem 
+          <NavItem 
                   label="Settings"
                   active={isSettingsActive}
                   icon={SettingsIcon}
@@ -613,21 +613,21 @@ export default function MerchantSidebar() {
                 />
                 {settingsExpanded && (
                   <>
-                    <NavItem
-                      href={settingsAccountUrl}
-                      label="Account settings"
+                    <NavItem 
+                      href={settingsAccountUrl} 
+                      label="Account settings" 
                       active={pathname === settingsAccountUrl || (pathname?.startsWith("/merchant/store/") && pathname?.includes("/settings/account"))}
                       isSubItem
                     />
-                    <NavItem
-                      href={settingsPricingUrl}
-                      label="Pricing plans"
+                    <NavItem 
+                      href={settingsPricingUrl} 
+                      label="Pricing plans" 
                       active={pathname === settingsPricingUrl || (pathname?.startsWith("/merchant/store/") && pathname?.includes("/settings/pricing"))}
                       isSubItem
                     />
-                    <NavItem
-                      href={settingsStoreUrl}
-                      label="Store settings"
+                    <NavItem 
+                      href={settingsStoreUrl} 
+                      label="Store settings" 
                       active={pathname === settingsStoreUrl || (pathname?.startsWith("/merchant/store/") && pathname?.includes("/settings/store"))}
                       isSubItem
                     />
@@ -637,15 +637,15 @@ export default function MerchantSidebar() {
                       active={pathname === usersUrl || pathname?.startsWith("/merchant/store/") && pathname?.includes("/users") || pathname?.startsWith("/merchant/users") || false}
                       isSubItem
                     />
-                    <NavItem
-                      href={settingsStoreCommUrl}
-                      label="Store communications"
+                    <NavItem 
+                      href={settingsStoreCommUrl} 
+                      label="Store communications" 
                       active={pathname === settingsStoreCommUrl || (pathname?.startsWith("/merchant/store/") && pathname?.includes("/settings/store-communications"))}
                       isSubItem
                     />
-                    <NavItem
-                      href={settingsBankUrl}
-                      label="Bank account"
+                    <NavItem 
+                      href={settingsBankUrl} 
+                      label="Bank account" 
                       active={pathname === settingsBankUrl || (pathname?.startsWith("/merchant/store/") && pathname?.includes("/settings/bank-account"))}
                       isSubItem
                     />
@@ -689,8 +689,8 @@ export default function MerchantSidebar() {
                 label="Add solutions"
                 icon={AddSolutionsIcon}
               />
-            </div>
-
+          </div>
+          
             {/* Help */}
             <div className="w-[256px]">
               <NavItem 
@@ -698,10 +698,10 @@ export default function MerchantSidebar() {
                 label="Help"
                 icon={HelpIcon}
               />
-            </div>
+        </div>
 
             <div className="mb-3" />
-          </div>
+        </div>
 
           {/* User Profile Section */}
           <div className="flex flex-col justify-end pt-4" style={{ boxShadow: 'rgba(0, 0, 0, 0.2) 0px 4px 16px' }}>
@@ -729,7 +729,7 @@ export default function MerchantSidebar() {
                 </svg>
               </div>
                   </div>
-          </div>
+        </div>
         </ul>
       </aside>
 

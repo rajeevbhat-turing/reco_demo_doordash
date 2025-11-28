@@ -17,40 +17,122 @@ export async function GET(request: NextRequest) {
 
   try {
     // Fetch orders - by userId or storeId (for merchant portal)
-    const whereClause = storeId ? 'o.store_id = ?' : 'o.user_id = ?';
-    const queryParam = storeId || userId;
+    // For merchant portal: show ALL orders for the store (no user filtering)
+    // For customer: show only orders for that user
+    let ordersRaw: any[] = [];
     
-    const ordersRaw = await db.query<any>(
-      `SELECT 
-        o.id,
-        o.user_id,
-        o.store_id,
-        o.store_category,
-        o.payment_method_id,
-        o.address_id,
-        o.delivery_type,
-        o.delivery_time_str,
-        o.extra_fee,
-        o.scheduled_date,
-        o.scheduled_time_slot,
-        o.phone_country_code,
-        o.phone_number,
-        o.tip_amount,
-        o.subtotal,
-        o.service_fee,
-        o.delivery_fee,
-        o.total,
-        o.order_date,
-        o.status
-      FROM orders o
-      WHERE ${whereClause}
-      ORDER BY o.order_date DESC`,
-      [queryParam]
-    );
+    if (storeId) {
+      // Merchant portal: fetch all orders for this store
+      // Convert storeId to number for database query (store_id is INTEGER)
+      const storeIdNum = parseInt(storeId, 10);
+      if (isNaN(storeIdNum)) {
+        return NextResponse.json(
+          { success: false, message: 'Invalid store ID' },
+          { status: 400 }
+        );
+      }
+      
+      console.log(`🔍 Fetching orders for store ID: ${storeId} (numeric: ${storeIdNum})`);
+      
+      // First, let's check what store_ids actually exist in orders
+      const allStoreIds = await db.query<any>(
+        `SELECT DISTINCT store_id, COUNT(*) as count 
+         FROM orders 
+         GROUP BY store_id 
+         ORDER BY store_id`
+      );
+      console.log(`📊 All store_ids in orders table:`, allStoreIds);
+      
+      ordersRaw = await db.query<any>(
+        `SELECT 
+          o.id,
+          o.user_id,
+          o.store_id,
+          o.store_category,
+          o.payment_method_id,
+          o.address_id,
+          o.delivery_type,
+          o.delivery_time_str,
+          o.extra_fee,
+          o.scheduled_date,
+          o.scheduled_time_slot,
+          o.phone_country_code,
+          o.phone_number,
+          o.tip_amount,
+          o.subtotal,
+          o.service_fee,
+          o.delivery_fee,
+          o.total,
+          o.order_date,
+          o.status
+        FROM orders o
+        WHERE o.store_id = ?
+        ORDER BY o.order_date DESC`,
+        [storeIdNum]
+      );
+      
+      console.log(`📦 Found ${ordersRaw.length} orders for store ${storeIdNum}`);
+      
+      // Debug: Check what store_ids actually exist in database
+      if (ordersRaw.length === 0) {
+        const allStoreIds = await db.query<any>(
+          `SELECT DISTINCT store_id, COUNT(*) as count 
+           FROM orders 
+           GROUP BY store_id 
+           ORDER BY store_id`
+        );
+        console.log(`💡 Available store_ids in database:`, allStoreIds.map((s: any) => `store_id=${s.store_id} (${s.count} orders)`).join(', '));
+        console.log(`🔍 Query was: WHERE store_id = ${storeIdNum} (type: ${typeof storeIdNum})`);
+      }
+      if (ordersRaw.length === 0) {
+        console.log(`⚠️ Query used: WHERE store_id = ${storeIdNum} (type: ${typeof storeIdNum})`);
+        console.log(`💡 Available store_ids:`, allStoreIds.map((s: any) => `${s.store_id} (${s.count} orders)`).join(', '));
+      }
+    } else if (userId) {
+      // Customer portal: fetch orders for this user
+      const userIdNum = parseInt(userId, 10);
+      if (isNaN(userIdNum)) {
+        return NextResponse.json(
+          { success: false, message: 'Invalid user ID' },
+          { status: 400 }
+        );
+      }
+      
+      ordersRaw = await db.query<any>(
+        `SELECT 
+          o.id,
+          o.user_id,
+          o.store_id,
+          o.store_category,
+          o.payment_method_id,
+          o.address_id,
+          o.delivery_type,
+          o.delivery_time_str,
+          o.extra_fee,
+          o.scheduled_date,
+          o.scheduled_time_slot,
+          o.phone_country_code,
+          o.phone_number,
+          o.tip_amount,
+          o.subtotal,
+          o.service_fee,
+          o.delivery_fee,
+          o.total,
+          o.order_date,
+          o.status
+        FROM orders o
+        WHERE o.user_id = ?
+        ORDER BY o.order_date DESC`,
+        [userIdNum]
+      );
+    }
 
     if (ordersRaw.length === 0) {
+      console.log(`⚠️ No orders found for ${storeId ? `store ${storeId}` : `user ${userId}`}`);
       return NextResponse.json({ success: true, data: [] });
     }
+    
+    console.log(`✅ Found ${ordersRaw.length} orders for ${storeId ? `store ${storeId}` : `user ${userId}`}`);
 
     const orderIds = ordersRaw.map(o => o.id);
 
@@ -308,7 +390,7 @@ export async function GET(request: NextRequest) {
     });
 
     if (storeId) {
-      console.log(`✅ Fetched ${orders.length} orders for store ${storeId}`);
+      console.log(`✅ Fetched ${orders.length} orders for store ${storeId}`)(`✅ Fetched ${orders.length} orders for store ${storeId}`);
     } else {
       console.log(`✅ Fetched ${orders.length} orders for user ${userId}`);
     }
@@ -332,18 +414,7 @@ export async function POST(request: NextRequest) {
     const {
       storeId,
       userId,
-      storeCategory,
-      items,
-      paymentCard,
-      deliveryAddress,
-      deliveryOption,
-      phoneNumber,
-      tipAmount = 0,
-      subtotal,
-      serviceFee,
-      deliveryFee,
-      total,
-      status = 'Confirmed',
+      status = 'pending',
     } = body;
 
     if (!storeId) {
@@ -353,204 +424,27 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Convert storeId to number (database uses INTEGER)
-    const storeIdNum = parseInt(storeId, 10);
-    if (isNaN(storeIdNum)) {
-      return NextResponse.json(
-        { success: false, message: 'Invalid store ID' },
-        { status: 400 }
-      );
-    }
-
-    // Get or create user_id (can be null for guest orders)
-    let userIdNum: number | null = null;
-    if (userId) {
-      userIdNum = parseInt(userId, 10);
-      if (isNaN(userIdNum)) {
-        userIdNum = null;
-      }
-    }
-
-    // Get or create payment_method_id
-    let paymentMethodId: number | null = null;
-    if (paymentCard && paymentCard.lastFour) {
-      // Try to find existing payment method
-      const existingPaymentMethods = await db.query<any>(
-        `SELECT id FROM payment_methods WHERE last_four = ? AND user_id = ? LIMIT 1`,
-        [paymentCard.lastFour, userIdNum]
-      );
-      
-      if (existingPaymentMethods.length > 0) {
-        paymentMethodId = existingPaymentMethods[0].id;
-      } else if (userIdNum) {
-        // Create new payment method
-        const paymentResult = await db.query<any>(
-          `INSERT INTO payment_methods (user_id, type, last_four, expiry, zip_code, is_default)
-           VALUES (?, ?, ?, ?, ?, ?)`,
-          [
-            userIdNum,
-            paymentCard.type || 'credit',
-            paymentCard.lastFour,
-            paymentCard.expiry || '',
-            paymentCard.zipCode || '',
-            0 // Not default
-          ]
-        );
-        paymentMethodId = paymentResult.lastInsertRowid;
-      }
-    }
-
-    // Get or create address_id
-    let addressId: number | null = null;
-    if (deliveryAddress) {
-      // Try to find existing address
-      const existingAddresses = await db.query<any>(
-        `SELECT id FROM addresses 
-         WHERE street = ? AND city = ? AND state = ? AND zip_code = ? 
-         AND (user_id = ? OR user_id IS NULL)
-         LIMIT 1`,
-        [
-          deliveryAddress.street,
-          deliveryAddress.city,
-          deliveryAddress.state,
-          deliveryAddress.zipCode,
-          userIdNum
-        ]
-      );
-      
-      if (existingAddresses.length > 0) {
-        addressId = existingAddresses[0].id;
-      } else {
-        // Create new address
-        const addressResult = await db.query<any>(
-          `INSERT INTO addresses (
-            user_id, address_type, street, apartment_suite, business_name,
-            city, state, zip_code, latitude, longitude, delivery_instructions, is_default
-          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-          [
-            userIdNum,
-            deliveryAddress.type || 'home',
-            deliveryAddress.street,
-            deliveryAddress.aptSuiteOther || null,
-            deliveryAddress.businessName || null,
-            deliveryAddress.city,
-            deliveryAddress.state,
-            deliveryAddress.zipCode,
-            deliveryAddress.lat || null,
-            deliveryAddress.lng || null,
-            deliveryAddress.deliveryInstructions || null,
-            0 // Not default
-          ]
-        );
-        addressId = addressResult.lastInsertRowid;
-      }
-    }
-
-    // Insert order
-    const orderDate = new Date().toISOString();
-    const orderResult = await db.query<any>(
-      `INSERT INTO orders (
-        user_id, store_id, store_category, payment_method_id, address_id,
-        delivery_type, delivery_time_str, extra_fee, scheduled_date, scheduled_time_slot,
-        phone_country_code, phone_number, tip_amount, subtotal, service_fee, delivery_fee, total, order_date, status
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [
-        userIdNum,
-        storeIdNum,
-        storeCategory || 'restaurant',
-        paymentMethodId,
-        addressId,
-        deliveryOption?.type || 'standard',
-        deliveryOption?.deliveryTime || '25-35 min',
-        Math.round((deliveryOption?.extraFee || 0) * 100), // Convert to cents
-        deliveryOption?.scheduledDate ? new Date(deliveryOption.scheduledDate).toISOString().split('T')[0] : null,
-        deliveryOption?.scheduledTimeSlot || null,
-        phoneNumber?.countryCode || '+1',
-        phoneNumber?.number || '',
-        Math.round((tipAmount || 0) * 100), // Convert to cents
-        Math.round((subtotal || 0) * 100), // Convert to cents
-        Math.round((serviceFee || 0) * 100), // Convert to cents
-        Math.round((deliveryFee || 0) * 100), // Convert to cents
-        Math.round((total || 0) * 100), // Convert to cents
-        orderDate,
-        status
-      ]
-    );
-
-    const orderId = orderResult.lastInsertRowid;
-
-    // Insert order items
-    if (items && Array.isArray(items)) {
-      for (const item of items) {
-        const menuItemId = parseInt(item.id, 10);
-        if (isNaN(menuItemId)) {
-          console.warn(`Invalid menu item ID: ${item.id}`);
-          continue;
-        }
-
-        const orderItemResult = await db.query<any>(
-          `INSERT INTO order_items (order_id, menu_item_id, quantity) VALUES (?, ?, ?)`,
-          [orderId, menuItemId, item.quantity || 1]
-        );
-
-        const orderItemId = orderItemResult.lastInsertRowid;
-
-        // Insert modifications if any
-        if (item.modifications && Array.isArray(item.modifications)) {
-          for (const mod of item.modifications) {
-            const modificationId = parseInt(mod.modificationId, 10);
-            if (isNaN(modificationId)) {
-              continue;
-            }
-
-            const appliedModResult = await db.query<any>(
-              `INSERT INTO order_item_applied_modifications (order_item_id, modification_id, modification_desc)
-               VALUES (?, ?, ?)`,
-              [orderItemId, modificationId, mod.modificationDescription || '']
-            );
-
-            const appliedModId = appliedModResult.lastInsertRowid;
-
-            // Insert modification options
-            if (mod.options && Array.isArray(mod.options)) {
-              for (const option of mod.options) {
-                const optionId = parseInt(option.optionId, 10);
-                if (isNaN(optionId)) {
-                  continue;
-                }
-
-                await db.query(
-                  `INSERT INTO order_item_applied_options (
-                    order_item_applied_mod_id, option_id, option_name, price, quantity
-                  ) VALUES (?, ?, ?, ?, ?)`,
-                  [
-                    appliedModId,
-                    optionId,
-                    option.optionName || '',
-                    Math.round((option.price || 0) * 100), // Convert to cents
-                    option.quantity || 1
-                  ]
-                );
-              }
-            }
-          }
-        }
-      }
-    }
-
-    console.log(`✅ Order ${orderId} saved to database for store ${storeId}`);
-
+    // Orders are now saved to localStorage only (no database save)
+    // This endpoint just returns success to maintain API compatibility
+    console.log(`✅ Order saved to localStorage: storeId=${storeId}, userId=${userId || 'guest'}, status=${status}`);
+    
     return NextResponse.json({
       success: true,
+      message: 'Order saved to localStorage',
       data: {
-        id: String(orderId),
-        orderId: String(orderId),
+        storeId,
+        userId: userId || null,
+        status,
       },
     });
   } catch (error: any) {
-    console.error('❌ Error saving order:', error);
+    console.error('❌ Error in POST /api/orders:', error);
     return NextResponse.json(
-      { success: false, message: 'Internal server error', error: error.message },
+      { 
+        success: false, 
+        message: 'Internal server error', 
+        error: error.message,
+      },
       { status: 500 }
     );
   }

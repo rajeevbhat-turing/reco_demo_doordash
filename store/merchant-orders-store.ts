@@ -66,7 +66,7 @@ export const useMerchantOrdersStore = create<OrdersStore>()(
       orders: initialOrders,
       searchQuery: "",
       selectedFilter: "All channels",
-      activeTab: "History",
+      activeTab: "Active", // Default to Active tab to show new orders
 
       setOrders: (orders) => set({ orders }),
       addOrder: (order) => set((state) => ({ orders: [...state.orders, order] })),

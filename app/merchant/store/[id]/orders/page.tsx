@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input"
 import { useMerchantPersistedState } from "@/lib/hooks/useMerchantPersistedState"
 import { useCurrentStore } from "@/lib/hooks/useCurrentStore"
 import { useMerchantOrdersStore } from "@/store/merchant-orders-store"
-import { useMerchantOrders } from "@/lib/hooks/use-merchant-orders"
+import { useOrdersStore } from "@/store/orders-store"
 import { useAllRestaurants } from "@/lib/hooks/use-restaurants"
 
 interface Order {
@@ -20,6 +20,11 @@ interface Order {
   fulfillmentType: "Customer pickup" | "DashDoor delivery"
   channel: string
   subtotal: string
+  rawOrderDate?: Date
+  orderCreatedAt?: Date
+  minutesElapsed?: number
+  secondsElapsed?: number
+  totalSecondsElapsed?: number
 }
 
 function FilterBar({ searchValue, onSearchChange }: { searchValue: string; onSearchChange: (value: string) => void }) {
@@ -70,6 +75,8 @@ export default function MerchantStoreOrdersPage() {
   const [searchValue, setSearchValue] = useState(searchQuery)
   const [lastUpdated, setLastUpdated] = useState(3)
   const [storeSet, setStoreSet] = useState(false)
+  // Force re-render every second to update order statuses and timers
+  const [currentTime, setCurrentTime] = useState(new Date())
 
   const storeIdParam = params.id as string
 
@@ -131,12 +138,94 @@ export default function MerchantStoreOrdersPage() {
   // Fallback to storeIdParam if restaurant not found yet
   const numericStoreId = currentRestaurant?.id || storeIdParam || null
 
-  // Fetch orders from API for current store using numeric ID
-  const { data: apiOrders = [], isLoading: isLoadingOrders } = useMerchantOrders(numericStoreId)
+  console.log(`🔍 Store lookup: URL param="${storeIdParam}", Found restaurant="${currentRestaurant?.name}", Numeric ID="${numericStoreId}"`)
+
+  // Get orders from localStorage (orders-store) instead of API
+  const { orders: storeOrders } = useOrdersStore()
+  
+  // Filter orders for current store from localStorage
+  const apiOrders = useMemo(() => {
+    if (!numericStoreId) return []
+    
+    const filtered = storeOrders.filter((order: any) => {
+      const orderStoreId = order.storeId || order.restaurantId
+      return String(orderStoreId) === String(numericStoreId)
+    })
+    
+    console.log(`📦 Found ${filtered.length} orders in localStorage for store ${numericStoreId} (out of ${storeOrders.length} total orders)`)
+    return filtered
+  }, [storeOrders, numericStoreId])
+  
+  const isLoadingOrders = false // No loading since we're using localStorage
+
+  // Calculate order status progression based on time elapsed
+  const calculateOrderStatus = (orderCreatedAt: Date, currentTime: Date) => {
+    const totalSecondsElapsed = Math.floor((currentTime.getTime() - orderCreatedAt.getTime()) / 1000)
+    const minutesElapsed = Math.floor(totalSecondsElapsed / 60)
+    const secondsElapsed = totalSecondsElapsed % 60
+    
+    // Status progression over 30 minutes:
+    // 0-2 min: pending (needs action)
+    // 2-8 min: confirmed (in progress)
+    // 8-15 min: preparing (in progress)
+    // 15-20 min: ready (ready for pickup)
+    // 20-25 min: picked_up (scheduled)
+    // 25-30 min: on_the_way (scheduled)
+    // 30+ min: delivered (completed)
+    
+    if (minutesElapsed >= 30) {
+      return { fulfillmentStatus: 'delivered', orderStatus: 'Completed' as const, minutesElapsed, secondsElapsed, totalSecondsElapsed }
+    } else if (minutesElapsed >= 25) {
+      return { fulfillmentStatus: 'on_the_way', orderStatus: 'Scheduled' as const, minutesElapsed, secondsElapsed, totalSecondsElapsed }
+    } else if (minutesElapsed >= 20) {
+      return { fulfillmentStatus: 'picked_up', orderStatus: 'Scheduled' as const, minutesElapsed, secondsElapsed, totalSecondsElapsed }
+    } else if (minutesElapsed >= 15) {
+      return { fulfillmentStatus: 'ready', orderStatus: 'Active' as const, minutesElapsed, secondsElapsed, totalSecondsElapsed }
+    } else if (minutesElapsed >= 8) {
+      return { fulfillmentStatus: 'preparing', orderStatus: 'Active' as const, minutesElapsed, secondsElapsed, totalSecondsElapsed }
+    } else if (minutesElapsed >= 2) {
+      return { fulfillmentStatus: 'confirmed', orderStatus: 'Active' as const, minutesElapsed, secondsElapsed, totalSecondsElapsed }
+    } else {
+      return { fulfillmentStatus: 'pending', orderStatus: 'Active' as const, minutesElapsed, secondsElapsed, totalSecondsElapsed }
+    }
+  }
+  
+  // Get color for fulfillment status
+  const getFulfillmentStatusColor = (status: string) => {
+    const statusLower = status.toLowerCase()
+    if (statusLower.includes('needs action') || statusLower === 'pending') {
+      return { bg: 'bg-red-100', text: 'text-red-700', border: 'border-red-300', dot: 'bg-red-500' }
+    } else if (statusLower.includes('in progress') || statusLower === 'confirmed' || statusLower === 'preparing') {
+      return { bg: 'bg-blue-100', text: 'text-blue-700', border: 'border-blue-300', dot: 'bg-blue-500' }
+    } else if (statusLower.includes('ready for pickup') || statusLower === 'ready') {
+      return { bg: 'bg-yellow-100', text: 'text-yellow-800', border: 'border-yellow-300', dot: 'bg-yellow-500' }
+    } else if (statusLower.includes('picked up') || statusLower === 'picked_up') {
+      return { bg: 'bg-purple-100', text: 'text-purple-700', border: 'border-purple-300', dot: 'bg-purple-500' }
+    } else if (statusLower.includes('on the way') || statusLower === 'on_the_way') {
+      return { bg: 'bg-indigo-100', text: 'text-indigo-700', border: 'border-indigo-300', dot: 'bg-indigo-500' }
+    } else if (statusLower.includes('delivered') || statusLower === 'delivered') {
+      return { bg: 'bg-green-100', text: 'text-green-700', border: 'border-green-300', dot: 'bg-green-500' }
+    } else if (statusLower.includes('cancelled')) {
+      return { bg: 'bg-gray-100', text: 'text-gray-700', border: 'border-gray-300', dot: 'bg-gray-500' }
+    }
+    return { bg: 'bg-gray-100', text: 'text-gray-700', border: 'border-gray-300', dot: 'bg-gray-500' }
+  }
 
   // Transform API orders to merchant order format
   const orders = useMemo(() => {
-    const now = new Date()
+    const now = currentTime
+    
+    console.log(`📦 Processing ${apiOrders.length} orders for store ${numericStoreId}`)
+    if (apiOrders.length > 0) {
+      console.log('📋 Orders:', apiOrders.map((o: any) => ({ 
+        id: o.id, 
+        status: o.status, 
+        orderDate: o.orderDate,
+        storeId: o.storeId,
+        userId: o.userId,
+        userName: o.userName
+      })))
+    }
     
     return apiOrders.map((order: any) => {
       // Parse order date - handle both ISO string and formatted string
@@ -155,8 +244,10 @@ export default function MerchantStoreOrdersPage() {
         orderDate = new Date()
       }
 
-      // Check if order is in the past
-      const isPastOrder = orderDate < now
+      // Check if order is in the past (more than 30 minutes old)
+      // Handle case where orderDate might be slightly in the future due to timezone issues
+      const minutesSinceOrder = Math.max(0, Math.floor((now.getTime() - orderDate.getTime()) / (1000 * 60)))
+      const isPastOrder = minutesSinceOrder >= 30
 
       // Check if there's a scheduled date in the future
       let scheduledDate: Date | null = null
@@ -170,27 +261,41 @@ export default function MerchantStoreOrdersPage() {
       const isFutureScheduled = scheduledDate && scheduledDate > now
 
       // Determine order status based on database status and date
-      // Priority: Past orders always go to History, unless explicitly future scheduled
       let orderStatus: "Active" | "Scheduled" | "Completed" | "Cancelled - Not Paid"
-      
-      if (order.status === 'Completed') {
-        orderStatus = 'Completed'
-      } else if (order.status === 'Cancelled') {
+      let fulfillmentStatus: string
+      let minutesElapsed: number | undefined
+      let secondsElapsed: number | undefined
+      let totalSecondsElapsed: number | undefined
+
+      // Check if order is cancelled first
+      if (order.status === 'Cancelled' || order.status === 'cancelled') {
         orderStatus = 'Cancelled - Not Paid'
-      } else if (isPastOrder && !isFutureScheduled) {
-        // Past orders (regardless of status) should be in History
-        // Exception: if there's a future scheduled date, it stays Scheduled
+        fulfillmentStatus = 'cancelled'
+      } 
+      // Check if order is explicitly completed/delivered
+      else if (order.status === 'Completed' || order.status === 'delivered') {
         orderStatus = 'Completed'
-      } else if (order.status === 'Confirmed') {
-        // Current/future confirmed orders are Active
-        orderStatus = 'Active'
-      } else if (isFutureScheduled) {
-        // Future scheduled orders
+        fulfillmentStatus = 'delivered'
+      } 
+      // Check if order is older than 30 minutes (auto-complete)
+      else if (isPastOrder && !isFutureScheduled) {
+        orderStatus = 'Completed'
+        fulfillmentStatus = 'delivered'
+      } 
+      // Check if order is scheduled for future
+      else if (isFutureScheduled) {
         orderStatus = 'Scheduled'
-      } else {
-        // Default: if not in past and no explicit status, treat as Scheduled
-        // But this should rarely happen
-        orderStatus = 'Scheduled'
+        fulfillmentStatus = order.status || 'pending'
+      } 
+      // All other orders (pending, confirmed, preparing, etc.) are Active
+      else {
+        // Active orders - calculate status based on time elapsed
+        const statusInfo = calculateOrderStatus(orderDate, now)
+        orderStatus = statusInfo.orderStatus
+        fulfillmentStatus = statusInfo.fulfillmentStatus
+        minutesElapsed = statusInfo.minutesElapsed
+        secondsElapsed = statusInfo.secondsElapsed
+        totalSecondsElapsed = statusInfo.totalSecondsElapsed
       }
 
       // Get customer name - prioritize user name, then business name, then address
@@ -199,28 +304,63 @@ export default function MerchantStoreOrdersPage() {
                           order.deliveryAddress?.street || 
                           'Customer'
 
+      // Format fulfillment status for display
+      const formatFulfillmentStatus = (status: string) => {
+        const statusMap: Record<string, string> = {
+          'pending': 'Needs action',
+          'confirmed': 'In progress',
+          'preparing': 'In progress',
+          'ready': 'Ready for pickup',
+          'picked_up': 'Picked up',
+          'on_the_way': 'On the way',
+          'delivered': 'Delivered',
+          'cancelled': 'Cancelled',
+        }
+        return statusMap[status.toLowerCase()] || status
+      }
+
       return {
         customer: customerName,
-        orderId: `DD-${order.id}`,
+        orderId: order.orderId || `DD-${order.id}`, // Use orderId if exists, otherwise format
         orderStatus,
         date: orderDate.toLocaleDateString('en-US', { month: 'numeric', day: 'numeric', year: 'numeric' }),
         time: orderDate.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }),
-        fulfillmentStatus: order.status,
+        fulfillmentStatus: formatFulfillmentStatus(fulfillmentStatus),
         fulfillmentType: order.deliveryOption?.type === 'pickup' ? 'Customer pickup' : 'DashDoor delivery',
         channel: 'DashDoor',
-        subtotal: `$${((order.subtotal || 0) / 100).toFixed(2)}`, // Convert from cents to dollars
+        subtotal: (() => {
+          // Handle subtotal - could be in cents (from DB) or dollars (from localStorage)
+          let subtotalValue = order.subtotal || order.total || 0
+          if (typeof subtotalValue === 'number' && subtotalValue > 1000) {
+            // Likely in cents, convert to dollars
+            subtotalValue = subtotalValue / 100
+          }
+          return `$${subtotalValue.toFixed(2)}`
+        })(),
         rawOrderDate: orderDate, // Keep for sorting/filtering
+        orderCreatedAt: orderDate,
+        minutesElapsed,
+        secondsElapsed,
+        totalSecondsElapsed,
       }
+    }).map(order => {
+      // Debug logging for new orders
+      if (order.minutesElapsed !== undefined && order.minutesElapsed < 5) {
+        console.log(`🆕 New order found: ${order.orderId}, Status: ${order.orderStatus}, Fulfillment: ${order.fulfillmentStatus}, Minutes: ${order.minutesElapsed}`)
+      }
+      return order
     })
-  }, [apiOrders])
+  }, [apiOrders, currentTime, numericStoreId])
 
   // Sync search value with store
   useEffect(() => {
     setSearchQuery(searchValue)
   }, [searchValue, setSearchQuery])
 
+  // Update current time every second to trigger order status recalculations
   useEffect(() => {
     const interval = setInterval(() => {
+      setCurrentTime(new Date())
       setLastUpdated((prev) => (prev >= 60 ? 1 : prev + 1))
     }, 1000)
     return () => clearInterval(interval)
@@ -228,18 +368,63 @@ export default function MerchantStoreOrdersPage() {
 
   const handleRefresh = () => {
     setLastUpdated(0)
+    setCurrentTime(new Date())
     // Force refetch orders
     window.location.reload()
   }
 
+  // Auto-switch to Active tab when new orders arrive
+  useEffect(() => {
+    const activeOrders = orders.filter(order => {
+      const minutesSinceOrder = order.rawOrderDate ? Math.floor((currentTime.getTime() - order.rawOrderDate.getTime()) / (1000 * 60)) : 0
+      return order.orderStatus === "Active" && minutesSinceOrder < 30
+    })
+    
+    // If we have active orders and we're not on Active tab, switch to it
+    if (activeOrders.length > 0 && activeTab !== "Active") {
+      // Only auto-switch if user hasn't manually selected a tab recently (within last 10 seconds)
+      const lastTabChange = sessionStorage.getItem('lastTabChange')
+      const now = Date.now()
+      if (!lastTabChange || (now - parseInt(lastTabChange)) > 10000) {
+        setActiveTab("Active")
+      }
+    }
+  }, [orders, currentTime, activeTab, setActiveTab])
+
+  // Set default tab to Active if there are active orders
+  useEffect(() => {
+    if (orders.length > 0) {
+      const activeOrders = orders.filter(order => {
+        const minutesSinceOrder = order.rawOrderDate ? Math.floor((currentTime.getTime() - order.rawOrderDate.getTime()) / (1000 * 60)) : 0
+        return order.orderStatus === "Active" && minutesSinceOrder < 30
+      })
+      
+      console.log(`🔍 Found ${activeOrders.length} active orders out of ${orders.length} total`)
+      
+      if (activeOrders.length > 0) {
+        const lastTabChange = sessionStorage.getItem('lastTabChange')
+        const now = Date.now()
+        // Auto-switch to Active tab if:
+        // 1. User hasn't manually changed tabs in last 10 seconds, OR
+        // 2. Currently on History tab (default) and no manual change recorded
+        if (!lastTabChange || (now - parseInt(lastTabChange)) > 10000 || activeTab === "History") {
+          if (activeTab !== "Active") {
+            console.log(`🔄 Auto-switching to Active tab (${activeOrders.length} active orders)`)
+            setActiveTab("Active")
+          }
+        }
+      }
+    }
+  }, [orders, currentTime, activeTab, setActiveTab])
+
   // Filter orders based on active tab and search
   const filteredOrders = useMemo(() => {
-    const now = new Date()
+    const now = currentTime
     
     return orders.filter(order => {
       // Tab filtering logic:
-      // - "Active": Show orders with status 'Active' (current Confirmed orders)
-      // - "Scheduled": Show orders with status 'Scheduled' (future scheduled orders)
+      // - "Active": Show orders with status 'Active' (pending, confirmed, preparing, ready)
+      // - "Scheduled": Show orders with status 'Scheduled' (picked_up, on_the_way)
       // - "History": Show all past/completed orders (Completed, Cancelled, past orders)
       let matchesTab = false
       
@@ -247,19 +432,20 @@ export default function MerchantStoreOrdersPage() {
         // History shows:
         // - Completed orders
         // - Cancelled orders
-        // - Past orders (regardless of status, if they're in the past)
-        const isPastOrder = order.rawOrderDate && order.rawOrderDate < now
+        // - Orders older than 30 minutes
+        const minutesSinceOrder = order.rawOrderDate ? Math.floor((now.getTime() - order.rawOrderDate.getTime()) / (1000 * 60)) : 0
+        const isPastOrder = minutesSinceOrder >= 30
         matchesTab = order.orderStatus === "Completed" || 
                      order.orderStatus === "Cancelled - Not Paid" ||
-                     (isPastOrder && order.orderStatus !== "Active" && order.orderStatus !== "Scheduled")
+                     isPastOrder
       } else if (activeTab === "Active") {
-        // Active shows current Confirmed orders (not in the past)
-        const isPastOrder = order.rawOrderDate && order.rawOrderDate < now
-        matchesTab = order.orderStatus === "Active" && !isPastOrder
+        // Active shows current orders with status Active (less than 30 minutes old)
+        const minutesSinceOrder = order.rawOrderDate ? Math.floor((now.getTime() - order.rawOrderDate.getTime()) / (1000 * 60)) : 0
+        matchesTab = order.orderStatus === "Active" && minutesSinceOrder < 30
       } else if (activeTab === "Scheduled") {
-        // Scheduled shows only future scheduled orders
-        const isPastOrder = order.rawOrderDate && order.rawOrderDate < now
-        matchesTab = order.orderStatus === "Scheduled" && !isPastOrder
+        // Scheduled shows orders with status Scheduled (picked_up, on_the_way)
+        const minutesSinceOrder = order.rawOrderDate ? Math.floor((now.getTime() - order.rawOrderDate.getTime()) / (1000 * 60)) : 0
+        matchesTab = order.orderStatus === "Scheduled" && minutesSinceOrder < 30
       }
 
       // Search filtering
@@ -269,7 +455,7 @@ export default function MerchantStoreOrdersPage() {
       
       return matchesTab && matchesSearch
     })
-  }, [orders, activeTab, searchValue])
+  }, [orders, activeTab, searchValue, currentTime])
 
   // Show loading state while finding store
   if (isLoading) {
@@ -317,14 +503,23 @@ export default function MerchantStoreOrdersPage() {
       {/* Tabs */}
       <div className="flex items-center gap-1 mb-6 border-b border-gray-200">
         <button 
-          onClick={() => setActiveTab("Active")}
-          className={`px-4 py-2 text-sm font-medium ${
+          onClick={() => {
+            setActiveTab("Active")
+            sessionStorage.setItem('lastTabChange', Date.now().toString())
+          }}
+          className={`px-4 py-2 text-sm font-medium relative ${
             activeTab === "Active"
               ? "text-gray-900 border-b-2 border-gray-900"
               : "text-gray-600 hover:text-gray-900"
           }`}
         >
           Active
+          {orders.filter(order => {
+            const isPastOrder = order.rawOrderDate && order.rawOrderDate < currentTime
+            return order.orderStatus === "Active" && !isPastOrder
+          }).length > 0 && activeTab !== "Active" && (
+            <span className="absolute -top-1 -right-1 w-2 h-2 bg-blue-600 rounded-full" />
+          )}
         </button>
         <button 
           onClick={() => setActiveTab("Scheduled")}
@@ -399,7 +594,46 @@ export default function MerchantStoreOrdersPage() {
                     </td>
                     <td className="px-4 py-3 text-gray-600">{order.date}</td>
                     <td className="px-4 py-3 text-gray-600">{order.time}</td>
-                    <td className="px-4 py-3 text-gray-600">{order.fulfillmentStatus || "-"}</td>
+                    <td className="px-4 py-3">
+                      {(() => {
+                        const statusColors = getFulfillmentStatusColor(order.fulfillmentStatus)
+                        const progressPercent = order.totalSecondsElapsed !== undefined 
+                          ? Math.min((order.totalSecondsElapsed / (30 * 60)) * 100, 100)
+                          : 0
+                        
+                        return (
+                          <div className="flex flex-col gap-2">
+                            {/* Status badge with color */}
+                            <span className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-xs font-medium border ${statusColors.bg} ${statusColors.text} ${statusColors.border}`}>
+                              <span className={`w-1.5 h-1.5 rounded-full ${statusColors.dot}`} />
+                              {order.fulfillmentStatus || "-"}
+                            </span>
+                            
+                            {/* Progress bar with seconds */}
+                            {order.totalSecondsElapsed !== undefined && order.orderStatus === "Active" && (
+                              <div className="flex items-center gap-2">
+                                <div className="w-32 h-2 bg-gray-200 rounded-full overflow-hidden">
+                                  <div 
+                                    className={`h-full transition-all duration-1000 ${
+                                      progressPercent >= 75 ? 'bg-orange-500' : 
+                                      progressPercent >= 50 ? 'bg-yellow-500' : 
+                                      'bg-blue-500'
+                                    }`}
+                                    style={{ width: `${progressPercent}%` }}
+                                  />
+                                </div>
+                                <span className="text-xs text-gray-600 font-medium min-w-[70px]">
+                                  {order.minutesElapsed !== undefined && order.secondsElapsed !== undefined
+                                    ? `${order.minutesElapsed}m ${order.secondsElapsed}s / 30m`
+                                    : `${order.minutesElapsed || 0}m / 30m`
+                                  }
+                                </span>
+                              </div>
+                            )}
+                          </div>
+                        )
+                      })()}
+                    </td>
                     <td className="px-4 py-3 text-gray-600">{order.fulfillmentType}</td>
                     <td className="px-4 py-3 text-gray-600">{order.channel}</td>
                     <td className="px-4 py-3 text-right font-medium">{order.subtotal}</td>

@@ -16,20 +16,22 @@ export default function SalesOverTimeChart({ data, priorData, type }: SalesOverT
   }
 
   const allValues = [...data.map(d => d.value), ...(priorData?.map(d => d.value) || [])]
-  const maxValue = Math.max(...allValues, 1)
+  const maxValue = Math.max(...allValues, 0.01) // Use 0.01 instead of 1 to show small values
   const chartHeight = 200
-  const chartWidth = 100
   const paddingLeft = 50
   const paddingRight = 20
   const paddingTop = 20
   const paddingBottom = 40
-  const availableWidth = chartWidth - paddingLeft - paddingRight
-  const availableHeight = chartHeight - paddingTop - paddingBottom
 
   // Format value based on type
   const formatValue = (value: number) => {
     if (type === 'Sales' || type === 'Average ticket value') {
-      return `$${value.toLocaleString()}`
+      return new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      }).format(value)
     }
     return value.toLocaleString()
   }
@@ -37,20 +39,16 @@ export default function SalesOverTimeChart({ data, priorData, type }: SalesOverT
   // Format Y-axis labels
   const formatYAxisLabel = (value: number) => {
     if (type === 'Sales' || type === 'Average ticket value') {
-      // For zero values, show CA$0, CA$1, -CA$1 format
       if (value === 0) {
-        return 'CA$0'
+        return '$0'
       }
-      if (value === 1) {
-        return 'CA$1'
-      }
-      if (value === -1) {
-        return '-CA$1'
+      if (value >= 1000) {
+        return `$${(value / 1000).toFixed(value >= 10000 ? 0 : 1)}K`
       }
       if (value >= 1) {
-        return `CA$${value.toFixed(0)}`
+        return `$${value.toFixed(0)}`
       }
-      return `CA$${value.toFixed(1)}`
+      return `$${value.toFixed(2)}`
     }
     if (value >= 1000) {
       return `${(value / 1000).toFixed(1)}K`
@@ -58,50 +56,43 @@ export default function SalesOverTimeChart({ data, priorData, type }: SalesOverT
     return value.toString()
   }
 
-  // Generate Y-axis labels - for zero sales, show CA$1, CA$0, -CA$1
-  const yAxisSteps = 2
-  let yAxisLabels
-  if (maxValue === 0 && (type === 'Sales' || type === 'Average ticket value')) {
-    // Special case for zero sales - show CA$1, CA$0, -CA$1
-    yAxisLabels = [
-      { value: 1, y: paddingTop, label: 'CA$1' },
-      { value: 0, y: paddingTop + availableHeight / 2, label: 'CA$0' },
-      { value: -1, y: paddingTop + availableHeight, label: '-CA$1' },
-    ]
-  } else {
-    yAxisLabels = Array.from({ length: yAxisSteps + 1 }, (_, i) => {
-      const value = (maxValue / yAxisSteps) * (yAxisSteps - i)
-      return {
-        value,
-        y: paddingTop + (availableHeight / yAxisSteps) * i,
-        label: formatYAxisLabel(value)
-      }
-    })
+  // Generate Y-axis labels
+  const yAxisSteps = 4
+  const availableHeight = chartHeight - paddingTop - paddingBottom
+  const yAxisLabels = Array.from({ length: yAxisSteps + 1 }, (_, i) => {
+    const value = (maxValue / yAxisSteps) * (yAxisSteps - i)
+    return {
+      value,
+      y: paddingTop + (availableHeight / yAxisSteps) * i,
+      label: formatYAxisLabel(value)
+    }
+  })
+
+  // Calculate points for the line - using viewBox approach for responsive sizing
+  const getXPosition = (index: number, total: number, containerWidth: number) => {
+    const availableWidth = containerWidth - paddingLeft - paddingRight
+    return paddingLeft + (availableWidth / Math.max(total - 1, 1)) * index
+  }
+
+  const getYPosition = (value: number) => {
+    const availableHeight = chartHeight - paddingTop - paddingBottom
+    if (maxValue === 0) {
+      return paddingTop + availableHeight / 2
+    }
+    return paddingTop + availableHeight - (value / maxValue) * availableHeight
   }
 
   // Calculate points for the line
   const points = data.map((point, index) => {
-    const x = paddingLeft + (availableWidth / (data.length - 1 || 1)) * index
-    // For zero values, position at middle (CA$0 level)
-    let y
-    if (maxValue === 0 && (type === 'Sales' || type === 'Average ticket value')) {
-      // When all values are zero, position line at CA$0 (middle)
-      y = paddingTop + availableHeight / 2
-    } else {
-      y = paddingTop + availableHeight - (point.value / maxValue) * availableHeight
-    }
+    const x = getXPosition(index, data.length, 800) // Use a base width for calculations
+    const y = getYPosition(point.value)
     return { x, y, value: point.value, date: point.date }
   })
 
   // Prior period points
   const priorPoints = priorData?.map((point, index) => {
-    const x = paddingLeft + (availableWidth / (data.length - 1 || 1)) * index
-    let y
-    if (maxValue === 0 && (type === 'Sales' || type === 'Average ticket value')) {
-      y = paddingTop + availableHeight / 2
-    } else {
-      y = paddingTop + availableHeight - (point.value / maxValue) * availableHeight
-    }
+    const x = getXPosition(index, data.length, 800)
+    const y = getYPosition(point.value)
     return { x, y, value: point.value, date: point.date }
   })
 
@@ -122,16 +113,21 @@ export default function SalesOverTimeChart({ data, priorData, type }: SalesOverT
 
   return (
     <div className="w-full">
-      <svg width="100%" height={chartHeight} className="overflow-visible">
+      <svg 
+        viewBox={`0 0 800 ${chartHeight}`}
+        preserveAspectRatio="xMidYMid meet"
+        className="w-full h-[200px] overflow-visible"
+      >
         {/* Y-axis labels */}
         {yAxisLabels.map(({ y, label }, index) => (
           <text
             key={index}
             x={paddingLeft - 10}
             y={y + 4}
-            className="text-xs fill-gray-500"
+            fill="#6B7280"
             textAnchor="end"
             fontSize="11"
+            fontFamily="system-ui, -apple-system, sans-serif"
           >
             {label}
           </text>
@@ -143,7 +139,7 @@ export default function SalesOverTimeChart({ data, priorData, type }: SalesOverT
             key={index}
             x1={paddingLeft}
             y1={y}
-            x2={paddingLeft + availableWidth}
+            x2={800 - paddingRight}
             y2={y}
             stroke="#E5E7EB"
             strokeWidth="1"
@@ -217,9 +213,10 @@ export default function SalesOverTimeChart({ data, priorData, type }: SalesOverT
               key={index}
               x={point.x}
               y={chartHeight - paddingBottom + 20}
-              className="text-xs fill-gray-500"
+              fill="#6B7280"
               textAnchor="middle"
               fontSize="10"
+              fontFamily="system-ui, -apple-system, sans-serif"
             >
               {formatDateLabel(point.date)}
             </text>

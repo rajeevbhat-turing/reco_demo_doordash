@@ -9,6 +9,7 @@ import ByDayOfWeekChart from "@/components/merchant/ByDayOfWeekChart"
 import ByHourOfDayChart from "@/components/merchant/ByHourOfDayChart"
 import { useCurrentStore } from "@/lib/hooks/useCurrentStore"
 import { useAllRestaurants } from "@/lib/hooks/use-restaurants"
+import { useOrdersStore } from "@/store/orders-store"
 
 /**
  * Route: /merchant/store/[id]/insights/sales
@@ -27,6 +28,9 @@ export default function SalesPage() {
   const [activeTabDay, setActiveTabDay] = useState<"Sales" | "Total orders" | "Average ticket value">("Sales")
   const [activeTabHour, setActiveTabHour] = useState<"Sales" | "Total orders" | "Average ticket value">("Sales")
   const [viewMode, setViewMode] = useState<"chart" | "table">("chart")
+  const [salesData, setSalesData] = useState<any>(null)
+  const [priorSalesData, setPriorSalesData] = useState<any>(null)
+  const [isLoadingSales, setIsLoadingSales] = useState(true)
 
   const storeIdParam = params.id as string
 
@@ -63,77 +67,241 @@ export default function SalesPage() {
     }
   }, [storeIdParam, restaurants, isLoading, setCurrentStoreId, contextStoreId, storeSet, mounted])
 
+  // Get orders from localStorage
+  const { orders: allOrders = [] } = useOrdersStore()
+  
+  // Calculate sales data from localStorage orders
+  useEffect(() => {
+    if (!mounted || !storeIdParam) return
+
+    setIsLoadingSales(true)
+    try {
+      // Filter orders for this store
+      const storeOrders = allOrders.filter((order: any) => {
+        const orderStoreId = order.storeId || order.restaurantId;
+        return String(orderStoreId) === String(storeIdParam);
+      })
+
+      // Calculate date ranges
+      const today = new Date()
+      const last7DaysEnd = new Date(today)
+      last7DaysEnd.setHours(23, 59, 59, 999)
+      const last7DaysStart = new Date(today)
+      last7DaysStart.setDate(today.getDate() - 6)
+      last7DaysStart.setHours(0, 0, 0, 0)
+
+      const prior7DaysEnd = new Date(last7DaysStart)
+      prior7DaysEnd.setDate(prior7DaysEnd.getDate() - 1)
+      prior7DaysEnd.setHours(23, 59, 59, 999)
+      const prior7DaysStart = new Date(prior7DaysEnd)
+      prior7DaysStart.setDate(prior7DaysStart.getDate() - 6)
+      prior7DaysStart.setHours(0, 0, 0, 0)
+
+      // Helper to check if order is in date range
+      const isInDateRange = (orderDate: string | Date, start: Date, end: Date) => {
+        const date = new Date(orderDate)
+        return date >= start && date <= end
+      }
+
+      // Filter orders by date range
+      const currentPeriodOrders = storeOrders.filter((order: any) => {
+        const orderDate = order.orderDate || order.orderCreatedAt
+        if (!orderDate) return false
+        return isInDateRange(orderDate, last7DaysStart, last7DaysEnd)
+      })
+
+      const priorPeriodOrders = storeOrders.filter((order: any) => {
+        const orderDate = order.orderDate || order.orderCreatedAt
+        if (!orderDate) return false
+        return isInDateRange(orderDate, prior7DaysStart, prior7DaysEnd)
+      })
+
+      // Calculate sales metrics for current period
+      const calculateSalesData = (orders: any[]) => {
+        const completedOrders = orders.filter((o: any) => {
+          const status = o.status?.toLowerCase() || ''
+          return status === 'completed' || status === 'delivered' || status === 'confirmed'
+        })
+
+        const grossSales = completedOrders.reduce((sum: number, order: any) => {
+          const total = order.total || order.subtotal || 0
+          // Handle both cents and dollars
+          return sum + (total > 1000 ? total / 100 : total)
+        }, 0)
+
+        const totalOrders = completedOrders.length
+        const averageTicketSize = totalOrders > 0 ? grossSales / totalOrders : 0
+
+        // Group by date
+        const salesByDate: Record<string, { sales: number; orders: number }> = {}
+        completedOrders.forEach((order: any) => {
+          const orderDate = new Date(order.orderDate || order.orderCreatedAt)
+          const date = orderDate.toISOString().split('T')[0]
+          if (!salesByDate[date]) {
+            salesByDate[date] = { sales: 0, orders: 0 }
+          }
+          const total = order.total || order.subtotal || 0
+          salesByDate[date].sales += total > 1000 ? total / 100 : total
+          salesByDate[date].orders += 1
+        })
+
+        // Group by day of week
+        const salesByDayOfWeek: Record<string, { sales: number; orders: number }> = {
+          'Sun': { sales: 0, orders: 0 }, 'Mon': { sales: 0, orders: 0 }, 'Tue': { sales: 0, orders: 0 },
+          'Wed': { sales: 0, orders: 0 }, 'Thu': { sales: 0, orders: 0 }, 'Fri': { sales: 0, orders: 0 },
+          'Sat': { sales: 0, orders: 0 },
+        }
+        completedOrders.forEach((order: any) => {
+          const orderDate = new Date(order.orderDate || order.orderCreatedAt)
+          const dayOfWeek = orderDate.toLocaleDateString('en-US', { weekday: 'short' })
+          const total = order.total || order.subtotal || 0
+          salesByDayOfWeek[dayOfWeek].sales += total > 1000 ? total / 100 : total
+          salesByDayOfWeek[dayOfWeek].orders += 1
+        })
+
+        // Group by hour
+        const salesByHour: Record<number, { sales: number; orders: number }> = {}
+        for (let i = 0; i < 24; i++) {
+          salesByHour[i] = { sales: 0, orders: 0 }
+        }
+        completedOrders.forEach((order: any) => {
+          const orderDate = new Date(order.orderDate || order.orderCreatedAt)
+          const hour = orderDate.getHours()
+          const total = order.total || order.subtotal || 0
+          salesByHour[hour].sales += total > 1000 ? total / 100 : total
+          salesByHour[hour].orders += 1
+        })
+
+        return {
+          grossSales,
+          totalOrders,
+          averageTicketSize,
+          salesByDate,
+          salesByDayOfWeek,
+          salesByHour,
+        }
+      }
+
+      setSalesData(calculateSalesData(currentPeriodOrders))
+      setPriorSalesData(calculateSalesData(priorPeriodOrders))
+    } catch (error) {
+      console.error('Error calculating sales data:', error)
+    } finally {
+      setIsLoadingSales(false)
+    }
+  }, [mounted, storeIdParam, allOrders])
+
   // Show loading state while finding store or not mounted
-  if (isLoading || !mounted) {
+  if (isLoading || !mounted || isLoadingSales) {
     return (
       <MerchantLayout>
         <div className="min-h-screen flex items-center justify-center">
           <div className="text-center">
-            <p className="text-gray-600">Loading store...</p>
+            <p className="text-gray-600">Loading sales data...</p>
           </div>
         </div>
       </MerchantLayout>
     )
   }
 
-  // Mock data - in production, this would come from API
-  const grossSales = 0.00
-  const totalOrders = 0
-  const averageTicketSize = 0.00
+  // Calculate metrics from real data
+  const grossSales = salesData?.grossSales || 0
+  const totalOrders = salesData?.totalOrders || 0
+  const averageTicketSize = salesData?.averageTicketSize || 0
 
-  // Mock chart data - Last 7 days
-  const chartData = [
-    { date: "2025-11-19", value: 0 },
-    { date: "2025-11-20", value: 0 },
-    { date: "2025-11-21", value: 0 },
-    { date: "2025-11-22", value: 0 },
-    { date: "2025-11-23", value: 0 },
-    { date: "2025-11-24", value: 0 },
-    { date: "2025-11-25", value: 0 },
-  ]
+  const priorGrossSales = priorSalesData?.grossSales || 0
+  const priorTotalOrders = priorSalesData?.totalOrders || 0
+  const priorAverageTicketSize = priorSalesData?.averageTicketSize || 0
 
-  // Prior period data
-  const priorChartData = [
-    { date: "2025-11-12", value: 0 },
-    { date: "2025-11-13", value: 0 },
-    { date: "2025-11-14", value: 0 },
-    { date: "2025-11-15", value: 0 },
-    { date: "2025-11-16", value: 0 },
-    { date: "2025-11-17", value: 0 },
-    { date: "2025-11-18", value: 0 },
-  ]
+  // Calculate percentage changes
+  const calculatePercentageChange = (current: number, prior: number) => {
+    if (prior === 0) return current > 0 ? 100 : 0
+    return ((current - prior) / prior) * 100
+  }
 
-  // By day of week data
-  const dayOfWeekData = [
-    { day: "Wed", value: 0 },
-    { day: "Thu", value: 0 },
-    { day: "Fri", value: 0 },
-    { day: "Sat", value: 0 },
-    { day: "Sun", value: 0 },
-    { day: "Mon", value: 0 },
-    { day: "Tue", value: 0 },
-  ]
+  const grossSalesChange = calculatePercentageChange(grossSales, priorGrossSales)
+  const totalOrdersChange = calculatePercentageChange(totalOrders, priorTotalOrders)
+  const averageTicketSizeChange = calculatePercentageChange(averageTicketSize, priorAverageTicketSize)
 
-  const priorDayOfWeekData = [
-    { day: "Wed", value: 0 },
-    { day: "Thu", value: 0 },
-    { day: "Fri", value: 0 },
-    { day: "Sat", value: 0 },
-    { day: "Sun", value: 0 },
-    { day: "Mon", value: 0 },
-    { day: "Tue", value: 0 },
-  ]
+  // Generate date range for last 7 days
+  const generateDateRange = (days: number) => {
+    const dates: string[] = []
+    const today = new Date()
+    for (let i = days - 1; i >= 0; i--) {
+      const date = new Date(today)
+      date.setDate(date.getDate() - i)
+      dates.push(date.toISOString().split('T')[0])
+    }
+    return dates
+  }
 
-  // By hour of day data (24 hours) - formatted for display
-  const hourOfDayData = Array.from({ length: 24 }, (_, i) => ({
-    hour: i === 0 ? "12 am" : i < 12 ? `${i} am` : i === 12 ? "12 pm" : `${i - 12} pm`,
-    value: 0,
-  }))
+  const last7DaysDates = generateDateRange(7)
+  const prior7DaysDates = generateDateRange(7).map(date => {
+    const d = new Date(date)
+    d.setDate(d.getDate() - 7)
+    return d.toISOString().split('T')[0]
+  })
 
-  const priorHourOfDayData = Array.from({ length: 24 }, (_, i) => ({
-    hour: i === 0 ? "12 am" : i < 12 ? `${i} am` : i === 12 ? "12 pm" : `${i - 12} pm`,
-    value: 0,
-  }))
+  // Transform sales by date into chart format
+  const getChartData = (dates: string[], data: any, type: "Sales" | "Total orders" | "Average ticket value") => {
+    return dates.map(date => {
+      const dayData = data?.salesByDate?.[date] || { sales: 0, orders: 0 }
+      let value = 0
+      if (type === "Sales") {
+        value = dayData.sales || 0
+      } else if (type === "Total orders") {
+        value = dayData.orders || 0
+      } else {
+        value = dayData.orders > 0 ? dayData.sales / dayData.orders : 0
+      }
+      return { date, value }
+    })
+  }
+
+  const chartData = getChartData(last7DaysDates, salesData, activeTabSales)
+  const priorChartData = getChartData(prior7DaysDates, priorSalesData, activeTabSales)
+
+  // Transform day of week data
+  const dayOrder = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+  const getDayOfWeekData = (data: any, type: "Sales" | "Total orders" | "Average ticket value") => {
+    return dayOrder.map(day => {
+      const dayData = data?.salesByDayOfWeek?.[day] || { sales: 0, orders: 0 }
+      let value = 0
+      if (type === "Sales") {
+        value = dayData.sales || 0
+      } else if (type === "Total orders") {
+        value = dayData.orders || 0
+      } else {
+        value = dayData.orders > 0 ? dayData.sales / dayData.orders : 0
+      }
+      return { day, value }
+    })
+  }
+
+  const dayOfWeekData = getDayOfWeekData(salesData, activeTabDay)
+  const priorDayOfWeekData = getDayOfWeekData(priorSalesData, activeTabDay)
+
+  // Transform hour of day data
+  const getHourOfDayData = (data: any, type: "Sales" | "Total orders" | "Average ticket value") => {
+    return Array.from({ length: 24 }, (_, i) => {
+      const hourData = data?.salesByHour?.[i] || { sales: 0, orders: 0 }
+      let value = 0
+      if (type === "Sales") {
+        value = hourData.sales || 0
+      } else if (type === "Total orders") {
+        value = hourData.orders || 0
+      } else {
+        value = hourData.orders > 0 ? hourData.sales / hourData.orders : 0
+      }
+      return {
+        hour: i === 0 ? "12 am" : i < 12 ? `${i} am` : i === 12 ? "12 pm" : `${i - 12} pm`,
+        value,
+      }
+    })
+  }
+
+  const hourOfDayData = getHourOfDayData(salesData, activeTabHour)
+  const priorHourOfDayData = getHourOfDayData(priorSalesData, activeTabHour)
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('en-US', {
@@ -152,9 +320,28 @@ export default function SalesPage() {
 
   const getDateRangeText = () => {
     if (dateRange === "last7days") {
-      return "Last 7 days (Wed, Nov 19 - Tue, Nov 25, 2025) vs. 7 days prior (Wed, Nov 12 - Tue, Nov 18, 2025)"
+      const today = new Date()
+      const startDate = new Date(today)
+      startDate.setDate(today.getDate() - 6)
+      const priorEndDate = new Date(startDate)
+      priorEndDate.setDate(priorEndDate.getDate() - 1)
+      const priorStartDate = new Date(priorEndDate)
+      priorStartDate.setDate(priorStartDate.getDate() - 6)
+      
+      const formatDateRange = (start: Date, end: Date) => {
+        const startStr = start.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })
+        const endStr = end.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })
+        return `${startStr} - ${endStr}`
+      }
+      
+      return `Last 7 days (${formatDateRange(startDate, today)}) vs. 7 days prior (${formatDateRange(priorStartDate, priorEndDate)})`
     } else if (dateRange === "7daysPrior") {
-      return "7 days prior (Wed, Nov 12 - Tue, Nov 18, 2025)"
+      const today = new Date()
+      const startDate = new Date(today)
+      startDate.setDate(today.getDate() - 13)
+      const endDate = new Date(today)
+      endDate.setDate(today.getDate() - 7)
+      return `7 days prior (${startDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })} - ${endDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })})`
     }
     return "Custom range"
   }
@@ -169,7 +356,7 @@ export default function SalesPage() {
             <Info className="h-5 w-5 text-gray-400" />
           </div>
           <p className="text-sm text-gray-600">
-            Last updated on Nov 25, 2025, 1:45 AM GMT+3
+            Last updated on {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}, {new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}
           </p>
         </div>
 
@@ -179,9 +366,9 @@ export default function SalesPage() {
           <div className="bg-white border border-gray-200 rounded-lg p-6">
             <h3 className="text-sm font-medium text-gray-600 mb-2">Gross sales</h3>
             <p className="text-3xl font-bold text-gray-900 mb-2">{formatCurrency(grossSales)}</p>
-            <div className="flex items-center gap-1 text-sm text-green-600">
-              <span>▲</span>
-              <span>--% vs. 7 days prior</span>
+            <div className={`flex items-center gap-1 text-sm ${grossSalesChange >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+              <span>{grossSalesChange >= 0 ? '▲' : '▼'}</span>
+              <span>{Math.abs(grossSalesChange).toFixed(1)}% vs. 7 days prior</span>
             </div>
           </div>
 
@@ -189,9 +376,9 @@ export default function SalesPage() {
           <div className="bg-white border border-gray-200 rounded-lg p-6">
             <h3 className="text-sm font-medium text-gray-600 mb-2">Total orders</h3>
             <p className="text-3xl font-bold text-gray-900 mb-2">{totalOrders}</p>
-            <div className="flex items-center gap-1 text-sm text-green-600">
-              <span>▲</span>
-              <span>--% vs. 7 days prior</span>
+            <div className={`flex items-center gap-1 text-sm ${totalOrdersChange >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+              <span>{totalOrdersChange >= 0 ? '▲' : '▼'}</span>
+              <span>{Math.abs(totalOrdersChange).toFixed(1)}% vs. 7 days prior</span>
             </div>
           </div>
 
@@ -199,9 +386,9 @@ export default function SalesPage() {
           <div className="bg-white border border-gray-200 rounded-lg p-6">
             <h3 className="text-sm font-medium text-gray-600 mb-2">Average ticket size</h3>
             <p className="text-3xl font-bold text-gray-900 mb-2">{formatCurrency(averageTicketSize)}</p>
-            <div className="flex items-center gap-1 text-sm text-green-600">
-              <span>▲</span>
-              <span>--% vs. 7 days prior</span>
+            <div className={`flex items-center gap-1 text-sm ${averageTicketSizeChange >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+              <span>{averageTicketSizeChange >= 0 ? '▲' : '▼'}</span>
+              <span>{Math.abs(averageTicketSizeChange).toFixed(1)}% vs. 7 days prior</span>
             </div>
           </div>
         </div>
@@ -279,13 +466,13 @@ export default function SalesPage() {
                 <div className="flex items-center gap-2">
                   <div className="w-3 h-3 rounded-full bg-purple-500"></div>
                   <span className="text-sm text-gray-600">
-                    Last 7 days Wed, Nov 19 - Tue, Nov 25, 2025
+                    Last 7 days {formatDate(last7DaysDates[0])} - {formatDate(last7DaysDates[6])}
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="w-3 h-3 rounded-full bg-gray-400"></div>
                   <span className="text-sm text-gray-600">
-                    7 days prior Wed, Nov 12 - Tue, Nov 18, 2025
+                    7 days prior {formatDate(prior7DaysDates[0])} - {formatDate(prior7DaysDates[6])}
                   </span>
                 </div>
               </div>
@@ -324,7 +511,7 @@ export default function SalesPage() {
         <div className="bg-white border border-gray-200 rounded-lg p-6 mb-6">
           <h2 className="text-lg font-semibold text-gray-900 mb-2">By day of week</h2>
           <p className="text-sm text-gray-600 mb-4">
-            Last 7 days (Nov 19 - Nov 25, 2025) vs. 7 days prior (Nov 12 - Nov 18, 2025)
+            Last 7 days ({formatDate(last7DaysDates[0])} - {formatDate(last7DaysDates[6])}) vs. 7 days prior ({formatDate(prior7DaysDates[0])} - {formatDate(prior7DaysDates[6])})
           </p>
 
           {/* Tabs */}
@@ -368,7 +555,7 @@ export default function SalesPage() {
         <div className="bg-white border border-gray-200 rounded-lg p-6 mb-6">
           <h2 className="text-lg font-semibold text-gray-900 mb-2">By hour of day</h2>
           <p className="text-sm text-gray-600 mb-4">
-            Last 7 days (Nov 19 - Nov 25, 2025) vs. 7 days prior (Nov 12 - Nov 18, 2025)
+            Last 7 days ({formatDate(last7DaysDates[0])} - {formatDate(last7DaysDates[6])}) vs. 7 days prior ({formatDate(prior7DaysDates[0])} - {formatDate(prior7DaysDates[6])})
           </p>
 
           <ByHourOfDayChart data={hourOfDayData} priorData={priorHourOfDayData} type={activeTabHour} />

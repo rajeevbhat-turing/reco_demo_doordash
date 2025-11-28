@@ -11,7 +11,7 @@ import { useMerchantHomeStore } from "@/store/merchant-home-store"
 import { useMerchantMetrics } from "@/lib/hooks/use-merchant-metrics"
 import { useMerchantOperations } from "@/lib/hooks/use-merchant-operations"
 import { useMerchantCustomers } from "@/lib/hooks/use-merchant-customers"
-import { useMerchantOrders } from "@/lib/hooks/use-merchant-orders"
+import { useOrdersStore } from "@/store/orders-store"
 import { useAllRestaurants } from '@/lib/hooks/use-restaurants'
 import { useUserStore } from '@/store/user-store'
 
@@ -260,10 +260,19 @@ export default function MerchantStorePage() {
   // Fallback to storeIdParam if restaurant not found yet
   const numericStoreId = currentRestaurant?.id || storeIdParam || null
 
-  // Get orders for calculations
-  const { data: orders = [] } = useMerchantOrders(numericStoreId)
+  // Get orders from localStorage instead of API
+  const { orders: allOrders = [] } = useOrdersStore()
+  
+  // Filter orders for this store
+  const orders = useMemo(() => {
+    if (!numericStoreId) return [];
+    return allOrders.filter((order: any) => {
+      const orderStoreId = order.storeId || order.restaurantId;
+      return String(orderStoreId) === String(numericStoreId);
+    });
+  }, [allOrders, numericStoreId])
 
-  // Calculate metrics from actual orders using numeric store ID
+  // Calculate metrics from actual orders using numeric store ID (now uses localStorage)
   const { metrics: calculatedMetrics } = useMerchantMetrics(numericStoreId)
 
   // Use calculated metrics if available, otherwise fall back to stored metrics

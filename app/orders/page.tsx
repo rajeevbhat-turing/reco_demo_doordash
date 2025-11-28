@@ -15,10 +15,17 @@ import { useRestaurantMenu } from '@/lib/hooks/use-restaurant-menu';
 import { useUserStore } from '@/store/user-store';
 import Link from 'next/link';
 import { OrderItem as ReviewOrderItem } from '@/types/review-types';
+import { useOrders } from '@/lib/hooks/use-orders';
 
 export default function Orders() {
   const router = useRouter();
-  const { orders, updateOrderReview } = useOrdersStore();
+  const { orders: storeOrders, updateOrderReview } = useOrdersStore();
+  // Fetch orders from database
+  const { orders: dbOrders, isLoading: isLoadingOrders } = useOrders();
+  
+  // Use database orders if available and not empty, otherwise fall back to store orders
+  // This ensures we don't lose orders if DB query returns empty but store has orders
+  const orders = (dbOrders && dbOrders.length > 0) ? dbOrders : storeOrders;
   const { startReorder } = useCartStore();
   const [activeTab, setActiveTab] = useState<'Personal' | 'Business'>('Personal');
   const [mounted, setMounted] = useState(false);

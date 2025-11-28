@@ -60,13 +60,21 @@ export default function MerchantLayout({ children }: { children: React.ReactNode
             <div className="bg-white rounded-xl p-3 w-[104px] shadow-lg cursor-pointer hover:shadow-xl transition-shadow">
               <div className="flex flex-col items-center">
                 <div className="relative flex justify-center">
-                  <img
-                    className="h-12 w-12 rounded-full border-4 border-white"
-                    height={48}
-                    width={48}
-                    alt="Merchant Experience Partner photo"
-                    src="/placeholder-user.jpg"
-                  />
+                  <div className="h-12 w-12 rounded-full border-4 border-white bg-[#0066cc] flex items-center justify-center">
+                    <svg
+                      height="28"
+                      width="28"
+                      aria-hidden="true"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM13 19H11V17H13V19ZM15.07 11.25L14.17 12.17C13.45 12.9 13 13.5 13 15H11V14.5C11 13.67 11.45 12.92 12.17 12.21L13.41 10.97C13.78 10.6 14 10.13 14 9.5C14 8.4 13.1 7.5 12 7.5C10.9 7.5 10 8.4 10 9.5H8C8 7.29 9.79 5.5 12 5.5C14.21 5.5 16 7.29 16 9.5C16 10.6 15.61 11.59 15.07 12.13L15.07 11.25Z"
+                        fill="white"
+                      />
+                    </svg>
+                  </div>
                   <svg
                     className="absolute bottom-0 right-2 bg-white rounded-xl p-1 shadow-lg"
                     height="24"

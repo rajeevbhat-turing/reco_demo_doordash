@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { useMerchantOrders } from './use-merchant-orders';
+import { useOrdersStore } from '@/store/orders-store';
 import { Order } from '@/constants/order-data';
 
 interface MerchantMetrics {
@@ -11,9 +11,22 @@ interface MerchantMetrics {
 
 /**
  * Hook to calculate sales metrics from orders for a merchant store
+ * Uses localStorage orders instead of API
  */
 export function useMerchantMetrics(storeId: string | null) {
-  const { data: orders = [], isLoading } = useMerchantOrders(storeId);
+  // Get orders from localStorage instead of API
+  const { orders: allOrders = [] } = useOrdersStore();
+  
+  // Filter orders for this store
+  const orders = useMemo(() => {
+    if (!storeId) return [];
+    return allOrders.filter((order: Order) => {
+      const orderStoreId = order.storeId || order.restaurantId;
+      return String(orderStoreId) === String(storeId);
+    });
+  }, [allOrders, storeId]);
+  
+  const isLoading = false; // No loading since we're using localStorage
 
   const metrics = useMemo<MerchantMetrics>(() => {
     if (!orders || orders.length === 0) {
