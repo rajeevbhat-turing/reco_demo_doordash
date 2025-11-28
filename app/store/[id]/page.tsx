@@ -116,6 +116,8 @@ export default function RestaurantPage() {
   const ticking = useRef(false);
   const featuredItemsRef = useRef<HTMLDivElement>(null);
   const dealsRef = useRef<HTMLDivElement>(null);
+  const [canScrollLeftFeatured, setCanScrollLeftFeatured] = useState(false);
+  const [canScrollRightFeatured, setCanScrollRightFeatured] = useState(true);
 
   // Fetch the specific restaurant directly (optimization: don't wait for nearby restaurants list)
   const currentUser = useUserStore(state => state.currentUser);
@@ -281,9 +283,7 @@ export default function RestaurantPage() {
         })
         .slice(0, 5); // Take top 5
 
-      const familySharingItemsData = menuItems.filter(
-        item => item.category === 'Family & Sharing'
-      );
+      const familySharingItemsData = menuItems.filter(item => item.category === 'Family & Sharing');
       const beefItemsData = menuItems.filter(item => item.category === 'Beef');
 
       // Transform categories to match expected format
@@ -452,10 +452,59 @@ export default function RestaurantPage() {
     }
   }, [activeCategory, menuTopPosition]);
 
+  // Updates arrow button states based on scroll position for featured items
+  const updateFeaturedItemsScrollButtons = useCallback(() => {
+    if (featuredItemsRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } = featuredItemsRef.current;
+      setCanScrollLeftFeatured(scrollLeft > 0);
+      setCanScrollRightFeatured(scrollLeft < scrollWidth - clientWidth - 1); // -1 for rounding errors
+    }
+  }, []);
+
+  // Scrolls featured items left by one card width smoothly
+  const handleFeaturedItemsPrevious = useCallback(() => {
+    if (featuredItemsRef.current && canScrollLeftFeatured) {
+      const cardWidth = 200 + 16; // card width + gap
+      featuredItemsRef.current.scrollBy({
+        left: -cardWidth,
+        behavior: 'smooth',
+      });
+    }
+  }, [canScrollLeftFeatured]);
+
+  // Scrolls featured items right by one card width smoothly
+  const handleFeaturedItemsNext = useCallback(() => {
+    if (featuredItemsRef.current && canScrollRightFeatured) {
+      const cardWidth = 200 + 16; // card width + gap
+      featuredItemsRef.current.scrollBy({
+        left: cardWidth,
+        behavior: 'smooth',
+      });
+    }
+  }, [canScrollRightFeatured]);
+
   useEffect(() => {
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, [handleScroll]);
+
+  // Update featured items scroll button states on mount and when featured items change
+  useEffect(() => {
+    updateFeaturedItemsScrollButtons();
+  }, [featuredItems, updateFeaturedItemsScrollButtons]);
+
+  // Add scroll event listener to featured items container
+  useEffect(() => {
+    const scrollContainer = featuredItemsRef.current;
+    if (scrollContainer) {
+      scrollContainer.addEventListener('scroll', updateFeaturedItemsScrollButtons);
+      window.addEventListener('resize', updateFeaturedItemsScrollButtons);
+      return () => {
+        scrollContainer.removeEventListener('scroll', updateFeaturedItemsScrollButtons);
+        window.removeEventListener('resize', updateFeaturedItemsScrollButtons);
+      };
+    }
+  }, [featuredItems, updateFeaturedItemsScrollButtons]);
 
   const scrollToSection = (category: string) => {
     setActiveCategory(category);
@@ -1081,24 +1130,29 @@ export default function RestaurantPage() {
                   >
                     <div className="flex items-center justify-between mb-4">
                       <h2 className="text-xl font-bold">Featured Items</h2>
-                      <div className="flex">
+                      <div className="flex gap-1">
                         <button
-                          className="p-2 rounded-full border border-gray-200 mr-2"
-                          onClick={() => scrollContainer(featuredItemsRef, 'left')}
+                          onClick={handleFeaturedItemsPrevious}
+                          disabled={!canScrollLeftFeatured}
+                          className="w-8 h-8 rounded-full bg-[#f1f1f1] flex items-center justify-center hover:bg-gray-200 
+                          disabled:bg-[#f7f7f7] disabled:cursor-not-allowed text-[#191919ff] disabled:text-gray-400"
                         >
-                          <ChevronLeft className="h-5 w-5" />
+                          <ChevronLeft className="w-4 h-4" strokeWidth={3} />
                         </button>
                         <button
-                          className="p-2 rounded-full border border-gray-200"
-                          onClick={() => scrollContainer(featuredItemsRef, 'right')}
+                          onClick={handleFeaturedItemsNext}
+                          disabled={!canScrollRightFeatured}
+                          className="w-8 h-8 rounded-full bg-[#f1f1f1] flex items-center justify-center hover:bg-gray-200 
+                          disabled:bg-[#f7f7f7] disabled:cursor-not-allowed text-[#191919ff] disabled:text-gray-400"
                         >
-                          <ChevronRight className="h-5 w-5" />
+                          <ChevronRight className="w-4 h-4" strokeWidth={3} />
                         </button>
                       </div>
                     </div>
                     <div
                       ref={featuredItemsRef}
                       className="flex overflow-x-auto space-x-4 pb-4 hide-scrollbar"
+                      onScroll={updateFeaturedItemsScrollButtons}
                     >
                       {featuredItems.map(item => (
                         <div
