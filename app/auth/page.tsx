@@ -79,10 +79,10 @@ export default function AuthPage() {
             {signInFormState.currentForm === 'email'
               ? 'Login with email'
               : signInFormState.currentForm === 'otp'
-              ? 'Verify code'
-              : signInFormState.foundUser
-              ? `Welcome back, ${signInFormState.foundUser.name?.split(' ')[0] || 'User'}`
-              : 'Login with email'}
+                ? 'Verify code'
+                : signInFormState.foundUser
+                  ? `Welcome back, ${signInFormState.foundUser.name?.split(' ')[0] || 'User'}`
+                  : 'Login with email'}
           </h2>
         </div>
 

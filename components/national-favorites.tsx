@@ -1,67 +1,71 @@
-"use client"
+'use client';
 
-import { useState, useEffect } from "react"
-import Link from "next/link"
-import { Heart, Star } from "lucide-react"
-import { useRestaurants } from "@/lib/hooks/use-restaurants"
-import { useUserStore } from "@/store/user-store"
-import type { FilterState } from "@/components/filter-options"
-import { RestaurantsSkeleton } from "@/components/skeletons/restaurant-skeleton"
+import { useState, useEffect } from 'react';
+import Link from 'next/link';
+import { Heart, Star } from 'lucide-react';
+import { useRestaurants } from '@/lib/hooks/use-restaurants';
+import { useUserStore } from '@/store/user-store';
+import type { FilterState } from '@/components/filter-options';
+import { RestaurantsSkeleton } from '@/components/skeletons/restaurant-skeleton';
 
 interface NationalFavoritesProps {
-  activeFilters: FilterState
+  activeFilters: FilterState;
 }
 
 export default function NationalFavorites({ activeFilters }: NationalFavoritesProps) {
   // Get user's address for location-based filtering
-  const currentUser = useUserStore(state => state.currentUser)
-  const defaultAddress = currentUser?.addresses.find(a => a.default)
+  const currentUser = useUserStore(state => state.currentUser);
+  const defaultAddress = currentUser?.addresses.find(a => a.default);
 
   // Fetch restaurants near user's address
   const { data: restaurants, isLoading } = useRestaurants(
     defaultAddress?.lat,
     defaultAddress?.lng,
     10 // 10 mile radius
-  )
+  );
 
-  const [filteredRestaurants, setFilteredRestaurants] = useState(restaurants || [])
-  const [resultsCount, setResultsCount] = useState(restaurants?.length || 0)
+  const [filteredRestaurants, setFilteredRestaurants] = useState(restaurants || []);
+  const [resultsCount, setResultsCount] = useState(restaurants?.length || 0);
 
   useEffect(() => {
     if (!restaurants) return;
-    
-    let filteredRestaurants = [...restaurants]
+
+    let filteredRestaurants = [...restaurants];
 
     // Apply filters
     if (activeFilters.underThirtyMins) {
-      filteredRestaurants = filteredRestaurants.filter((restaurant) => {
-        const timeMatch = restaurant.time.match(/(\d+)/)
-        const deliveryTime = timeMatch ? parseInt(timeMatch[1]) : 60
-        return deliveryTime <= 30
-      })
+      filteredRestaurants = filteredRestaurants.filter(restaurant => {
+        const timeMatch = restaurant.time.match(/(\d+)/);
+        const deliveryTime = timeMatch ? parseInt(timeMatch[1]) : 60;
+        return deliveryTime <= 30;
+      });
     }
 
     if (activeFilters.deals) {
-      filteredRestaurants = filteredRestaurants.filter((restaurant) => restaurant.discount && restaurant.discount.length > 0)
+      filteredRestaurants = filteredRestaurants.filter(
+        restaurant => restaurant.discount && restaurant.discount.length > 0
+      );
     }
 
     if (activeFilters.overRating) {
-      filteredRestaurants = filteredRestaurants.filter((restaurant) => restaurant?.rating && restaurant.rating >= activeFilters.overRating!)
+      filteredRestaurants = filteredRestaurants.filter(
+        restaurant => restaurant?.rating && restaurant.rating >= activeFilters.overRating!
+      );
     }
 
     if (activeFilters.price && activeFilters.price.length > 0) {
-      filteredRestaurants = filteredRestaurants.filter((restaurant) =>
+      filteredRestaurants = filteredRestaurants.filter(restaurant =>
         activeFilters.price!.includes(restaurant.priceRange)
-      )
+      );
     }
 
     if (activeFilters.dashPass) {
-      filteredRestaurants = filteredRestaurants.filter((restaurant) => restaurant.dashPass)
+      filteredRestaurants = filteredRestaurants.filter(restaurant => restaurant.dashPass);
     }
 
-    setFilteredRestaurants(filteredRestaurants)
-    setResultsCount(filteredRestaurants.length)
-  }, [activeFilters, restaurants])
+    setFilteredRestaurants(filteredRestaurants);
+    setResultsCount(filteredRestaurants.length);
+  }, [activeFilters, restaurants]);
 
   const hasActiveFilters = () => {
     return (
@@ -70,8 +74,8 @@ export default function NationalFavorites({ activeFilters }: NationalFavoritesPr
       activeFilters.overRating !== null ||
       (activeFilters.price !== null && activeFilters.price.length > 0) ||
       activeFilters.dashPass
-    )
-  }
+    );
+  };
 
   // Show loading skeleton while fetching restaurants
   if (isLoading) {
@@ -115,18 +119,19 @@ export default function NationalFavorites({ activeFilters }: NationalFavoritesPr
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
-          {filteredRestaurants.map((restaurant) => (
+          {filteredRestaurants.map(restaurant => (
             <div key={restaurant.id} className="restaurant-card overflow-hidden">
               <Link href={`/store/${restaurant.id}`} className="block" prefetch={false}>
                 <div className="relative h-[200px] bg-gray-100">
                   <img
                     src={
-                      restaurant.banner || `/placeholder.svg?height=200&width=400&query=${restaurant.name} restaurant`
+                      restaurant.banner ||
+                      `/placeholder.svg?height=200&width=400&query=${restaurant.name} restaurant`
                     }
                     alt={restaurant.name}
                     className="w-full h-full object-cover"
                     loading="lazy"
-                    onError={(e) => {
+                    onError={e => {
                       // Fallback to placeholder if image fails to load
                       const target = e.target as HTMLImageElement;
                       target.src = '/placeholder.svg';
@@ -141,7 +146,13 @@ export default function NationalFavorites({ activeFilters }: NationalFavoritesPr
                     <h3 className="font-bold text-lg">{restaurant.name}</h3>
                     {restaurant.dashPass && (
                       <div className="text-teal-600">
-                        <svg width="20" height="12" viewBox="0 0 20 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <svg
+                          width="20"
+                          height="12"
+                          viewBox="0 0 20 12"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
                           <path
                             d="M18.5 1.5L11.5 9.5L7.5 5.5L1.5 10.5"
                             stroke="currentColor"
@@ -159,11 +170,17 @@ export default function NationalFavorites({ activeFilters }: NationalFavoritesPr
                 </div>
 
                 <div className="flex items-center mt-1 text-sm text-gray-700 flex-wrap">
-                  {restaurant?.rating && restaurant.rating != 0 && <div className="flex items-center">
-                    <span className="font-semibold">{restaurant.rating}</span>
-                    <Star className="h-4 w-4 ml-1 text-gray-700 fill-current" />
-                  </div>}
-                  {restaurant?.reviews && restaurant.reviews != '0' && restaurant.reviews != '0 ratings' && <span className="mx-1">({restaurant.reviews})</span>}
+                  {restaurant?.rating && restaurant.rating != 0 && (
+                    <div className="flex items-center">
+                      <span className="font-semibold">{restaurant.rating}</span>
+                      <Star className="h-4 w-4 ml-1 text-gray-700 fill-current" />
+                    </div>
+                  )}
+                  {restaurant?.reviews &&
+                    restaurant.reviews != '0' &&
+                    restaurant.reviews != '0 ratings' && (
+                      <span className="mx-1">({restaurant.reviews})</span>
+                    )}
                   {restaurant?.rating && restaurant.rating != 0 && <span className="mx-1">•</span>}
                   <span>{restaurant.distance}</span>
                   <span className="mx-1">•</span>
@@ -171,14 +188,11 @@ export default function NationalFavorites({ activeFilters }: NationalFavoritesPr
                 </div>
 
                 <div className="mt-1 text-sm text-gray-500">{restaurant.deliveryFee}</div>
-
-
-
               </div>
             </div>
           ))}
         </div>
       )}
     </div>
-  )
+  );
 }

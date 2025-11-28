@@ -697,8 +697,8 @@ export default function SearchPage() {
               typeof selectedItem.rating === 'number'
                 ? selectedItem.rating
                 : typeof selectedItem.rating === 'string'
-                ? parseFloat(selectedItem.rating) || undefined
-                : undefined,
+                  ? parseFloat(selectedItem.rating) || undefined
+                  : undefined,
             ratingCount: selectedItem.ratingCount ?? undefined,
           }}
         />

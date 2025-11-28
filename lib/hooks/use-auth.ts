@@ -7,11 +7,11 @@ import { User, Address } from '@/lib/types/user-types';
 
 /**
  * Custom hook for authentication with TanStack Query
- * 
+ *
  * Usage:
  * ```tsx
  * const { login, generateOTP, isLoading, error } = useAuth();
- * 
+ *
  * const handleLogin = async () => {
  *   try {
  *     await login({ email: 'user@example.com', password: 'password' });
@@ -20,7 +20,7 @@ import { User, Address } from '@/lib/types/user-types';
  *     console.error('Login failed:', err);
  *   }
  * };
- * 
+ *
  * const handleGenerateOTP = async () => {
  *   try {
  *     const { otp, user } = await generateOTP({ email: 'user@example.com' });
@@ -32,7 +32,7 @@ import { User, Address } from '@/lib/types/user-types';
  * ```
  */
 export function useAuth() {
-  const getTempAddress = useUserStore((state) => state.getTempAddress);
+  const getTempAddress = useUserStore(state => state.getTempAddress);
 
   const loginMutation = useMutation({
     mutationFn: loginUser,
@@ -57,11 +57,12 @@ export function useAuth() {
 
       // Check if temp address already exists in user's addresses
       // Compare by street, city, state, and zipCode
-      const existingAddress = userData.addresses?.find(addr =>
-        addr.street === tempAddress.street &&
-        addr.city === tempAddress.city &&
-        addr.state === tempAddress.state &&
-        addr.zipCode === tempAddress.zipCode
+      const existingAddress = userData.addresses?.find(
+        addr =>
+          addr.street === tempAddress.street &&
+          addr.city === tempAddress.city &&
+          addr.state === tempAddress.state &&
+          addr.zipCode === tempAddress.zipCode
       );
 
       if (existingAddress) {
@@ -98,7 +99,7 @@ export function useAuth() {
       // Update users array in store (only when tempAddress exists)
       const userExists = state.users.some(u => u.id === updatedUserData.id);
       const updatedUsers = userExists
-        ? state.users.map(user => user.id === updatedUserData.id ? updatedUserData : user)
+        ? state.users.map(user => (user.id === updatedUserData.id ? updatedUserData : user))
         : [...state.users, updatedUserData];
 
       // Set both users array and current user atomically
@@ -133,4 +134,3 @@ export function useAuth() {
     isGeneratingOTP: generateOTPMutation.isPending,
   };
 }
-

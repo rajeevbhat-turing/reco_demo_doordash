@@ -4,7 +4,7 @@ import { getImageWithFallback } from '@/constants/image-placeholders';
 
 /**
  * GET /api/promotionals
- * 
+ *
  * Fetches active promotional banners from the database
  * Returns promotionals with restaurant logos
  */
@@ -53,16 +53,14 @@ export async function GET(request: NextRequest) {
       success: true,
       data: promotionalsData,
     });
-
   } catch (error) {
     console.error('❌ Fetch promotionals error:', error);
     return NextResponse.json(
       {
         success: false,
-        error: 'An error occurred while fetching promotionals'
+        error: 'An error occurred while fetching promotionals',
       },
       { status: 500 }
     );
   }
 }
-

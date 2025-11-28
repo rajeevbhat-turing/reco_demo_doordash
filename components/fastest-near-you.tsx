@@ -1,7 +1,7 @@
-import { Heart } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { ChevronLeft, ChevronRight } from "lucide-react"
-import { calculateDeliveryTime, parseDistance } from "@/lib/utils/restaurant-utils"
+import { Heart } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { calculateDeliveryTime, parseDistance } from '@/lib/utils/restaurant-utils';
 
 interface NearbyStore {
   id: string;
@@ -22,34 +22,37 @@ interface FastestNearYouProps {
 // Default data (fallback)
 const defaultStores: NearbyStore[] = [
   {
-    id: "1",
-    name: "Geary Wine & Spirits",
-    rating: "4.5",
-    numRatings: "(20+)",
-    distance: "0.7 mi",
-    time: "26 min",
-    image: "https://img.cdn4dd.com/cdn-cgi/image/fit=contain,format=auto/https://doordash-static.s3.amazonaws.com/media/store/header/6cfa729f-7914-4b44-b141-4ef82b229828.9",
-    isDashPass: true
+    id: '1',
+    name: 'Geary Wine & Spirits',
+    rating: '4.5',
+    numRatings: '(20+)',
+    distance: '0.7 mi',
+    time: '26 min',
+    image:
+      'https://img.cdn4dd.com/cdn-cgi/image/fit=contain,format=auto/https://doordash-static.s3.amazonaws.com/media/store/header/6cfa729f-7914-4b44-b141-4ef82b229828.9',
+    isDashPass: true,
   },
   {
-    id: "2",
+    id: '2',
     name: "Mollie Stone's Markets",
-    rating: "4.6",
-    numRatings: "200+",
-    distance: "1.9 mi",
-    time: "35 min",
-    image: "https://img.cdn4dd.com/cdn-cgi/image/fit=contain,width=1200,height=672,format=auto/https://doordash-static.s3.amazonaws.com/media/restaurant/cover_square/35cd6437-4142-46af-be81-4a10e6b3f312.png",
-    discount: "25% off, up to $15"
+    rating: '4.6',
+    numRatings: '200+',
+    distance: '1.9 mi',
+    time: '35 min',
+    image:
+      'https://img.cdn4dd.com/cdn-cgi/image/fit=contain,width=1200,height=672,format=auto/https://doordash-static.s3.amazonaws.com/media/restaurant/cover_square/35cd6437-4142-46af-be81-4a10e6b3f312.png',
+    discount: '25% off, up to $15',
   },
   {
-    id: "3",
-    name: "Marina Supermarket",
-    rating: "4.5",
-    numRatings: "200+",
-    distance: "2.3 mi",
-    time: "40 min",
-    image: "https://img.cdn4dd.com/cdn-cgi/image/fit=contain,width=1200,height=672,format=auto/https://doordash-static.s3.amazonaws.com/media/store/cover/e8bb850f-6082-4f12-b6eb-3da45a5ffe80.jpg"
-  }
+    id: '3',
+    name: 'Marina Supermarket',
+    rating: '4.5',
+    numRatings: '200+',
+    distance: '2.3 mi',
+    time: '40 min',
+    image:
+      'https://img.cdn4dd.com/cdn-cgi/image/fit=contain,width=1200,height=672,format=auto/https://doordash-static.s3.amazonaws.com/media/store/cover/e8bb850f-6082-4f12-b6eb-3da45a5ffe80.jpg',
+  },
 ];
 
 export default function FastestNearYou({ stores = defaultStores }: FastestNearYouProps) {
@@ -74,24 +77,20 @@ export default function FastestNearYou({ stores = defaultStores }: FastestNearYo
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {stores.map((store) => (
+        {stores.map(store => (
           <div key={store.id} className="relative group">
             <div className="w-full rounded-lg overflow-hidden bg-gray-100">
               <div style={{ width: '100%', paddingBottom: '75%', position: 'relative' }}>
                 <div className="absolute inset-0">
-                  <img 
-                    src={store.image} 
-                    alt={store.name}
-                    className="w-full h-full object-cover" 
-                  />
+                  <img src={store.image} alt={store.name} className="w-full h-full object-cover" />
                   {/* Overlay to improve text visibility if needed */}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
                 </div>
               </div>
             </div>
-            <Button 
-              variant="ghost" 
-              size="icon" 
+            <Button
+              variant="ghost"
+              size="icon"
               className="absolute top-2 right-2 rounded-full bg-white opacity-80 hover:opacity-100"
             >
               <Heart className="h-5 w-5" />
@@ -116,7 +115,6 @@ export default function FastestNearYou({ stores = defaultStores }: FastestNearYo
                 <span className="mx-1">•</span>
                 <span>{getDeliveryTime(store)}</span>
               </div>
-              
             </div>
           </div>
         ))}

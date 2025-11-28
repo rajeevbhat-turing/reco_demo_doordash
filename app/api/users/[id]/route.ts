@@ -4,22 +4,19 @@ import { getImageWithFallback } from '@/constants/image-placeholders';
 
 /**
  * GET /api/users/[id]
- * 
+ *
  * Fetches a user by ID from the database
  * Returns user data with addresses and payment methods
  */
-export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;
 
     if (!id) {
       return NextResponse.json(
-        { 
-          success: false, 
-          error: 'User ID is required' 
+        {
+          success: false,
+          error: 'User ID is required',
         },
         { status: 400 }
       );
@@ -46,9 +43,9 @@ export async function GET(
 
     if (!user) {
       return NextResponse.json(
-        { 
-          success: false, 
-          error: 'User not found' 
+        {
+          success: false,
+          error: 'User not found',
         },
         { status: 404 }
       );
@@ -155,16 +152,14 @@ export async function GET(
       success: true,
       data: userData,
     });
-
   } catch (error) {
     console.error('❌ Fetch user error:', error);
     return NextResponse.json(
-      { 
-        success: false, 
-        error: 'An error occurred while fetching user' 
+      {
+        success: false,
+        error: 'An error occurred while fetching user',
       },
       { status: 500 }
     );
   }
 }
-

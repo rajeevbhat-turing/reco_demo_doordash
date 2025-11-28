@@ -8,21 +8,23 @@ import { PaymentMethod } from '@/lib/types/user-types';
 export async function get_default_payment_method(): Promise<PaymentMethod | null> {
   const userStore = useUserStore.getState();
   const currentUser = userStore.currentUser;
-  
+
   if (!currentUser) {
     return null;
   }
-  
+
   try {
     // Call API route to fetch from database
-    const response = await fetch(`/api/expected-state/get-default-payment-method?userId=${currentUser.id}`);
-    
+    const response = await fetch(
+      `/api/expected-state/get-default-payment-method?userId=${currentUser.id}`
+    );
+
     if (!response.ok) {
       throw new Error(`HTTP ${response.status}: ${response.statusText}`);
     }
 
     const result = await response.json();
-    
+
     if (!result.success) {
       throw new Error(result.error || 'Failed to fetch default payment method');
     }
@@ -33,4 +35,3 @@ export async function get_default_payment_method(): Promise<PaymentMethod | null
     return null;
   }
 }
-

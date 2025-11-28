@@ -1,169 +1,169 @@
-"use client"
+'use client';
 
-import { useState, useEffect, useRef } from "react"
-import { X } from "lucide-react"
+import { useState, useEffect, useRef } from 'react';
+import { X } from 'lucide-react';
 
 interface AddCardModalProps {
-  isOpen: boolean
-  onClose: () => void
+  isOpen: boolean;
+  onClose: () => void;
   onAddCard: (cardData: {
-    cardNumber: string
-    cvc: string
-    expiration: string
-    zipCode: string
-  }) => void
+    cardNumber: string;
+    cvc: string;
+    expiration: string;
+    zipCode: string;
+  }) => void;
 }
 
 export default function AddCardModal({ isOpen, onClose, onAddCard }: AddCardModalProps) {
-  const dialogRef = useRef<HTMLDivElement>(null)
-  const [cardNumber, setCardNumber] = useState("")
-  const [cvc, setCvc] = useState("")
-  const [expiration, setExpiration] = useState("")
-  const [zipCode, setZipCode] = useState("")
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const [cardNumber, setCardNumber] = useState('');
+  const [cvc, setCvc] = useState('');
+  const [expiration, setExpiration] = useState('');
+  const [zipCode, setZipCode] = useState('');
   const [errors, setErrors] = useState({
-    cardNumber: "",
-    cvc: "",
-    expiration: "",
-    zipCode: ""
-  })
+    cardNumber: '',
+    cvc: '',
+    expiration: '',
+    zipCode: '',
+  });
 
   useEffect(() => {
     const handleEscapeKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        onClose()
+      if (event.key === 'Escape') {
+        onClose();
       }
-    }
+    };
 
     const handleClickOutside = (event: MouseEvent) => {
       if (dialogRef.current && !dialogRef.current.contains(event.target as Node)) {
-        onClose()
+        onClose();
       }
-    }
+    };
 
     if (isOpen) {
-      document.body.style.overflow = "hidden"
-      document.addEventListener("keydown", handleEscapeKey)
-      document.addEventListener("mousedown", handleClickOutside)
+      document.body.style.overflow = 'hidden';
+      document.addEventListener('keydown', handleEscapeKey);
+      document.addEventListener('mousedown', handleClickOutside);
     } else {
-      document.body.style.overflow = "auto"
+      document.body.style.overflow = 'auto';
     }
 
     return () => {
-      document.body.style.overflow = "auto"
-      document.removeEventListener("keydown", handleEscapeKey)
-      document.removeEventListener("mousedown", handleClickOutside)
-    }
-  }, [isOpen, onClose])
+      document.body.style.overflow = 'auto';
+      document.removeEventListener('keydown', handleEscapeKey);
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isOpen, onClose]);
 
-  if (!isOpen) return null
+  if (!isOpen) return null;
 
   // Format card number with spaces (XXXX XXXX XXXX XXXX)
   const formatCardNumber = (value: string) => {
-    const numbers = value.replace(/\D/g, "")
-    const groups = numbers.match(/.{1,4}/g)
-    return groups ? groups.join(" ") : numbers
-  }
+    const numbers = value.replace(/\D/g, '');
+    const groups = numbers.match(/.{1,4}/g);
+    return groups ? groups.join(' ') : numbers;
+  };
 
   // Format expiration (MM / YY)
   const formatExpiration = (value: string) => {
-    const numbers = value.replace(/\D/g, "")
+    const numbers = value.replace(/\D/g, '');
     if (numbers.length >= 2) {
-      return numbers.slice(0, 2) + " / " + numbers.slice(2, 4)
+      return numbers.slice(0, 2) + ' / ' + numbers.slice(2, 4);
     }
-    return numbers
-  }
+    return numbers;
+  };
 
   const handleCardNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const formatted = formatCardNumber(e.target.value)
-    if (formatted.replace(/\s/g, "").length <= 16) {
-      setCardNumber(formatted)
+    const formatted = formatCardNumber(e.target.value);
+    if (formatted.replace(/\s/g, '').length <= 16) {
+      setCardNumber(formatted);
       if (errors.cardNumber) {
-        setErrors({ ...errors, cardNumber: "" })
+        setErrors({ ...errors, cardNumber: '' });
       }
     }
-  }
+  };
 
   const handleCvcChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value.replace(/\D/g, "")
+    const value = e.target.value.replace(/\D/g, '');
     if (value.length <= 4) {
-      setCvc(value)
+      setCvc(value);
       if (errors.cvc) {
-        setErrors({ ...errors, cvc: "" })
+        setErrors({ ...errors, cvc: '' });
       }
     }
-  }
+  };
 
   const handleExpirationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const formatted = formatExpiration(e.target.value)
-    if (formatted.replace(/\D/g, "").length <= 4) {
-      setExpiration(formatted)
+    const formatted = formatExpiration(e.target.value);
+    if (formatted.replace(/\D/g, '').length <= 4) {
+      setExpiration(formatted);
       if (errors.expiration) {
-        setErrors({ ...errors, expiration: "" })
+        setErrors({ ...errors, expiration: '' });
       }
     }
-  }
+  };
 
   const handleZipCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value.replace(/\D/g, "")
+    const value = e.target.value.replace(/\D/g, '');
     if (value.length <= 5) {
-      setZipCode(value)
+      setZipCode(value);
       if (errors.zipCode) {
-        setErrors({ ...errors, zipCode: "" })
+        setErrors({ ...errors, zipCode: '' });
       }
     }
-  }
+  };
 
   const validateForm = () => {
     const newErrors = {
-      cardNumber: "",
-      cvc: "",
-      expiration: "",
-      zipCode: ""
-    }
-    let isValid = true
+      cardNumber: '',
+      cvc: '',
+      expiration: '',
+      zipCode: '',
+    };
+    let isValid = true;
 
     // Validate card number (must be 16 digits)
-    if (cardNumber.replace(/\s/g, "").length !== 16) {
-      newErrors.cardNumber = "Card number must be 16 digits"
-      isValid = false
+    if (cardNumber.replace(/\s/g, '').length !== 16) {
+      newErrors.cardNumber = 'Card number must be 16 digits';
+      isValid = false;
     }
 
     // Validate CVC (must be 3 or 4 digits)
     if (cvc.length < 3 || cvc.length > 4) {
-      newErrors.cvc = "CVC must be 3 or 4 digits"
-      isValid = false
+      newErrors.cvc = 'CVC must be 3 or 4 digits';
+      isValid = false;
     }
 
     // Validate expiration (must be MM/YY format and valid date)
-    const expParts = expiration.split(" / ")
+    const expParts = expiration.split(' / ');
     if (expParts.length !== 2) {
-      newErrors.expiration = "Invalid expiration format"
-      isValid = false
+      newErrors.expiration = 'Invalid expiration format';
+      isValid = false;
     } else {
-      const month = parseInt(expParts[0])
-      const year = parseInt(expParts[1])
+      const month = parseInt(expParts[0]);
+      const year = parseInt(expParts[1]);
       if (month < 1 || month > 12) {
-        newErrors.expiration = "Invalid month"
-        isValid = false
+        newErrors.expiration = 'Invalid month';
+        isValid = false;
       }
       // Check if card is expired
-      const currentYear = new Date().getFullYear() % 100
-      const currentMonth = new Date().getMonth() + 1
+      const currentYear = new Date().getFullYear() % 100;
+      const currentMonth = new Date().getMonth() + 1;
       if (year < currentYear || (year === currentYear && month < currentMonth)) {
-        newErrors.expiration = "Card is expired"
-        isValid = false
+        newErrors.expiration = 'Card is expired';
+        isValid = false;
       }
     }
 
     // Validate zip code (must be 5 digits)
     if (zipCode.length !== 5) {
-      newErrors.zipCode = "Zip code must be 5 digits"
-      isValid = false
+      newErrors.zipCode = 'Zip code must be 5 digits';
+      isValid = false;
     }
 
-    setErrors(newErrors)
-    return isValid
-  }
+    setErrors(newErrors);
+    return isValid;
+  };
 
   const handleSubmit = () => {
     if (validateForm()) {
@@ -171,43 +171,45 @@ export default function AddCardModal({ isOpen, onClose, onAddCard }: AddCardModa
         cardNumber,
         cvc,
         expiration,
-        zipCode
-      })
+        zipCode,
+      });
       // Reset form
-      setCardNumber("")
-      setCvc("")
-      setExpiration("")
-      setZipCode("")
-      setErrors({ cardNumber: "", cvc: "", expiration: "", zipCode: "" })
+      setCardNumber('');
+      setCvc('');
+      setExpiration('');
+      setZipCode('');
+      setErrors({ cardNumber: '', cvc: '', expiration: '', zipCode: '' });
     }
-  }
+  };
 
   const handleBack = () => {
     // Reset form
-    setCardNumber("")
-    setCvc("")
-    setExpiration("")
-    setZipCode("")
-    setErrors({ cardNumber: "", cvc: "", expiration: "", zipCode: "" })
-    onClose()
-  }
+    setCardNumber('');
+    setCvc('');
+    setExpiration('');
+    setZipCode('');
+    setErrors({ cardNumber: '', cvc: '', expiration: '', zipCode: '' });
+    onClose();
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div ref={dialogRef} className="relative bg-white rounded-2xl w-full mx-4 p-4" style={{ maxWidth: '622px' }}>
+      <div
+        ref={dialogRef}
+        className="relative bg-white rounded-2xl w-full mx-4 p-4"
+        style={{ maxWidth: '622px' }}
+      >
         {/* Close button */}
-        <button 
+        <button
           onClick={handleBack}
-          className="absolute top-4 left-4 p-1 hover:bg-gray-100 rounded-full transition-colors" 
+          className="absolute top-4 left-4 p-1 hover:bg-gray-100 rounded-full transition-colors"
           aria-label="Close modal"
         >
           <X className="h-6 w-6 text-gray-700" />
         </button>
 
         {/* Title */}
-        <h2 className="text-2xl font-bold text-gray-900 text-center mb-8">
-          Add New Card
-        </h2>
+        <h2 className="text-2xl font-bold text-gray-900 text-center mb-8">Add New Card</h2>
 
         {/* Form */}
         <div className="space-y-6">
@@ -224,7 +226,7 @@ export default function AddCardModal({ isOpen, onClose, onAddCard }: AddCardModa
                 onChange={handleCardNumberChange}
                 placeholder="XXXX XXXX XXXX XXXX"
                 className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 ${
-                  errors.cardNumber ? "border-red-500" : "border-gray-300"
+                  errors.cardNumber ? 'border-red-500' : 'border-gray-300'
                 }`}
               />
               {errors.cardNumber && (
@@ -242,12 +244,10 @@ export default function AddCardModal({ isOpen, onClose, onAddCard }: AddCardModa
                 onChange={handleCvcChange}
                 placeholder="CVC"
                 className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 ${
-                  errors.cvc ? "border-red-500" : "border-gray-300"
+                  errors.cvc ? 'border-red-500' : 'border-gray-300'
                 }`}
               />
-              {errors.cvc && (
-                <p className="text-red-500 text-xs mt-1">{errors.cvc}</p>
-              )}
+              {errors.cvc && <p className="text-red-500 text-xs mt-1">{errors.cvc}</p>}
             </div>
           </div>
 
@@ -264,7 +264,7 @@ export default function AddCardModal({ isOpen, onClose, onAddCard }: AddCardModa
                 onChange={handleExpirationChange}
                 placeholder="MM / YY"
                 className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 ${
-                  errors.expiration ? "border-red-500" : "border-gray-300"
+                  errors.expiration ? 'border-red-500' : 'border-gray-300'
                 }`}
               />
               {errors.expiration && (
@@ -282,12 +282,10 @@ export default function AddCardModal({ isOpen, onClose, onAddCard }: AddCardModa
                 onChange={handleZipCodeChange}
                 placeholder="Zip Code"
                 className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 ${
-                  errors.zipCode ? "border-red-500" : "border-gray-300"
+                  errors.zipCode ? 'border-red-500' : 'border-gray-300'
                 }`}
               />
-              {errors.zipCode && (
-                <p className="text-red-500 text-xs mt-1">{errors.zipCode}</p>
-              )}
+              {errors.zipCode && <p className="text-red-500 text-xs mt-1">{errors.zipCode}</p>}
             </div>
           </div>
         </div>
@@ -309,6 +307,5 @@ export default function AddCardModal({ isOpen, onClose, onAddCard }: AddCardModa
         </div>
       </div>
     </div>
-  )
+  );
 }
-

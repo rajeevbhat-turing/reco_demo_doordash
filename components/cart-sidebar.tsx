@@ -317,40 +317,40 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
 
   // Handle click outside to close sidebar
   useEffect(() => {
-    if (!isOpen) return
+    if (!isOpen) return;
 
     const handleClickOutside = (event: MouseEvent) => {
       if (sidebarRef.current && !sidebarRef.current.contains(event.target as Node)) {
-        onClose()
+        onClose();
       }
-    }
+    };
 
     // Add event listener with a small delay to prevent immediate closing when opening
     const timeoutId = setTimeout(() => {
-      document.addEventListener('mousedown', handleClickOutside)
-    }, 100)
+      document.addEventListener('mousedown', handleClickOutside);
+    }, 100);
 
     return () => {
-      clearTimeout(timeoutId)
-      document.removeEventListener('mousedown', handleClickOutside)
-    }
-  }, [isOpen, onClose])
+      clearTimeout(timeoutId);
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isOpen, onClose]);
 
   // Handle Escape key to close sidebar
   useEffect(() => {
-    if (!isOpen) return
+    if (!isOpen) return;
 
     const handleEscapeKey = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
-        onClose()
+        onClose();
       }
-    }
+    };
 
-    document.addEventListener('keydown', handleEscapeKey)
+    document.addEventListener('keydown', handleEscapeKey);
     return () => {
-      document.removeEventListener('keydown', handleEscapeKey)
-    }
-  }, [isOpen, onClose])
+      document.removeEventListener('keydown', handleEscapeKey);
+    };
+  }, [isOpen, onClose]);
 
   const cartClasses = isOpen
     ? 'fixed inset-y-0 right-0 z-50 w-full md:w-[550px] bg-white shadow-xl flex flex-col transform translate-x-0 transition-transform duration-300 ease-in-out'
@@ -686,8 +686,8 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
               typeof selectedItem.rating === 'number'
                 ? selectedItem.rating
                 : typeof selectedItem.rating === 'string'
-                ? parseFloat(selectedItem.rating) || undefined
-                : undefined,
+                  ? parseFloat(selectedItem.rating) || undefined
+                  : undefined,
             ratingCount: selectedItem.ratingCount ?? undefined,
           }}
         />

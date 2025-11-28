@@ -65,13 +65,11 @@ export default function DealModal({ isOpen, onClose, deal }: DealModalProps) {
   const freeItemsMenuData = useMemo(() => {
     if (!deal?.freeItems || deal.freeItems.length === 0) return [];
     if (!menuData?.menuItems) return [];
-    
+
     return deal.freeItems
       .map(freeItem => {
         // Match by ID (both are strings)
-        const menuItem = menuData.menuItems.find(
-          item => item.id === freeItem.id
-        );
+        const menuItem = menuData.menuItems.find(item => item.id === freeItem.id);
         return menuItem ? { ...menuItem, freeItemId: freeItem.id } : null;
       })
       .filter((item): item is MenuItem & { freeItemId: string } => item !== null);
@@ -291,8 +289,8 @@ export default function DealModal({ isOpen, onClose, deal }: DealModalProps) {
               typeof selectedItem.rating === 'number'
                 ? selectedItem.rating
                 : typeof selectedItem.rating === 'string'
-                ? parseFloat(selectedItem.rating) || undefined
-                : undefined,
+                  ? parseFloat(selectedItem.rating) || undefined
+                  : undefined,
             ratingCount: selectedItem.ratingCount ?? undefined,
           }}
         />

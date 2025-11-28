@@ -56,12 +56,17 @@ export default function Orders() {
   const getStoreName = (order: Order) => {
     // First, try to get store name from order
     const storeName = order.storeName || order.restaurantName;
-    
+
     // Validate storeName - check if it's valid (not empty, not a number, not "Unknown Store")
-    if (storeName && storeName.trim() !== '' && storeName !== 'Unknown Store' && !/^\d+$/.test(storeName)) {
+    if (
+      storeName &&
+      storeName.trim() !== '' &&
+      storeName !== 'Unknown Store' &&
+      !/^\d+$/.test(storeName)
+    ) {
       return storeName;
     }
-    
+
     // If storeName is invalid or missing, try to look up from restaurants array
     const restaurantId = order.storeId || order.restaurantId;
     if (restaurantId && restaurants && restaurants.length > 0) {
@@ -70,7 +75,7 @@ export default function Orders() {
         return foundRestaurant.name;
       }
     }
-    
+
     // Fallback
     return 'Store';
   };
@@ -242,12 +247,12 @@ export default function Orders() {
               const dateDisplay = isToday
                 ? `Today, ${order.orderDate.split(', ')[1]}`
                 : order.orderDate
-                ? new Date(order.orderDate).toLocaleDateString('en-US', {
-                    weekday: 'short',
-                    month: 'short',
-                    day: 'numeric',
-                  })
-                : '';
+                  ? new Date(order.orderDate).toLocaleDateString('en-US', {
+                      weekday: 'short',
+                      month: 'short',
+                      day: 'numeric',
+                    })
+                  : '';
 
               return (
                 <div

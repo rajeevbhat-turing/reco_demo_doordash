@@ -10,7 +10,13 @@ import { Address } from '@/lib/types/user-types';
 import SearchBar from '@/components/search-bar';
 import CartSidebar from '@/components/cart-sidebar';
 import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import AuthenticationModal from './modals/authentication-modal';
 import AddressesModal from './modals/addresses-modal';
 import AddAddressModal from './modals/add-address-modal';
@@ -253,7 +259,8 @@ export default function Header() {
     const query = addressSearchQuery.toLowerCase();
     return addressesData
       .filter(address => {
-        const fullAddress = `${address.street}, ${address.city}, ${address.state} ${address.zipCode}`.toLowerCase();
+        const fullAddress =
+          `${address.street}, ${address.city}, ${address.state} ${address.zipCode}`.toLowerCase();
         return fullAddress.includes(query);
       })
       .slice(0, 5); // Limit to 5 results
@@ -623,14 +630,18 @@ export default function Header() {
                                         <SelectItem value="New Jersey">New Jersey</SelectItem>
                                         <SelectItem value="New Mexico">New Mexico</SelectItem>
                                         <SelectItem value="New York">New York</SelectItem>
-                                        <SelectItem value="North Carolina">North Carolina</SelectItem>
+                                        <SelectItem value="North Carolina">
+                                          North Carolina
+                                        </SelectItem>
                                         <SelectItem value="North Dakota">North Dakota</SelectItem>
                                         <SelectItem value="Ohio">Ohio</SelectItem>
                                         <SelectItem value="Oklahoma">Oklahoma</SelectItem>
                                         <SelectItem value="Oregon">Oregon</SelectItem>
                                         <SelectItem value="Pennsylvania">Pennsylvania</SelectItem>
                                         <SelectItem value="Rhode Island">Rhode Island</SelectItem>
-                                        <SelectItem value="South Carolina">South Carolina</SelectItem>
+                                        <SelectItem value="South Carolina">
+                                          South Carolina
+                                        </SelectItem>
                                         <SelectItem value="South Dakota">South Dakota</SelectItem>
                                         <SelectItem value="Tennessee">Tennessee</SelectItem>
                                         <SelectItem value="Texas">Texas</SelectItem>
@@ -913,7 +924,7 @@ export default function Header() {
                       </>
                     )}
                   </div>
-                  
+
                   {/* Cart */}
                   <div className="ml-4">
                     <button

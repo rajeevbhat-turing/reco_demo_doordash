@@ -86,7 +86,9 @@ export default function PromoCodeModal({
     setError({ promocode: null, giftCard: null, deals: null });
 
     // Find deal by promocode (only search in available deals, excluding free item deals for now)
-    const deal = availableDeals.find(d => d.promocode?.toUpperCase() === promoCode.trim().toUpperCase());
+    const deal = availableDeals.find(
+      d => d.promocode?.toUpperCase() === promoCode.trim().toUpperCase()
+    );
 
     if (!deal) {
       setError({ promocode: 'Invalid promo code', giftCard: null, deals: null });
@@ -108,7 +110,7 @@ export default function PromoCodeModal({
     // Apply the deal (for both discount and free item deals)
     if (cartId) {
       // For free item deals, get the free item IDs from cart
-      let freeItemIds: string[] = [];
+      const freeItemIds: string[] = [];
       if (deal.freeItems && deal.freeItems.length > 0) {
         const dealFreeItemIds = deal.freeItems.map(fi => fi.id);
         // Find matching cart items
@@ -168,7 +170,7 @@ export default function PromoCodeModal({
     // Apply the deal (for both discount and free item deals)
     if (cartId) {
       // For free item deals, only track the FIRST free item found (only one free item should be discounted)
-      let freeItemIds: string[] = [];
+      const freeItemIds: string[] = [];
       if (deal.freeItems && deal.freeItems.length > 0) {
         const dealFreeItemIds = deal.freeItems.map(fi => fi.id);
         let foundFirstFreeItem = false;
@@ -367,8 +369,8 @@ export default function PromoCodeModal({
                                       : 'free items'
                                   } and code ${deal.promocode} to apply`
                                 : deal.minimumPurchase
-                                ? `Spend $${deal.minimumPurchase}+ and code ${deal.promocode} to apply`
-                                : `Use code ${deal.promocode} to apply`}
+                                  ? `Spend $${deal.minimumPurchase}+ and code ${deal.promocode} to apply`
+                                  : `Use code ${deal.promocode} to apply`}
                             </>
                           ) : (
                             deal.description

@@ -206,9 +206,9 @@ export default function CheckoutPage() {
   // Check if restaurant is outside delivery area
   const isOutsideDeliveryArea = Boolean(
     currentCategory === 'restaurant' &&
-      currentStoreId &&
-      restaurants &&
-      !restaurants.some((r: any) => r.id === currentStoreId)
+    currentStoreId &&
+    restaurants &&
+    !restaurants.some((r: any) => r.id === currentStoreId)
   );
 
   // Get restaurant and calculate distance for delivery time calculation
@@ -486,7 +486,7 @@ export default function CheckoutPage() {
           // Calculate final_price: keep original price per item
           // The discount is already applied to subtotal via freeItemDiscount
           // We keep the original price per item for accurate display and calculation
-          let finalPrice = originalPrice;
+          const finalPrice = originalPrice;
           // Note: The free item discount is handled at the subtotal level, not per-item
           // This ensures accurate pricing display and calculations
 
@@ -646,10 +646,15 @@ export default function CheckoutPage() {
     if (currentCart) {
       const storeName = currentCart.storeName;
       // Validate storeName - check if it's valid (not empty, not a number, not "Unknown Store")
-      if (storeName && storeName.trim() !== '' && storeName !== 'Unknown Store' && !/^\d+$/.test(storeName)) {
+      if (
+        storeName &&
+        storeName.trim() !== '' &&
+        storeName !== 'Unknown Store' &&
+        !/^\d+$/.test(storeName)
+      ) {
         return storeName;
       }
-      
+
       // If storeName is invalid or missing, try to look up from restaurants array
       if (currentCart.storeCategory === 'restaurant' && currentCart.storeId && restaurants) {
         const foundRestaurant = restaurants.find(r => r.id === currentCart.storeId);
@@ -688,7 +693,7 @@ export default function CheckoutPage() {
 
     // Start from next 30-minute window
     let startHour = currentHour;
-    let startMinute = currentMinute < 30 ? 30 : 0;
+    const startMinute = currentMinute < 30 ? 30 : 0;
     if (currentMinute >= 30) {
       startHour += 1;
     }
@@ -1113,7 +1118,7 @@ export default function CheckoutPage() {
                 <h2 className="text-lg font-semibold mb-4">1. Sign in or sign up to place order</h2>
 
                 {/* Info banner */}
-                {authMode !== "forgot-password" && (
+                {authMode !== 'forgot-password' && (
                   <div className="bg-cyan-50 border border-cyan-200 rounded-lg p-3 mb-4 flex items-center">
                     <svg
                       className="w-5 h-5 text-cyan-600 mr-2 flex-shrink-0"
@@ -1135,7 +1140,7 @@ export default function CheckoutPage() {
                 )}
 
                 {/* Sign In / Sign Up Tabs */}
-                {authMode !== "forgot-password" && (
+                {authMode !== 'forgot-password' && (
                   <div className="flex justify-center mb-6">
                     <div className="inline-flex bg-gray-100 rounded-full p-1">
                       <button
@@ -1207,10 +1212,10 @@ export default function CheckoutPage() {
                               }`
                             : 'No address selected'
                           : tempAddress
-                          ? `${tempAddress.street.substring(0, 23)}${
-                              tempAddress.street.length > 23 ? '...' : ''
-                            }`
-                          : 'No address selected'}
+                            ? `${tempAddress.street.substring(0, 23)}${
+                                tempAddress.street.length > 23 ? '...' : ''
+                              }`
+                            : 'No address selected'}
                       </span>
                       {userIsAuthenticated && (
                         <button

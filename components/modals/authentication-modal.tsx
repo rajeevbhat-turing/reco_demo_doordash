@@ -263,7 +263,10 @@ export default function AuthenticationModal({
       <div className="absolute inset-0 bg-black/50" onClick={handleClose} />
 
       {/* Modal */}
-      <div ref={dialogRef} className="relative bg-white rounded-xl shadow-xl max-w-xl w-full mx-4 h-[90vh] overflow-hidden">
+      <div
+        ref={dialogRef}
+        className="relative bg-white rounded-xl shadow-xl max-w-xl w-full mx-4 h-[90vh] overflow-hidden"
+      >
         {/* Fixed Header - appears when original header is out of view */}
         {showFixedHeader && (
           <div className="absolute top-0 left-0 right-0 z-30 bg-white border-b border-gray-300 p-4 rounded-t-xl">
@@ -353,7 +356,11 @@ export default function AuthenticationModal({
           {/* Authentication Forms */}
           <div className="pb-6">
             {mode === 'signin' ? (
-              <SignIn onSuccess={handleAuthSuccess} setMode={handleSetMode} initialEmail={initialEmail} />
+              <SignIn
+                onSuccess={handleAuthSuccess}
+                setMode={handleSetMode}
+                initialEmail={initialEmail}
+              />
             ) : mode === 'signup' ? (
               <SignUp
                 onShowOTP={handleShowOTP}

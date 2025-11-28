@@ -60,17 +60,13 @@ function isJSONPath(value: string): boolean {
   if (!value || typeof value !== 'string') {
     return false;
   }
-  
+
   // Valid JSONPath patterns:
   // - Starts with $[ (array access): $[0], $[0].prop, $[*]
   // - Starts with $. (property access): $.prop, $.prop.nested
   // - Starts with $.. (recursive descent): $..prop
   // - Exactly $ (root)
-  return (
-    value.startsWith('$[') ||
-    value.startsWith('$.') ||
-    value.startsWith('$..')
-  );
+  return value.startsWith('$[') || value.startsWith('$.') || value.startsWith('$..');
 }
 
 /**
@@ -92,7 +88,7 @@ function getResolvedArgs(args: Record<string, any>, expectedStates: any[]): Reco
     if (typeof value === 'string' && isJSONPath(value)) {
       try {
         const result = JSONPath({ path: value, json: expectedStates });
-        
+
         if (result.length === 0) {
           console.error(`JSONPath not found: ${value}`);
           resolvedArgs[key] = undefined;
@@ -131,7 +127,9 @@ function getResolvedArgs(args: Record<string, any>, expectedStates: any[]): Reco
   return resolvedArgs;
 }
 
-export async function getStates(expected_state_functions: ExpectedStateFunction[] = []): Promise<States> {
+export async function getStates(
+  expected_state_functions: ExpectedStateFunction[] = []
+): Promise<States> {
   const cartStore = useCartStore.getState();
   const userStore = useUserStore.getState();
   const appStore = useAppStore.getState();
@@ -168,11 +166,11 @@ export async function getStates(expected_state_functions: ExpectedStateFunction[
 
   // Execute expected state functions
   const expected_states: any[] = [];
-  
+
   for (const funcSpec of expected_state_functions) {
     try {
       const func = (expectedStateFunctions as any)[funcSpec.function];
-      
+
       if (typeof func !== 'function') {
         console.error(`Expected state function not found: ${funcSpec.function}`);
         expected_states.push({
@@ -181,16 +179,18 @@ export async function getStates(expected_state_functions: ExpectedStateFunction[
         });
         continue;
       }
-      
+
       // Resolve any JSONPath expressions in the arguments
-      const resolvedArgs = funcSpec.args && Object.keys(funcSpec.args).length > 0
-        ? getResolvedArgs(funcSpec.args, expected_states)
-        : funcSpec.args;
-      
+      const resolvedArgs =
+        funcSpec.args && Object.keys(funcSpec.args).length > 0
+          ? getResolvedArgs(funcSpec.args, expected_states)
+          : funcSpec.args;
+
       // Call the function with resolved args (if any)
-      const result = resolvedArgs && Object.keys(resolvedArgs).length > 0
-        ? await func(resolvedArgs)
-        : await func();
+      const result =
+        resolvedArgs && Object.keys(resolvedArgs).length > 0
+          ? await func(resolvedArgs)
+          : await func();
       expected_states.push(result);
     } catch (error) {
       console.error(`Error executing expected state function '${funcSpec.function}':`, error);
@@ -207,4 +207,3 @@ export async function getStates(expected_state_functions: ExpectedStateFunction[
     expected_states,
   };
 }
-

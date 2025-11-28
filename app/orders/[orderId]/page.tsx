@@ -38,12 +38,17 @@ export default function OrderReceiptPage() {
   const getStoreName = (order: Order) => {
     // First, try to get store name from order
     const storeName = order.storeName || order.restaurantName;
-    
+
     // Validate storeName - check if it's valid (not empty, not a number, not "Unknown Store")
-    if (storeName && storeName.trim() !== '' && storeName !== 'Unknown Store' && !/^\d+$/.test(storeName)) {
+    if (
+      storeName &&
+      storeName.trim() !== '' &&
+      storeName !== 'Unknown Store' &&
+      !/^\d+$/.test(storeName)
+    ) {
       return storeName;
     }
-    
+
     // Fallback - if storeName is a number or invalid, return a generic name
     return 'Store';
   };
@@ -77,7 +82,7 @@ export default function OrderReceiptPage() {
   // Calculate original subtotal (before free item discount) and final subtotal
   const originalSubtotal =
     order.items?.reduce((sum, item) => sum + item.price * item.quantity, 0) || 0;
-  
+
   // Always use stored subtotal from order if available (most accurate)
   // If not available, calculate using original prices and apply stored freeItemDiscount
   let subtotal = order.subtotal || 0;

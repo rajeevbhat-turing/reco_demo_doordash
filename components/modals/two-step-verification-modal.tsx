@@ -58,7 +58,7 @@ export default function TwoStepVerificationModal({
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [isOpen, onClose]);
-  
+
   // Handles code input changes
   const handleCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.replace(/\D/g, '').slice(0, 6);
@@ -216,9 +216,17 @@ export default function TwoStepVerificationModal({
                 onKeyDown={e => {
                   // Allow: backspace, delete, tab, escape, enter, and arrow keys
                   if (
-                    ['Backspace', 'Delete', 'Tab', 'Escape', 'Enter', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(
-                      e.key
-                    )
+                    [
+                      'Backspace',
+                      'Delete',
+                      'Tab',
+                      'Escape',
+                      'Enter',
+                      'ArrowLeft',
+                      'ArrowRight',
+                      'ArrowUp',
+                      'ArrowDown',
+                    ].includes(e.key)
                   ) {
                     return; // Allow these keys
                   }

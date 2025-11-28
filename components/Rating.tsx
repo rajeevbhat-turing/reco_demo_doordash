@@ -1,4 +1,4 @@
-'use client'
+'use client';
 import { useState } from 'react';
 
 interface RatingProps {
@@ -16,12 +16,12 @@ export const Rating = ({ initialRating = 0, onChange }: RatingProps) => {
   };
 
   const StarIcon = () => (
-    <svg 
-      width="24" 
-      height="24" 
-      viewBox="0 0 24 24" 
-      fill="none" 
-      stroke="currentColor" 
+    <svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
       strokeWidth="2"
       className="w-5 h-5"
     >
@@ -32,7 +32,7 @@ export const Rating = ({ initialRating = 0, onChange }: RatingProps) => {
   return (
     <div className="flex items-center">
       <div className="flex gap-1">
-        {[1, 2, 3, 4, 5].map((star) => (
+        {[1, 2, 3, 4, 5].map(star => (
           <button
             key={star}
             className="focus:outline-none"
@@ -40,11 +40,13 @@ export const Rating = ({ initialRating = 0, onChange }: RatingProps) => {
             onMouseEnter={() => setHover(star)}
             onMouseLeave={() => setHover(0)}
           >
-            <span className={`${
-              star <= (hover || rating) 
-                ? 'text-[#2563EB]' // DashDoor blue color when selected/hovered
-                : 'text-[#E6E6E6]'  // Light gray for empty stars
-            }`}>
+            <span
+              className={`${
+                star <= (hover || rating)
+                  ? 'text-[#2563EB]' // DashDoor blue color when selected/hovered
+                  : 'text-[#E6E6E6]' // Light gray for empty stars
+              }`}
+            >
               <StarIcon />
             </span>
           </button>
@@ -53,4 +55,4 @@ export const Rating = ({ initialRating = 0, onChange }: RatingProps) => {
       <span className="ml-2 text-sm text-gray-500">• Leave a review</span>
     </div>
   );
-}; 
+};

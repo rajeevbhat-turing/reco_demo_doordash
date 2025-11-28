@@ -74,7 +74,8 @@ export default function LandingPage() {
     const query = addressSearchQuery.toLowerCase();
     return addressesData
       .filter(address => {
-        const fullAddress = `${address.street}, ${address.city}, ${address.state} ${address.zipCode}`.toLowerCase();
+        const fullAddress =
+          `${address.street}, ${address.city}, ${address.state} ${address.zipCode}`.toLowerCase();
         return fullAddress.includes(query);
       })
       .slice(0, 5); // Limit to 5 results

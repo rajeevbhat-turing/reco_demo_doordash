@@ -35,26 +35,30 @@ export default function StoreReviewsPage() {
   } | null>(null);
 
   // Fetch reviews from API and merge with store changes
-  const { vendorReviews, approvedReviews, averageRating, isLoading, apiData } = useStoreReviews(storeId);
-  
+  const { vendorReviews, approvedReviews, averageRating, isLoading, apiData } =
+    useStoreReviews(storeId);
+
   // Get store review changes for merging - using individual selectors to prevent object recreation
   const newReviews = useReviewStore(state => state.newReviews);
   const helpfulChanges = useReviewStore(state => state.helpfulChanges);
   const approvalChanges = useReviewStore(state => state.approvalChanges);
   const deletedReviewIds = useReviewStore(state => state.deletedReviewIds);
-  
-  const storeReviewChanges = useMemo(() => ({
-    newReviews,
-    helpfulChanges,
-    approvalChanges,
-    deletedReviewIds,
-  }), [newReviews, helpfulChanges, approvalChanges, deletedReviewIds]);
+
+  const storeReviewChanges = useMemo(
+    () => ({
+      newReviews,
+      helpfulChanges,
+      approvalChanges,
+      deletedReviewIds,
+    }),
+    [newReviews, helpfulChanges, approvalChanges, deletedReviewIds]
+  );
 
   const toggleHelpfulRating = useReviewStore(state => state.toggleHelpfulRating);
   const currentUser = useUserStore(state => state.currentUser);
   const { setCurrentStore, clearCurrentStore } = useAppStore();
   const cartStore = useCartStore();
-  
+
   // Fetch restaurant data to set current store
   const { data: restaurantData } = useRestaurant(storeId);
 
@@ -62,7 +66,7 @@ export default function StoreReviewsPage() {
   useEffect(() => {
     // Set the category to restaurant when the page loads
     cartStore.setCategory('restaurant');
-    
+
     if (restaurantData) {
       setCurrentStore(restaurantData, 'restaurant');
     }
@@ -76,23 +80,26 @@ export default function StoreReviewsPage() {
   // This prevents O(n²) complexity from calling getUserReviewCount for each review
   const userReviewCountsMap = useMemo(() => {
     if (!apiData) return new Map<string, number>();
-    
+
     const merged = mergeReviewsWithChanges(apiData, storeReviewChanges);
     const countsMap = new Map<string, number>();
-    
+
     // Count reviews per user in a single pass
     merged.forEach(review => {
       const currentCount = countsMap.get(review.userId) || 0;
       countsMap.set(review.userId, currentCount + 1);
     });
-    
+
     return countsMap;
   }, [apiData, storeReviewChanges]);
 
   // Helper function to get user review count from pre-computed map
-  const getUserReviewCount = useCallback((userId: string) => {
-    return userReviewCountsMap.get(userId) || 0;
-  }, [userReviewCountsMap]);
+  const getUserReviewCount = useCallback(
+    (userId: string) => {
+      return userReviewCountsMap.get(userId) || 0;
+    },
+    [userReviewCountsMap]
+  );
 
   // Collect all photos from all approved reviews with user info
   const allCustomerPhotos = useMemo(() => {
@@ -311,8 +318,8 @@ export default function StoreReviewsPage() {
                         currentUser && review.ratedHelpfulBy.includes(currentUser.id)
                           ? 'bg-[#191919ff] text-white hover:bg-[#2a2a2a]'
                           : currentUser
-                          ? 'bg-[#f1f1f1] text-[#191919ff] hover:bg-gray-200'
-                          : 'bg-[#f1f1f1] text-[#191919ff] cursor-not-allowed'
+                            ? 'bg-[#f1f1f1] text-[#191919ff] hover:bg-gray-200'
+                            : 'bg-[#f1f1f1] text-[#191919ff] cursor-not-allowed'
                       } ${!currentUser ? 'pointer-events-none' : ''}`}
                     >
                       <LightbulbIcon />
@@ -337,7 +344,9 @@ export default function StoreReviewsPage() {
         onClose={() => setReviewDialogOpen(false)}
         restaurantName={vendorName}
         vendorId={storeId}
-        vendorLogo={vendorReviews && vendorReviews.length > 0 ? vendorReviews[0]?.vendorLogo : undefined}
+        vendorLogo={
+          vendorReviews && vendorReviews.length > 0 ? vendorReviews[0]?.vendorLogo : undefined
+        }
       />
 
       {/* Reviews Info Modal */}

@@ -5,12 +5,16 @@ import { useOrdersStore } from '@/store/orders-store';
 import { useEffect } from 'react';
 
 export function useOrders() {
-  const currentUser = useUserStore((state) => state.currentUser);
+  const currentUser = useUserStore(state => state.currentUser);
   const userId = currentUser?.id;
-  const initializeOrdersFromDB = useOrdersStore((state) => state.initializeOrdersFromDB);
-  const isInitialized = useOrdersStore((state) => state.isInitialized);
+  const initializeOrdersFromDB = useOrdersStore(state => state.initializeOrdersFromDB);
+  const isInitialized = useOrdersStore(state => state.isInitialized);
 
-  const { data: orders, isLoading, error } = useQuery({
+  const {
+    data: orders,
+    isLoading,
+    error,
+  } = useQuery({
     queryKey: ['orders', userId],
     queryFn: () => fetchUserOrders(userId!),
     enabled: !!userId && !isInitialized, // Only fetch if user is logged in and store not initialized
@@ -31,4 +35,3 @@ export function useOrders() {
     error,
   };
 }
-

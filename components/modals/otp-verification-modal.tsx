@@ -154,9 +154,17 @@ export default function OTPVerificationModal({
                 onKeyDown={e => {
                   // Allow: backspace, delete, tab, escape, enter, and arrow keys
                   if (
-                    ['Backspace', 'Delete', 'Tab', 'Escape', 'Enter', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(
-                      e.key
-                    )
+                    [
+                      'Backspace',
+                      'Delete',
+                      'Tab',
+                      'Escape',
+                      'Enter',
+                      'ArrowLeft',
+                      'ArrowRight',
+                      'ArrowUp',
+                      'ArrowDown',
+                    ].includes(e.key)
                   ) {
                     return; // Allow these keys
                   }

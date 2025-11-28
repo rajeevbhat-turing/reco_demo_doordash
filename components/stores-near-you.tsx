@@ -1,19 +1,19 @@
-import { Heart, Info } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import { Heart, Info } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 interface Store {
-  name: string
-  image: string
-  openTime?: string
-  time?: string
-  closed: boolean
-  delivery: string
-  inStorePrice: boolean
-  discount: string
+  name: string;
+  image: string;
+  openTime?: string;
+  time?: string;
+  closed: boolean;
+  delivery: string;
+  inStorePrice: boolean;
+  discount: string;
 }
 
 interface StoresNearYouProps {
-  stores: Store[]
+  stores: Store[];
 }
 
 export default function StoresNearYou({ stores }: StoresNearYouProps) {
@@ -26,16 +26,18 @@ export default function StoresNearYou({ stores }: StoresNearYouProps) {
           <div key={`${store.name}-${index}`} className="border border-gray-200 rounded-lg p-4">
             <div className="flex gap-4">
               <div className="relative w-16 h-16 rounded-full overflow-hidden bg-gray-100">
-                <img 
-                  src={store.image || "/placeholder.svg"} 
-                  alt={store.name} 
+                <img
+                  src={store.image || '/placeholder.svg'}
+                  alt={store.name}
                   className="w-full h-full object-cover"
                   loading="lazy"
                 />
               </div>
 
               <div className="flex-1">
-                {store.openTime && <div className="text-sm text-blue-600 font-medium mb-1">{store.openTime}</div>}
+                {store.openTime && (
+                  <div className="text-sm text-blue-600 font-medium mb-1">{store.openTime}</div>
+                )}
                 <div className="flex justify-between">
                   <h3 className="font-medium">{store.name}</h3>
                   <Button variant="ghost" size="icon" className="rounded-full -mr-2 -mt-2">
@@ -57,13 +59,11 @@ export default function StoresNearYou({ stores }: StoresNearYouProps) {
                     In-store prices
                   </div>
                 )}
-
-
               </div>
             </div>
           </div>
         ))}
       </div>
     </div>
-  )
+  );
 }

@@ -3,10 +3,7 @@ import { db } from '@/lib/db';
 import { calculateDeliveryTime, checkIfOpen, formatHours } from '@/lib/utils/restaurant-utils';
 import { getImageWithFallback } from '@/constants/image-placeholders';
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id: restaurantId } = await params;
 
@@ -23,8 +20,9 @@ export async function GET(
     const lng = parseFloat(searchParams.get('lng') || '0');
 
     // Fetch restaurant with distance calculation if lat/lng provided
-    const restaurantQuery = lat && lng
-      ? `SELECT 
+    const restaurantQuery =
+      lat && lng
+        ? `SELECT 
           r.id,
           r.name,
           r.logo,
@@ -77,7 +75,7 @@ export async function GET(
           ) AS total_rating_count
         FROM restaurants r
         WHERE r.id = ?`
-      : `SELECT 
+        : `SELECT 
           r.id,
           r.name,
           r.logo,
@@ -125,9 +123,7 @@ export async function GET(
         FROM restaurants r
         WHERE r.id = ?`;
 
-    const params_array = lat && lng
-      ? [lat, lng, lat, restaurantId]
-      : [restaurantId];
+    const params_array = lat && lng ? [lat, lng, lat, restaurantId] : [restaurantId];
 
     const restaurantRaw = await db.queryOne<any>(restaurantQuery, params_array);
 
@@ -149,12 +145,19 @@ export async function GET(
       name: restaurantRaw.name,
       logo: getImageWithFallback(restaurantRaw.logo, 'logo'),
       banner: getImageWithFallback(restaurantRaw.banner, 'image'),
-      detailsBanner: restaurantRaw.details_banner ? getImageWithFallback(restaurantRaw.details_banner, 'image') : undefined,
+      detailsBanner: restaurantRaw.details_banner
+        ? getImageWithFallback(restaurantRaw.details_banner, 'image')
+        : undefined,
       rating: restaurantRaw.avg_rating ? parseFloat(restaurantRaw.avg_rating).toFixed(1) : null,
-      reviews: restaurantRaw.total_rating_count ? `${restaurantRaw.total_rating_count}+ ratings` : null,
+      reviews: restaurantRaw.total_rating_count
+        ? `${restaurantRaw.total_rating_count}+ ratings`
+        : null,
       distance: distance > 0 ? `${distance.toFixed(1)} mi` : 'Distance unavailable',
       time: deliveryTime,
-      deliveryFee: restaurantRaw.is_free_delivery === 1 ? '$0 delivery fee' : `$${(restaurantRaw.min_delivery_fee / 100).toFixed(2)} delivery fee`,
+      deliveryFee:
+        restaurantRaw.is_free_delivery === 1
+          ? '$0 delivery fee'
+          : `$${(restaurantRaw.min_delivery_fee / 100).toFixed(2)} delivery fee`,
       isFreeDelivery: restaurantRaw.is_free_delivery === 1,
       minDeliveryFee: restaurantRaw.min_delivery_fee,
       priceRange: '$'.repeat(restaurantRaw.price_range),
@@ -169,7 +172,9 @@ export async function GET(
       lat: restaurantRaw.latitude,
       lng: restaurantRaw.longitude,
       phone: restaurantRaw.phone,
-      discount: restaurantRaw.discount_percentage ? `${restaurantRaw.discount_percentage}% off` : undefined,
+      discount: restaurantRaw.discount_percentage
+        ? `${restaurantRaw.discount_percentage}% off`
+        : undefined,
       featured: restaurantRaw.featured === 1,
       new: restaurantRaw.new_flag === 1,
       categories: restaurantRaw.categories_str ? restaurantRaw.categories_str.split(',') : [],
@@ -184,10 +189,6 @@ export async function GET(
     });
   } catch (error: any) {
     console.error('❌ Error fetching restaurant:', error);
-    return NextResponse.json(
-      { success: false, message: 'Internal server error' },
-      { status: 500 }
-    );
+    return NextResponse.json({ success: false, message: 'Internal server error' }, { status: 500 });
   }
 }
-

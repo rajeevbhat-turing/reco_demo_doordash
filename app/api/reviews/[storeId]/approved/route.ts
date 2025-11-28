@@ -4,7 +4,7 @@ import { getImageWithFallback } from '@/constants/image-placeholders';
 
 /**
  * GET /api/reviews/[storeId]/approved
- * 
+ *
  * Fetches only approved reviews for a specific store
  */
 export async function GET(
@@ -15,10 +15,7 @@ export async function GET(
     const { storeId } = await params;
 
     if (!storeId) {
-      return NextResponse.json(
-        { success: false, error: 'Store ID is required' },
-        { status: 400 }
-      );
+      return NextResponse.json({ success: false, error: 'Store ID is required' }, { status: 400 });
     }
 
     // Fetch only approved reviews with user and store information
@@ -168,4 +165,3 @@ export async function GET(
     );
   }
 }
-

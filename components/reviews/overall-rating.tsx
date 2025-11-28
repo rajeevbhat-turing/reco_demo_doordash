@@ -69,9 +69,7 @@ export default function OverallRating({ averageRating, totalReviews }: OverallRa
 
         {/* Rating number */}
         <div className="absolute inset-0 flex items-center justify-center left-[-3px] top-[-5px]">
-          <span className="text-[18px] font-bold text-[#606060ff]">
-            {formattedRating}
-          </span>
+          <span className="text-[18px] font-bold text-[#606060ff]">{formattedRating}</span>
         </div>
 
         {/* Star positioned in the gap (lower center) */}

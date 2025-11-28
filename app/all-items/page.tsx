@@ -110,10 +110,10 @@ function AllItemsContent() {
         new: restaurant.new,
       }));
     }
-    
+
     // Only restaurants are supported now
     // Return empty array for non-restaurant types
-    
+
     // Default to empty array for other types
     return [];
   };

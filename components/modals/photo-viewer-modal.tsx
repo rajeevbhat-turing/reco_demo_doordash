@@ -64,11 +64,7 @@ export default function PhotoViewerModal({
         onClick={e => e.stopPropagation()}
       >
         {/* Close Button */}
-        <button
-          onClick={onClose}
-          className="w-8 h-8 cursor-pointer mx-4"
-          aria-label="Close modal"
-        >
+        <button onClick={onClose} className="w-8 h-8 cursor-pointer mx-4" aria-label="Close modal">
           <X className="w-6 h-6 text-[#191919ff]" strokeWidth={2} />
         </button>
 

@@ -27,7 +27,8 @@ export default function Reviews({ vendorId, vendorName }: ReviewsProps) {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   // Fetch reviews from API and merge with store changes
-  const { vendorReviews, approvedReviews, averageRating, isLoading, apiData } = useStoreReviews(vendorId);
+  const { vendorReviews, approvedReviews, averageRating, isLoading, apiData } =
+    useStoreReviews(vendorId);
 
   // Get store changes for merging - using individual selectors to prevent object recreation
   const newReviews = useReviewStore(state => state.newReviews);
@@ -48,12 +49,8 @@ export default function Reviews({ vendorId, vendorName }: ReviewsProps) {
   // Get current user's review for this vendor (if exists)
   const userReview =
     currentUser && apiData
-      ? getMergedUserReviewForVendor(
-          apiData,
-          vendorId,
-          currentUser.id,
-          storeReviewChanges
-        ) || useReviewStore.getState().getNewReviewForVendor(vendorId, currentUser.id)
+      ? getMergedUserReviewForVendor(apiData, vendorId, currentUser.id, storeReviewChanges) ||
+        useReviewStore.getState().getNewReviewForVendor(vendorId, currentUser.id)
       : null;
 
   const totalReviews = approvedReviews?.length || 0;

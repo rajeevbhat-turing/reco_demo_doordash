@@ -185,7 +185,7 @@ export default function UserProfilePage() {
 
         {/* Restricted Profile Message */}
         {/* Current user can see his/her own restricted profile. */}
-        {(user.is_restricted && !isCurrentUser) ? (
+        {user.is_restricted && !isCurrentUser ? (
           <div className="flex flex-col items-center justify-center py-12 mt-8">
             <div className="w-16 h-16 rounded-full bg-white flex items-center justify-center mb-4 shadow-xl">
               <LockIcon />

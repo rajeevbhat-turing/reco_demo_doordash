@@ -50,7 +50,10 @@ export default function AddressReviewErrorModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
-      <div ref={dialogRef} className="relative bg-white rounded-xl w-full max-w-md md:max-w-xl mx-4">
+      <div
+        ref={dialogRef}
+        className="relative bg-white rounded-xl w-full max-w-md md:max-w-xl mx-4"
+      >
         <div className="py-6 px-8 md:px-4">
           {/* Close button */}
           <button

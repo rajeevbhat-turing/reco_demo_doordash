@@ -1,8 +1,8 @@
-import React, { useState, useRef, useEffect } from "react"
-import { ChevronLeft, ChevronRight, Plus } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { useCartStore } from "@/store/cart-store"
-import { getDefaultRating } from "@/utils/rating-utils"
+import React, { useState, useRef, useEffect } from 'react';
+import { ChevronLeft, ChevronRight, Plus } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { useCartStore } from '@/store/cart-store';
+import { getDefaultRating } from '@/utils/rating-utils';
 
 interface Product {
   id: string;
@@ -26,10 +26,10 @@ interface ProductCarouselProps {
 export default function ProductCarousel({
   title,
   storeName,
-  storeImage = "/placeholder.svg?height=50&width=50",
-  time = "26 min",
+  storeImage = '/placeholder.svg?height=50&width=50',
+  time = '26 min',
   products,
-  isSnapEligible = false
+  isSnapEligible = false,
 }: ProductCarouselProps) {
   return (
     <div className="py-6">
@@ -38,13 +38,7 @@ export default function ProductCarousel({
       </div>
       <div className="flex items-start mb-4">
         <div className="relative w-12 h-12 rounded-full overflow-hidden bg-gray-100 mr-4">
-          <img
-            src={storeImage}
-            alt={storeName}
-            width={48}
-            height={48}
-            className="object-cover"
-          />
+          <img src={storeImage} alt={storeName} width={48} height={48} className="object-cover" />
         </div>
 
         <div className="flex-grow">
@@ -81,7 +75,7 @@ export default function ProductCarousel({
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-        {products.map((product) => (
+        {products.map(product => (
           <div key={product.id} className="border border-gray-200 rounded-lg overflow-hidden">
             {/* Product image container with hover effect */}
             <div className="group relative h-40 w-full bg-gray-50 flex items-center justify-center">
@@ -95,12 +89,8 @@ export default function ProductCarousel({
               </div>
 
               {/* Add button that appears on hover */}
-              <div
-                className="absolute bottom-2 right-2 transition-all duration-200 opacity-0 group-hover:opacity-100 z-10"
-              >
-                <button
-                  className="h-8 w-8 rounded-full bg-white hover:bg-gray-100 shadow-md flex items-center justify-center"
-                >
+              <div className="absolute bottom-2 right-2 transition-all duration-200 opacity-0 group-hover:opacity-100 z-10">
+                <button className="h-8 w-8 rounded-full bg-white hover:bg-gray-100 shadow-md flex items-center justify-center">
                   <Plus className="h-4 w-4 text-gray-900" />
                 </button>
               </div>
@@ -117,9 +107,7 @@ export default function ProductCarousel({
                 </div>
               )}
 
-              {product.inStock && (
-                <div className="text-xs text-green-700 mt-1">Many in stock</div>
-              )}
+              {product.inStock && <div className="text-xs text-green-700 mt-1">Many in stock</div>}
 
               {/*<Button className="w-full mt-2 h-8 text-xs rounded-full bg-gray-200 hover:bg-gray-300 text-gray-900">*/}
               {/*  Add*/}

@@ -5,7 +5,7 @@ import { useState } from 'react';
 
 /**
  * TanStack Query Provider
- * 
+ *
  * Wraps the application with QueryClientProvider for server state management.
  * This enables useQuery and useMutation hooks throughout the app.
  */
@@ -27,10 +27,5 @@ export function QueryProvider({ children }: { children: React.ReactNode }) {
       })
   );
 
-  return (
-    <QueryClientProvider client={queryClient}>
-      {children}
-    </QueryClientProvider>
-  );
+  return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
 }
-

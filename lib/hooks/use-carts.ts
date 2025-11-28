@@ -5,12 +5,16 @@ import { useCartStore } from '@/store/cart-store';
 import { useEffect } from 'react';
 
 export function useCarts() {
-  const currentUser = useUserStore((state) => state.currentUser);
+  const currentUser = useUserStore(state => state.currentUser);
   const userId = currentUser?.id;
-  const initializeCartsFromDB = useCartStore((state) => state.initializeCartsFromDB);
-  const isInitialized = useCartStore((state) => state.isInitialized);
+  const initializeCartsFromDB = useCartStore(state => state.initializeCartsFromDB);
+  const isInitialized = useCartStore(state => state.isInitialized);
 
-  const { data: carts, isLoading, error } = useQuery({
+  const {
+    data: carts,
+    isLoading,
+    error,
+  } = useQuery({
     queryKey: ['carts', userId],
     queryFn: () => fetchUserCarts(userId!),
     enabled: !!userId && !isInitialized, // Only fetch if user is logged in and store not initialized
@@ -32,4 +36,3 @@ export function useCarts() {
     error,
   };
 }
-

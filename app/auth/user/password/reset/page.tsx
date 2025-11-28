@@ -38,15 +38,17 @@ function PasswordResetContent() {
 
 export default function PasswordResetPage() {
   return (
-    <Suspense fallback={
-      <div className="bg-white flex flex-col items-center pt-[56px] w-full min-h-screen">
-        <div className="max-w-sm w-full">
-          <div className="mt-8">
-            <h2 className="text-2xl font-bold text-[#191919ff] text-center">Forgot Password?</h2>
+    <Suspense
+      fallback={
+        <div className="bg-white flex flex-col items-center pt-[56px] w-full min-h-screen">
+          <div className="max-w-sm w-full">
+            <div className="mt-8">
+              <h2 className="text-2xl font-bold text-[#191919ff] text-center">Forgot Password?</h2>
+            </div>
           </div>
         </div>
-      </div>
-    }>
+      }
+    >
       <PasswordResetContent />
     </Suspense>
   );

@@ -281,9 +281,7 @@ export default function RestaurantPage() {
         })
         .slice(0, 5); // Take top 5
 
-      const familySharingItemsData = menuItems.filter(
-        item => item.category === 'Family & Sharing'
-      );
+      const familySharingItemsData = menuItems.filter(item => item.category === 'Family & Sharing');
       const beefItemsData = menuItems.filter(item => item.category === 'Beef');
 
       // Transform categories to match expected format

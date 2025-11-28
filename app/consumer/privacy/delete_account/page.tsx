@@ -47,12 +47,11 @@ export default function DeleteAccountPage() {
           currentUser: null,
           deletedUserIds: [...parsedUserStore.state.deletedUserIds, currentUser?.id],
         },
-      }
+      };
 
       // Set new user store to local storage
       localStorage.setItem('user-store', JSON.stringify(newUserStore));
     }
-
 
     // After 3 seconds, delete user and navigate to home
     setTimeout(() => {

@@ -4,7 +4,7 @@ import { calculateDistance } from '@/lib/utils/distance-utils';
 
 /**
  * GET /api/expected-state/get-cheaptest-item
- * 
+ *
  * Finds an item based on multiple filters:
  * - options: array of item names to search for
  * - cuisine: restaurant cuisine type
@@ -23,22 +23,24 @@ export async function GET(request: NextRequest) {
 
     if (!optionsParam) {
       return NextResponse.json(
-        { 
-          success: false, 
-          error: 'options is required' 
+        {
+          success: false,
+          error: 'options is required',
         },
         { status: 400 }
       );
     }
 
     const options: string[] = JSON.parse(optionsParam);
-    const restaurantFilters: string[] = restaurantFiltersParam ? JSON.parse(restaurantFiltersParam) : [];
+    const restaurantFilters: string[] = restaurantFiltersParam
+      ? JSON.parse(restaurantFiltersParam)
+      : [];
 
     if (!options || options.length === 0) {
       return NextResponse.json(
-        { 
-          success: false, 
-          error: 'At least one option is required' 
+        {
+          success: false,
+          error: 'At least one option is required',
         },
         { status: 400 }
       );
@@ -110,12 +112,12 @@ export async function GET(request: NextRequest) {
 
     // Step 4: Calculate distances and filter by radius
     let itemsWithDistance = items;
-    
+
     if (!lat || !lng) {
       return NextResponse.json(
-        { 
-          success: false, 
-          error: 'lat and lng are required' 
+        {
+          success: false,
+          error: 'lat and lng are required',
         },
         { status: 400 }
       );
@@ -128,12 +130,7 @@ export async function GET(request: NextRequest) {
     // Calculate distances for all items
     itemsWithDistance = items.map((item: any) => ({
       ...item,
-      distance: calculateDistance(
-        item.restaurantLat,
-        item.restaurantLng,
-        userLat,
-        userLng
-      ),
+      distance: calculateDistance(item.restaurantLat, item.restaurantLng, userLat, userLng),
     }));
 
     // Filter out restaurants beyond the radius
@@ -155,10 +152,12 @@ export async function GET(request: NextRequest) {
     if (restaurantFilters.includes('nearest')) {
       // Sort by distance and group by restaurant
       filteredItems.sort((a: any, b: any) => a.distance - b.distance);
-      
+
       // Get the nearest restaurant
       const nearestRestaurantId = filteredItems[0].restaurantId;
-      filteredItems = filteredItems.filter((item: any) => item.restaurantId === nearestRestaurantId);
+      filteredItems = filteredItems.filter(
+        (item: any) => item.restaurantId === nearestRestaurantId
+      );
     }
 
     if (filteredItems.length === 0) {
@@ -170,13 +169,13 @@ export async function GET(request: NextRequest) {
         },
       });
     }
-    
+
     // Find the minimum effective price
     const minPrice = Math.min(...filteredItems.map((item: any) => item.itemPrice));
-    
+
     // Get all items with the minimum price
     const cheapestItems = filteredItems.filter((item: any) => item.itemPrice === minPrice);
-    
+
     // If there's a tie, prefer the item whose name appears first in the options list
     let selectedItem;
     if (cheapestItems.length === 1) {
@@ -184,7 +183,7 @@ export async function GET(request: NextRequest) {
     } else {
       // For each option in order, check if any of the cheapest items match
       for (const optionName of options) {
-        const match = cheapestItems.find((item: any) => 
+        const match = cheapestItems.find((item: any) =>
           item.itemName.toLowerCase().includes(optionName.toLowerCase())
         );
         if (match) {
@@ -225,23 +224,21 @@ export async function GET(request: NextRequest) {
           zipCode: selectedItem.restaurantZipCode,
         },
         distance: selectedItem.distance || null,
-      }
+      },
     };
 
     return NextResponse.json({
       success: true,
       data: result,
     });
-
   } catch (error) {
     console.error('❌ Get item error:', error);
     return NextResponse.json(
-      { 
-        success: false, 
-        error: error instanceof Error ? error.message : 'An error occurred'
+      {
+        success: false,
+        error: error instanceof Error ? error.message : 'An error occurred',
       },
       { status: 500 }
     );
   }
 }
-
