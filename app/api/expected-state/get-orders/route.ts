@@ -6,12 +6,26 @@ interface SortSpec {
   order?: "asc" | "desc";
 }
 
+// Map camelCase field names to snake_case database column names
+function mapFieldToColumn(field: string): string {
+  const fieldMap: Record<string, string> = {
+    'orderDate': 'order_date',
+    'userId': 'user_id',
+    'storeId': 'store_id',
+    'storeName': 'store_name',
+    'deliveryFee': 'delivery_fee',
+    // Add more mappings as needed
+  };
+  return fieldMap[field] || field;
+}
+
 /**
  * GET /api/expected-state/get-orders
  * 
  * Query Parameters:
  * - userId: User ID (optional, use this OR email)
  * - email: User email (optional, use this OR userId)
+ * - restaurant_id: Filter by restaurant ID (optional)
  * - sort_type: JSON array of sort specifications (optional)
  *   - Supports aggregation: { "key": "field.count", "order": "desc" }
  *   - Regular sorting: { "key": "field", "order": "asc" }
@@ -30,6 +44,7 @@ export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams;
     let userId = searchParams.get('userId');
     const email = searchParams.get('email');
+    const restaurantId = searchParams.get('restaurant_id');
     const sortTypeParam = searchParams.get('sort_type');
     const limitParam = searchParams.get('limit');
     const limit = limitParam ? parseInt(limitParam, 10) : null;
@@ -117,7 +132,8 @@ export async function GET(request: NextRequest) {
       if (sortSpecs.length > 1) {
         const secondarySortClauses = sortSpecs.slice(1).map(spec => {
           const direction = spec.order === 'desc' ? 'DESC' : 'ASC';
-          return `o2.${spec.key} ${direction}`;
+          const dbColumn = mapFieldToColumn(spec.key);
+          return `o2.${dbColumn} ${direction}`;
         });
         secondarySorts = secondarySortClauses.join(', ');
       }
@@ -135,6 +151,10 @@ export async function GET(request: NextRequest) {
       `;
 
       // Add filters
+      if (restaurantId) {
+        query += ' AND o.store_id = ?';
+        queryParams.push(restaurantId);
+      }
       if (statusFilter) {
         query += ' AND o.status = ?';
         queryParams.push(statusFilter);
@@ -178,6 +198,10 @@ export async function GET(request: NextRequest) {
       queryParams.push(userId);
 
       // Add filters again for representative selection
+      if (restaurantId) {
+        query += ' AND o2.store_id = ?';
+        queryParams.push(restaurantId);
+      }
       if (statusFilter) {
         query += ' AND o2.status = ?';
         queryParams.push(statusFilter);
@@ -229,6 +253,10 @@ export async function GET(request: NextRequest) {
       `;
 
       // Add filters
+      if (restaurantId) {
+        query += ' AND o.store_id = ?';
+        queryParams.push(restaurantId);
+      }
       if (statusFilter) {
         query += ' AND o.status = ?';
         queryParams.push(statusFilter);
@@ -246,7 +274,8 @@ export async function GET(request: NextRequest) {
       if (sortSpecs.length > 0) {
         const sortClauses = sortSpecs.map(spec => {
           const direction = spec.order === 'desc' ? 'DESC' : 'ASC';
-          return `o.${spec.key} ${direction}`;
+          const dbColumn = mapFieldToColumn(spec.key);
+          return `o.${dbColumn} ${direction}`;
         });
         query += ` ORDER BY ${sortClauses.join(', ')}`;
       }
@@ -266,7 +295,38 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    // Transform to result format
+    // Fetch order items for all orders
+    const orderIds = orders.map((order: any) => order.id);
+    const orderItemsRaw = await db.query<any>(
+      `SELECT 
+        oi.id,
+        oi.order_id,
+        oi.menu_item_id,
+        oi.quantity,
+        mi.name,
+        mi.price
+      FROM order_items oi
+      LEFT JOIN menu_items mi ON oi.menu_item_id = mi.id
+      WHERE oi.order_id IN (${orderIds.map(() => '?').join(',')})`,
+      orderIds
+    );
+
+    // Group items by order_id
+    const itemsByOrderId = new Map<number, any[]>();
+    orderItemsRaw.forEach((item: any) => {
+      if (!itemsByOrderId.has(item.order_id)) {
+        itemsByOrderId.set(item.order_id, []);
+      }
+      itemsByOrderId.get(item.order_id)!.push({
+        id: String(item.id),
+        menuItemId: String(item.menu_item_id),
+        name: item.name,
+        quantity: item.quantity,
+        price: item.price,
+      });
+    });
+
+    // Transform to result format with items
     const results = orders.map((order: any) => ({
       id: String(order.id),
       userId: String(order.user_id),
@@ -278,6 +338,7 @@ export async function GET(request: NextRequest) {
       total: order.total,
       status: order.status,
       orderDate: order.order_date,
+      items: itemsByOrderId.get(order.id) || [],
     }));
 
     return NextResponse.json({

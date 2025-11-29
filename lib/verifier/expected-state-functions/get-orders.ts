@@ -1,5 +1,13 @@
 import { useUserStore } from '@/store/user-store';
 
+export interface OrderItemResult {
+  id: string;
+  menuItemId: string;
+  name: string;
+  quantity: number;
+  price: number; // In cents
+}
+
 export interface OrderResult {
   id: string;
   userId: string;
@@ -11,6 +19,7 @@ export interface OrderResult {
   total: number;
   status: string;
   orderDate: string;
+  items: OrderItemResult[];
 }
 
 export interface SortSpec {
@@ -19,6 +28,7 @@ export interface SortSpec {
 }
 
 export interface GetOrdersArgs {
+  restaurant_id?: string; // Optional: Filter by restaurant ID
   user?: string; // Optional user email (otherwise logged-in user)
   sort_type?: SortSpec[]; // Optional: supports "field.count" for aggregation
   limit?: number; // Number of orders to return
@@ -53,7 +63,12 @@ export async function get_orders(args: GetOrdersArgs = {}): Promise<GetOrdersRes
     return null;
   }
 
-  const { user, sort_type, limit, filters = {} } = args;
+  const { restaurant_id, user, sort_type, limit, filters = {} } = args;
+  
+  // Default sort by orderDate descending if no sort_type provided
+  const effectiveSortType = sort_type && sort_type.length > 0 
+    ? sort_type 
+    : [{ key: 'orderDate', order: 'desc' as const }];
   
   try {
     // Build query parameters
@@ -67,9 +82,12 @@ export async function get_orders(args: GetOrdersArgs = {}): Promise<GetOrdersRes
       params.append('userId', currentUser.id);
     }
     
-    if (sort_type && sort_type.length > 0) {
-      params.append('sort_type', JSON.stringify(sort_type));
+    if (restaurant_id) {
+      params.append('restaurant_id', restaurant_id);
     }
+    
+    // Always pass sort_type (uses default if not provided)
+    params.append('sort_type', JSON.stringify(effectiveSortType));
     
     if (limit !== undefined && limit !== null) {
       params.append('limit', String(limit));

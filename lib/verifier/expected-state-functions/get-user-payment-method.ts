@@ -1,13 +1,17 @@
 import { useUserStore } from '@/store/user-store';
 import { PaymentMethod } from '@/lib/types/user-types';
 
+export interface GetUserPaymentMethodResult {
+  paymentMethod: PaymentMethod;
+}
+
 /**
  * Get a user's payment method with optional filtering
  * 
  * @param args - Object containing optional user email and filters
  *   - user: Optional user email. If not provided, uses logged-in user
  *   - filters: Optional filters (default, last_four_digits)
- * @returns Payment method object or null if not found
+ * @returns Object with paymentMethod property, or null if not found
  */
 export async function get_user_payment_method(args: {
   user?: string;
@@ -15,7 +19,7 @@ export async function get_user_payment_method(args: {
     default?: boolean;
     last_four_digits?: string;
   };
-} = {}): Promise<PaymentMethod | null> {
+} = {}): Promise<GetUserPaymentMethodResult | null> {
   const userStore = useUserStore.getState();
   const currentUser = userStore.currentUser;
   
@@ -59,7 +63,7 @@ export async function get_user_payment_method(args: {
       throw new Error(result.error || 'Failed to fetch payment method');
     }
 
-    return result.data;
+    return { paymentMethod: result.data };
   } catch (error) {
     console.error('Error fetching payment method from DB:', error);
     return null;
