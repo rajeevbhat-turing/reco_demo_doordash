@@ -272,23 +272,46 @@ export default function MerchantStorePage() {
     });
   }, [allOrders, numericStoreId])
 
-  // Calculate metrics from actual orders using numeric store ID (now uses localStorage)
-  const { metrics: calculatedMetrics } = useMerchantMetrics(numericStoreId)
-
-  // Use calculated metrics if available, otherwise fall back to stored metrics
-  const metrics = useMemo(() => {
-    if (calculatedMetrics.totalOrders > 0) {
-      return calculatedMetrics
+  // Calculate "Today's overview" metrics from today's orders
+  const todayMetrics = useMemo(() => {
+    if (!orders || orders.length === 0) {
+      return {
+        totalSales: 0,
+        totalOrders: 0,
+        averageOrderValue: 0,
+      }
     }
-    return storedMetrics
-  }, [calculatedMetrics, storedMetrics])
 
-  // Update stored metrics when calculated metrics change
-  useEffect(() => {
-    if (calculatedMetrics.totalOrders > 0) {
-      setMetrics(calculatedMetrics)
+    const today = new Date()
+    const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0, 0)
+    const todayEnd = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 23, 59, 59, 999)
+
+    // Filter orders for today
+    const todayOrders = orders.filter((order: any) => {
+      const orderDate = order.orderDate ? new Date(order.orderDate) : null
+      if (!orderDate) return false
+      return orderDate >= todayStart && orderDate <= todayEnd
+    })
+
+    // Calculate today's metrics
+    const totalSales = todayOrders.reduce((sum: number, order: any) => {
+      const total = order.total || order.subtotal || 0
+      // Handle both cents and dollars
+      return sum + (total > 1000 ? total / 100 : total)
+    }, 0)
+
+    const totalOrders = todayOrders.length
+    const averageOrderValue = totalOrders > 0 ? totalSales / totalOrders : 0
+
+    return {
+      totalSales,
+      totalOrders,
+      averageOrderValue,
     }
-  }, [calculatedMetrics, setMetrics])
+  }, [orders])
+
+  // Use today's metrics for display
+  const metrics = todayMetrics
 
   // Calculate sales data for the chart based on selected period
   const salesData = useMemo(() => {

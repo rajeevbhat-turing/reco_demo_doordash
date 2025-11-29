@@ -429,15 +429,8 @@ export default function MerchantStoreOrdersPage() {
       let matchesTab = false
       
       if (activeTab === "History") {
-        // History shows:
-        // - Completed orders
-        // - Cancelled orders
-        // - Orders older than 30 minutes
-        const minutesSinceOrder = order.rawOrderDate ? Math.floor((now.getTime() - order.rawOrderDate.getTime()) / (1000 * 60)) : 0
-        const isPastOrder = minutesSinceOrder >= 30
-        matchesTab = order.orderStatus === "Completed" || 
-                     order.orderStatus === "Cancelled - Not Paid" ||
-                     isPastOrder
+        // History shows ALL orders including active ones
+        matchesTab = true
       } else if (activeTab === "Active") {
         // Active shows current orders with status Active (less than 30 minutes old)
         const minutesSinceOrder = order.rawOrderDate ? Math.floor((now.getTime() - order.rawOrderDate.getTime()) / (1000 * 60)) : 0
@@ -532,7 +525,10 @@ export default function MerchantStoreOrdersPage() {
           Scheduled
         </button>
         <button 
-          onClick={() => setActiveTab("History")}
+          onClick={() => {
+            setActiveTab("History")
+            sessionStorage.setItem('lastTabChange', Date.now().toString())
+          }}
           className={`px-4 py-2 text-sm font-medium ${
             activeTab === "History"
               ? "text-gray-900 border-b-2 border-gray-900"

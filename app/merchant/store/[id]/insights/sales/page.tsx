@@ -118,9 +118,11 @@ export default function SalesPage() {
 
       // Calculate sales metrics for current period
       const calculateSalesData = (orders: any[]) => {
+        // Include all orders (not just completed) since we're tracking all orders from localStorage
         const completedOrders = orders.filter((o: any) => {
           const status = o.status?.toLowerCase() || ''
-          return status === 'completed' || status === 'delivered' || status === 'confirmed'
+          // Include all orders except cancelled
+          return status !== 'cancelled'
         })
 
         const grossSales = completedOrders.reduce((sum: number, order: any) => {

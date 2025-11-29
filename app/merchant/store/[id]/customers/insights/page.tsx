@@ -6,6 +6,7 @@ import { ChevronDown } from "lucide-react"
 import { useCurrentStore } from "@/lib/hooks/useCurrentStore"
 import { useAllRestaurants } from "@/lib/hooks/use-restaurants"
 import { useQuery } from "@tanstack/react-query"
+import { useOrdersStore } from "@/store/orders-store"
 
 /**
  * Route: /merchant/store/[id]/customers/insights
@@ -28,17 +29,100 @@ export default function CustomerInsightsPage() {
     setMounted(true)
   }, [])
 
-  // Convert period to API format
-  const periodMap: Record<string, string> = {
-    'This month': 'this_month',
-    'Last month': 'last_month',
-    'This year': 'this_year',
-  }
+  // Get orders from localStorage
+  const { orders: allOrders } = useOrdersStore()
+  
+  // Filter orders for this store
+  const storeOrders = useMemo(() => {
+    if (!storeIdParam) return []
+    return allOrders.filter((order: any) => {
+      const orderStoreId = order.storeId || order.restaurantId
+      return String(orderStoreId) === String(storeIdParam)
+    })
+  }, [allOrders, storeIdParam])
 
-  // Fetch customer insights data
-  const { data: insightsData, isLoading: isLoadingInsights } = useQuery({
-    queryKey: ['customer-insights', storeIdParam, periodMap[selectedPeriod]],
+  // Calculate customer insights from localStorage orders
+  const calculatedInsights = useMemo(() => {
+    const now = new Date()
+    let startDate: Date
+    let endDate = now
+    
+    // Determine date range based on selected period
+    if (selectedPeriod === 'This month') {
+      startDate = new Date(now.getFullYear(), now.getMonth(), 1)
+    } else if (selectedPeriod === 'Last month') {
+      startDate = new Date(now.getFullYear(), now.getMonth() - 1, 1)
+      endDate = new Date(now.getFullYear(), now.getMonth(), 0)
+    } else { // This year
+      startDate = new Date(now.getFullYear(), 0, 1)
+    }
+    
+    // Filter orders in the selected period
+    const periodOrders = storeOrders.filter((order: any) => {
+      const orderDate = order.orderDate ? new Date(order.orderDate) : null
+      if (!orderDate) return false
+      return orderDate >= startDate && orderDate <= endDate
+    })
+    
+    // Get unique customers
+    const customerMap = new Map<string, { orders: any[], userId: string | null }>()
+    periodOrders.forEach((order: any) => {
+      const customerKey = order.userId || order.userName || order.deliveryAddress?.street || 'anonymous'
+      if (!customerMap.has(customerKey)) {
+        customerMap.set(customerKey, { orders: [], userId: order.userId || null })
+      }
+      customerMap.get(customerKey)!.orders.push(order)
+    })
+    
+    const totalCustomers = customerMap.size
+    const customers = Array.from(customerMap.values())
+    
+    // Categorize customers
+    const newCustomers = customers.filter(c => c.orders.length === 1).length
+    const occasionalCustomers = customers.filter(c => c.orders.length >= 2 && c.orders.length <= 4).length
+    const frequentCustomers = customers.filter(c => c.orders.length >= 5).length
+    
+    const newCustomersPercent = totalCustomers > 0 ? Math.round((newCustomers / totalCustomers) * 100) : 0
+    const occasionalCustomersPercent = totalCustomers > 0 ? Math.round((occasionalCustomers / totalCustomers) * 100) : 0
+    const frequentCustomersPercent = totalCustomers > 0 ? Math.round((frequentCustomers / totalCustomers) * 100) : 0
+    
+    // Get customer locations (zip codes)
+    const zipCodeMap = new Map<string, number>()
+    periodOrders.forEach((order: any) => {
+      const zipCode = order.deliveryAddress?.zipCode
+      if (zipCode) {
+        zipCodeMap.set(zipCode, (zipCodeMap.get(zipCode) || 0) + 1)
+      }
+    })
+    
+    // Filter zip codes with at least 2 customers
+    const customerLocations = Array.from(zipCodeMap.entries())
+      .filter(([_, count]) => count >= 2)
+      .map(([zipCode, customerCount]) => ({ zipCode, customerCount }))
+      .sort((a, b) => b.customerCount - a.customerCount)
+    
+    return {
+      totalCustomers,
+      newCustomers,
+      newCustomersPercent,
+      occasionalCustomers,
+      occasionalCustomersPercent,
+      frequentCustomers,
+      frequentCustomersPercent,
+      customerLocations,
+      totalCustomersChange: 0, // Can't calculate change without prior period data
+    }
+  }, [storeOrders, selectedPeriod])
+
+  // Fetch customer insights data from API (for comparison/fallback)
+  const { data: apiInsightsData, isLoading: isLoadingApiInsights } = useQuery({
+    queryKey: ['customer-insights', storeIdParam, selectedPeriod],
     queryFn: async () => {
+      const periodMap: Record<string, string> = {
+        'This month': 'this_month',
+        'Last month': 'last_month',
+        'This year': 'this_year',
+      }
       const period = periodMap[selectedPeriod] || 'this_month'
       const response = await fetch(`/api/stores/${storeIdParam}/customers/insights?period=${period}`)
       if (!response.ok) throw new Error('Failed to fetch customer insights')
@@ -47,6 +131,10 @@ export default function CustomerInsightsPage() {
     },
     enabled: !!storeIdParam && storeSet && mounted,
   })
+
+  // Use calculated insights from localStorage, fallback to API if available
+  const insightsData = calculatedInsights.totalCustomers > 0 ? calculatedInsights : (apiInsightsData || calculatedInsights)
+  const isLoadingInsights = false // No loading since we're using localStorage
 
   // Set the store ID when component mounts or storeIdParam changes
   useEffect(() => {

@@ -6,6 +6,7 @@ import { ChevronDown, MessageSquare, Star } from "lucide-react"
 import { useCurrentStore } from "@/lib/hooks/useCurrentStore"
 import { useAllRestaurants } from "@/lib/hooks/use-restaurants"
 import { useQuery } from "@tanstack/react-query"
+import { useOrdersStore } from "@/store/orders-store"
 
 /**
  * Route: /merchant/store/[id]/customers/ratings-reviews
@@ -27,21 +28,119 @@ export default function RatingsReviewsPage() {
     setMounted(true)
   }, [])
 
-  // Fetch reviews for this store
-  const { data: reviewsData, isLoading: isLoadingReviews } = useQuery({
+  // Get orders from localStorage
+  const { orders: allOrders } = useOrdersStore()
+  
+  // Filter orders for this store
+  const storeOrders = useMemo(() => {
+    if (!storeIdParam) return []
+    return allOrders.filter((order: any) => {
+      const orderStoreId = order.storeId || order.restaurantId
+      return String(orderStoreId) === String(storeIdParam)
+    })
+  }, [allOrders, storeIdParam])
+
+  // Fetch reviews for this store from API
+  const { data: apiReviewsData, isLoading: isLoadingApiReviews } = useQuery({
     queryKey: ['store-reviews', storeIdParam],
     queryFn: async () => {
       const response = await fetch(`/api/reviews/${storeIdParam}?approvalStatus=approved`)
       if (!response.ok) throw new Error('Failed to fetch reviews')
       const result = await response.json()
-      return result.data
+      return result.data || []
     },
     enabled: !!storeIdParam && storeSet && mounted,
   })
 
-  // Calculate ratings statistics
+  // Calculate date range based on selected timeframe
+  const getDateRange = (timeframe: string) => {
+    const now = new Date()
+    let startDate: Date
+    
+    if (timeframe === 'Last 7 days') {
+      startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
+    } else if (timeframe === 'Last 30 days') {
+      startDate = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000)
+    } else {
+      // All time
+      startDate = new Date(0)
+    }
+    
+    return { startDate, endDate: now }
+  }
+
+  // Combine API reviews with recent orders from localStorage
+  // Show recent orders that could have reviews
+  const reviewsData = useMemo(() => {
+    const apiReviews = apiReviewsData || []
+    const { startDate, endDate } = getDateRange(selectedTimeframe)
+    
+    // Filter API reviews by timeframe
+    const filteredApiReviews = apiReviews.filter((review: any) => {
+      if (!review.timestamp) return false
+      const reviewDate = new Date(review.timestamp)
+      return reviewDate >= startDate && reviewDate <= endDate
+    })
+    
+    // Create review-like entries from recent orders
+    const recentOrdersForReviews = storeOrders
+      .filter((order: any) => {
+        const orderDate = order.orderDate ? new Date(order.orderDate) : null
+        if (!orderDate) return false
+        return orderDate >= startDate && orderDate <= endDate
+      })
+      .map((order: any) => {
+        // Check if this order already has a review in API
+        const hasApiReview = filteredApiReviews.some((review: any) => review.orderId === order.id || review.orderId === order.orderId)
+        if (hasApiReview) return null
+        
+        // Get user name - prioritize userName, then businessName, fallback to Customer
+        const userName = order.userName || order.deliveryAddress?.businessName || 'Customer'
+        
+        // Check if order has a review stored in localStorage (rating and reviewText)
+        const hasOrderReview = order.rating !== null && order.rating !== undefined && order.reviewText
+        
+        if (hasOrderReview) {
+          // Order has a review - show it as a review
+          return {
+            id: `order-review-${order.id}`,
+            orderId: order.orderId || order.id,
+            userName: userName,
+            rating: order.rating,
+            content: order.reviewText,
+            timestamp: order.reviewDate ? new Date(order.reviewDate).toISOString() : (order.orderDate || new Date().toISOString()),
+            isRecentOrder: false, // This is a review, not just a recent order
+          }
+        } else {
+          // No review yet - show as recent order placeholder
+          return {
+            id: `order-${order.id}`,
+            orderId: order.orderId || order.id,
+            userName: userName,
+            rating: null, // No rating yet - will show empty stars
+            content: `Order placed on ${order.orderDate ? new Date(order.orderDate).toLocaleDateString('en-US', { month: 'numeric', day: 'numeric', year: 'numeric' }) : 'recently'}`,
+            timestamp: order.orderDate || new Date().toISOString(),
+            isRecentOrder: true, // Flag to indicate this is a recent order, not a review
+          }
+        }
+      })
+      .filter(Boolean) // Remove null entries
+    
+    // Combine API reviews with recent orders
+    return [...filteredApiReviews, ...recentOrdersForReviews].sort((a: any, b: any) => {
+      const dateA = new Date(a.timestamp || 0).getTime()
+      const dateB = new Date(b.timestamp || 0).getTime()
+      return dateB - dateA // Most recent first
+    })
+  }, [apiReviewsData, storeOrders, selectedTimeframe])
+
+  const isLoadingReviews = isLoadingApiReviews
+
+  // Calculate ratings statistics (count actual reviews with ratings, including reviews from orders)
   const ratingsStats = useMemo(() => {
-    if (!reviewsData || reviewsData.length === 0) {
+    const actualReviews = reviewsData.filter((review: any) => review.rating !== null && review.rating !== undefined && !review.isRecentOrder)
+    
+    if (!actualReviews || actualReviews.length === 0) {
       return {
         averageRating: 0,
         totalRatings: 0,
@@ -55,12 +154,12 @@ export default function RatingsReviewsPage() {
       }
     }
 
-    const totalRatings = reviewsData.length
-    const sumRatings = reviewsData.reduce((sum: number, review: any) => sum + review.rating, 0)
+    const totalRatings = actualReviews.length
+    const sumRatings = actualReviews.reduce((sum: number, review: any) => sum + (review.rating || 0), 0)
     const averageRating = sumRatings / totalRatings
 
     const breakdown = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 }
-    reviewsData.forEach((review: any) => {
+    actualReviews.forEach((review: any) => {
       const rating = Math.round(review.rating)
       if (rating >= 1 && rating <= 5) {
         breakdown[rating as keyof typeof breakdown]++
@@ -133,10 +232,18 @@ export default function RatingsReviewsPage() {
               
               {/* Timeframe Selector */}
               <div className="flex items-center gap-2">
-                <button className="flex items-center gap-2 px-3 py-2 border border-gray-300 rounded-md text-sm text-gray-700 hover:bg-gray-50">
-                  {selectedTimeframe}
-                  <ChevronDown className="h-4 w-4" />
-                </button>
+                <div className="relative">
+                  <select
+                    value={selectedTimeframe}
+                    onChange={(e) => setSelectedTimeframe(e.target.value)}
+                    className="appearance-none flex items-center gap-2 px-3 py-2 border border-gray-300 rounded-md text-sm text-gray-700 hover:bg-gray-50 bg-white pr-8 cursor-pointer"
+                  >
+                    <option value="Last 7 days">Last 7 days</option>
+                    <option value="Last 30 days">Last 30 days</option>
+                    <option value="All time">All time</option>
+                  </select>
+                  <ChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 h-4 w-4 pointer-events-none text-gray-400" />
+                </div>
               </div>
             </div>
 
@@ -148,10 +255,23 @@ export default function RatingsReviewsPage() {
             ) : reviewsData && reviewsData.length > 0 ? (
               <div className="space-y-4">
                 {reviewsData.map((review: any) => (
-                  <div key={review.id} className="bg-white border border-gray-200 rounded-lg p-6">
+                  <div key={review.id} className={`bg-white border rounded-lg p-6 relative ${
+                    review.isRecentOrder 
+                      ? 'border-blue-200 bg-blue-50' 
+                      : 'border-gray-200'
+                  }`}>
+                    {/* Recent Order tag - top left */}
+                    {review.isRecentOrder && (
+                      <span className="absolute top-3 left-3 text-[10px] font-medium text-blue-600 bg-blue-100 px-1.5 py-0.5 rounded">
+                        Recent Order
+                      </span>
+                    )}
+                    
                     <div className="flex items-start justify-between mb-3">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
+                        <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                          review.isRecentOrder ? 'bg-blue-200' : 'bg-gray-200'
+                        }`}>
                           <span className="text-sm font-medium text-gray-700">
                             {review.userName?.charAt(0).toUpperCase() || 'U'}
                           </span>
@@ -169,12 +289,13 @@ export default function RatingsReviewsPage() {
                           </p>
                         </div>
                       </div>
+                      {/* Always show stars - filled for reviews, empty for recent orders */}
                       <div className="flex items-center gap-1">
                         {[1, 2, 3, 4, 5].map((star) => (
                           <Star
                             key={star}
                             className={`h-5 w-5 ${
-                              star <= Math.round(review.rating)
+                              review.rating !== null && star <= Math.round(review.rating)
                                 ? 'fill-yellow-400 text-yellow-400'
                                 : 'text-gray-300'
                             }`}
@@ -182,7 +303,9 @@ export default function RatingsReviewsPage() {
                         ))}
                       </div>
                     </div>
-                    <p className="text-gray-700">{review.content}</p>
+                    <p className={`${review.isRecentOrder ? 'text-blue-700' : 'text-gray-700'}`}>
+                      {review.content}
+                    </p>
                   </div>
                 ))}
               </div>
