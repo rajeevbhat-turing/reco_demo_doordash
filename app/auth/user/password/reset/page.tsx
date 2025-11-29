@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, Suspense } from 'react';
+import { Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import ForgotPassword from '@/components/authentication/forgot-password';
 
@@ -8,7 +8,6 @@ function PasswordResetContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const email = searchParams.get('email') || undefined;
-  const [showSuccess, setShowSuccess] = useState(false);
 
   // Handles back to sign in button click
   const handleBackToSignIn = () => {
@@ -18,19 +17,13 @@ function PasswordResetContent() {
   return (
     <div className="bg-white flex flex-col items-center pt-[56px] w-full min-h-screen">
       <div className="max-w-sm w-full">
-        {/* Header - Hide when success screen is shown */}
-        {!showSuccess && (
-          <div className="mt-8">
-            <h2 className="text-2xl font-bold text-[#191919ff] text-center">Forgot Password?</h2>
-          </div>
-        )}
+        {/* Header */}
+        <div className="mt-8">
+          <h2 className="text-2xl font-bold text-[#191919ff] text-center">Forgot Password?</h2>
+        </div>
 
         {/* Forgot Password Form */}
-        <ForgotPassword
-          onBackToSignIn={handleBackToSignIn}
-          email={email}
-          onSuccessStateChange={setShowSuccess}
-        />
+        <ForgotPassword onBackToSignIn={handleBackToSignIn} email={email} />
       </div>
     </div>
   );

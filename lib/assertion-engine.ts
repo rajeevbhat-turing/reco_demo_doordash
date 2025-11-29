@@ -91,7 +91,7 @@ export class AssertionEngine {
         if (typeof current === 'string' && this.isJsonString(current)) {
           try {
             current = JSON.parse(current);
-          } catch (e) {
+          } catch (_e) {
             // If parsing fails, keep the string value
           }
         }
@@ -105,7 +105,7 @@ export class AssertionEngine {
     try {
       JSON.parse(str);
       return true;
-    } catch (e) {
+    } catch (_e) {
       return false;
     }
   }
@@ -433,7 +433,7 @@ export class AssertionEngine {
   ): AssertionResult {
     // Simplified implementation - you can enhance this with proper datetime parsing
     const actual = this.getValue(assertion.path!, localStorage);
-    const expected = assertion.expectation;
+    const _expected = assertion.expectation;
 
     return {
       actual,
@@ -448,7 +448,7 @@ export class AssertionEngine {
   ): AssertionResult {
     // Simplified implementation - you can enhance this with proper datetime parsing
     const actual = this.getValue(assertion.path!, localStorage);
-    const expected = assertion.expectation;
+    const _expected = assertion.expectation;
 
     return {
       actual,

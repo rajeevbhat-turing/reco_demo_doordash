@@ -72,8 +72,6 @@ export default function AddressesModal({
     });
   }, [searchQuery]);
 
-  const hasSearchResults = searchQuery.trim().length > 0 && filteredSearchAddresses.length > 0;
-
   if (!isOpen) return null;
 
   return (

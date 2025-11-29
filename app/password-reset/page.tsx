@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -123,14 +123,6 @@ export default function PasswordResetPage() {
       setShowTwoStepModal(true);
     }
   };
-
-  // Checks if form is valid for enabling submit button
-  const isFormValid =
-    formData.oldPassword &&
-    formData.newPassword &&
-    formData.confirmPassword &&
-    formData.newPassword.length >= 10 &&
-    formData.newPassword === formData.confirmPassword;
 
   // Enable submit button if all fields are filled
   const enableSubmitButton =

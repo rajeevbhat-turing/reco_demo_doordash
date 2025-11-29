@@ -175,7 +175,7 @@ export function applySearchFilters(
 /**
  * Determine search context based on results to hide irrelevant filters
  */
-export function determineSearchContext(results: SearchResultRestaurant[]): {
+export function determineSearchContext(_results: SearchResultRestaurant[]): {
   hideCuisine: boolean;
   hideDietary: boolean;
 } {
@@ -201,7 +201,7 @@ export function detectAvailableCategories(results: SearchResultRestaurant[]): st
  */
 export function filterByCategory(
   results: SearchResultRestaurant[],
-  category: string
+  _category: string
 ): SearchResultRestaurant[] {
   // Since we only have restaurants now, just return all results
   return results;

@@ -44,6 +44,7 @@ export default function ChooseLabelModal({
       setSelectedLabel(label);
       setCustomLabelText(isCustom ? currentLabel : '');
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen, currentLabel]);
 
   useEffect(() => {

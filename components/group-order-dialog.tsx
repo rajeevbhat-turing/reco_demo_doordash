@@ -17,7 +17,6 @@ export default function GroupOrderDialog({ isOpen, onClose }: GroupOrderDialogPr
     'main' | 'paying' | 'delivery' | 'deadline' | 'success'
   >('main');
   const [selectedLimit, setSelectedLimit] = useState<string>('No Limit');
-  const [selectedDeliveryOption, setSelectedDeliveryOption] = useState<string>('Standard delivery');
   const [selectedDeliveryTime, setSelectedDeliveryTime] = useState<string>('ASAP');
   const [selectedDate, setSelectedDate] = useState<string>('Today');
   const [selectedDeadlineTime, setSelectedDeadlineTime] = useState<string>('1:15 AM');
@@ -169,7 +168,7 @@ export default function GroupOrderDialog({ isOpen, onClose }: GroupOrderDialogPr
               </p>
 
               <div className="mb-6">
-                <h3 className="text-xl font-medium mb-4 text-left">From McDonald's</h3>
+                <h3 className="text-xl font-medium mb-4 text-left">From McDonald&apos;s</h3>
 
                 <div className="space-y-0">
                   <div
@@ -195,7 +194,7 @@ export default function GroupOrderDialog({ isOpen, onClose }: GroupOrderDialogPr
                         </svg>
                       </div>
                       <div>
-                        <h4 className="font-medium">I'm paying</h4>
+                        <h4 className="font-medium">I&apos;m paying</h4>
                         <p className="text-gray-500 text-sm">
                           {selectedLimit === 'No Limit'
                             ? 'No spend limit'
@@ -657,9 +656,9 @@ export default function GroupOrderDialog({ isOpen, onClose }: GroupOrderDialogPr
                 <ul className="text-sm text-gray-600 space-y-2">
                   <li>• People can add items until the order deadline</li>
                   <li>• All items will be delivered together</li>
-                  <li>• You'll be able to review the order before checking out</li>
+                  <li>• You&apos;ll be able to review the order before checking out</li>
                   {selectedLimit !== 'No Limit' && (
-                    <li>• You've set a {selectedLimit} limit per person</li>
+                    <li>• You&apos;ve set a {selectedLimit} limit per person</li>
                   )}
                   {hasDeadline && (
                     <li>
@@ -894,7 +893,7 @@ export default function GroupOrderDialog({ isOpen, onClose }: GroupOrderDialogPr
               <div className="mb-6">
                 <h3 className="font-medium mb-2">How do you want to check out?</h3>
                 <p className="text-gray-600 text-sm mb-4">
-                  We'll send you reminders before the order deadline.
+                  We&apos;ll send you reminders before the order deadline.
                 </p>
 
                 <div className="space-y-4">
@@ -924,7 +923,7 @@ export default function GroupOrderDialog({ isOpen, onClose }: GroupOrderDialogPr
                       <div className="ml-3">
                         <div className="font-medium">Manually</div>
                         <div className="text-sm text-gray-500">
-                          We'll remind you to checkout at {selectedDeadlineTime}.
+                          We&apos;ll remind you to checkout at {selectedDeadlineTime}.
                         </div>
                       </div>
                     </label>
@@ -958,7 +957,7 @@ export default function GroupOrderDialog({ isOpen, onClose }: GroupOrderDialogPr
                       <div className="ml-3">
                         <div className="font-medium">Automatically</div>
                         <div className="text-sm text-gray-500">
-                          We'll checkout for you at {selectedDeadlineTime} and send you a
+                          We&apos;ll checkout for you at {selectedDeadlineTime} and send you a
                           confirmation.
                         </div>
                       </div>

@@ -8,7 +8,7 @@ import { getImageWithFallback } from '@/constants/image-placeholders';
  * Fetches active promotional banners from the database
  * Returns promotionals with restaurant logos
  */
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     // Fetch active promotionals with restaurant logos
     const promotionals = await db.query<any>(

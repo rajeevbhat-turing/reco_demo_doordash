@@ -1,10 +1,9 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { X, ExternalLink, ChevronRight } from 'lucide-react';
 import DealModal from './deal-modal';
 import { type Deal } from '@/types/deal-types';
-import { DashDoorLogoMark } from '../common/Icons';
 import { useDealsByRestaurantId } from '@/lib/hooks/use-deals';
 
 interface DealsModalProps {

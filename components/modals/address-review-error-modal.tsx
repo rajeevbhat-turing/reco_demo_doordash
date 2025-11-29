@@ -65,13 +65,13 @@ export default function AddressReviewErrorModal({
           <div className="mt-6 mb-8">
             {/* Title */}
             <h2 className="text-2xl font-bold text-gray-900 mb-4">
-              We can't add this address at the moment
+              We can&apos;t add this address at the moment
             </h2>
 
             {/* Body Text */}
             <p className="text-gray-900">
-              We're currently reviewing the address. Please check for any typos and re-enter your
-              address.
+              We&apos;re currently reviewing the address. Please check for any typos and re-enter
+              your address.
             </p>
           </div>
 

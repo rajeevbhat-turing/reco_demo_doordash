@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState, useMemo } from 'react';
+import React, { useEffect, useRef, useState, useMemo } from 'react';
 import { X, AlertCircle } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { type Deal } from '@/types/deal-types';
@@ -45,7 +45,7 @@ export default function PromoCodeModal({
   const appliedDealId = cartId ? getAppliedDealId(cartId) : null;
 
   // Get deals from API: restaurant-specific + common deals (no DashPass deal)
-  const { data: allDeals, isLoading: isLoadingDeals } = useCheckoutDeals(restaurantId);
+  const { data: allDeals } = useCheckoutDeals(restaurantId);
 
   // Filter out free item deals for now
   const availableDeals = useMemo(() => {
@@ -212,7 +212,7 @@ export default function PromoCodeModal({
   };
 
   // Handle remove deal
-  const handleRemoveDeal = (dealId: string) => {
+  const handleRemoveDeal = (_dealId: string) => {
     if (cartId) {
       removeDeal(cartId);
       setError({ promocode: null, giftCard: null, deals: null });

@@ -68,6 +68,7 @@ export default function AuthenticationModal({
       document.removeEventListener('keydown', handleEscapeKey);
       document.removeEventListener('mousedown', handleClickOutside);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [defaultMode]);
 
   // Detect user's country on component mount
@@ -109,7 +110,7 @@ export default function AuthenticationModal({
             }
           }
         }
-      } catch (error) {
+      } catch (_error) {
         // Could not detect user country from browser, using default (USA)
       }
 

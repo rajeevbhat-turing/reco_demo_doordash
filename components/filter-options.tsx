@@ -1,7 +1,7 @@
 'use client';
 
 import { forwardRef, useImperativeHandle } from 'react';
-import { ChevronDown, Tag, DollarSign, Check } from 'lucide-react';
+import { ChevronDown, Tag, Check } from 'lucide-react';
 import { useFilterOptions } from '@/hooks/use-filter-options';
 
 export interface FilterState {
@@ -38,17 +38,6 @@ interface FilterOptionsProps {
   hideDietaryFilter?: boolean; // Hide dietary filter (for Pets, Retail)
 }
 
-interface ScheduleOption {
-  day: string;
-  date: string;
-  fullDate: Date;
-}
-
-interface TimeOption {
-  time: string;
-  selected: boolean;
-}
-
 const FilterOptions = forwardRef<FilterOptionsRef, FilterOptionsProps>(
   (
     {
@@ -69,31 +58,31 @@ const FilterOptions = forwardRef<FilterOptionsRef, FilterOptionsProps>(
       filters,
       ratingDropdownOpen,
       priceDropdownOpen,
-      locationDropdownOpen,
+      // locationDropdownOpen,
       cuisineDropdownOpen,
       dietaryDropdownOpen,
       selectedRating,
       selectedPrices,
-      selectedLocation,
+      // selectedLocation,
       selectedCuisines,
       selectedDietaryPreferences,
 
       // Refs
       ratingButtonRef,
       priceButtonRef,
-      locationButtonRef,
+      // locationButtonRef,
       cuisineButtonRef,
       dietaryButtonRef,
-      ratingDropdownRef,
-      priceDropdownRef,
-      locationDropdownRef,
-      cuisineDropdownRef,
-      dietaryDropdownRef,
+      // ratingDropdownRef,
+      // priceDropdownRef,
+      // locationDropdownRef,
+      // cuisineDropdownRef,
+      // dietaryDropdownRef,
 
       // Positioned refs (callback refs for immediate positioning)
       ratingDropdownPositionedRef,
       priceDropdownPositionedRef,
-      locationDropdownPositionedRef,
+      // locationDropdownPositionedRef,
       cuisineDropdownPositionedRef,
       dietaryDropdownPositionedRef,
 
@@ -104,9 +93,9 @@ const FilterOptions = forwardRef<FilterOptionsRef, FilterOptionsProps>(
       resetRatingFilter,
       resetPriceFilter,
       applyPriceFilter,
-      handleLocationSelect,
-      resetLocationFilter,
-      applyLocationFilter,
+      // handleLocationSelect,
+      // resetLocationFilter,
+      // applyLocationFilter,
       handleCuisineToggle,
       resetCuisineFilter,
       applyCuisineFilter,
@@ -125,7 +114,7 @@ const FilterOptions = forwardRef<FilterOptionsRef, FilterOptionsProps>(
 
       // Labels
       getPriceLabel,
-      getLocationLabel,
+      // getLocationLabel,
       getCuisineLabel,
       getDietaryLabel,
       getRatingLabel,

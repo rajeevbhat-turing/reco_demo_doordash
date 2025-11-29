@@ -390,7 +390,9 @@ export default function Orders() {
 
                     {/* Inline review text (if any) */}
                     {order.reviewText && (
-                      <p className="text-sm text-gray-700 mt-2 italic">"{order.reviewText}"</p>
+                      <p className="text-sm text-gray-700 mt-2 italic">
+                        &quot;{order.reviewText}&quot;
+                      </p>
                     )}
 
                     {/* Tags */}
@@ -428,7 +430,7 @@ export default function Orders() {
           orderItems={convertOrderItemsToReviewItems(reviewingOrder)}
           orderDate={formatOrderDate(reviewingOrder)}
           vendorLogo={orderRestaurant?.logo || undefined}
-          onSubmit={(rating, text, likedItems) => {
+          onSubmit={(rating, text, _likedItems) => {
             updateOrderReview(reviewingOrder.id, rating, text);
             setReviewingOrder(null);
             setSelectedRating(0);

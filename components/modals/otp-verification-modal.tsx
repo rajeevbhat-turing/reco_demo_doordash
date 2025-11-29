@@ -72,9 +72,9 @@ export default function OTPVerificationModal({
   };
 
   // Handles Get Help button click - closes OTP modal
-  const handleGetHelp = () => {
-    onClose();
-  };
+  // const handleGetHelp = () => {
+  //   onClose();
+  // };
 
   // Handle escape key and outside click
   useEffect(() => {
@@ -129,7 +129,7 @@ export default function OTPVerificationModal({
           <h2 className="text-2xl font-bold text-[#191919ff] mb-2">Phone Number Verification</h2>
           {!showTooManyAttempts && (
             <p className="text-[#191919ff] text-[15px] font-medium">
-              For your security, we want to make sure it's really you.
+              For your security, we want to make sure it&apos;s really you.
             </p>
           )}
         </div>

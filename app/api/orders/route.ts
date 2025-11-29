@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { Order, OrderItem } from '@/constants/order-data';
-import { OrderModification, OrderModificationOption } from '@/types';
+import { OrderModification } from '@/types';
 
 /**
  * Safely converts cents to dollars, handling null/undefined/zero values and string inputs

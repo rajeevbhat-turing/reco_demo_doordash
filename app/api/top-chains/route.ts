@@ -7,7 +7,7 @@ import { db } from '@/lib/db';
  * Fetches restaurants (chains) with average rating > 4.5
  * Returns array of restaurant objects with id, name, and rating
  */
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     // Get restaurants with average rating > 4.5
     const restaurants = await db.query<any>(

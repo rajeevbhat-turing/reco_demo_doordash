@@ -22,6 +22,7 @@ export default function StoreCard({
   deliveryTime,
   discount,
   isDashPass,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   storeType = 'restaurant',
 }: StoreCardProps) {
   const [imageError, setImageError] = useState(false);

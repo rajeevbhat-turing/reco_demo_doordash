@@ -38,7 +38,6 @@ export async function POST(request: NextRequest) {
 
     // Create log file path with session ID and date
     const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
-    const timestamp = new Date(logEntry.timestamp).toISOString().replace(/[:.]/g, '-').slice(0, 19); // 2025-01-23T21-30-15
     const logFilePath = path.join(logsDir, `session-${logEntry.sessionId}-${today}.log`);
 
     // Format log entry for file
@@ -55,7 +54,7 @@ export async function POST(request: NextRequest) {
       try {
         const existingData = fs.readFileSync(jsonLogPath, 'utf8');
         jsonLogs = JSON.parse(existingData);
-      } catch (parseError) {
+      } catch (_parseError) {
         console.warn('Failed to parse existing JSON log, starting fresh');
         jsonLogs = [];
       }

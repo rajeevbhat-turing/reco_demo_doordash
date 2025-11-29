@@ -1,9 +1,9 @@
 'use client';
 
-import { Heart, Info, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Heart, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { getDefaultRating } from '@/utils/rating-utils';
 
 interface Store {

@@ -1,11 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Trash2, ChevronLeft } from 'lucide-react';
 import { useUserStore } from '@/store/user-store';
 import AddCardModal from '@/components/modals/add-card-modal';
-import PaymentFrequencyModal from '@/components/modals/payment-frequency-modal';
+// import PaymentFrequencyModal from '@/components/modals/payment-frequency-modal';
 
 export default function PaymentPage() {
   const router = useRouter();
@@ -14,18 +14,18 @@ export default function PaymentPage() {
     addPaymentMethod,
     removePaymentMethod,
     setDefaultPaymentMethod,
-    currentUser,
-    setPaymentFrequency,
+    // currentUser,
+    // setPaymentFrequency,
   } = useUserStore();
   const savedPaymentMethods = getPaymentMethods();
 
   const [showAddCardModal, setShowAddCardModal] = useState(false);
-  const [showPaymentFrequencyModal, setShowPaymentFrequencyModal] = useState(false);
+  // const [showPaymentFrequencyModal, setShowPaymentFrequencyModal] = useState(false);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string | null>(
     savedPaymentMethods.find(pm => pm.default)?.id || null
   );
 
-  const paymentFrequency = currentUser?.paymentFrequency || 'after-each-order';
+  // const paymentFrequency = currentUser?.paymentFrequency || 'after-each-order';
 
   // Handle add payment method
   const handleAddCard = (cardData: {
@@ -64,14 +64,14 @@ export default function PaymentPage() {
   };
 
   // Handle save payment frequency
-  const handleSavePaymentFrequency = (frequency: 'once-a-day' | 'after-each-order') => {
-    setPaymentFrequency(frequency);
-  };
+  // const handleSavePaymentFrequency = (frequency: 'once-a-day' | 'after-each-order') => {
+  //   setPaymentFrequency(frequency);
+  // };
 
   // Get display text for payment frequency
-  const getPaymentFrequencyText = () => {
-    return paymentFrequency === 'once-a-day' ? 'Once a day' : 'Pay after each order';
-  };
+  // const getPaymentFrequencyText = () => {
+  //   return paymentFrequency === 'once-a-day' ? 'Once a day' : 'Pay after each order';
+  // };
 
   return (
     <div className="min-h-screen bg-white">

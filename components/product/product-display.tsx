@@ -4,7 +4,6 @@ import { useRef, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Plus, Trash2, Minus } from 'lucide-react';
 import ProductCard from '@/components/product-card';
 import type { Product } from '@/types';
-import Link from 'next/link';
 import { CartCategory, useCartStore } from '@/store/cart-store';
 
 interface ProductDisplayProps {
@@ -35,7 +34,7 @@ export default function ProductDisplay({
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   // Use the cart store
-  const { carts, findCart, updateQuantity, removeItem, setCategory, addItem } = useCartStore();
+  const { findCart, updateQuantity, removeItem, setCategory, addItem } = useCartStore();
 
   // Set the category when component mounts
   useEffect(() => {
@@ -100,9 +99,6 @@ export default function ProductDisplay({
       removeItem(product.id);
     }
   };
-
-  // Create a URL-friendly version of the category title
-  const categorySlug = title.toLowerCase().replace(/\s+/g, '-');
 
   // Find items in cart
   const getItemQuantity = (productId: number | string): number => {

@@ -30,11 +30,20 @@ const eslintConfig = [
       prettier: prettier,
     },
     rules: {
-      '@typescript-eslint/no-unused-vars': 'error',
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        {
+          argsIgnorePattern: '^_', // ignore unused args starting with _
+          varsIgnorePattern: '^_', // ignore unused variables starting with _
+          caughtErrorsIgnorePattern: '^_', // ignore unused catch(error) args starting with _
+          ignoreRestSiblings: true, // ignore unused rest arguments
+        },
+      ],
       'no-unused-vars': 'off',
       'prefer-const': 'error',
       'no-var': 'error',
       'prettier/prettier': 'error',
+      '@next/next/no-img-element': 'off', // Ignore the eslint warning about using the html img element
     },
   },
 ];

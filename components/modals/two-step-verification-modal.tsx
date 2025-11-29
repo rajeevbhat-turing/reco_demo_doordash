@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { VerificationIcon } from '@/lib/utils/icons';
@@ -129,10 +129,10 @@ export default function TwoStepVerificationModal({
   };
 
   // Handles get help functionality
-  const handleGetHelp = () => {
-    // Close modal
-    onClose();
-  };
+  // const handleGetHelp = () => {
+  //   // Close modal
+  //   onClose();
+  // };
 
   // Handles outside click to close modal
   const handleOutsideClick = (e: React.MouseEvent) => {
@@ -194,7 +194,7 @@ export default function TwoStepVerificationModal({
           <h2 className="text-2xl font-bold text-[#191919ff] mb-2">2-Step Verification</h2>
           {!showTooManyAttempts && (
             <p className="text-[#191919ff] text-[15px] font-medium">
-              For your security, we want to make sure it's really you.
+              For your security, we want to make sure it&apos;s really you.
             </p>
           )}
         </div>

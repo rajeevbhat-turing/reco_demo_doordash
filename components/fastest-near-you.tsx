@@ -1,6 +1,5 @@
 import { Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { calculateDeliveryTime, parseDistance } from '@/lib/utils/restaurant-utils';
 
 interface NearbyStore {

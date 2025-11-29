@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect, useMemo, useRef } from 'react';
-import { X, ChevronDown } from 'lucide-react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
+import { X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import {

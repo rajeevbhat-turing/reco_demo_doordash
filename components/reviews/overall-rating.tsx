@@ -4,10 +4,9 @@ import { getDefaultRating } from '@/lib/utils/rating-utils';
 
 interface OverallRatingProps {
   averageRating: number;
-  totalReviews: number;
 }
 
-export default function OverallRating({ averageRating, totalReviews }: OverallRatingProps) {
+export default function OverallRating({ averageRating }: OverallRatingProps) {
   // Calculate the percentage for the circular progress
   const percentage = (averageRating / 5) * 100;
 

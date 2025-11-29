@@ -60,7 +60,7 @@ export async function GET(request: NextRequest) {
             { status: 400 }
           );
         }
-      } catch (error) {
+      } catch (_error) {
         return NextResponse.json(
           {
             success: false,
@@ -113,7 +113,7 @@ export async function GET(request: NextRequest) {
             );
           }
         }
-      } catch (error) {
+      } catch (_error) {
         return NextResponse.json(
           {
             success: false,

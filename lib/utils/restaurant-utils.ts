@@ -85,7 +85,7 @@ function parseHour(hourValue: number | string | null | undefined): number {
         // Fallback to Date.getHours() if regex doesn't match
         return date.getHours();
       }
-    } catch (e) {
+    } catch (_e) {
       // If parsing fails, try parsing as integer string
       const parsed = parseInt(hourValue, 10);
       if (!isNaN(parsed)) {

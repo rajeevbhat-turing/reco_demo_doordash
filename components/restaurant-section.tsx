@@ -3,7 +3,6 @@
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Heart, ChevronLeft, ChevronRight, Star } from 'lucide-react';
 import type { Restaurant } from '@/constants/restaurants';
 import { getDefaultRating } from '@/utils/rating-utils';
 
@@ -16,16 +15,14 @@ interface RestaurantSectionProps {
 export default function RestaurantSection({
   title,
   restaurants,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   seeAllLink = '/all-items',
 }: RestaurantSectionProps) {
   const router = useRouter();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const [showLeftArrow, setShowLeftArrow] = useState(false);
-  const [showRightArrow, setShowRightArrow] = useState(true);
-  const [cardWidth, setCardWidth] = useState(350);
-  const [visibleCards, setVisibleCards] = useState(3);
-  const [containerWidth, setContainerWidth] = useState(0);
-  const [favorites, setFavorites] = useState<{ [key: string]: boolean }>({});
+  const [_cardWidth, setCardWidth] = useState(350);
+  const [_visibleCards, setVisibleCards] = useState(3);
+  const [_containerWidth, setContainerWidth] = useState(0);
 
   // Calculate how many cards can fit and their optimal width
   useEffect(() => {
@@ -57,36 +54,6 @@ export default function RestaurantSection({
     window.addEventListener('resize', updateCardLayout);
     return () => window.removeEventListener('resize', updateCardLayout);
   }, []);
-
-  const scroll = (direction: 'left' | 'right') => {
-    if (!scrollContainerRef.current) return;
-
-    const container = scrollContainerRef.current;
-    // Scroll by exactly one card width (plus gap)
-    const scrollAmount = cardWidth + 16; // 16px is the gap
-
-    if (direction === 'left') {
-      container.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
-    } else {
-      container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
-    }
-  };
-
-  const handleScroll = () => {
-    if (!scrollContainerRef.current) return;
-
-    const container = scrollContainerRef.current;
-    setShowLeftArrow(container.scrollLeft > 0);
-    setShowRightArrow(container.scrollLeft < container.scrollWidth - container.clientWidth - 10);
-  };
-
-  const toggleFavorite = (restaurantId: string) => (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setFavorites(prev => ({
-      ...prev,
-      [restaurantId]: !prev[restaurantId],
-    }));
-  };
 
   return (
     <section className="py-6">

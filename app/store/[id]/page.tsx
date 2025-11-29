@@ -2,16 +2,7 @@
 
 import { useEffect, useState, useRef, useCallback, useMemo } from 'react';
 import { useParams } from 'next/navigation';
-import {
-  ChevronDown,
-  Info,
-  ChevronLeft,
-  ChevronRight,
-  Heart,
-  Search,
-  X,
-  ThumbsUp,
-} from 'lucide-react';
+import { Info, ChevronLeft, ChevronRight, Heart, Search, X, ThumbsUp } from 'lucide-react';
 import { useRestaurants } from '@/lib/hooks/use-restaurants';
 import { useRestaurant } from '@/lib/hooks/use-restaurant';
 import { useRestaurantMenu } from '@/lib/hooks/use-restaurant-menu';
@@ -29,9 +20,9 @@ import GroupOrderDialog from '@/components/group-order-dialog';
 import StoreDetailsDialog from '@/components/store-details-dialog';
 import OutsideDeliveryAreaModal from '@/components/modals/outside-delivery-area-modal';
 import { Reviews } from '@/components/reviews';
-import { type Deal } from '@/types/deal-types';
-import { useDealsByRestaurantId } from '@/lib/hooks/use-deals';
-import { Deals } from '@/components/deals';
+// import { type Deal } from '@/types/deal-types';
+// import { useDealsByRestaurantId } from '@/lib/hooks/use-deals';
+// import { Deals } from '@/components/deals';
 import ServiceFeesInfo from '@/components/service-fees-info';
 import { getDefaultRating } from '@/utils/rating-utils';
 import {
@@ -103,8 +94,8 @@ export default function RestaurantPage() {
   const [menuCategories, setMenuCategories] = useState<any[]>([]);
   const [activeCategory, setActiveCategory] = useState('Featured Items');
   const [mostOrderedItems, setMostOrderedItems] = useState<any[]>([]);
-  const [familySharingItems, setFamilySharingItems] = useState<any[]>([]);
-  const [beefItems, setBeefItems] = useState<any[]>([]);
+  const [_familySharingItems, setFamilySharingItems] = useState<any[]>([]);
+  const [_beefItems, setBeefItems] = useState<any[]>([]);
   const [menuTopPosition, setMenuTopPosition] = useState(0);
   const menuRef = useRef<HTMLDivElement>(null);
   const menuContainerRef = useRef<HTMLDivElement>(null);
@@ -115,7 +106,7 @@ export default function RestaurantPage() {
   const { addItem } = useCartStore();
   const ticking = useRef(false);
   const featuredItemsRef = useRef<HTMLDivElement>(null);
-  const dealsRef = useRef<HTMLDivElement>(null);
+  // const dealsRef = useRef<HTMLDivElement>(null);
   const [canScrollLeftFeatured, setCanScrollLeftFeatured] = useState(false);
   const [canScrollRightFeatured, setCanScrollRightFeatured] = useState(true);
 
@@ -147,11 +138,7 @@ export default function RestaurantPage() {
     }
   }, [restaurant, restaurants, restaurantInNearby]);
 
-  // Set the category to restaurant when the page loads
-  useEffect(() => {
-    cartStore.setCategory('restaurant');
-  }, []);
-  const menuDropdownRef = useRef<HTMLDivElement>(null);
+  // const menuDropdownRef = useRef<HTMLDivElement>(null);
 
   // Dialog states
   const [menuItemDialogOpen, setMenuItemDialogOpen] = useState(false);
@@ -159,13 +146,13 @@ export default function RestaurantPage() {
   const [groupOrderDialogOpen, setGroupOrderDialogOpen] = useState(false);
   const [storeDetailsDialogOpen, setStoreDetailsDialogOpen] = useState(false);
   const [serviceFeesInfoOpen, setServiceFeesInfoOpen] = useState(false);
-  const [menuDropdownOpen, setMenuDropdownOpen] = useState(false);
+  // const [menuDropdownOpen, setMenuDropdownOpen] = useState(false);
   const [outsideDeliveryAreaModalOpen, setOutsideDeliveryAreaModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearching, setIsSearching] = useState(false);
 
   const [isSaved, setIsSaved] = useState(false);
-  const [selectedMenuType, setSelectedMenuType] = useState('Regular Menu');
+  // const [selectedMenuType, setSelectedMenuType] = useState('Regular Menu');
   const [isStickyHeader, setIsStickyHeader] = useState(false);
   const [isStickyMenu, setIsStickyMenu] = useState(false);
   const [stickyHeaderHeight, setStickyHeaderHeight] = useState(0);
@@ -209,7 +196,7 @@ export default function RestaurantPage() {
           if (typeof favoritesObj !== 'object' || favoritesObj === null) {
             favoritesObj = {};
           }
-        } catch (error) {
+        } catch (_error) {
           favoritesObj = {};
         }
       }
@@ -249,6 +236,7 @@ export default function RestaurantPage() {
   useEffect(() => {
     // Set the category to restaurant
     cartStore.setCategory('restaurant');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -303,6 +291,7 @@ export default function RestaurantPage() {
     return () => {
       clearCurrentStore();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, restaurantInNearby, specificRestaurant, menuData]);
 
   // Use restaurant.time (already calculated by API using calculateDeliveryTime) or calculate from distance
@@ -531,36 +520,36 @@ export default function RestaurantPage() {
   };
 
   // Get deals from API
-  const { restaurantDeals } = useDealsByRestaurantId(id || '');
+  // const { restaurantDeals } = useDealsByRestaurantId(id || '');
 
   // Get first deal (excluding dashpass)
-  const firstDeal = useMemo(() => {
-    return restaurantDeals.length > 0 ? restaurantDeals[0] : null;
-  }, [restaurantDeals]);
+  // const firstDeal = useMemo(() => {
+  //   return restaurantDeals.length > 0 ? restaurantDeals[0] : null;
+  // }, [restaurantDeals]);
 
   // Format deal banner text
-  const getDealBannerText = (deal: Deal) => {
-    if (
-      deal.discountType === 'percentage' &&
-      deal.minimumPurchase &&
-      deal.discountValue &&
-      deal.maximumDiscount
-    ) {
-      return `Spend $${deal.minimumPurchase}, get ${deal.discountValue}% off up to $${deal.maximumDiscount}`;
-    } else if (deal.discountType === 'percentage' && deal.minimumPurchase && deal.discountValue) {
-      return `Spend $${deal.minimumPurchase}, get ${deal.discountValue}% off`;
-    } else if (deal.discountType === 'fixed' && deal.minimumPurchase && deal.discountValue) {
-      return `Spend $${deal.minimumPurchase}, get $${deal.discountValue} off`;
-    } else if (deal.freeItems && deal.freeItems.length > 0 && deal.minimumPurchase) {
-      // If single free item, show its name; otherwise show "free items"
-      if (deal.freeItems.length === 1) {
-        return `Spend $${deal.minimumPurchase}, get ${deal.freeItems[0].name} free`;
-      } else {
-        return `Spend $${deal.minimumPurchase}, get free items`;
-      }
-    }
-    return deal.title;
-  };
+  // const getDealBannerText = (deal: Deal) => {
+  //   if (
+  //     deal.discountType === 'percentage' &&
+  //     deal.minimumPurchase &&
+  //     deal.discountValue &&
+  //     deal.maximumDiscount
+  //   ) {
+  //     return `Spend $${deal.minimumPurchase}, get ${deal.discountValue}% off up to $${deal.maximumDiscount}`;
+  //   } else if (deal.discountType === 'percentage' && deal.minimumPurchase && deal.discountValue) {
+  //     return `Spend $${deal.minimumPurchase}, get ${deal.discountValue}% off`;
+  //   } else if (deal.discountType === 'fixed' && deal.minimumPurchase && deal.discountValue) {
+  //     return `Spend $${deal.minimumPurchase}, get $${deal.discountValue} off`;
+  //   } else if (deal.freeItems && deal.freeItems.length > 0 && deal.minimumPurchase) {
+  //     // If single free item, show its name; otherwise show "free items"
+  //     if (deal.freeItems.length === 1) {
+  //       return `Spend $${deal.minimumPurchase}, get ${deal.freeItems[0].name} free`;
+  //     } else {
+  //       return `Spend $${deal.minimumPurchase}, get free items`;
+  //     }
+  //   }
+  //   return deal.title;
+  // };
 
   if (!restaurant) {
     return <div className="p-8 text-center">Loading...</div>;
@@ -591,21 +580,6 @@ export default function RestaurantPage() {
     addItem(cartItem, 'restaurant', restaurant?.name, restaurantId);
   };
 
-  const scrollContainer = (
-    containerRef: React.RefObject<HTMLDivElement | null>,
-    direction: 'left' | 'right'
-  ) => {
-    if (!containerRef.current) return;
-
-    const scrollAmount = 600; // Adjust this value based on how far you want to scroll
-    const currentScroll = containerRef.current.scrollLeft;
-
-    containerRef.current.scrollTo({
-      left: direction === 'left' ? currentScroll - scrollAmount : currentScroll + scrollAmount,
-      behavior: 'smooth',
-    });
-  };
-
   const openItemDialog = (item: any) => {
     // Ensure the item has the restaurantId property
     const itemWithRestaurantId = {
@@ -620,14 +594,14 @@ export default function RestaurantPage() {
     setGroupOrderDialogOpen(true);
   };
 
-  const toggleMenuDropdown = () => {
-    setMenuDropdownOpen(!menuDropdownOpen);
-  };
+  // const toggleMenuDropdown = () => {
+  //   setMenuDropdownOpen(!menuDropdownOpen);
+  // };
 
-  const selectMenuType = (menuType: string) => {
-    setSelectedMenuType(menuType);
-    setMenuDropdownOpen(false);
-  };
+  // const selectMenuType = (menuType: string) => {
+  //   setSelectedMenuType(menuType);
+  //   setMenuDropdownOpen(false);
+  // };
 
   // Handle clear search
   const handleClearSearch = () => {
@@ -1044,7 +1018,9 @@ export default function RestaurantPage() {
                       ))
                     ) : (
                       <div className="col-span-2 py-8 text-center">
-                        <p className="text-gray-500">No items found matching "{searchQuery}"</p>
+                        <p className="text-gray-500">
+                          No items found matching &quot;{searchQuery}&quot;
+                        </p>
                         <button className="mt-2 text-red-600" onClick={handleClearSearch}>
                           Clear search
                         </button>
@@ -1100,7 +1076,7 @@ export default function RestaurantPage() {
                               >
                                 <TooltipArrow className="fill-[#191919ff]" />
                                 <p className="text-sm">
-                                  Your address is not in the store's delivery area
+                                  Your address is not in the store&apos;s delivery area
                                 </p>
                               </TooltipContent>
                             </Tooltip>

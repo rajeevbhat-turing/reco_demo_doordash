@@ -13,6 +13,7 @@ export default function Snackbar() {
         setSnackbar(null);
       }, snackbar.autoHideDuration);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [snackbar]);
 
   if (!snackbar) return null;

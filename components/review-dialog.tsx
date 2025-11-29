@@ -3,7 +3,7 @@
 import type React from 'react';
 
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { X, Star, Info, ThumbsUp, ThumbsDown } from 'lucide-react';
+import { X, Star, ThumbsUp, ThumbsDown } from 'lucide-react';
 import { useUserStore } from '@/store/user-store';
 import { useReviewStore } from '@/store/review-store';
 import { FilledLightbulbIcon } from '@/lib/utils/icons';
@@ -86,6 +86,7 @@ export default function ReviewDialog({
       onSubmit(submittedRating, submittedText, submittedLikedItems);
     }
     onClose();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [onSubmit, submittedRating, submittedText, submittedLikedItems, onClose]);
 
   useEffect(() => {

@@ -179,7 +179,7 @@ export default function UserProfilePage() {
 
         {isCurrentUser && (
           <p className="text-sm text-[#191919ff] font-medium">
-            All contributions will appear once they're approved.
+            All contributions will appear once they&apos;re approved.
           </p>
         )}
 

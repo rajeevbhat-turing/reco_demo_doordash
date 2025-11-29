@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
-import { ArrowRight, Star, Search, MapPin, ChevronRight, Plus, Navigation } from 'lucide-react';
+import React, { useState, useEffect, useMemo } from 'react';
+import { ArrowRight, Search, MapPin, ChevronRight, Plus, Navigation } from 'lucide-react';
 import AuthenticationModal from '@/components/modals/authentication-modal';
 import AddNewAddressModal from '@/components/modals/landing-page/add-new-address-modal';
 import AddressReviewErrorModal from '@/components/modals/landing-page/address-review-error-modal';
@@ -394,7 +394,7 @@ export default function LandingPage() {
 
                 {/* Legal Disclaimer */}
                 <p className="text-xs text-[#606060ff] mb-4 leading-relaxed font-bold">
-                  By clicking on any "Continue" button, you agree to DoorDash's{' '}
+                  By clicking on any &quot;Continue&quot; button, you agree to DoorDash&apos;s{' '}
                   {/* <a href="" className="text-[#1700ee] underline hover:text-blue-700"> */}
                   Terms and Conditions
                   {/* </a> */} and{' '}
@@ -479,7 +479,7 @@ export default function LandingPage() {
                     className="absolute top-full left-0 right-0 mt-2 bg-white rounded-sm shadow-lg border border-gray-200 
               max-h-[260px] overflow-y-auto z-50"
                   >
-                    {filteredAddresses?.slice(0, 3)?.map((address, index) => (
+                    {filteredAddresses?.slice(0, 3)?.map(address => (
                       <div
                         onClick={() => handleSelectAddress(address)}
                         key={`address-dropdown-item-${address.id}`}

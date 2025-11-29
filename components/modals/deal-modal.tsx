@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useMemo } from 'react';
+import React, { useEffect, useRef, useMemo } from 'react';
 import { X, Plus, ThumbsUp } from 'lucide-react';
 import { type Deal } from '@/types/deal-types';
 import { type MenuItem } from '@/constants/menu-items';

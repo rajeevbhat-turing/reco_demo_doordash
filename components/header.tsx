@@ -75,7 +75,6 @@ export default function Header() {
     useUserStore();
   const shouldOpenCart = useCartStore(state => state.shouldOpenCart);
   const resetOpenCartTrigger = useCartStore(state => state.resetOpenCartTrigger);
-  const getTotalItems = useCartStore(state => state.getTotalItems);
   const addresses = getAddresses();
   const tempAddress = useSyncExternalStore(
     useUserStore.subscribe,
@@ -103,6 +102,7 @@ export default function Header() {
     } else {
       setSelectedAddressId('');
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [addresses]);
 
   // Show address selection modal if user is authenticated and doesn't have a default address
@@ -186,9 +186,6 @@ export default function Header() {
       resetOpenCartTrigger();
     }
   }, [shouldOpenCart, resetOpenCartTrigger]);
-
-  // Check if current path is in account flow
-  const isAccountFlow = pathname.startsWith('/consumer') || pathname.startsWith('/password-reset');
 
   // Check if current path is store or reviews
   const isStoreOrReviews =
@@ -501,12 +498,12 @@ export default function Header() {
                               {/* Address review error view */}
                               <div className="p-6">
                                 <h2 className="text-2xl font-bold text-gray-900 mb-4">
-                                  We can't add this address at the moment
+                                  We can&apos;t add this address at the moment
                                 </h2>
 
                                 <p className="text-gray-900 mb-8">
-                                  We're currently reviewing the address. Please check for any typos
-                                  and re-enter your address.
+                                  We&apos;re currently reviewing the address. Please check for any
+                                  typos and re-enter your address.
                                 </p>
 
                                 <div className="space-y-3">

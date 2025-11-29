@@ -129,7 +129,8 @@ export default function ArchiveRequestPage() {
                 It will be ready within several days.
               </p>
               <p className="text-[#191919ff] text-sm font-medium">
-                We'll update this page and notify you via email when it's available to download.
+                We&apos;ll update this page and notify you via email when it&apos;s available to
+                download.
               </p>
             </div>
 

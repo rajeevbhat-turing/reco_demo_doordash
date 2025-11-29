@@ -238,7 +238,7 @@ export default function Reviews({ vendorId, vendorName }: ReviewsProps) {
       >
         {/* Overall Rating */}
         <div className="flex-shrink-0">
-          <OverallRating averageRating={averageRating} totalReviews={totalReviews} />
+          <OverallRating averageRating={averageRating} />
         </div>
 
         {visibleReviews.map(review => (

@@ -1,7 +1,6 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React from 'react';
 import { ChevronLeft, ChevronRight, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useCartStore } from '@/store/cart-store';
 import { getDefaultRating } from '@/utils/rating-utils';
 
 interface Product {

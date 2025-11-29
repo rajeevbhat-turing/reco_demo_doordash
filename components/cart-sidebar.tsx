@@ -31,7 +31,7 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
     clearCart,
     addItem,
     isGroupOrder,
-    groupOrderId,
+    // groupOrderId,
     getConfig,
   } = useCartStore();
 
@@ -74,6 +74,7 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
   const items = currentCart?.items || [];
 
   const [restaurant, setRestaurant] = useState<any>(null);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [store, setStore] = useState<any>(null);
   const [complementItems, setComplementItems] = useState<any[]>([]);
   const complementScrollRef = useRef<HTMLDivElement>(null);
@@ -86,6 +87,7 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
 
   // Function to get store information based on category and store ID
   // Note: Only restaurants are supported now
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const getStoreInfo = useCallback((storeId: string, category: string) => {
     // No store info for restaurants - they use restaurant data directly
     return null;
@@ -163,6 +165,7 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
       setComplementItems([]);
     }
     return null; // useMemo must return something
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentCart?.storeId, currentCart?.storeCategory, items.length, fetchComplementItems]);
 
   // Get the display name based on current cart

@@ -19,7 +19,7 @@ export default function ProductCard({
   storeId,
   category = 'restaurant',
 }: ProductCardProps) {
-  const { carts, findCart, updateQuantity, removeItem, setCategory, addItem } = useCartStore();
+  const { findCart, updateQuantity, removeItem, setCategory, addItem } = useCartStore();
 
   // Set the category when component mounts
   useEffect(() => {

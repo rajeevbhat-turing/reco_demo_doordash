@@ -52,6 +52,7 @@ export default function ProductDetailModal({
     }
 
     setIsNutritionOpen(false); // Also reset nutrition panel
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [product?.id, storeId, category, findCart]);
 
   if (!product) return null;

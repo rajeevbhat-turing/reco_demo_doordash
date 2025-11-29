@@ -1,8 +1,6 @@
 import type { CartCategory } from '@/store/cart-store';
-import type { Restaurant } from '@/constants/restaurants';
 import type { Address } from '@/lib/types/user-types';
 import type { Deal } from '@/types/deal-types';
-import { calculateDistance } from './distance-utils';
 import { getTaxRate } from './tax-calculator';
 
 // Category-specific configurations

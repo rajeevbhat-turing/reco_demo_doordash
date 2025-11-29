@@ -169,6 +169,7 @@ export default function AddressDetailsModal({
         setCustomLabelText('');
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [address]);
 
   // Handle escape key and outside click
@@ -292,45 +293,43 @@ export default function AddressDetailsModal({
   const config = getTypeConfig();
 
   // Get current state based on address type
-  const getCurrentState = () => {
-    switch (addressType) {
-      case 'house':
-        return houseState;
-      case 'apartment':
-        return apartmentState;
-      case 'hotel':
-        return hotelState;
-      case 'office':
-        return officeState;
-      case 'other':
-        return otherState;
-      default:
-        return houseState;
-    }
-  };
+  // const getCurrentState = () => {
+  //   switch (addressType) {
+  //     case 'house':
+  //       return houseState;
+  //     case 'apartment':
+  //       return apartmentState;
+  //     case 'hotel':
+  //       return hotelState;
+  //     case 'office':
+  //       return officeState;
+  //     case 'other':
+  //       return otherState;
+  //     default:
+  //       return houseState;
+  //   }
+  // };
 
   // Update current state based on address type
-  const updateCurrentState = (updates: Partial<any>) => {
-    switch (addressType) {
-      case 'house':
-        setHouseState(prev => ({ ...prev, ...updates }));
-        break;
-      case 'apartment':
-        setApartmentState(prev => ({ ...prev, ...updates }));
-        break;
-      case 'hotel':
-        setHotelState(prev => ({ ...prev, ...updates }));
-        break;
-      case 'office':
-        setOfficeState(prev => ({ ...prev, ...updates }));
-        break;
-      case 'other':
-        setOtherState(prev => ({ ...prev, ...updates }));
-        break;
-    }
-  };
-
-  const currentState = getCurrentState();
+  // const updateCurrentState = (updates: Partial<any>) => {
+  //   switch (addressType) {
+  //     case 'house':
+  //       setHouseState(prev => ({ ...prev, ...updates }));
+  //       break;
+  //     case 'apartment':
+  //       setApartmentState(prev => ({ ...prev, ...updates }));
+  //       break;
+  //     case 'hotel':
+  //       setHotelState(prev => ({ ...prev, ...updates }));
+  //       break;
+  //     case 'office':
+  //       setOfficeState(prev => ({ ...prev, ...updates }));
+  //       break;
+  //     case 'other':
+  //       setOtherState(prev => ({ ...prev, ...updates }));
+  //       break;
+  //   }
+  // };
 
   const handleSave = () => {
     if (onSave) {

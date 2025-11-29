@@ -19,25 +19,27 @@ export const DUMMY_IMAGE_PATTERN = 'https://static.dashdoor.test';
 export function isValidImageUrl(url: string | null | undefined): boolean {
   if (!url) return false;
   if (typeof url !== 'string') return false;
-  
+
   const trimmed = url.trim();
   if (trimmed === '') return false;
-  
+
   // Normalize to lowercase for consistent comparison
   const normalized = trimmed.toLowerCase();
-  
+
   // Reject if it starts with the exact dummy pattern
   if (normalized.startsWith(DUMMY_IMAGE_PATTERN.toLowerCase())) {
     return false;
   }
-  
+
   // Reject common dashdoor.test patterns (be specific to avoid false positives)
-  if (normalized.startsWith('http://static.dashdoor.test') || 
-      normalized.startsWith('https://static.dashdoor.test') ||
-      normalized.startsWith('//static.dashdoor.test')) {
+  if (
+    normalized.startsWith('http://static.dashdoor.test') ||
+    normalized.startsWith('https://static.dashdoor.test') ||
+    normalized.startsWith('//static.dashdoor.test')
+  ) {
     return false;
   }
-  
+
   // For other URLs, check if dashdoor.test is the hostname
   // Only check if URL has a protocol to avoid false positives
   if (normalized.startsWith('http://') || normalized.startsWith('https://')) {
@@ -51,16 +53,19 @@ export function isValidImageUrl(url: string | null | undefined): boolean {
           break;
         }
       }
-      
+
       const hostname = normalized.substring(afterProtocol, hostnameEnd);
-      
+
       // Only reject if hostname is exactly dashdoor.test or ends with .dashdoor.test
-      if (hostname === 'dashdoor.test' || (hostname.endsWith('.dashdoor.test') && hostname.length > 'dashdoor.test'.length)) {
+      if (
+        hostname === 'dashdoor.test' ||
+        (hostname.endsWith('.dashdoor.test') && hostname.length > 'dashdoor.test'.length)
+      ) {
         return false;
       }
     }
   }
-  
+
   // If we get here, assume the URL is valid (be permissive)
   return true;
 }
@@ -95,17 +100,16 @@ export function getImageWithFallback(
   if (!url || typeof url !== 'string') {
     return getPlaceholderImage(type);
   }
-  
+
   const trimmed = url.trim();
   if (trimmed === '') {
     return getPlaceholderImage(type);
   }
-  
+
   // Use validation function
   if (isValidImageUrl(trimmed)) {
     return trimmed;
   }
-  
+
   return getPlaceholderImage(type);
 }
-

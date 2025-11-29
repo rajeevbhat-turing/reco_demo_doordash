@@ -3,7 +3,7 @@
 import { useState, useMemo, useEffect, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Star, ChevronLeft, ChevronRight, Info } from 'lucide-react';
+import { Star, ChevronLeft, ChevronRight } from 'lucide-react';
 import { format } from 'date-fns';
 import ReviewDialog from '@/components/review-dialog';
 import ReviewsInfoModal from '@/components/modals/reviews-info-modal';

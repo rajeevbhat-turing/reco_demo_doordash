@@ -163,7 +163,7 @@ export default function OutsideDeliveryAreaModal({
             <div className="px-4 pt-14">
               {/* Title */}
               <h2 className="text-3xl font-bold text-[#191919ff]">
-                Your address is outside of this store's delivery area
+                Your address is outside of this store&apos;s delivery area
               </h2>
               <p className="text-base font-medium text-[#606060ff] mb-4">
                 Change your address or view nearby stores
@@ -223,7 +223,7 @@ export default function OutsideDeliveryAreaModal({
         isOpen={showLabelModal}
         onClose={() => setShowLabelModal(false)}
         addresses={addresses}
-        onSelectAddress={addressId => {
+        onSelectAddress={(_addressId: string) => {
           setShowLabelModal(false);
           setShowChooseLabelModal(true);
         }}
@@ -238,7 +238,7 @@ export default function OutsideDeliveryAreaModal({
       <ChooseLabelModal
         isOpen={showChooseLabelModal}
         onClose={() => setShowChooseLabelModal(false)}
-        onSave={label => {
+        onSave={(_label: string) => {
           // Handle label save if needed
           setShowChooseLabelModal(false);
         }}

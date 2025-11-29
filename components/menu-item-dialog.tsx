@@ -42,6 +42,7 @@ interface MenuItemDialogProps {
 }
 
 export default function MenuItemDialog({ isOpen, onClose, item }: MenuItemDialogProps) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [appliedModifications, setAppliedModifications] = useState<
     Map<string, AppliedModificationOption[]>
@@ -373,9 +374,9 @@ export default function MenuItemDialog({ isOpen, onClose, item }: MenuItemDialog
     return true;
   };
 
-  const handleOptionSelect = (optionId: string) => {
-    setSelectedOption(optionId === selectedOption ? null : optionId);
-  };
+  // const handleOptionSelect = (optionId: string) => {
+  //   setSelectedOption(optionId === selectedOption ? null : optionId);
+  // };
 
   const handleAddToCart = () => {
     if (!item || !canAddToCart()) return;

@@ -2,7 +2,7 @@
 
 import { useParams, useRouter } from 'next/navigation';
 import { useOrdersStore } from '@/store/orders-store';
-import { Phone, Download, Home, ArrowLeft } from 'lucide-react';
+import { Download, Home, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useState, useEffect } from 'react';
 import { Order } from '@/constants/order-data';
@@ -51,11 +51,6 @@ export default function OrderReceiptPage() {
 
     // Fallback - if storeName is a number or invalid, return a generic name
     return 'Store';
-  };
-
-  // Helper function to get total (support both old and new field names)
-  const getTotal = (order: Order) => {
-    return order.total || order.totalAmount || 0;
   };
 
   if (!mounted) {
@@ -601,7 +596,7 @@ export default function OrderReceiptPage() {
           orderItems={convertOrderItemsToReviewItems(order)}
           orderDate={formatOrderDate(order)}
           vendorLogo={orderRestaurant?.logo || undefined}
-          onSubmit={(rating, text, likedItems) => {
+          onSubmit={(rating, text, _likedItems) => {
             updateOrderReview(order.id, rating, text);
             setShowReviewDialog(false);
           }}

@@ -46,7 +46,7 @@ export default function SignUpPage() {
             }
           }
         }
-      } catch (error) {
+      } catch (_error) {
         // Fallback to USA
       }
       const usaCountry = countryData.find(country => country.code === 'US');

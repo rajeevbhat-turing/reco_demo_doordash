@@ -1,9 +1,8 @@
 'use client';
 
-import { useState, useEffect, useMemo, useRef, useSyncExternalStore } from 'react';
+import React, { useState, useEffect, useMemo, useRef, useSyncExternalStore } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import Link from 'next/link';
-import { Heart, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useRestaurants } from '@/lib/hooks/use-restaurants';
 import { useUserStore } from '@/store/user-store';
 import { useCartStore } from '@/store/cart-store';
@@ -11,7 +10,6 @@ import FilterOptions, {
   type FilterOptionsRef,
   type FilterState,
 } from '@/components/filter-options';
-import type { Restaurant } from '@/constants/restaurants';
 import type { MenuItem } from '@/constants/menu-items';
 import { getDefaultRating } from '@/utils/rating-utils';
 import { RestaurantsSkeleton } from '@/components/skeletons/restaurant-skeleton';
@@ -87,6 +85,7 @@ export default function SearchPage() {
   // Set the category to restaurant when component mounts
   useEffect(() => {
     cartStore.setCategory('restaurant');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Load favorites from localStorage on mount
@@ -153,7 +152,7 @@ export default function SearchPage() {
             if (typeof favoritesObj !== 'object' || favoritesObj === null) {
               favoritesObj = {};
             }
-          } catch (error) {
+          } catch (_error) {
             favoritesObj = {};
           }
         }
@@ -410,17 +409,6 @@ export default function SearchPage() {
         filters.dietaryPreferences !== undefined &&
         filters.dietaryPreferences.length > 0)
     );
-  };
-
-  const toggleFavorite = (restaurantId: string) => {
-    isInitializingRef.current = false; // Mark as user-initiated change
-    setFavorites(prev => {
-      if (prev.includes(restaurantId)) {
-        return prev.filter(id => id !== restaurantId);
-      } else {
-        return [...prev, restaurantId];
-      }
-    });
   };
 
   // Check scroll position for arrows

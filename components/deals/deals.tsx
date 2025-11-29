@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { ChevronRight, ChevronLeft, ExternalLink } from 'lucide-react';
 import DealsModal from '../modals/deals-modal';
 import DealModal from '../modals/deal-modal';
@@ -34,13 +34,12 @@ export default function Deals({ restaurantId }: DealsProps) {
   // Update scroll buttons on mount and when deals change
   useEffect(() => {
     updateScrollButtons();
-    if (scrollContainerRef.current) {
-      scrollContainerRef.current.addEventListener('scroll', updateScrollButtons);
+    const scrollContainer = scrollContainerRef.current;
+    if (scrollContainer) {
+      scrollContainer.addEventListener('scroll', updateScrollButtons);
       window.addEventListener('resize', updateScrollButtons);
       return () => {
-        if (scrollContainerRef.current) {
-          scrollContainerRef.current.removeEventListener('scroll', updateScrollButtons);
-        }
+        scrollContainer.removeEventListener('scroll', updateScrollButtons);
         window.removeEventListener('resize', updateScrollButtons);
       };
     }

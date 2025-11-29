@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { X } from 'lucide-react';
 import { format } from 'date-fns';
 import { generateAvatarColor } from '@/lib/utils/helperFunctions';

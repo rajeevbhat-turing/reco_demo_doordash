@@ -37,7 +37,7 @@ const TAX_RATES: Record<string, number> = {
  * @param zipCode - Optional zip code for more specific rates
  * @returns Tax rate as a decimal (e.g., 0.0725 for 7.25%)
  */
-export function getTaxRate(state: string, zipCode?: string): number {
+export function getTaxRate(state: string, _zipCode?: string): number {
   if (!state) {
     return TAX_RATES['DEFAULT'];
   }
@@ -50,8 +50,8 @@ export function getTaxRate(state: string, zipCode?: string): number {
   }
 
   // Future: Could add zip code specific rates here
-  // if (zipCode && ZIP_TAX_RATES[zipCode]) {
-  //   return ZIP_TAX_RATES[zipCode];
+  // if (_zipCode && ZIP_TAX_RATES[_zipCode]) {
+  //   return ZIP_TAX_RATES[_zipCode];
   // }
 
   // Return default rate if state not found

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect, useSyncExternalStore } from 'react';
-import { Search, X, ArrowLeft, ChevronRight, Clock } from 'lucide-react';
+import { Search, X, ArrowLeft, Clock } from 'lucide-react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useRestaurants } from '@/lib/hooks/use-restaurants';
 import { useUserStore } from '@/store/user-store';
@@ -274,14 +274,14 @@ const SearchBar = () => {
   // Generate description for restaurant search results
   const generateDescription = (restaurant: any) => {
     // Create a description based on restaurant properties
-    const tags = [restaurant.cuisine, 'Popular items', 'Fast delivery', 'Highly rated'];
+    const _tags = [restaurant.cuisine, 'Popular items', 'Fast delivery', 'Highly rated'];
 
     return `${restaurant.cuisine} • ${restaurant.priceRange} • ${restaurant.time}`;
   };
 
   // Generate search suggestions based on search term
   // Disabled: Auto-generated suggestions removed per user requirement
-  const generateSearchSuggestions = (term: string) => {
+  const generateSearchSuggestions = (_term: string) => {
     // Return empty array - no auto-generated suggestions
     return [];
   };

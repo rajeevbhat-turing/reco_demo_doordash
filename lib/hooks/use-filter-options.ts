@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import type { FilterState } from '@/components/filter-options';
 
 interface FilterOption {
@@ -107,13 +107,18 @@ interface UseFilterOptionsReturn {
 }
 
 export function useFilterOptions({
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   isGrocery = false,
   onFilterChange,
   onReset,
   externalFilters,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   filterData = [],
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   showPriceFilter = true,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   hideCuisineFilter = false,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   hideDietaryFilter = false,
 }: UseFilterOptionsProps): UseFilterOptionsReturn {
   const [filters, setFilters] = useState<FilterState>({
@@ -147,8 +152,6 @@ export function useFilterOptions({
       setSelectedDietaryPreferences(externalFilters.dietaryPreferences || []);
     }
   }, [externalFilters]);
-  const [categoryDropdownOpen, setCategoryDropdownOpen] = useState(false);
-  const [isTimeOptionsExpanded, setIsTimeOptionsExpanded] = useState(false);
   const [selectedRating, setSelectedRating] = useState<number | null>(null);
   const [selectedPrices, setSelectedPrices] = useState<string[]>([]);
   const [selectedLocation, setSelectedLocation] = useState<string | null>(null);
@@ -498,21 +501,28 @@ export function useFilterOptions({
       e.stopPropagation();
     };
 
+    // Capture ref values to use in cleanup function
+    const cuisineDropdown = cuisineDropdownRef.current;
+    const dietaryDropdown = dietaryDropdownRef.current;
+    const ratingDropdown = ratingDropdownRef.current;
+    const priceDropdown = priceDropdownRef.current;
+    const locationDropdown = locationDropdownRef.current;
+
     // Add scroll listeners to open dropdowns
-    if (cuisineDropdownOpen && cuisineDropdownRef.current) {
-      cuisineDropdownRef.current.addEventListener('scroll', handleDropdownScroll, true);
+    if (cuisineDropdownOpen && cuisineDropdown) {
+      cuisineDropdown.addEventListener('scroll', handleDropdownScroll, true);
     }
-    if (dietaryDropdownOpen && dietaryDropdownRef.current) {
-      dietaryDropdownRef.current.addEventListener('scroll', handleDropdownScroll, true);
+    if (dietaryDropdownOpen && dietaryDropdown) {
+      dietaryDropdown.addEventListener('scroll', handleDropdownScroll, true);
     }
-    if (ratingDropdownOpen && ratingDropdownRef.current) {
-      ratingDropdownRef.current.addEventListener('scroll', handleDropdownScroll, true);
+    if (ratingDropdownOpen && ratingDropdown) {
+      ratingDropdown.addEventListener('scroll', handleDropdownScroll, true);
     }
-    if (priceDropdownOpen && priceDropdownRef.current) {
-      priceDropdownRef.current.addEventListener('scroll', handleDropdownScroll, true);
+    if (priceDropdownOpen && priceDropdown) {
+      priceDropdown.addEventListener('scroll', handleDropdownScroll, true);
     }
-    if (locationDropdownOpen && locationDropdownRef.current) {
-      locationDropdownRef.current.addEventListener('scroll', handleDropdownScroll, true);
+    if (locationDropdownOpen && locationDropdown) {
+      locationDropdown.addEventListener('scroll', handleDropdownScroll, true);
     }
 
     // Add event listeners to catch all types of scrolling
@@ -524,20 +534,20 @@ export function useFilterOptions({
 
     return () => {
       // Remove dropdown scroll listeners
-      if (cuisineDropdownRef.current) {
-        cuisineDropdownRef.current.removeEventListener('scroll', handleDropdownScroll, true);
+      if (cuisineDropdown) {
+        cuisineDropdown.removeEventListener('scroll', handleDropdownScroll, true);
       }
-      if (dietaryDropdownRef.current) {
-        dietaryDropdownRef.current.removeEventListener('scroll', handleDropdownScroll, true);
+      if (dietaryDropdown) {
+        dietaryDropdown.removeEventListener('scroll', handleDropdownScroll, true);
       }
-      if (ratingDropdownRef.current) {
-        ratingDropdownRef.current.removeEventListener('scroll', handleDropdownScroll, true);
+      if (ratingDropdown) {
+        ratingDropdown.removeEventListener('scroll', handleDropdownScroll, true);
       }
-      if (priceDropdownRef.current) {
-        priceDropdownRef.current.removeEventListener('scroll', handleDropdownScroll, true);
+      if (priceDropdown) {
+        priceDropdown.removeEventListener('scroll', handleDropdownScroll, true);
       }
-      if (locationDropdownRef.current) {
-        locationDropdownRef.current.removeEventListener('scroll', handleDropdownScroll, true);
+      if (locationDropdown) {
+        locationDropdown.removeEventListener('scroll', handleDropdownScroll, true);
       }
 
       window.removeEventListener('scroll', handleScroll, true);
@@ -572,7 +582,6 @@ export function useFilterOptions({
   };
 
   const expandTimeOptions = () => {
-    setIsTimeOptionsExpanded(true);
     setVisibleTimeOptions(timeOptions);
   };
 
@@ -778,7 +787,6 @@ export function useFilterOptions({
     const viewportHeight = window.innerHeight;
     const viewportWidth = window.innerWidth;
     const dropdownWidth = 400; // w-[400px]
-    const spacing = 8; // mt-2 = 8px
 
     // Calculate horizontal position: center the dropdown relative to the button
     let left = buttonRect.left + buttonRect.width / 2 - dropdownWidth / 2;

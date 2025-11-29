@@ -4,7 +4,7 @@ import { useAppStore, SearchResult } from '@/store/app-store';
 import { useOrdersStore } from '@/store/orders-store';
 import { useDealsStore } from '@/store/deals-store';
 import { useReviewStore } from '@/store/review-store';
-import { User, Address, PaymentMethod } from '@/lib/types/user-types';
+import { User, Address } from '@/lib/types/user-types';
 import { Order } from '@/constants/order-data';
 import { UserReview } from '@/types/review-types';
 import * as expectedStateFunctions from '../expected-state-functions';

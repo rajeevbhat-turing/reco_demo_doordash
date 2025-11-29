@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { ChevronDown, Mail, CreditCard } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
 import Link from 'next/link';
 import OTPVerificationModal from '@/components/modals/otp-verification-modal';
 import { useUserStore } from '@/store/user-store';
@@ -13,7 +13,6 @@ export default function AccountSettingsPage() {
   const updateUser = useUserStore(state => state.updateUser);
   const [country, setCountry] = useState('United States');
   const [phoneCountry, setPhoneCountry] = useState('+1 (US)');
-  const [receiveUpdates, setReceiveUpdates] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [generalError, setGeneralError] = useState('');
   const [showOTPModal, setShowOTPModal] = useState(false);
@@ -169,20 +168,22 @@ export default function AccountSettingsPage() {
         return value.trim() === '' ? 'First name is required' : '';
       case 'lastName':
         return value.trim() === '' ? 'Last name is required' : '';
-      case 'email':
+      case 'email': {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return value.trim() === ''
           ? 'Email is required'
           : !emailRegex.test(value)
             ? 'Please enter a valid email address'
             : '';
-      case 'phoneNumber':
+      }
+      case 'phoneNumber': {
         const phoneRegex = /^\d{10}$/;
         return value.trim() === ''
           ? 'Phone number is required'
           : !phoneRegex.test(value)
             ? 'Phone number is invalid'
             : '';
+      }
       default:
         return '';
     }
