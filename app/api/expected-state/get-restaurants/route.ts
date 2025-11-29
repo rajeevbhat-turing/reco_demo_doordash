@@ -15,7 +15,8 @@ interface SortSpec {
  * - lat: Latitude (required)
  * - lng: Longitude (required)
  * - name: Restaurant name to filter by (optional, partial match, case-insensitive)
- * - sort_type: JSON array of sort specifications (optional)
+ * - item_keyword: Menu item keyword to filter by (optional, finds restaurants with matching items)
+ * - sort_type: JSON array of sort specifications (optional, defaults to distance asc)
  *   - Each spec: { key: string, order?: "asc" | "desc" }
  *   - Example: [{ "key": "distance", "order": "asc" }, { "key": "minDeliveryFee", "order": "asc" }]
  *   - Sorts by first spec, then uses subsequent specs as tiebreakers
@@ -24,14 +25,15 @@ interface SortSpec {
  * - cuisines: JSON array of cuisine types to filter by (optional, matches any)
  * - categories: JSON array of categories to filter by (optional, matches any)
  * - prices: JSON array of price ranges (optional): "$", "$$", "$$$", "$$$$"
+ * - dashpass: Boolean to filter by DashPass availability (optional)
  * - restaurant_ids_not_in: JSON array of restaurant IDs to exclude (optional)
  * 
  * Finds restaurants with optional filtering and sorting:
  * 1. Fetches all restaurants from database
- * 2. Applies filters if provided (name, cuisines, categories, prices, exclusions)
+ * 2. Applies filters if provided (name, item_keyword, cuisines, categories, prices, dashpass, exclusions)
  * 3. Calculates distance for all restaurants
  * 4. Filters restaurants within 10 mile radius
- * 5. Applies multi-level sorting based on sort_type array
+ * 5. Applies multi-level sorting based on sort_type array (defaults to distance asc)
  * 6. Returns top N restaurants based on limit
  */
 export async function GET(request: NextRequest) {
@@ -39,12 +41,14 @@ export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams;
     const userId = searchParams.get('userId');
     const name = searchParams.get('name');
+    const itemKeyword = searchParams.get('item_keyword');
     const sortTypeParam = searchParams.get('sort_type');
     const limitParam = searchParams.get('limit');
     const limit = limitParam ? parseInt(limitParam, 10) : null;
     const cuisinesParam = searchParams.get('cuisines');
     const categoriesParam = searchParams.get('categories');
     const pricesParam = searchParams.get('prices');
+    const dashpassParam = searchParams.get('dashpass');
     const restaurantIdsNotInParam = searchParams.get('restaurant_ids_not_in');
     const lat = searchParams.get('lat');
     const lng = searchParams.get('lng');
@@ -253,6 +257,13 @@ export async function GET(request: NextRequest) {
       queryParams.push(`%${name}%`);
     }
     
+    // Apply item keyword filter if provided
+    if (itemKeyword) {
+      query += ' INNER JOIN menu_items mi ON r.id = mi.restaurant_id';
+      whereClauses.push('LOWER(mi.name) LIKE ?');
+      queryParams.push(`%${itemKeyword.toLowerCase()}%`);
+    }
+    
     // Apply cuisines filter if provided
     if (cuisines.length > 0) {
       const cuisineConditions = cuisines.map(() => 'r.cuisine LIKE ?').join(' OR ');
@@ -275,6 +286,13 @@ export async function GET(request: NextRequest) {
       const pricePlaceholders = priceRanges.map(() => '?').join(',');
       whereClauses.push(`r.price_range IN (${pricePlaceholders})`);
       queryParams.push(...priceRanges);
+    }
+    
+    // Apply DashPass filter if provided
+    if (dashpassParam !== null) {
+      const dashpassValue = dashpassParam === 'true' ? 1 : 0;
+      whereClauses.push('r.dash_pass = ?');
+      queryParams.push(dashpassValue);
     }
     
     // Apply restaurant exclusion filter if provided

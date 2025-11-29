@@ -29,6 +29,7 @@ export interface GetItemsArgs {
   lng?: number; // Optional: explicit longitude
   filters?: {
     menu_categories?: string[]; // Filter by menu category names (matches any in array)
+    restaurant_ids_not_in?: string[]; // Exclude items from these restaurant IDs
   };
 }
 
@@ -112,6 +113,10 @@ export async function get_items(args: GetItemsArgs): Promise<GetItemsResult | nu
     
     if (filters.menu_categories && filters.menu_categories.length > 0) {
       params.append('menu_categories', JSON.stringify(filters.menu_categories));
+    }
+    
+    if (filters.restaurant_ids_not_in && filters.restaurant_ids_not_in.length > 0) {
+      params.append('restaurant_ids_not_in', JSON.stringify(filters.restaurant_ids_not_in));
     }
     
     // Call API route
