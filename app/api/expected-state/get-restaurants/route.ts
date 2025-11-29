@@ -14,17 +14,21 @@ interface SortSpec {
  * - userId: User ID (required)
  * - lat: Latitude (required)
  * - lng: Longitude (required)
+ * - name: Restaurant name to filter by (optional, partial match, case-insensitive)
  * - sort_type: JSON array of sort specifications (optional)
  *   - Each spec: { key: string, order?: "asc" | "desc" }
  *   - Example: [{ "key": "distance", "order": "asc" }, { "key": "minDeliveryFee", "order": "asc" }]
  *   - Sorts by first spec, then uses subsequent specs as tiebreakers
  *   - order defaults to "asc" if not provided
  * - limit: Number of restaurants to return (optional, returns all if not provided)
- * - cuisine: Filter by cuisine type
+ * - cuisines: JSON array of cuisine types to filter by (optional, matches any)
+ * - categories: JSON array of categories to filter by (optional, matches any)
+ * - prices: JSON array of price ranges (optional): "$", "$$", "$$$", "$$$$"
+ * - restaurant_ids_not_in: JSON array of restaurant IDs to exclude (optional)
  * 
  * Finds restaurants with optional filtering and sorting:
  * 1. Fetches all restaurants from database
- * 2. Applies cuisine filter if provided
+ * 2. Applies filters if provided (name, cuisines, categories, prices, exclusions)
  * 3. Calculates distance for all restaurants
  * 4. Filters restaurants within 10 mile radius
  * 5. Applies multi-level sorting based on sort_type array
@@ -34,10 +38,14 @@ export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
     const userId = searchParams.get('userId');
+    const name = searchParams.get('name');
     const sortTypeParam = searchParams.get('sort_type');
     const limitParam = searchParams.get('limit');
     const limit = limitParam ? parseInt(limitParam, 10) : null;
-    const cuisineFilter = searchParams.get('cuisine');
+    const cuisinesParam = searchParams.get('cuisines');
+    const categoriesParam = searchParams.get('categories');
+    const pricesParam = searchParams.get('prices');
+    const restaurantIdsNotInParam = searchParams.get('restaurant_ids_not_in');
     const lat = searchParams.get('lat');
     const lng = searchParams.get('lng');
 
@@ -115,31 +123,170 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // Build SQL query with optional cuisine filter
+    // Parse filter arrays
+    let cuisines: string[] = [];
+    if (cuisinesParam) {
+      try {
+        cuisines = JSON.parse(cuisinesParam);
+        if (!Array.isArray(cuisines)) {
+          return NextResponse.json(
+            { 
+              success: false, 
+              error: 'cuisines must be an array' 
+            },
+            { status: 400 }
+          );
+        }
+      } catch (error) {
+        return NextResponse.json(
+          { 
+            success: false, 
+            error: 'Invalid cuisines format' 
+          },
+          { status: 400 }
+        );
+      }
+    }
+
+    let categories: string[] = [];
+    if (categoriesParam) {
+      try {
+        categories = JSON.parse(categoriesParam);
+        if (!Array.isArray(categories)) {
+          return NextResponse.json(
+            { 
+              success: false, 
+              error: 'categories must be an array' 
+            },
+            { status: 400 }
+          );
+        }
+      } catch (error) {
+        return NextResponse.json(
+          { 
+            success: false, 
+            error: 'Invalid categories format' 
+          },
+          { status: 400 }
+        );
+      }
+    }
+
+    let prices: string[] = [];
+    let priceRanges: number[] = [];
+    if (pricesParam) {
+      try {
+        prices = JSON.parse(pricesParam);
+        if (!Array.isArray(prices)) {
+          return NextResponse.json(
+            { 
+              success: false, 
+              error: 'prices must be an array' 
+            },
+            { status: 400 }
+          );
+        }
+        
+        // Convert price symbols to numeric ranges
+        const priceMap: Record<string, number> = { '$': 1, '$$': 2, '$$$': 3, '$$$$': 4 };
+        priceRanges = prices.map(p => priceMap[p]).filter(Boolean);
+      } catch (error) {
+        return NextResponse.json(
+          { 
+            success: false, 
+            error: 'Invalid prices format' 
+          },
+          { status: 400 }
+        );
+      }
+    }
+
+    let restaurantIdsNotIn: string[] = [];
+    if (restaurantIdsNotInParam) {
+      try {
+        restaurantIdsNotIn = JSON.parse(restaurantIdsNotInParam);
+        if (!Array.isArray(restaurantIdsNotIn)) {
+          return NextResponse.json(
+            { 
+              success: false, 
+              error: 'restaurant_ids_not_in must be an array' 
+            },
+            { status: 400 }
+          );
+        }
+      } catch (error) {
+        return NextResponse.json(
+          { 
+            success: false, 
+            error: 'Invalid restaurant_ids_not_in format' 
+          },
+          { status: 400 }
+        );
+      }
+    }
+
+    // Build SQL query with optional filters
     let query = `
-      SELECT 
-        id,
-        name,
-        logo,
-        cuisine,
-        min_delivery_fee,
-        price_range,
-        dash_pass,
-        street,
-        city,
-        state,
-        zip_code,
-        latitude,
-        longitude
-      FROM restaurants
+      SELECT DISTINCT
+        r.id,
+        r.name,
+        r.logo,
+        r.cuisine,
+        r.min_delivery_fee,
+        r.price_range,
+        r.dash_pass,
+        r.street,
+        r.city,
+        r.state,
+        r.zip_code,
+        r.latitude,
+        r.longitude
+      FROM restaurants r
     `;
     
     const queryParams: any[] = [];
+    const whereClauses: string[] = [];
     
-    // Apply cuisine filter if provided
-    if (cuisineFilter) {
-      query += ' WHERE cuisine like ?';
-      queryParams.push(`%${cuisineFilter}%`);
+    // Apply name filter if provided
+    if (name) {
+      whereClauses.push('r.name LIKE ?');
+      queryParams.push(`%${name}%`);
+    }
+    
+    // Apply cuisines filter if provided
+    if (cuisines.length > 0) {
+      const cuisineConditions = cuisines.map(() => 'r.cuisine LIKE ?').join(' OR ');
+      whereClauses.push(`(${cuisineConditions})`);
+      cuisines.forEach(cuisine => {
+        queryParams.push(`%${cuisine}%`);
+      });
+    }
+    
+    // Apply categories filter if provided
+    if (categories.length > 0) {
+      query += ' INNER JOIN restaurant_categories rc ON r.id = rc.restaurant_id';
+      const categoryPlaceholders = categories.map(() => '?').join(',');
+      whereClauses.push(`rc.category_name IN (${categoryPlaceholders})`);
+      queryParams.push(...categories);
+    }
+    
+    // Apply price ranges filter if provided
+    if (priceRanges.length > 0) {
+      const pricePlaceholders = priceRanges.map(() => '?').join(',');
+      whereClauses.push(`r.price_range IN (${pricePlaceholders})`);
+      queryParams.push(...priceRanges);
+    }
+    
+    // Apply restaurant exclusion filter if provided
+    if (restaurantIdsNotIn.length > 0) {
+      const excludePlaceholders = restaurantIdsNotIn.map(() => '?').join(',');
+      whereClauses.push(`r.id NOT IN (${excludePlaceholders})`);
+      queryParams.push(...restaurantIdsNotIn);
+    }
+    
+    // Add WHERE clause if we have any conditions
+    if (whereClauses.length > 0) {
+      query += ' WHERE ' + whereClauses.join(' AND ');
     }
 
     const restaurants = await db.query<any>(query, queryParams);

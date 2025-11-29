@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
+import { calculateDistance } from '@/lib/utils/distance-utils';
 
 interface SortSpec {
   key: string;
@@ -12,7 +13,10 @@ interface SortSpec {
  * Query Parameters:
  * - userId: User ID (required)
  * - restaurant_id: Filter by restaurant ID (optional, searches all restaurants if not provided)
+ * - lat: Latitude (optional, used for distance filtering when restaurant_id not provided)
+ * - lng: Longitude (optional, used for distance filtering when restaurant_id not provided)
  * - keywords: JSON array of keywords to match against item name (optional)
+ * - menu_categories: JSON array of menu category names to filter by (optional, matches any)
  * - sort_type: JSON array of sort specifications (optional)
  *   - Each spec: { key: string, order?: "asc" | "desc" }
  *   - Example: [{ "key": "price", "order": "asc" }, { "key": "rating", "order": "desc" }]
@@ -22,16 +26,21 @@ interface SortSpec {
  * 
  * Finds menu items with optional filtering and sorting:
  * 1. Fetches menu items from database (all or from specific restaurant)
- * 2. Filters by keywords if provided (matches against item name only)
- * 3. Applies multi-level sorting based on sort_type array
- * 4. Returns top N items based on limit
+ * 2. If restaurant_id not provided: filters restaurants by 10 mile radius using lat/lng
+ * 3. Filters by menu categories if provided (matches against category name)
+ * 4. Filters by keywords if provided (matches against item name only)
+ * 5. Applies multi-level sorting based on sort_type array
+ * 6. Returns top N items based on limit
  */
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
     const userId = searchParams.get('userId');
     const restaurantId = searchParams.get('restaurant_id');
+    const lat = searchParams.get('lat');
+    const lng = searchParams.get('lng');
     const keywordsParam = searchParams.get('keywords');
+    const menuCategoriesParam = searchParams.get('menu_categories');
     const sortTypeParam = searchParams.get('sort_type');
     const limitParam = searchParams.get('limit');
     const limit = limitParam ? parseInt(limitParam, 10) : null;
@@ -41,6 +50,17 @@ export async function GET(request: NextRequest) {
         { 
           success: false, 
           error: 'userId is required' 
+        },
+        { status: 400 }
+      );
+    }
+    
+    // If restaurant_id is not provided, lat and lng are required for distance filtering
+    if (!restaurantId && (!lat || !lng)) {
+      return NextResponse.json(
+        { 
+          success: false, 
+          error: 'lat and lng are required when restaurant_id is not provided' 
         },
         { status: 400 }
       );
@@ -65,6 +85,31 @@ export async function GET(request: NextRequest) {
           { 
             success: false, 
             error: 'Invalid keywords format' 
+          },
+          { status: 400 }
+        );
+      }
+    }
+
+    // Parse menu_categories if provided
+    let menuCategories: string[] = [];
+    if (menuCategoriesParam) {
+      try {
+        menuCategories = JSON.parse(menuCategoriesParam);
+        if (!Array.isArray(menuCategories)) {
+          return NextResponse.json(
+            { 
+              success: false, 
+              error: 'menu_categories must be an array' 
+            },
+            { status: 400 }
+          );
+        }
+      } catch (error) {
+        return NextResponse.json(
+          { 
+            success: false, 
+            error: 'Invalid menu_categories format' 
           },
           { status: 400 }
         );
@@ -124,37 +169,90 @@ export async function GET(request: NextRequest) {
       }
     }
 
+    // If restaurant_id is not provided, we need to filter by distance
+    let restaurantIdsInRadius: string[] | null = null;
+    
+    if (!restaurantId && lat && lng) {
+      const userLat = parseFloat(lat);
+      const userLng = parseFloat(lng);
+      const maxRadius = 10; // 10 mile radius
+      
+      // Get all restaurants with their coordinates
+      const allRestaurants = await db.query<any>(
+        'SELECT id, latitude, longitude FROM restaurants WHERE latitude IS NOT NULL AND longitude IS NOT NULL'
+      );
+      
+      // Filter restaurants within radius
+      restaurantIdsInRadius = allRestaurants
+        .filter((restaurant: any) => {
+          const distance = calculateDistance(
+            restaurant.latitude,
+            restaurant.longitude,
+            userLat,
+            userLng
+          );
+          return distance <= maxRadius;
+        })
+        .map((restaurant: any) => String(restaurant.id));
+      
+      // If no restaurants in radius, return empty result
+      if (restaurantIdsInRadius.length === 0) {
+        return NextResponse.json({
+          success: true,
+          data: [],
+        });
+      }
+    }
+    
     // Build SQL query
     let query = `
-      SELECT 
-        id,
-        restaurant_id,
-        category_id,
-        name,
-        description,
-        price,
-        image,
-        calories,
-        rating,
-        rating_count,
-        popular,
-        featured
-      FROM menu_items
-      WHERE 1=1
+      SELECT DISTINCT
+        mi.id,
+        mi.restaurant_id,
+        mi.category_id,
+        mi.name,
+        mi.description,
+        mi.price,
+        mi.image,
+        mi.calories,
+        mi.rating,
+        mi.rating_count,
+        mi.popular,
+        mi.featured
+      FROM menu_items mi
     `;
+    
+    // Join with menu_categories if filtering by categories
+    if (menuCategories.length > 0) {
+      query += ' INNER JOIN menu_categories mc ON mi.category_id = mc.id';
+    }
+    
+    query += ' WHERE mi.is_available=1';
     
     const queryParams: any[] = [];
     
     // Filter by restaurant if provided
     if (restaurantId) {
-      query += ' AND restaurant_id = ?';
+      query += ' AND mi.restaurant_id = ?';
       queryParams.push(restaurantId);
+    } else if (restaurantIdsInRadius) {
+      // Filter by restaurants within radius
+      const placeholders = restaurantIdsInRadius.map(() => '?').join(',');
+      query += ` AND mi.restaurant_id IN (${placeholders})`;
+      queryParams.push(...restaurantIdsInRadius);
+    }
+
+    // Filter by menu categories if provided
+    if (menuCategories.length > 0) {
+      const categoryPlaceholders = menuCategories.map(() => '?').join(',');
+      query += ` AND mc.name COLLATE NOCASE IN (${categoryPlaceholders})`;
+      queryParams.push(...menuCategories);
     }
 
     // Filter by keywords if provided (match against name only)
     if (keywords.length > 0) {
       // Create OR conditions for each keyword
-      const keywordConditions = keywords.map(() => 'LOWER(name) LIKE ?').join(' OR ');
+      const keywordConditions = keywords.map(() => 'LOWER(mi.name) LIKE ?').join(' OR ');
       query += ` AND (${keywordConditions})`;
       
       // Add each keyword as a parameter with wildcard matching

@@ -23,12 +23,16 @@ export interface SortSpec {
 }
 
 export interface GetRestaurantsArgs {
+  name?: string; // Filter by restaurant name (partial match, case-insensitive)
   sort_type?: SortSpec[]; // Array of sort specifications for multi-level sorting
   limit?: number; // Number of restaurants to return
   lat?: number; // Optional explicit latitude
   lng?: number; // Optional explicit longitude
   filters?: {
-    cuisine?: string; // Filter by cuisine type
+    cuisines?: string[]; // Filter by cuisine types (matches any in array)
+    categories?: string[]; // Filter by categories (matches any in array)
+    prices?: string[]; // Filter by price ranges: "$", "$$", "$$$", "$$$$"
+    restaurant_ids_not_in?: string[]; // Exclude these restaurant IDs
   };
 }
 
@@ -57,7 +61,7 @@ export async function get_restaurants(args: GetRestaurantsArgs): Promise<GetRest
     return null;
   }
 
-  const { sort_type, limit, lat, lng, filters = {} } = args;
+  const { name, sort_type, limit, lat, lng, filters = {} } = args;
   
   try {
     // Determine lat/lng to use: prefer explicit args, fallback to selected address
@@ -93,8 +97,24 @@ export async function get_restaurants(args: GetRestaurantsArgs): Promise<GetRest
       params.append('sort_type', JSON.stringify(sort_type));
     }
     
-    if (filters.cuisine) {
-      params.append('cuisine', filters.cuisine);
+    if (name) {
+      params.append('name', name);
+    }
+    
+    if (filters.cuisines && filters.cuisines.length > 0) {
+      params.append('cuisines', JSON.stringify(filters.cuisines));
+    }
+    
+    if (filters.categories && filters.categories.length > 0) {
+      params.append('categories', JSON.stringify(filters.categories));
+    }
+    
+    if (filters.prices && filters.prices.length > 0) {
+      params.append('prices', JSON.stringify(filters.prices));
+    }
+    
+    if (filters.restaurant_ids_not_in && filters.restaurant_ids_not_in.length > 0) {
+      params.append('restaurant_ids_not_in', JSON.stringify(filters.restaurant_ids_not_in));
     }
     
     // Call API route
