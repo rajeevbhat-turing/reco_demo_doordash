@@ -66,10 +66,16 @@ To set up the project for local development:
    npm install
    ```
 
-2. **Run the development server**:
+2. **Create a `.env` file** with `LIBSQL_URL` (defaults to `.env`):
+
+   ```sh
+   LIBSQL_URL=your_libsql_url_here
+   ```
+
+3. **Run the development server**:
 
    ```sh
    npm run dev
    ```
 
-3. **Open your browser** and navigate to `localhost:3000` to see the app running.
+4. **Open your browser** and navigate to `localhost:3000` to see the app running.

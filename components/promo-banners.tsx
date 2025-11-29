@@ -1,8 +1,10 @@
 'use client';
 
-import { useRef, useState, useEffect } from 'react';
+import { useRef, useState, useEffect, useMemo, useSyncExternalStore } from 'react';
 import Link from 'next/link';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { useRestaurants } from '@/lib/hooks/use-restaurants';
+import { useUserStore } from '@/store/user-store';
 
 interface PromoBanner {
   id: string;
@@ -24,6 +26,32 @@ export default function PromoBanners() {
   const [banners, setBanners] = useState<PromoBanner[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Get user's address for location-based filtering
+  const isAuthenticated = useSyncExternalStore(
+    useUserStore.subscribe,
+    () => useUserStore.getState().isAuthenticated(),
+    () => false // fallback for SSR
+  );
+  const currentUser = useUserStore(state => state.currentUser);
+  const defaultAddress = currentUser?.addresses?.find(a => a.default);
+
+  // Get temp address for guest users
+  const tempAddress = useSyncExternalStore(
+    useUserStore.subscribe,
+    () => useUserStore.getState().getTempAddress(),
+    () => null // fallback for SSR
+  );
+
+  // Determine which address to use: logged-in user's default address or guest's temp address
+  const activeAddress = isAuthenticated ? defaultAddress : tempAddress;
+
+  // Fetch restaurants near user's address
+  const { data: restaurants, isLoading: isLoadingRestaurants } = useRestaurants(
+    activeAddress?.lat,
+    activeAddress?.lng,
+    10 // 10 mile radius
+  );
 
   // Fetch promotional banners from API
   useEffect(() => {
@@ -67,10 +95,24 @@ export default function PromoBanners() {
     fetchBanners();
   }, []);
 
+  // Filter banners to only include restaurants in delivery area
+  const filteredBanners = useMemo(() => {
+    // If no address is set, loading restaurants, or no restaurants, don't show any banners
+    if (!activeAddress || isLoadingRestaurants || !restaurants) {
+      return [];
+    }
+
+    // Create a set of restaurant IDs that are in delivery area
+    const restaurantIdsInDeliveryArea = new Set(restaurants.map(restaurant => restaurant.id));
+
+    // Filter banners to only include those whose restaurant is in delivery area
+    return banners.filter(banner => restaurantIdsInDeliveryArea.has(banner.restaurantId));
+  }, [banners, restaurants, isLoadingRestaurants, activeAddress]);
+
   // Update currentIndex based on scroll position
   useEffect(() => {
     const container = scrollContainerRef.current;
-    if (!container || banners.length === 0) return;
+    if (!container || filteredBanners.length === 0) return;
 
     const updateIndexFromScroll = () => {
       const cardWidth = container.querySelector('.promo-card')?.clientWidth || 0;
@@ -80,14 +122,14 @@ export default function PromoBanners() {
 
       // Check if we're at the end (within 5px tolerance)
       if (scrollLeft >= maxScroll - 5) {
-        setCurrentIndex(banners.length - 1);
+        setCurrentIndex(filteredBanners.length - 1);
       } else if (scrollLeft <= 5) {
         // At the start
         setCurrentIndex(0);
       } else {
         // Calculate index based on scroll position
         const newIndex = Math.round(scrollLeft / (cardWidth + gap));
-        setCurrentIndex(Math.min(Math.max(0, newIndex), banners.length - 1));
+        setCurrentIndex(Math.min(Math.max(0, newIndex), filteredBanners.length - 1));
       }
     };
 
@@ -103,7 +145,7 @@ export default function PromoBanners() {
       container.removeEventListener('scroll', updateIndexFromScroll);
       window.removeEventListener('resize', updateIndexFromScroll);
     };
-  }, [banners.length]);
+  }, [filteredBanners.length]);
 
   const scrollBanners = (direction: 'left' | 'right') => {
     if (!scrollContainerRef.current) return;
@@ -118,7 +160,7 @@ export default function PromoBanners() {
       setCurrentIndex(prev => Math.max(0, prev - 1));
     } else {
       container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
-      setCurrentIndex(prev => Math.min(banners.length - 1, prev + 1));
+      setCurrentIndex(prev => Math.min(filteredBanners.length - 1, prev + 1));
     }
 
     // Pause auto-scroll when user manually navigates
@@ -128,11 +170,11 @@ export default function PromoBanners() {
 
   // Auto-scroll functionality
   useEffect(() => {
-    if (!isAutoScrolling || banners.length === 0) return;
+    if (!isAutoScrolling || filteredBanners.length === 0) return;
 
     const interval = setInterval(() => {
       setCurrentIndex(prev => {
-        const nextIndex = prev >= banners.length - 1 ? 0 : prev + 1;
+        const nextIndex = prev >= filteredBanners.length - 1 ? 0 : prev + 1;
 
         if (scrollContainerRef.current) {
           const container = scrollContainerRef.current;
@@ -153,10 +195,10 @@ export default function PromoBanners() {
     }, 4000); // Change banner every 4 seconds
 
     return () => clearInterval(interval);
-  }, [isAutoScrolling, banners.length]);
+  }, [isAutoScrolling, filteredBanners.length]);
 
-  // Don't render if loading or error
-  if (isLoading) {
+  // Don't render if loading banners or restaurants, or if there's an error
+  if (isLoading || isLoadingRestaurants) {
     return (
       <div className="relative mb-6">
         <div className="flex gap-4">
@@ -166,8 +208,9 @@ export default function PromoBanners() {
     );
   }
 
-  if (error || banners.length === 0) {
-    return null; // Don't show anything if there's an error or no banners
+  // Don't show anything if there's an error, no banners, or no address
+  if (error || filteredBanners.length === 0 || !activeAddress) {
+    return null;
   }
 
   return (
@@ -180,7 +223,7 @@ export default function PromoBanners() {
         onMouseEnter={() => setIsAutoScrolling(false)}
         onMouseLeave={() => setIsAutoScrolling(true)}
       >
-        {banners.map(banner => (
+        {filteredBanners.map(banner => (
           <Link
             key={banner.id}
             href={`/store/${banner.restaurantId}`}
@@ -198,7 +241,9 @@ export default function PromoBanners() {
                 </p>
                 <div className="mt-4 inline-block">
                   <button
-                    className={`${banner.buttonColor} ${banner.buttonColor.includes('text-') ? '' : 'text-white'} px-4 py-2 rounded-full text-sm font-medium hover:shadow-md transition-shadow`}
+                    className={`${banner.buttonColor} ${
+                      banner.buttonColor.includes('text-') ? '' : 'text-white'
+                    } px-4 py-2 rounded-full text-sm font-medium hover:shadow-md transition-shadow`}
                   >
                     {banner.buttonText}
                   </button>
@@ -235,7 +280,7 @@ export default function PromoBanners() {
         </div>
       )}
 
-      {currentIndex < banners.length - 1 && (
+      {currentIndex < filteredBanners.length - 1 && (
         <div className="absolute -right-4 top-1/2 -translate-y-1/2">
           <button
             onClick={() => scrollBanners('right')}
@@ -248,7 +293,7 @@ export default function PromoBanners() {
 
       {/* Indicator dots
       <div className="flex justify-center space-x-2 mt-4">
-        {banners.map((_, index) => (
+        {filteredBanners.map((_, index) => (
           <button
             key={index}
             onClick={() => {
