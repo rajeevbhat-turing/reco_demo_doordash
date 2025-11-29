@@ -320,9 +320,11 @@ Gets restaurants with optional filtering, sorting, and radius filtering.
   sort_type?: SortSpec[];          // Optional: Multi-level sorting
   limit?: number;                  // Optional: Number of restaurants to return
   filters?: {
+    item_keyword?: string;         // Optional: Filter by menu item keyword (finds restaurants with matching items)
     cuisines?: string[];           // Optional: Array of cuisines (matches any)
     categories?: string[];         // Optional: Array of categories (matches any)
     prices?: string[];             // Optional: Array of price ranges: "$", "$$", "$$$", "$$$$"
+    dashpass?: boolean;            // Optional: Filter by DashPass availability
     restaurant_ids_not_in?: string[];  // Optional: Exclude these restaurant IDs
   };
 }
@@ -338,7 +340,8 @@ Gets restaurants with optional filtering, sorting, and radius filtering.
 
 ### Defaults
 - `lat`/`lng`: Uses logged-in user's selected or default address if not provided
-- `order`: "asc" if not specified
+- `sort_type`: Defaults to `[{ key: "distance", order: "asc" }]` if not specified (nearest restaurants first)
+- `order`: "asc" if not specified in a sort spec
 - `limit`: Returns all matching restaurants if not specified
 - **Automatic radius filtering**: All restaurants are filtered to within 10 miles of the user's location
 
@@ -366,20 +369,56 @@ Gets restaurants with optional filtering, sorting, and radius filtering.
 
 ### Examples
 
+**Get nearest restaurants (uses default sort by distance):**
+```json
+{
+  "function": "get_restaurants",
+  "args": {
+    "limit": 5
+  }
+}
+```
+Returns the 5 nearest restaurants (default sort by distance ascending).
+
 **Filter by restaurant name:**
 ```json
 {
   "function": "get_restaurants",
   "args": {
     "name": "Pizza",
-    "sort_type": [
-      { "key": "distance", "order": "asc" }
-    ],
     "limit": 5
   }
 }
 ```
-This will find all restaurants with "Pizza" in their name (e.g., "Pizza Palace", "Mario's Pizza").
+This will find all restaurants with "Pizza" in their name (e.g., "Pizza Palace", "Mario's Pizza"), sorted by distance.
+
+**Filter by menu item keyword:**
+```json
+{
+  "function": "get_restaurants",
+  "args": {
+    "filters": {
+      "item_keyword": "tacos"
+    },
+    "limit": 10
+  }
+}
+```
+Finds restaurants that have menu items with "tacos" in the name, sorted by nearest first.
+
+**Filter by DashPass:**
+```json
+{
+  "function": "get_restaurants",
+  "args": {
+    "filters": {
+      "dashpass": true
+    },
+    "limit": 10
+  }
+}
+```
+Returns only DashPass restaurants, sorted by nearest first.
 
 **Get nearest vegetarian restaurants:**
 ```json
@@ -531,6 +570,7 @@ Gets menu items with optional filtering and multi-level sorting.
   lng?: number;                    // Optional: Explicit longitude
   filters?: {
     menu_categories?: string[];    // Optional: Array of menu category names (matches any)
+    restaurant_ids_not_in?: string[]; // Optional: Exclude items from these restaurant IDs
   };
 }
 ```
@@ -606,6 +646,24 @@ Gets menu items with optional filtering and multi-level sorting.
 }
 ```
 This will find items that belong to either "Appetizers" or "Salads" menu categories.
+
+**Exclude items from specific restaurants:**
+```json
+{
+  "function": "get_items",
+  "args": {
+    "keywords": ["tacos"],
+    "filters": {
+      "restaurant_ids_not_in": ["$[0].orders[*].storeId"]
+    },
+    "sort_type": [
+      { "key": "price", "order": "asc" }
+    ],
+    "limit": 5
+  }
+}
+```
+Finds the cheapest tacos, excluding restaurants the user has already ordered from.
 
 **Search with explicit coordinates:**
 ```json

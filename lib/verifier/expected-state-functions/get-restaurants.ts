@@ -29,9 +29,11 @@ export interface GetRestaurantsArgs {
   lat?: number; // Optional explicit latitude
   lng?: number; // Optional explicit longitude
   filters?: {
+    item_keyword?: string; // Filter by menu item keyword (restaurants that have items matching this keyword)
     cuisines?: string[]; // Filter by cuisine types (matches any in array)
     categories?: string[]; // Filter by categories (matches any in array)
     prices?: string[]; // Filter by price ranges: "$", "$$", "$$$", "$$$$"
+    dashpass?: boolean; // Filter by DashPass availability
     restaurant_ids_not_in?: string[]; // Exclude these restaurant IDs
   };
 }
@@ -63,6 +65,11 @@ export async function get_restaurants(args: GetRestaurantsArgs): Promise<GetRest
 
   const { name, sort_type, limit, lat, lng, filters = {} } = args;
   
+  // Default sort by distance ascending if no sort_type provided
+  const effectiveSortType = sort_type && sort_type.length > 0 
+    ? sort_type 
+    : [{ key: 'distance', order: 'asc' as const }];
+  
   try {
     // Determine lat/lng to use: prefer explicit args, fallback to selected address
     let userLat: number | undefined = lat;
@@ -93,12 +100,15 @@ export async function get_restaurants(args: GetRestaurantsArgs): Promise<GetRest
       params.append('limit', String(limit));
     }
     
-    if (sort_type && sort_type.length > 0) {
-      params.append('sort_type', JSON.stringify(sort_type));
-    }
+    // Always pass sort_type (uses default if not provided)
+    params.append('sort_type', JSON.stringify(effectiveSortType));
     
     if (name) {
       params.append('name', name);
+    }
+    
+    if (filters.item_keyword) {
+      params.append('item_keyword', filters.item_keyword);
     }
     
     if (filters.cuisines && filters.cuisines.length > 0) {
@@ -111,6 +121,10 @@ export async function get_restaurants(args: GetRestaurantsArgs): Promise<GetRest
     
     if (filters.prices && filters.prices.length > 0) {
       params.append('prices', JSON.stringify(filters.prices));
+    }
+    
+    if (filters.dashpass !== undefined) {
+      params.append('dashpass', String(filters.dashpass));
     }
     
     if (filters.restaurant_ids_not_in && filters.restaurant_ids_not_in.length > 0) {

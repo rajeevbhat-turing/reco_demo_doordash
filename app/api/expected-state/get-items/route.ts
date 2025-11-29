@@ -17,6 +17,7 @@ interface SortSpec {
  * - lng: Longitude (optional, used for distance filtering when restaurant_id not provided)
  * - keywords: JSON array of keywords to match against item name (optional)
  * - menu_categories: JSON array of menu category names to filter by (optional, matches any)
+ * - restaurant_ids_not_in: JSON array of restaurant IDs to exclude (optional)
  * - sort_type: JSON array of sort specifications (optional)
  *   - Each spec: { key: string, order?: "asc" | "desc" }
  *   - Example: [{ "key": "price", "order": "asc" }, { "key": "rating", "order": "desc" }]
@@ -29,8 +30,9 @@ interface SortSpec {
  * 2. If restaurant_id not provided: filters restaurants by 10 mile radius using lat/lng
  * 3. Filters by menu categories if provided (matches against category name)
  * 4. Filters by keywords if provided (matches against item name only)
- * 5. Applies multi-level sorting based on sort_type array
- * 6. Returns top N items based on limit
+ * 5. Excludes items from specific restaurants if restaurant_ids_not_in provided
+ * 6. Applies multi-level sorting based on sort_type array
+ * 7. Returns top N items based on limit
  */
 export async function GET(request: NextRequest) {
   try {
@@ -41,6 +43,7 @@ export async function GET(request: NextRequest) {
     const lng = searchParams.get('lng');
     const keywordsParam = searchParams.get('keywords');
     const menuCategoriesParam = searchParams.get('menu_categories');
+    const restaurantIdsNotInParam = searchParams.get('restaurant_ids_not_in');
     const sortTypeParam = searchParams.get('sort_type');
     const limitParam = searchParams.get('limit');
     const limit = limitParam ? parseInt(limitParam, 10) : null;
@@ -110,6 +113,31 @@ export async function GET(request: NextRequest) {
           { 
             success: false, 
             error: 'Invalid menu_categories format' 
+          },
+          { status: 400 }
+        );
+      }
+    }
+
+    // Parse restaurant_ids_not_in if provided
+    let restaurantIdsNotIn: string[] = [];
+    if (restaurantIdsNotInParam) {
+      try {
+        restaurantIdsNotIn = JSON.parse(restaurantIdsNotInParam);
+        if (!Array.isArray(restaurantIdsNotIn)) {
+          return NextResponse.json(
+            { 
+              success: false, 
+              error: 'restaurant_ids_not_in must be an array' 
+            },
+            { status: 400 }
+          );
+        }
+      } catch (error) {
+        return NextResponse.json(
+          { 
+            success: false, 
+            error: 'Invalid restaurant_ids_not_in format' 
           },
           { status: 400 }
         );
@@ -259,6 +287,13 @@ export async function GET(request: NextRequest) {
       keywords.forEach(keyword => {
         queryParams.push(`%${keyword.toLowerCase()}%`);
       });
+    }
+
+    // Apply restaurant exclusion filter if provided
+    if (restaurantIdsNotIn.length > 0) {
+      const excludePlaceholders = restaurantIdsNotIn.map(() => '?').join(',');
+      query += ` AND mi.restaurant_id NOT IN (${excludePlaceholders})`;
+      queryParams.push(...restaurantIdsNotIn);
     }
 
     const menuItems = await db.query<any>(query, queryParams);
