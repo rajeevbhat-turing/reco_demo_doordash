@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect, useMemo } from 'react';
+import { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { ChevronRight, ChevronLeft, ArrowRight, Star } from 'lucide-react';
 import OverallRating from './overall-rating';
@@ -118,6 +118,11 @@ export default function Reviews({ vendorId, vendorName }: ReviewsProps) {
     router.push(`/reviews/store/${vendorId}`);
   };
 
+  // Handle closing review dialog
+  const handleCloseReviewDialog = useCallback(() => {
+    setReviewDialogOpen(false);
+  }, []);
+
   // Show loading state
   if (isLoading) {
     return null;
@@ -172,7 +177,7 @@ export default function Reviews({ vendorId, vendorName }: ReviewsProps) {
         {reviewDialogOpen && (
           <ReviewDialog
             isOpen={reviewDialogOpen}
-            onClose={() => setReviewDialogOpen(false)}
+            onClose={handleCloseReviewDialog}
             restaurantName={vendorName}
             vendorId={vendorId}
             vendorLogo={
@@ -259,7 +264,7 @@ export default function Reviews({ vendorId, vendorName }: ReviewsProps) {
       {/* Review Dialog */}
       <ReviewDialog
         isOpen={reviewDialogOpen}
-        onClose={() => setReviewDialogOpen(false)}
+        onClose={handleCloseReviewDialog}
         restaurantName={vendorName}
         vendorId={vendorId}
         vendorLogo={

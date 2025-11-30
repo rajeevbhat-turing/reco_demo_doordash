@@ -26,6 +26,7 @@ export default function TwoStepVerificationModal({
   const [showTooManyAttempts, setShowTooManyAttempts] = useState(false);
 
   const dialogRef = useRef<HTMLDivElement>(null);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // Disable body scroll and limit height when modal is open
   useEffect(() => {
@@ -80,11 +81,17 @@ export default function TwoStepVerificationModal({
 
   // Starts the resend timer countdown
   const startResendTimer = () => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+    }
     setResendTimer(30);
-    const interval = setInterval(() => {
+    intervalRef.current = setInterval(() => {
       setResendTimer(prev => {
         if (prev <= 1) {
-          clearInterval(interval);
+          if (intervalRef.current) {
+            clearInterval(intervalRef.current);
+            intervalRef.current = null;
+          }
           return 0;
         }
         return prev - 1;
@@ -165,6 +172,16 @@ export default function TwoStepVerificationModal({
       }
     }
   }, [isOpen]);
+
+  // Cleanup interval on unmount
+  useEffect(
+    () => () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    },
+    []
+  );
 
   if (!isOpen) return null;
 

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { X, ExternalLink, ChevronRight } from 'lucide-react';
 import DealModal from './deal-modal';
 import { type Deal } from '@/types/deal-types';
@@ -37,6 +37,12 @@ export default function DealsModal({ isOpen, onClose, restaurantId }: DealsModal
       setIsDealModalOpen(true);
     }
   };
+
+  // Handle closing deal modal
+  const handleCloseDealModal = useCallback(() => {
+    setIsDealModalOpen(false);
+    setSelectedDeal(null);
+  }, []);
 
   useEffect(() => {
     if (isOpen) {
@@ -145,14 +151,7 @@ export default function DealsModal({ isOpen, onClose, restaurantId }: DealsModal
       </div>
 
       {/* Deal Modal */}
-      <DealModal
-        isOpen={isDealModalOpen}
-        onClose={() => {
-          setIsDealModalOpen(false);
-          setSelectedDeal(null);
-        }}
-        deal={selectedDeal}
-      />
+      <DealModal isOpen={isDealModalOpen} onClose={handleCloseDealModal} deal={selectedDeal} />
     </div>
   );
 }

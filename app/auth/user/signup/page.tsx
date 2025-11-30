@@ -27,6 +27,7 @@ export default function SignUpPage() {
   const countryDropdownRef = useRef<HTMLDivElement>(null);
   const countrySelectRef = useRef<HTMLDivElement>(null);
   const countryButtonRef = useRef<HTMLButtonElement | null>(null);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [countrySearchTerm, setCountrySearchTerm] = useState('');
 
   // Detect user's country on component mount
@@ -182,6 +183,17 @@ export default function SignUpPage() {
     };
   }, [showCountryDropdown]);
 
+  // Cleanup timeout on unmount
+  useEffect(
+    () => () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
+      }
+    },
+    []
+  );
+
   const generateOTP = () => {
     const newOtp = Math.floor(100000 + Math.random() * 900000).toString();
     setOtp(newOtp);
@@ -213,7 +225,7 @@ export default function SignUpPage() {
       // Redirecting to the route before authentication
       router.replace(routeBeforeAuth);
       // Delay clearing the saved path to ensure navigation completes
-      setTimeout(() => {
+      timeoutRef.current = setTimeout(() => {
         setRouteBeforeAuth(null);
       }, 500);
     } else {

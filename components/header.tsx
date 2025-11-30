@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState, useSyncExternalStore, useMemo } from 'react';
+import { useEffect, useState, useSyncExternalStore, useMemo, useCallback } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { MapPin, ChevronDown, ShoppingCart, ChevronRight, Plus } from 'lucide-react';
@@ -201,10 +201,14 @@ export default function Header() {
     setIsCartOpen(!isCartOpen);
   };
 
-  const handleCloseCart = () => {
+  const handleCloseCart = useCallback(() => {
     console.log('[HEADER] Closing cart');
     setIsCartOpen(false);
-  };
+  }, []);
+
+  const handleCloseAddressesModal = useCallback(() => {
+    setShowAddressesModal(false);
+  }, []);
 
   const handleSelectAddress = (addressId: string) => {
     setSelectedAddressId(addressId);
@@ -968,7 +972,7 @@ export default function Header() {
       {/* Addresses Modal */}
       <AddressesModal
         isOpen={showAddressesModal}
-        onClose={() => setShowAddressesModal(false)}
+        onClose={handleCloseAddressesModal}
         addresses={addresses}
         selectedAddressId={selectedAddressId}
         onSelectAddress={handleSelectAddress}

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import SignIn from '@/components/authentication/sign-in';
 import { useAppStore } from '@/store/app-store';
@@ -14,12 +14,23 @@ export default function AuthPage() {
     currentForm: 'email' | 'password' | 'otp';
     foundUser: any;
   }>({ currentForm: 'email', foundUser: null });
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
+      }
+    };
+  }, []);
 
   const handleAuthSuccess = () => {
     if (routeBeforeAuth) {
       router.replace(routeBeforeAuth);
       // Delay clearing the saved path to ensure navigation completes
-      setTimeout(() => {
+      timeoutRef.current = setTimeout(() => {
         setRouteBeforeAuth(null);
       }, 500);
     } else {

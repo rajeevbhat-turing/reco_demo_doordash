@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { ArrowRight, Search, MapPin, ChevronRight, Plus, Navigation } from 'lucide-react';
 import AuthenticationModal from '@/components/modals/authentication-modal';
 import AddNewAddressModal from '@/components/modals/landing-page/add-new-address-modal';
@@ -78,7 +78,7 @@ export default function LandingPage() {
           `${address.street}, ${address.city}, ${address.state} ${address.zipCode}`.toLowerCase();
         return fullAddress.includes(query);
       })
-      .slice(0, 5); // Limit to 5 results
+      .slice(0, 3); // Limit to 3 results
   }, [addressSearchQuery]);
 
   // Handle address selection
@@ -166,10 +166,10 @@ export default function LandingPage() {
   };
 
   // Handle review error modal close
-  const handleReviewErrorModalClose = () => {
+  const handleReviewErrorModalClose = useCallback(() => {
     setShowReviewErrorModal(false);
     setPendingAddressData(null);
-  };
+  }, []);
 
   // Handle review address - go back to add address modal with pre-filled data
   const handleReviewAddress = () => {
@@ -479,7 +479,7 @@ export default function LandingPage() {
                     className="absolute top-full left-0 right-0 mt-2 bg-white rounded-sm shadow-lg border border-gray-200 
               max-h-[260px] overflow-y-auto z-50"
                   >
-                    {filteredAddresses?.slice(0, 3)?.map(address => (
+                    {filteredAddresses?.map(address => (
                       <div
                         onClick={() => handleSelectAddress(address)}
                         key={`address-dropdown-item-${address.id}`}

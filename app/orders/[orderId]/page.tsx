@@ -4,7 +4,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { useOrdersStore } from '@/store/orders-store';
 import { Download, Home, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Order } from '@/constants/order-data';
 import ReviewDialog from '@/components/review-dialog';
 import { useRestaurant } from '@/lib/hooks/use-restaurant';
@@ -33,6 +33,22 @@ export default function OrderReceiptPage() {
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  // Handle review dialog close
+  const handleCloseReviewDialog = useCallback(() => {
+    setShowReviewDialog(false);
+  }, []);
+
+  // Handle review submit
+  const handleReviewSubmit = useCallback(
+    (rating: number, text: string, _likedItems?: ReviewOrderItem[]) => {
+      if (order) {
+        updateOrderReview(order.id, rating, text);
+        setShowReviewDialog(false);
+      }
+    },
+    [order, updateOrderReview]
+  );
 
   // Helper function to get store name (support both old and new field names)
   const getStoreName = (order: Order) => {
@@ -589,17 +605,14 @@ export default function OrderReceiptPage() {
       {order && (
         <ReviewDialog
           isOpen={showReviewDialog}
-          onClose={() => setShowReviewDialog(false)}
+          onClose={handleCloseReviewDialog}
           restaurantName={getStoreName(order)}
           vendorId={order.storeId || order.restaurantId}
           defaultRating={0}
           orderItems={convertOrderItemsToReviewItems(order)}
           orderDate={formatOrderDate(order)}
           vendorLogo={orderRestaurant?.logo || undefined}
-          onSubmit={(rating, text, _likedItems) => {
-            updateOrderReview(order.id, rating, text);
-            setShowReviewDialog(false);
-          }}
+          onSubmit={handleReviewSubmit}
         />
       )}
     </div>

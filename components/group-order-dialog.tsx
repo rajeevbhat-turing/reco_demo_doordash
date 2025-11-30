@@ -11,6 +11,7 @@ interface GroupOrderDialogProps {
 
 export default function GroupOrderDialog({ isOpen, onClose }: GroupOrderDialogProps) {
   const dialogRef = useRef<HTMLDivElement>(null);
+  const copiedTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const startGroupOrder = useCartStore(state => state.startGroupOrder);
 
   const [currentView, setCurrentView] = useState<
@@ -57,6 +58,16 @@ export default function GroupOrderDialog({ isOpen, onClose }: GroupOrderDialogPr
       }
     };
   }, [isOpen, onClose]);
+
+  // Cleanup timeout on unmount
+  useEffect(
+    () => () => {
+      if (copiedTimeoutRef.current) {
+        clearTimeout(copiedTimeoutRef.current);
+      }
+    },
+    []
+  );
 
   if (!isOpen) return null;
 
@@ -128,7 +139,10 @@ export default function GroupOrderDialog({ isOpen, onClose }: GroupOrderDialogPr
     try {
       await navigator.clipboard.writeText(groupOrderLink);
       setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      if (copiedTimeoutRef.current) {
+        clearTimeout(copiedTimeoutRef.current);
+      }
+      copiedTimeoutRef.current = setTimeout(() => setCopied(false), 2000);
     } catch (err) {
       console.error('Failed to copy: ', err);
     }

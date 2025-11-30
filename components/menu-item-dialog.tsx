@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { X, ChevronDown, ChevronUp, Minus, Plus } from 'lucide-react';
 import { useCartStore } from '@/store/cart-store';
 import type { MenuItem } from '@/constants/menu-items';
@@ -186,13 +186,37 @@ export default function MenuItemDialog({ isOpen, onClose, item }: MenuItemDialog
     });
   }, [appliedModifications, item]);
 
-  if (!isOpen || !item) return null;
-
   // Parse base price (remove currency symbol and convert to number)
-  const basePrice = parseFloat(item.price.replace(/[^0-9.]/g, '')) || 0;
+  const basePrice = useMemo(
+    () => (item ? parseFloat(item.price.replace(/[^0-9.]/g, '')) || 0 : 0),
+    [item]
+  );
+
+  const recommendedOptions: MenuItemOption[] = useMemo(
+    () => [
+      {
+        id: '1',
+        title: '#1 · Popular Choice',
+        subtitle: 'Regular portion with standard selections',
+        details: ['Regular size', 'Standard selections'],
+        price: `$${basePrice.toFixed(2)}`,
+        popular: true,
+        popularity: '10+',
+      },
+      {
+        id: '2',
+        title: '#2 · Value Combo',
+        subtitle: 'Large size with beverage',
+        details: ['Large size', 'Includes beverage'],
+        price: `$${(basePrice + 2.5).toFixed(2)}`,
+      },
+    ],
+    [basePrice]
+  );
 
   // Calculate total price including customizations
-  const calculateTotalPrice = () => {
+  const totalPrice = useMemo(() => {
+    if (!item) return '0.00';
     let total = basePrice;
 
     // Add selected recommended option price if applicable
@@ -213,26 +237,7 @@ export default function MenuItemDialog({ isOpen, onClose, item }: MenuItemDialog
 
     // Multiply by quantity
     return (total * quantity).toFixed(2);
-  };
-
-  const recommendedOptions: MenuItemOption[] = [
-    {
-      id: '1',
-      title: '#1 · Popular Choice',
-      subtitle: 'Regular portion with standard selections',
-      details: ['Regular size', 'Standard selections'],
-      price: `$${basePrice.toFixed(2)}`,
-      popular: true,
-      popularity: '10+',
-    },
-    {
-      id: '2',
-      title: '#2 · Value Combo',
-      subtitle: 'Large size with beverage',
-      details: ['Large size', 'Includes beverage'],
-      price: `$${(basePrice + 2.5).toFixed(2)}`,
-    },
-  ];
+  }, [basePrice, selectedOption, appliedModifications, quantity, recommendedOptions, item]);
 
   const toggleModificationExpanded = (modId: string) => {
     const newExpanded = new Set(expandedModifications);
@@ -356,7 +361,8 @@ export default function MenuItemDialog({ isOpen, onClose, item }: MenuItemDialog
     return option?.quantity || 0;
   };
 
-  const canAddToCart = (): boolean => {
+  const canAddToCart = useMemo((): boolean => {
+    if (!item) return false;
     const menuItem = item as MenuItem;
     if (!menuItem.modifications) return true;
 
@@ -372,17 +378,19 @@ export default function MenuItemDialog({ isOpen, onClose, item }: MenuItemDialog
     }
 
     return true;
-  };
+  }, [visibleModifications, appliedModifications, item]);
+
+  if (!isOpen || !item) return null;
 
   // const handleOptionSelect = (optionId: string) => {
   //   setSelectedOption(optionId === selectedOption ? null : optionId);
   // };
 
   const handleAddToCart = () => {
-    if (!item || !canAddToCart()) return;
+    if (!item || !canAddToCart) return;
 
     const menuItem = item as MenuItem;
-    const singleItemPrice = parseFloat(calculateTotalPrice()) / quantity;
+    const singleItemPrice = parseFloat(totalPrice) / quantity;
 
     // Format applied modifications for cart
     const formattedModifications: AppliedModification[] = [];
@@ -752,12 +760,12 @@ export default function MenuItemDialog({ isOpen, onClose, item }: MenuItemDialog
             {/* Add to Cart Button */}
             <button
               className={`flex-1 py-3 ${
-                canAddToCart() ? 'bg-red-600' : 'bg-gray-300'
+                canAddToCart ? 'bg-red-600' : 'bg-gray-300'
               } text-white font-medium rounded-lg`}
-              disabled={!canAddToCart()}
+              disabled={!canAddToCart}
               onClick={handleAddToCart}
             >
-              Add to cart - ${calculateTotalPrice()}
+              Add to cart - ${totalPrice}
             </button>
           </div>
         </div>

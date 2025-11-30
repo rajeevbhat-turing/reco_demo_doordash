@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useRef, useMemo } from 'react';
+import React, { useEffect, useRef, useMemo, useCallback } from 'react';
 import { X, Plus, ThumbsUp } from 'lucide-react';
 import { type Deal } from '@/types/deal-types';
 import { type MenuItem } from '@/constants/menu-items';
@@ -91,6 +91,11 @@ export default function DealModal({ isOpen, onClose, deal }: DealModalProps) {
     if (!deal?.restaurantId || !restaurants) return null;
     return getRestaurantById(restaurants, deal.restaurantId);
   }, [deal?.restaurantId, restaurants]);
+
+  // Handle closing menu item dialog
+  const handleCloseMenuItemDialog = useCallback(() => {
+    setMenuItemDialogOpen(false);
+  }, []);
 
   // Handle add to cart
   const handleAddToCart = (item: MenuItem) => {
@@ -280,7 +285,7 @@ export default function DealModal({ isOpen, onClose, deal }: DealModalProps) {
       {selectedItem && (
         <MenuItemDialog
           isOpen={menuItemDialogOpen}
-          onClose={() => setMenuItemDialogOpen(false)}
+          onClose={handleCloseMenuItemDialog}
           item={{
             ...selectedItem,
             image: selectedItem.image || '',

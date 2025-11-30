@@ -124,6 +124,22 @@ export default function StoreReviewsPage() {
     return vendorReviews && vendorReviews.length > 0 ? vendorReviews[0].vendorName : '';
   }, [vendorReviews]);
 
+  // Handle close review dialog
+  const handleCloseReviewDialog = useCallback(() => {
+    setReviewDialogOpen(false);
+  }, []);
+
+  // Handle close reviews info modal
+  const handleCloseReviewsInfoModal = useCallback(() => {
+    setReviewsInfoModalOpen(false);
+  }, []);
+
+  // Handle close photo viewer modal
+  const handleClosePhotoViewer = useCallback(() => {
+    setPhotoViewerOpen(false);
+    setSelectedPhoto(null);
+  }, []);
+
   const totalReviews = approvedReviews?.length || 0;
 
   // If loading
@@ -341,7 +357,7 @@ export default function StoreReviewsPage() {
       {/* Review Dialog */}
       <ReviewDialog
         isOpen={reviewDialogOpen}
-        onClose={() => setReviewDialogOpen(false)}
+        onClose={handleCloseReviewDialog}
         restaurantName={vendorName}
         vendorId={storeId}
         vendorLogo={
@@ -350,19 +366,13 @@ export default function StoreReviewsPage() {
       />
 
       {/* Reviews Info Modal */}
-      <ReviewsInfoModal
-        isOpen={reviewsInfoModalOpen}
-        onClose={() => setReviewsInfoModalOpen(false)}
-      />
+      <ReviewsInfoModal isOpen={reviewsInfoModalOpen} onClose={handleCloseReviewsInfoModal} />
 
       {/* Photo Viewer Modal */}
       {selectedPhoto && (
         <PhotoViewerModal
           isOpen={photoViewerOpen}
-          onClose={() => {
-            setPhotoViewerOpen(false);
-            setSelectedPhoto(null);
-          }}
+          onClose={handleClosePhotoViewer}
           photo={selectedPhoto.photo}
           userName={selectedPhoto.userName}
           timestamp={selectedPhoto.timestamp}

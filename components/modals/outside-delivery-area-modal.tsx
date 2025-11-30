@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { X, Home, ChevronRight } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useUserStore } from '@/store/user-store';
@@ -144,6 +144,38 @@ export default function OutsideDeliveryAreaModal({
     setShowAddAddressModal(true);
   };
 
+  // Memoized modal close handlers
+  const handleCloseAddressesModal = useCallback(() => {
+    setShowAddressesModal(false);
+  }, []);
+
+  const handleCloseLabelModal = useCallback(() => {
+    setShowLabelModal(false);
+  }, []);
+
+  const handleCloseChooseLabelModal = useCallback(() => {
+    setShowChooseLabelModal(false);
+  }, []);
+
+  const handleCloseAddAddressModal = useCallback(() => {
+    setShowAddAddressModal(false);
+  }, []);
+
+  const handleCloseReviewErrorModal = useCallback(() => {
+    setShowReviewErrorModal(false);
+    setPendingAddressData(null);
+  }, []);
+
+  const handleCloseAddressTypeModal = useCallback(() => {
+    setShowAddressTypeModal(false);
+    setTempAddressData(null);
+  }, []);
+
+  const handleCloseAddressDetailsModal = useCallback(() => {
+    setShowAddressDetailsModal(false);
+    setTempAddressData(null);
+  }, []);
+
   return (
     <>
       {/* Outside Delivery Area Modal */}
@@ -209,7 +241,7 @@ export default function OutsideDeliveryAreaModal({
       {/* Address Modals */}
       <AddressesModal
         isOpen={showAddressesModal}
-        onClose={() => setShowAddressesModal(false)}
+        onClose={handleCloseAddressesModal}
         addresses={addresses}
         selectedAddressId={selectedAddressId}
         onSelectAddress={handleSelectAddress}
@@ -221,7 +253,7 @@ export default function OutsideDeliveryAreaModal({
 
       <ChooseAddressLabelModal
         isOpen={showLabelModal}
-        onClose={() => setShowLabelModal(false)}
+        onClose={handleCloseLabelModal}
         addresses={addresses}
         onSelectAddress={(_addressId: string) => {
           setShowLabelModal(false);
@@ -237,7 +269,7 @@ export default function OutsideDeliveryAreaModal({
 
       <ChooseLabelModal
         isOpen={showChooseLabelModal}
-        onClose={() => setShowChooseLabelModal(false)}
+        onClose={handleCloseChooseLabelModal}
         onSave={(_label: string) => {
           // Handle label save if needed
           setShowChooseLabelModal(false);
@@ -246,27 +278,21 @@ export default function OutsideDeliveryAreaModal({
 
       <AddAddressModal
         isOpen={showAddAddressModal}
-        onClose={() => setShowAddAddressModal(false)}
+        onClose={handleCloseAddAddressModal}
         onContinue={handleAddAddress}
         initialData={pendingAddressData || undefined}
       />
 
       <AddressReviewErrorModal
         isOpen={showReviewErrorModal}
-        onClose={() => {
-          setShowReviewErrorModal(false);
-          setPendingAddressData(null);
-        }}
+        onClose={handleCloseReviewErrorModal}
         onReviewAddress={handleReviewAddress}
         onEnterNewAddress={handleEnterNewAddress}
       />
 
       <AddressTypeModal
         isOpen={showAddressTypeModal}
-        onClose={() => {
-          setShowAddressTypeModal(false);
-          setTempAddressData(null);
-        }}
+        onClose={handleCloseAddressTypeModal}
         addressData={
           tempAddressData ||
           pendingAddressData || {
@@ -292,10 +318,7 @@ export default function OutsideDeliveryAreaModal({
 
       <AddressDetailsModal
         isOpen={showAddressDetailsModal}
-        onClose={() => {
-          setShowAddressDetailsModal(false);
-          setTempAddressData(null);
-        }}
+        onClose={handleCloseAddressDetailsModal}
         address={
           selectedAddressId
             ? addresses.find(a => a.id === selectedAddressId)

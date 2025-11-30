@@ -27,6 +27,7 @@ export default function AccountSettingsPage() {
   const phoneCountrySelectRef = useRef<HTMLDivElement>(null);
   const phoneCountryButtonRef = useRef<HTMLButtonElement>(null);
   const phoneCountryDropdownRef = useRef<HTMLDivElement>(null);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Form data state
   const [formData, setFormData] = useState({
@@ -82,6 +83,17 @@ export default function AccountSettingsPage() {
       document.body.style.height = 'auto';
     };
   }, [showOTPModal]);
+
+  // Cleanup timeout on unmount
+  useEffect(
+    () => () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
+      }
+    },
+    []
+  );
 
   // Close country dropdown when clicking outside and position it below
   useEffect(() => {
@@ -386,7 +398,7 @@ export default function AccountSettingsPage() {
       setGeneralError('Unable to update profile. Please try again later.');
     } finally {
       // Wait 500ms before hiding loading state
-      setTimeout(() => {
+      timeoutRef.current = setTimeout(() => {
         setIsSaving(false);
       }, 500);
     }

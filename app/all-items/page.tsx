@@ -4,10 +4,11 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import VerticalListPage from '@/components/vertical-list-page';
 import { useRestaurants } from '@/lib/hooks/use-restaurants';
 import { useUserStore } from '@/store/user-store';
-import { Suspense } from 'react';
+import { Suspense, useMemo } from 'react';
 import { RestaurantsSkeleton } from '@/components/skeletons/restaurant-skeleton';
 import { useAllDeals } from '@/lib/hooks/use-deals';
 import type { Deal } from '@/types/deal-types';
+import { hasValidLogo } from '@/lib/utils/helperFunctions';
 
 // Inner component that uses searchParams
 function AllItemsContent() {
@@ -36,16 +37,8 @@ function AllItemsContent() {
   const shouldFetchDeals = section === 'deals-for-you';
   const { data: allDeals } = useAllDeals(shouldFetchDeals);
 
-  // Function to check if an image URL is valid (not placeholder/empty)
-  const hasValidLogo = (logoUrl: string | undefined): boolean => {
-    if (!logoUrl || logoUrl.trim() === '') return false;
-    if (logoUrl.includes('placeholder.svg')) return false;
-    if (logoUrl.includes('placeholder.png')) return false;
-    return true;
-  };
-
-  // Get the items based on the section
-  const getItems = () => {
+  // Get the items based on the section - memoized to prevent unnecessary recalculations
+  const items = useMemo(() => {
     // Restaurant items
     if (type === 'restaurant') {
       if (!restaurants) return [];
@@ -116,7 +109,7 @@ function AllItemsContent() {
 
     // Default to empty array for other types
     return [];
-  };
+  }, [restaurants, section, type, allDeals]);
 
   const handleBack = () => {
     // Redirect to the appropriate home page based on the type
@@ -185,7 +178,7 @@ function AllItemsContent() {
   return (
     <VerticalListPage
       title={title}
-      items={getItems()}
+      items={items}
       onBackClick={handleBack}
       categoryType={type}
       urlPrefix={getUrlPrefix()}

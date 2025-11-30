@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { CircleUserRound } from 'lucide-react';
 import TwoStepVerificationModal from '@/components/modals/two-step-verification-modal';
@@ -21,9 +21,9 @@ export default function ArchiveRequestPage() {
   };
 
   // Handles closing 2-step verification modal
-  const handleCloseTwoStepModal = () => {
+  const handleCloseTwoStepModal = useCallback(() => {
     setShowTwoStepModal(false);
-  };
+  }, []);
 
   // Handles archive request submission
   const handleRequestArchive = () => {

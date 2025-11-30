@@ -318,6 +318,12 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
     clearCart(storeId, storeCategory as any);
   };
 
+  // Handle closing menu item dialog
+  const handleCloseMenuItemDialog = useCallback(() => {
+    setMenuItemDialogOpen(false);
+    setSelectedItem(null);
+  }, []);
+
   // Handle click outside to close sidebar
   useEffect(() => {
     if (!isOpen) return;
@@ -680,7 +686,7 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
       {selectedItem && (
         <MenuItemDialog
           isOpen={menuItemDialogOpen}
-          onClose={() => setMenuItemDialogOpen(false)}
+          onClose={handleCloseMenuItemDialog}
           item={{
             ...selectedItem,
             image: selectedItem.image || '',

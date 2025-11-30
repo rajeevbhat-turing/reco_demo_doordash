@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { X, Check } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import countryData from '@/lib/utils/countryCode.json';
@@ -25,32 +25,38 @@ export default function CountryCodeDropdown({
   const headerRef = useRef<HTMLDivElement>(null);
 
   // Filter countries based on search term
-  const filteredCountries = countryData.filter(
-    country =>
-      country.name.toLowerCase().includes(countrySearchTerm.toLowerCase()) ||
-      country.dial_code.includes(countrySearchTerm)
+  const filteredCountries = useMemo(
+    () =>
+      countryData.filter(
+        country =>
+          country.name.toLowerCase().includes(countrySearchTerm.toLowerCase()) ||
+          country.dial_code.includes(countrySearchTerm)
+      ),
+    [countrySearchTerm]
   );
 
   // Sort countries to show user country first, then USA, then others
-  const sortedCountries = [...filteredCountries].sort((a, b) => {
-    const userCountryCode = userCountry?.code || selectedCountry.code;
-    const isUserCountry = (country: any) => country.code === userCountryCode;
-    const isUSA = (country: any) => country.code === 'US';
+  const sortedCountries = useMemo(() => {
+    return [...filteredCountries].sort((a, b) => {
+      const userCountryCode = userCountry?.code || selectedCountry.code;
+      const isUserCountry = (country: any) => country.code === userCountryCode;
+      const isUSA = (country: any) => country.code === 'US';
 
-    // If user country is detected and it's not USA
-    if (userCountryCode !== 'US') {
-      if (isUserCountry(a)) return -1;
-      if (isUserCountry(b)) return 1;
-      if (isUSA(a)) return -1;
-      if (isUSA(b)) return 1;
-    } else {
-      // If user country is USA or not detected, show USA first
-      if (isUSA(a)) return -1;
-      if (isUSA(b)) return 1;
-    }
+      // If user country is detected and it's not USA
+      if (userCountryCode !== 'US') {
+        if (isUserCountry(a)) return -1;
+        if (isUserCountry(b)) return 1;
+        if (isUSA(a)) return -1;
+        if (isUSA(b)) return 1;
+      } else {
+        // If user country is USA or not detected, show USA first
+        if (isUSA(a)) return -1;
+        if (isUSA(b)) return 1;
+      }
 
-    return a.name.localeCompare(b.name);
-  });
+      return a.name.localeCompare(b.name);
+    });
+  }, [filteredCountries, userCountry, selectedCountry]);
 
   // Handle scroll detection for showing fixed header
   useEffect(() => {

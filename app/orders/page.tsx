@@ -2,7 +2,7 @@
 import { Button } from '@/components/ui/button';
 import { Order } from '@/constants/order-data';
 import { useOrdersStore } from '@/store/orders-store';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { ChevronRight, ShoppingCart, Receipt, Star } from 'lucide-react';
 import { useCartStore } from '@/store/cart-store';
 import { prepareOrderForReorder } from '@/lib/reorder-utils';
@@ -51,6 +51,24 @@ export default function Orders() {
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  // Handle review dialog close
+  const handleCloseReviewDialog = useCallback(() => {
+    setReviewingOrder(null);
+    setSelectedRating(0);
+  }, []);
+
+  // Handle review submit
+  const handleReviewSubmit = useCallback(
+    (rating: number, text: string, _likedItems?: ReviewOrderItem[]) => {
+      if (reviewingOrder) {
+        updateOrderReview(reviewingOrder.id, rating, text);
+        setReviewingOrder(null);
+        setSelectedRating(0);
+      }
+    },
+    [reviewingOrder, updateOrderReview]
+  );
 
   // Helper function to get store name (support both old and new field names)
   const getStoreName = (order: Order) => {
@@ -420,21 +438,14 @@ export default function Orders() {
       {reviewingOrder && (
         <ReviewDialog
           isOpen={true}
-          onClose={() => {
-            setReviewingOrder(null);
-            setSelectedRating(0);
-          }}
+          onClose={handleCloseReviewDialog}
           restaurantName={getStoreName(reviewingOrder)}
           vendorId={reviewingOrder.storeId || reviewingOrder.restaurantId}
           defaultRating={selectedRating}
           orderItems={convertOrderItemsToReviewItems(reviewingOrder)}
           orderDate={formatOrderDate(reviewingOrder)}
           vendorLogo={orderRestaurant?.logo || undefined}
-          onSubmit={(rating, text, _likedItems) => {
-            updateOrderReview(reviewingOrder.id, rating, text);
-            setReviewingOrder(null);
-            setSelectedRating(0);
-          }}
+          onSubmit={handleReviewSubmit}
         />
       )}
     </div>

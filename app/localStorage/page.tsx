@@ -1,11 +1,23 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { Download } from 'lucide-react';
 
 export default function LocalStorageDownloadPage() {
   const [isDownloading, setIsDownloading] = useState(true);
   const [downloadComplete, setDownloadComplete] = useState(false);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Cleanup timeout on unmount
+  useEffect(
+    () => () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
+      }
+    },
+    []
+  );
 
   useEffect(() => {
     // Add global browser functions
@@ -137,7 +149,7 @@ export default function LocalStorageDownloadPage() {
       setIsDownloading(false);
 
       // Redirect to home page after a short delay
-      setTimeout(() => {
+      timeoutRef.current = setTimeout(() => {
         window.location.href = '/';
       }, 2000);
     } catch (error) {

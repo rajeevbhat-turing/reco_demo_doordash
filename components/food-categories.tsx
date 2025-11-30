@@ -57,9 +57,13 @@ export default function FoodCategories({
       }
     }
     // Check scroll position after scrolling to selected category
-    setTimeout(() => {
+    const timeoutId = setTimeout(() => {
       checkScrollPosition();
     }, 300);
+
+    return () => {
+      clearTimeout(timeoutId);
+    };
   }, [selectedCategory]);
 
   // Scroll functions

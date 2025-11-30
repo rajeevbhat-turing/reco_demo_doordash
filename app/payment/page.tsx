@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { Trash2, ChevronLeft } from 'lucide-react';
 import { useUserStore } from '@/store/user-store';
@@ -72,6 +72,11 @@ export default function PaymentPage() {
   // const getPaymentFrequencyText = () => {
   //   return paymentFrequency === 'once-a-day' ? 'Once a day' : 'Pay after each order';
   // };
+
+  // Handle close add card modal
+  const handleCloseAddCardModal = useCallback(() => {
+    setShowAddCardModal(false);
+  }, []);
 
   return (
     <div className="min-h-screen bg-white">
@@ -249,7 +254,7 @@ export default function PaymentPage() {
       {/* Add Card Modal */}
       <AddCardModal
         isOpen={showAddCardModal}
-        onClose={() => setShowAddCardModal(false)}
+        onClose={handleCloseAddCardModal}
         onAddCard={handleAddCard}
       />
 

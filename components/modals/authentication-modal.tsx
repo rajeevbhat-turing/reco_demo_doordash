@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { X } from 'lucide-react';
 import countryData from '@/lib/utils/countryCode.json';
 import { useUserStore } from '@/store/user-store';
@@ -38,6 +38,15 @@ export default function AuthenticationModal({
 
   const dialogRef = useRef<HTMLDivElement>(null);
 
+  // Closes the modal and resets all data
+  const handleClose = useCallback(() => {
+    onClose();
+    setMode(defaultMode);
+    setLastVerifiedUser(null);
+    setSignUpUser(null);
+    setShowOtpModal(false);
+  }, [onClose, defaultMode]);
+
   // Disable body scroll and limit height when modal is open
   useEffect(() => {
     const handleEscapeKey = (event: KeyboardEvent) => {
@@ -68,8 +77,7 @@ export default function AuthenticationModal({
       document.removeEventListener('keydown', handleEscapeKey);
       document.removeEventListener('mousedown', handleClickOutside);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [defaultMode]);
+  }, [defaultMode, handleClose]);
 
   // Detect user's country on component mount
   useEffect(() => {
@@ -154,75 +162,72 @@ export default function AuthenticationModal({
   };
 
   // Handle user creation
-  const handleUserCreation = (user: User) => {
-    const newUser = {
-      id: `user-${Date.now().toString()}`,
-      name: user.name,
-      email: user.email,
-      phoneNumber: user.phoneNumber,
-      password: user.password,
-      country: user.country,
-      userCountry: user.userCountry,
-      avatar: null,
-      paymentMethods: [],
-      addresses: [],
-      is_restricted: false,
-      reviews: [],
-    };
+  const handleUserCreation = useCallback(
+    (user: User) => {
+      const newUser = {
+        id: `user-${Date.now().toString()}`,
+        name: user.name,
+        email: user.email,
+        phoneNumber: user.phoneNumber,
+        password: user.password,
+        country: user.country,
+        userCountry: user.userCountry,
+        avatar: null,
+        paymentMethods: [],
+        addresses: [],
+        is_restricted: false,
+        reviews: [],
+      };
 
-    addUser(newUser, true);
-    setSignUpUser(null);
-    handleClose();
-  };
+      addUser(newUser, true);
+      setSignUpUser(null);
+      handleClose();
+    },
+    [addUser, handleClose]
+  );
 
   // Handles OTP verification from the OTP modal
-  const handleOTPVerification = (
-    enteredOtp: string,
-    generatedOtp: string,
-    setOtpError: (error: string) => void,
-    setAttemptsLeft: (attempts: number) => void,
-    attemptsLeft: number,
-    setShowTooManyAttempts: (show: boolean) => void
-  ) => {
-    // Accept any 6-digit OTP for development/testing
-    if (enteredOtp.length === 6) {
-      // OTP is correct - check if sign up user exists
-      if (signUpUser) {
-        // Set last verified user
-        setLastVerifiedUser({ ...signUpUser });
+  const handleOTPVerification = useCallback(
+    (
+      enteredOtp: string,
+      generatedOtp: string,
+      setOtpError: (error: string) => void,
+      setAttemptsLeft: (attempts: number) => void,
+      attemptsLeft: number,
+      setShowTooManyAttempts: (show: boolean) => void
+    ) => {
+      // Accept any 6-digit OTP for development/testing
+      if (enteredOtp.length === 6) {
+        // OTP is correct - check if sign up user exists
+        if (signUpUser) {
+          // Set last verified user
+          setLastVerifiedUser({ ...signUpUser });
 
-        // Check password length from sign up user
-        if (signUpUser.password.length < 10) {
-          // Password too short - show error in auth modal
-          setShowOtpModal(false);
+          // Check password length from sign up user
+          if (signUpUser.password.length < 10) {
+            // Password too short - show error in auth modal
+            setShowOtpModal(false);
+            return;
+          }
+
+          // Password is valid - create user and close modal
+          handleUserCreation(signUpUser);
           return;
         }
+      } else {
+        // OTP is incorrect - show error
+        const newAttemptsLeft = attemptsLeft - 1;
+        setAttemptsLeft(newAttemptsLeft);
+        setOtpError('Invalid or incorrect code');
 
-        // Password is valid - create user and close modal
-        handleUserCreation(signUpUser);
-        return;
+        if (newAttemptsLeft <= 0) {
+          // No attempts left - show too many attempts message
+          setShowTooManyAttempts(true);
+        }
       }
-    } else {
-      // OTP is incorrect - show error
-      const newAttemptsLeft = attemptsLeft - 1;
-      setAttemptsLeft(newAttemptsLeft);
-      setOtpError('Invalid or incorrect code');
-
-      if (newAttemptsLeft <= 0) {
-        // No attempts left - show too many attempts message
-        setShowTooManyAttempts(true);
-      }
-    }
-  };
-
-  // Closes the modal and resets all data
-  const handleClose = () => {
-    onClose();
-    setMode(defaultMode);
-    setLastVerifiedUser(null);
-    setSignUpUser(null);
-    setShowOtpModal(false);
-  };
+    },
+    [signUpUser, handleUserCreation]
+  );
 
   // Handles successful authentication
   const handleAuthSuccess = () => {

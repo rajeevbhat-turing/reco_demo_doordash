@@ -121,8 +121,9 @@ export default function ReviewDialog({
       document.addEventListener('mousedown', handleClickOutside);
 
       // Focus the textarea when the dialog opens (if not showing success)
+      let focusTimeoutId: ReturnType<typeof setTimeout> | null = null;
       if (textareaRef.current && !showSuccess) {
-        setTimeout(() => {
+        focusTimeoutId = setTimeout(() => {
           textareaRef.current?.focus();
         }, 100);
       }
@@ -131,6 +132,9 @@ export default function ReviewDialog({
         document.body.style.overflow = 'auto';
         document.removeEventListener('keydown', handleEscapeKey);
         document.removeEventListener('mousedown', handleClickOutside);
+        if (focusTimeoutId) {
+          clearTimeout(focusTimeoutId);
+        }
       };
     }
   }, [isOpen, onClose, showSuccess, handleDone]);

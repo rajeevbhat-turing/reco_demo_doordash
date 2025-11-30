@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Star, ChevronRight, ArrowRight, ChevronLeft } from 'lucide-react';
@@ -89,6 +89,15 @@ export default function UserProfilePage() {
       .toUpperCase()
       .slice(0, 2);
   }, [user]);
+
+  // Memoized modal close handlers
+  const handleCloseRatingsModal = useCallback(() => {
+    setRatingsModalOpen(false);
+  }, []);
+
+  const handleCloseProfileBadgesModal = useCallback(() => {
+    setProfileBadgesModalOpen(false);
+  }, []);
 
   // If user is loading or not found
   if (isLoadingUser || !user) {
@@ -338,7 +347,7 @@ export default function UserProfilePage() {
         {/* User Ratings Modal */}
         <UserRatingsModal
           isOpen={ratingsModalOpen}
-          onClose={() => setRatingsModalOpen(false)}
+          onClose={handleCloseRatingsModal}
           userName={user.name}
           reviews={allReviews || []}
         />
@@ -346,7 +355,7 @@ export default function UserProfilePage() {
         {/* Profile Badges Modal */}
         <ProfileBadgesModal
           isOpen={profileBadgesModalOpen}
-          onClose={() => setProfileBadgesModalOpen(false)}
+          onClose={handleCloseProfileBadgesModal}
         />
       </div>
     </div>

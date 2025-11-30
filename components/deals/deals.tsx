@@ -103,6 +103,17 @@ export default function Deals({ restaurantId }: DealsProps) {
     }
   };
 
+  // Handle close deals modal
+  const handleCloseDealsModal = useCallback(() => {
+    setIsDealsModalOpen(false);
+  }, []);
+
+  // Handle close deal modal
+  const handleCloseDealModal = useCallback(() => {
+    setIsDealModalOpen(false);
+    setSelectedDeal(null);
+  }, []);
+
   // If loading or no deals exist, don't render anything
   if (isLoading || deals.length === 0) {
     return null;
@@ -229,19 +240,12 @@ export default function Deals({ restaurantId }: DealsProps) {
       {/* Deals Modal */}
       <DealsModal
         isOpen={isDealsModalOpen}
-        onClose={() => setIsDealsModalOpen(false)}
+        onClose={handleCloseDealsModal}
         restaurantId={restaurantId}
       />
 
       {/* Deal Modal */}
-      <DealModal
-        isOpen={isDealModalOpen}
-        onClose={() => {
-          setIsDealModalOpen(false);
-          setSelectedDeal(null);
-        }}
-        deal={selectedDeal}
-      />
+      <DealModal isOpen={isDealModalOpen} onClose={handleCloseDealModal} deal={selectedDeal} />
     </div>
   );
 }

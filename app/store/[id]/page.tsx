@@ -106,6 +106,10 @@ export default function RestaurantPage() {
   const { addItem } = useCartStore();
   const ticking = useRef(false);
   const featuredItemsRef = useRef<HTMLDivElement>(null);
+  const timeoutRef = useRef<{
+    navigationRecord?: ReturnType<typeof setTimeout>;
+    scrollReenable?: ReturnType<typeof setTimeout>;
+  }>({});
   // const dealsRef = useRef<HTMLDivElement>(null);
   const [canScrollLeftFeatured, setCanScrollLeftFeatured] = useState(false);
   const [canScrollRightFeatured, setCanScrollRightFeatured] = useState(true);
@@ -225,12 +229,28 @@ export default function RestaurantPage() {
       if (referrer.includes('/search')) {
         console.log('[NAVIGATION] User came from search page, recording navigation');
         // Small delay to ensure search info is set before navigation
-        setTimeout(() => {
+        timeoutRef.current.navigationRecord = setTimeout(() => {
           recordNavigationFromSearch();
         }, 100);
       }
     }
+    const timeout = timeoutRef.current.navigationRecord;
+    return () => {
+      if (timeout) {
+        clearTimeout(timeout);
+      }
+    };
   }, [recordNavigationFromSearch]);
+
+  // Cleanup scrollReenable timeout on unmount
+  useEffect(() => {
+    const timeouts = timeoutRef.current;
+    return () => {
+      if (timeouts.scrollReenable) {
+        clearTimeout(timeouts.scrollReenable);
+      }
+    };
+  }, []);
 
   // Set the cart category to restaurant when the component mounts
   useEffect(() => {
@@ -511,9 +531,14 @@ export default function RestaurantPage() {
 
       window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
 
+      // Clear existing timeout if any
+      if (timeoutRef.current.scrollReenable) {
+        clearTimeout(timeoutRef.current.scrollReenable);
+      }
+
       // Re-enable scroll-based highlight changes after scroll animation completes
       // Smooth scroll typically takes ~500-1000ms, using 1200ms to be safe
-      setTimeout(() => {
+      timeoutRef.current.scrollReenable = setTimeout(() => {
         isProgrammaticScroll.current = false;
       }, 1200);
     }
@@ -550,6 +575,26 @@ export default function RestaurantPage() {
   //   }
   //   return deal.title;
   // };
+
+  // Handle close menu item dialog
+  const handleCloseMenuItemDialog = useCallback(() => {
+    setMenuItemDialogOpen(false);
+  }, []);
+
+  // Handle close group order dialog
+  const handleCloseGroupOrderDialog = useCallback(() => {
+    setGroupOrderDialogOpen(false);
+  }, []);
+
+  // Handle close store details dialog
+  const handleCloseStoreDetailsDialog = useCallback(() => {
+    setStoreDetailsDialogOpen(false);
+  }, []);
+
+  // Handle close service fees info dialog
+  const handleCloseServiceFeesInfo = useCallback(() => {
+    setServiceFeesInfoOpen(false);
+  }, []);
 
   if (!restaurant) {
     return <div className="p-8 text-center">Loading...</div>;
@@ -1301,22 +1346,19 @@ export default function RestaurantPage() {
       {/* Menu Item Dialog */}
       <MenuItemDialog
         isOpen={menuItemDialogOpen}
-        onClose={() => setMenuItemDialogOpen(false)}
+        onClose={handleCloseMenuItemDialog}
         item={selectedItem}
       />
       {/* Group Order Dialog */}
-      <GroupOrderDialog
-        isOpen={groupOrderDialogOpen}
-        onClose={() => setGroupOrderDialogOpen(false)}
-      />
+      <GroupOrderDialog isOpen={groupOrderDialogOpen} onClose={handleCloseGroupOrderDialog} />
       {/* Store Details Dialog */}
       <StoreDetailsDialog
         isOpen={storeDetailsDialogOpen}
-        onClose={() => setStoreDetailsDialogOpen(false)}
+        onClose={handleCloseStoreDetailsDialog}
         store={restaurant}
       />
       {/* Service Fees Info Dialog */}
-      <ServiceFeesInfo isOpen={serviceFeesInfoOpen} onClose={() => setServiceFeesInfoOpen(false)} />
+      <ServiceFeesInfo isOpen={serviceFeesInfoOpen} onClose={handleCloseServiceFeesInfo} />
       {/* Outside Delivery Area Modal */}
       <OutsideDeliveryAreaModal
         isOpen={outsideDeliveryAreaModalOpen}

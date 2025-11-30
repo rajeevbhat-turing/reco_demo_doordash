@@ -31,6 +31,7 @@ export default function OTPVerificationModal({
   containerClassName = '',
 }: OTPVerificationModalProps) {
   const dialogRef = useRef<HTMLDivElement>(null);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const [otpInput, setOtpInput] = useState<string>('');
   const [otpError, setOtpError] = useState<string>('');
   const [attemptsLeft, setAttemptsLeft] = useState(5);
@@ -39,11 +40,18 @@ export default function OTPVerificationModal({
 
   // Starts the resend timer countdown
   const startResendTimer = () => {
+    // Clear existing interval if any
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+    }
     setResendTimer(30);
-    const interval = setInterval(() => {
+    intervalRef.current = setInterval(() => {
       setResendTimer(prev => {
         if (prev <= 1) {
-          clearInterval(interval);
+          if (intervalRef.current) {
+            clearInterval(intervalRef.current);
+            intervalRef.current = null;
+          }
           return 0;
         }
         return prev - 1;
@@ -110,6 +118,14 @@ export default function OTPVerificationModal({
       setShowTooManyAttempts(false);
       startResendTimer();
     }
+
+    return () => {
+      // Clear interval on unmount or when modal closes
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    };
   }, [isOpen]);
 
   if (!isOpen) return null;

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { X } from 'lucide-react';
 
 interface ScheduleDeliveryModalProps {
@@ -166,7 +166,7 @@ export default function ScheduleDeliveryModal({
     return slots;
   };
 
-  const dates = generateDates();
+  const dates = useMemo(() => generateDates(), []);
   const [selectedDate, setSelectedDate] = useState(dates[0].date); // Default to today
   const [selectedTimeType, setSelectedTimeType] = useState<'asap' | 'later'>('asap');
   const [selectedTimeSlot, setSelectedTimeSlot] = useState<string>('');
@@ -175,7 +175,10 @@ export default function ScheduleDeliveryModal({
   const isToday = selectedDate === dates[0].date;
 
   // Get appropriate time slots based on whether it's today or a future day
-  const timeSlots = isToday ? generateTimeSlotsForToday() : generateTimeSlotsForFutureDay();
+  const timeSlots = useMemo(
+    () => (isToday ? generateTimeSlotsForToday() : generateTimeSlotsForFutureDay()),
+    [isToday]
+  );
 
   // Get the full date object for the selected date
   const getFullDateForSelectedDate = () => {
