@@ -24,8 +24,13 @@ export class AuthModalPage {
     this.page = page;
     this.landingSignInButton = page.getByRole('button', { name: /^sign in$/i }).first();
     this.landingSignUpButton = page.getByRole('button', { name: /^sign up$/i }).first();
-    this.signInTab = page.getByRole('button', { name: /^sign in$/i }).nth(1);
-    this.signUpTab = page.getByRole('button', { name: /^sign up$/i }).nth(1);
+    // Sign In/Sign Up tabs inside the modal - scope to modal tabs container
+    // The tabs are in: div.mt-12.mb-4.flex.justify-center (inside modal)
+    const modalTabsContainer = page.locator('div.mt-12.mb-4.flex.justify-center');
+    // Get visible Sign In tab button (Playwright's getByRole filters hidden by default, but we scope to modal)
+    this.signInTab = modalTabsContainer.getByRole('button', { name: /^sign in$/i });
+    // Get visible Sign Up tab button (Playwright's getByRole filters hidden by default, but we scope to modal)
+    this.signUpTab = modalTabsContainer.getByRole('button', { name: /^sign up$/i });
     this.firstNameInput = page.locator('#firstName');
     this.lastNameInput = page.locator('#lastName');
     this.emailInput = page.locator('#email');
@@ -50,6 +55,11 @@ export class AuthModalPage {
       await this.landingSignUpButton.click();
     }
     await expect(this.page.getByText('Sign in or Sign up')).toBeVisible();
+    
+    // Click the Sign Up tab to ensure we're on the signup form
+    await this.signUpTab.waitFor({ state: 'visible', timeout: 5000 });
+    await this.signUpTab.click();
+    await this.page.waitForTimeout(300); // Wait for tab switch animation
   }
 
   async fillSignupForm(params: { firstName: string; lastName: string; email: string; mobileNumber: string; password: string; }) {

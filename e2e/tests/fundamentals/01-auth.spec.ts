@@ -47,7 +47,104 @@ test.describe('Fundamentals: Authentication', () => {
     expect(isLoggedIn).toBeTruthy();
   });
 
-  test('can login with existing user', async ({ page }) => {
+  test('sign in shows error when email is empty', async ({ page }) => {
+    await page.goto('http://localhost:3000');
+    await page.waitForLoadState('networkidle');
+    
+    // Click Sign In button to open modal
+    const signInBtn = page.getByRole('button', { name: /^sign in$/i }).first();
+    await expect(signInBtn).toBeVisible({ timeout: 5000 });
+    await signInBtn.click();
+    await page.waitForTimeout(500);
+    
+    // Wait for modal to appear
+    await expect(page.getByText('Sign in or Sign up')).toBeVisible({ timeout: 5000 });
+    
+    // Wait for email input to be visible in modal
+    const emailInput = page.locator('#email');
+    await expect(emailInput).toBeVisible({ timeout: 3000 });
+    
+    // Try to continue without entering email
+    const continueButton = page.getByRole('button', { name: /continue to sign in/i });
+    await continueButton.click();
+    await page.waitForTimeout(500);
+    
+    // Should show "Email is required" error
+    await expect(page.getByText('Email is required')).toBeVisible({ timeout: 3000 });
+  });
+
+  test('sign in shows error when email is incorrect', async ({ page }) => {
+    await page.goto('http://localhost:3000');
+    await page.waitForLoadState('networkidle');
+    
+    // Click Sign In button to open modal
+    const signInBtn = page.getByRole('button', { name: /^sign in$/i }).first();
+    await expect(signInBtn).toBeVisible({ timeout: 5000 });
+    await signInBtn.click();
+    await page.waitForTimeout(500);
+    
+    // Wait for modal to appear
+    await expect(page.getByText('Sign in or Sign up')).toBeVisible({ timeout: 5000 });
+    
+    // Wait for email input to be visible in modal
+    const emailInput = page.locator('#email');
+    await expect(emailInput).toBeVisible({ timeout: 3000 });
+    
+    // Enter incorrect email
+    await emailInput.fill('nonexistent@example.com');
+    const continueButton = page.getByRole('button', { name: /continue to sign in/i });
+    await continueButton.click();
+    await page.waitForTimeout(1000);
+    
+    // Should show "Incorrect email" error
+    await expect(page.getByText('Incorrect email')).toBeVisible({ timeout: 3000 });
+    await expect(page.getByText(/We couldn't find an account/i)).toBeVisible({ timeout: 3000 });
+  });
+
+  test('can login with existing user via modal', async ({ page }) => {
+    await page.goto('http://localhost:3000');
+    await page.waitForLoadState('networkidle');
+    
+    // Click Sign In button to open modal
+    const signInBtn = page.getByRole('button', { name: /^sign in$/i }).first();
+    await expect(signInBtn).toBeVisible({ timeout: 5000 });
+    await signInBtn.click();
+    await page.waitForTimeout(500);
+    
+    // Wait for modal to appear
+    await expect(page.getByText('Sign in or Sign up')).toBeVisible({ timeout: 5000 });
+    
+    // Wait for email input to be visible in modal
+    const emailInput = page.locator('#email');
+    await expect(emailInput).toBeVisible({ timeout: 3000 });
+    
+    // Enter correct email
+    await emailInput.fill('kai.hayes1@example.com');
+    const continueButton = page.getByRole('button', { name: /continue to sign in/i });
+    await continueButton.click();
+    await page.waitForTimeout(1000);
+    
+    // Should show OTP form (6 input fields)
+    const otpInputs = page.locator('input[id^="otp-"]');
+    await expect(otpInputs.first()).toBeVisible({ timeout: 5000 });
+    
+    // Enter any 6-digit OTP (any 6 digits work in dev)
+    for (let i = 0; i < 6; i++) {
+      await otpInputs.nth(i).fill(String(i + 1));
+    }
+    
+    // Click Sign In button (should be visible in the OTP form)
+    const signInButton = page.getByRole('button', { name: /^sign in$/i }).filter({ hasText: /sign in/i }).last();
+    await signInButton.click();
+    await page.waitForTimeout(2000);
+    
+    // Modal should close and user should be logged in
+    // Check for logged-in state (orders link or home page)
+    const isLoggedIn = await page.getByRole('link', { name: /orders/i }).isVisible({ timeout: 5000 }).catch(() => false);
+    expect(isLoggedIn).toBeTruthy();
+  });
+
+  test('can login with existing user via auth page', async ({ page }) => {
     await page.goto('http://localhost:3000/auth');
     await page.waitForLoadState('networkidle');
     
