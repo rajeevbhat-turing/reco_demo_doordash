@@ -919,6 +919,7 @@ export default function Header() {
                     <button
                       className="relative h-8 w-14 rounded-full bg-[#2563EB] text-white text-sm font-semibold flex items-center justify-center"
                       onClick={toggleCart}
+                      aria-label="Cart"
                     >
                       <ShoppingCart className="h-4 w-4 text-white mr-1" />
                       <span className="font-medium">{cartItemCount}</span>
