@@ -499,6 +499,8 @@ export default function CheckoutPage() {
                 ? item.price
                 : parseFloat(item.price.toString().replace(/[^0-9.]/g, '')),
             final_price: finalPrice,
+            menuCategoryId: item.menuCategoryId,
+            menuCategoryName: item.menuCategoryName,
             modifications: item.appliedModifications?.map(appliedMod => ({
               modificationId: appliedMod.modificationId,
               modificationDescription: appliedMod.modificationDescription,

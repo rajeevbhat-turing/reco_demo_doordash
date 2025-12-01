@@ -5,7 +5,7 @@ export type { Deal } from './get-deal';
 export { get_user_address } from './get-user-address';
 export type { GetUserAddressResult } from './get-user-address';
 export { get_restaurants } from './get-restaurants';
-export type { RestaurantResult, GetRestaurantsArgs, GetRestaurantsResult, SortSpec as RestaurantSortSpec } from './get-restaurants';
+export type { RestaurantResult, DealResult, GetRestaurantsArgs, GetRestaurantsResult, SortSpec as RestaurantSortSpec } from './get-restaurants';
 export { get_items } from './get-items';
 export type { MenuItemResult, GetItemsArgs, GetItemsResult, SortSpec } from './get-items';
 export { get_orders } from './get-orders';
@@ -16,4 +16,6 @@ export { get_date_N_days_from_today } from './get-date-N-days-from-today';
 export type { GetDateNDaysFromTodayArgs, GetDateNDaysFromTodayResult } from './get-date-N-days-from-today';
 export { get_time_slot } from './get-time-slot';
 export type { GetTimeSlotArgs, GetTimeSlotResult } from './get-time-slot';
+export { get_menu_categories } from './get-menu-categories';
+export type { MenuCategoryResult, GetMenuCategoriesArgs, GetMenuCategoriesResult } from './get-menu-categories';
 

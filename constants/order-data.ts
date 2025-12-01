@@ -6,6 +6,8 @@ export interface OrderItem {
   name: string;
   quantity: number;
   price: number;
+  menuCategoryId?: string;
+  menuCategoryName?: string;
   modifications?: OrderModification[];
 }
 

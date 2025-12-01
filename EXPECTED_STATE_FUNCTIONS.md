@@ -11,8 +11,9 @@ This document describes all available expected state functions, their arguments,
 6. [get_items](#get_items)
 7. [get_orders](#get_orders)
 8. [get_carts](#get_carts)
-9. [get_date_N_days_from_today](#get_date_n_days_from_today)
-10. [get_time_slot](#get_time_slot)
+9. [get_menu_categories](#get_menu_categories)
+10. [get_date_N_days_from_today](#get_date_n_days_from_today)
+11. [get_time_slot](#get_time_slot)
 
 ---
 
@@ -325,6 +326,7 @@ Gets restaurants with optional filtering, sorting, and radius filtering.
     categories?: string[];         // Optional: Array of categories (matches any)
     prices?: string[];             // Optional: Array of price ranges: "$", "$$", "$$$", "$$$$"
     dashpass?: boolean;            // Optional: Filter by DashPass availability
+    has_deals?: boolean;           // Optional: Filter by restaurants with deals (default: false). When true, includes deals in response
     restaurant_ids_not_in?: string[];  // Optional: Exclude these restaurant IDs
   };
 }
@@ -343,6 +345,7 @@ Gets restaurants with optional filtering, sorting, and radius filtering.
 - `sort_type`: Defaults to `[{ key: "distance", order: "asc" }]` if not specified (nearest restaurants first)
 - `order`: "asc" if not specified in a sort spec
 - `limit`: Returns all matching restaurants if not specified
+- `has_deals`: Defaults to false
 - **Automatic radius filtering**: All restaurants are filtered to within 10 miles of the user's location
 
 ### Returns
@@ -356,6 +359,8 @@ Gets restaurants with optional filtering, sorting, and radius filtering.
     minDeliveryFee: number;        // In cents
     priceRange: number;            // 1-4 ($-$$$$)
     dashPass: boolean;
+    rating: number | null;         // Average rating from approved user reviews (1 decimal place)
+    ratingCount: number;           // Number of approved reviews
     address: {
       street: string;
       city: string;
@@ -363,6 +368,18 @@ Gets restaurants with optional filtering, sorting, and radius filtering.
       zipCode: string;
     };
     distance: number;              // Distance in miles (always present)
+    deals?: Array<{                // Only included when has_deals filter is true
+      id: string;
+      title: string;
+      description: string;
+      buttonText: string | null;
+      buttonLink: string | null;
+      minimumPurchase: number | null;     // In cents
+      discountType: string | null;
+      discountValue: number | null;
+      maximumDiscount: number | null;     // In cents
+      promocode: string | null;
+    }>;
   }>
 }
 ```
@@ -420,6 +437,20 @@ Finds restaurants that have menu items with "tacos" in the name, sorted by neare
 ```
 Returns only DashPass restaurants, sorted by nearest first.
 
+**Filter by restaurants with deals:**
+```json
+{
+  "function": "get_restaurants",
+  "args": {
+    "filters": {
+      "has_deals": true
+    },
+    "limit": 10
+  }
+}
+```
+Returns only restaurants that have deals, including the deals data in the response. Each restaurant will have a `deals` array containing all available deals.
+
 **Get nearest vegetarian restaurants:**
 ```json
 {
@@ -467,6 +498,35 @@ Returns only DashPass restaurants, sorted by nearest first.
   }
 }
 ```
+
+**Sort by highest rating:**
+```json
+{
+  "function": "get_restaurants",
+  "args": {
+    "sort_type": [
+      { "key": "rating", "order": "desc" }
+    ],
+    "limit": 10
+  }
+}
+```
+Returns the top 10 highest-rated restaurants (based on approved user reviews).
+
+**Sort by rating, then by distance:**
+```json
+{
+  "function": "get_restaurants",
+  "args": {
+    "sort_type": [
+      { "key": "rating", "order": "desc" },
+      { "key": "distance", "order": "asc" }
+    ],
+    "limit": 10
+  }
+}
+```
+Returns restaurants sorted by highest rating first, with nearest restaurants as tiebreakers for same ratings.
 
 **Combine all filters:**
 ```json
@@ -1103,6 +1163,91 @@ Returns `null` if user is not found. Returns empty array `{ carts: [] }` if no c
 - Applied modifications include customizations and selected options (e.g., size, toppings)
 - Cart items include full menu item details (name, price, image) from the database
 - Useful for validating cart state before checkout or checking for abandoned carts
+
+---
+
+## get_menu_categories
+
+Gets menu categories for a specific restaurant with optional filtering.
+
+### Arguments
+```typescript
+{
+  restaurant_id: string;    // Required: Restaurant ID to fetch categories for
+  keyword?: string;         // Optional: Keyword to filter category names (partial match, case-insensitive)
+  limit?: number;           // Optional: Number of categories to return
+}
+```
+
+### Defaults
+- `limit`: Returns all matching categories if not specified
+- Categories are ordered by `display_order` ascending (as defined in database)
+
+### Returns
+```typescript
+{
+  categories: Array<{
+    id: string;
+    name: string;
+    sortOrder: number;
+  }>
+}
+```
+
+Returns `null` if user is not found. Returns empty array `{ categories: [] }` if no categories exist.
+
+### Examples
+
+**Get all categories for a restaurant:**
+```json
+{
+  "function": "get_menu_categories",
+  "args": {
+    "restaurant_id": "123"
+  }
+}
+```
+
+**Filter categories by keyword:**
+```json
+{
+  "function": "get_menu_categories",
+  "args": {
+    "restaurant_id": "123",
+    "keyword": "appetizer",
+    "limit": 5
+  }
+}
+```
+
+**Using JSONPath for restaurant_id:**
+```json
+[
+  {
+    "function": "get_restaurants",
+    "args": {
+      "name": "Pizza Palace",
+      "limit": 1
+    }
+  },
+  {
+    "function": "get_menu_categories",
+    "args": {
+      "restaurant_id": "$[0].restaurants[0].id"
+    }
+  }
+]
+```
+
+**Explanation:**
+- First function finds "Pizza Palace" restaurant
+- Second function retrieves all menu categories for that restaurant
+- Useful for validating menu structure or finding specific category sections
+
+### Notes
+- Only returns categories that have available menu items in the restaurant
+- Categories are ordered by their display_order field (as defined in the database)
+- Keyword filter is case-insensitive and matches partial category names
 
 ---
 
