@@ -40,3 +40,9 @@ poc-database.sqlite
 
 # macOS .DS_Store
 .DS_Store
+
+# LHCI reports
+lhci-reports
+.lighthouseci
+puppeteer-login.js
+lighthouserc.js
