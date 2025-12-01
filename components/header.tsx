@@ -145,10 +145,17 @@ export default function Header() {
     const updateCartCount = () => {
       const cartState = useCartStore.getState();
       const appState = useAppStore.getState();
+      const currentUser = useUserStore.getState().currentUser;
+
+      // Filter carts by current user
+      // Guest users see carts without userId, logged-in users see only their carts
+      const userCarts = cartState.carts.filter(cart => 
+        currentUser ? cart.userId === currentUser.id : !cart.userId
+      );
 
       // If no current store is set, show number of carts
       if (!appState.currentStore?.id) {
-        setCartItemCount(cartState.carts.length);
+        setCartItemCount(userCarts.length);
         return;
       }
 

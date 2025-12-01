@@ -149,8 +149,12 @@ export default function Orders() {
     return '';
   };
 
-  // Filter orders by the active tab
-  const filteredOrders = orders.filter(order => (order.orderType || 'Personal') === activeTab);
+  // Filter orders by the active tab and current user
+  const filteredOrders = orders.filter(
+    order =>
+      (order.orderType || 'Personal') === activeTab &&
+      (!currentUser || order.userId === currentUser.id)
+  );
 
   // Handle reorder functionality
   const handleReorder = async (order: Order) => {

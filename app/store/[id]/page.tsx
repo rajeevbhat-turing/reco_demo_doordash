@@ -1092,12 +1092,14 @@ export default function RestaurantPage() {
                         <span className="font-medium text-[#3d8f8f]">
                           {restaurant.isFreeDelivery
                             ? '$0 delivery fee'
-                            : `$${(restaurant.minDeliveryFee / 100).toFixed(2)} delivery fee`}
+                            : `$${(restaurant.minDeliveryFee / 100).toFixed(
+                                2
+                              )} minimum delivery fee`}
                         </span>
-                        <div className="flex items-center text-gray-800 text-sm">
+                        {/* <div className="flex items-center text-gray-800 text-sm">
                           <span>pricing & fees</span>
-                          {/* <Info className="h-4 w-4 ml-1 text-gray-500" /> */}
-                        </div>
+                          <Info className="h-4 w-4 ml-1 text-gray-500" />
+                        </div> */}
                       </div>
                     </div>
                     {restaurantInNearby ? (

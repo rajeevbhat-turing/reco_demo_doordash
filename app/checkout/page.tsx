@@ -458,7 +458,10 @@ export default function CheckoutPage() {
       // 1. Order ID
       id: newOrderId,
 
-      // 2. Cart fields extracted to root level (support both old and new field names)
+      // 2. User ID
+      userId: currentUser?.id,
+
+      // 3. Cart fields extracted to root level (support both old and new field names)
       storeId: currentCart?.storeId,
       storeName: validatedStoreName, // Use validated store name
       restaurantId: currentCart?.storeId, // Old field name for backward compatibility
@@ -517,7 +520,7 @@ export default function CheckoutPage() {
         });
       })(),
 
-      // 3. Payment card as object
+      // 4. Payment card as object
       paymentCard: {
         type: selectedPaymentMethodObj?.type,
         cardNumber: selectedPaymentMethodObj?.cardNumber,
@@ -527,10 +530,10 @@ export default function CheckoutPage() {
         zipCode: selectedPaymentMethodObj?.zipCode,
       },
 
-      // 4. Address
+      // 5. Address
       deliveryAddress: selectedAddress,
 
-      // 5. Delivery option and related info
+      // 6. Delivery option and related info
       deliveryOption: {
         type: selectedDeliveryOption,
         deliveryTime: deliveryTime,

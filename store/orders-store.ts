@@ -39,10 +39,13 @@ export const useOrdersStore = create<OrdersStore>()(
           }));
         },
 
-        initializeOrdersFromDB: orders => {
-          console.log(`[ORDERS STORE] Initializing ${orders.length} orders from database`);
-          set({ orders, isInitialized: true });
-        },
+        initializeOrdersFromDB: (orders) => {
+          console.log(`[ORDERS STORE] Initializing ${orders.length} orders from database`)
+          set(state => {
+            const newOrders = [...orders, ...state.orders]
+            return { orders: newOrders, isInitialized: true }
+          })
+        }
       }),
       {
         name: 'orders-store',

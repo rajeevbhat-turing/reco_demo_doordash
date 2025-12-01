@@ -10,17 +10,21 @@ import ReviewDialog from '@/components/review-dialog';
 import { useRestaurant } from '@/lib/hooks/use-restaurant';
 import { useRestaurantMenu } from '@/lib/hooks/use-restaurant-menu';
 import { OrderItem as ReviewOrderItem } from '@/types/review-types';
+import { useUserStore } from '@/store/user-store';
 import './print.css';
 
 export default function OrderReceiptPage() {
   const params = useParams();
   const router = useRouter();
   const { orders, updateOrderReview } = useOrdersStore();
+  const currentUser = useUserStore(state => state.currentUser);
   const [mounted, setMounted] = useState(false);
   const [showReviewDialog, setShowReviewDialog] = useState(false);
 
   const orderId = params.orderId as string;
-  const order = orders.find(o => o.id === orderId);
+  const order = orders.find(
+    o => o.id === orderId && (!currentUser || o.userId === currentUser.id)
+  );
 
   // Get restaurant ID for the order
   const restaurantId = order?.storeId || order?.restaurantId || undefined;
