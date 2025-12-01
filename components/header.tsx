@@ -149,7 +149,7 @@ export default function Header() {
 
       // Filter carts by current user
       // Guest users see carts without userId, logged-in users see only their carts
-      const userCarts = cartState.carts.filter(cart => 
+      const userCarts = cartState.carts.filter(cart =>
         currentUser ? cart.userId === currentUser.id : !cart.userId
       );
 

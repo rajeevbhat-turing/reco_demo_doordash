@@ -44,7 +44,7 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
   // Filter carts by current user
   // Guest users see carts without userId, logged-in users see only their carts
   const currentUser = useUserStore(state => state.currentUser);
-  const userCarts = carts.filter(cart => 
+  const userCarts = carts.filter(cart =>
     currentUser ? cart.userId === currentUser.id : !cart.userId
   );
 

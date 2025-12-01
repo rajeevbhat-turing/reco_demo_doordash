@@ -7,9 +7,9 @@ import { useEffect } from 'react';
 export function useCarts() {
   const currentUser = useUserStore(state => state.currentUser);
   const userId = currentUser?.id;
-  const initializeCartsFromDB = useCartStore((state) => state.initializeCartsFromDB);
-  const isInitialized = useCartStore((state) => state.isInitialized);
-  const existingCarts = useCartStore((state) => state.carts);
+  const initializeCartsFromDB = useCartStore(state => state.initializeCartsFromDB);
+  const isInitialized = useCartStore(state => state.isInitialized);
+  const existingCarts = useCartStore(state => state.carts);
 
   const {
     data: carts,
@@ -36,7 +36,7 @@ export function useCarts() {
     if (carts !== undefined && !isInitialized && userId) {
       // Check if any of the current user's carts are already present in the store
       const hasUserCarts = existingCarts.some(cart => cart.userId === userId);
-      
+
       if (hasUserCarts) {
         // If at least one cart for current user exists, initialize with empty array so we don't overwrite the existing carts
         console.log('✅ User carts already present in store, initializing with empty array');

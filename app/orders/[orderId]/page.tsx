@@ -22,9 +22,7 @@ export default function OrderReceiptPage() {
   const [showReviewDialog, setShowReviewDialog] = useState(false);
 
   const orderId = params.orderId as string;
-  const order = orders.find(
-    o => o.id === orderId && (!currentUser || o.userId === currentUser.id)
-  );
+  const order = orders.find(o => o.id === orderId && (!currentUser || o.userId === currentUser.id));
 
   // Get restaurant ID for the order
   const restaurantId = order?.storeId || order?.restaurantId || undefined;
