@@ -30,6 +30,7 @@ export interface GetItemsArgs {
   filters?: {
     menu_categories?: string[]; // Filter by menu category names (matches any in array)
     restaurant_ids_not_in?: string[]; // Exclude items from these restaurant IDs
+    featured?: boolean; // Filter by featured status (true = only featured, false = only non-featured)
   };
 }
 
@@ -117,6 +118,10 @@ export async function get_items(args: GetItemsArgs): Promise<GetItemsResult | nu
     
     if (filters.restaurant_ids_not_in && filters.restaurant_ids_not_in.length > 0) {
       params.append('restaurant_ids_not_in', JSON.stringify(filters.restaurant_ids_not_in));
+    }
+    
+    if (filters.featured !== undefined) {
+      params.append('featured', String(filters.featured));
     }
     
     // Call API route
