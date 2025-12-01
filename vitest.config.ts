@@ -9,21 +9,21 @@ export default defineConfig({
     environment: 'jsdom',
     setupFiles: ['./vitest.setup.ts'],
     include: ['**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
-    exclude: ['node_modules', '.next', 'e2e'],
+    exclude: [
+      'node_modules',
+      '.next',
+      'e2e',
+      '**/e2e/**',
+      'testing/e2e/**',
+      '**/testing/e2e/**',
+      'testing/unit/templates/**',
+      '**/testing/unit/templates/**',
+    ],
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],
-      include: [
-        'lib/**/*.{ts,tsx}',
-        'components/**/*.{ts,tsx}',
-        'store/**/*.{ts,tsx}',
-      ],
-      exclude: [
-        '**/*.d.ts',
-        '**/node_modules/**',
-        '**/.next/**',
-        '**/e2e/**',
-      ],
+      include: ['lib/**/*.{ts,tsx}', 'components/**/*.{ts,tsx}', 'store/**/*.{ts,tsx}'],
+      exclude: ['**/*.d.ts', '**/node_modules/**', '**/.next/**', '**/e2e/**'],
     },
   },
   resolve: {
@@ -34,4 +34,3 @@ export default defineConfig({
     },
   },
 });
-

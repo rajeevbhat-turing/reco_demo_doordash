@@ -256,7 +256,6 @@ describe('search-utils', () => {
       const results = performSearch('burger', mockRestaurants, mockMenuItems);
       // Restaurant matches should come first
       const restaurantMatches = results.filter(r => r.matchType === 'restaurant');
-      const menuItemMatches = results.filter(r => r.matchType === 'menu-item');
       expect(restaurantMatches.length).toBeGreaterThan(0);
     });
 
