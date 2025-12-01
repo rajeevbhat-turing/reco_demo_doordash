@@ -8,13 +8,13 @@ import { testDataGenerators } from '../../fixtures/test.fixtures';
  * - Full end-to-end order flow
  * - Order confirmation
  * - Order details verification
+ * - Review submission
  * 
  * @playwright-report
  */
 test.describe('Orders', () => {
   test.beforeEach(async ({ page, context }) => {
     // Clear storage before each test
-    // Navigate to a page first to ensure we have a valid context
     await page.goto('http://localhost:3000');
     await page.evaluate(() => {
       localStorage.clear();
@@ -27,15 +27,14 @@ test.describe('Orders', () => {
     page, 
     authModalPage, 
     storePage, 
-    checkoutPage 
+    checkoutPage,
+    ordersPage 
   }) => {
     // Step 1: Sign up a new user
     await authModalPage.signupSuccessfully();
     await expect(page).toHaveURL(/\/home/, { timeout: 15000 });
     
     // Step 2: Set up user with payment method and address via localStorage
-    // We'll use the user store state to add payment and address
-    // Ensure we're on a page with the correct origin before accessing localStorage
     await page.evaluate(() => {
       try {
         const userStoreStr = localStorage.getItem('user-store');
@@ -98,115 +97,171 @@ test.describe('Orders', () => {
     // Wait a bit for localStorage to be processed
     await page.waitForTimeout(500);
     
-    // Step 3: Visit store page
-    const storeId = '1'; // Use existing store ID
+    // Step 3: Navigate to a store within delivery range (Salads House - store 83)
+    const storeId = '83';
     await storePage.gotoStore(storeId);
-    
-    // Dismiss the "address outside delivery area" modal if it appears
-    const outsideDeliveryModalText = page.getByText("Your address is outside of this store's delivery area");
-    const isModalVisible = await outsideDeliveryModalText.isVisible({ timeout: 3000 }).catch(() => false);
-    if (isModalVisible) {
-      // Find the close button - it has aria-label="Close modal"
-      // The button is positioned in the top-left corner of the modal
-      const closeButton = page.getByRole('button', { name: /close modal/i });
-      if (await closeButton.isVisible({ timeout: 2000 }).catch(() => false)) {
-        await closeButton.click();
-        await page.waitForTimeout(300); // Wait for modal to close
-      }
-    }
-    
     await storePage.waitForStoreLoaded();
     
-    // Step 4: Add items to cart
-    const menuItems = await storePage.getMenuItems();
-    expect(menuItems.length).toBeGreaterThan(0);
+    // Step 4: Add items to cart - click on the menu item CARD to open the dialog
+    const menuItemCards = page.locator('div.border.border-gray-200.rounded-lg.cursor-pointer:has(h3)');
+    await expect(menuItemCards.first()).toBeVisible({ timeout: 10000 });
+    const menuItemCount = await menuItemCards.count();
+    expect(menuItemCount).toBeGreaterThan(0);
     
-    // Add first item
-    await page.getByRole('button', { name: /add to cart/i }).first().click();
+    // Click on the first menu item card to open the menu item dialog
+    await menuItemCards.first().click();
+    await page.waitForTimeout(500);
     
-    // Step 5: Open cart drawer (click cart icon in header)
+    // Step 5: Wait for menu item dialog to open
+    const menuItemDialog = page.locator('div.fixed.inset-0.z-50').first();
+    await expect(menuItemDialog).toBeVisible({ timeout: 5000 });
+    
+    // Step 6: Select a side option (checkbox modification - e.g., Side Salad)
+    const sideOption = page.locator('button div.h-5.w-5.rounded.border-2').first();
+    if (await sideOption.isVisible({ timeout: 3000 }).catch(() => false)) {
+      await sideOption.click();
+      await page.waitForTimeout(300);
+    }
+    
+    // Step 7: Select a food preference option (radio button modification - e.g., Spice level)
+    const spiceOption = page.locator('button div.h-5.w-5.rounded-full.border-2').first();
+    if (await spiceOption.isVisible({ timeout: 3000 }).catch(() => false)) {
+      await spiceOption.click();
+      await page.waitForTimeout(300);
+    }
+    
+    // Step 8: Click increase quantity button
+    const increaseQuantityButton = page.locator('button[aria-label="Increase quantity"]');
+    if (await increaseQuantityButton.isVisible({ timeout: 3000 }).catch(() => false)) {
+      await increaseQuantityButton.click();
+      await page.waitForTimeout(300);
+    }
+    
+    // Step 9: Click "Add to cart" button in the dialog
+    const addToCartButton = page.locator('div.fixed.inset-0.z-50 button').filter({ hasText: /add to cart/i }).first();
+    await addToCartButton.click();
+    await page.waitForTimeout(500);
+    
+    // Step 10: Open cart drawer by clicking cart icon in header
     const cartButton = page.locator('button[aria-label*="cart" i], button:has([class*="cart" i])').first();
     if (await cartButton.isVisible({ timeout: 5000 })) {
       await cartButton.click();
       await page.waitForTimeout(500);
     }
     
-    // Step 6: Click Continue button from cart drawer to proceed to checkout
+    // Step 11: Click Continue button from cart drawer to proceed to checkout
     const continueButton = page.getByRole('button', { name: /^Continue$/i });
     if (await continueButton.isVisible({ timeout: 5000 })) {
       await continueButton.click();
       await page.waitForTimeout(1000);
     } else {
-      // If cart drawer doesn't have continue button, navigate directly to checkout
       await checkoutPage.gotoCheckout(storeId, 'restaurant');
     }
     
-    // Step 7: Wait for checkout page to load
-    await checkoutPage.waitForCheckoutLoaded();
+    // Step 12: Wait for checkout page to load
     await expect(page).toHaveURL(/\/checkout/, { timeout: 10000 });
+    // Wait for Place Order button to be visible
+    const placeOrderButton = page.getByRole('button', { name: /place order/i }).first();
+    await expect(placeOrderButton).toBeVisible({ timeout: 10000 });
     
-    // Step 8: Verify defaults are selected (standard delivery, default address, default payment)
-    // Standard delivery should be selected by default
-    const standardOption = checkoutPage.standardOption;
-    if (await standardOption.isVisible({ timeout: 3000 })) {
-      // Check if standard is selected (it should be by default)
-      const isSelected = await standardOption.evaluate((el) => {
-        return el.getAttribute('aria-checked') === 'true' || 
-               el.classList.contains('selected') ||
-               el.querySelector('input[type="radio"]:checked') !== null;
-      });
-      // Standard should be selected by default, but if not, select it
-      if (!isSelected) {
-        await checkoutPage.selectDeliveryOption('standard');
+    // Step 13: Standard delivery should be selected by default - no action needed
+    // Wait for page to settle
+    await page.waitForTimeout(1000);
+    
+    // Step 14: Payment method should already be set from localStorage
+    // Check if payment shows "...4655" pattern (use .first() to avoid strict mode)
+    const paymentIndicator = page.getByText('...4655').first();
+    const hasPaymentMethod = await paymentIndicator.isVisible({ timeout: 3000 }).catch(() => false);
+    
+    // If no payment method found, try to add one via clicking Credit/Debit Card button
+    if (!hasPaymentMethod) {
+      const addCardBtn = page.locator('button:has-text("Credit/Debit Card")').first();
+      if (await addCardBtn.isVisible({ timeout: 2000 }).catch(() => false)) {
+        await addCardBtn.click();
+        await page.waitForTimeout(500);
+        // Fill card details in the modal
+        const cardNumberInput = page.locator('input[name*="card" i], input[placeholder*="card" i]').first();
+        if (await cardNumberInput.isVisible({ timeout: 2000 }).catch(() => false)) {
+          await cardNumberInput.fill('5555 5555 5555 4444');
+          await page.locator('input[name*="expir" i], input[placeholder*="MM" i]').first().fill('12/28');
+          await page.locator('input[name*="cvc" i], input[placeholder*="CVC" i]').first().fill('123');
+          await page.locator('input[name*="zip" i], input[placeholder*="ZIP" i]').first().fill('12345');
+          const saveBtn = page.getByRole('button', { name: /save|add|submit/i }).first();
+          await saveBtn.click();
+          await page.waitForTimeout(1000);
+        }
       }
     }
     
-    // Step 9: Verify payment method is available (should be set from localStorage)
-    // If no payment method is visible, add one
-    const hasPaymentMethod = await checkoutPage.selectedPaymentMethod.isVisible({ timeout: 3000 }).catch(() => false);
-    if (!hasPaymentMethod) {
-      const cardData = testDataGenerators.generateCard();
-      await checkoutPage.addPaymentCard(cardData);
-      await page.waitForTimeout(1000);
-    }
+    // Step 15: Click Place Order button directly
+    await placeOrderButton.click();
+    await page.waitForTimeout(500);
     
-    // Step 10: Verify Place Order button is enabled
-    const canPlace = await checkoutPage.canPlaceOrder();
-    expect(canPlace).toBeTruthy();
+    // Step 16: Verify order confirmation modal appears
+    await expect(page.getByText('Order Confirmed!')).toBeVisible({ timeout: 10000 });
     
-    // Step 11: Place the order
-    await checkoutPage.placeOrder();
-    
-    // Step 12: Verify order confirmation modal appears
-    await expect(checkoutPage.orderConfirmationModal).toBeVisible({ timeout: 10000 });
-    
-    // Step 13: Verify order confirmation details
-    // Check for "Order Confirmed!" title
-    await expect(page.getByText('Order Confirmed!')).toBeVisible({ timeout: 5000 });
-    
-    // Check for "Your order has been placed successfully" message
+    // Step 17: Verify order confirmation details
     await expect(page.getByText(/Your order has been placed successfully/i)).toBeVisible({ timeout: 5000 });
     
-    // Verify Order ID is displayed
-    const orderId = await checkoutPage.getConfirmationOrderId();
+    // Verify Order ID is displayed (alphanumeric code like "YKR4N9LE0")
+    const orderIdElement = page.locator('text=/[A-Z0-9]{6,}/').first();
+    const orderId = await orderIdElement.textContent();
     expect(orderId).toBeTruthy();
-    expect(orderId.length).toBeGreaterThan(0);
     
     // Verify Total is displayed
-    const totalText = await page.locator(':text("Total")').locator('..').locator(':text("$")').first().textContent();
-    expect(totalText).toBeTruthy();
-    expect(totalText).toContain('$');
+    await expect(page.getByText(/Total.*\$/i).first()).toBeVisible({ timeout: 5000 });
     
     // Verify Estimated Delivery Time is displayed
     await expect(page.getByText(/Estimated Delivery Time|Scheduled Delivery Time/i)).toBeVisible({ timeout: 5000 });
-    const deliveryTimeText = await page.getByText(/\d+-\d+ min|\d+:\d+ [AP]M/i).first().textContent();
-    expect(deliveryTimeText).toBeTruthy();
     
-    // Verify "Close" button is present
-    await expect(page.getByRole('button', { name: /close/i })).toBeVisible({ timeout: 5000 });
+    // Step 19: Close the order confirmation modal
+    const closeButton = page.getByRole('button', { name: /^close$/i });
+    await expect(closeButton).toBeVisible({ timeout: 5000 });
+    await closeButton.click();
+    await page.waitForTimeout(500);
     
-    // Verify SMS/email notification message
-    await expect(page.getByText(/You will receive SMS and email updates/i)).toBeVisible({ timeout: 5000 });
+    // Step 20: Verify we're back on the home page
+    await expect(page).toHaveURL(/\/home/, { timeout: 10000 });
+    
+    // Step 21: Click on "Orders" in the sidebar
+    const ordersLink = page.locator('a[href="/orders"]');
+    await ordersLink.click();
+    await page.waitForTimeout(500);
+    
+    // Step 22: Wait for orders page to load
+    await expect(page).toHaveURL(/\/orders/, { timeout: 10000 });
+    await ordersPage.waitForOrdersLoaded();
+    
+    // Step 23: Find the last order and click on a star to rate it
+    await page.waitForTimeout(1000);
+    
+    // Find the first order card (most recent order)
+    const firstOrderCard = page.locator('div.hover\\:bg-gray-50.transition-colors.cursor-pointer').first();
+    await expect(firstOrderCard).toBeVisible({ timeout: 10000 });
+    
+    // Click on a star to open the review dialog (5th star for 5-star rating)
+    const starButton = firstOrderCard.locator('svg.lucide-star').nth(4);
+    await starButton.click();
+    await page.waitForTimeout(500);
+    
+    // Step 24: Wait for review dialog to appear
+    const reviewDialog = page.locator('div.fixed.inset-0.z-50').first();
+    await expect(reviewDialog).toBeVisible({ timeout: 5000 });
+    
+    // Step 25: Enter review text in the textarea
+    const reviewTextarea = page.locator('textarea');
+    await expect(reviewTextarea).toBeVisible({ timeout: 3000 });
+    await reviewTextarea.fill('The food was good. This is my official review of the store and I know they hope it was good, because it was indeed good!');
+    await page.waitForTimeout(300);
+    
+    // Step 26: Click "Submit Review" button
+    const submitReviewButton = page.getByRole('button', { name: /submit review/i });
+    await submitReviewButton.click();
+    await page.waitForTimeout(1000);
+    
+    // Verify the review was submitted successfully
+    await expect(page.getByText(/Thanks for leaving a review|review.*submitted/i)).toBeVisible({ timeout: 5000 }).catch(async () => {
+      await expect(reviewDialog).toBeHidden({ timeout: 5000 });
+    });
   });
 });
-

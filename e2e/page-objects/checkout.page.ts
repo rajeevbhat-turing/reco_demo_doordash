@@ -71,10 +71,10 @@ export class CheckoutPage extends BasePage {
     this.selectedAddress = page.locator('[class*="selected-address"], p:has-text("Street")').first();
     this.deliveryTimeDisplay = page.locator(':text-matches("\\d+-\\d+ min")').first();
 
-    // Delivery options
-    this.expressOption = page.locator('[class*="delivery-option"]:has-text("Express"), div:has-text("Express"):has-text("Direct")');
-    this.standardOption = page.locator('[class*="delivery-option"]:has-text("Standard"), div:has-text("Standard")');
-    this.scheduleOption = page.locator('[class*="delivery-option"]:has-text("Schedule"), div:has-text("Schedule")');
+    // Delivery options - specific clickable divs with option names
+    this.expressOption = page.locator('div.border.rounded-lg.cursor-pointer:has(h3:has-text("Express"))');
+    this.standardOption = page.locator('div.border.rounded-lg.cursor-pointer:has(h3:has-text("Standard"))');
+    this.scheduleOption = page.locator('div.border.rounded-lg.cursor-pointer:has(h3:has-text("Schedule"))');
 
     // Payment section
     this.paymentSection = page.locator(':has-text("Payment details")').first();
@@ -96,15 +96,15 @@ export class CheckoutPage extends BasePage {
     this.promoCodeInput = this.promoCodeModal.locator('input');
     this.applyPromoButton = this.promoCodeModal.getByRole('button', { name: /apply/i });
 
-    // Actions
-    this.placeOrderButton = page.getByRole('button', { name: /place order/i });
+    // Actions - use .first() to avoid strict mode violations when multiple buttons exist
+    this.placeOrderButton = page.getByRole('button', { name: /place order/i }).first();
     this.addMoreItemsButton = page.getByRole('button', { name: /add more items/i });
 
-    // Modals
-    this.orderConfirmationModal = page.locator('[role="dialog"]:has-text("confirmed"), [role="dialog"]:has-text("Order")');
-    this.addressesModal = page.locator('[role="dialog"]:has-text("address")');
-    this.addCardModal = page.locator('[role="dialog"]:has-text("card")');
-    this.scheduleModal = page.locator('[role="dialog"]:has-text("Schedule"), [role="dialog"]:has-text("time")');
+    // Modals - use fixed overlay pattern, not role="dialog"
+    this.orderConfirmationModal = page.locator('div.fixed.inset-0.z-50:has-text("Order Confirmed")');
+    this.addressesModal = page.locator('div.fixed.inset-0.z-50:has-text("address")');
+    this.addCardModal = page.locator('div.fixed.inset-0.z-50:has-text("card")');
+    this.scheduleModal = page.locator('div.fixed.inset-0.z-50:has-text("Schedule")');
 
     // Auth (for non-authenticated users)
     this.signInTab = page.getByRole('button', { name: /^sign in$/i });

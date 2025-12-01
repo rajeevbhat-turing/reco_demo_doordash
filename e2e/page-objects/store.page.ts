@@ -57,20 +57,20 @@ export class StorePage extends BasePage {
     this.menuCategories = page.locator('ul li button, [class*="menu-category"]');
     this.searchInput = page.locator('input[placeholder*="Search"]');
 
-    // Menu items
-    this.menuItems = page.locator('[class*="menu-item"], [class*="border"]:has(h3):has(button)');
-    this.featuredItems = page.locator('[class*="featured"] [class*="item"], section:has-text("Featured") [class*="border"]:has(h3)');
-    this.mostOrderedItems = page.locator('section:has-text("Most Ordered") [class*="border"]:has(h3)');
-    this.addToCartButtons = page.locator('button:has-text("+"), button[aria-label="Add to cart"]');
+    // Menu items - the cards with border, h3, and cursor-pointer that open the dialog when clicked
+    this.menuItems = page.locator('div.border.border-gray-200.rounded-lg.cursor-pointer:has(h3)');
+    this.featuredItems = page.locator('section:has-text("Featured") div.border.rounded-lg:has(h3)');
+    this.mostOrderedItems = page.locator('section:has-text("Most Ordered") div.border.rounded-lg:has(h3)');
+    this.addToCartButtons = page.locator('button[aria-label="Add to cart"]');
 
-    // Menu item dialog
-    this.menuItemDialog = page.locator('[role="dialog"], [class*="dialog"]').first();
+    // Menu item dialog - uses fixed overlay pattern, not role="dialog"
+    this.menuItemDialog = page.locator('div.fixed.inset-0.z-50').first();
     this.dialogItemName = this.menuItemDialog.locator('h2, h3').first();
     this.dialogAddToCartButton = this.menuItemDialog.getByRole('button', { name: /add to (cart|order)/i });
     this.dialogQuantity = this.menuItemDialog.locator('[class*="quantity"], span:has-text("×")');
-    this.dialogIncrease = this.menuItemDialog.locator('button:has-text("+")').last();
-    this.dialogDecrease = this.menuItemDialog.locator('button:has-text("-")').last();
-    this.dialogClose = this.menuItemDialog.locator('button:has([class*="x" i]), button[aria-label*="close" i]').first();
+    this.dialogIncrease = this.menuItemDialog.locator('button[aria-label="Increase quantity"]');
+    this.dialogDecrease = this.menuItemDialog.locator('button[aria-label="Decrease quantity"]');
+    this.dialogClose = this.menuItemDialog.locator('button[aria-label*="close" i], button[aria-label*="Close" i]').first();
 
     // Reviews
     this.reviewsSection = page.locator('section:has-text("Reviews"), [class*="reviews"]');
