@@ -6,9 +6,9 @@ import { getImageWithFallback } from '@/constants/image-placeholders';
  * GET /api/expected-state/get-reviews
  * 
  * Query Parameters:
- * - email: User email (required)
- * - store_id: Filter by store ID (optional)
- * - approval_status: Filter by approval status ('approved', 'rejected', 'pending') (optional)
+ * - email: User email (optional if restaurant_id provided)
+ * - restaurant_id: Filter by restaurant ID (optional if email provided)
+ * - has_liked_items: Filter by whether review has liked items (optional, "true" or "false")
  * - sort_type: JSON array of sort specifications (optional)
  *   Example: [{ "key": "rating", "order": "desc" }, { "key": "timestamp", "order": "asc" }]
  * - limit: Number of reviews to return (optional)
@@ -17,14 +17,16 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const email = searchParams.get('email');
-    const storeId = searchParams.get('store_id');
+    const restaurantId = searchParams.get('restaurant_id');
     const approvalStatus = searchParams.get('approval_status');
+    const hasLikedItemsParam = searchParams.get('has_liked_items');
     const sortTypeParam = searchParams.get('sort_type');
     const limit = searchParams.get('limit');
 
-    if (!email) {
+    // Email is only required if restaurant_id is not provided
+    if (!email && !restaurantId) {
       return NextResponse.json(
-        { success: false, error: 'Email is required' },
+        { success: false, error: 'Either email or restaurant_id is required' },
         { status: 400 }
       );
     }
@@ -49,7 +51,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Validate sort fields
-    const validSortFields = ['timestamp', 'rating', 'id'];
+    const validSortFields = ['timestamp', 'rating', 'id', 'helpfulCount'];
     for (const spec of sortSpecs) {
       if (!validSortFields.includes(spec.key)) {
         return NextResponse.json(
@@ -65,52 +67,72 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // First, get the user ID from email
-    const userResult = await db.query<any>(
-      'SELECT id FROM users WHERE email = ?',
-      [email]
-    );
-
-    if (userResult.length === 0) {
-      return NextResponse.json({
-        success: true,
-        data: [],
-        meta: {
-          message: 'User not found',
-          email,
-        },
-      });
-    }
-
-    const userId = userResult[0].id;
-
     // Build WHERE clause
-    const conditions: string[] = ['ur.user_id = ?'];
-    const params: any[] = [userId];
+    const conditions: string[] = [];
+    const params: any[] = [];
 
-    if (storeId) {
-      conditions.push('ur.store_id = ?');
-      params.push(storeId);
+    // If email is provided, filter by user
+    if (email) {
+      const userResult = await db.query<any>(
+        'SELECT id FROM users WHERE email = ?',
+        [email]
+      );
+
+      if (userResult.length === 0) {
+        return NextResponse.json({
+          success: true,
+          data: [],
+          meta: {
+            message: 'User not found',
+            email,
+          },
+        });
+      }
+
+      const userId = userResult[0].id;
+      conditions.push('ur.user_id = ?');
+      params.push(userId);
     }
 
+    // If restaurant_id is provided, filter by restaurant
+    if (restaurantId) {
+      conditions.push('ur.store_id = ?');
+      params.push(restaurantId);
+    }
+
+    // Filter by approval status (defaults to "approved" on client side)
     if (approvalStatus) {
       conditions.push('ur.approval_status = ?');
       params.push(approvalStatus);
     }
 
-    const whereClause = `WHERE ${conditions.join(' AND ')}`;
+    // If has_liked_items is provided, filter by reviews with/without liked items
+    if (hasLikedItemsParam !== null) {
+      const hasLikedItems = hasLikedItemsParam.toLowerCase() === 'true';
+      if (hasLikedItems) {
+        // Only reviews that have liked items (and the order items still exist)
+        conditions.push('EXISTS (SELECT 1 FROM review_liked_items rli JOIN order_items oi ON rli.order_item_id = oi.id WHERE rli.review_id = ur.id)');
+      } else {
+        // Only reviews that don't have liked items
+        conditions.push('NOT EXISTS (SELECT 1 FROM review_liked_items rli JOIN order_items oi ON rli.order_item_id = oi.id WHERE rli.review_id = ur.id)');
+      }
+    }
+
+    const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
     const limitClause = limit ? `LIMIT ${parseInt(limit)}` : '';
     
     // Build ORDER BY clause from sort_type
+    // For helpfulCount, we need to use a subquery since it's calculated
     const orderByClauses = sortSpecs.map(spec => {
       const order = (spec.order || 'asc').toUpperCase();
+      if (spec.key === 'helpfulCount') {
+        return `(SELECT COUNT(*) FROM review_helpful rh WHERE rh.review_id = ur.id) ${order}`;
+      }
       return `ur.${spec.key} ${order}`;
     });
     const orderByClause = `ORDER BY ${orderByClauses.join(', ')}`;
 
-    // Fetch reviews with user and store information
-    const reviews = await db.query<any>(
-      `SELECT 
+    const fullQuery = `SELECT 
         ur.id,
         ur.store_id,
         ur.store_category,
@@ -124,15 +146,17 @@ export async function GET(request: NextRequest) {
         u.email AS user_email,
         u.avatar AS user_avatar,
         r.name AS store_name,
-        r.logo AS store_logo
+        r.logo AS store_logo,
+        (SELECT COUNT(*) FROM review_helpful rh WHERE rh.review_id = ur.id) AS helpful_count
       FROM user_reviews ur
       JOIN users u ON ur.user_id = u.id
       JOIN restaurants r ON ur.store_id = r.id
       ${whereClause}
       ${orderByClause}
-      ${limitClause}`,
-      params
-    );
+      ${limitClause}`;
+
+    // Fetch reviews with user and store information
+    const reviews = await db.query<any>(fullQuery, params);
 
     if (reviews.length === 0) {
       return NextResponse.json({
@@ -218,7 +242,7 @@ export async function GET(request: NextRequest) {
       const helpfulUsers = helpfulByReview.get(review.id) || [];
       const reviewLikedItems = likedItemsByReview.get(review.id) || [];
 
-      return {
+      const transformed = {
         id: String(review.id),
         storeId: String(review.store_id),
         storeName: review.store_name,
@@ -227,7 +251,7 @@ export async function GET(request: NextRequest) {
         userId: String(review.user_id),
         userName: review.user_name,
         userEmail: review.user_email,
-        userAvatar: review.user_avatar ? getImageWithFallback(review.user_avatar, 'avatar') : null,
+        userAvatar: review.user_avatar ? getImageWithFallback(review.user_avatar, 'user') : null,
         rating: review.rating,
         content: review.content,
         timestamp: review.timestamp,
@@ -238,6 +262,9 @@ export async function GET(request: NextRequest) {
         ratedHelpfulBy: helpfulUsers,
         likedItems: reviewLikedItems,
       };
+      
+      console.log(`📝 Review ${review.id}: has ${reviewLikedItems.length} liked items`);
+      return transformed;
     });
 
     console.log(`✅ Fetched ${transformedReviews.length} reviews for user ${email}`);
