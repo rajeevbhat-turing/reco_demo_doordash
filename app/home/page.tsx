@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useEffect, useMemo, useRef, useSyncExternalStore } from 'react';
+import Link from 'next/link';
+import { Heart } from 'lucide-react';
 import FoodCategories from '@/components/food-categories';
 import FilterOptions, {
   type FilterOptionsRef,
@@ -31,7 +33,7 @@ export default function Home() {
   const [allFilteredRestaurants, setAllFilteredRestaurants] = useState<Restaurant[]>([]);
   const filterOptionsRef = useRef<FilterOptionsRef>(null);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const { clearSearchResults } = useAppStore();
+  const { updateSearchResults, clearSearchResults } = useAppStore();
 
   // Get cart store to set category
   const cartStore = useCartStore();
@@ -71,8 +73,21 @@ export default function Home() {
   // Set the category to restaurant when component mounts
   useEffect(() => {
     cartStore.setCategory('restaurant');
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Get address from user store for location filtering
+  const { getAddresses, getTempAddress } = useUserStore();
+  const addresses = getAddresses();
+  const userIsAuthenticated = isAuthenticated;
+
+  // Get active address (selected address for authenticated users, temp address for non-authenticated)
+  const selectedAddress = useMemo(() => {
+    if (userIsAuthenticated && addresses?.length > 0) {
+      // Find default address or use first address
+      return addresses.find(a => a.default) || addresses[0] || null;
+    }
+    return null;
+  }, [userIsAuthenticated, addresses]);
 
   // Function to check if an image URL is valid (not placeholder/empty)
   const hasValidLogo = (logoUrl: string | undefined): boolean => {
@@ -207,9 +222,10 @@ export default function Home() {
     );
 
     // Filter restaurants that have at least one restaurant-specific deal
-    return actualRestaurants.filter(
-      restaurant => restaurantIdsWithDeals.has(restaurant.id) && hasValidLogo(restaurant.logo)
-    );
+    return actualRestaurants
+      .filter(
+        restaurant => restaurantIdsWithDeals.has(restaurant.id) && hasValidLogo(restaurant.logo)
+      );
   }, [actualRestaurants, allDeals]);
 
   const newOnDoorDash = useMemo(() => {
@@ -255,17 +271,16 @@ export default function Home() {
             );
             if (matchesCategories) return true;
           }
-
+          
           // Also check cuisine field
           if (restaurant.cuisine) {
-            const matchesCuisine = filters.cuisine!.some(
-              selectedCuisine =>
-                restaurant.cuisine!.toLowerCase().includes(selectedCuisine.toLowerCase()) ||
-                selectedCuisine.toLowerCase().includes(restaurant.cuisine!.toLowerCase())
+            const matchesCuisine = filters.cuisine!.some(selectedCuisine =>
+              restaurant.cuisine!.toLowerCase().includes(selectedCuisine.toLowerCase()) ||
+              selectedCuisine.toLowerCase().includes(restaurant.cuisine!.toLowerCase())
             );
             if (matchesCuisine) return true;
           }
-
+          
           return false;
         });
       }
@@ -284,17 +299,16 @@ export default function Home() {
             );
             if (matchesCategories) return true;
           }
-
+          
           // Also check cuisine field
           if (restaurant.cuisine) {
-            const matchesCuisine = filters.dietaryPreferences!.some(
-              dietary =>
-                restaurant.cuisine!.toLowerCase().includes(dietary.toLowerCase()) ||
-                dietary.toLowerCase().includes(restaurant.cuisine!.toLowerCase())
+            const matchesCuisine = filters.dietaryPreferences!.some(dietary =>
+              restaurant.cuisine!.toLowerCase().includes(dietary.toLowerCase()) ||
+              dietary.toLowerCase().includes(restaurant.cuisine!.toLowerCase())
             );
             if (matchesCuisine) return true;
           }
-
+          
           return false;
         });
       }
@@ -354,7 +368,6 @@ export default function Home() {
       setAllFilteredRestaurants([]);
       clearSearchResults();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     filters,
     nationalFavorites,
@@ -363,7 +376,6 @@ export default function Home() {
     newOnDoorDash,
     allStores,
     selectedCategory,
-    allDeals,
   ]);
 
   const handleFilterChange = (newFilters: FilterState) => {
@@ -497,7 +509,10 @@ export default function Home() {
             </div>
 
             {allFilteredRestaurants.length > 0 ? (
-              <RestaurantSection title="" restaurants={allFilteredRestaurants} />
+              <RestaurantSection
+                title=""
+                restaurants={allFilteredRestaurants}
+              />
             ) : (
               <div className="mt-10 py-16 text-center bg-gray-50 rounded-lg">
                 <h3 className="text-lg font-medium text-gray-700">
@@ -533,8 +548,7 @@ export default function Home() {
                   </div>
                 </div>
                 <p className="text-base text-gray-900 max-w-md mx-auto">
-                  We couldn&apos;t find any restaurants near your location that we currently deliver
-                  from. Follow along as we launch in new cities.
+                  We couldn't find any restaurants near your location that we currently deliver from. Follow along as we launch in new cities.
                 </p>
               </div>
             ) : (
