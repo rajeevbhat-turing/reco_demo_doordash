@@ -82,10 +82,6 @@ export async function get_restaurants(
     return null;
   }
 
-<<<<<<< HEAD
-  const { sort_type, limit, lat, lng, filters = {} } = args;
-
-=======
   const { name, sort_type, limit, lat, lng, filters = {} } = args;
   
   // Default sort by distance ascending if no sort_type provided
@@ -93,7 +89,6 @@ export async function get_restaurants(
     ? sort_type 
     : [{ key: 'distance', order: 'asc' as const }];
   
->>>>>>> 097930f2c88c7a871529672a96c657f79fb0a0e0
   try {
     // Determine lat/lng to use: prefer explicit args, fallback to selected address
     let userLat: number | undefined = lat;
@@ -124,15 +119,6 @@ export async function get_restaurants(
     if (limit !== undefined && limit !== null) {
       params.append('limit', String(limit));
     }
-<<<<<<< HEAD
-
-    if (sort_type && sort_type.length > 0) {
-      params.append('sort_type', JSON.stringify(sort_type));
-    }
-
-    if (filters.cuisine) {
-      params.append('cuisine', filters.cuisine);
-=======
     
     // Always pass sort_type (uses default if not provided)
     params.append('sort_type', JSON.stringify(effectiveSortType));
@@ -167,7 +153,6 @@ export async function get_restaurants(
     
     if (filters.restaurant_ids_not_in && filters.restaurant_ids_not_in.length > 0) {
       params.append('restaurant_ids_not_in', JSON.stringify(filters.restaurant_ids_not_in));
->>>>>>> 097930f2c88c7a871529672a96c657f79fb0a0e0
     }
 
     // Call API route

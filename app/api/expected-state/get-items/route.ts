@@ -249,9 +249,6 @@ export async function GET(request: NextRequest) {
         mi.featured
       FROM menu_items mi
     `;
-<<<<<<< HEAD
-
-=======
     
     // Join with menu_categories if filtering by categories
     if (menuCategories.length > 0) {
@@ -260,7 +257,6 @@ export async function GET(request: NextRequest) {
     
     query += ' WHERE mi.is_available=1';
     
->>>>>>> 097930f2c88c7a871529672a96c657f79fb0a0e0
     const queryParams: any[] = [];
 
     // Filter by restaurant if provided

@@ -22,10 +22,6 @@ interface SortSpec {
  *   - Sorts by first spec, then uses subsequent specs as tiebreakers
  *   - order defaults to "asc" if not provided
  * - limit: Number of restaurants to return (optional, returns all if not provided)
-<<<<<<< HEAD
- * - cuisine: Filter by cuisine type
- *
-=======
  * - cuisines: JSON array of cuisine types to filter by (optional, matches any)
  * - categories: JSON array of categories to filter by (optional, matches any)
  * - prices: JSON array of price ranges (optional): "$", "$$", "$$$", "$$$$"
@@ -33,7 +29,6 @@ interface SortSpec {
  * - has_deals: Boolean to filter by restaurants with deals (optional, default: false). When true, includes deals in response
  * - restaurant_ids_not_in: JSON array of restaurant IDs to exclude (optional)
  * 
->>>>>>> 097930f2c88c7a871529672a96c657f79fb0a0e0
  * Finds restaurants with optional filtering and sorting:
  * 1. Fetches all restaurants from database
  * 2. Applies filters if provided (name, item_keyword, cuisines, categories, prices, dashpass, has_deals, exclusions)
@@ -270,13 +265,6 @@ export async function GET(request: NextRequest) {
     `;
 
     const queryParams: any[] = [];
-<<<<<<< HEAD
-
-    // Apply cuisine filter if provided
-    if (cuisineFilter) {
-      query += ' WHERE cuisine like ?';
-      queryParams.push(`%${cuisineFilter}%`);
-=======
     const whereClauses: string[] = [];
     
     // Apply name filter if provided
@@ -338,7 +326,6 @@ export async function GET(request: NextRequest) {
     // Add WHERE clause if we have any conditions
     if (whereClauses.length > 0) {
       query += ' WHERE ' + whereClauses.join(' AND ');
->>>>>>> 097930f2c88c7a871529672a96c657f79fb0a0e0
     }
 
     const restaurants = await db.query<any>(query, queryParams);

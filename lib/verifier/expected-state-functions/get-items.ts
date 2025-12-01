@@ -45,10 +45,6 @@ export interface GetItemsResult {
  * - Each spec has a "key" (field name) and optional "order" ("asc" or "desc", defaults to "asc")
  * - Example: [{ key: "price", order: "asc" }, { key: "rating", order: "desc" }]
  *   → Sorts by price ascending first, then by rating descending for items with same price
-<<<<<<< HEAD
- *
- * @param args - Object containing restaurant_id, keywords, sort_type, and limit
-=======
  * 
  * Distance Filtering:
  * - If restaurant_id is NOT provided, filters restaurants by 10 mile radius using lat/lng
@@ -56,7 +52,6 @@ export interface GetItemsResult {
  * - If restaurant_id IS provided, no distance filtering is applied
  * 
  * @param args - Object containing restaurant_id, keywords, sort_type, limit, lat, and lng
->>>>>>> 097930f2c88c7a871529672a96c657f79fb0a0e0
  * @returns Object with items array
  */
 export async function get_items(args: GetItemsArgs): Promise<GetItemsResult | null> {
@@ -67,13 +62,8 @@ export async function get_items(args: GetItemsArgs): Promise<GetItemsResult | nu
     return null;
   }
 
-<<<<<<< HEAD
-  const { restaurant_id, keywords, sort_type, limit } = args;
-
-=======
   const { restaurant_id, keywords, sort_type, limit, lat, lng, filters = {} } = args;
   
->>>>>>> 097930f2c88c7a871529672a96c657f79fb0a0e0
   try {
     // Determine lat/lng to use: prefer explicit args, fallback to selected address
     let userLat: number | undefined = lat;
@@ -120,9 +110,6 @@ export async function get_items(args: GetItemsArgs): Promise<GetItemsResult | nu
     if (limit !== undefined && limit !== null) {
       params.append('limit', String(limit));
     }
-<<<<<<< HEAD
-
-=======
     
     if (filters.menu_categories && filters.menu_categories.length > 0) {
       params.append('menu_categories', JSON.stringify(filters.menu_categories));
@@ -132,7 +119,6 @@ export async function get_items(args: GetItemsArgs): Promise<GetItemsResult | nu
       params.append('restaurant_ids_not_in', JSON.stringify(filters.restaurant_ids_not_in));
     }
     
->>>>>>> 097930f2c88c7a871529672a96c657f79fb0a0e0
     // Call API route
     const response = await fetch(`/api/expected-state/get-items?${params.toString()}`);
 
