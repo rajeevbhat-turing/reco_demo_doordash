@@ -1,5 +1,18 @@
 import { useUserStore } from '@/store/user-store';
 
+export interface DealResult {
+  id: string;
+  title: string;
+  description: string;
+  buttonText: string | null;
+  buttonLink: string | null;
+  minimumPurchase: number | null; // In cents
+  discountType: string | null;
+  discountValue: number | null;
+  maximumDiscount: number | null; // In cents
+  promocode: string | null;
+}
+
 export interface RestaurantResult {
   id: string;
   name: string;
@@ -8,6 +21,8 @@ export interface RestaurantResult {
   minDeliveryFee: number;
   priceRange: number;
   dashPass: boolean;
+  rating: number | null; // Average rating from approved user reviews
+  ratingCount: number; // Number of approved reviews
   address: {
     street: string;
     city: string;
@@ -15,6 +30,7 @@ export interface RestaurantResult {
     zipCode: string;
   };
   distance: number; // Distance in miles from user location
+  deals?: DealResult[]; // Only included when has_deals filter is true
 }
 
 export interface SortSpec {
@@ -34,6 +50,7 @@ export interface GetRestaurantsArgs {
     categories?: string[]; // Filter by categories (matches any in array)
     prices?: string[]; // Filter by price ranges: "$", "$$", "$$$", "$$$$"
     dashpass?: boolean; // Filter by DashPass availability
+    has_deals?: boolean; // Filter by restaurants with deals (default: false). When true, includes deals in response
     restaurant_ids_not_in?: string[]; // Exclude these restaurant IDs
   };
 }
@@ -125,6 +142,10 @@ export async function get_restaurants(args: GetRestaurantsArgs): Promise<GetRest
     
     if (filters.dashpass !== undefined) {
       params.append('dashpass', String(filters.dashpass));
+    }
+    
+    if (filters.has_deals !== undefined) {
+      params.append('has_deals', String(filters.has_deals));
     }
     
     if (filters.restaurant_ids_not_in && filters.restaurant_ids_not_in.length > 0) {

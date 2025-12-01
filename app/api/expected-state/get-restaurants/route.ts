@@ -26,15 +26,17 @@ interface SortSpec {
  * - categories: JSON array of categories to filter by (optional, matches any)
  * - prices: JSON array of price ranges (optional): "$", "$$", "$$$", "$$$$"
  * - dashpass: Boolean to filter by DashPass availability (optional)
+ * - has_deals: Boolean to filter by restaurants with deals (optional, default: false). When true, includes deals in response
  * - restaurant_ids_not_in: JSON array of restaurant IDs to exclude (optional)
  * 
  * Finds restaurants with optional filtering and sorting:
  * 1. Fetches all restaurants from database
- * 2. Applies filters if provided (name, item_keyword, cuisines, categories, prices, dashpass, exclusions)
+ * 2. Applies filters if provided (name, item_keyword, cuisines, categories, prices, dashpass, has_deals, exclusions)
  * 3. Calculates distance for all restaurants
  * 4. Filters restaurants within 10 mile radius
  * 5. Applies multi-level sorting based on sort_type array (defaults to distance asc)
- * 6. Returns top N restaurants based on limit
+ * 6. If has_deals is true, fetches and includes deals for each restaurant
+ * 7. Returns top N restaurants based on limit
  */
 export async function GET(request: NextRequest) {
   try {
@@ -49,6 +51,8 @@ export async function GET(request: NextRequest) {
     const categoriesParam = searchParams.get('categories');
     const pricesParam = searchParams.get('prices');
     const dashpassParam = searchParams.get('dashpass');
+    const hasDealsParam = searchParams.get('has_deals');
+    const hasDeals = hasDealsParam === 'true';
     const restaurantIdsNotInParam = searchParams.get('restaurant_ids_not_in');
     const lat = searchParams.get('lat');
     const lng = searchParams.get('lng');
@@ -244,7 +248,19 @@ export async function GET(request: NextRequest) {
         r.state,
         r.zip_code,
         r.latitude,
-        r.longitude
+        r.longitude,
+        (
+          SELECT AVG(ur.rating)
+          FROM user_reviews ur
+          WHERE ur.store_id = r.id 
+            AND ur.approval_status = 'approved'
+        ) AS avg_rating,
+        (
+          SELECT COUNT(*)
+          FROM user_reviews ur
+          WHERE ur.store_id = r.id 
+            AND ur.approval_status = 'approved'
+        ) AS rating_count
       FROM restaurants r
     `;
     
@@ -295,6 +311,11 @@ export async function GET(request: NextRequest) {
       queryParams.push(dashpassValue);
     }
     
+    // Apply has_deals filter if provided
+    if (hasDeals) {
+      query += ' INNER JOIN deals d ON r.id = d.restaurant_id';
+    }
+    
     // Apply restaurant exclusion filter if provided
     if (restaurantIdsNotIn.length > 0) {
       const excludePlaceholders = restaurantIdsNotIn.map(() => '?').join(',');
@@ -337,6 +358,8 @@ export async function GET(request: NextRequest) {
         minDeliveryFee: restaurant.min_delivery_fee,
         priceRange: restaurant.price_range,
         dashPass: restaurant.dash_pass === 1,
+        rating: restaurant.avg_rating ? Math.round(restaurant.avg_rating * 10) / 10 : null, // Round to 1 decimal place
+        ratingCount: restaurant.rating_count || 0,
         address: {
           street: restaurant.street,
           city: restaurant.city,
@@ -390,6 +413,54 @@ export async function GET(request: NextRequest) {
 
     // Apply limit if provided
     const limitedResults = limit ? results.slice(0, limit) : results;
+
+    // Fetch deals if has_deals filter is true
+    if (hasDeals && limitedResults.length > 0) {
+      const restaurantIds = limitedResults.map((r: any) => r.id);
+      const dealsRaw = await db.query<any>(
+        `SELECT 
+          id,
+          restaurant_id,
+          title,
+          description,
+          button_text,
+          button_link,
+          minimum_purchase,
+          discount_type,
+          discount_value,
+          maximum_discount,
+          promocode
+        FROM deals
+        WHERE restaurant_id IN (${restaurantIds.map(() => '?').join(',')})`,
+        restaurantIds
+      );
+
+      // Group deals by restaurant_id
+      const dealsByRestaurantId = new Map<string, any[]>();
+      dealsRaw.forEach((deal: any) => {
+        const restId = String(deal.restaurant_id);
+        if (!dealsByRestaurantId.has(restId)) {
+          dealsByRestaurantId.set(restId, []);
+        }
+        dealsByRestaurantId.get(restId)!.push({
+          id: String(deal.id),
+          title: deal.title,
+          description: deal.description,
+          buttonText: deal.button_text,
+          buttonLink: deal.button_link,
+          minimumPurchase: deal.minimum_purchase,
+          discountType: deal.discount_type,
+          discountValue: deal.discount_value,
+          maximumDiscount: deal.maximum_discount,
+          promocode: deal.promocode,
+        });
+      });
+
+      // Add deals to each restaurant
+      limitedResults.forEach((restaurant: any) => {
+        restaurant.deals = dealsByRestaurantId.get(restaurant.id) || [];
+      });
+    }
 
     return NextResponse.json({
       success: true,

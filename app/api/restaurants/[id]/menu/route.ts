@@ -33,6 +33,7 @@ export async function GET(
         mi.is_available,
         mi.discount_percentage,
         mi.discount_cap,
+        mi.category_id,
         mc.name AS category_name
       FROM menu_items mi
       JOIN menu_categories mc ON mi.category_id = mc.id
@@ -155,6 +156,8 @@ export async function GET(
         price: priceDisplay,
         image: getImageWithFallback(item.image, 'image'),
         category: item.category_name,
+        categoryId: String(item.category_id),
+        categoryName: item.category_name,
         calories: item.calories ? String(item.calories) : undefined,
         rating: item.rating || null,
         ratingCount: item.rating_count || null,

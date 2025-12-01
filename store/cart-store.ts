@@ -18,6 +18,8 @@ export interface CartItem {
   quantity: number
   customizations?: string
   appliedModifications?: AppliedModification[]
+  menuCategoryId?: string
+  menuCategoryName?: string
 }
 
 // Cart interface - represents a cart for a single vendor/store
