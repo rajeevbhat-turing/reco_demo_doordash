@@ -1442,11 +1442,12 @@ Gets user reviews with optional filtering and sorting.
 ### Arguments
 ```typescript
 {
-  email?: string;                    // Optional: User email. If not provided, uses logged-in user
-  store_id?: string;                 // Optional: Filter by store ID
-  approval_status?: 'approved' | 'rejected' | 'pending';  // Optional: Filter by approval status
+  email?: string;                    // Optional: User email. If not provided with restaurant_id, uses logged-in user
+  restaurant_id?: string;            // Optional: Filter by restaurant ID
+  approval_status?: 'approved' | 'rejected' | 'pending';  // Optional: Filter by approval status (defaults to "approved")
+  has_liked_items?: boolean;         // Optional: Filter by whether review has liked items (true = only with liked items)
   sort_type?: Array<{
-    key: string;                     // Field to sort by (e.g., "rating", "timestamp")
+    key: string;                     // Field to sort by (e.g., "rating", "timestamp", "helpfulCount")
     order?: "asc" | "desc";          // Sort order, defaults to "asc"
   }>;
   limit?: number;                    // Optional: Number of reviews to return
@@ -1454,7 +1455,8 @@ Gets user reviews with optional filtering and sorting.
 ```
 
 ### Defaults
-- `email`: Uses currently logged-in user's email if not specified
+- `email`: Uses currently logged-in user's email if neither `email` nor `restaurant_id` is specified
+- `approval_status`: Defaults to `"approved"` (only shows approved reviews)
 - `sort_type`: Defaults to `[{ key: "timestamp", order: "desc" }]` (most recent reviews first)
 - `order`: "asc" if not specified in a sort spec
 - `limit`: Returns all matching reviews if not specified
@@ -1462,6 +1464,7 @@ Gets user reviews with optional filtering and sorting.
 ### Supported Sort Fields
 - `timestamp` - When the review was created
 - `rating` - The star rating (1-5)
+- `helpfulCount` - Number of users who marked the review as helpful
 - `id` - Review ID
 
 ### Returns
@@ -1507,13 +1510,45 @@ Gets user reviews with optional filtering and sorting.
 }
 ```
 
-**Get only approved reviews:**
+**Get only approved reviews (default behavior):**
+```json
+{
+  "function": "get_reviews",
+  "args": {
+    "email": "user@example.com"
+  }
+}
+```
+
+**Get pending reviews:**
 ```json
 {
   "function": "get_reviews",
   "args": {
     "email": "user@example.com",
-    "approval_status": "approved"
+    "approval_status": "pending"
+  }
+}
+```
+
+**Get reviews with liked items only:**
+```json
+{
+  "function": "get_reviews",
+  "args": {
+    "email": "user@example.com",
+    "has_liked_items": true
+  }
+}
+```
+
+**Get reviews without liked items:**
+```json
+{
+  "function": "get_reviews",
+  "args": {
+    "email": "user@example.com",
+    "has_liked_items": false
   }
 }
 ```
@@ -1545,27 +1580,23 @@ Gets user reviews with optional filtering and sorting.
 }
 ```
 
-**Get reviews for a specific store:**
+**Get reviews for a specific restaurant:**
 ```json
 {
   "function": "get_reviews",
   "args": {
     "email": "user@example.com",
-    "store_id": "starbucks-299-fremont"
+    "restaurant_id": "starbucks-299-fremont"
   }
 }
 ```
 
-**Get pending reviews sorted by timestamp:**
+**Get all reviews for a restaurant (no user filter):**
 ```json
 {
   "function": "get_reviews",
   "args": {
-    "email": "user@example.com",
-    "approval_status": "pending",
-    "sort_type": [
-      { "key": "timestamp", "order": "asc" }
-    ]
+    "restaurant_id": "starbucks-299-fremont"
   }
 }
 ```
@@ -1593,9 +1624,13 @@ Gets user reviews with optional filtering and sorting.
 ```
 
 ### Notes
-- If user is not found, returns an empty array (not an error)
+- Either `email` or `restaurant_id` must be provided (or both)
+- If neither is provided, uses logged-in user's email
+- If user is not found (when filtering by email), returns an empty array (not an error)
+- **By default, only "approved" reviews are returned** - explicitly set `approval_status` to see pending/rejected reviews
 - Photos, helpful ratings, and liked items are automatically fetched and included
-- Approval status determines if a review is publicly visible ('approved'), hidden ('rejected'), or awaiting moderation ('pending')
+- `has_liked_items` filter: `true` returns only reviews where the user highlighted specific items they liked, `false` returns reviews without liked items
+- `helpfulCount` can be used in sorting to find the most helpful reviews
 - Multi-level sorting applies specs in order (first spec as primary sort, subsequent specs as tiebreakers)
-- Returns `null` if no logged-in user and no email provided
+- Returns `null` if no logged-in user and neither `email` nor `restaurant_id` is provided
 

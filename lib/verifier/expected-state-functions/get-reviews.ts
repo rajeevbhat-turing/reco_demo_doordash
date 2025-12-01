@@ -33,8 +33,9 @@ export interface SortSpec {
 
 export interface GetReviewsArgs {
   email?: string; // Optional: Filter by user email (otherwise uses logged-in user)
-  store_id?: string; // Optional: Filter by store ID
-  approval_status?: 'approved' | 'rejected' | 'pending'; // Optional: Filter by approval status
+  restaurant_id?: string; // Optional: Filter by restaurant ID
+  approval_status?: 'approved' | 'rejected' | 'pending'; // Optional: Filter by approval status (defaults to "approved")
+  has_liked_items?: boolean; // Optional: Filter by whether review has liked items (true = only reviews with liked items)
   sort_type?: SortSpec[]; // Optional: Sort specifications (e.g., [{ key: "rating", order: "desc" }])
   limit?: number; // Optional: Number of reviews to return
 }
@@ -53,8 +54,8 @@ export async function get_reviews(args: GetReviewsArgs = {}): Promise<GetReviews
   const userStore = useUserStore.getState();
   const currentUser = userStore.currentUser;
   
-  // If no email provided, require logged-in user
-  if (!args.email && !currentUser) {
+  // Only default to logged-in user if neither email nor restaurant_id is provided
+  if (!args.email && !args.restaurant_id && !currentUser) {
     return null;
   }
 
@@ -64,7 +65,7 @@ export async function get_reviews(args: GetReviewsArgs = {}): Promise<GetReviews
     : [{ key: 'timestamp', order: 'desc' as const }];
 
   try {
-    const { email, store_id, approval_status, limit } = args;
+    const { email, restaurant_id, approval_status, has_liked_items, limit } = args;
     
     // Build query parameters
     const params = new URLSearchParams();
@@ -72,17 +73,21 @@ export async function get_reviews(args: GetReviewsArgs = {}): Promise<GetReviews
     if (email) {
       // If email is provided, use it
       params.append('email', email);
-    } else if (currentUser) {
-      // Otherwise, use the logged-in user's email
+    } else if (!restaurant_id && currentUser) {
+      // Only default to logged-in user's email if restaurant_id is not provided
       params.append('email', currentUser.email);
     }
     
-    if (store_id) {
-      params.append('store_id', store_id);
+    if (restaurant_id) {
+      params.append('restaurant_id', restaurant_id);
     }
     
-    if (approval_status) {
-      params.append('approval_status', approval_status);
+    // Default approval_status to "approved" if not specified
+    const effectiveApprovalStatus = approval_status || 'approved';
+    params.append('approval_status', effectiveApprovalStatus);
+    
+    if (has_liked_items !== undefined) {
+      params.append('has_liked_items', String(has_liked_items));
     }
     
     // Always pass sort_type (uses default if not provided)
