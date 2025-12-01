@@ -66,3 +66,11 @@ export const generateAvatarColor = (name: string) => {
   const colorIndex = Math.abs(hash) % colors.length;
   return colors[colorIndex];
 };
+
+// Function to check if an image URL is valid (not placeholder/empty)
+export const hasValidLogo = (logoUrl: string | undefined): boolean => {
+  if (!logoUrl || logoUrl.trim() === '') return false;
+  if (logoUrl.includes('placeholder.svg')) return false;
+  if (logoUrl.includes('placeholder.png')) return false;
+  return true;
+};

@@ -1,93 +1,96 @@
-"use client"
+'use client';
 
-import type React from "react"
-import { useEffect } from "react"
-import { Plus, Trash2, Minus } from "lucide-react"
-import type { Product } from "@/types"
-import { CartCategory, useCartStore } from "@/store/cart-store"
+import type React from 'react';
+import { useEffect } from 'react';
+import { Plus, Trash2, Minus } from 'lucide-react';
+import type { Product } from '@/types';
+import { CartCategory, useCartStore } from '@/store/cart-store';
 
 interface ProductCardProps {
-  product: Product
-  onProductClick: (product: Product) => void
-  storeId?: string
-  category?: CartCategory
+  product: Product;
+  onProductClick: (product: Product) => void;
+  storeId?: string;
+  category?: CartCategory;
 }
 
-export default function ProductCard({ 
-  product, 
-  onProductClick, 
+export default function ProductCard({
+  product,
+  onProductClick,
   storeId,
-  category = "restaurant"
+  category = 'restaurant',
 }: ProductCardProps) {
-  const { carts, findCart, updateQuantity, removeItem, setCategory, addItem } = useCartStore()
+  const { findCart, updateQuantity, removeItem, setCategory, addItem } = useCartStore();
 
   // Set the category when component mounts
   useEffect(() => {
-    setCategory(category)
-  }, [category, setCategory])
+    setCategory(category);
+  }, [category, setCategory]);
 
   // Check if product is in cart - search across all carts
-  const currentCart = storeId ? findCart(storeId, category) : null
-  const cartItem = currentCart?.items.find((item) => item.id === product.id)
-  const quantity = cartItem?.quantity || 0
+  const currentCart = storeId ? findCart(storeId, category) : null;
+  const cartItem = currentCart?.items.find(item => item.id === product.id);
+  const quantity = cartItem?.quantity || 0;
 
   // Helper function to format price
   const formatPrice = (price: number | string): string => {
     if (typeof price === 'string') {
       // If it's already a string like "$37.80", return as is
       if (price.startsWith('$')) {
-        return price
+        return price;
       }
       // If it's a string number like "37.80", format it
-      const numPrice = parseFloat(price)
-      return isNaN(numPrice) ? price : `$${numPrice.toFixed(2)}`
+      const numPrice = parseFloat(price);
+      return isNaN(numPrice) ? price : `$${numPrice.toFixed(2)}`;
     }
     // If it's a number, format it normally
-    return `$${price.toFixed(2)}`
-  }
+    return `$${price.toFixed(2)}`;
+  };
 
   const handleAddToCart = (e: React.MouseEvent) => {
-    e.stopPropagation() // Prevent opening the modal when clicking the add button
-    
+    e.stopPropagation(); // Prevent opening the modal when clicking the add button
+
     // Get store name for convenience stores
-    let storeName: string | undefined
+    let storeName: string | undefined;
     if (category === 'convenience' && storeId) {
-      storeName = `Store ${storeId}`
+      storeName = `Store ${storeId}`;
     }
-    
+
     const cartItem = {
       id: product.id,
       itemName: product.name, // Use itemName instead of name
       price: product.price,
       image: product.image,
-    }
-    
+    };
+
     // Add to cart - will automatically find or create cart for this store
-    addItem(cartItem, category, storeName, storeId)
-  }
+    addItem(cartItem, category, storeName, storeId);
+  };
 
   const handleRemoveFromCart = (e: React.MouseEvent) => {
-    e.stopPropagation() // Prevent opening the modal when clicking the remove button
-    removeItem(product.id)
-  }
+    e.stopPropagation(); // Prevent opening the modal when clicking the remove button
+    removeItem(product.id);
+  };
 
   const handleDecreaseQuantity = (e: React.MouseEvent) => {
-    e.stopPropagation() // Prevent opening the modal when clicking the decrease button
-    
+    e.stopPropagation(); // Prevent opening the modal when clicking the decrease button
+
     if (quantity > 1) {
       // If quantity is more than 1, just decrease it
-      updateQuantity(product.id, quantity - 1)
+      updateQuantity(product.id, quantity - 1);
     } else {
       // If quantity is 1, remove the item completely
-      removeItem(product.id)
+      removeItem(product.id);
     }
-  }
+  };
 
   return (
-    <div className="min-w-[140px] max-w-[140px] flex-shrink-0 cursor-pointer" onClick={() => onProductClick(product)}>
+    <div
+      className="min-w-[140px] max-w-[140px] flex-shrink-0 cursor-pointer"
+      onClick={() => onProductClick(product)}
+    >
       <div className="relative mb-2">
         <img
-          src={product.image || "/placeholder.svg"}
+          src={product.image || '/placeholder.svg'}
           alt={product.name}
           width={140}
           height={140}
@@ -98,14 +101,26 @@ export default function ProductCard({
         {quantity > 0 ? (
           <div className="absolute bottom-2 right-2">
             <div className="flex items-center bg-white rounded-full shadow-md px-2 py-1">
-              <button className="p-1 text-gray-700" onClick={handleRemoveFromCart} aria-label="Remove from cart">
+              <button
+                className="p-1 text-gray-700"
+                onClick={handleRemoveFromCart}
+                aria-label="Remove from cart"
+              >
                 <Trash2 className="w-4 h-4" />
               </button>
               <span className="mx-2 text-sm font-medium">{quantity} ×</span>
-              <button className="p-1 text-gray-700" onClick={handleDecreaseQuantity} aria-label="Decrease quantity">
+              <button
+                className="p-1 text-gray-700"
+                onClick={handleDecreaseQuantity}
+                aria-label="Decrease quantity"
+              >
                 <Minus className="w-4 h-4" />
               </button>
-              <button className="p-1 text-gray-700" onClick={handleAddToCart} aria-label="Add one more">
+              <button
+                className="p-1 text-gray-700"
+                onClick={handleAddToCart}
+                aria-label="Add one more"
+              >
                 <Plus className="w-4 h-4" />
               </button>
             </div>
@@ -121,12 +136,10 @@ export default function ProductCard({
         )}
       </div>
       <div>
-        <p className="font-medium text-red-600">
-          {formatPrice(product.price)}
-        </p>
+        <p className="font-medium text-red-600">{formatPrice(product.price)}</p>
         <h3 className="text-sm line-clamp-2 h-10">{product.name}</h3>
         <p className="text-xs text-gray-500">{product.quantity}</p>
       </div>
     </div>
-  )
+  );
 }

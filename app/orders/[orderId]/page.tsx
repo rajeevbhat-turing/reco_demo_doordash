@@ -2,25 +2,27 @@
 
 import { useParams, useRouter } from 'next/navigation';
 import { useOrdersStore } from '@/store/orders-store';
-import { Phone, Download, Home, ArrowLeft } from 'lucide-react';
+import { Download, Home, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Order } from '@/constants/order-data';
 import ReviewDialog from '@/components/review-dialog';
 import { useRestaurant } from '@/lib/hooks/use-restaurant';
 import { useRestaurantMenu } from '@/lib/hooks/use-restaurant-menu';
 import { OrderItem as ReviewOrderItem } from '@/types/review-types';
+import { useUserStore } from '@/store/user-store';
 import './print.css';
 
 export default function OrderReceiptPage() {
   const params = useParams();
   const router = useRouter();
   const { orders, updateOrderReview } = useOrdersStore();
+  const currentUser = useUserStore(state => state.currentUser);
   const [mounted, setMounted] = useState(false);
   const [showReviewDialog, setShowReviewDialog] = useState(false);
 
   const orderId = params.orderId as string;
-  const order = orders.find(o => o.id === orderId);
+  const order = orders.find(o => o.id === orderId && (!currentUser || o.userId === currentUser.id));
 
   // Get restaurant ID for the order
   const restaurantId = order?.storeId || order?.restaurantId || undefined;
@@ -34,23 +36,39 @@ export default function OrderReceiptPage() {
     setMounted(true);
   }, []);
 
+  // Handle review dialog close
+  const handleCloseReviewDialog = useCallback(() => {
+    setShowReviewDialog(false);
+  }, []);
+
+  // Handle review submit
+  const handleReviewSubmit = useCallback(
+    (rating: number, text: string, _likedItems?: ReviewOrderItem[]) => {
+      if (order) {
+        updateOrderReview(order.id, rating, text);
+        setShowReviewDialog(false);
+      }
+    },
+    [order, updateOrderReview]
+  );
+
   // Helper function to get store name (support both old and new field names)
   const getStoreName = (order: Order) => {
     // First, try to get store name from order
     const storeName = order.storeName || order.restaurantName;
-    
+
     // Validate storeName - check if it's valid (not empty, not a number, not "Unknown Store")
-    if (storeName && storeName.trim() !== '' && storeName !== 'Unknown Store' && !/^\d+$/.test(storeName)) {
+    if (
+      storeName &&
+      storeName.trim() !== '' &&
+      storeName !== 'Unknown Store' &&
+      !/^\d+$/.test(storeName)
+    ) {
       return storeName;
     }
-    
+
     // Fallback - if storeName is a number or invalid, return a generic name
     return 'Store';
-  };
-
-  // Helper function to get total (support both old and new field names)
-  const getTotal = (order: Order) => {
-    return order.total || order.totalAmount || 0;
   };
 
   if (!mounted) {
@@ -77,7 +95,7 @@ export default function OrderReceiptPage() {
   // Calculate original subtotal (before free item discount) and final subtotal
   const originalSubtotal =
     order.items?.reduce((sum, item) => sum + item.price * item.quantity, 0) || 0;
-  
+
   // Always use stored subtotal from order if available (most accurate)
   // If not available, calculate using original prices and apply stored freeItemDiscount
   let subtotal = order.subtotal || 0;
@@ -589,17 +607,14 @@ export default function OrderReceiptPage() {
       {order && (
         <ReviewDialog
           isOpen={showReviewDialog}
-          onClose={() => setShowReviewDialog(false)}
+          onClose={handleCloseReviewDialog}
           restaurantName={getStoreName(order)}
           vendorId={order.storeId || order.restaurantId}
           defaultRating={0}
           orderItems={convertOrderItemsToReviewItems(order)}
           orderDate={formatOrderDate(order)}
           vendorLogo={orderRestaurant?.logo || undefined}
-          onSubmit={(rating, text, likedItems) => {
-            updateOrderReview(order.id, rating, text);
-            setShowReviewDialog(false);
-          }}
+          onSubmit={handleReviewSubmit}
         />
       )}
     </div>

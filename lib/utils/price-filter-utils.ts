@@ -2,13 +2,13 @@
  * Extract numeric price from a price string (e.g., "$7.40+" -> 7.40)
  */
 export function extractPrice(priceStr: string | number): number {
-  if (typeof priceStr === "number") {
-    return priceStr
+  if (typeof priceStr === 'number') {
+    return priceStr;
   }
   // Remove all non-numeric characters except decimal point
-  const numericStr = priceStr.toString().replace(/[^0-9.]/g, "")
-  const price = parseFloat(numericStr)
-  return isNaN(price) ? 0 : price
+  const numericStr = priceStr.toString().replace(/[^0-9.]/g, '');
+  const price = parseFloat(numericStr);
+  return isNaN(price) ? 0 : price;
 }
 
 /**
@@ -26,28 +26,28 @@ export function restaurantHasItemsInPriceRange(
 ): boolean {
   // If no price filter is set, return true (don't filter)
   if (minPrice === null && maxPrice === null) {
-    return true
+    return true;
   }
 
   if (!menuItems || menuItems.length === 0) {
-    return false // No items to check
+    return false; // No items to check
   }
 
   // Check if any menu item falls within the price range
-  return menuItems.some((item) => {
-    const itemPrice = extractPrice(item.price)
+  return menuItems.some(item => {
+    const itemPrice = extractPrice(item.price);
 
     // Check if price is within range
     if (minPrice !== null && maxPrice !== null) {
-      return itemPrice >= minPrice && itemPrice <= maxPrice
+      return itemPrice >= minPrice && itemPrice <= maxPrice;
     } else if (minPrice !== null) {
-      return itemPrice >= minPrice
+      return itemPrice >= minPrice;
     } else if (maxPrice !== null) {
-      return itemPrice <= maxPrice
+      return itemPrice <= maxPrice;
     }
 
-    return true
-  })
+    return true;
+  });
 }
 
 /**
@@ -61,27 +61,26 @@ export function storeHasProductsInPriceRange(
 ): boolean {
   // If no price filter is set, return true (don't filter)
   if (minPrice === null && maxPrice === null) {
-    return true
+    return true;
   }
 
   if (!products || products.length === 0) {
-    return false // No products to check
+    return false; // No products to check
   }
 
   // Check if any product falls within the price range
-  return products.some((product) => {
-    const productPrice = extractPrice(product.price)
+  return products.some(product => {
+    const productPrice = extractPrice(product.price);
 
     // Check if price is within range
     if (minPrice !== null && maxPrice !== null) {
-      return productPrice >= minPrice && productPrice <= maxPrice
+      return productPrice >= minPrice && productPrice <= maxPrice;
     } else if (minPrice !== null) {
-      return productPrice >= minPrice
+      return productPrice >= minPrice;
     } else if (maxPrice !== null) {
-      return productPrice <= maxPrice
+      return productPrice <= maxPrice;
     }
 
-    return true
-  })
+    return true;
+  });
 }
-

@@ -112,7 +112,7 @@ export default function ContentSections() {
               </h3>
               <p className="text-sm md:text-base font-medium text-[#191919ff] mb-6">
                 Get a slice of pizza or the whole pie delivered, or pick up house lo mein from the
-                Chinese takeout spot you've been meaning to try.
+                Chinese takeout spot you&apos;ve been meaning to try.
               </p>
               <button
                 className="bg-[#eb1700ff] text-white font-bold px-3 py-2 rounded-[28px] text-sm md:text-base 
@@ -158,7 +158,7 @@ export default function ContentSections() {
               </h2>
               <p className="text-sm md:text-base font-medium text-[#191919ff] mb-6">
                 Members get a $0 delivery fee on DashPass orders, 5% back on pickup orders, and so
-                much more. Plus, it's free for 30 days.
+                much more. Plus, it&apos;s free for 30 days.
               </p>
               <button
                 className="bg-[#eb1700ff] text-white font-bold px-3 py-2 rounded-[28px] text-sm md:text-base 
@@ -282,8 +282,8 @@ export default function ContentSections() {
                   Sign up to dash and get paid
                 </h2>
                 <p className="text-sm md:text-base font-medium text-[#191919ff] mb-6">
-                  Deliver with the #1 Food and Drink App in the U.S. As a delivery driver, you'll
-                  make money and work on your schedule. Sign up in minutes.
+                  Deliver with the #1 Food and Drink App in the U.S. As a delivery driver,
+                  you&apos;ll make money and work on your schedule. Sign up in minutes.
                 </p>
                 <button
                   className="bg-[#eb1700ff] text-white font-bold px-3 py-2 rounded-[28px] text-sm md:text-base 

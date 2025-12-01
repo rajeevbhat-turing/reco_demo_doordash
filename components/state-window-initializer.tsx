@@ -12,4 +12,3 @@ export function StateWindowInitializer() {
 
   return null;
 }
-

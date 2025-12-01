@@ -2,7 +2,7 @@
 import { Button } from '@/components/ui/button';
 import { Order } from '@/constants/order-data';
 import { useOrdersStore } from '@/store/orders-store';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { ChevronRight, ShoppingCart, Receipt, Star } from 'lucide-react';
 import { useCartStore } from '@/store/cart-store';
 import { prepareOrderForReorder } from '@/lib/reorder-utils';
@@ -52,16 +52,39 @@ export default function Orders() {
     setMounted(true);
   }, []);
 
+  // Handle review dialog close
+  const handleCloseReviewDialog = useCallback(() => {
+    setReviewingOrder(null);
+    setSelectedRating(0);
+  }, []);
+
+  // Handle review submit
+  const handleReviewSubmit = useCallback(
+    (rating: number, text: string, _likedItems?: ReviewOrderItem[]) => {
+      if (reviewingOrder) {
+        updateOrderReview(reviewingOrder.id, rating, text);
+        setReviewingOrder(null);
+        setSelectedRating(0);
+      }
+    },
+    [reviewingOrder, updateOrderReview]
+  );
+
   // Helper function to get store name (support both old and new field names)
   const getStoreName = (order: Order) => {
     // First, try to get store name from order
     const storeName = order.storeName || order.restaurantName;
-    
+
     // Validate storeName - check if it's valid (not empty, not a number, not "Unknown Store")
-    if (storeName && storeName.trim() !== '' && storeName !== 'Unknown Store' && !/^\d+$/.test(storeName)) {
+    if (
+      storeName &&
+      storeName.trim() !== '' &&
+      storeName !== 'Unknown Store' &&
+      !/^\d+$/.test(storeName)
+    ) {
       return storeName;
     }
-    
+
     // If storeName is invalid or missing, try to look up from restaurants array
     const restaurantId = order.storeId || order.restaurantId;
     if (restaurantId && restaurants && restaurants.length > 0) {
@@ -70,7 +93,7 @@ export default function Orders() {
         return foundRestaurant.name;
       }
     }
-    
+
     // Fallback
     return 'Store';
   };
@@ -126,8 +149,12 @@ export default function Orders() {
     return '';
   };
 
-  // Filter orders by the active tab
-  const filteredOrders = orders.filter(order => (order.orderType || 'Personal') === activeTab);
+  // Filter orders by the active tab and current user
+  const filteredOrders = orders.filter(
+    order =>
+      (order.orderType || 'Personal') === activeTab &&
+      (!currentUser || order.userId === currentUser.id)
+  );
 
   // Handle reorder functionality
   const handleReorder = async (order: Order) => {
@@ -242,12 +269,12 @@ export default function Orders() {
               const dateDisplay = isToday
                 ? `Today, ${order.orderDate.split(', ')[1]}`
                 : order.orderDate
-                ? new Date(order.orderDate).toLocaleDateString('en-US', {
-                    weekday: 'short',
-                    month: 'short',
-                    day: 'numeric',
-                  })
-                : '';
+                  ? new Date(order.orderDate).toLocaleDateString('en-US', {
+                      weekday: 'short',
+                      month: 'short',
+                      day: 'numeric',
+                    })
+                  : '';
 
               return (
                 <div
@@ -385,7 +412,9 @@ export default function Orders() {
 
                     {/* Inline review text (if any) */}
                     {order.reviewText && (
-                      <p className="text-sm text-gray-700 mt-2 italic">"{order.reviewText}"</p>
+                      <p className="text-sm text-gray-700 mt-2 italic">
+                        &quot;{order.reviewText}&quot;
+                      </p>
                     )}
 
                     {/* Tags */}
@@ -413,21 +442,14 @@ export default function Orders() {
       {reviewingOrder && (
         <ReviewDialog
           isOpen={true}
-          onClose={() => {
-            setReviewingOrder(null);
-            setSelectedRating(0);
-          }}
+          onClose={handleCloseReviewDialog}
           restaurantName={getStoreName(reviewingOrder)}
           vendorId={reviewingOrder.storeId || reviewingOrder.restaurantId}
           defaultRating={selectedRating}
           orderItems={convertOrderItemsToReviewItems(reviewingOrder)}
           orderDate={formatOrderDate(reviewingOrder)}
           vendorLogo={orderRestaurant?.logo || undefined}
-          onSubmit={(rating, text, likedItems) => {
-            updateOrderReview(reviewingOrder.id, rating, text);
-            setReviewingOrder(null);
-            setSelectedRating(0);
-          }}
+          onSubmit={handleReviewSubmit}
         />
       )}
     </div>

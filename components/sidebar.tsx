@@ -2,25 +2,21 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useState, useSyncExternalStore } from 'react';
-import {
-  Home,
-  FileText,
-  CircleUserRound,
-} from 'lucide-react';
+import { useState, useSyncExternalStore, useCallback } from 'react';
+import { Home, FileText, CircleUserRound } from 'lucide-react';
 import AuthenticationModal from './modals/authentication-modal';
 import AccountPopup from './account-popup';
 import { useUserStore } from '@/store/user-store';
 
 export default function Sidebar() {
   const pathname = usePathname();
-  
+
   const isAuthenticated = useSyncExternalStore(
     useUserStore.subscribe,
     () => useUserStore.getState().isAuthenticated(),
     () => false // fallback for SSR
   );
-  
+
   const [authModalMode, setAuthModalMode] = useState<'signin' | 'signup' | null>(null);
   const [showAccountPopup, setShowAccountPopup] = useState(false);
   const [accountButtonRef, setAccountButtonRef] = useState<HTMLDivElement | null>(null);
@@ -32,6 +28,14 @@ export default function Sidebar() {
   const handleAccountClick = () => {
     setShowAccountPopup(!showAccountPopup);
   };
+
+  const handleCloseAccountPopup = useCallback(() => {
+    setShowAccountPopup(false);
+  }, []);
+
+  const handleCloseAuthModal = useCallback(() => {
+    setAuthModalMode(null);
+  }, []);
 
   return (
     <>
@@ -106,14 +110,14 @@ export default function Sidebar() {
       {showAccountPopup && (
         <AccountPopup
           isOpen={showAccountPopup}
-          onClose={() => setShowAccountPopup(false)}
+          onClose={handleCloseAccountPopup}
           anchorElement={accountButtonRef}
         />
       )}
 
       {/* Authentication Modal */}
       {authModalMode && (
-        <AuthenticationModal onClose={() => setAuthModalMode(null)} defaultMode={authModalMode} />
+        <AuthenticationModal onClose={handleCloseAuthModal} defaultMode={authModalMode} />
       )}
     </>
   );

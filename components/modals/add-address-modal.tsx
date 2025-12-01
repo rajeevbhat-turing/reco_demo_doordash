@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect, useMemo, useRef } from 'react';
-import { X, ChevronDown } from 'lucide-react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
+import { X } from 'lucide-react';
 import { Address } from '@/lib/types/user-types';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -58,19 +58,19 @@ export default function AddAddressModal({
       }
     };
 
-    const handleClickOutside = (event: MouseEvent) => {
-      const target = event.target as HTMLElement;
-      // Don't close if clicking inside the modal or inside a Select dropdown (Radix UI Portal)
-      if (
-        dialogRef.current &&
-        !dialogRef.current.contains(target) &&
-        !target.closest('[data-radix-select-content]') &&
-        !target.closest('[data-radix-select-viewport]') &&
-        !target.closest('[data-radix-select-item]')
-      ) {
-        onClose();
-      }
-    };
+    // const handleClickOutside = (event: MouseEvent) => {
+    //   const target = event.target as HTMLElement;
+    //   // Don't close if clicking inside the modal or inside a Select dropdown (Radix UI Portal)
+    //   if (
+    //     dialogRef.current &&
+    //     !dialogRef.current.contains(target) &&
+    //     !target.closest('[data-radix-select-content]') &&
+    //     !target.closest('[data-radix-select-viewport]') &&
+    //     !target.closest('[data-radix-select-item]')
+    //   ) {
+    //     onClose();
+    //   }
+    // };
 
     if (isOpen) {
       document.body.style.overflow = 'hidden';

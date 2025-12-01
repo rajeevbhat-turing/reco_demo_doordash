@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { ThumbsUp, ChevronLeft, ChevronRight } from 'lucide-react';
 import { OrderItem } from '@/types/review-types';
 import MenuItemDialog from '@/components/menu-item-dialog';
@@ -34,7 +34,7 @@ export default function OrderItemsScrollable({
       return null;
     }
     console.log('menuItems', menuItems, 'orderItem.menuItemId', orderItem.menuItemId);
-    
+
     return menuItems.find(item => item.id === orderItem.menuItemId) || null;
   };
 
@@ -94,6 +94,12 @@ export default function OrderItemsScrollable({
       scrollContainerRef.current.scrollBy({ left: 200, behavior: 'smooth' });
     }
   };
+
+  // Handle closing menu item dialog
+  const handleCloseMenuItemDialog = useCallback(() => {
+    setMenuItemDialogOpen(false);
+    setSelectedItem(null);
+  }, []);
 
   return (
     <div className="mb-4 relative group">
@@ -158,10 +164,7 @@ export default function OrderItemsScrollable({
       {/* Menu Item Dialog */}
       <MenuItemDialog
         isOpen={menuItemDialogOpen}
-        onClose={() => {
-          setMenuItemDialogOpen(false);
-          setSelectedItem(null);
-        }}
+        onClose={handleCloseMenuItemDialog}
         item={selectedItem as any}
       />
     </div>

@@ -3,11 +3,11 @@ import { db } from '@/lib/db';
 
 /**
  * GET /api/top-chains
- * 
+ *
  * Fetches restaurants (chains) with average rating > 4.5
  * Returns array of restaurant objects with id, name, and rating
  */
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     // Get restaurants with average rating > 4.5
     const restaurants = await db.query<any>(
@@ -42,16 +42,14 @@ export async function GET(request: NextRequest) {
       success: true,
       data: chains,
     });
-
   } catch (error) {
     console.error('❌ Fetch top chains error:', error);
     return NextResponse.json(
       {
         success: false,
-        error: 'An error occurred while fetching top chains'
+        error: 'An error occurred while fetching top chains',
       },
       { status: 500 }
     );
   }
 }
-

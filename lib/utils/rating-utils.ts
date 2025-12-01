@@ -3,10 +3,10 @@
  * Returns 0 as default if rating is null, undefined, or falsy
  */
 export function getDefaultRating(rating: number | string | null | undefined): number {
-  if (rating === null || rating === undefined || rating === "") {
+  if (rating === null || rating === undefined || rating === '') {
     return 0;
   }
-  
+
   // Handle string ratings (like "4.7" or percentages like "85%")
   if (typeof rating === 'string') {
     // If it's a percentage, convert to a 5-star scale
@@ -18,7 +18,7 @@ export function getDefaultRating(rating: number | string | null | undefined): nu
     const parsed = parseFloat(rating);
     return isNaN(parsed) ? 0 : parsed;
   }
-  
+
   // If it's already a number
   return typeof rating === 'number' ? rating : 0;
 }
@@ -26,9 +26,11 @@ export function getDefaultRating(rating: number | string | null | undefined): nu
 /**
  * Ensures an object with rating property has a valid rating
  */
-export function withDefaultRating<T extends { rating?: number | string | null }>(item: T): T & { rating: number } {
+export function withDefaultRating<T extends { rating?: number | string | null }>(
+  item: T
+): T & { rating: number } {
   return {
     ...item,
-    rating: getDefaultRating(item.rating)
+    rating: getDefaultRating(item.rating),
   };
-} 
+}

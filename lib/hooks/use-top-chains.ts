@@ -69,7 +69,7 @@ export function useTopCuisines() {
     // Group chains by cuisine
     const cuisineMap = new Map<string, { count: number; totalRating: number }>();
 
-    chains.forEach((chain) => {
+    chains.forEach(chain => {
       if (!chain.cuisine) return;
 
       const existing = cuisineMap.get(chain.cuisine);
@@ -121,7 +121,7 @@ export function useTopCities() {
     // Group chains by city
     const cityMap = new Map<string, { count: number; totalRating: number }>();
 
-    chains.forEach((chain) => {
+    chains.forEach(chain => {
       if (!chain.city) return;
 
       const existing = cityMap.get(chain.city);
@@ -158,4 +158,3 @@ export function useTopCities() {
 
   return cities;
 }
-

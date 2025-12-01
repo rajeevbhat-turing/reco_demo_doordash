@@ -66,7 +66,7 @@ export default function AddressSelectionModal({
         !dropdownRef.current.contains(target) &&
         !inputContainerRef.current.contains(target)
       ) {
-        // Close dropdown if clicking outside the dropdown and input, 
+        // Close dropdown if clicking outside the dropdown and input,
         // including when clicking inside other modals
         setSearchQuery('');
       }
@@ -215,7 +215,8 @@ export default function AddressSelectionModal({
 
             {/* Disclaimer */}
             <p className="text-base text-[#191919ff] text-left font-medium mb-4 leading-relaxed">
-              Other fees, taxes and gratuity still apply. Enter your exact address to find all available stores and delivery times.
+              Other fees, taxes and gratuity still apply. Enter your exact address to find all
+              available stores and delivery times.
             </p>
 
             {/* Address Input Label */}

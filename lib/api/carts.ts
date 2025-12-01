@@ -8,7 +8,7 @@ interface CartsResponse {
 
 export async function fetchUserCarts(userId: string): Promise<Cart[]> {
   const response = await fetch(`/api/carts?userId=${userId}`);
-  
+
   const result: CartsResponse = await response.json();
 
   if (!response.ok || !result.success) {
@@ -17,4 +17,3 @@ export async function fetchUserCarts(userId: string): Promise<Cart[]> {
 
   return result.data || [];
 }
-

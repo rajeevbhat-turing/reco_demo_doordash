@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useSyncExternalStore, useState } from 'react';
+import React, { useEffect, useSyncExternalStore, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import Header from '@/components/header';
 // import LandingPageFooter from '@/components/landing-page-footer';
@@ -78,6 +78,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
       // If user is not logged in, has no temp address, and is not on "/" or "/auth" paths, redirect to "/"
       router.replace('/');
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname, isAuthenticated, tempAddress, isMounted, router]);
 
   if (pathname === '/') {

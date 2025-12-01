@@ -4,7 +4,7 @@ import { getImageWithFallback } from '@/constants/image-placeholders';
 
 /**
  * GET /api/reviews/review/[reviewId]
- * 
+ *
  * Fetches a single review by ID
  */
 export async function GET(
@@ -15,10 +15,7 @@ export async function GET(
     const { reviewId } = await params;
 
     if (!reviewId) {
-      return NextResponse.json(
-        { success: false, error: 'Review ID is required' },
-        { status: 400 }
-      );
+      return NextResponse.json({ success: false, error: 'Review ID is required' }, { status: 400 });
     }
 
     // Fetch review with user and store information
@@ -46,10 +43,7 @@ export async function GET(
     );
 
     if (!review) {
-      return NextResponse.json(
-        { success: false, error: 'Review not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ success: false, error: 'Review not found' }, { status: 404 });
     }
 
     // Fetch photos for this review
@@ -127,4 +121,3 @@ export async function GET(
     );
   }
 }
-

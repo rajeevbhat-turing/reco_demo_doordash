@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -387,9 +387,9 @@ export default function SignUp({
 
       {/* Legal Text */}
       <p className="text-sm font-medium text-[#606060ff] mt-8 mb-4">
-        By tapping "Sign Up" or "Continue with...," you agree to DashDoor's Terms, including a
-        waiver of your jury trial right, and Privacy Policy. We may text you a verification code.
-        Msg & data rates apply.
+        By tapping &quot;Sign Up&quot; or &quot;Continue with...,&quot; you agree to DashDoor&apos;s
+        Terms, including a waiver of your jury trial right, and Privacy Policy. We may text you a
+        verification code. Msg & data rates apply.
       </p>
 
       {/* Sign Up Button */}
