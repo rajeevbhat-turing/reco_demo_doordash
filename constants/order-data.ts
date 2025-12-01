@@ -36,6 +36,8 @@ export interface Order {
   restaurantId?: string;  // Old field name
   restaurantName?: string; // Old field name
   storeCategory?: string;
+
+  userId?: string;
   
   // Order items
   items?: OrderItem[];

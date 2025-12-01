@@ -41,19 +41,23 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
   const currentRestaurantId = getCurrentRestaurantId();
   const activeStoreId = currentStoreId || currentRestaurantId;
 
+  // Filter carts by current user
+  // Guest users see carts without userId, logged-in users see only their carts
+  const currentUser = useUserStore(state => state.currentUser);
+  const userCarts = carts.filter(cart => 
+    currentUser ? cart.userId === currentUser.id : !cart.userId
+  );
+
   // Find the cart for the current store
   // If no current store is set, use the last cart as the main cart
   let currentCart = activeStoreId ? findCart(activeStoreId, currentCategory) : null;
-  let otherCarts = carts.filter(cart => cart !== currentCart);
+  let otherCarts = userCarts.filter(cart => cart !== currentCart);
 
   // When no store is active, show the last cart as the main cart
-  if (!activeStoreId && carts.length > 0) {
-    currentCart = carts[carts.length - 1];
-    otherCarts = carts.slice(0, -1);
+  if (!activeStoreId && userCarts.length > 0) {
+    currentCart = userCarts[userCarts.length - 1];
+    otherCarts = userCarts.slice(0, -1);
   }
-
-  // Only fetch restaurants if needed (for restaurant carts or other carts that might be restaurants)
-  const currentUser = useUserStore(state => state.currentUser);
   const defaultAddress = currentUser?.addresses.find(a => a.default);
   const hasRestaurantCart =
     currentCart?.storeCategory === 'restaurant' ||
@@ -356,7 +360,7 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
     ? 'fixed inset-y-0 right-0 z-50 w-full md:w-[550px] bg-white shadow-xl flex flex-col transform translate-x-0 transition-transform duration-300 ease-in-out'
     : 'fixed inset-y-0 right-0 z-50 w-full md:w-[550px] bg-white shadow-xl flex flex-col transform translate-x-full transition-transform duration-300 ease-in-out';
 
-  if (carts.length === 0 && isOpen) {
+  if (userCarts.length === 0 && isOpen) {
     return (
       <div ref={sidebarRef} className={cartClasses}>
         <div className="p-4 border-b flex items-center justify-between">

@@ -3,6 +3,7 @@ import { persist, devtools } from "zustand/middleware"
 import type { Product, AppliedModification } from "@/types"
 import { useVerifierStore } from "./verifier-store"
 import { useAppStore } from "./app-store"
+import { useUserStore } from "./user-store"
 import { checkDealCriteriaBoolean, fetchDealById } from "@/lib/utils/deal-utils"
 import { haveSameModifications, generateCartItemId } from "@/lib/utils/cart-merge"
 
@@ -28,6 +29,7 @@ export interface Cart {
   items: CartItem[] // Items in this cart
   selectedCard?: any // Selected payment method for this cart
   isReorder?: boolean // Flag to indicate if this cart is a reorder
+  userId?: string // User ID who owns this cart
 }
 
 // Category-specific configurations
@@ -207,10 +209,14 @@ export const useCartStore = create<CartStore>()(
           return null
         },
 
-        // Find a cart by storeId and storeCategory
+        // Find a cart by storeId and storeCategory, filtered by current user
+        // Guest users see carts without userId, logged-in users see only their carts
         findCart: (storeId: string, storeCategory: CartCategory) => {
+          const currentUser = useUserStore.getState().currentUser
           return get().carts.find(cart =>
-            cart.storeId === storeId && cart.storeCategory === storeCategory
+            cart.storeId === storeId &&
+            cart.storeCategory === storeCategory &&
+            (currentUser ? cart.userId === currentUser.id : !cart.userId)
           )
         },
 
@@ -261,6 +267,9 @@ export const useCartStore = create<CartStore>()(
             // Create new cart for this vendor
             console.log(`[CART] Creating new cart for ${resolvedStoreName}`)
 
+            // Get current user ID
+            const currentUser = useUserStore.getState().currentUser
+
             const newCart: Cart = {
               storeId: itemStoreId,
               storeName: resolvedStoreName,
@@ -268,7 +277,8 @@ export const useCartStore = create<CartStore>()(
               items: [{
                 ...item,
                 quantity: 1,
-              }]
+              }],
+              ...(currentUser?.id ? { userId: currentUser.id } : {})
             }
 
             verifierStore.updateMaxItemsReached(1)
@@ -325,9 +335,12 @@ export const useCartStore = create<CartStore>()(
             verifierStore.resetClearInfo()
           }
 
-          // Update the specific cart in the carts array
+          // Update the specific cart in the carts array (filtered by userId)
+          const currentUser = useUserStore.getState().currentUser
           const updatedCarts = carts.map(cart =>
-            cart.storeId === itemStoreId && cart.storeCategory === itemCategory
+            cart.storeId === itemStoreId &&
+            cart.storeCategory === itemCategory &&
+            (currentUser ? cart.userId === currentUser.id : !cart.userId)
               ? { ...cart, items: newItems }
               : cart
           )
@@ -340,14 +353,20 @@ export const useCartStore = create<CartStore>()(
         removeItem: (id) => {
           const { carts } = get()
           const verifierStore = useVerifierStore.getState()
+          const currentUser = useUserStore.getState().currentUser
 
           console.log(`[CART] Removing item with id: ${id}`)
 
-          // Find which cart contains the item
+          // Filter carts by current user
+          const userCarts = carts.filter(cart =>
+            currentUser ? cart.userId === currentUser.id : !cart.userId
+          )
+
+          // Find which cart contains the item (only in user's carts)
           let removedItem: CartItem | undefined
           let targetCart: Cart | undefined
 
-          for (const cart of carts) {
+          for (const cart of userCarts) {
             const item = cart.items.find((item) => item.id === id)
             if (item) {
               removedItem = item
@@ -379,16 +398,20 @@ export const useCartStore = create<CartStore>()(
 
           let updatedCarts: Cart[]
 
-          // If cart is empty, remove it from the carts array
+          // If cart is empty, remove it from the carts array (filtered by userId)
           if (newItems.length === 0) {
             updatedCarts = carts.filter(cart =>
-              !(cart.storeId === targetCart!.storeId && cart.storeCategory === targetCart!.storeCategory)
+              !(cart.storeId === targetCart!.storeId &&
+                cart.storeCategory === targetCart!.storeCategory &&
+                (currentUser ? cart.userId === currentUser.id : !cart.userId))
             )
             console.log(`[CART] Removed empty cart for ${targetCart.storeName}`)
           } else {
-            // Update the cart with new items
+            // Update the cart with new items (filtered by userId)
             updatedCarts = carts.map(cart =>
-              cart.storeId === targetCart!.storeId && cart.storeCategory === targetCart!.storeCategory
+              cart.storeId === targetCart!.storeId &&
+              cart.storeCategory === targetCart!.storeCategory &&
+              (currentUser ? cart.userId === currentUser.id : !cart.userId)
                 ? { ...cart, items: newItems }
                 : cart
             )
@@ -457,14 +480,20 @@ export const useCartStore = create<CartStore>()(
         updateQuantity: (id, quantity) => {
           const { carts } = get()
           const verifierStore = useVerifierStore.getState()
+          const currentUser = useUserStore.getState().currentUser
 
           console.log(`[CART] Updating quantity for item ${id} to ${quantity}`)
 
-          // Find which cart contains the item
+          // Filter carts by current user
+          const userCarts = carts.filter(cart =>
+            currentUser ? cart.userId === currentUser.id : !cart.userId
+          )
+
+          // Find which cart contains the item (only in user's carts)
           let existingItem: CartItem | undefined
           let targetCart: Cart | undefined
 
-          for (const cart of carts) {
+          for (const cart of userCarts) {
             const item = cart.items.find((item) => item.id === id)
             if (item) {
               existingItem = item
@@ -505,16 +534,20 @@ export const useCartStore = create<CartStore>()(
 
           let updatedCarts: Cart[]
 
-          // If cart is empty, remove it from the carts array
+          // If cart is empty, remove it from the carts array (filtered by userId)
           if (newItems.length === 0) {
             updatedCarts = carts.filter(cart =>
-              !(cart.storeId === targetCart!.storeId && cart.storeCategory === targetCart!.storeCategory)
+              !(cart.storeId === targetCart!.storeId &&
+                cart.storeCategory === targetCart!.storeCategory &&
+                (currentUser ? cart.userId === currentUser.id : !cart.userId))
             )
             console.log(`[CART] Removed empty cart for ${targetCart.storeName}`)
           } else {
-            // Update the cart with new items
+            // Update the cart with new items (filtered by userId)
             updatedCarts = carts.map(cart =>
-              cart.storeId === targetCart!.storeId && cart.storeCategory === targetCart!.storeCategory
+              cart.storeId === targetCart!.storeId &&
+              cart.storeCategory === targetCart!.storeCategory &&
+              (currentUser ? cart.userId === currentUser.id : !cart.userId)
                 ? { ...cart, items: newItems }
                 : cart
             )
@@ -562,6 +595,7 @@ export const useCartStore = create<CartStore>()(
         clearCart: (storeId?, storeCategory?) => {
           const { carts, getCurrentStoreId, getCurrentRestaurantId, getCurrentCategory } = get()
           const verifierStore = useVerifierStore.getState()
+          const currentUser = useUserStore.getState().currentUser
 
           // If no storeId provided, try to clear the current store's cart
           const targetStoreId = storeId || getCurrentStoreId() || getCurrentRestaurantId()
@@ -572,9 +606,11 @@ export const useCartStore = create<CartStore>()(
             return
           }
 
-          // Find the cart to clear
+          // Find the cart to clear (filtered by userId)
           const cartToClear = carts.find(cart =>
-            cart.storeId === targetStoreId && cart.storeCategory === targetCategory
+            cart.storeId === targetStoreId &&
+            cart.storeCategory === targetCategory &&
+            (currentUser ? cart.userId === currentUser.id : !cart.userId)
           )
 
           if (!cartToClear) {
@@ -592,24 +628,32 @@ export const useCartStore = create<CartStore>()(
           verifierStore.resetMaxItemsReached()
           verifierStore.resetVerifierConsumed()
 
-          // Remove the cart from carts array
+          // Remove the cart from carts array (filtered by userId)
           const updatedCarts = carts.filter(cart =>
-            !(cart.storeId === targetStoreId && cart.storeCategory === targetCategory)
+            !(cart.storeId === targetStoreId &&
+              cart.storeCategory === targetCategory &&
+              (currentUser ? cart.userId === currentUser.id : !cart.userId))
           )
 
           set({ carts: updatedCarts })
         },
 
-        // Clear all carts
+        // Clear all carts (only current user's carts)
         clearAllCarts: () => {
           const { carts } = get()
           const verifierStore = useVerifierStore.getState()
+          const currentUser = useUserStore.getState().currentUser
 
-          const totalItems = carts.reduce((total, cart) =>
+          // Filter carts by current user
+          const userCarts = carts.filter(cart =>
+            currentUser ? cart.userId === currentUser.id : !cart.userId
+          )
+
+          const totalItems = userCarts.reduce((total, cart) =>
             total + cart.items.reduce((sum, item) => sum + item.quantity, 0), 0
           )
 
-          console.log(`[CART] Clearing all ${carts.length} carts: ${totalItems} items`)
+          console.log(`[CART] Clearing all ${userCarts.length} carts: ${totalItems} items`)
 
           const maxItemsReached = verifierStore.maxItemsReached
           const itemsBeforeClear = Math.max(totalItems, maxItemsReached)
@@ -617,14 +661,24 @@ export const useCartStore = create<CartStore>()(
           verifierStore.resetMaxItemsReached()
           verifierStore.resetVerifierConsumed()
 
-          set({ carts: [] })
+          // Remove only current user's carts, keep other users' carts
+          const remainingCarts = carts.filter(cart =>
+            currentUser ? cart.userId !== currentUser.id : cart.userId
+          )
+
+          set({ carts: remainingCarts })
         },
 
         // Set selected card for a cart
         setSelectedCard: (storeId, storeCategory, card) => {
           const { carts } = get()
+          const currentUser = useUserStore.getState().currentUser
           const updatedCarts = carts.map((cart) => {
-            if (cart.storeId === storeId && cart.storeCategory === storeCategory) {
+            if (
+              cart.storeId === storeId &&
+              cart.storeCategory === storeCategory &&
+              (currentUser ? cart.userId === currentUser.id : !cart.userId)
+            ) {
               return { ...cart, selectedCard: card }
             }
             return cart
@@ -666,6 +720,7 @@ export const useCartStore = create<CartStore>()(
         // Get total items count for specific cart or all carts
         getTotalItems: (storeId?, category?) => {
           const { carts, findCart } = get()
+          const currentUser = useUserStore.getState().currentUser
 
           // If storeId and category provided, calculate for specific cart
           if (storeId && category) {
@@ -674,8 +729,11 @@ export const useCartStore = create<CartStore>()(
             return cart.items.reduce((sum, item) => sum + item.quantity, 0)
           }
 
-          // Otherwise calculate across all carts
-          return carts.reduce((total, cart) =>
+          // Otherwise calculate across all carts (filtered by userId)
+          const userCarts = carts.filter(cart =>
+            currentUser ? cart.userId === currentUser.id : !cart.userId
+          )
+          return userCarts.reduce((total, cart) =>
             total + cart.items.reduce((sum, item) => sum + item.quantity, 0), 0
           )
         },
@@ -683,6 +741,7 @@ export const useCartStore = create<CartStore>()(
         // Calculate subtotal for specific cart or all carts
         getSubtotal: (storeId?, category?) => {
           const { carts, findCart } = get()
+          const currentUser = useUserStore.getState().currentUser
 
           // If storeId and category provided, calculate for specific cart
           if (storeId && category) {
@@ -697,8 +756,11 @@ export const useCartStore = create<CartStore>()(
             }, 0)
           }
 
-          // Otherwise calculate across all carts
-          return carts.reduce((cartTotal, cart) =>
+          // Otherwise calculate across all carts (filtered by userId)
+          const userCarts = carts.filter(cart =>
+            currentUser ? cart.userId === currentUser.id : !cart.userId
+          )
+          return userCarts.reduce((cartTotal, cart) =>
             cartTotal + cart.items.reduce((sum, item) => {
               const price =
                 typeof item.price === "number"
@@ -838,6 +900,9 @@ export const useCartStore = create<CartStore>()(
           
           console.log(`[REORDER] Starting reorder with ${items.length} items from ${storeName}`)
           
+          // Get current user ID
+          const currentUser = useUserStore.getState().currentUser
+          
           // Create a new cart for the reorder
           const reorderCart: Cart = {
             storeId: storeId,
@@ -846,6 +911,7 @@ export const useCartStore = create<CartStore>()(
             items: items,
             selectedCard: undefined,
             isReorder: true, // Mark this cart as a reorder
+            ...(currentUser?.id ? { userId: currentUser.id } : {})
           }
           
           // Add the reorder cart to existing carts
@@ -869,15 +935,41 @@ export const useCartStore = create<CartStore>()(
 
         // Initialize carts from database
         initializeCartsFromDB: (carts: Cart[]) => {
-          const { carts: guestCarts } = get()
+          const { carts: existingCarts } = get()
+          const currentUser = useUserStore.getState().currentUser
+          
+          // Separate guest carts (no userId) from user carts (with userId)
+          const guestCarts = existingCarts.filter(cart => !cart?.userId)
+          const userCarts = existingCarts.filter(cart => cart?.userId)
           
           console.log(`[CART] Initializing carts from database`)
-          console.log(`[CART] Guest carts: ${guestCarts.length}, DB carts: ${carts.length}`)
+          console.log(`[CART] Guest carts: ${guestCarts.length}, User carts: ${userCarts.length}, DB carts: ${carts.length}`)
+          
+          // If user is logged in and there are guest carts, assign userId to them
+          let cartsToMerge = guestCarts
+          if (currentUser?.id && guestCarts.length > 0) {
+            cartsToMerge = guestCarts.map(cart => ({
+              ...cart,
+              userId: currentUser.id
+            }))
+            console.log(`[CART] Assigned userId to ${guestCarts.length} guest carts`)
+          }
           
           // Import merge utility
           import('@/lib/utils/cart-merge').then(({ mergeGuestCartsWithDBCarts }) => {
-            const mergedCarts = mergeGuestCartsWithDBCarts(guestCarts, carts)
-            set({ carts: mergedCarts, isInitialized: true })
+            // Step 1: Merge guest carts (now with userId) with existing user carts
+            const mergedGuestAndUserCarts = mergeGuestCartsWithDBCarts(cartsToMerge, userCarts)
+            
+            // Step 2: If no DB carts, use the merged guest+user carts
+            if (carts.length === 0) {
+              set({ carts: mergedGuestAndUserCarts, isInitialized: true })
+              return
+            }
+            
+            // Step 3: Merge the combined guest+user carts with DB carts
+            // This will merge any remaining carts
+            const finalMergedCarts = mergeGuestCartsWithDBCarts(mergedGuestAndUserCarts, carts)
+            set({ carts: finalMergedCarts, isInitialized: true })
           })
         },
       }),
