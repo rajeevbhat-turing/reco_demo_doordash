@@ -3,7 +3,7 @@
 import type React from 'react';
 
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { X, Star, Info, ThumbsUp, ThumbsDown } from 'lucide-react';
+import { X, Star, ThumbsUp, ThumbsDown } from 'lucide-react';
 import { useUserStore } from '@/store/user-store';
 import { useReviewStore } from '@/store/review-store';
 import { FilledLightbulbIcon } from '@/lib/utils/icons';
@@ -86,6 +86,7 @@ export default function ReviewDialog({
       onSubmit(submittedRating, submittedText, submittedLikedItems);
     }
     onClose();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [onSubmit, submittedRating, submittedText, submittedLikedItems, onClose]);
 
   useEffect(() => {
@@ -120,8 +121,9 @@ export default function ReviewDialog({
       document.addEventListener('mousedown', handleClickOutside);
 
       // Focus the textarea when the dialog opens (if not showing success)
+      let focusTimeoutId: ReturnType<typeof setTimeout> | null = null;
       if (textareaRef.current && !showSuccess) {
-        setTimeout(() => {
+        focusTimeoutId = setTimeout(() => {
           textareaRef.current?.focus();
         }, 100);
       }
@@ -130,6 +132,9 @@ export default function ReviewDialog({
         document.body.style.overflow = 'auto';
         document.removeEventListener('keydown', handleEscapeKey);
         document.removeEventListener('mousedown', handleClickOutside);
+        if (focusTimeoutId) {
+          clearTimeout(focusTimeoutId);
+        }
       };
     }
   }, [isOpen, onClose, showSuccess, handleDone]);

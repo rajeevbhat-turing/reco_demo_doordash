@@ -21,4 +21,3 @@ export function useRestaurantMenu(restaurantId: string | undefined, enabled: boo
     gcTime: 10 * 60 * 1000, // 10 minutes (previously cacheTime)
   });
 }
-

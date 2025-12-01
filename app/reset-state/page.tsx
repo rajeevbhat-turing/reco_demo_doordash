@@ -1,25 +1,25 @@
-"use client"
+'use client';
 
-import { useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function ResetStatePage() {
-  const router = useRouter()
+  const router = useRouter();
 
   useEffect(() => {
     try {
       // Clear all localStorage
-      localStorage.clear()
-      console.log('✅ All localStorage cleared successfully')
-      
+      localStorage.clear();
+      console.log('✅ All localStorage cleared successfully');
+
       // Redirect back to home page
-      router.push('/')
+      router.push('/');
     } catch (error) {
-      console.error('❌ Failed to clear localStorage:', error)
+      console.error('❌ Failed to clear localStorage:', error);
       // Still redirect even if there's an error
-      router.push('/')
+      router.push('/');
     }
-  }, [router])
+  }, [router]);
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -29,5 +29,5 @@ export default function ResetStatePage() {
         <p className="text-gray-600">Redirecting to home page...</p>
       </div>
     </div>
-  )
+  );
 }

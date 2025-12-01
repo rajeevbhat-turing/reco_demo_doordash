@@ -1,31 +1,28 @@
-import { create } from "zustand"
-import { devtools } from "zustand/middleware"
-import type { Product } from "@/types"
-import { usePersistedState } from "@/lib/hooks/usePersistedState"
+import { usePersistedState } from '@/lib/hooks/usePersistedState';
 
 // Define supported cart categories
-export type CartCategory = "restaurant"
+export type CartCategory = 'restaurant';
 
 // Base cart item interface
 export interface CartItem {
-  id: number | string
-  itemName: string
-  price: number | string
-  image: string
-  quantity: number
-  storeId?: string
-  restaurantId?: string
-  storeName?: string
-  customizations?: string
-  category: CartCategory
+  id: number | string;
+  itemName: string;
+  price: number | string;
+  image: string;
+  quantity: number;
+  storeId?: string;
+  restaurantId?: string;
+  storeName?: string;
+  customizations?: string;
+  category: CartCategory;
 }
 
 // Category-specific configurations
 interface CategoryConfig {
-  freeDeliveryThreshold: number
-  defaultDeliveryFee: number
-  serviceFeePercentage: number
-  minServiceFee: number
+  freeDeliveryThreshold: number;
+  defaultDeliveryFee: number;
+  serviceFeePercentage: number;
+  minServiceFee: number;
 }
 
 // Default configuration by category
@@ -36,81 +33,109 @@ const categoryConfigs: Record<CartCategory, CategoryConfig> = {
     serviceFeePercentage: 0.15,
     minServiceFee: 4.99,
   },
-}
+};
 
 // Helper function to get store name from restaurant ID
 // Note: This is a fallback - callers should pass the actual store name when adding items
 const getStoreNameFromRestaurantId = (restaurantId: string): string => {
   // Format the ID as a display name (e.g., "philz-coffee" -> "Philz Coffee")
   return restaurantId
-    .split("-")
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(" ")
-}
+    .split('-')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+};
 
 // Helper function to get store name from store ID
 // Only restaurants are supported now
-const getStoreNameFromStoreId = (storeId: string, category?: CartCategory): string => {
+const getStoreNameFromStoreId = (storeId: string, _category?: CartCategory): string => {
   // Format the ID as a display name (e.g., "philz-coffee" -> "Philz Coffee")
   return storeId
-    .split("-")
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(" ")
-}
+    .split('-')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+};
 
 // Cart store interface
-interface PersistedCartStore {
-  // State
-  items: CartItem[]
-  currentCategory: CartCategory
-  currentStoreId: string | null
-  currentRestaurantId: string | null
-  isGroupOrder: boolean
-  groupOrderId: string | null
-  totalCartValue: number
+// interface PersistedCartStore {
+//   // State
+//   items: CartItem[];
+//   currentCategory: CartCategory;
+//   currentStoreId: string | null;
+//   currentRestaurantId: string | null;
+//   isGroupOrder: boolean;
+//   groupOrderId: string | null;
+//   totalCartValue: number;
 
-  // Category methods
-  setCategory: (category: CartCategory) => void
-  getConfig: () => CategoryConfig
+//   // Category methods
+//   setCategory: (category: CartCategory) => void;
+//   getConfig: () => CategoryConfig;
 
-  // Cart operations
-  addItem: (item: Omit<CartItem, "quantity" | "category">, category?: CartCategory, storeName?: string) => void
-  removeItem: (id: string | number) => void
-  updateQuantity: (id: string | number, quantity: number) => void
-  clearCart: () => void
+//   // Cart operations
+//   addItem: (
+//     item: Omit<CartItem, 'quantity' | 'category'>,
+//     category?: CartCategory,
+//     storeName?: string
+//   ) => void;
+//   removeItem: (id: string | number) => void;
+//   updateQuantity: (id: string | number, quantity: number) => void;
+//   clearCart: () => void;
 
-  // Cart calculations
-  getTotalItems: () => number
-  getSubtotal: () => number
-  getServiceFee: () => number
-  getDeliveryFee: () => number
-  getTotal: () => number
-  getTotalPrice: () => string
+//   // Cart calculations
+//   getTotalItems: () => number;
+//   getSubtotal: () => number;
+//   getServiceFee: () => number;
+//   getDeliveryFee: () => number;
+//   getTotal: () => number;
+//   getTotalPrice: () => string;
 
-  // Item source checks
-  hasDifferentStore: (storeId: string) => boolean
-  hasDifferentRestaurant: (restaurantId: string) => boolean
+//   // Item source checks
+//   hasDifferentStore: (storeId: string) => boolean;
+//   hasDifferentRestaurant: (restaurantId: string) => boolean;
 
-  // Update total cart value
-  updateTotalCartValue: () => void
-}
+//   // Update total cart value
+//   updateTotalCartValue: () => void;
+// }
 
 // Custom hook that integrates with our persisted state system
 export function usePersistedCartStore() {
   // Use our persisted state hook for cart items
   const [items, setItems] = usePersistedState<CartItem[]>('persisted-cart', []);
-  const [currentCategory, setCurrentCategory] = usePersistedState<CartCategory>('persisted-cart_category', 'restaurant');
-  const [currentStoreId, setCurrentStoreId] = usePersistedState<string | null>('persisted-cart.storeId', null);
-  const [currentRestaurantId, setCurrentRestaurantId] = usePersistedState<string | null>('persisted-cart.restaurantId', null);
-  const [isGroupOrder, setIsGroupOrder] = usePersistedState<boolean>('persisted-cart.isGroupOrder', false);
-  const [groupOrderId, setGroupOrderId] = usePersistedState<string | null>('persisted-cart.groupOrderId', null);
-  const [totalCartValue, setTotalCartValue] = usePersistedState<number>('persisted-cart.totalValue', 0);
+  const [currentCategory, setCurrentCategory] = usePersistedState<CartCategory>(
+    'persisted-cart_category',
+    'restaurant'
+  );
+  const [currentStoreId, setCurrentStoreId] = usePersistedState<string | null>(
+    'persisted-cart.storeId',
+    null
+  );
+  const [currentRestaurantId, setCurrentRestaurantId] = usePersistedState<string | null>(
+    'persisted-cart.restaurantId',
+    null
+  );
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [isGroupOrder, setIsGroupOrder] = usePersistedState<boolean>(
+    'persisted-cart.isGroupOrder',
+    false
+  );
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [groupOrderId, setGroupOrderId] = usePersistedState<string | null>(
+    'persisted-cart.groupOrderId',
+    null
+  );
+  const [totalCartValue, setTotalCartValue] = usePersistedState<number>(
+    'persisted-cart.totalValue',
+    0
+  );
 
   const getConfig = () => categoryConfigs[currentCategory];
 
-  const addItem = (item: Omit<CartItem, "quantity" | "category">, category?: CartCategory, storeName?: string) => {
+  const addItem = (
+    item: Omit<CartItem, 'quantity' | 'category'>,
+    category?: CartCategory,
+    storeName?: string
+  ) => {
     const itemCategory = category || currentCategory;
-    const itemName = item.itemName || "Unknown Item";
+    const itemName = item.itemName || 'Unknown Item';
 
     let resolvedStoreName = storeName;
     if (!resolvedStoreName) {
@@ -119,17 +144,15 @@ export function usePersistedCartStore() {
       } else if (item.storeId) {
         resolvedStoreName = getStoreNameFromStoreId(item.storeId, itemCategory);
       } else {
-        resolvedStoreName = "Unknown Store";
+        resolvedStoreName = 'Unknown Store';
       }
     }
 
-    const existingItem = items.find((i) => i.id === item.id);
+    const existingItem = items.find(i => i.id === item.id);
     let newItems: CartItem[];
 
     if (existingItem) {
-      newItems = items.map((i) => 
-        i.id === item.id ? { ...i, quantity: i.quantity + 1 } : i
-      );
+      newItems = items.map(i => (i.id === item.id ? { ...i, quantity: i.quantity + 1 } : i));
     } else {
       newItems = [
         ...items,
@@ -150,9 +173,9 @@ export function usePersistedCartStore() {
   };
 
   const removeItem = (id: string | number) => {
-    const newItems = items.filter((item) => item.id !== id);
+    const newItems = items.filter(item => item.id !== id);
     setItems(newItems);
-    
+
     if (newItems.length === 0) {
       setCurrentStoreId(null);
       setCurrentRestaurantId(null);
@@ -163,9 +186,7 @@ export function usePersistedCartStore() {
     if (quantity <= 0) {
       removeItem(id);
     } else {
-      const newItems = items.map((item) => 
-        item.id === id ? { ...item, quantity } : item
-      );
+      const newItems = items.map(item => (item.id === id ? { ...item, quantity } : item));
       setItems(newItems);
     }
   };
@@ -183,9 +204,10 @@ export function usePersistedCartStore() {
 
   const getSubtotal = () => {
     return items.reduce((sum, item) => {
-      const price = typeof item.price === "number" 
-        ? item.price 
-        : Number.parseFloat(item.price.toString().replace(/[^0-9.]/g, ""));
+      const price =
+        typeof item.price === 'number'
+          ? item.price
+          : Number.parseFloat(item.price.toString().replace(/[^0-9.]/g, ''));
       return sum + price * item.quantity;
     }, 0);
   };

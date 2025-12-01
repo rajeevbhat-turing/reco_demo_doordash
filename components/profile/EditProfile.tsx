@@ -99,7 +99,7 @@ export default function EditProfile({ onCancel }: EditProfileProps) {
     try {
       // Preprocess first name: trim and remove special characters
       let processedFirstName = preprocessName(firstName);
-      
+
       // Validate first name - if not empty and invalid, use original value
       if (processedFirstName && !isValidName(processedFirstName)) {
         processedFirstName = originalFirstName;
@@ -107,7 +107,7 @@ export default function EditProfile({ onCancel }: EditProfileProps) {
 
       // Preprocess last name: trim and remove special characters
       let processedLastName = preprocessName(lastName);
-      
+
       // Validate last name - if not empty and invalid, use original value
       if (processedLastName && !isValidName(processedLastName)) {
         processedLastName = originalLastName;

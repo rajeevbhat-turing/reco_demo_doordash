@@ -406,4 +406,3 @@ export const PersonIcon = ({ width = 16, height = 16 }: { width?: number; height
     ></path>
   </svg>
 );
-

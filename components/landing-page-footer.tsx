@@ -30,7 +30,7 @@ const doingBusinessData = [
   'Get DoorDash for Business',
 ];
 
-const bottomLinksData = ['Dasher Central', 'LinkedIn', 'Glassdoor', 'Accessibility', 'Newsroom'];
+// const bottomLinksData = ['Dasher Central', 'LinkedIn', 'Glassdoor', 'Accessibility', 'Newsroom'];
 
 export default function LandingPageFooter() {
   return (

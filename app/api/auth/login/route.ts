@@ -4,7 +4,7 @@ import { getImageWithFallback } from '@/constants/image-placeholders';
 
 /**
  * POST /api/auth/login
- * 
+ *
  * Authenticates a user with email and password
  * Returns user data with addresses and payment methods
  */
@@ -16,9 +16,9 @@ export async function POST(request: NextRequest) {
     // Validate input
     if (!email || !password) {
       return NextResponse.json(
-        { 
-          success: false, 
-          error: 'Email and password are required' 
+        {
+          success: false,
+          error: 'Email and password are required',
         },
         { status: 400 }
       );
@@ -45,9 +45,9 @@ export async function POST(request: NextRequest) {
 
     if (!user) {
       return NextResponse.json(
-        { 
-          success: false, 
-          error: 'Invalid email or password' 
+        {
+          success: false,
+          error: 'Invalid email or password',
         },
         { status: 401 }
       );
@@ -57,9 +57,9 @@ export async function POST(request: NextRequest) {
     const deletedIdsSet = new Set(deletedUserIds.map((id: string) => String(id)));
     if (deletedIdsSet.has(String(user.id))) {
       return NextResponse.json(
-        { 
-          success: false, 
-          error: 'Invalid email or password' 
+        {
+          success: false,
+          error: 'Invalid email or password',
         },
         { status: 401 }
       );
@@ -166,16 +166,14 @@ export async function POST(request: NextRequest) {
       success: true,
       data: userData,
     });
-
   } catch (error) {
     console.error('❌ Login error:', error);
     return NextResponse.json(
-      { 
-        success: false, 
-        error: 'An error occurred during login' 
+      {
+        success: false,
+        error: 'An error occurred during login',
       },
       { status: 500 }
     );
   }
 }
-

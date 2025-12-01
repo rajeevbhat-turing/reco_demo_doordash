@@ -9,7 +9,7 @@ const EMPTY_DEALS_ARRAY: Deal[] = [];
 
 /**
  * Fetch deals from API
- * 
+ *
  * @param restaurantId - Optional restaurant ID
  *   - If provided: returns restaurant-specific deals + common deals
  *   - If not provided: returns only common deals
@@ -98,9 +98,10 @@ export function useDealsByRestaurantId(restaurantId: string | number) {
   // Filter deals: DashPass (id = 'dashpass-delivery-fee') + restaurant-specific (restaurantId matches)
   // TEMPORARILY DISABLED: DashPass deal
   const filteredDeals = useMemo(() => {
-    return data.filter((deal: Deal) =>
-      // deal.id === 'dashpass-delivery-fee' || // TEMPORARILY DISABLED
-      deal.restaurantId === String(restaurantId)
+    return data.filter(
+      (deal: Deal) =>
+        // deal.id === 'dashpass-delivery-fee' || // TEMPORARILY DISABLED
+        deal.restaurantId === String(restaurantId)
     );
   }, [data, restaurantId]);
 
@@ -150,4 +151,3 @@ export function useCheckoutDeals(restaurantId?: string | number) {
     refetch,
   };
 }
-

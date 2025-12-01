@@ -4,7 +4,7 @@ import { getImageWithFallback } from '@/constants/image-placeholders';
 
 /**
  * GET /api/users/email/[email]
- * 
+ *
  * Fetches a user by email from the database
  * Returns user data with addresses and payment methods
  */
@@ -14,15 +14,15 @@ export async function GET(
 ) {
   try {
     const { email } = await params;
-    
+
     // Decode the email from URL
     const decodedEmail = decodeURIComponent(email);
 
     if (!decodedEmail) {
       return NextResponse.json(
-        { 
-          success: false, 
-          error: 'Email is required' 
+        {
+          success: false,
+          error: 'Email is required',
         },
         { status: 400 }
       );
@@ -49,9 +49,9 @@ export async function GET(
 
     if (!user) {
       return NextResponse.json(
-        { 
-          success: false, 
-          error: 'User not found' 
+        {
+          success: false,
+          error: 'User not found',
         },
         { status: 404 }
       );
@@ -158,16 +158,14 @@ export async function GET(
       success: true,
       data: userData,
     });
-
   } catch (error) {
     console.error('❌ Fetch user by email error:', error);
     return NextResponse.json(
-      { 
-        success: false, 
-        error: 'An error occurred while fetching user' 
+      {
+        success: false,
+        error: 'An error occurred while fetching user',
       },
       { status: 500 }
     );
   }
 }
-

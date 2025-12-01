@@ -1,8 +1,9 @@
 'use client';
 
+import React from 'react';
 import { usePathname } from 'next/navigation';
 import Sidebar from '@/components/sidebar';
-import Footer from '@/components/footer';
+// import Footer from '@/components/footer';
 import { useUserStore } from '@/store/user-store';
 
 export default function LayoutWrapper({ children }: { children: React.ReactNode }) {

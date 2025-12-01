@@ -4,9 +4,9 @@ import { getImageWithFallback } from '@/constants/image-placeholders';
 
 /**
  * GET /api/reviews
- * 
+ *
  * Fetches reviews with optional filters
- * 
+ *
  * Query params:
  * - storeId: Filter by store ID (optional)
  * - userId: Filter by user ID (optional)
@@ -192,4 +192,3 @@ export async function GET(request: NextRequest) {
     );
   }
 }
-

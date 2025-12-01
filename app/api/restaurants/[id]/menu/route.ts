@@ -2,10 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { getImageWithFallback } from '@/constants/image-placeholders';
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id: restaurantId } = await params;
 
@@ -135,17 +132,15 @@ export async function GET(
     const menuItems = menuItemsRaw.map((item: any) => {
       // Get modifications for this item
       const itemModifications = modificationsMap.get(item.id) || [];
-      
+
       // Check if there are any required modifications
       const hasRequiredModifications = itemModifications.some(
         (mod: any) => mod.is_required === true
       );
-      
+
       // Format price - add "+" if there are required modifications
       const priceInDollars = (item.price / 100).toFixed(2);
-      const priceDisplay = hasRequiredModifications 
-        ? `$${priceInDollars}+` 
-        : `$${priceInDollars}`;
+      const priceDisplay = hasRequiredModifications ? `$${priceInDollars}+` : `$${priceInDollars}`;
 
       return {
         id: String(item.id),
@@ -160,7 +155,7 @@ export async function GET(
         ratingCount: item.rating_count || null,
         popular: item.popular === 1,
         featured: item.featured === 1,
-        discount: item.discount_percentage 
+        discount: item.discount_percentage
           ? `${item.discount_percentage}% off up to $${(item.discount_cap / 100).toFixed(2)}`
           : undefined,
         modifications: itemModifications,
@@ -176,8 +171,13 @@ export async function GET(
     }));
 
     // Count total modifications across all items
-    const totalModifications = menuItems.reduce((sum, item) => sum + (item.modifications?.length || 0), 0);
-    console.log(`✅ Fetched ${menuItems.length} menu items with ${totalModifications} total modifications for restaurant ${restaurantId}`);
+    const totalModifications = menuItems.reduce(
+      (sum, item) => sum + (item.modifications?.length || 0),
+      0
+    );
+    console.log(
+      `✅ Fetched ${menuItems.length} menu items with ${totalModifications} total modifications for restaurant ${restaurantId}`
+    );
 
     return NextResponse.json({
       success: true,
@@ -188,10 +188,6 @@ export async function GET(
     });
   } catch (error) {
     console.error('❌ Error fetching menu:', error);
-    return NextResponse.json(
-      { success: false, message: 'Failed to fetch menu' },
-      { status: 500 }
-    );
+    return NextResponse.json({ success: false, message: 'Failed to fetch menu' }, { status: 500 });
   }
 }
-

@@ -4,7 +4,10 @@ import type { Deal } from '@/types/deal-types';
  * Fetch a deal by ID from the API
  * This is a utility function that can be used outside of React components
  */
-export async function fetchDealById(dealId: string, restaurantId?: string | number): Promise<Deal | null> {
+export async function fetchDealById(
+  dealId: string,
+  restaurantId?: string | number
+): Promise<Deal | null> {
   try {
     // Fetch deals (with restaurantId if provided to get both restaurant-specific + common deals)
     const searchParams = new URLSearchParams();
@@ -192,4 +195,3 @@ export function checkDealCriteriaBoolean(
   const result = checkDealCriteria(deal, cartItems, cartSubtotal);
   return result.meets;
 }
-

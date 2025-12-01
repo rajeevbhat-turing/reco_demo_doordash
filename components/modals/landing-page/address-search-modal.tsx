@@ -31,7 +31,8 @@ export default function AddressSearchModal({
     const query = searchQuery.toLowerCase();
     return addressesData
       .filter(address => {
-        const fullAddress = `${address.street}, ${address.city}, ${address.state} ${address.zipCode}`.toLowerCase();
+        const fullAddress =
+          `${address.street}, ${address.city}, ${address.state} ${address.zipCode}`.toLowerCase();
         return fullAddress.includes(query);
       })
       .slice(0, 3); // Limit to 3 results
@@ -82,7 +83,10 @@ export default function AddressSearchModal({
 
   return (
     <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center">
-      <div ref={dialogRef} className="relative flex flex-col bg-white max-w-lg rounded-xl p-4 mx-4 w-full">
+      <div
+        ref={dialogRef}
+        className="relative flex flex-col bg-white max-w-lg rounded-xl p-4 mx-4 w-full"
+      >
         {/* Top Section - Search Bar */}
         <div className="flex items-center gap-3 mt-4 mb-2">
           <div

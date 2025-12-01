@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { ChevronRight, ChevronLeft, ExternalLink } from 'lucide-react';
 import DealsModal from '../modals/deals-modal';
 import DealModal from '../modals/deal-modal';
@@ -34,13 +34,12 @@ export default function Deals({ restaurantId }: DealsProps) {
   // Update scroll buttons on mount and when deals change
   useEffect(() => {
     updateScrollButtons();
-    if (scrollContainerRef.current) {
-      scrollContainerRef.current.addEventListener('scroll', updateScrollButtons);
+    const scrollContainer = scrollContainerRef.current;
+    if (scrollContainer) {
+      scrollContainer.addEventListener('scroll', updateScrollButtons);
       window.addEventListener('resize', updateScrollButtons);
       return () => {
-        if (scrollContainerRef.current) {
-          scrollContainerRef.current.removeEventListener('scroll', updateScrollButtons);
-        }
+        scrollContainer.removeEventListener('scroll', updateScrollButtons);
         window.removeEventListener('resize', updateScrollButtons);
       };
     }
@@ -103,6 +102,17 @@ export default function Deals({ restaurantId }: DealsProps) {
       setIsDealModalOpen(true);
     }
   };
+
+  // Handle close deals modal
+  const handleCloseDealsModal = useCallback(() => {
+    setIsDealsModalOpen(false);
+  }, []);
+
+  // Handle close deal modal
+  const handleCloseDealModal = useCallback(() => {
+    setIsDealModalOpen(false);
+    setSelectedDeal(null);
+  }, []);
 
   // If loading or no deals exist, don't render anything
   if (isLoading || deals.length === 0) {
@@ -230,19 +240,12 @@ export default function Deals({ restaurantId }: DealsProps) {
       {/* Deals Modal */}
       <DealsModal
         isOpen={isDealsModalOpen}
-        onClose={() => setIsDealsModalOpen(false)}
+        onClose={handleCloseDealsModal}
         restaurantId={restaurantId}
       />
 
       {/* Deal Modal */}
-      <DealModal
-        isOpen={isDealModalOpen}
-        onClose={() => {
-          setIsDealModalOpen(false);
-          setSelectedDeal(null);
-        }}
-        deal={selectedDeal}
-      />
+      <DealModal isOpen={isDealModalOpen} onClose={handleCloseDealModal} deal={selectedDeal} />
     </div>
   );
 }

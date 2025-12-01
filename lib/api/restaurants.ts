@@ -35,7 +35,7 @@ interface FetchRestaurantsParams {
 
 /**
  * Fetch restaurants within a radius of user's location
- * 
+ *
  * @param params - Location parameters (lat, lng, radius)
  * @returns Array of restaurants with calculated distances
  */
@@ -65,7 +65,7 @@ export async function fetchRestaurants(params: FetchRestaurantsParams): Promise<
 
 /**
  * Fetch a specific restaurant by ID
- * 
+ *
  * @param restaurantId - The restaurant ID to fetch
  * @param lat - Optional user latitude for distance calculation
  * @param lng - Optional user longitude for distance calculation
@@ -81,10 +81,10 @@ export async function fetchRestaurantById(
     params.append('lat', lat.toString());
     params.append('lng', lng.toString());
   }
-  
+
   const url = `/api/restaurants/${restaurantId}${params.toString() ? `?${params.toString()}` : ''}`;
   const response = await fetch(url);
-  
+
   const result: RestaurantResponse = await response.json();
 
   if (!response.ok || !result.success) {
@@ -97,4 +97,3 @@ export async function fetchRestaurantById(
 
   return result.data;
 }
-

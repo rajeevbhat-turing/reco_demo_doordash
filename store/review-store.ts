@@ -1,7 +1,7 @@
 'use client';
 
-import { create } from "zustand";
-import { persist, devtools } from "zustand/middleware";
+import { create } from 'zustand';
+import { persist, devtools } from 'zustand/middleware';
 import { UserReview } from '@/types/review-types';
 
 /**
@@ -47,17 +47,17 @@ export const useReviewStore = create<ReviewStore>()(
             ...review,
             id: `review-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
             timestamp: new Date().toISOString(),
-            approvalStatus: 'approved'
+            approvalStatus: 'approved',
           };
 
-          set((state) => ({
-            newReviews: [...state.newReviews, newReview]
+          set(state => ({
+            newReviews: [...state.newReviews, newReview],
           }));
         },
 
         // Toggle helpful rating
         toggleHelpfulRating: (reviewId: string, userId: string, currentHelpfulBy?: string[]) => {
-          set((state) => {
+          set(state => {
             // Use provided current state or get from store changes
             const baseHelpful = currentHelpfulBy || state.helpfulChanges[reviewId] || [];
             const isRatedHelpful = baseHelpful.includes(userId);
@@ -66,31 +66,31 @@ export const useReviewStore = create<ReviewStore>()(
               ...state.helpfulChanges,
               [reviewId]: isRatedHelpful
                 ? baseHelpful.filter(id => id !== userId)
-                : [...baseHelpful, userId]
+                : [...baseHelpful, userId],
             };
 
             return {
-              helpfulChanges: newHelpfulChanges
+              helpfulChanges: newHelpfulChanges,
             };
           });
         },
 
         // Update review approval status
         updateReviewApproval: (reviewId: string, status: 'approved' | 'rejected' | 'pending') => {
-          set((state) => ({
+          set(state => ({
             approvalChanges: {
               ...state.approvalChanges,
-              [reviewId]: status
-            }
+              [reviewId]: status,
+            },
           }));
         },
 
         // Delete a review (can be from API or newly created)
         deleteReview: (reviewId: string) => {
-          set((state) => {
+          set(state => {
             // Remove from newReviews if it's a newly created review
             const updatedNewReviews = state.newReviews.filter(review => review.id !== reviewId);
-            
+
             // Add to deletedReviewIds if not already there
             const updatedDeletedIds = state.deletedReviewIds.includes(reviewId)
               ? state.deletedReviewIds
@@ -98,7 +98,7 @@ export const useReviewStore = create<ReviewStore>()(
 
             return {
               newReviews: updatedNewReviews,
-              deletedReviewIds: updatedDeletedIds
+              deletedReviewIds: updatedDeletedIds,
             };
           });
         },
@@ -109,7 +109,7 @@ export const useReviewStore = create<ReviewStore>()(
             newReviews: [],
             helpfulChanges: {},
             approvalChanges: {},
-            deletedReviewIds: []
+            deletedReviewIds: [],
           });
         },
 
@@ -128,9 +128,11 @@ export const useReviewStore = create<ReviewStore>()(
         // Get a user's new review for a specific vendor
         getNewReviewForVendor: (vendorId: string, userId: string) => {
           const state = get();
-          return state.newReviews.find(
-            review => review.vendorId === vendorId && review.userId === userId
-          ) || null;
+          return (
+            state.newReviews.find(
+              review => review.vendorId === vendorId && review.userId === userId
+            ) || null
+          );
         },
 
         // Check if a review is deleted
@@ -140,8 +142,8 @@ export const useReviewStore = create<ReviewStore>()(
         },
       }),
       {
-        name: "review-store",
-        partialize: (state) => ({
+        name: 'review-store',
+        partialize: state => ({
           newReviews: state.newReviews,
           helpfulChanges: state.helpfulChanges,
           approvalChanges: state.approvalChanges,
@@ -150,7 +152,7 @@ export const useReviewStore = create<ReviewStore>()(
       }
     ),
     {
-      name: "review-store",
+      name: 'review-store',
       enabled: process.env.NODE_ENV === 'development',
     }
   )

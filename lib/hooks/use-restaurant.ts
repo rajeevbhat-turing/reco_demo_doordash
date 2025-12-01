@@ -3,10 +3,10 @@ import { fetchRestaurantById } from '@/lib/api/restaurants';
 import { useUserStore } from '@/store/user-store';
 
 export function useRestaurant(restaurantId: string | undefined) {
-  const currentAddress = useUserStore((state) => {
+  const currentAddress = useUserStore(state => {
     const user = state.currentUser;
     if (user?.addresses && user.addresses.length > 0) {
-      return user.addresses.find((addr) => addr.default) || user.addresses[0];
+      return user.addresses.find(addr => addr.default) || user.addresses[0];
     }
     return state.getTempAddress();
   });
@@ -21,4 +21,3 @@ export function useRestaurant(restaurantId: string | undefined) {
     staleTime: 1000 * 60 * 10, // 10 minutes (longer than restaurants list)
   });
 }
-

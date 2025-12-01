@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import TwoStepVerificationModal from '@/components/modals/two-step-verification-modal';
 import { useUserStore } from '@/store/user-store';
@@ -14,6 +14,18 @@ export default function DeleteAccountPage() {
   const [isVerified, setIsVerified] = useState(false);
   const [showConfirmPage, setShowConfirmPage] = useState(false);
   const [showDeletionPage, setShowDeletionPage] = useState(false);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Cleanup timeout on unmount
+  useEffect(
+    () => () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
+      }
+    },
+    []
+  );
 
   // Handles 2-step verification success
   const handleTwoStepSuccess = () => {
@@ -22,9 +34,9 @@ export default function DeleteAccountPage() {
   };
 
   // Handles closing 2-step verification modal
-  const handleCloseTwoStepModal = () => {
+  const handleCloseTwoStepModal = useCallback(() => {
     setShowTwoStepModal(false);
-  };
+  }, []);
 
   // Handles continue button - shows confirmation page
   const handleContinue = () => {
@@ -47,15 +59,14 @@ export default function DeleteAccountPage() {
           currentUser: null,
           deletedUserIds: [...parsedUserStore.state.deletedUserIds, currentUser?.id],
         },
-      }
+      };
 
       // Set new user store to local storage
       localStorage.setItem('user-store', JSON.stringify(newUserStore));
     }
 
-
     // After 3 seconds, delete user and navigate to home
-    setTimeout(() => {
+    timeoutRef.current = setTimeout(() => {
       // Delete user from store
       if (currentUser) {
         deleteUser(currentUser.id);

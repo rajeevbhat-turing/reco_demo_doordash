@@ -4,7 +4,7 @@ import { getImageWithFallback } from '@/constants/image-placeholders';
 
 /**
  * POST /api/auth/generate-otp
- * 
+ *
  * Generates OTP for user authentication
  * Checks if email exists in database, generates OTP if found
  * Returns OTP and user data (without password)
@@ -17,9 +17,9 @@ export async function POST(request: NextRequest) {
     // Validate input
     if (!email) {
       return NextResponse.json(
-        { 
-          success: false, 
-          error: 'Email is required' 
+        {
+          success: false,
+          error: 'Email is required',
         },
         { status: 400 }
       );
@@ -46,9 +46,10 @@ export async function POST(request: NextRequest) {
 
     if (!user) {
       return NextResponse.json(
-        { 
-          success: false, 
-          error: "We couldn't find an account with the email you entered. Try a different email or sign up." 
+        {
+          success: false,
+          error:
+            "We couldn't find an account with the email you entered. Try a different email or sign up.",
         },
         { status: 404 }
       );
@@ -58,9 +59,10 @@ export async function POST(request: NextRequest) {
     const deletedIdsSet = new Set(deletedUserIds.map((id: string) => String(id)));
     if (deletedIdsSet.has(String(user.id))) {
       return NextResponse.json(
-        { 
-          success: false, 
-          error: "We couldn't find an account with the email you entered. Try a different email or sign up." 
+        {
+          success: false,
+          error:
+            "We couldn't find an account with the email you entered. Try a different email or sign up.",
         },
         { status: 404 }
       );
@@ -173,16 +175,14 @@ export async function POST(request: NextRequest) {
         user: userData,
       },
     });
-
   } catch (error) {
     console.error('❌ Generate OTP error:', error);
     return NextResponse.json(
-      { 
-        success: false, 
-        error: 'An error occurred while generating OTP' 
+      {
+        success: false,
+        error: 'An error occurred while generating OTP',
       },
       { status: 500 }
     );
   }
 }
-
