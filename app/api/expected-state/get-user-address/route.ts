@@ -5,12 +5,14 @@ import { db } from '@/lib/db';
  * GET /api/expected-state/get-user-address
  *
  * Query Parameters:
- * - type: Address type (required) - e.g., "house", "apartment", "hotel", "office", "other"
+ * - type: Address type (optional) - e.g., "house", "apartment", "hotel", "office", "other"
+ *         If not provided, returns the default address.
  * - userId: User ID (optional, use this OR email)
  * - email: User email (optional, use this OR userId)
  *
  * Gets a user's address by type from the database.
  * If email is provided, looks up the user by email first.
+ * If type is not provided, returns the default address.
  */
 export async function GET(request: NextRequest) {
   try {
@@ -30,6 +32,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
+<<<<<<< HEAD
     if (!type) {
       return NextResponse.json(
         {
@@ -40,6 +43,8 @@ export async function GET(request: NextRequest) {
       );
     }
 
+=======
+>>>>>>> 097930f2c88c7a871529672a96c657f79fb0a0e0
     // If email is provided, look up the user first
     if (email && !userId) {
       const user = await db.queryOne<any>('SELECT id FROM users WHERE email = ? COLLATE NOCASE', [
@@ -56,6 +61,7 @@ export async function GET(request: NextRequest) {
       userId = String(user.id);
     }
 
+<<<<<<< HEAD
     const address = await db.queryOne<any>(
       `SELECT 
         id,
@@ -85,6 +91,49 @@ export async function GET(request: NextRequest) {
       [userId, type]
     );
 
+=======
+    // Build query based on whether type is provided
+    let query = `SELECT 
+      id,
+      street,
+      city,
+      state,
+      zip_code as zipCode,
+      latitude as lat,
+      longitude as lng,
+      address_type as addressType,
+      is_default as "default",
+      gate_code as gateCode,
+      apartment_suite as apartmentSuite,
+      entry_code as entryCode,
+      room_suite as roomSuite,
+      hotel_name as hotelName,
+      suite_floor as suiteFloor,
+      business_name as businessName,
+      building_name as buildingName,
+      delivery_preference as deliveryPreference,
+      meet_location as meetLocation,
+      delivery_instructions as deliveryInstructions,
+      personal_label as personalLabel
+    FROM addresses
+    WHERE user_id = ?`;
+    
+    const params: any[] = [userId];
+    
+    if (type) {
+      // If type is provided, filter by type
+      query += ' AND address_type = ? COLLATE NOCASE';
+      params.push(type);
+    } else {
+      // If no type provided, get default address
+      query += ' AND is_default = 1';
+    }
+    
+    query += ' LIMIT 1';
+    
+    const address = await db.queryOne<any>(query, params);
+    
+>>>>>>> 097930f2c88c7a871529672a96c657f79fb0a0e0
     if (!address) {
       return NextResponse.json({
         success: true,
