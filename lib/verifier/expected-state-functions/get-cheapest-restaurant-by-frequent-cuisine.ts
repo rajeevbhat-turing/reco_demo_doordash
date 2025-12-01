@@ -29,45 +29,46 @@ export interface CheapestRestaurantResult {
 
 /**
  * Get the restaurant with the lowest delivery fee for user's most frequent cuisine
- * 
+ *
  * Algorithm:
  * 1. Fetch all previous orders for the logged in user
  * 2. Find the most frequently ordered cuisine
  * 3. Within that cuisine's orders, find the lowest delivery fee
  * 4. Return the restaurant for that cuisine with the lowest delivery fee (within radius)
  * 5. If no cheaper restaurant found, return the restaurant from previous orders with lowest fee
- * 
+ *
  * @returns Object containing the restaurant with lowest delivery fee and metadata
  */
 export async function get_cheapest_restaurant_by_frequent_cuisine(): Promise<CheapestRestaurantResult | null> {
   const userStore = useUserStore.getState();
   const currentUser = userStore.currentUser;
-  
+
   if (!currentUser) {
     return null;
   }
 
   // Get user's selected address (either current temp address or default address)
-  const selectedAddress = userStore.getTempAddress() || 
+  const selectedAddress =
+    userStore.getTempAddress() ||
     (currentUser.addresses && currentUser.addresses.find(addr => addr.default));
-  
+
   if (!selectedAddress || !selectedAddress.lat || !selectedAddress.lng) {
     console.error('No valid address found with lat/lng');
     return null;
   }
-  
+
   try {
     // Call API route with lat/lng parameters
     const response = await fetch(
       `/api/expected-state/get-cheapest-restaurant-by-frequent-cuisine?userId=${currentUser.id}&lat=${selectedAddress.lat}&lng=${selectedAddress.lng}&radius=10`
     );
-    
+
     if (!response.ok) {
       throw new Error(`HTTP ${response.status}: ${response.statusText}`);
     }
 
     const result = await response.json();
-    
+
     if (!result.success) {
       throw new Error(result.error || 'Failed to fetch cheapest restaurant');
     }
@@ -78,5 +79,3 @@ export async function get_cheapest_restaurant_by_frequent_cuisine(): Promise<Che
     return null;
   }
 }
-
-

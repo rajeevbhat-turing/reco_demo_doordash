@@ -21,6 +21,7 @@ interface PromoBanner {
 
 export default function PromoBanners() {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const autoScrollResumeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAutoScrolling, setIsAutoScrolling] = useState(true);
   const [banners, setBanners] = useState<PromoBanner[]>([]);
@@ -165,7 +166,11 @@ export default function PromoBanners() {
 
     // Pause auto-scroll when user manually navigates
     setIsAutoScrolling(false);
-    setTimeout(() => setIsAutoScrolling(true), 5000);
+    // Clear existing timeout if any
+    if (autoScrollResumeTimeoutRef.current) {
+      clearTimeout(autoScrollResumeTimeoutRef.current);
+    }
+    autoScrollResumeTimeoutRef.current = setTimeout(() => setIsAutoScrolling(true), 5000);
   };
 
   // Auto-scroll functionality
@@ -196,6 +201,16 @@ export default function PromoBanners() {
 
     return () => clearInterval(interval);
   }, [isAutoScrolling, filteredBanners.length]);
+
+  // Cleanup timeout on unmount
+  useEffect(
+    () => () => {
+      if (autoScrollResumeTimeoutRef.current) {
+        clearTimeout(autoScrollResumeTimeoutRef.current);
+      }
+    },
+    []
+  );
 
   // Don't render if loading banners or restaurants, or if there's an error
   if (isLoading || isLoadingRestaurants) {

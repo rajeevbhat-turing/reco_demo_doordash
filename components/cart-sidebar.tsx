@@ -31,7 +31,7 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
     clearCart,
     addItem,
     isGroupOrder,
-    groupOrderId,
+    // groupOrderId,
     getConfig,
   } = useCartStore();
 
@@ -41,19 +41,23 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
   const currentRestaurantId = getCurrentRestaurantId();
   const activeStoreId = currentStoreId || currentRestaurantId;
 
+  // Filter carts by current user
+  // Guest users see carts without userId, logged-in users see only their carts
+  const currentUser = useUserStore(state => state.currentUser);
+  const userCarts = carts.filter(cart =>
+    currentUser ? cart.userId === currentUser.id : !cart.userId
+  );
+
   // Find the cart for the current store
   // If no current store is set, use the last cart as the main cart
   let currentCart = activeStoreId ? findCart(activeStoreId, currentCategory) : null;
-  let otherCarts = carts.filter(cart => cart !== currentCart);
+  let otherCarts = userCarts.filter(cart => cart !== currentCart);
 
   // When no store is active, show the last cart as the main cart
-  if (!activeStoreId && carts.length > 0) {
-    currentCart = carts[carts.length - 1];
-    otherCarts = carts.slice(0, -1);
+  if (!activeStoreId && userCarts.length > 0) {
+    currentCart = userCarts[userCarts.length - 1];
+    otherCarts = userCarts.slice(0, -1);
   }
-
-  // Only fetch restaurants if needed (for restaurant carts or other carts that might be restaurants)
-  const currentUser = useUserStore(state => state.currentUser);
   const defaultAddress = currentUser?.addresses.find(a => a.default);
   const hasRestaurantCart =
     currentCart?.storeCategory === 'restaurant' ||
@@ -74,6 +78,7 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
   const items = currentCart?.items || [];
 
   const [restaurant, setRestaurant] = useState<any>(null);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [store, setStore] = useState<any>(null);
   const [complementItems, setComplementItems] = useState<any[]>([]);
   const complementScrollRef = useRef<HTMLDivElement>(null);
@@ -86,6 +91,7 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
 
   // Function to get store information based on category and store ID
   // Note: Only restaurants are supported now
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const getStoreInfo = useCallback((storeId: string, category: string) => {
     // No store info for restaurants - they use restaurant data directly
     return null;
@@ -163,6 +169,7 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
       setComplementItems([]);
     }
     return null; // useMemo must return something
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentCart?.storeId, currentCart?.storeCategory, items.length, fetchComplementItems]);
 
   // Get the display name based on current cart
@@ -315,48 +322,54 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
     clearCart(storeId, storeCategory as any);
   };
 
+  // Handle closing menu item dialog
+  const handleCloseMenuItemDialog = useCallback(() => {
+    setMenuItemDialogOpen(false);
+    setSelectedItem(null);
+  }, []);
+
   // Handle click outside to close sidebar
   useEffect(() => {
-    if (!isOpen) return
+    if (!isOpen) return;
 
     const handleClickOutside = (event: MouseEvent) => {
       if (sidebarRef.current && !sidebarRef.current.contains(event.target as Node)) {
-        onClose()
+        onClose();
       }
-    }
+    };
 
     // Add event listener with a small delay to prevent immediate closing when opening
     const timeoutId = setTimeout(() => {
-      document.addEventListener('mousedown', handleClickOutside)
-    }, 100)
+      document.addEventListener('mousedown', handleClickOutside);
+    }, 100);
 
     return () => {
-      clearTimeout(timeoutId)
-      document.removeEventListener('mousedown', handleClickOutside)
-    }
-  }, [isOpen, onClose])
+      clearTimeout(timeoutId);
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isOpen, onClose]);
 
   // Handle Escape key to close sidebar
   useEffect(() => {
-    if (!isOpen) return
+    if (!isOpen) return;
 
     const handleEscapeKey = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
-        onClose()
+        onClose();
       }
-    }
+    };
 
-    document.addEventListener('keydown', handleEscapeKey)
+    document.addEventListener('keydown', handleEscapeKey);
     return () => {
-      document.removeEventListener('keydown', handleEscapeKey)
-    }
-  }, [isOpen, onClose])
+      document.removeEventListener('keydown', handleEscapeKey);
+    };
+  }, [isOpen, onClose]);
 
   const cartClasses = isOpen
     ? 'fixed inset-y-0 right-0 z-50 w-full md:w-[550px] bg-white shadow-xl flex flex-col transform translate-x-0 transition-transform duration-300 ease-in-out'
     : 'fixed inset-y-0 right-0 z-50 w-full md:w-[550px] bg-white shadow-xl flex flex-col transform translate-x-full transition-transform duration-300 ease-in-out';
 
-  if (carts.length === 0 && isOpen) {
+  if (userCarts.length === 0 && isOpen) {
     return (
       <div ref={sidebarRef} className={cartClasses}>
         <div className="p-4 border-b flex items-center justify-between">
@@ -677,7 +690,7 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
       {selectedItem && (
         <MenuItemDialog
           isOpen={menuItemDialogOpen}
-          onClose={() => setMenuItemDialogOpen(false)}
+          onClose={handleCloseMenuItemDialog}
           item={{
             ...selectedItem,
             image: selectedItem.image || '',
@@ -686,8 +699,8 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
               typeof selectedItem.rating === 'number'
                 ? selectedItem.rating
                 : typeof selectedItem.rating === 'string'
-                ? parseFloat(selectedItem.rating) || undefined
-                : undefined,
+                  ? parseFloat(selectedItem.rating) || undefined
+                  : undefined,
             ratingCount: selectedItem.ratingCount ?? undefined,
           }}
         />

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { VerificationIcon } from '@/lib/utils/icons';
@@ -26,6 +26,7 @@ export default function TwoStepVerificationModal({
   const [showTooManyAttempts, setShowTooManyAttempts] = useState(false);
 
   const dialogRef = useRef<HTMLDivElement>(null);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // Disable body scroll and limit height when modal is open
   useEffect(() => {
@@ -58,7 +59,7 @@ export default function TwoStepVerificationModal({
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [isOpen, onClose]);
-  
+
   // Handles code input changes
   const handleCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.replace(/\D/g, '').slice(0, 6);
@@ -80,11 +81,17 @@ export default function TwoStepVerificationModal({
 
   // Starts the resend timer countdown
   const startResendTimer = () => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+    }
     setResendTimer(30);
-    const interval = setInterval(() => {
+    intervalRef.current = setInterval(() => {
       setResendTimer(prev => {
         if (prev <= 1) {
-          clearInterval(interval);
+          if (intervalRef.current) {
+            clearInterval(intervalRef.current);
+            intervalRef.current = null;
+          }
           return 0;
         }
         return prev - 1;
@@ -129,10 +136,10 @@ export default function TwoStepVerificationModal({
   };
 
   // Handles get help functionality
-  const handleGetHelp = () => {
-    // Close modal
-    onClose();
-  };
+  // const handleGetHelp = () => {
+  //   // Close modal
+  //   onClose();
+  // };
 
   // Handles outside click to close modal
   const handleOutsideClick = (e: React.MouseEvent) => {
@@ -166,6 +173,16 @@ export default function TwoStepVerificationModal({
     }
   }, [isOpen]);
 
+  // Cleanup interval on unmount
+  useEffect(
+    () => () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    },
+    []
+  );
+
   if (!isOpen) return null;
 
   return (
@@ -194,7 +211,7 @@ export default function TwoStepVerificationModal({
           <h2 className="text-2xl font-bold text-[#191919ff] mb-2">2-Step Verification</h2>
           {!showTooManyAttempts && (
             <p className="text-[#191919ff] text-[15px] font-medium">
-              For your security, we want to make sure it's really you.
+              For your security, we want to make sure it&apos;s really you.
             </p>
           )}
         </div>
@@ -216,9 +233,17 @@ export default function TwoStepVerificationModal({
                 onKeyDown={e => {
                   // Allow: backspace, delete, tab, escape, enter, and arrow keys
                   if (
-                    ['Backspace', 'Delete', 'Tab', 'Escape', 'Enter', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(
-                      e.key
-                    )
+                    [
+                      'Backspace',
+                      'Delete',
+                      'Tab',
+                      'Escape',
+                      'Enter',
+                      'ArrowLeft',
+                      'ArrowRight',
+                      'ArrowUp',
+                      'ArrowDown',
+                    ].includes(e.key)
                   ) {
                     return; // Allow these keys
                   }

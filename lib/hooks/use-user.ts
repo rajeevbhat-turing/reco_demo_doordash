@@ -6,19 +6,17 @@ import { User } from '@/lib/types/user-types';
 
 /**
  * Custom hook to get a user by ID
- * 
+ *
  * Architecture: Store (localStorage) > Database (API)
  * 1. Check store first - if user exists, return store data
  * 2. If not in store, fetch from API
- * 
+ *
  * @param userId - The ID of the user to fetch
  * @returns User data with loading and error states
  */
 export function useUser(userId: string) {
   // Subscribe to the specific user in the store - this will update when store changes
-  const storeUser = useUserStore(state =>
-    state.users.find(user => user.id === userId) || null
-  );
+  const storeUser = useUserStore(state => state.users.find(user => user.id === userId) || null);
 
   // Only fetch from API if user is not in store
   const query = useQuery<User>({
@@ -50,19 +48,17 @@ export function useUser(userId: string) {
 
 /**
  * Custom hook to get a user by email
- * 
+ *
  * Architecture: Store (localStorage) > Database (API)
  * 1. Check store first - if user exists, return store data
  * 2. If not in store, fetch from API
- * 
+ *
  * @param email - The email of the user to fetch
  * @returns User data with loading and error states
  */
 export function useUserByEmail(email: string) {
   // Subscribe to the specific user in the store - this will update when store changes
-  const storeUser = useUserStore(state =>
-    state.users.find(user => user.email === email) || null
-  );
+  const storeUser = useUserStore(state => state.users.find(user => user.email === email) || null);
 
   // Only fetch from API if user is not in store
   const query = useQuery<User>({
@@ -93,4 +89,3 @@ export function useUserByEmail(email: string) {
     isSuccess: !!user,
   };
 }
-

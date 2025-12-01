@@ -50,7 +50,10 @@ export default function AddressReviewErrorModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
-      <div ref={dialogRef} className="relative bg-white rounded-xl w-full max-w-md md:max-w-xl mx-4">
+      <div
+        ref={dialogRef}
+        className="relative bg-white rounded-xl w-full max-w-md md:max-w-xl mx-4"
+      >
         <div className="py-6 px-8 md:px-4">
           {/* Close button */}
           <button
@@ -70,13 +73,13 @@ export default function AddressReviewErrorModal({
 
             {/* Error Message */}
             <h2 className="text-2xl font-bold text-[#191919ff] mb-3">
-              We can't add this address at the moment
+              We can&apos;t add this address at the moment
             </h2>
 
             {/* Body Text */}
             <p className="text-sm md:text-[15px] font-medium text-[#191919ff] leading-relaxed">
-              We're currently reviewing the address. Please check for any typos and re-enter your
-              address.
+              We&apos;re currently reviewing the address. Please check for any typos and re-enter
+              your address.
             </p>
           </div>
 

@@ -1,6 +1,6 @@
-import type { Restaurant } from "@/constants/restaurants"
-import { Address } from "@/lib/types/user-types"
-import { calculateDistance } from "./distance-utils"
+import type { Restaurant } from '@/constants/restaurants';
+import { Address } from '@/lib/types/user-types';
+import { calculateDistance } from './distance-utils';
 
 /**
  * Filter restaurants based on distance from selected address
@@ -18,7 +18,7 @@ export function filterRestaurantsByLocation(
 ): Restaurant[] {
   // If no address selected (neither authenticated nor temp), return all restaurants
   const activeAddress = selectedAddress || tempAddress || null;
-  
+
   if (!activeAddress) {
     return restaurants;
   }
@@ -30,7 +30,7 @@ export function filterRestaurantsByLocation(
   }
 
   // Filter restaurants that are within the radius
-  return restaurants.filter((restaurant) => {
+  return restaurants.filter(restaurant => {
     // Validate that restaurant has coordinates
     if (typeof restaurant.lat !== 'number' || typeof restaurant.lng !== 'number') {
       // If restaurant doesn't have coordinates, exclude it from location filtering
@@ -50,4 +50,3 @@ export function filterRestaurantsByLocation(
     return distance <= radiusMiles;
   });
 }
-

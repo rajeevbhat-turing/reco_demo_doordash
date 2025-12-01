@@ -5,10 +5,10 @@ import { getImageWithFallback } from '@/constants/image-placeholders';
 
 /**
  * GET /api/restaurants
- * 
+ *
  * Fetches restaurants within a radius of user's location
  * Calculates distance using Haversine formula
- * 
+ *
  * Query params:
  * - lat: User's latitude (required)
  * - lng: User's longitude (required)
@@ -24,9 +24,9 @@ export async function GET(request: NextRequest) {
     // Validate coordinates
     if (!lat || !lng) {
       return NextResponse.json(
-        { 
-          success: false, 
-          error: 'Latitude and longitude are required' 
+        {
+          success: false,
+          error: 'Latitude and longitude are required',
         },
         { status: 400 }
       );
@@ -34,9 +34,9 @@ export async function GET(request: NextRequest) {
 
     if (lat < -90 || lat > 90 || lng < -180 || lng > 180) {
       return NextResponse.json(
-        { 
-          success: false, 
-          error: 'Invalid coordinates' 
+        {
+          success: false,
+          error: 'Invalid coordinates',
         },
         { status: 400 }
       );
@@ -111,20 +111,23 @@ export async function GET(request: NextRequest) {
       const deliveryTime = calculateDeliveryTime(distance);
       const currentHour = new Date().getHours();
       const isOpen = checkIfOpen(r.opening_hour, r.closing_hour, currentHour);
-      
+
       return {
         id: String(r.id),
         name: r.name,
         logo: getImageWithFallback(r.logo, 'logo'),
         banner: getImageWithFallback(r.banner, 'image'),
-        detailsBanner: r.details_banner ? getImageWithFallback(r.details_banner, 'image') : undefined,
+        detailsBanner: r.details_banner
+          ? getImageWithFallback(r.details_banner, 'image')
+          : undefined,
         rating: r.avg_rating ? parseFloat(r.avg_rating.toFixed(1)) : null,
         reviews: r.total_rating_count ? `${r.total_rating_count}+ ratings` : null,
         distance: `${distance.toFixed(1)} mi`,
         time: deliveryTime,
-        deliveryFee: r.is_free_delivery === 1 
-          ? '$0 delivery fee' 
-          : `$${(r.min_delivery_fee / 100).toFixed(2)} delivery fee`,
+        deliveryFee:
+          r.is_free_delivery === 1
+            ? '$0 delivery fee'
+            : `$${(r.min_delivery_fee / 100).toFixed(2)} delivery fee`,
         isFreeDelivery: r.is_free_delivery === 1,
         minDeliveryFee: r.min_delivery_fee,
         priceRange: '$'.repeat(r.price_range),
@@ -139,8 +142,8 @@ export async function GET(request: NextRequest) {
         lat: r.latitude,
         lng: r.longitude,
         phone: r.phone,
-        discount: r.discount_percentage 
-          ? `${r.discount_percentage}% off${r.discount_cap ? `, up to $${(r.discount_cap / 100).toFixed(2)}` : ''}` 
+        discount: r.discount_percentage
+          ? `${r.discount_percentage}% off${r.discount_cap ? `, up to $${(r.discount_cap / 100).toFixed(2)}` : ''}`
           : undefined,
         featured: r.featured === 1,
         new: r.new_flag === 1,
@@ -149,7 +152,9 @@ export async function GET(request: NextRequest) {
       };
     });
 
-    console.log(`✅ Found ${transformedRestaurants.length} restaurants within ${radius} miles of (${lat}, ${lng})`);
+    console.log(
+      `✅ Found ${transformedRestaurants.length} restaurants within ${radius} miles of (${lat}, ${lng})`
+    );
 
     return NextResponse.json({
       success: true,
@@ -161,19 +166,14 @@ export async function GET(request: NextRequest) {
         radius,
       },
     });
-
   } catch (error) {
     console.error('❌ Error fetching restaurants:', error);
     return NextResponse.json(
-      { 
-        success: false, 
-        error: 'An error occurred while fetching restaurants' 
+      {
+        success: false,
+        error: 'An error occurred while fetching restaurants',
       },
       { status: 500 }
     );
   }
 }
-
-
-
-

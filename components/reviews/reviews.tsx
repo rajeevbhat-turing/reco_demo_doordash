@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect, useMemo } from 'react';
+import { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { ChevronRight, ChevronLeft, ArrowRight, Star } from 'lucide-react';
 import OverallRating from './overall-rating';
@@ -27,7 +27,8 @@ export default function Reviews({ vendorId, vendorName }: ReviewsProps) {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   // Fetch reviews from API and merge with store changes
-  const { vendorReviews, approvedReviews, averageRating, isLoading, apiData } = useStoreReviews(vendorId);
+  const { vendorReviews, approvedReviews, averageRating, isLoading, apiData } =
+    useStoreReviews(vendorId);
 
   // Get store changes for merging - using individual selectors to prevent object recreation
   const newReviews = useReviewStore(state => state.newReviews);
@@ -48,12 +49,8 @@ export default function Reviews({ vendorId, vendorName }: ReviewsProps) {
   // Get current user's review for this vendor (if exists)
   const userReview =
     currentUser && apiData
-      ? getMergedUserReviewForVendor(
-          apiData,
-          vendorId,
-          currentUser.id,
-          storeReviewChanges
-        ) || useReviewStore.getState().getNewReviewForVendor(vendorId, currentUser.id)
+      ? getMergedUserReviewForVendor(apiData, vendorId, currentUser.id, storeReviewChanges) ||
+        useReviewStore.getState().getNewReviewForVendor(vendorId, currentUser.id)
       : null;
 
   const totalReviews = approvedReviews?.length || 0;
@@ -121,6 +118,11 @@ export default function Reviews({ vendorId, vendorName }: ReviewsProps) {
     router.push(`/reviews/store/${vendorId}`);
   };
 
+  // Handle closing review dialog
+  const handleCloseReviewDialog = useCallback(() => {
+    setReviewDialogOpen(false);
+  }, []);
+
   // Show loading state
   if (isLoading) {
     return null;
@@ -175,7 +177,7 @@ export default function Reviews({ vendorId, vendorName }: ReviewsProps) {
         {reviewDialogOpen && (
           <ReviewDialog
             isOpen={reviewDialogOpen}
-            onClose={() => setReviewDialogOpen(false)}
+            onClose={handleCloseReviewDialog}
             restaurantName={vendorName}
             vendorId={vendorId}
             vendorLogo={
@@ -241,7 +243,7 @@ export default function Reviews({ vendorId, vendorName }: ReviewsProps) {
       >
         {/* Overall Rating */}
         <div className="flex-shrink-0">
-          <OverallRating averageRating={averageRating} totalReviews={totalReviews} />
+          <OverallRating averageRating={averageRating} />
         </div>
 
         {visibleReviews.map(review => (
@@ -262,7 +264,7 @@ export default function Reviews({ vendorId, vendorName }: ReviewsProps) {
       {/* Review Dialog */}
       <ReviewDialog
         isOpen={reviewDialogOpen}
-        onClose={() => setReviewDialogOpen(false)}
+        onClose={handleCloseReviewDialog}
         restaurantName={vendorName}
         vendorId={vendorId}
         vendorLogo={

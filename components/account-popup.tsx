@@ -3,9 +3,9 @@
 import { useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Heart, Globe, Lock, ArrowRight, Plane, UsersRound } from 'lucide-react';
+import { Globe, Lock } from 'lucide-react';
 import { useUserStore } from '@/store/user-store';
-import { GiftIcon, GlitterIcon, MedalIcon, MessageIcon } from '@/utils/icons';
+// import { GiftIcon, GlitterIcon, MedalIcon, MessageIcon } from '@/utils/icons';
 interface AccountPopupProps {
   isOpen: boolean;
   onClose: () => void;

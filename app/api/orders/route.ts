@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { Order, OrderItem } from '@/constants/order-data';
-import { OrderModification, OrderModificationOption } from '@/types';
+import { OrderModification } from '@/types';
 
 /**
  * Safely converts cents to dollars, handling null/undefined/zero values and string inputs
@@ -12,7 +12,7 @@ function centsToDollars(cents: number | string | null | undefined): number {
   if (cents === null || cents === undefined) {
     return 0;
   }
-  
+
   // Handle string inputs
   if (typeof cents === 'string') {
     const parsed = parseFloat(cents);
@@ -21,12 +21,12 @@ function centsToDollars(cents: number | string | null | undefined): number {
     }
     return parsed / 100;
   }
-  
+
   // Handle number inputs
   if (typeof cents !== 'number' || isNaN(cents)) {
     return 0;
   }
-  
+
   return cents / 100;
 }
 
@@ -35,10 +35,7 @@ export async function GET(request: NextRequest) {
   const userId = searchParams.get('userId');
 
   if (!userId) {
-    return NextResponse.json(
-      { success: false, message: 'User ID is required' },
-      { status: 400 }
-    );
+    return NextResponse.json({ success: false, message: 'User ID is required' }, { status: 400 });
   }
 
   try {
@@ -78,19 +75,25 @@ export async function GET(request: NextRequest) {
     const orderIds = ordersRaw.map(o => o.id);
 
     // Fetch order items for these orders
-    const orderItemsRaw = orderIds.length > 0 ? await db.query<any>(
-      `SELECT id, order_id, menu_item_id, quantity FROM order_items WHERE order_id IN (${orderIds.map(() => '?').join(',')})`,
-      orderIds
-    ) : [];
+    const orderItemsRaw =
+      orderIds.length > 0
+        ? await db.query<any>(
+            `SELECT id, order_id, menu_item_id, quantity FROM order_items WHERE order_id IN (${orderIds.map(() => '?').join(',')})`,
+            orderIds
+          )
+        : [];
 
     // Get unique menu item IDs from order items
     const menuItemIds = [...new Set(orderItemsRaw.map(oi => oi.menu_item_id).filter(id => id))];
 
     // Fetch menu item details
-    const menuItemsRaw = menuItemIds.length > 0 ? await db.query<any>(
-      `SELECT id, restaurant_id, name, price FROM menu_items WHERE id IN (${menuItemIds.map(() => '?').join(',')})`,
-      menuItemIds
-    ) : [];
+    const menuItemsRaw =
+      menuItemIds.length > 0
+        ? await db.query<any>(
+            `SELECT id, restaurant_id, name, price FROM menu_items WHERE id IN (${menuItemIds.map(() => '?').join(',')})`,
+            menuItemIds
+          )
+        : [];
 
     const menuItemsMap = new Map<number, any>();
     menuItemsRaw.forEach((item: any) => {
@@ -106,10 +109,13 @@ export async function GET(request: NextRequest) {
     const restaurantIds = [...new Set(ordersRaw.map(o => o.store_id).filter(id => id))];
 
     // Fetch restaurant details
-    const restaurantsRaw = restaurantIds.length > 0 ? await db.query<any>(
-      `SELECT id, name, dash_pass FROM restaurants WHERE id IN (${restaurantIds.map(() => '?').join(',')})`,
-      restaurantIds
-    ) : [];
+    const restaurantsRaw =
+      restaurantIds.length > 0
+        ? await db.query<any>(
+            `SELECT id, name, dash_pass FROM restaurants WHERE id IN (${restaurantIds.map(() => '?').join(',')})`,
+            restaurantIds
+          )
+        : [];
 
     const restaurantsMap = new Map<number, any>();
     restaurantsRaw.forEach((r: any) => {
@@ -122,17 +128,23 @@ export async function GET(request: NextRequest) {
 
     // Fetch applied modifications for order items
     const orderItemIds = orderItemsRaw.map(oi => oi.id);
-    const appliedModsRaw = orderItemIds.length > 0 ? await db.query<any>(
-      `SELECT id, order_item_id, modification_id, modification_desc FROM order_item_applied_modifications WHERE order_item_id IN (${orderItemIds.map(() => '?').join(',')})`,
-      orderItemIds
-    ) : [];
+    const appliedModsRaw =
+      orderItemIds.length > 0
+        ? await db.query<any>(
+            `SELECT id, order_item_id, modification_id, modification_desc FROM order_item_applied_modifications WHERE order_item_id IN (${orderItemIds.map(() => '?').join(',')})`,
+            orderItemIds
+          )
+        : [];
 
     // Fetch applied modification options
     const appliedModIds = appliedModsRaw.map(am => am.id);
-    const appliedOptionsRaw = appliedModIds.length > 0 ? await db.query<any>(
-      `SELECT id, order_item_applied_mod_id, option_id, option_name, price, quantity FROM order_item_applied_options WHERE order_item_applied_mod_id IN (${appliedModIds.map(() => '?').join(',')})`,
-      appliedModIds
-    ) : [];
+    const appliedOptionsRaw =
+      appliedModIds.length > 0
+        ? await db.query<any>(
+            `SELECT id, order_item_applied_mod_id, option_id, option_name, price, quantity FROM order_item_applied_options WHERE order_item_applied_mod_id IN (${appliedModIds.map(() => '?').join(',')})`,
+            appliedModIds
+          )
+        : [];
 
     // Create a map of applied modification options by applied modification ID
     const appliedOptionsMap = new Map<number, any[]>();
@@ -145,10 +157,13 @@ export async function GET(request: NextRequest) {
 
     // Fetch modification details to get isRequired flag
     const modificationIds = [...new Set(appliedModsRaw.map(mod => mod.modification_id))];
-    const modificationsRaw = modificationIds.length > 0 ? await db.query<any>(
-      `SELECT id, is_required FROM modifications WHERE id IN (${modificationIds.map(() => '?').join(',')})`,
-      modificationIds
-    ) : [];
+    const modificationsRaw =
+      modificationIds.length > 0
+        ? await db.query<any>(
+            `SELECT id, is_required FROM modifications WHERE id IN (${modificationIds.map(() => '?').join(',')})`,
+            modificationIds
+          )
+        : [];
 
     const modificationsMap = new Map<number, any>();
     modificationsRaw.forEach((mod: any) => {
@@ -205,8 +220,10 @@ export async function GET(request: NextRequest) {
 
     // Fetch payment methods for orders
     const paymentMethodIds = [...new Set(ordersRaw.map(o => o.payment_method_id).filter(id => id))];
-    const paymentMethodsRaw = paymentMethodIds.length > 0 ? await db.query<any>(
-      `SELECT 
+    const paymentMethodsRaw =
+      paymentMethodIds.length > 0
+        ? await db.query<any>(
+            `SELECT 
         pm.id,
         pm.type,
         pm.last_four,
@@ -215,8 +232,9 @@ export async function GET(request: NextRequest) {
         pm.is_default
       FROM payment_methods pm
       WHERE pm.id IN (${paymentMethodIds.map(() => '?').join(',')})`,
-      paymentMethodIds
-    ) : [];
+            paymentMethodIds
+          )
+        : [];
 
     const paymentMethodsMap = new Map<number, any>();
     paymentMethodsRaw.forEach(pm => {
@@ -232,8 +250,10 @@ export async function GET(request: NextRequest) {
 
     // Fetch addresses for orders
     const addressIds = [...new Set(ordersRaw.map(o => o.address_id).filter(id => id))];
-    const addressesRaw = addressIds.length > 0 ? await db.query<any>(
-      `SELECT 
+    const addressesRaw =
+      addressIds.length > 0
+        ? await db.query<any>(
+            `SELECT 
         a.id,
         a.address_type,
         a.street,
@@ -248,8 +268,9 @@ export async function GET(request: NextRequest) {
         a.is_default
       FROM addresses a
       WHERE a.id IN (${addressIds.map(() => '?').join(',')})`,
-      addressIds
-    ) : [];
+            addressIds
+          )
+        : [];
 
     const addressesMap = new Map<number, any>();
     addressesRaw.forEach(addr => {
@@ -273,7 +294,9 @@ export async function GET(request: NextRequest) {
     const orders: Order[] = ordersRaw.map(order => {
       const restaurant = restaurantsMap.get(order.store_id);
       const items = orderItemsMap.get(order.id) || [];
-      const paymentCard = order.payment_method_id ? paymentMethodsMap.get(order.payment_method_id) : undefined;
+      const paymentCard = order.payment_method_id
+        ? paymentMethodsMap.get(order.payment_method_id)
+        : undefined;
       const deliveryAddress = order.address_id ? addressesMap.get(order.address_id) : undefined;
 
       return {
@@ -315,10 +338,6 @@ export async function GET(request: NextRequest) {
     });
   } catch (error: any) {
     console.error('❌ Error fetching orders:', error);
-    return NextResponse.json(
-      { success: false, message: 'Internal server error' },
-      { status: 500 }
-    );
+    return NextResponse.json({ success: false, message: 'Internal server error' }, { status: 500 });
   }
 }
-

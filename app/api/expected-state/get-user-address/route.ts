@@ -3,12 +3,12 @@ import { db } from '@/lib/db';
 
 /**
  * GET /api/expected-state/get-user-address
- * 
+ *
  * Query Parameters:
  * - type: Address type (required) - e.g., "house", "apartment", "hotel", "office", "other"
  * - userId: User ID (optional, use this OR email)
  * - email: User email (optional, use this OR userId)
- * 
+ *
  * Gets a user's address by type from the database.
  * If email is provided, looks up the user by email first.
  */
@@ -22,9 +22,9 @@ export async function GET(request: NextRequest) {
     // Must provide either userId or email
     if (!userId && !email) {
       return NextResponse.json(
-        { 
-          success: false, 
-          error: 'Either userId or email is required' 
+        {
+          success: false,
+          error: 'Either userId or email is required',
         },
         { status: 400 }
       );
@@ -32,9 +32,9 @@ export async function GET(request: NextRequest) {
 
     if (!type) {
       return NextResponse.json(
-        { 
-          success: false, 
-          error: 'type is required' 
+        {
+          success: false,
+          error: 'type is required',
         },
         { status: 400 }
       );
@@ -42,18 +42,17 @@ export async function GET(request: NextRequest) {
 
     // If email is provided, look up the user first
     if (email && !userId) {
-      const user = await db.queryOne<any>(
-        'SELECT id FROM users WHERE email = ? COLLATE NOCASE',
-        [email]
-      );
-      
+      const user = await db.queryOne<any>('SELECT id FROM users WHERE email = ? COLLATE NOCASE', [
+        email,
+      ]);
+
       if (!user) {
         return NextResponse.json({
           success: true,
           data: null,
         });
       }
-      
+
       userId = String(user.id);
     }
 
@@ -85,14 +84,14 @@ export async function GET(request: NextRequest) {
       LIMIT 1`,
       [userId, type]
     );
-    
+
     if (!address) {
       return NextResponse.json({
         success: true,
         data: null,
       });
     }
-    
+
     const result: any = {
       id: String(address.id),
       street: address.street,
@@ -122,19 +121,17 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       success: true,
       data: {
-        address: result
+        address: result,
       },
     });
-
   } catch (error) {
     console.error('❌ Get user address error:', error);
     return NextResponse.json(
-      { 
-        success: false, 
-        error: error instanceof Error ? error.message : 'An error occurred'
+      {
+        success: false,
+        error: error instanceof Error ? error.message : 'An error occurred',
       },
       { status: 500 }
     );
   }
 }
-

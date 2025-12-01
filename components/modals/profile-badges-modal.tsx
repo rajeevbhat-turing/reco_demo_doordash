@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Star, Crown, Megaphone, Store } from 'lucide-react';
 import { LockIcon } from '@/lib/utils/icons';
 

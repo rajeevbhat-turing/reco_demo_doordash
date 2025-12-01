@@ -20,4 +20,3 @@ export async function fetchUserOrders(userId: string): Promise<Order[]> {
 
   return result.data;
 }
-

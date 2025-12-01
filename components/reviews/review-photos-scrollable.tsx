@@ -84,7 +84,11 @@ export default function ReviewPhotosScrollable({
               });
             }}
           >
-            <img src={photo} alt={`Review photo ${index + 1}`} className="w-full h-full object-cover" />
+            <img
+              src={photo}
+              alt={`Review photo ${index + 1}`}
+              className="w-full h-full object-cover"
+            />
           </div>
         ))}
       </div>

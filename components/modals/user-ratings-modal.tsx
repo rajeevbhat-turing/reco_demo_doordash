@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useMemo, useState } from 'react';
+import React, { useEffect, useRef, useMemo, useState } from 'react';
 import { X } from 'lucide-react';
 import Link from 'next/link';
 import { Star } from 'lucide-react';
@@ -161,7 +161,7 @@ export default function UserRatingsModal({
 
         {/* Header */}
         <div className="pt-12 px-6">
-          <h2 className="text-3xl font-bold text-[#191919ff]">{userName}'s ratings</h2>
+          <h2 className="text-3xl font-bold text-[#191919ff]">{userName}&apos;s ratings</h2>
         </div>
 
         {/* Tabs */}

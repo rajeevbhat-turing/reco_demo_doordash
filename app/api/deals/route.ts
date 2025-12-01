@@ -3,9 +3,9 @@ import { db } from '@/lib/db';
 
 /**
  * GET /api/deals
- * 
+ *
  * Fetches deals from the database
- * 
+ *
  * Query params:
  * - restaurantId: Filter by restaurant ID (optional)
  *   - If provided: returns restaurant-specific deals + common deals
@@ -104,7 +104,12 @@ export async function GET(request: NextRequest) {
       buttonLink: deal.button_link || undefined,
       minimumPurchase: deal.minimum_purchase ? deal.minimum_purchase / 100 : undefined,
       discountType: deal.discount_type || undefined,
-      discountValue: deal.discount_value !== null ? (deal.discount_type === 'percentage' ? deal.discount_value : deal.discount_value / 100) : undefined,
+      discountValue:
+        deal.discount_value !== null
+          ? deal.discount_type === 'percentage'
+            ? deal.discount_value
+            : deal.discount_value / 100
+          : undefined,
       maximumDiscount: deal.maximum_discount ? deal.maximum_discount / 100 : undefined,
       promocode: deal.promocode || undefined,
       freeItems: freeItemsByDeal[deal.id] || undefined,
@@ -114,16 +119,14 @@ export async function GET(request: NextRequest) {
       success: true,
       data: dealsData,
     });
-
   } catch (error) {
     console.error('❌ Fetch deals error:', error);
     return NextResponse.json(
       {
         success: false,
-        error: 'An error occurred while fetching deals'
+        error: 'An error occurred while fetching deals',
       },
       { status: 500 }
     );
   }
 }
-
