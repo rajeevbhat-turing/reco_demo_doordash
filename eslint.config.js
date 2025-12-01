@@ -42,7 +42,7 @@ const eslintConfig = [
       'no-unused-vars': 'off',
       'prefer-const': 'error',
       'no-var': 'error',
-      'prettier/prettier': 'error',
+      'prettier/prettier': ['error', { endOfLine: 'auto' }],
       '@next/next/no-img-element': 'off', // Ignore the eslint warning about using the html img element
     },
   },
