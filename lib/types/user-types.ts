@@ -41,8 +41,8 @@ export interface Address {
   buildingName?: string;
 
   // Delivery preferences
-  deliveryPreference?: 'door' | 'location';
-  meetLocation?: string;
+  deliveryPreference?: 'leave' | 'meet';
+  deliveryLocation?: string;
   deliveryInstructions?: string;
   personalLabel?: string;
 }
