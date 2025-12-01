@@ -31,6 +31,7 @@ export default function OTPVerificationModal({
   containerClassName = '',
 }: OTPVerificationModalProps) {
   const dialogRef = useRef<HTMLDivElement>(null);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const [otpInput, setOtpInput] = useState<string>('');
   const [otpError, setOtpError] = useState<string>('');
   const [attemptsLeft, setAttemptsLeft] = useState(5);
@@ -39,11 +40,18 @@ export default function OTPVerificationModal({
 
   // Starts the resend timer countdown
   const startResendTimer = () => {
+    // Clear existing interval if any
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+    }
     setResendTimer(30);
-    const interval = setInterval(() => {
+    intervalRef.current = setInterval(() => {
       setResendTimer(prev => {
         if (prev <= 1) {
-          clearInterval(interval);
+          if (intervalRef.current) {
+            clearInterval(intervalRef.current);
+            intervalRef.current = null;
+          }
           return 0;
         }
         return prev - 1;
@@ -72,9 +80,9 @@ export default function OTPVerificationModal({
   };
 
   // Handles Get Help button click - closes OTP modal
-  const handleGetHelp = () => {
-    onClose();
-  };
+  // const handleGetHelp = () => {
+  //   onClose();
+  // };
 
   // Handle escape key and outside click
   useEffect(() => {
@@ -110,6 +118,14 @@ export default function OTPVerificationModal({
       setShowTooManyAttempts(false);
       startResendTimer();
     }
+
+    return () => {
+      // Clear interval on unmount or when modal closes
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    };
   }, [isOpen]);
 
   if (!isOpen) return null;
@@ -129,7 +145,7 @@ export default function OTPVerificationModal({
           <h2 className="text-2xl font-bold text-[#191919ff] mb-2">Phone Number Verification</h2>
           {!showTooManyAttempts && (
             <p className="text-[#191919ff] text-[15px] font-medium">
-              For your security, we want to make sure it's really you.
+              For your security, we want to make sure it&apos;s really you.
             </p>
           )}
         </div>
@@ -154,9 +170,17 @@ export default function OTPVerificationModal({
                 onKeyDown={e => {
                   // Allow: backspace, delete, tab, escape, enter, and arrow keys
                   if (
-                    ['Backspace', 'Delete', 'Tab', 'Escape', 'Enter', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(
-                      e.key
-                    )
+                    [
+                      'Backspace',
+                      'Delete',
+                      'Tab',
+                      'Escape',
+                      'Enter',
+                      'ArrowLeft',
+                      'ArrowRight',
+                      'ArrowUp',
+                      'ArrowDown',
+                    ].includes(e.key)
                   ) {
                     return; // Allow these keys
                   }

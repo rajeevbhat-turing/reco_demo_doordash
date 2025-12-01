@@ -4,18 +4,18 @@
 export interface BaseStore {
   id: string;
   name: string;
-  image: string;           // Unified property (called "logo" in grocery, "image" in retail)
-  deliveryTime: string;    // Common across all store types
-  isDashPass?: boolean;    // Optional but common across most store types
+  image: string; // Unified property (called "logo" in grocery, "image" in retail)
+  deliveryTime: string; // Common across all store types
+  isDashPass?: boolean; // Optional but common across most store types
   storeType: StoreCategory; // Category identifier
 }
 
 // Store category type
-export type StoreCategory = "restaurant" | "flowers";
+export type StoreCategory = 'restaurant' | 'flowers';
 
 // Restaurant-specific store interface
 export interface RestaurantStore extends BaseStore {
-  storeType: "restaurant";
+  storeType: 'restaurant';
   rating: number;
   reviews: number;
   distance: string;
@@ -54,7 +54,7 @@ export interface StoreConfig {
 export interface Product {
   id: number;
   name: string;
-  price: number|string;
+  price: number | string;
   quantity?: string;
   image: string;
   description?: string;
@@ -62,7 +62,7 @@ export interface Product {
 }
 
 export interface ProductSection {
-  id: number|string;
+  id: number | string;
   title: string;
   products: Product[];
 }

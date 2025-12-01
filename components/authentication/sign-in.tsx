@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -42,7 +42,7 @@ export default function SignIn({
   const [foundUser, setFoundUser] = useState<any>(null);
   const [attemptsLeft, setAttemptsLeft] = useState(5);
   const [resendTimer, setResendTimer] = useState(0);
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const intervalRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Updating the email field when the initialEmail prop changes
   useEffect(() => {
@@ -555,7 +555,7 @@ export default function SignIn({
 
         {/* Help Options */}
         <div className="mb-6 mt-4">
-          <p className="text-sm text-[#191919ff] font-bold mb-2">Didn't get it?</p>
+          <p className="text-sm text-[#191919ff] font-bold mb-2">Didn&apos;t get it?</p>
           <div className="flex items-center gap-2 text-sm">
             <button
               type="button"
@@ -676,9 +676,9 @@ export default function SignIn({
 
       {/* Legal Text */}
       <p className="text-sm font-medium text-[#606060ff] mt-4 mb-4">
-        By tapping any "Continue" button, you agree to DashDoor's , including a waiver of your jury
-        trial right, and Privacy Policy. We may text you a verification code. Msg & data rates
-        apply.
+        By tapping any &quot;Continue&quot; button, you agree to DashDoor&apos;s , including a
+        waiver of your jury trial right, and Privacy Policy. We may text you a verification code.
+        Msg & data rates apply.
       </p>
     </form>
   );

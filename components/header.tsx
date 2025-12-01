@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState, useSyncExternalStore, useMemo } from 'react';
+import { useEffect, useState, useSyncExternalStore, useMemo, useCallback } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { MapPin, ChevronDown, ShoppingCart, ChevronRight, Plus } from 'lucide-react';
@@ -10,7 +10,13 @@ import { Address } from '@/lib/types/user-types';
 import SearchBar from '@/components/search-bar';
 import CartSidebar from '@/components/cart-sidebar';
 import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import AuthenticationModal from './modals/authentication-modal';
 import AddressesModal from './modals/addresses-modal';
 import AddAddressModal from './modals/add-address-modal';
@@ -69,7 +75,6 @@ export default function Header() {
     useUserStore();
   const shouldOpenCart = useCartStore(state => state.shouldOpenCart);
   const resetOpenCartTrigger = useCartStore(state => state.resetOpenCartTrigger);
-  const getTotalItems = useCartStore(state => state.getTotalItems);
   const addresses = getAddresses();
   const tempAddress = useSyncExternalStore(
     useUserStore.subscribe,
@@ -97,6 +102,7 @@ export default function Header() {
     } else {
       setSelectedAddressId('');
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [addresses]);
 
   // Show address selection modal if user is authenticated and doesn't have a default address
@@ -143,7 +149,7 @@ export default function Header() {
 
       // Filter carts by current user
       // Guest users see carts without userId, logged-in users see only their carts
-      const userCarts = cartState.carts.filter(cart => 
+      const userCarts = cartState.carts.filter(cart =>
         currentUser ? cart.userId === currentUser.id : !cart.userId
       );
 
@@ -188,9 +194,6 @@ export default function Header() {
     }
   }, [shouldOpenCart, resetOpenCartTrigger]);
 
-  // Check if current path is in account flow
-  const isAccountFlow = pathname.startsWith('/consumer') || pathname.startsWith('/password-reset');
-
   // Check if current path is store or reviews
   const isStoreOrReviews =
     pathname.startsWith('/store') ||
@@ -205,10 +208,14 @@ export default function Header() {
     setIsCartOpen(!isCartOpen);
   };
 
-  const handleCloseCart = () => {
+  const handleCloseCart = useCallback(() => {
     console.log('[HEADER] Closing cart');
     setIsCartOpen(false);
-  };
+  }, []);
+
+  const handleCloseAddressesModal = useCallback(() => {
+    setShowAddressesModal(false);
+  }, []);
 
   const handleSelectAddress = (addressId: string) => {
     setSelectedAddressId(addressId);
@@ -260,7 +267,8 @@ export default function Header() {
     const query = addressSearchQuery.toLowerCase();
     return addressesData
       .filter(address => {
-        const fullAddress = `${address.street}, ${address.city}, ${address.state} ${address.zipCode}`.toLowerCase();
+        const fullAddress =
+          `${address.street}, ${address.city}, ${address.state} ${address.zipCode}`.toLowerCase();
         return fullAddress.includes(query);
       })
       .slice(0, 5); // Limit to 5 results
@@ -501,12 +509,12 @@ export default function Header() {
                               {/* Address review error view */}
                               <div className="p-6">
                                 <h2 className="text-2xl font-bold text-gray-900 mb-4">
-                                  We can't add this address at the moment
+                                  We can&apos;t add this address at the moment
                                 </h2>
 
                                 <p className="text-gray-900 mb-8">
-                                  We're currently reviewing the address. Please check for any typos
-                                  and re-enter your address.
+                                  We&apos;re currently reviewing the address. Please check for any
+                                  typos and re-enter your address.
                                 </p>
 
                                 <div className="space-y-3">
@@ -630,14 +638,18 @@ export default function Header() {
                                         <SelectItem value="New Jersey">New Jersey</SelectItem>
                                         <SelectItem value="New Mexico">New Mexico</SelectItem>
                                         <SelectItem value="New York">New York</SelectItem>
-                                        <SelectItem value="North Carolina">North Carolina</SelectItem>
+                                        <SelectItem value="North Carolina">
+                                          North Carolina
+                                        </SelectItem>
                                         <SelectItem value="North Dakota">North Dakota</SelectItem>
                                         <SelectItem value="Ohio">Ohio</SelectItem>
                                         <SelectItem value="Oklahoma">Oklahoma</SelectItem>
                                         <SelectItem value="Oregon">Oregon</SelectItem>
                                         <SelectItem value="Pennsylvania">Pennsylvania</SelectItem>
                                         <SelectItem value="Rhode Island">Rhode Island</SelectItem>
-                                        <SelectItem value="South Carolina">South Carolina</SelectItem>
+                                        <SelectItem value="South Carolina">
+                                          South Carolina
+                                        </SelectItem>
                                         <SelectItem value="South Dakota">South Dakota</SelectItem>
                                         <SelectItem value="Tennessee">Tennessee</SelectItem>
                                         <SelectItem value="Texas">Texas</SelectItem>
@@ -920,7 +932,7 @@ export default function Header() {
                       </>
                     )}
                   </div>
-                  
+
                   {/* Cart */}
                   <div className="ml-4">
                     <button
@@ -967,7 +979,7 @@ export default function Header() {
       {/* Addresses Modal */}
       <AddressesModal
         isOpen={showAddressesModal}
-        onClose={() => setShowAddressesModal(false)}
+        onClose={handleCloseAddressesModal}
         addresses={addresses}
         selectedAddressId={selectedAddressId}
         onSelectAddress={handleSelectAddress}

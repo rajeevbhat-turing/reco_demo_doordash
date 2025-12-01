@@ -2,7 +2,7 @@ import { UserReview } from '@/types/review-types';
 
 /**
  * Utility functions for merging API reviews with session-specific changes
- * 
+ *
  * Architecture: localStorage (store changes) > Database (API data)
  */
 
@@ -134,7 +134,8 @@ export function calculateMergedAverageRating(
 
   if (approvedReviews.length === 0) return 0;
 
-  const average = approvedReviews.reduce((sum, review) => sum + review.rating, 0) / approvedReviews.length;
+  const average =
+    approvedReviews.reduce((sum, review) => sum + review.rating, 0) / approvedReviews.length;
   return Math.round(average * 10) / 10; // Round to 1 decimal place
 }
 
@@ -187,8 +188,5 @@ export function getMergedUserReviewForVendor(
   }
 ): UserReview | null {
   const merged = mergeReviewsWithChanges(apiReviews, storeReviewChanges);
-  return merged.find(
-    review => review.vendorId === vendorId && review.userId === userId
-  ) || null;
+  return merged.find(review => review.vendorId === vendorId && review.userId === userId) || null;
 }
-

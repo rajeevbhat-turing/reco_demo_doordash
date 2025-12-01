@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useMemo } from 'react';
+import React, { useEffect, useRef, useMemo, useCallback } from 'react';
 import { X, Plus, ThumbsUp } from 'lucide-react';
 import { type Deal } from '@/types/deal-types';
 import { type MenuItem } from '@/constants/menu-items';
@@ -65,13 +65,11 @@ export default function DealModal({ isOpen, onClose, deal }: DealModalProps) {
   const freeItemsMenuData = useMemo(() => {
     if (!deal?.freeItems || deal.freeItems.length === 0) return [];
     if (!menuData?.menuItems) return [];
-    
+
     return deal.freeItems
       .map(freeItem => {
         // Match by ID (both are strings)
-        const menuItem = menuData.menuItems.find(
-          item => item.id === freeItem.id
-        );
+        const menuItem = menuData.menuItems.find(item => item.id === freeItem.id);
         return menuItem ? { ...menuItem, freeItemId: freeItem.id } : null;
       })
       .filter((item): item is MenuItem & { freeItemId: string } => item !== null);
@@ -93,6 +91,11 @@ export default function DealModal({ isOpen, onClose, deal }: DealModalProps) {
     if (!deal?.restaurantId || !restaurants) return null;
     return getRestaurantById(restaurants, deal.restaurantId);
   }, [deal?.restaurantId, restaurants]);
+
+  // Handle closing menu item dialog
+  const handleCloseMenuItemDialog = useCallback(() => {
+    setMenuItemDialogOpen(false);
+  }, []);
 
   // Handle add to cart
   const handleAddToCart = (item: MenuItem) => {
@@ -282,7 +285,7 @@ export default function DealModal({ isOpen, onClose, deal }: DealModalProps) {
       {selectedItem && (
         <MenuItemDialog
           isOpen={menuItemDialogOpen}
-          onClose={() => setMenuItemDialogOpen(false)}
+          onClose={handleCloseMenuItemDialog}
           item={{
             ...selectedItem,
             image: selectedItem.image || '',
@@ -291,8 +294,8 @@ export default function DealModal({ isOpen, onClose, deal }: DealModalProps) {
               typeof selectedItem.rating === 'number'
                 ? selectedItem.rating
                 : typeof selectedItem.rating === 'string'
-                ? parseFloat(selectedItem.rating) || undefined
-                : undefined,
+                  ? parseFloat(selectedItem.rating) || undefined
+                  : undefined,
             ratingCount: selectedItem.ratingCount ?? undefined,
           }}
         />

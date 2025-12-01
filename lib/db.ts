@@ -3,7 +3,7 @@ import { getRequiredEnv } from '@/lib/env';
 
 /**
  * Database Connection Layer
- * 
+ *
  * Provides access to the libsql database server.
  * This class manages the connection to the remote database.
  */
@@ -20,17 +20,17 @@ class DatabaseConnection {
 
     try {
       const url = getRequiredEnv('LIBSQL_URL');
-      
+
       console.log(`📂 Connecting to libsql server: ${url}`);
-      
+
       // Create libsql client
       this.client = createClient({
         url: url,
       });
-      
+
       this.initialized = true;
       console.log('✅ Database connection established (libsql)');
-      
+
       return this.client;
     } catch (error) {
       console.error('❌ Failed to initialize database:', error);
@@ -46,13 +46,13 @@ class DatabaseConnection {
    */
   async query<T = any>(sql: string, params: any[] = []): Promise<T[]> {
     const client = this.init();
-    
+
     try {
       const result = await client.execute({
         sql: sql,
         args: params,
       });
-      
+
       return result.rows as T[];
     } catch (error) {
       console.error('❌ Query error:', error);
@@ -70,13 +70,13 @@ class DatabaseConnection {
    */
   async queryOne<T = any>(sql: string, params: any[] = []): Promise<T | undefined> {
     const client = this.init();
-    
+
     try {
       const result = await client.execute({
         sql: sql,
         args: params,
       });
-      
+
       return result.rows[0] as T | undefined;
     } catch (error) {
       console.error('❌ Query error:', error);
@@ -109,4 +109,3 @@ class DatabaseConnection {
 
 // Export singleton instance
 export const db = new DatabaseConnection();
-

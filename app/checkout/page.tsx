@@ -1,10 +1,9 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import {
   ChevronRight,
-  X,
   Trash2,
   Home,
   Package,
@@ -49,7 +48,6 @@ import { calculateDistance } from '@/lib/utils/distance-utils';
 import { calculateFees, calculateEstimatedTax } from '@/lib/utils/fee-calculator';
 import { useDeals } from '@/lib/hooks/use-deals';
 import { Deal } from '@/types/deal-types';
-import { stores } from '@/data/store-data';
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -64,7 +62,6 @@ export default function CheckoutPage() {
     getSubtotal,
     getServiceFee,
     getDeliveryFee,
-    getTotal,
     getTotalItems,
     setSelectedCard,
     removeItem,
@@ -89,7 +86,7 @@ export default function CheckoutPage() {
 
   // Find the cart using query params first (before fetching restaurants)
   const currentCart = categoryParam && storeIdParam ? findCart(storeIdParam, categoryParam) : null;
-  const items = currentCart?.items || [];
+  const items = useMemo(() => currentCart?.items || [], [currentCart]);
   const currentCategory = currentCart?.storeCategory || categoryParam; // Use categoryParam as fallback for faster access
   const currentStoreId = currentCart?.storeId || null;
   const [forgotPasswordEmail, setForgotPasswordEmail] = useState('');
@@ -206,9 +203,9 @@ export default function CheckoutPage() {
   // Check if restaurant is outside delivery area
   const isOutsideDeliveryArea = Boolean(
     currentCategory === 'restaurant' &&
-      currentStoreId &&
-      restaurants &&
-      !restaurants.some((r: any) => r.id === currentStoreId)
+    currentStoreId &&
+    restaurants &&
+    !restaurants.some((r: any) => r.id === currentStoreId)
   );
 
   // Get restaurant and calculate distance for delivery time calculation
@@ -230,7 +227,7 @@ export default function CheckoutPage() {
   const [showOrderConfirmation, setShowOrderConfirmation] = useState(false);
   const [orderId, setOrderId] = useState('');
   const [showScheduleModal, setShowScheduleModal] = useState(false);
-  const [selectedScheduleTime, setSelectedScheduleTime] = useState('');
+  const [selectedScheduleTime, _setSelectedScheduleTime] = useState('');
   const [scheduledDate, setScheduledDate] = useState<Date | null>(null);
   const [scheduledTimeSlot, setScheduledTimeSlot] = useState('');
   const [isClient, setIsClient] = useState(false);
@@ -304,7 +301,7 @@ export default function CheckoutPage() {
         currentRestaurant.lat,
         currentRestaurant.lng
       );
-    } catch (error) {
+    } catch (_error) {
       // Fallback to restaurant distance
       return restaurantDistance;
     }
@@ -362,14 +359,17 @@ export default function CheckoutPage() {
       total: feeResult.total,
     };
   }, [
-    subtotal,
-    deliveryDistance,
     currentRestaurant,
     selectedAddress,
+    subtotal,
+    deliveryDistance,
     appliedDeal,
     selectedDeliveryOption,
     currentCategory,
+    getServiceFee,
     currentStoreId,
+    getDeliveryFee,
+    tempAddress,
   ]);
 
   // Extract fees for backward compatibility
@@ -414,7 +414,7 @@ export default function CheckoutPage() {
         setSelectedAddressId(defaultAddressId);
       }
     }
-  }, [addresses]);
+  }, [addresses, selectedAddressId]);
 
   // Update selected payment method when payment methods change
   useEffect(() => {
@@ -423,6 +423,7 @@ export default function CheckoutPage() {
       const defaultPaymentMethod = savedPaymentMethods.find(pm => pm.default);
       updateSelectedPaymentMethod(defaultPaymentMethod?.id || savedPaymentMethods[0].id);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [savedPaymentMethods, selectedPaymentMethod]);
 
   // Redirect if cart not found or empty
@@ -480,16 +481,16 @@ export default function CheckoutPage() {
           );
 
           // Check if this is the first free item from the deal
-          let isFirstFreeItem = false;
+          // let isFirstFreeItem = false;
           if (isFreeItem && matchedFreeItemId && !hasAppliedFreeItem) {
             hasAppliedFreeItem = true;
-            isFirstFreeItem = true;
+            // isFirstFreeItem = true;
           }
 
           // Calculate final_price: keep original price per item
           // The discount is already applied to subtotal via freeItemDiscount
           // We keep the original price per item for accurate display and calculation
-          let finalPrice = originalPrice;
+          const finalPrice = originalPrice;
           // Note: The free item discount is handled at the subtotal level, not per-item
           // This ensures accurate pricing display and calculations
 
@@ -589,12 +590,6 @@ export default function CheckoutPage() {
     setShowOrderConfirmation(true);
   };
 
-  const getItemPrice = (item: any) => {
-    return typeof item.price === 'number'
-      ? item.price
-      : parseFloat(item.price.toString().replace(/[^0-9.]/g, ''));
-  };
-
   // Helper function to check if item is free and get pricing info
   // Only one quantity per free item should be free
   const getItemPricingInfo = (
@@ -649,10 +644,15 @@ export default function CheckoutPage() {
     if (currentCart) {
       const storeName = currentCart.storeName;
       // Validate storeName - check if it's valid (not empty, not a number, not "Unknown Store")
-      if (storeName && storeName.trim() !== '' && storeName !== 'Unknown Store' && !/^\d+$/.test(storeName)) {
+      if (
+        storeName &&
+        storeName.trim() !== '' &&
+        storeName !== 'Unknown Store' &&
+        !/^\d+$/.test(storeName)
+      ) {
         return storeName;
       }
-      
+
       // If storeName is invalid or missing, try to look up from restaurants array
       if (currentCart.storeCategory === 'restaurant' && currentCart.storeId && restaurants) {
         const foundRestaurant = restaurants.find(r => r.id === currentCart.storeId);
@@ -680,40 +680,6 @@ export default function CheckoutPage() {
     } else {
       router.back();
     }
-  };
-
-  // Generate schedule times for the rest of the day
-  const generateScheduleTimes = () => {
-    const times = [];
-    const now = new Date();
-    const currentHour = now.getHours();
-    const currentMinute = now.getMinutes();
-
-    // Start from next 30-minute window
-    let startHour = currentHour;
-    let startMinute = currentMinute < 30 ? 30 : 0;
-    if (currentMinute >= 30) {
-      startHour += 1;
-    }
-
-    // Generate times until 11:30 PM
-    for (let hour = startHour; hour < 24; hour++) {
-      const startMin = hour === startHour ? startMinute : 0;
-      for (let minute = startMin; minute < 60; minute += 30) {
-        if (hour === 23 && minute === 30) break; // Stop at 11:30 PM
-        const timeString = `${hour.toString().padStart(2, '0')}:${minute
-          .toString()
-          .padStart(2, '0')}`;
-        const displayTime = new Date(2024, 0, 1, hour, minute).toLocaleTimeString('en-US', {
-          hour: 'numeric',
-          minute: '2-digit',
-          hour12: true,
-        });
-        times.push({ value: timeString, display: displayTime });
-      }
-    }
-
-    return times;
   };
 
   const handleDeliveryOptionChange = (optionId: string) => {
@@ -909,14 +875,14 @@ export default function CheckoutPage() {
     setShowReviewErrorModal(false);
     if (pendingAddressData) {
       // Extract apartment/suite from street if it exists
-      const streetParts = pendingAddressData.street.split(',').map(s => s.trim());
-      const initialData = {
-        street: pendingAddressData.street,
-        apartmentSuite: streetParts[1] || '',
-        city: pendingAddressData.city,
-        state: pendingAddressData.state,
-        zipCode: pendingAddressData.zipCode,
-      };
+      // const streetParts = pendingAddressData.street.split(',').map(s => s.trim());
+      // const initialData = {
+      //   street: pendingAddressData.street,
+      //   apartmentSuite: streetParts[1] || '',
+      //   city: pendingAddressData.city,
+      //   state: pendingAddressData.state,
+      //   zipCode: pendingAddressData.zipCode,
+      // };
       // Store in a state that AddAddressModal can use
       setShowAddAddressModal(true);
       // The initialData will be passed via the modal's initialData prop
@@ -1019,12 +985,6 @@ export default function CheckoutPage() {
     [restaurantDistance]
   );
 
-  // Calculate extra delivery fee based on selected delivery option
-  const extraDeliveryFee = useMemo(() => {
-    const selectedOption = deliveryOptions.find(opt => opt.id === selectedDeliveryOption);
-    return selectedOption?.price || 0;
-  }, [selectedDeliveryOption, deliveryOptions]);
-
   // Get the selected payment method object
   const selectedPaymentMethodObj = savedPaymentMethods.find(m => m.id === selectedPaymentMethod);
 
@@ -1116,7 +1076,7 @@ export default function CheckoutPage() {
                 <h2 className="text-lg font-semibold mb-4">1. Sign in or sign up to place order</h2>
 
                 {/* Info banner */}
-                {authMode !== "forgot-password" && (
+                {authMode !== 'forgot-password' && (
                   <div className="bg-cyan-50 border border-cyan-200 rounded-lg p-3 mb-4 flex items-center">
                     <svg
                       className="w-5 h-5 text-cyan-600 mr-2 flex-shrink-0"
@@ -1138,7 +1098,7 @@ export default function CheckoutPage() {
                 )}
 
                 {/* Sign In / Sign Up Tabs */}
-                {authMode !== "forgot-password" && (
+                {authMode !== 'forgot-password' && (
                   <div className="flex justify-center mb-6">
                     <div className="inline-flex bg-gray-100 rounded-full p-1">
                       <button
@@ -1210,10 +1170,10 @@ export default function CheckoutPage() {
                               }`
                             : 'No address selected'
                           : tempAddress
-                          ? `${tempAddress.street.substring(0, 23)}${
-                              tempAddress.street.length > 23 ? '...' : ''
-                            }`
-                          : 'No address selected'}
+                            ? `${tempAddress.street.substring(0, 23)}${
+                                tempAddress.street.length > 23 ? '...' : ''
+                              }`
+                            : 'No address selected'}
                       </span>
                       {userIsAuthenticated && (
                         <button
@@ -1728,7 +1688,7 @@ export default function CheckoutPage() {
                       <img src="/piggy-bank.png" alt="Piggy Bank" width={80} height={100} />
                     </div>
                     <div className="py-4 flex-1 flex flex-col items-center">
-                      <div className="text-sm text-[#191919ff]">You're saving</div>
+                      <div className="text-sm text-[#191919ff]">You&apos;re saving</div>
                       <div className="text-[40px] font-bold text-[#eb1700ff]">
                         ${(discountAmount + freeItemDiscount).toFixed(2)}
                       </div>
@@ -1785,7 +1745,7 @@ export default function CheckoutPage() {
                         let hasAppliedFreeItem = false;
                         return items.map(item => {
                           const freeItemIds = cartId ? getFreeItemIds(cartId) : [];
-                          const { isFreeItem, originalPrice, displayPrice, matchedFreeItemId } =
+                          const { isFreeItem, originalPrice, matchedFreeItemId } =
                             getItemPricingInfo(item, cartId, freeItemIds, appliedDeal);
 
                           // Check if this is the first free item from the deal

@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server';
 
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     // Create a simple HTML page that will trigger localStorage download
     const html = `
@@ -58,7 +58,10 @@ export async function GET(request: NextRequest) {
         'Content-Type': 'text/html',
       },
     });
-  } catch (error) {
-    return NextResponse.json({ error: 'Failed to generate localStorage download page' }, { status: 500 });
+  } catch (_error) {
+    return NextResponse.json(
+      { error: 'Failed to generate localStorage download page' },
+      { status: 500 }
+    );
   }
 }

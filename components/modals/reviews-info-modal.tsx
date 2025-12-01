@@ -1,7 +1,7 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
-import { X, Store, Users, CheckCircle, CircleCheck } from 'lucide-react';
+import React, { useEffect, useRef } from 'react';
+import { X, CircleCheck } from 'lucide-react';
 import { FollowersIcon, MarketIcon } from '@/lib/utils/icons';
 
 interface ReviewsInfoModalProps {

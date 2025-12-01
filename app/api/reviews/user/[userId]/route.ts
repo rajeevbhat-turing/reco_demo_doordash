@@ -4,9 +4,9 @@ import { getImageWithFallback } from '@/constants/image-placeholders';
 
 /**
  * GET /api/reviews/user/[userId]
- * 
+ *
  * Fetches all reviews by a specific user
- * 
+ *
  * Query params:
  * - approvalStatus: Filter by approval status ('approved', 'rejected', 'pending') (optional)
  */
@@ -20,10 +20,7 @@ export async function GET(
     const approvalStatus = searchParams.get('approvalStatus');
 
     if (!userId) {
-      return NextResponse.json(
-        { success: false, error: 'User ID is required' },
-        { status: 400 }
-      );
+      return NextResponse.json({ success: false, error: 'User ID is required' }, { status: 400 });
     }
 
     // Build WHERE clause
@@ -185,4 +182,3 @@ export async function GET(
     );
   }
 }
-

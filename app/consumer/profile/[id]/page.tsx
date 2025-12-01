@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Star, ChevronRight, ArrowRight, ChevronLeft } from 'lucide-react';
@@ -89,6 +89,15 @@ export default function UserProfilePage() {
       .toUpperCase()
       .slice(0, 2);
   }, [user]);
+
+  // Memoized modal close handlers
+  const handleCloseRatingsModal = useCallback(() => {
+    setRatingsModalOpen(false);
+  }, []);
+
+  const handleCloseProfileBadgesModal = useCallback(() => {
+    setProfileBadgesModalOpen(false);
+  }, []);
 
   // If user is loading or not found
   if (isLoadingUser || !user) {
@@ -179,13 +188,13 @@ export default function UserProfilePage() {
 
         {isCurrentUser && (
           <p className="text-sm text-[#191919ff] font-medium">
-            All contributions will appear once they're approved.
+            All contributions will appear once they&apos;re approved.
           </p>
         )}
 
         {/* Restricted Profile Message */}
         {/* Current user can see his/her own restricted profile. */}
-        {(user.is_restricted && !isCurrentUser) ? (
+        {user.is_restricted && !isCurrentUser ? (
           <div className="flex flex-col items-center justify-center py-12 mt-8">
             <div className="w-16 h-16 rounded-full bg-white flex items-center justify-center mb-4 shadow-xl">
               <LockIcon />
@@ -338,7 +347,7 @@ export default function UserProfilePage() {
         {/* User Ratings Modal */}
         <UserRatingsModal
           isOpen={ratingsModalOpen}
-          onClose={() => setRatingsModalOpen(false)}
+          onClose={handleCloseRatingsModal}
           userName={user.name}
           reviews={allReviews || []}
         />
@@ -346,7 +355,7 @@ export default function UserProfilePage() {
         {/* Profile Badges Modal */}
         <ProfileBadgesModal
           isOpen={profileBadgesModalOpen}
-          onClose={() => setProfileBadgesModalOpen(false)}
+          onClose={handleCloseProfileBadgesModal}
         />
       </div>
     </div>

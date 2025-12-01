@@ -20,7 +20,7 @@ interface MenuResponse {
 
 export async function fetchRestaurantMenu(restaurantId: string): Promise<MenuData> {
   const response = await fetch(`/api/restaurants/${restaurantId}/menu`);
-  
+
   const result: MenuResponse = await response.json();
 
   if (!response.ok || !result.success) {
@@ -33,4 +33,3 @@ export async function fetchRestaurantMenu(restaurantId: string): Promise<MenuDat
 
   return result.data;
 }
-

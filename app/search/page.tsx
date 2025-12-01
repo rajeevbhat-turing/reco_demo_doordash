@@ -1,9 +1,15 @@
 'use client';
 
-import { useState, useEffect, useMemo, useRef, useSyncExternalStore } from 'react';
+import React, {
+  useState,
+  useEffect,
+  useMemo,
+  useRef,
+  useSyncExternalStore,
+  useCallback,
+} from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import Link from 'next/link';
-import { Heart, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useRestaurants } from '@/lib/hooks/use-restaurants';
 import { useUserStore } from '@/store/user-store';
 import { useCartStore } from '@/store/cart-store';
@@ -11,7 +17,6 @@ import FilterOptions, {
   type FilterOptionsRef,
   type FilterState,
 } from '@/components/filter-options';
-import type { Restaurant } from '@/constants/restaurants';
 import type { MenuItem } from '@/constants/menu-items';
 import { getDefaultRating } from '@/utils/rating-utils';
 import { RestaurantsSkeleton } from '@/components/skeletons/restaurant-skeleton';
@@ -47,6 +52,10 @@ export default function SearchPage() {
   const loadedFavoritesRef = useRef<string[]>([]);
   const isInitializingRef = useRef(true);
   const dishesScrollRef = useRef<HTMLDivElement>(null);
+  const timeoutRef = useRef<{
+    midScrollCheck?: ReturnType<typeof setTimeout>;
+    finalScrollCheck?: ReturnType<typeof setTimeout>;
+  }>({});
   const [showLeftArrow, setShowLeftArrow] = useState(false);
   const [showRightArrow, setShowRightArrow] = useState(false);
   const [menuItemDialogOpen, setMenuItemDialogOpen] = useState(false);
@@ -87,6 +96,7 @@ export default function SearchPage() {
   // Set the category to restaurant when component mounts
   useEffect(() => {
     cartStore.setCategory('restaurant');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Load favorites from localStorage on mount
@@ -153,7 +163,7 @@ export default function SearchPage() {
             if (typeof favoritesObj !== 'object' || favoritesObj === null) {
               favoritesObj = {};
             }
-          } catch (error) {
+          } catch (_error) {
             favoritesObj = {};
           }
         }
@@ -397,6 +407,11 @@ export default function SearchPage() {
     });
   };
 
+  // Handle close menu item dialog
+  const handleCloseMenuItemDialog = useCallback(() => {
+    setMenuItemDialogOpen(false);
+  }, []);
+
   // Check if any filters are active
   const hasActiveFilters = () => {
     return (
@@ -410,17 +425,6 @@ export default function SearchPage() {
         filters.dietaryPreferences !== undefined &&
         filters.dietaryPreferences.length > 0)
     );
-  };
-
-  const toggleFavorite = (restaurantId: string) => {
-    isInitializingRef.current = false; // Mark as user-initiated change
-    setFavorites(prev => {
-      if (prev.includes(restaurantId)) {
-        return prev.filter(id => id !== restaurantId);
-      } else {
-        return [...prev, restaurantId];
-      }
-    });
   };
 
   // Check scroll position for arrows
@@ -448,8 +452,29 @@ export default function SearchPage() {
     }
   }, [matchedMenuItems]);
 
+  // Cleanup timeouts on unmount
+  useEffect(() => {
+    const timeouts = timeoutRef.current;
+    return () => {
+      if (timeouts.midScrollCheck) {
+        clearTimeout(timeouts.midScrollCheck);
+      }
+      if (timeouts.finalScrollCheck) {
+        clearTimeout(timeouts.finalScrollCheck);
+      }
+    };
+  }, []);
+
   const scrollDishes = (direction: 'left' | 'right') => {
     if (dishesScrollRef.current) {
+      // Clear existing timeouts
+      if (timeoutRef.current.midScrollCheck) {
+        clearTimeout(timeoutRef.current.midScrollCheck);
+      }
+      if (timeoutRef.current.finalScrollCheck) {
+        clearTimeout(timeoutRef.current.finalScrollCheck);
+      }
+
       const scrollAmount = 300;
       dishesScrollRef.current.scrollBy({
         left: direction === 'left' ? -scrollAmount : scrollAmount,
@@ -461,12 +486,12 @@ export default function SearchPage() {
       checkScroll();
 
       // Check again after a short delay to catch the position during smooth scroll
-      setTimeout(() => {
+      timeoutRef.current.midScrollCheck = setTimeout(() => {
         checkScroll();
       }, 50);
 
       // Final check after smooth scroll animation should complete (typically 300-500ms)
-      setTimeout(() => {
+      timeoutRef.current.finalScrollCheck = setTimeout(() => {
         checkScroll();
       }, 500);
     }
@@ -688,7 +713,7 @@ export default function SearchPage() {
       {selectedItem && (
         <MenuItemDialog
           isOpen={menuItemDialogOpen}
-          onClose={() => setMenuItemDialogOpen(false)}
+          onClose={handleCloseMenuItemDialog}
           item={{
             ...selectedItem,
             image: selectedItem.image || '',
@@ -697,8 +722,8 @@ export default function SearchPage() {
               typeof selectedItem.rating === 'number'
                 ? selectedItem.rating
                 : typeof selectedItem.rating === 'string'
-                ? parseFloat(selectedItem.rating) || undefined
-                : undefined,
+                  ? parseFloat(selectedItem.rating) || undefined
+                  : undefined,
             ratingCount: selectedItem.ratingCount ?? undefined,
           }}
         />
