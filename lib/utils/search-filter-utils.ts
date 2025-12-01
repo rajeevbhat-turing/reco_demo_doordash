@@ -1,6 +1,6 @@
 import type { FilterState } from "@/components/filter-options"
-import { getDefaultRating } from "@/utils/rating-utils"
-import { restaurantHasItemsInPriceRange } from "@/utils/price-filter-utils"
+import { getDefaultRating } from "./rating-utils"
+import { restaurantHasItemsInPriceRange } from "./price-filter-utils"
 import type { SearchResultRestaurant } from "./search-utils"
 
 /**

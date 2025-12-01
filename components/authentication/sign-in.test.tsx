@@ -1,43 +1,44 @@
+import { vi } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import SignIn from './sign-in';
 import { useAuth } from '@/lib/hooks/use-auth';
 import { isValidEmail } from '@/lib/utils/helperFunctions';
 
 // Mock dependencies
-jest.mock('@/lib/hooks/use-auth');
-jest.mock('@/lib/utils/helperFunctions');
-jest.mock('@/store/user-store', () => ({
-  useUserStore: jest.fn((selector?: any) => {
+vi.mock('@/lib/hooks/use-auth');
+vi.mock('@/lib/utils/helperFunctions');
+vi.mock('@/store/user-store', () => ({
+  useUserStore: vi.fn((selector?: any) => {
     if (selector) {
       return selector({
-        getTempAddress: jest.fn(() => null),
+        getTempAddress: vi.fn(() => null),
         users: [],
         currentUser: null,
         changePasswordPhoneVerified: false,
       });
     }
     return {
-      getTempAddress: jest.fn(() => null),
+      getTempAddress: vi.fn(() => null),
       users: [],
       currentUser: null,
       changePasswordPhoneVerified: false,
     };
   }),
 }));
-jest.mock('lucide-react', () => ({
+vi.mock('lucide-react', () => ({
   X: () => <div data-testid="x-icon">X</div>,
 }));
 
-const mockOnSuccess = jest.fn();
-const mockSetMode = jest.fn();
+const mockOnSuccess = vi.fn();
+const mockSetMode = vi.fn();
 
 describe('SignIn Component', () => {
-  const mockLogin = jest.fn();
-  const mockGenerateOTP = jest.fn();
+  const mockLogin = vi.fn();
+  const mockGenerateOTP = vi.fn();
 
   beforeEach(() => {
-    jest.clearAllMocks();
-    (useAuth as jest.Mock).mockReturnValue({
+    vi.clearAllMocks();
+    (useAuth as ReturnType<typeof vi.fn>).mockReturnValue({
       login: mockLogin,
       generateOTP: mockGenerateOTP,
       isLoading: false,
@@ -45,7 +46,7 @@ describe('SignIn Component', () => {
       error: null,
       isSuccess: false,
     });
-    (isValidEmail as jest.Mock).mockImplementation((email: string) => {
+    (isValidEmail as ReturnType<typeof vi.fn>).mockImplementation((email: string) => {
       return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
     });
   });
@@ -146,7 +147,7 @@ describe('SignIn Component', () => {
     });
 
     it('should show error when generateOTP fails', async () => {
-      mockGenerateOTP.mockRejectedValue(new Error('User not found'));
+      (mockGenerateOTP as ReturnType<typeof vi.fn>).mockRejectedValue(new Error('User not found'));
 
       render(<SignIn onSuccess={mockOnSuccess} setMode={mockSetMode} />);
 

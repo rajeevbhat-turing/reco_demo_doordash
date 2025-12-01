@@ -1,6 +1,6 @@
 # Unit Testing Guide
 
-This project uses Jest and React Testing Library for unit testing. Unit tests are co-located with their source files using the `.test.ts` or `.test.tsx` extension.
+This project uses Vitest and React Testing Library for unit testing. Unit tests are co-located with their source files using the `.test.ts` or `.test.tsx` extension.
 
 ### Uses of Unit Tests
 
@@ -15,36 +15,36 @@ This project uses Jest and React Testing Library for unit testing. Unit tests ar
 
 ```bash
 # Run all tests
-npm test
+npm run test:unit
 
 # Run tests in watch mode (automatically re-runs on file changes)
-npm run test:watch
+npm run test:unit:watch
 
 # Run tests with coverage report
-npm run test:coverage
+npm run test:unit:coverage
 
 # Run tests in CI mode (single run with coverage, optimized for CI environments)
-npm run test:ci
+npm run test:unit:ci
 ```
 
 ## Test Commands Explained
 
-- **`npm test`**: Runs all tests once and exits
-- **`npm run test:watch`**: Watches for file changes and re-runs affected tests automatically
-- **`npm run test:coverage`**: Generates a coverage report showing which code is tested
-- **`npm run test:ci`**: Runs tests in CI-friendly mode with coverage and limited workers
+- **`npm run test:unit`**: Runs all unit tests once and exits
+- **`npm run test:unit:watch`**: Watches for file changes and re-runs affected tests automatically
+- **`npm run test:unit:coverage`**: Generates a coverage report showing which code is tested
+- **`npm run test:unit:ci`**: Runs tests in CI-friendly mode with coverage
 
 ## Running Specific Tests
 
 ```bash
 # Run tests for a specific file
-npm test helperFunctions.test.ts
+npm run test:unit -- helperFunctions.test.ts
 
 # Run tests matching a pattern
-npm test -- -t "email validation"
+npm run test:unit -- -t "email validation"
 
 # Run tests in a directory
-npm test lib/utils/
+npm run test:unit -- lib/utils/
 ```
 
 ## Test Structure
@@ -69,17 +69,8 @@ describe('FunctionName', () => {
 
 External dependencies are mocked to isolate the code being tested:
 
-- **Next.js Router**: Mocked in `jest.setup.js`
-- **Zustand Stores**: Mock store state and actions
-- **API Calls**: Mock fetch or API functions
+- **Next.js Router**: Mocked in `vitest.setup.ts`
+- **Zustand Stores**: Mock store state and actions using `vi.mock()`
+- **API Calls**: Mock fetch or API functions using `vi.fn()`
 - **React Query**: Use QueryClientProvider wrapper
 
-## Debugging Tests
-
-```bash
-# Run tests with Node debugger
-node --inspect-brk node_modules/.bin/jest --runInBand
-
-# Run a specific test file
-npm test -- sign-up.test.tsx
-```

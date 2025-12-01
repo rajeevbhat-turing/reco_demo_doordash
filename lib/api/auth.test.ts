@@ -1,16 +1,17 @@
+import { vi } from 'vitest';
 import { loginUser, generateOTP } from './auth';
 import { useUserStore } from '@/store/user-store';
 import { User } from '@/lib/types/user-types';
 
 // Mock the store
-jest.mock('@/store/user-store', () => ({
+vi.mock('@/store/user-store', () => ({
   useUserStore: {
-    getState: jest.fn(),
+    getState: vi.fn(),
   },
 }));
 
 // Mock fetch
-global.fetch = jest.fn();
+global.fetch = vi.fn();
 
 describe('auth API', () => {
   const mockUser: User = {
@@ -33,17 +34,17 @@ describe('auth API', () => {
   };
 
   beforeEach(() => {
-    jest.clearAllMocks();
-    (fetch as jest.Mock).mockClear();
+    vi.clearAllMocks();
+    (fetch as ReturnType<typeof vi.fn>).mockClear();
   });
 
   describe('loginUser', () => {
     it('should login user from store when user exists and password matches', async () => {
-      const mockGetState = jest.fn(() => ({
-        getUserByEmail: jest.fn(() => mockUser),
+      const mockGetState = vi.fn(() => ({
+        getUserByEmail: vi.fn(() => mockUser),
         deletedUserIds: [],
       }));
-      (useUserStore.getState as jest.Mock) = mockGetState;
+      (useUserStore.getState as ReturnType<typeof vi.fn>) = mockGetState;
 
       const result = await loginUser({
         email: 'john@example.com',
@@ -55,11 +56,11 @@ describe('auth API', () => {
     });
 
     it('should throw error when password does not match', async () => {
-      const mockGetState = jest.fn(() => ({
-        getUserByEmail: jest.fn(() => mockUser),
+      const mockGetState = vi.fn(() => ({
+        getUserByEmail: vi.fn(() => mockUser),
         deletedUserIds: [],
       }));
-      (useUserStore.getState as jest.Mock) = mockGetState;
+      (useUserStore.getState as ReturnType<typeof vi.fn>) = mockGetState;
 
       await expect(
         loginUser({
@@ -72,12 +73,12 @@ describe('auth API', () => {
     });
 
     it('should call API when user not found in store', async () => {
-      const mockGetState = jest.fn(() => ({
-        getUserByEmail: jest.fn(() => null),
+      const mockGetState = vi.fn(() => ({
+        getUserByEmail: vi.fn(() => null),
         deletedUserIds: [],
       }));
-      (useUserStore.getState as jest.Mock) = mockGetState;
-      (fetch as jest.Mock).mockResolvedValueOnce({
+      (useUserStore.getState as ReturnType<typeof vi.fn>) = mockGetState;
+      (fetch as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
         json: async () => ({
           success: true,
           data: mockUser,
@@ -104,12 +105,12 @@ describe('auth API', () => {
     });
 
     it('should convert email to lowercase', async () => {
-      const mockGetUserByEmail = jest.fn(() => mockUser);
-      const mockGetState = jest.fn(() => ({
+      const mockGetUserByEmail = vi.fn(() => mockUser);
+      const mockGetState = vi.fn(() => ({
         getUserByEmail: mockGetUserByEmail,
         deletedUserIds: [],
       }));
-      (useUserStore.getState as jest.Mock) = mockGetState;
+      (useUserStore.getState as ReturnType<typeof vi.fn>) = mockGetState;
 
       const result = await loginUser({
         email: 'JOHN@EXAMPLE.COM',
@@ -122,12 +123,12 @@ describe('auth API', () => {
     });
 
     it('should throw error when API call fails', async () => {
-      const mockGetState = jest.fn(() => ({
-        getUserByEmail: jest.fn(() => null),
+      const mockGetState = vi.fn(() => ({
+        getUserByEmail: vi.fn(() => null),
         deletedUserIds: [],
       }));
-      (useUserStore.getState as jest.Mock) = mockGetState;
-      (fetch as jest.Mock).mockResolvedValueOnce({
+      (useUserStore.getState as ReturnType<typeof vi.fn>) = mockGetState;
+      (fetch as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
         json: async () => ({
           success: false,
           error: 'Invalid credentials',
@@ -143,12 +144,12 @@ describe('auth API', () => {
     });
 
     it('should include deletedUserIds in API request', async () => {
-      const mockGetState = jest.fn(() => ({
-        getUserByEmail: jest.fn(() => null),
+      const mockGetState = vi.fn(() => ({
+        getUserByEmail: vi.fn(() => null),
         deletedUserIds: ['deleted1', 'deleted2'],
       }));
-      (useUserStore.getState as jest.Mock) = mockGetState;
-      (fetch as jest.Mock).mockResolvedValueOnce({
+      (useUserStore.getState as ReturnType<typeof vi.fn>) = mockGetState;
+      (fetch as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
         json: async () => ({
           success: true,
           data: mockUser,
@@ -176,11 +177,11 @@ describe('auth API', () => {
 
   describe('generateOTP', () => {
     it('should generate OTP for user in store', async () => {
-      const mockGetState = jest.fn(() => ({
-        getUserByEmail: jest.fn(() => mockUser),
+      const mockGetState = vi.fn(() => ({
+        getUserByEmail: vi.fn(() => mockUser),
         deletedUserIds: [],
       }));
-      (useUserStore.getState as jest.Mock) = mockGetState;
+      (useUserStore.getState as ReturnType<typeof vi.fn>) = mockGetState;
 
       const result = await generateOTP({
         email: 'john@example.com',
@@ -192,18 +193,18 @@ describe('auth API', () => {
     });
 
     it('should call API when user not found in store', async () => {
-      const mockGetState = jest.fn(() => ({
-        getUserByEmail: jest.fn(() => null),
+      const mockGetState = vi.fn(() => ({
+        getUserByEmail: vi.fn(() => null),
         deletedUserIds: [],
       }));
-      (useUserStore.getState as jest.Mock) = mockGetState;
+      (useUserStore.getState as ReturnType<typeof vi.fn>) = mockGetState;
 
       const mockOTPResult = {
         otp: '123456',
         user: mockUser,
       };
 
-      (fetch as jest.Mock).mockResolvedValueOnce({
+      (fetch as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
         json: async () => ({
           success: true,
           data: mockOTPResult,
@@ -228,12 +229,12 @@ describe('auth API', () => {
     });
 
     it('should convert email to lowercase', async () => {
-      const mockGetUserByEmail = jest.fn(() => mockUser);
-      const mockGetState = jest.fn(() => ({
+      const mockGetUserByEmail = vi.fn(() => mockUser);
+      const mockGetState = vi.fn(() => ({
         getUserByEmail: mockGetUserByEmail,
         deletedUserIds: [],
       }));
-      (useUserStore.getState as jest.Mock) = mockGetState;
+      (useUserStore.getState as ReturnType<typeof vi.fn>) = mockGetState;
 
       await generateOTP({
         email: 'JOHN@EXAMPLE.COM',
@@ -243,12 +244,12 @@ describe('auth API', () => {
     });
 
     it('should throw error when API call fails', async () => {
-      const mockGetState = jest.fn(() => ({
-        getUserByEmail: jest.fn(() => null),
+      const mockGetState = vi.fn(() => ({
+        getUserByEmail: vi.fn(() => null),
         deletedUserIds: [],
       }));
-      (useUserStore.getState as jest.Mock) = mockGetState;
-      (fetch as jest.Mock).mockResolvedValueOnce({
+      (useUserStore.getState as ReturnType<typeof vi.fn>) = mockGetState;
+      (fetch as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
         json: async () => ({
           success: false,
           error: 'User not found',
@@ -263,18 +264,18 @@ describe('auth API', () => {
     });
 
     it('should include deletedUserIds in API request', async () => {
-      const mockGetState = jest.fn(() => ({
-        getUserByEmail: jest.fn(() => null),
+      const mockGetState = vi.fn(() => ({
+        getUserByEmail: vi.fn(() => null),
         deletedUserIds: ['deleted1'],
       }));
-      (useUserStore.getState as jest.Mock) = mockGetState;
+      (useUserStore.getState as ReturnType<typeof vi.fn>) = mockGetState;
 
       const mockOTPResult = {
         otp: '123456',
         user: mockUser,
       };
 
-      (fetch as jest.Mock).mockResolvedValueOnce({
+      (fetch as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
         json: async () => ({
           success: true,
           data: mockOTPResult,

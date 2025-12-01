@@ -1,8 +1,9 @@
+import { vi } from 'vitest';
 import { useUserStore } from './user-store';
 import { User, Address } from '@/lib/types/user-types';
 
 // Mock persist and devtools middleware to return the config as-is
-jest.mock('zustand/middleware', () => ({
+vi.mock('zustand/middleware', () => ({
   persist: (config: any, options?: any) => (set: any, get: any, api: any) => config(set, get, api),
   devtools: (config: any, options?: any) => (set: any, get: any, api: any) => config(set, get, api),
 }));

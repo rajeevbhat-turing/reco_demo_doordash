@@ -1,10 +1,12 @@
+import { vi } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import SignUp from './sign-up';
 import { isValidEmail, isValidName } from '@/lib/utils/helperFunctions';
+import { useUserStore } from '@/store/user-store';
 
 // Mock dependencies
-jest.mock('@/store/user-store', () => ({
-  useUserStore: jest.fn((selector?: any) => {
+vi.mock('@/store/user-store', () => ({
+  useUserStore: vi.fn((selector?: any) => {
     if (selector) {
       return selector({
         users: [],
@@ -15,13 +17,13 @@ jest.mock('@/store/user-store', () => ({
     };
   }),
 }));
-jest.mock('@/lib/utils/helperFunctions');
-jest.mock('lucide-react', () => ({
+vi.mock('@/lib/utils/helperFunctions');
+vi.mock('lucide-react', () => ({
   ChevronDown: () => <div data-testid="chevron-down">ChevronDown</div>,
 }));
 
-const mockOnShowOTP = jest.fn();
-const mockSetShowCountryDropdown = jest.fn();
+const mockOnShowOTP = vi.fn();
+const mockSetShowCountryDropdown = vi.fn();
 const mockSelectedCountry = {
   dial_code: '+1',
   code: 'US',
@@ -31,9 +33,8 @@ const mockSelectedCountry = {
 
 describe('SignUp Component', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
-    const { useUserStore } = require('@/store/user-store');
-    (useUserStore as jest.Mock).mockImplementation((selector?: any) => {
+    vi.clearAllMocks();
+    (useUserStore as unknown as ReturnType<typeof vi.fn>).mockImplementation((selector?: any) => {
       if (selector) {
         return selector({
           users: [],
@@ -43,10 +44,10 @@ describe('SignUp Component', () => {
         users: [],
       };
     });
-    (isValidEmail as jest.Mock).mockImplementation((email: string) => {
+    (isValidEmail as ReturnType<typeof vi.fn>).mockImplementation((email: string) => {
       return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
     });
-    (isValidName as jest.Mock).mockImplementation((name: string) => {
+    (isValidName as ReturnType<typeof vi.fn>).mockImplementation((name: string) => {
       return /^[a-zA-Z0-9\s\-'.,]+$/.test(name) && name.length <= 119;
     });
   });
@@ -464,8 +465,7 @@ describe('SignUp Component', () => {
         email: 'existing@example.com',
         phoneNumber: '+11234567890',
       };
-      const { useUserStore } = require('@/store/user-store');
-      (useUserStore as jest.Mock).mockImplementation((selector?: any) => {
+      (useUserStore as unknown as ReturnType<typeof vi.fn>).mockImplementation((selector?: any) => {
         if (selector) {
           return selector({
             users: [existingUser],
@@ -519,8 +519,7 @@ describe('SignUp Component', () => {
         email: 'different@example.com',
         phoneNumber: '+11234567890',
       };
-      const { useUserStore } = require('@/store/user-store');
-      (useUserStore as jest.Mock).mockImplementation((selector?: any) => {
+      (useUserStore as unknown as ReturnType<typeof vi.fn>).mockImplementation((selector?: any) => {
         if (selector) {
           return selector({
             users: [existingUser],

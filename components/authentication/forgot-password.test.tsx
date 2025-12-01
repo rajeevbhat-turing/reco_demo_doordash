@@ -1,30 +1,31 @@
+import { vi } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import ForgotPassword from './forgot-password';
 import { useUserByEmail } from '@/lib/hooks/use-user';
 import { isValidEmail } from '@/lib/utils/helperFunctions';
 
 // Mock dependencies
-jest.mock('@/lib/hooks/use-user');
-jest.mock('@/lib/utils/helperFunctions');
-jest.mock('next/navigation', () => ({
+vi.mock('@/lib/hooks/use-user');
+vi.mock('@/lib/utils/helperFunctions');
+vi.mock('next/navigation', () => ({
   useRouter: () => ({
-    push: jest.fn(),
+    push: vi.fn(),
   }),
 }));
 
-const mockOnBackToSignIn = jest.fn();
-const mockOnSuccessStateChange = jest.fn();
+const mockOnBackToSignIn = vi.fn();
+const mockOnSuccessStateChange = vi.fn();
 
 describe('ForgotPassword Component', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
-    (useUserByEmail as jest.Mock).mockReturnValue({
+    vi.clearAllMocks();
+    (useUserByEmail as ReturnType<typeof vi.fn>).mockReturnValue({
       data: null,
       isLoading: false,
       isError: false,
       error: null,
     });
-    (isValidEmail as jest.Mock).mockImplementation((email: string) => {
+    (isValidEmail as ReturnType<typeof vi.fn>).mockImplementation((email: string) => {
       return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
     });
   });
@@ -105,7 +106,7 @@ describe('ForgotPassword Component', () => {
         id: '1',
         email: 'john@example.com',
       };
-      (useUserByEmail as jest.Mock).mockReturnValue({
+      (useUserByEmail as ReturnType<typeof vi.fn>).mockReturnValue({
         data: mockUser,
         isLoading: false,
         isError: false,
@@ -150,7 +151,7 @@ describe('ForgotPassword Component', () => {
     });
 
     it('should show error when user is not found', async () => {
-      (useUserByEmail as jest.Mock).mockReturnValue({
+      (useUserByEmail as ReturnType<typeof vi.fn>).mockReturnValue({
         data: null,
         isLoading: false,
         isError: true,

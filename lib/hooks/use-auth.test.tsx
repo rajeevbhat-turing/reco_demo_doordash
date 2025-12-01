@@ -1,26 +1,28 @@
+import { vi } from 'vitest';
 import { renderHook, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useAuth } from './use-auth';
 import { loginUser, generateOTP } from '@/lib/api/auth';
 import { User, Address } from '@/lib/types/user-types';
+import { useUserStore } from '@/store/user-store';
 
 // Mock the API functions
-jest.mock('@/lib/api/auth', () => ({
-  loginUser: jest.fn(),
-  generateOTP: jest.fn(),
+vi.mock('@/lib/api/auth', () => ({
+  loginUser: vi.fn(),
+  generateOTP: vi.fn(),
 }));
 
 // Mock the store
-jest.mock('@/store/user-store', () => {
-  const mockGetTempAddressFn = jest.fn(() => null);
-  const mockGetStateFn = jest.fn(() => ({
+vi.mock('@/store/user-store', () => {
+  const mockGetTempAddressFn = vi.fn(() => null);
+  const mockGetStateFn = vi.fn(() => ({
     users: [],
     currentUser: null,
     changePasswordPhoneVerified: false,
   }));
-  const mockSetStateFn = jest.fn();
+  const mockSetStateFn = vi.fn();
 
-  const mockUseUserStore = jest.fn((selector?: any) => {
+  const mockUseUserStore = vi.fn((selector?: any) => {
     if (selector) {
       return selector({
         getTempAddress: mockGetTempAddressFn,
@@ -78,11 +80,10 @@ describe('useAuth', () => {
   };
 
   beforeEach(() => {
-    jest.clearAllMocks();
-    const { useUserStore } = require('@/store/user-store');
-    const mockStore = useUserStore as jest.Mock & {
-      getState: jest.Mock;
-      setState: jest.Mock;
+    vi.clearAllMocks();
+    const mockStore = useUserStore as unknown as ReturnType<typeof vi.fn> & {
+      getState: ReturnType<typeof vi.fn>;
+      setState: ReturnType<typeof vi.fn>;
     };
     mockStore.getState.mockReturnValue({
       users: [],
@@ -93,7 +94,7 @@ describe('useAuth', () => {
 
   describe('login', () => {
     it('should call loginUser and update store on success', async () => {
-      (loginUser as jest.Mock).mockResolvedValue(mockUser);
+      (loginUser as ReturnType<typeof vi.fn>).mockResolvedValue(mockUser);
 
       const { result } = renderHook(() => useAuth(), {
         wrapper: createWrapper(),
@@ -110,12 +111,11 @@ describe('useAuth', () => {
 
       await waitFor(() => {
         expect(loginUser).toHaveBeenCalled();
-        const callArgs = (loginUser as jest.Mock).mock.calls[0][0];
+        const callArgs = (loginUser as ReturnType<typeof vi.fn>).mock.calls[0][0];
         expect(callArgs.email).toBe('john@example.com');
         expect(callArgs.password).toBe('password123');
-        const { useUserStore } = require('@/store/user-store');
-        const mockStore = useUserStore as jest.Mock & {
-          setState: jest.Mock;
+        const mockStore = useUserStore as unknown as ReturnType<typeof vi.fn> & {
+          setState: ReturnType<typeof vi.fn>;
         };
         expect(mockStore.setState).toHaveBeenCalled();
       });
@@ -123,7 +123,7 @@ describe('useAuth', () => {
 
     it('should handle login error', async () => {
       const error = new Error('Invalid credentials');
-      (loginUser as jest.Mock).mockRejectedValue(error);
+      (loginUser as ReturnType<typeof vi.fn>).mockRejectedValue(error);
 
       const { result } = renderHook(() => useAuth(), {
         wrapper: createWrapper(),
@@ -154,9 +154,8 @@ describe('useAuth', () => {
         default: true,
       };
 
-      (loginUser as jest.Mock).mockResolvedValue(mockUser);
-      const { useUserStore } = require('@/store/user-store');
-      const mockStore = useUserStore as jest.Mock;
+      (loginUser as ReturnType<typeof vi.fn>).mockResolvedValue(mockUser);
+      const mockStore = useUserStore as unknown as ReturnType<typeof vi.fn>;
       mockStore.mockImplementation((selector?: any) => {
         if (selector) {
           return selector({
@@ -183,9 +182,8 @@ describe('useAuth', () => {
 
       await waitFor(() => {
         expect(loginUser).toHaveBeenCalled();
-        const { useUserStore } = require('@/store/user-store');
-        const mockStore = useUserStore as jest.Mock & {
-          setState: jest.Mock;
+        const mockStore = useUserStore as unknown as ReturnType<typeof vi.fn> & {
+          setState: ReturnType<typeof vi.fn>;
         };
         expect(mockStore.setState).toHaveBeenCalled();
       });
@@ -198,7 +196,7 @@ describe('useAuth', () => {
         otp: '123456',
         user: mockUser,
       };
-      (generateOTP as jest.Mock).mockResolvedValue(mockOTPResult);
+      (generateOTP as ReturnType<typeof vi.fn>).mockResolvedValue(mockOTPResult);
 
       const { result } = renderHook(() => useAuth(), {
         wrapper: createWrapper(),
@@ -214,14 +212,14 @@ describe('useAuth', () => {
 
       // React Query passes additional parameters, so we check if it was called with the email
       expect(generateOTP).toHaveBeenCalled();
-      const callArgs = (generateOTP as jest.Mock).mock.calls[0][0];
+      const callArgs = (generateOTP as ReturnType<typeof vi.fn>).mock.calls[0][0];
       expect(callArgs.email).toBe('john@example.com');
       expect(otpResult).toEqual(mockOTPResult);
     });
 
     it('should handle generateOTP error', async () => {
       const error = new Error('User not found');
-      (generateOTP as jest.Mock).mockRejectedValue(error);
+      (generateOTP as ReturnType<typeof vi.fn>).mockRejectedValue(error);
 
       const { result } = renderHook(() => useAuth(), {
         wrapper: createWrapper(),
