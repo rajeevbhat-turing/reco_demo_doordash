@@ -1,0 +1,98 @@
+[
+  {
+    "url": "http://localhost:3000/home",
+    "isRepresentativeRun": true,
+    "htmlPath": "D:\\work-and-related\\works\\turing\\rlgym\\dashdoor\\doordash-1\\lhci-reports\\localhost-home-2025_12_01_03_44_13.report.html",
+    "jsonPath": "D:\\work-and-related\\works\\turing\\rlgym\\dashdoor\\doordash-1\\lhci-reports\\localhost-home-2025_12_01_03_44_13.report.json",
+    "summary": {
+      "performance": 0.99,
+      "accessibility": 0.86,
+      "best-practices": 0.96,
+      "seo": 1
+    }
+  },
+  {
+    "url": "http://localhost:3000/store/15",
+    "isRepresentativeRun": true,
+    "htmlPath": "D:\\work-and-related\\works\\turing\\rlgym\\dashdoor\\doordash-1\\lhci-reports\\localhost-store_15-2025_12_01_03_44_33.report.html",
+    "jsonPath": "D:\\work-and-related\\works\\turing\\rlgym\\dashdoor\\doordash-1\\lhci-reports\\localhost-store_15-2025_12_01_03_44_33.report.json",
+    "summary": {
+      "performance": 1,
+      "accessibility": 0.9,
+      "best-practices": 0.96,
+      "seo": 1
+    }
+  },
+  {
+    "url": "http://localhost:3000/orders",
+    "isRepresentativeRun": true,
+    "htmlPath": "D:\\work-and-related\\works\\turing\\rlgym\\dashdoor\\doordash-1\\lhci-reports\\localhost-orders-2025_12_01_03_45_00.report.html",
+    "jsonPath": "D:\\work-and-related\\works\\turing\\rlgym\\dashdoor\\doordash-1\\lhci-reports\\localhost-orders-2025_12_01_03_45_00.report.json",
+    "summary": {
+      "performance": 1,
+      "accessibility": 0.86,
+      "best-practices": 0.96,
+      "seo": 1
+    }
+  },
+  {
+    "url": "http://localhost:3000/consumer/edit_profile",
+    "isRepresentativeRun": true,
+    "htmlPath": "D:\\work-and-related\\works\\turing\\rlgym\\dashdoor\\doordash-1\\lhci-reports\\localhost-consumer_edit_profile-2025_12_01_03_45_20.report.html",
+    "jsonPath": "D:\\work-and-related\\works\\turing\\rlgym\\dashdoor\\doordash-1\\lhci-reports\\localhost-consumer_edit_profile-2025_12_01_03_45_20.report.json",
+    "summary": {
+      "performance": 1,
+      "accessibility": 0.81,
+      "best-practices": 0.96,
+      "seo": 1
+    }
+  },
+  {
+    "url": "http://localhost:3000/consumer/privacy/manage_account",
+    "isRepresentativeRun": true,
+    "htmlPath": "D:\\work-and-related\\works\\turing\\rlgym\\dashdoor\\doordash-1\\lhci-reports\\localhost-consumer_privacy_manage_account-2025_12_01_03_45_36.report.html",
+    "jsonPath": "D:\\work-and-related\\works\\turing\\rlgym\\dashdoor\\doordash-1\\lhci-reports\\localhost-consumer_privacy_manage_account-2025_12_01_03_45_36.report.json",
+    "summary": {
+      "performance": 1,
+      "accessibility": 0.86,
+      "best-practices": 0.96,
+      "seo": 1
+    }
+  },
+  {
+    "url": "http://localhost:3000/password-reset",
+    "isRepresentativeRun": true,
+    "htmlPath": "D:\\work-and-related\\works\\turing\\rlgym\\dashdoor\\doordash-1\\lhci-reports\\localhost-password_reset-2025_12_01_03_45_55.report.html",
+    "jsonPath": "D:\\work-and-related\\works\\turing\\rlgym\\dashdoor\\doordash-1\\lhci-reports\\localhost-password_reset-2025_12_01_03_45_55.report.json",
+    "summary": {
+      "performance": 1,
+      "accessibility": 0.86,
+      "best-practices": 0.96,
+      "seo": 1
+    }
+  },
+  {
+    "url": "http://localhost:3000/search?q=burger",
+    "isRepresentativeRun": true,
+    "htmlPath": "D:\\work-and-related\\works\\turing\\rlgym\\dashdoor\\doordash-1\\lhci-reports\\localhost-search-2025_12_01_03_46_15.report.html",
+    "jsonPath": "D:\\work-and-related\\works\\turing\\rlgym\\dashdoor\\doordash-1\\lhci-reports\\localhost-search-2025_12_01_03_46_15.report.json",
+    "summary": {
+      "performance": 0.82,
+      "accessibility": 0.86,
+      "best-practices": 0.96,
+      "seo": 1
+    }
+  },
+  {
+    "url": "http://localhost:3000/payment",
+    "isRepresentativeRun": true,
+    "htmlPath": "D:\\work-and-related\\works\\turing\\rlgym\\dashdoor\\doordash-1\\lhci-reports\\localhost-payment-2025_12_01_03_46_46.report.html",
+    "jsonPath": "D:\\work-and-related\\works\\turing\\rlgym\\dashdoor\\doordash-1\\lhci-reports\\localhost-payment-2025_12_01_03_46_46.report.json",
+    "summary": {
+      "performance": 1,
+      "accessibility": 0.84,
+      "best-practices": 0.96,
+      "seo": 1
+    }
+  }
+]
