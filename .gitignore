@@ -44,3 +44,9 @@ poc-database.sqlite
 # Playwright test artifacts
 **/playwright-report/
 **/test-results/
+
+# lighthouse
+lhci-reports/
+.lighthouseci/
+lighthouserc.js
+puppeteer-login.js
