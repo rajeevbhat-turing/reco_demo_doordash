@@ -12,8 +12,9 @@ This document describes all available expected state functions, their arguments,
 7. [get_orders](#get_orders)
 8. [get_carts](#get_carts)
 9. [get_menu_categories](#get_menu_categories)
-10. [get_date_N_days_from_today](#get_date_n_days_from_today)
-11. [get_time_slot](#get_time_slot)
+10. [get_reviews](#get_reviews)
+11. [get_date_N_days_from_today](#get_date_n_days_from_today)
+12. [get_time_slot](#get_time_slot)
 
 ---
 
@@ -629,8 +630,10 @@ Gets menu items with optional filtering and multi-level sorting.
   lat?: number;                    // Optional: Explicit latitude
   lng?: number;                    // Optional: Explicit longitude
   filters?: {
-    menu_categories?: string[];    // Optional: Array of menu category names (matches any)
+    menu_categories?: string[];       // Optional: Filter by menu category names (e.g., ["Beverages", "Desserts"])
+                                      // Special value: "Most Ordered" filters for popular/high-rated items
     restaurant_ids_not_in?: string[]; // Optional: Exclude items from these restaurant IDs
+    featured?: boolean;               // Optional: Filter by featured status (true = only featured, false = only non-featured)
   };
 }
 ```
@@ -725,6 +728,32 @@ This will find items that belong to either "Appetizers" or "Salads" menu categor
 ```
 Finds the cheapest tacos, excluding restaurants the user has already ordered from.
 
+**Get only featured items:**
+```json
+{
+  "function": "get_items",
+  "args": {
+    "restaurant_id": "starbucks-299-fremont",
+    "filters": {
+      "featured": true
+    }
+  }
+}
+```
+
+**Get non-featured items:**
+```json
+{
+  "function": "get_items",
+  "args": {
+    "restaurant_id": "starbucks-299-fremont",
+    "filters": {
+      "featured": false
+    }
+  }
+}
+```
+
 **Search with explicit coordinates:**
 ```json
 {
@@ -770,6 +799,19 @@ Finds the cheapest tacos, excluding restaurants the user has already ordered fro
   }
 }
 ```
+
+### Notes
+- If `restaurant_id` is provided, searches only that restaurant
+- If `restaurant_id` is NOT provided, searches ALL restaurants within 10 mile radius (requires lat/lng)
+- The `lat`/`lng` default to the user's selected/default address if not explicitly provided
+- Keywords match against item name only (case-insensitive, partial match)
+- `menu_categories` filter supports special value `"Most Ordered"` to filter for popular items (items with `popular = true` OR `rating_count > 0`)
+  - When "Most Ordered" is used without explicit sorting, items are automatically sorted by: popular flag (desc), then rating count (desc)
+- `featured` filter: `true` returns only items with `featured = true`, `false` returns only non-featured items, omitted returns all items
+- Featured items are typically highlighted items that restaurants want to promote
+- Multi-level sorting applies specs in order (first spec as primary sort, subsequent specs as tiebreakers)
+- Distance filtering uses haversine formula for accurate distance calculation
+- Returns empty array if no items match the criteria
 
 ---
 
@@ -1390,4 +1432,205 @@ Returns: `{ "slot": "11:40 PM-12:00 AM" }`
 - Handles AM/PM conversion and midnight boundary correctly
 - Accepts both single and double-digit hours (e.g., "3:15 PM" or "03:15 PM")
 - Useful for validating scheduled delivery times in assertions
+
+---
+
+## get_reviews
+
+Gets user reviews with optional filtering and sorting.
+
+### Arguments
+```typescript
+{
+  email?: string;                    // Optional: User email. If not provided with restaurant_id, uses logged-in user
+  restaurant_id?: string;            // Optional: Filter by restaurant ID
+  approval_status?: 'approved' | 'rejected' | 'pending';  // Optional: Filter by approval status (defaults to "approved")
+  has_liked_items?: boolean;         // Optional: Filter by whether review has liked items (true = only with liked items)
+  sort_type?: Array<{
+    key: string;                     // Field to sort by (e.g., "rating", "timestamp", "helpfulCount")
+    order?: "asc" | "desc";          // Sort order, defaults to "asc"
+  }>;
+  limit?: number;                    // Optional: Number of reviews to return
+}
+```
+
+### Defaults
+- `email`: Uses currently logged-in user's email if neither `email` nor `restaurant_id` is specified
+- `approval_status`: Defaults to `"approved"` (only shows approved reviews)
+- `sort_type`: Defaults to `[{ key: "timestamp", order: "desc" }]` (most recent reviews first)
+- `order`: "asc" if not specified in a sort spec
+- `limit`: Returns all matching reviews if not specified
+
+### Supported Sort Fields
+- `timestamp` - When the review was created
+- `rating` - The star rating (1-5)
+- `helpfulCount` - Number of users who marked the review as helpful
+- `id` - Review ID
+
+### Returns
+```typescript
+{
+  reviews: Array<{
+    id: string;
+    storeId: string;
+    storeName: string;
+    storeLogo: string | null;
+    storeCategory: string;
+    userId: string;
+    userName: string;
+    userEmail: string;
+    userAvatar: string | null;
+    rating: number;                    // 1-5 stars
+    content: string;                   // Review text
+    timestamp: string;                 // ISO date string
+    orderId: string | null;
+    approvalStatus: 'approved' | 'rejected' | 'pending';
+    photos: string[];                  // Array of photo URLs
+    helpfulCount: number;              // Number of users who marked as helpful
+    ratedHelpfulBy: string[];          // User IDs who marked as helpful
+    likedItems: Array<{
+      orderItemId: string;
+      menuItemId: string;
+      itemName: string;
+      itemImage: string | null;
+    }>;
+  }>
+}
+```
+
+### Examples
+
+**Get all reviews for a user:**
+```json
+{
+  "function": "get_reviews",
+  "args": {
+    "email": "user@example.com"
+  }
+}
+```
+
+**Get only approved reviews (default behavior):**
+```json
+{
+  "function": "get_reviews",
+  "args": {
+    "email": "user@example.com"
+  }
+}
+```
+
+**Get pending reviews:**
+```json
+{
+  "function": "get_reviews",
+  "args": {
+    "email": "user@example.com",
+    "approval_status": "pending"
+  }
+}
+```
+
+**Get reviews with liked items only:**
+```json
+{
+  "function": "get_reviews",
+  "args": {
+    "email": "user@example.com",
+    "has_liked_items": true
+  }
+}
+```
+
+**Get reviews without liked items:**
+```json
+{
+  "function": "get_reviews",
+  "args": {
+    "email": "user@example.com",
+    "has_liked_items": false
+  }
+}
+```
+
+**Get reviews sorted by rating (highest first):**
+```json
+{
+  "function": "get_reviews",
+  "args": {
+    "email": "user@example.com",
+    "sort_type": [
+      { "key": "rating", "order": "desc" }
+    ]
+  }
+}
+```
+
+**Get top 5 reviews by rating:**
+```json
+{
+  "function": "get_reviews",
+  "args": {
+    "email": "user@example.com",
+    "sort_type": [
+      { "key": "rating", "order": "desc" }
+    ],
+    "limit": 5
+  }
+}
+```
+
+**Get reviews for a specific restaurant:**
+```json
+{
+  "function": "get_reviews",
+  "args": {
+    "email": "user@example.com",
+    "restaurant_id": "starbucks-299-fremont"
+  }
+}
+```
+
+**Get all reviews for a restaurant (no user filter):**
+```json
+{
+  "function": "get_reviews",
+  "args": {
+    "restaurant_id": "starbucks-299-fremont"
+  }
+}
+```
+
+**Multi-level sorting (rating desc, then timestamp desc):**
+```json
+{
+  "function": "get_reviews",
+  "args": {
+    "email": "user@example.com",
+    "sort_type": [
+      { "key": "rating", "order": "desc" },
+      { "key": "timestamp", "order": "desc" }
+    ]
+  }
+}
+```
+
+**Get reviews using logged-in user (no email specified):**
+```json
+{
+  "function": "get_reviews",
+  "args": {}
+}
+```
+
+### Notes
+- Either `email` or `restaurant_id` must be provided (or both)
+- If neither is provided, uses logged-in user's email
+- If user is not found (when filtering by email), returns an empty array (not an error)
+- **By default, only "approved" reviews are returned** - explicitly set `approval_status` to see pending/rejected reviews
+- Photos, helpful ratings, and liked items are automatically fetched and included
+- `has_liked_items` filter: `true` returns only reviews where the user highlighted specific items they liked, `false` returns reviews without liked items
+- `helpfulCount` can be used in sorting to find the most helpful reviews
+- Multi-level sorting applies specs in order (first spec as primary sort, subsequent specs as tiebreakers)
+- Returns `null` if no logged-in user and neither `email` nor `restaurant_id` is provided
 

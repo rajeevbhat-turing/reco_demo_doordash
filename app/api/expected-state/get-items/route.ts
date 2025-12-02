@@ -18,6 +18,7 @@ interface SortSpec {
  * - keywords: JSON array of keywords to match against item name (optional)
  * - menu_categories: JSON array of menu category names to filter by (optional, matches any)
  * - restaurant_ids_not_in: JSON array of restaurant IDs to exclude (optional)
+ * - featured: Boolean to filter by featured status (optional, "true" or "false")
  * - sort_type: JSON array of sort specifications (optional)
  *   - Each spec: { key: string, order?: "asc" | "desc" }
  *   - Example: [{ "key": "price", "order": "asc" }, { "key": "rating", "order": "desc" }]
@@ -44,6 +45,7 @@ export async function GET(request: NextRequest) {
     const keywordsParam = searchParams.get('keywords');
     const menuCategoriesParam = searchParams.get('menu_categories');
     const restaurantIdsNotInParam = searchParams.get('restaurant_ids_not_in');
+    const featuredParam = searchParams.get('featured');
     const sortTypeParam = searchParams.get('sort_type');
     const limitParam = searchParams.get('limit');
     const limit = limitParam ? parseInt(limitParam, 10) : null;
@@ -294,6 +296,13 @@ export async function GET(request: NextRequest) {
       const excludePlaceholders = restaurantIdsNotIn.map(() => '?').join(',');
       query += ` AND mi.restaurant_id NOT IN (${excludePlaceholders})`;
       queryParams.push(...restaurantIdsNotIn);
+    }
+    
+    // Apply featured filter if provided
+    if (featuredParam !== null) {
+      const featuredValue = featuredParam.toLowerCase() === 'true' ? 1 : 0;
+      query += ` AND mi.featured = ?`;
+      queryParams.push(featuredValue);
     }
 
     const menuItems = await db.query<any>(query, queryParams);
