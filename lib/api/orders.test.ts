@@ -15,16 +15,10 @@ describe('orders API', () => {
     const mockOrders: Order[] = [
       {
         id: '1',
-        userId: 'user1',
         storeId: 'store1',
         storeName: 'Test Restaurant',
+        storeCategory: 'restaurant',
         items: [],
-        subtotal: 20.99,
-        deliveryFee: 5.99,
-        serviceFee: 3.15,
-        total: 32.23,
-        status: 'delivered',
-        orderDate: '2024-01-01T00:00:00Z',
         deliveryAddress: {
           id: 'addr1',
           street: '123 Main St',
@@ -35,6 +29,26 @@ describe('orders API', () => {
           lng: -74.006,
           addressType: 'house',
         },
+        deliveryOption: {
+          type: 'delivery',
+          deliveryTime: '30-40 min',
+          extraFee: 0,
+          scheduledDate: null,
+          scheduledTimeSlot: undefined,
+        },
+        phoneNumber: {
+          countryCode: '+1',
+          number: '9999999999',
+        },
+        tipAmount: 5.0,
+        subtotal: 20.99,
+        deliveryFee: 5.99,
+        serviceFee: 3.15,
+        total: 32.23,
+        orderDate: '2024-01-01T00:00:00Z',
+        status: 'delivered',
+        orderType: 'Personal',
+        isDashPass: false,
       },
     ];
 

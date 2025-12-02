@@ -192,21 +192,15 @@ describe('useCarts', () => {
     });
 
     // Wait for the query to complete first - carts should be available
-    await waitFor(
-      () => {
-        expect(result.current.carts.length).toBeGreaterThan(0);
-      },
-      { timeout: 15000 }
-    );
+    await waitFor(() => {
+      expect(result.current.carts.length).toBeGreaterThan(0);
+    });
 
     // Then wait for the initialization to happen (useEffect runs after data is available)
     // The useEffect checks: carts !== undefined && !isInitialized && userId
-    await waitFor(
-      () => {
-        expect(mockInitializeCartsFromDB).toHaveBeenCalled();
-      },
-      { timeout: 15000 }
-    );
+    await waitFor(() => {
+      expect(mockInitializeCartsFromDB).toHaveBeenCalled();
+    });
 
     expect(mockInitializeCartsFromDB).toHaveBeenCalledWith(
       expect.arrayContaining([
@@ -216,7 +210,7 @@ describe('useCarts', () => {
         }),
       ])
     );
-  }, 30000);
+  });
 
   it('should handle error when fetch fails', async () => {
     const error = new Error('Failed to fetch carts');
@@ -234,14 +228,11 @@ describe('useCarts', () => {
     });
 
     // Wait for query to complete (either success or error)
-    await waitFor(
-      () => {
-        expect(result.current.isLoading).toBe(false);
-      },
-      { timeout: 15000 }
-    );
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
+    });
 
     // Check if error occurred - React Query sets error
     expect(result.current.error).toBeTruthy();
-  }, 20000);
+  });
 });

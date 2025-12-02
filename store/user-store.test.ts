@@ -4,8 +4,9 @@ import { User, Address } from '@/lib/types/user-types';
 
 // Mock persist and devtools middleware to return the config as-is
 vi.mock('zustand/middleware', () => ({
-  persist: (config: any, options?: any) => (set: any, get: any, api: any) => config(set, get, api),
-  devtools: (config: any, options?: any) => (set: any, get: any, api: any) => config(set, get, api),
+  persist: (config: any, _options?: any) => (set: any, get: any, api: any) => config(set, get, api),
+  devtools: (config: any, _options?: any) => (set: any, get: any, api: any) =>
+    config(set, get, api),
 }));
 
 describe('user-store', () => {

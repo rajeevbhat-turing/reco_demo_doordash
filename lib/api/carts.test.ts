@@ -18,14 +18,12 @@ describe('carts API', () => {
         storeName: 'Test Restaurant',
         storeCategory: 'restaurant',
         items: [],
-        userId: 'user1',
       },
       {
         storeId: '2',
         storeName: 'Another Restaurant',
         storeCategory: 'restaurant',
         items: [],
-        userId: 'user1',
       },
     ];
 

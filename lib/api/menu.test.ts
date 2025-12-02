@@ -18,7 +18,7 @@ describe('menu API', () => {
           id: '1',
           restaurantId: 'restaurant1',
           name: 'Burger',
-          price: '10.99',
+          price: '$10.99',
           description: 'Delicious burger',
           image: 'burger.jpg',
           category: 'Main',

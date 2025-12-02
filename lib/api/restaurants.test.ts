@@ -20,9 +20,9 @@ describe('restaurants API', () => {
         banner: 'banner.jpg',
         cuisine: 'Italian',
         rating: 4.5,
-        reviews: '100',
+        reviews: '100+ ratings',
         time: '30-40 min',
-        deliveryFee: '5.99',
+        deliveryFee: '$5.99 delivery fee',
         isFreeDelivery: false,
         minDeliveryFee: 599,
         priceRange: '$$',
@@ -36,7 +36,7 @@ describe('restaurants API', () => {
         lat: 40.7128,
         lng: -74.006,
         phone: '123-456-7890',
-        distance: '1.5',
+        distance: '1.5 mi',
       },
     ];
 
@@ -117,9 +117,9 @@ describe('restaurants API', () => {
       banner: 'banner.jpg',
       cuisine: 'Italian',
       rating: 4.5,
-      reviews: '100',
+      reviews: '100+ ratings',
       time: '30-40 min',
-      deliveryFee: '5.99',
+      deliveryFee: '$5.99 delivery fee',
       isFreeDelivery: false,
       minDeliveryFee: 599,
       priceRange: '$$',
@@ -133,7 +133,7 @@ describe('restaurants API', () => {
       lat: 40.7128,
       lng: -74.006,
       phone: '123-456-7890',
-      distance: '1.5',
+      distance: '1.5 mi',
     };
 
     it('should fetch restaurant by id successfully without coordinates', async () => {

@@ -122,16 +122,10 @@ describe('useOrders', () => {
   const mockOrders = [
     {
       id: '1',
-      userId: 'user1',
       storeId: 'store1',
       storeName: 'Test Restaurant',
+      storeCategory: 'restaurant',
       items: [],
-      subtotal: 20.99,
-      deliveryFee: 5.99,
-      serviceFee: 3.15,
-      total: 32.23,
-      status: 'delivered',
-      orderDate: '2024-01-01T00:00:00Z',
       deliveryAddress: {
         id: 'addr1',
         street: '123 Main St',
@@ -142,6 +136,26 @@ describe('useOrders', () => {
         lng: -74.006,
         addressType: 'house' as const,
       },
+      deliveryOption: {
+        type: 'delivery',
+        deliveryTime: '30-40 min',
+        extraFee: 0,
+        scheduledDate: null,
+        scheduledTimeSlot: undefined,
+      },
+      phoneNumber: {
+        countryCode: '+1',
+        number: '9999999999',
+      },
+      tipAmount: 5.0,
+      subtotal: 20.99,
+      deliveryFee: 5.99,
+      serviceFee: 3.15,
+      total: 32.23,
+      orderDate: '2024-01-01T00:00:00Z',
+      status: 'delivered',
+      orderType: 'Personal',
+      isDashPass: false,
     },
   ];
 
@@ -209,21 +223,15 @@ describe('useOrders', () => {
     });
 
     // Wait for the query to complete first - orders should be available
-    await waitFor(
-      () => {
-        expect(result.current.orders.length).toBeGreaterThan(0);
-      },
-      { timeout: 15000 }
-    );
+    await waitFor(() => {
+      expect(result.current.orders.length).toBeGreaterThan(0);
+    });
 
     // Then wait for the initialization to happen (useEffect runs after data is available)
     // The useEffect checks: orders && orders.length > 0 && !isInitialized && userId
-    await waitFor(
-      () => {
-        expect(mockInitializeOrdersFromDB).toHaveBeenCalled();
-      },
-      { timeout: 15000 }
-    );
+    await waitFor(() => {
+      expect(mockInitializeOrdersFromDB).toHaveBeenCalled();
+    });
 
     expect(mockInitializeOrdersFromDB).toHaveBeenCalledWith(
       expect.arrayContaining([
@@ -233,7 +241,7 @@ describe('useOrders', () => {
         }),
       ])
     );
-  }, 30000);
+  });
 
   it('should handle error when fetch fails', async () => {
     const error = new Error('Failed to fetch orders');
@@ -251,14 +259,11 @@ describe('useOrders', () => {
     });
 
     // Wait for query to complete (either success or error)
-    await waitFor(
-      () => {
-        expect(result.current.isLoading).toBe(false);
-      },
-      { timeout: 15000 }
-    );
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
+    });
 
     // Check if error occurred - React Query sets error
     expect(result.current.error).toBeTruthy();
-  }, 20000);
+  });
 });

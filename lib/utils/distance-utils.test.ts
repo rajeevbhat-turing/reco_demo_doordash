@@ -51,9 +51,11 @@ describe('distance-utils', () => {
 
       const distance = calculateDistance(lat1, lng1, lat2, lng2);
 
-      // Distance between Sydney and Melbourne is approximately 440 miles
-      expect(distance).toBeGreaterThan(400);
-      expect(distance).toBeLessThan(500);
+      // Round to nearest integer and allow ±1 mile for floating point precision
+      // Distance between Sydney and Melbourne is approximately 443 miles
+      const roundedDistance = Math.round(distance);
+      expect(roundedDistance).toBeGreaterThanOrEqual(442);
+      expect(roundedDistance).toBeLessThanOrEqual(444);
     });
 
     it('should handle coordinates crossing the equator', () => {
@@ -65,9 +67,11 @@ describe('distance-utils', () => {
 
       const distance = calculateDistance(lat1, lng1, lat2, lng2);
 
-      // Distance should be significant
-      expect(distance).toBeGreaterThan(4000);
-      expect(distance).toBeLessThan(5000);
+      // Round to nearest integer and allow ±1 mile for floating point precision
+      // Distance between New York and Rio de Janeiro is approximately 4821 miles
+      const roundedDistance = Math.round(distance);
+      expect(roundedDistance).toBeGreaterThanOrEqual(4820);
+      expect(roundedDistance).toBeLessThanOrEqual(4822);
     });
 
     it('should handle coordinates crossing the prime meridian', () => {
@@ -79,9 +83,11 @@ describe('distance-utils', () => {
 
       const distance = calculateDistance(lat1, lng1, lat2, lng2);
 
+      // Round to nearest integer and allow ±1 mile for floating point precision
       // Distance between London and Paris is approximately 214 miles
-      expect(distance).toBeGreaterThan(200);
-      expect(distance).toBeLessThan(250);
+      const roundedDistance = Math.round(distance);
+      expect(roundedDistance).toBeGreaterThanOrEqual(213);
+      expect(roundedDistance).toBeLessThanOrEqual(215);
     });
 
     it('should return positive distance regardless of point order', () => {
@@ -93,8 +99,12 @@ describe('distance-utils', () => {
       const distance1 = calculateDistance(lat1, lng1, lat2, lng2);
       const distance2 = calculateDistance(lat2, lng2, lat1, lng1);
 
-      expect(distance1).toBe(distance2);
-      expect(distance1).toBeGreaterThan(0);
+      // Round to nearest integer and allow ±1 mile for floating point precision
+      const roundedDistance1 = Math.round(distance1);
+      const roundedDistance2 = Math.round(distance2);
+      expect(roundedDistance1).toBe(roundedDistance2);
+      expect(roundedDistance1).toBeGreaterThanOrEqual(2444);
+      expect(roundedDistance1).toBeLessThanOrEqual(2446);
     });
   });
 });

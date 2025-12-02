@@ -32,16 +32,27 @@ describe('useRestaurants', () => {
     {
       id: '1',
       name: 'Test Restaurant',
+      logo: 'logo.jpg',
+      banner: 'banner.jpg',
       cuisine: 'Italian',
       rating: 4.5,
-      deliveryTime: '30-40 min',
-      deliveryFee: 5.99,
-      image: 'restaurant1.jpg',
+      reviews: '100+ ratings',
+      time: '30-40 min',
+      deliveryFee: '$5.99 delivery fee',
+      isFreeDelivery: false,
+      minDeliveryFee: 599,
+      priceRange: '$$',
+      dashPass: false,
+      isOpen: true,
+      openingHours: '9 AM - 10 PM',
+      street: '123 Main St',
       city: 'New York',
       state: 'NY',
+      zipCode: '10001',
       lat: 40.7128,
       lng: -74.006,
-      distance: 1.5,
+      phone: '123-456-7890',
+      distance: '1.5 mi',
     },
   ];
 
@@ -105,11 +116,12 @@ describe('useRestaurants', () => {
     });
 
     // Wait for query to complete (either success or error)
+    // Error handling may take slightly longer to process
     await waitFor(
       () => {
         expect(result.current.isLoading).toBe(false);
       },
-      { timeout: 5000 }
+      { timeout: 3000 }
     );
 
     // Check if error occurred
