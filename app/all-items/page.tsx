@@ -75,7 +75,7 @@ function AllItemsContent() {
             filteredRestaurants = [];
           }
           break;
-        case 'new-on-doordash':
+        case 'new-on-dashdoor':
           filteredRestaurants = restaurants.filter(r => r.new && hasValidLogo(r.logo));
           break;
         case 'all-stores':

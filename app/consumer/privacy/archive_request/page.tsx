@@ -134,13 +134,13 @@ export default function ArchiveRequestPage() {
               </p>
             </div>
 
-            {/* Return to DoorDash Button */}
+            {/* Return to Dashdoor Button */}
             <button
               onClick={handleReturnToHome}
               className="w-full py-2 px-6 font-medium text-[16px] transition-colors bg-red-600 hover:bg-red-700 
                 text-white rounded-[28px]"
             >
-              Return to DoorDash
+              Return to Dashdoor
             </button>
           </div>
         </div>

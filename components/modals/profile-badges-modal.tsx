@@ -54,7 +54,7 @@ export default function ProfileBadgesModal({ isOpen, onClose }: ProfileBadgesMod
         <div className="px-6 pb-6 pt-1">
           {/* Introductory Text */}
           <p className="text-sm text-[#606060ff] font-medium mb-5">
-            Earn badges and gain influence on DoorDash. Your profile must be public to participate.
+            Earn badges and gain influence on Dashdoor. Your profile must be public to participate.
           </p>
 
           {/* Emerging Expert Badge */}

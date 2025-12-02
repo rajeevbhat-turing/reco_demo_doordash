@@ -88,7 +88,7 @@ export default function DeleteAccountPage() {
             {/* Information */}
             <div className="mb-6">
               <p className="text-[#191919ff] font-medium text-sm mb-4">
-                Are you sure you want to delete your account and customer data from DoorDash?
+                Are you sure you want to delete your account and customer data from Dashdoor?
               </p>
               <p className="text-[#191919ff] font-medium text-sm">
                 This action is permanent and cannot be undone.
@@ -152,7 +152,7 @@ export default function DeleteAccountPage() {
             {/* Information */}
             <div className="mb-6">
               <p className="text-[#191919ff] text-sm font-medium mb-4">
-                Your account and customer data will be permanently removed from DoorDash. Any
+                Your account and customer data will be permanently removed from Dashdoor. Any
                 credits and gift card balances will also be forfeited.
               </p>
               <p className="text-[#191919ff] text-[12px] font-medium">

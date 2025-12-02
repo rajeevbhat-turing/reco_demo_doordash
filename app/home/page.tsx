@@ -228,7 +228,7 @@ export default function Home() {
       );
   }, [actualRestaurants, allDeals]);
 
-  const newOnDoorDash = useMemo(() => {
+  const newOnDashdoor = useMemo(() => {
     return actualRestaurants
       .filter(restaurant => restaurant.new && hasValidLogo(restaurant.logo))
       .slice(0, 8);
@@ -355,7 +355,7 @@ export default function Home() {
             ...nationalFavorites,
             ...fastestNearYou,
             ...dealsForYou,
-            ...newOnDoorDash,
+            ...newOnDashdoor,
             ...allStores,
           ].map(item => [item.id, item])
         ).values()
@@ -373,7 +373,7 @@ export default function Home() {
     nationalFavorites,
     fastestNearYou,
     dealsForYou,
-    newOnDoorDash,
+    newOnDashdoor,
     allStores,
     selectedCategory,
   ]);

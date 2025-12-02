@@ -72,6 +72,8 @@ To set up the project for local development:
    LIBSQL_URL=your_libsql_url_here
    ```
 
+Note: The default DB is located at `data/db` folder and named `dashdoor.db`
+
 3. **Run the development server**:
 
    ```sh

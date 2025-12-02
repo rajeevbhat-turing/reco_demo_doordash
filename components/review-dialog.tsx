@@ -315,7 +315,7 @@ export default function ReviewDialog({
                       today • Reviewed on{' '}
                       <img
                         src="/dashpass-icon.svg"
-                        alt="DoorDash"
+                        alt="Dashdoor"
                         width={24}
                         height={24}
                         className="inline-block ml-1"

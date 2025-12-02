@@ -60,14 +60,14 @@ export default function ServiceFeesInfo({ isOpen, onClose }: ServiceFeesInfoProp
               <p className="text-sm text-gray-700">
                 This merchant sets prices. Those prices may be higher than prices in-store or
                 elsewhere for this location. In-store promotions may not apply. Prices for delivery
-                and pickup may vary. This merchant pays DoorDash a commission on orders.
+                and pickup may vary. This merchant pays Dashdoor a commission on orders.
               </p>
             </div>
 
             <div>
               <h3 className="font-medium mb-1">Service Fee</h3>
               <p className="text-sm text-gray-700">
-                This fee goes to DoorDash. The service fee may vary but is 15% of your subtotal for
+                This fee goes to Dashdoor. The service fee may vary but is 15% of your subtotal for
                 most restaurant orders (and 5% for most eligible DashPass restaurant orders). A
                 flat, minimum service fee may apply on small orders.
               </p>
@@ -76,17 +76,17 @@ export default function ServiceFeesInfo({ isOpen, onClose }: ServiceFeesInfoProp
             <div>
               <h3 className="font-medium mb-1">Delivery Fee</h3>
               <p className="text-sm text-gray-700">
-                The delivery fee is a flat fee that goes to DoorDash. The delivery fee is $0 on
+                The delivery fee is a flat fee that goes to Dashdoor. The delivery fee is $0 on
                 eligible DashPass restaurant orders.
               </p>
             </div>
 
             <div>
-              <h3 className="font-medium mb-1">Other DoorDash Fees</h3>
+              <h3 className="font-medium mb-1">Other Dashdoor Fees</h3>
               <p className="text-sm text-gray-700">
                 Expanded range fees, Beyond local area fees, express fees, small order fees, and
                 fees in response to local regulations may apply. Each are separate fees, all of
-                which go to DoorDash.
+                which go to Dashdoor.
               </p>
             </div>
 
@@ -94,7 +94,7 @@ export default function ServiceFeesInfo({ isOpen, onClose }: ServiceFeesInfoProp
               <h3 className="font-medium mb-1">Government Fees</h3>
               <p className="text-sm text-gray-700">
                 Other fees such as bag fees and bottle fees required by law may apply. Some of these
-                fees may be retained by DoorDash.
+                fees may be retained by Dashdoor.
               </p>
             </div>
 

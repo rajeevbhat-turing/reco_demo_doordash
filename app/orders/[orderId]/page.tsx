@@ -268,7 +268,7 @@ export default function OrderReceiptPage() {
           className="w-[420px] bg-white border-l border-gray-200 overflow-y-auto flex-shrink-0"
         >
           <div className="h-full">
-            {/* DoorDash Logo - Only visible in print */}
+            {/* Dashdoor Logo - Only visible in print */}
             <div className="hidden print:block p-4 pb-2">
               <div className="flex items-center">
                 {/* Logo Mark */}

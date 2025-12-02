@@ -208,7 +208,7 @@ export default function PaymentPage() {
           </div>
         </div>
 
-        {/* DoorDash Credits Section */}
+        {/* Dashdoor Credits Section */}
         <div className="border border-gray-200 rounded-lg overflow-hidden mt-6">
           {/* Credits Header */}
           <div className="px-6 py-4 border-b border-gray-200">

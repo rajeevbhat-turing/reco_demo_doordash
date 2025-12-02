@@ -113,7 +113,7 @@ export default function Footer() {
               </li>
               <li>
                 <span className="text-gray-700 hover:text-gray-900 text-sm cursor-pointer">
-                  DoorDash Merchant
+                  Dashdoor Merchant
                 </span>
               </li>
               <li>
@@ -123,7 +123,7 @@ export default function Footer() {
               </li>
               <li>
                 <span className="text-gray-700 hover:text-gray-900 text-sm cursor-pointer">
-                  Get DoorDash for Business
+                  Get Dashdoor for Business
                 </span>
               </li>
             </ul>
@@ -166,7 +166,7 @@ export default function Footer() {
             <span className="text-xs text-gray-700 hover:text-gray-900 cursor-pointer">
               Do Not Sell or Share My Personal Information
             </span>
-            <span className="text-xs text-gray-700">© 2025 DoorDash</span>
+            <span className="text-xs text-gray-700">© 2025 Dashdoor</span>
           </div>
 
           {/* Social Media Icons */}

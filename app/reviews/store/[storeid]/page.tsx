@@ -294,7 +294,7 @@ export default function StoreReviewsPage() {
                       <span className="text-sm text-[#767676] font-medium">
                         {'• '}
                         {format(new Date(review.timestamp), 'M/d/yy')}
-                        {review.orderId ? ' • DoorDash order' : ''}
+                        {review.orderId ? ' • Dashdoor order' : ''}
                       </span>
                     </div>
 
