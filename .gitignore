@@ -7,7 +7,7 @@
 /.next/
 /out/
 
-# production
+/# production
 /build
 
 # debug
@@ -41,8 +41,6 @@ poc-database.sqlite
 # macOS .DS_Store
 .DS_Store
 
-# LHCI reports
-lhci-reports
-.lighthouseci
-puppeteer-login.js
-lighthouserc.js
+# Playwright test artifacts
+**/playwright-report/
+**/test-results/
