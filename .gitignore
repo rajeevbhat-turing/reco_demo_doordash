@@ -48,5 +48,4 @@ poc-database.sqlite
 # lighthouse
 lhci-reports/
 .lighthouseci/
-lighthouserc.js
 puppeteer-login.js
