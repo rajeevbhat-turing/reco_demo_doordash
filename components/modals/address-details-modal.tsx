@@ -41,8 +41,8 @@ interface OtherState {
 }
 
 interface SharedState {
-  deliveryPreference: 'door' | 'location';
-  meetLocation: string;
+  deliveryPreference: 'door' | 'location'; // Internal state, will be converted to 'leave'|'meet' on save
+  meetLocation: string; // Internal state, will be saved as deliveryLocation
   deliveryInstructions: string;
   personalLabel?: string;
 }
@@ -56,6 +56,7 @@ export default function AddressDetailsModal({
   onBack,
 }: AddressDetailsModalProps) {
   const dialogRef = useRef<HTMLDivElement>(null);
+  const isInitializedRef = useRef(false);
   const [addressType, setAddressType] = useState<Address['addressType']>(
     address?.addressType || 'house'
   );
@@ -155,9 +156,24 @@ export default function AddressDetailsModal({
       const addressLabel = address.personalLabel || '';
       const isCustom = isCustomLabel(addressLabel);
 
+      // Convert from new format (leave/meet) to internal format (door/location) for backward compatibility
+      let internalDeliveryPreference: 'door' | 'location' = 'door';
+      if (address.deliveryPreference === 'leave') {
+        internalDeliveryPreference = 'door';
+      } else if (address.deliveryPreference === 'meet') {
+        internalDeliveryPreference = 'location';
+      } else if (address.deliveryPreference === 'door' || address.deliveryPreference === 'location') {
+        // Handle old format
+        internalDeliveryPreference = address.deliveryPreference;
+      }
+
+      // Support both old (meetLocation) and new (deliveryLocation) field names for backward compatibility
+      const addressWithLegacy = address as Address & { meetLocation?: string };
+      const locationValue = address.deliveryLocation || addressWithLegacy.meetLocation || defaultMeetLocation;
+
       setSharedState({
-        deliveryPreference: address.deliveryPreference || 'door',
-        meetLocation: address.meetLocation || defaultMeetLocation,
+        deliveryPreference: internalDeliveryPreference,
+        meetLocation: locationValue,
         deliveryInstructions: address.deliveryInstructions || '',
         personalLabel: isCustom ? 'custom' : addressLabel,
       });
@@ -168,6 +184,12 @@ export default function AddressDetailsModal({
       } else {
         setCustomLabelText('');
       }
+      
+      // Mark as initialized after loading address data
+      isInitializedRef.current = true;
+    } else {
+      // Reset initialization flag when address is cleared
+      isInitializedRef.current = false;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [address]);
@@ -201,15 +223,37 @@ export default function AddressDetailsModal({
     };
   }, [isOpen, onClose]);
 
-  // Update meetLocation default when address type changes
+  // Update meetLocation default when address type changes (only if not initialized from saved address)
   useEffect(() => {
+    // Don't override if we just loaded from a saved address
+    if (!isInitializedRef.current) {
+      // Not initialized yet, wait for address prop to load
+      return;
+    }
+    
+    // Only set default if there's no saved deliveryLocation
+    const addressWithLegacy = address as Address & { meetLocation?: string };
+    const hasSavedLocation = address?.deliveryLocation || addressWithLegacy.meetLocation;
+    
+    if (hasSavedLocation) {
+      // Address has a saved location, don't override when type changes
+      return;
+    }
+    
+    // Only set default if current meetLocation is empty or is a default value
     const defaultMeetLocation = getDefaultMeetLocation(addressType);
-    // Only update if current meetLocation is empty or if we're switching types
-    setSharedState(prev => ({
-      ...prev,
-      meetLocation: defaultMeetLocation,
-    }));
-  }, [addressType]);
+    setSharedState(prev => {
+      // Only update if current meetLocation is empty or matches a previous default
+      // Don't overwrite user selections
+      if (!prev.meetLocation || prev.meetLocation === getDefaultMeetLocation(address?.addressType || 'house')) {
+        return {
+          ...prev,
+          meetLocation: defaultMeetLocation,
+        };
+      }
+      return prev;
+    });
+  }, [addressType, address]);
 
   if (!isOpen || !address) return null;
 
@@ -333,11 +377,23 @@ export default function AddressDetailsModal({
 
   const handleSave = () => {
     if (onSave) {
-      // Base data with shared state
+      // Convert internal state to saved format
+      // Map 'door' -> 'leave' and 'location' -> 'meet'
+      const savedDeliveryPreference: 'leave' | 'meet' = 
+        sharedState.deliveryPreference === 'door' ? 'leave' : 'meet';
+
+      // Base data with converted delivery preference and deliveryLocation
       const baseData: any = {
         addressType,
-        ...sharedState,
+        deliveryPreference: savedDeliveryPreference,
+        deliveryInstructions: sharedState.deliveryInstructions,
       };
+
+      // Always include deliveryLocation if it has a value (even if it's the default)
+      // This ensures the selected radio button option is persisted
+      if (sharedState.meetLocation && sharedState.meetLocation.trim() !== '') {
+        baseData.deliveryLocation = sharedState.meetLocation;
+      }
 
       // If custom label is selected, use the custom text (maintaining case)
       // Otherwise use lowercase for standard labels
@@ -613,7 +669,14 @@ export default function AddressDetailsModal({
             </label>
             <div className="grid grid-cols-2 gap-3">
               <button
-                onClick={() => setSharedState({ ...sharedState, deliveryPreference: 'door' })}
+                onClick={() => {
+                  const defaultLocation = config.leaveAtOptions[0]?.toLowerCase().replace(/\s+/g, '-') || '';
+                  setSharedState({ 
+                    ...sharedState, 
+                    deliveryPreference: 'door',
+                    meetLocation: defaultLocation,
+                  });
+                }}
                 className={`flex items-center space-x-2 px-4 py-4 rounded-lg border-2 transition-colors ${
                   sharedState.deliveryPreference === 'door'
                     ? 'border-black bg-white'
@@ -636,7 +699,14 @@ export default function AddressDetailsModal({
                 <span className="text-sm font-medium">{config.leaveAtLabel}</span>
               </button>
               <button
-                onClick={() => setSharedState({ ...sharedState, deliveryPreference: 'location' })}
+                onClick={() => {
+                  const defaultLocation = config.meetAtOptions[0]?.toLowerCase().replace(/\s+/g, '-') || '';
+                  setSharedState({ 
+                    ...sharedState, 
+                    deliveryPreference: 'location',
+                    meetLocation: defaultLocation,
+                  });
+                }}
                 className={`flex items-center space-x-2 px-4 py-4 rounded-lg border-2 transition-colors ${
                   sharedState.deliveryPreference === 'location'
                     ? 'border-black bg-white'

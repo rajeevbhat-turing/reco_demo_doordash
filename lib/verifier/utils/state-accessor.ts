@@ -93,7 +93,13 @@ function getResolvedArgs(args: Record<string, any>, expectedStates: any[]): Reco
           console.error(`JSONPath not found: ${value}`);
           resolvedArgs[key] = undefined;
         } else {
-          resolvedArgs[key] = result[0];
+          // If path contains wildcard [*] or .., return all results as array
+          // Otherwise return just the first result
+          if (value.includes('[*]') || value.includes('..')) {
+            resolvedArgs[key] = result; // Return entire array
+          } else {
+            resolvedArgs[key] = result[0]; // Return single value
+          }
         }
       } catch (error) {
         console.error(`Error resolving JSONPath "${value}":`, error);
@@ -105,7 +111,15 @@ function getResolvedArgs(args: Record<string, any>, expectedStates: any[]): Reco
         if (typeof item === 'string' && isJSONPath(item)) {
           try {
             const result = JSONPath({ path: item, json: expectedStates });
-            return result.length === 0 ? undefined : result[0];
+            if (result.length === 0) return undefined;
+            
+            // If path contains wildcard [*] or .., return all results as array
+            // Otherwise return just the first result
+            if (item.includes('[*]') || item.includes('..')) {
+              return result; // Return entire array
+            } else {
+              return result[0]; // Return single value
+            }
           } catch (error) {
             console.error(`Error resolving JSONPath "${item}":`, error);
             return undefined;

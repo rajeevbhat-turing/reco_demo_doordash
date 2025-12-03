@@ -34,8 +34,8 @@ COPY --from=builder --chown=nextjs:nodejs \
   /app/node_modules/@libsql/linux-x64-musl \
   ./node_modules/@libsql/linux-x64-musl
 
-COPY ./data/db/doordash.db /app/doordash.db
-ENV LIBSQL_URL=file:/app/doordash.db
+COPY ./data/db/dashdoor.db /app/dashdoor.db
+ENV LIBSQL_URL=file:/app/dashdoor.db
 
 USER nextjs
 

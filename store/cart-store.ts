@@ -12,13 +12,15 @@ export type CartCategory = 'restaurant' | 'grocery' | 'retail' | 'convenience' |
 
 // Base cart item interface (simplified - no vendor info)
 export interface CartItem {
-  id: number | string;
-  itemName: string;
-  price: number | string;
-  image: string;
-  quantity: number;
-  customizations?: string;
-  appliedModifications?: AppliedModification[];
+  id: number | string
+  itemName: string
+  price: number | string
+  image: string
+  quantity: number
+  customizations?: string
+  appliedModifications?: AppliedModification[]
+  menuCategoryId?: string
+  menuCategoryName?: string
 }
 
 // Cart interface - represents a cart for a single vendor/store

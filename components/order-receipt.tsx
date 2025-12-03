@@ -61,7 +61,7 @@ export default function OrderReceipt({
 
   return (
     <div className="max-w-3xl mx-auto bg-white">
-      {/* DoorDash Logo */}
+      {/* Dashdoor Logo */}
       <div className="mb-6">
         <svg width="140" height="28" viewBox="0 0 140 28" fill="none">
           <path
@@ -76,7 +76,7 @@ export default function OrderReceipt({
             fontWeight="bold"
             fontFamily="Arial, sans-serif"
           >
-            DOORDASH
+            DASHDOOR
           </text>
         </svg>
       </div>

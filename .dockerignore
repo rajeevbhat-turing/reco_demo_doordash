@@ -50,9 +50,6 @@ Dockerfile
 README.md
 docs/
 
-# Scripts
-scripts/
-
 # Config files that aren't needed in production
 config/logs/
 config/test-configs/

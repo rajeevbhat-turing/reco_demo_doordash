@@ -288,7 +288,7 @@ export default function UserProfilePage() {
                         {'• '}
                         {format(new Date(review.timestamp), 'M/d/yy')}
                         <span className="text-[#767676ff]">
-                          {review.orderId ? ' • DoorDash order' : ''}
+                          {review.orderId ? ' • Dashdoor order' : ''}
                         </span>
                       </span>
                     </div>

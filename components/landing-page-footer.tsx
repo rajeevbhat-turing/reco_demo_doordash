@@ -25,9 +25,9 @@ const letUsHelpYouData = ['Account Details', 'Order History', 'Help'];
 
 const doingBusinessData = [
   'Become a Dasher',
-  'DoorDash Merchant',
+  'Dashdoor Merchant',
   'Get Dashers for Deliveries',
-  'Get DoorDash for Business',
+  'Get Dashdoor for Business',
 ];
 
 // const bottomLinksData = ['Dasher Central', 'LinkedIn', 'Glassdoor', 'Accessibility', 'Newsroom'];

@@ -433,6 +433,7 @@ export default function MenuItemDialog({ isOpen, onClose, item }: MenuItemDialog
     );
 
     // Create the cart item to compare
+    const itemWithCategory = item as MenuItem
     const cartItem = {
       id: uniqueCartItemId, // Use unique ID that includes modifications
       itemName: item.name,
@@ -440,8 +441,10 @@ export default function MenuItemDialog({ isOpen, onClose, item }: MenuItemDialog
       image: item.image,
       customizations: customizationsString,
       appliedModifications: formattedModifications.length > 0 ? formattedModifications : undefined,
-    };
-
+      menuCategoryId: itemWithCategory.categoryId,
+      menuCategoryName: itemWithCategory.categoryName || itemWithCategory.category,
+    }
+    
     // Use haveSameModifications to check if item with same modifications exists
     const existingItem = cart?.items.find(i => haveSameModifications(i, cartItem as any));
 

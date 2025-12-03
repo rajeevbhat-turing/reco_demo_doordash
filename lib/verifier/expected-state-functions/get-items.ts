@@ -25,6 +25,13 @@ export interface GetItemsArgs {
   keywords?: string[]; // Keywords to match against item name
   sort_type?: SortSpec[]; // Array of sort specifications for multi-level sorting
   limit?: number; // Number of items to return
+  lat?: number; // Optional: explicit latitude
+  lng?: number; // Optional: explicit longitude
+  filters?: {
+    menu_categories?: string[]; // Filter by menu category names (matches any in array)
+    restaurant_ids_not_in?: string[]; // Exclude items from these restaurant IDs
+    featured?: boolean; // Filter by featured status (true = only featured, false = only non-featured)
+  };
 }
 
 export interface GetItemsResult {
@@ -39,8 +46,13 @@ export interface GetItemsResult {
  * - Each spec has a "key" (field name) and optional "order" ("asc" or "desc", defaults to "asc")
  * - Example: [{ key: "price", order: "asc" }, { key: "rating", order: "desc" }]
  *   → Sorts by price ascending first, then by rating descending for items with same price
- *
- * @param args - Object containing restaurant_id, keywords, sort_type, and limit
+ * 
+ * Distance Filtering:
+ * - If restaurant_id is NOT provided, filters restaurants by 10 mile radius using lat/lng
+ * - lat/lng default to user's selected address if not explicitly provided
+ * - If restaurant_id IS provided, no distance filtering is applied
+ * 
+ * @param args - Object containing restaurant_id, keywords, sort_type, limit, lat, and lng
  * @returns Object with items array
  */
 export async function get_items(args: GetItemsArgs): Promise<GetItemsResult | null> {
@@ -51,15 +63,41 @@ export async function get_items(args: GetItemsArgs): Promise<GetItemsResult | nu
     return null;
   }
 
-  const { restaurant_id, keywords, sort_type, limit } = args;
-
+  const { restaurant_id, keywords, sort_type, limit, lat, lng, filters = {} } = args;
+  
   try {
+    // Determine lat/lng to use: prefer explicit args, fallback to selected address
+    let userLat: number | undefined = lat;
+    let userLng: number | undefined = lng;
+    
+    // Only need lat/lng if restaurant_id is not provided (for distance filtering)
+    if (!restaurant_id) {
+      if (userLat === undefined || userLng === undefined) {
+        const selectedAddress = userStore.getTempAddress() || 
+          (currentUser.addresses && currentUser.addresses.find(addr => addr.default));
+        
+        if (!selectedAddress || !selectedAddress.lat || !selectedAddress.lng) {
+          console.error('No valid address found with lat/lng for distance filtering');
+          return null;
+        }
+        
+        userLat = selectedAddress.lat;
+        userLng = selectedAddress.lng;
+      }
+    }
+    
     // Build query parameters
     const params = new URLSearchParams();
     params.append('userId', currentUser.id);
 
     if (restaurant_id) {
       params.append('restaurant_id', restaurant_id);
+    }
+    
+    // Pass lat/lng if we have them (only used when restaurant_id is not provided)
+    if (userLat !== undefined && userLng !== undefined) {
+      params.append('lat', String(userLat));
+      params.append('lng', String(userLng));
     }
 
     if (keywords && keywords.length > 0) {
@@ -73,7 +111,19 @@ export async function get_items(args: GetItemsArgs): Promise<GetItemsResult | nu
     if (limit !== undefined && limit !== null) {
       params.append('limit', String(limit));
     }
-
+    
+    if (filters.menu_categories && filters.menu_categories.length > 0) {
+      params.append('menu_categories', JSON.stringify(filters.menu_categories));
+    }
+    
+    if (filters.restaurant_ids_not_in && filters.restaurant_ids_not_in.length > 0) {
+      params.append('restaurant_ids_not_in', JSON.stringify(filters.restaurant_ids_not_in));
+    }
+    
+    if (filters.featured !== undefined) {
+      params.append('featured', String(filters.featured));
+    }
+    
     // Call API route
     const response = await fetch(`/api/expected-state/get-items?${params.toString()}`);
 

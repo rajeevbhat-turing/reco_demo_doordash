@@ -1,5 +1,18 @@
 import { useUserStore } from '@/store/user-store';
 
+export interface DealResult {
+  id: string;
+  title: string;
+  description: string;
+  buttonText: string | null;
+  buttonLink: string | null;
+  minimumPurchase: number | null; // In cents
+  discountType: string | null;
+  discountValue: number | null;
+  maximumDiscount: number | null; // In cents
+  promocode: string | null;
+}
+
 export interface RestaurantResult {
   id: string;
   name: string;
@@ -8,6 +21,8 @@ export interface RestaurantResult {
   minDeliveryFee: number;
   priceRange: number;
   dashPass: boolean;
+  rating: number | null; // Average rating from approved user reviews
+  ratingCount: number; // Number of approved reviews
   address: {
     street: string;
     city: string;
@@ -15,6 +30,7 @@ export interface RestaurantResult {
     zipCode: string;
   };
   distance: number; // Distance in miles from user location
+  deals?: DealResult[]; // Only included when has_deals filter is true
 }
 
 export interface SortSpec {
@@ -23,12 +39,19 @@ export interface SortSpec {
 }
 
 export interface GetRestaurantsArgs {
+  name?: string; // Filter by restaurant name (partial match, case-insensitive)
   sort_type?: SortSpec[]; // Array of sort specifications for multi-level sorting
   limit?: number; // Number of restaurants to return
   lat?: number; // Optional explicit latitude
   lng?: number; // Optional explicit longitude
   filters?: {
-    cuisine?: string; // Filter by cuisine type
+    item_keyword?: string; // Filter by menu item keyword (restaurants that have items matching this keyword)
+    cuisines?: string[]; // Filter by cuisine types (matches any in array)
+    categories?: string[]; // Filter by categories (matches any in array)
+    prices?: string[]; // Filter by price ranges: "$", "$$", "$$$", "$$$$"
+    dashpass?: boolean; // Filter by DashPass availability
+    has_deals?: boolean; // Filter by restaurants with deals (default: false). When true, includes deals in response
+    restaurant_ids_not_in?: string[]; // Exclude these restaurant IDs
   };
 }
 
@@ -59,8 +82,13 @@ export async function get_restaurants(
     return null;
   }
 
-  const { sort_type, limit, lat, lng, filters = {} } = args;
-
+  const { name, sort_type, limit, lat, lng, filters = {} } = args;
+  
+  // Default sort by distance ascending if no sort_type provided
+  const effectiveSortType = sort_type && sort_type.length > 0 
+    ? sort_type 
+    : [{ key: 'distance', order: 'asc' as const }];
+  
   try {
     // Determine lat/lng to use: prefer explicit args, fallback to selected address
     let userLat: number | undefined = lat;
@@ -91,13 +119,40 @@ export async function get_restaurants(
     if (limit !== undefined && limit !== null) {
       params.append('limit', String(limit));
     }
-
-    if (sort_type && sort_type.length > 0) {
-      params.append('sort_type', JSON.stringify(sort_type));
+    
+    // Always pass sort_type (uses default if not provided)
+    params.append('sort_type', JSON.stringify(effectiveSortType));
+    
+    if (name) {
+      params.append('name', name);
     }
-
-    if (filters.cuisine) {
-      params.append('cuisine', filters.cuisine);
+    
+    if (filters.item_keyword) {
+      params.append('item_keyword', filters.item_keyword);
+    }
+    
+    if (filters.cuisines && filters.cuisines.length > 0) {
+      params.append('cuisines', JSON.stringify(filters.cuisines));
+    }
+    
+    if (filters.categories && filters.categories.length > 0) {
+      params.append('categories', JSON.stringify(filters.categories));
+    }
+    
+    if (filters.prices && filters.prices.length > 0) {
+      params.append('prices', JSON.stringify(filters.prices));
+    }
+    
+    if (filters.dashpass !== undefined) {
+      params.append('dashpass', String(filters.dashpass));
+    }
+    
+    if (filters.has_deals !== undefined) {
+      params.append('has_deals', String(filters.has_deals));
+    }
+    
+    if (filters.restaurant_ids_not_in && filters.restaurant_ids_not_in.length > 0) {
+      params.append('restaurant_ids_not_in', JSON.stringify(filters.restaurant_ids_not_in));
     }
 
     // Call API route
