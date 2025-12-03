@@ -177,10 +177,8 @@ describe('SignIn Component', () => {
 
       expect(emailInput.value).toBe('test@example.com');
 
-      const clearButton = screen.getByTestId('x-icon').closest('button');
-      if (clearButton) {
-        fireEvent.click(clearButton);
-      }
+      const clearButton = screen.getByLabelText('Clear email');
+      fireEvent.click(clearButton);
 
       await waitFor(() => {
         expect(emailInput.value).toBe('');

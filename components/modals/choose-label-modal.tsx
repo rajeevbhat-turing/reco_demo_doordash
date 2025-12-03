@@ -86,7 +86,10 @@ export default function ChooseLabelModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
+      data-testid="choose-label-modal-backdrop"
+    >
       <div ref={dialogRef} className="relative bg-white rounded-2xl w-full max-w-sm mx-4">
         <div className="p-6">
           {/* Close button */}

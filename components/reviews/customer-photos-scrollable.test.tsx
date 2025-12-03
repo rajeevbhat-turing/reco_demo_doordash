@@ -31,9 +31,9 @@ describe('CustomerPhotosScrollable', () => {
   });
 
   it('should not display title when not provided', () => {
-    const { container } = render(<CustomerPhotosScrollable photos={mockPhotos} />);
+    render(<CustomerPhotosScrollable photos={mockPhotos} />);
 
-    expect(container.querySelector('h3')).not.toBeInTheDocument();
+    expect(screen.queryByRole('heading', { level: 3 })).not.toBeInTheDocument();
   });
 
   it('should call onPhotoClick when photo is clicked and photoInfo is available', () => {
@@ -71,16 +71,16 @@ describe('CustomerPhotosScrollable', () => {
   });
 
   it('should handle empty photos array', () => {
-    const { container } = render(<CustomerPhotosScrollable photos={[]} />);
+    render(<CustomerPhotosScrollable photos={[]} />);
 
-    const images = container.querySelectorAll('img');
+    const images = screen.queryAllByRole('img');
     expect(images.length).toBe(0);
   });
 
   it('should handle scroll events', async () => {
-    const { container } = render(<CustomerPhotosScrollable photos={mockPhotos} />);
+    render(<CustomerPhotosScrollable photos={mockPhotos} />);
 
-    const scrollContainer = container.querySelector('[class*="overflow-x-auto"]') as HTMLElement;
+    const scrollContainer = screen.getByTestId('customer-photos-scroll-container');
     if (scrollContainer) {
       // Mock scroll properties
       Object.defineProperty(scrollContainer, 'scrollLeft', {

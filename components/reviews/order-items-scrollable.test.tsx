@@ -210,13 +210,13 @@ describe('OrderItemsScrollable', () => {
 
   it('should handle empty items array', () => {
     const Wrapper = createWrapper();
-    const { container } = render(
+    render(
       <Wrapper>
         <OrderItemsScrollable items={[]} restaurantId="restaurant1" />
       </Wrapper>
     );
 
-    const items = container.querySelectorAll('[class*="order-item"]');
+    const items = screen.queryAllByTestId(/^order-item-/);
     expect(items.length).toBe(0);
   });
 

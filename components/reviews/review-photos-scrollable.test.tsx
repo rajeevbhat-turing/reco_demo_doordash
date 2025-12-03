@@ -70,7 +70,7 @@ describe('ReviewPhotosScrollable', () => {
   });
 
   it('should handle empty photos array', () => {
-    const { container } = render(
+    render(
       <ReviewPhotosScrollable
         photos={[]}
         userName={mockUserName}
@@ -79,12 +79,12 @@ describe('ReviewPhotosScrollable', () => {
       />
     );
 
-    const images = container.querySelectorAll('img');
+    const images = screen.queryAllByRole('img');
     expect(images.length).toBe(0);
   });
 
   it('should handle scroll events', async () => {
-    const { container } = render(
+    render(
       <ReviewPhotosScrollable
         photos={mockPhotos}
         userName={mockUserName}
@@ -93,7 +93,7 @@ describe('ReviewPhotosScrollable', () => {
       />
     );
 
-    const scrollContainer = container.querySelector('[class*="overflow-x-auto"]') as HTMLElement;
+    const scrollContainer = screen.getByTestId('review-photos-scroll-container');
     if (scrollContainer) {
       // Mock scroll properties
       Object.defineProperty(scrollContainer, 'scrollLeft', {

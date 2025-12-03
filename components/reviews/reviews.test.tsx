@@ -57,6 +57,7 @@ describe('Reviews', () => {
       id: 'review1',
       vendorId: 'vendor1',
       vendorName: 'Test Restaurant',
+      vendorLogo: 'restaurant-logo.jpg',
       userId: 'user1',
       userName: 'John Doe',
       userEmail: 'john@example.com',
@@ -73,6 +74,7 @@ describe('Reviews', () => {
       id: 'review2',
       vendorId: 'vendor1',
       vendorName: 'Test Restaurant',
+      vendorLogo: 'restaurant-logo.jpg',
       userId: 'user2',
       userName: 'Jane Smith',
       userEmail: 'jane@example.com',
@@ -237,6 +239,15 @@ describe('Reviews', () => {
   });
 
   it('should open review dialog when star is clicked', async () => {
+    // Set up empty state to show stars
+    (useStoreReviews as ReturnType<typeof vi.fn>).mockReturnValue({
+      vendorReviews: [],
+      approvedReviews: [],
+      averageRating: 0,
+      isLoading: false,
+      apiData: [],
+    });
+
     const Wrapper = createWrapper();
     render(
       <Wrapper>
@@ -244,10 +255,9 @@ describe('Reviews', () => {
       </Wrapper>
     );
 
-    // Find and click a star (they're in the OverallRating component)
-    // For simplicity, we'll test the "Add Review" button which also opens the dialog
-    const addReviewButton = screen.getByText('Add Review');
-    fireEvent.click(addReviewButton);
+    // Click on a star to open the review dialog
+    const star = screen.getByTestId('rating-star-3');
+    fireEvent.click(star);
 
     await waitFor(() => {
       expect(screen.getByTestId('review-dialog')).toBeInTheDocument();
@@ -386,14 +396,14 @@ describe('Reviews', () => {
 
   it('should handle scroll buttons', () => {
     const Wrapper = createWrapper();
-    const { container } = render(
+    render(
       <Wrapper>
         <Reviews vendorId="vendor1" vendorName="Test Restaurant" />
       </Wrapper>
     );
 
     // Scroll buttons should be present (ChevronLeft and ChevronRight icons)
-    const buttons = container.querySelectorAll('button');
+    const buttons = screen.getAllByRole('button');
     // Should have Add Review, See All, and scroll buttons
     expect(buttons.length).toBeGreaterThan(0);
   });

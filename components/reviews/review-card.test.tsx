@@ -28,6 +28,7 @@ describe('ReviewCard', () => {
     id: 'review1',
     vendorId: 'vendor1',
     vendorName: 'Test Restaurant',
+    vendorLogo: 'restaurant-logo.jpg',
     userId: 'user1',
     userName: 'John Doe',
     userEmail: 'john@example.com',
@@ -64,11 +65,24 @@ describe('ReviewCard', () => {
   });
 
   it('should display rating stars correctly', () => {
-    const { container } = render(<ReviewCard review={mockReview} />);
+    render(<ReviewCard review={mockReview} />);
 
-    // Check for star SVGs in the container
-    const stars = container.querySelectorAll('svg');
-    expect(stars.length).toBeGreaterThanOrEqual(5);
+    // Check that rating stars container is rendered
+    const ratingStars = screen.getByTestId('rating-stars');
+    expect(ratingStars).toBeInTheDocument();
+
+    // For a 5-star rating, stars 1-5 should be filled
+    const star1 = screen.getByTestId('rating-star-1');
+    const star2 = screen.getByTestId('rating-star-2');
+    const star3 = screen.getByTestId('rating-star-3');
+    const star4 = screen.getByTestId('rating-star-4');
+    const star5 = screen.getByTestId('rating-star-5');
+
+    expect(star1).toHaveAttribute('data-filled', 'true');
+    expect(star2).toHaveAttribute('data-filled', 'true');
+    expect(star3).toHaveAttribute('data-filled', 'true');
+    expect(star4).toHaveAttribute('data-filled', 'true');
+    expect(star5).toHaveAttribute('data-filled', 'true');
   });
 
   it('should display formatted date', () => {
@@ -141,6 +155,32 @@ describe('ReviewCard', () => {
 
     // Should still render the component
     expect(screen.getByText('John Doe')).toBeInTheDocument();
+  });
+
+  it('should display partial star filling for 3-star rating', () => {
+    const threeStarReview: UserReview = {
+      ...mockReview,
+      rating: 3,
+    };
+
+    render(<ReviewCard review={threeStarReview} />);
+
+    // Check that rating stars container is rendered
+    const ratingStars = screen.getByTestId('rating-stars');
+    expect(ratingStars).toBeInTheDocument();
+
+    // For a 3-star rating, stars 1-3 should be filled, stars 4-5 should not be filled
+    const star1 = screen.getByTestId('rating-star-1');
+    const star2 = screen.getByTestId('rating-star-2');
+    const star3 = screen.getByTestId('rating-star-3');
+    const star4 = screen.getByTestId('rating-star-4');
+    const star5 = screen.getByTestId('rating-star-5');
+
+    expect(star1).toHaveAttribute('data-filled', 'true');
+    expect(star2).toHaveAttribute('data-filled', 'true');
+    expect(star3).toHaveAttribute('data-filled', 'true');
+    expect(star4).toHaveAttribute('data-filled', 'false');
+    expect(star5).toHaveAttribute('data-filled', 'false');
   });
 
   it('should handle empty content', () => {

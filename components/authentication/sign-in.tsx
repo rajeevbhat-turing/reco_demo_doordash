@@ -620,6 +620,7 @@ export default function SignIn({
               onClick={clearEmail}
               className="absolute right-3 top-1/2 transform -translate-y-1/2 text-white hover:opacity-80 
               transition-colors bg-black rounded-full p-1"
+              aria-label="Clear email"
             >
               <X className="h-3 w-3" />
             </button>

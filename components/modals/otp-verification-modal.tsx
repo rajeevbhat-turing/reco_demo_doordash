@@ -135,8 +135,12 @@ export default function OTPVerificationModal({
       ref={dialogRef}
       className={`absolute inset-0 z-[100] flex items-center justify-center ${containerClassName}`}
       style={{ backgroundColor: 'rgba(0, 0, 0, 0.65)' }}
+      data-testid="otp-verification-modal-backdrop"
     >
-      <div className="bg-white rounded-xl shadow-xl max-w-md w-full mx-4 pt-6">
+      <div
+        className="bg-white rounded-xl shadow-xl max-w-md w-full mx-4 pt-6"
+        data-testid="otp-verification-modal-content"
+      >
         {/* Header */}
         <div className="text-center mt-5 mb-4 px-4">
           <div className="w-16 h-16 mx-auto mb-3 rounded-full flex items-center justify-center text-red-600">
@@ -154,10 +158,14 @@ export default function OTPVerificationModal({
           <>
             {/* OTP Input */}
             <div className="mb-4 px-4 mt-4">
-              <label className="block text-[15px] font-bold text-[#191919ff] mb-2">
+              <label
+                htmlFor="otp-input"
+                className="block text-[15px] font-bold text-[#191919ff] mb-2"
+              >
                 Enter 6-digit code
               </label>
               <Input
+                id="otp-input"
                 type="text"
                 inputMode="numeric"
                 pattern="[0-9]*"

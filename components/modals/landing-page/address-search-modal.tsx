@@ -82,7 +82,10 @@ export default function AddressSearchModal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center">
+    <div
+      className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center"
+      data-testid="address-search-modal-backdrop"
+    >
       <div
         ref={dialogRef}
         className="relative flex flex-col bg-white max-w-lg rounded-xl p-4 mx-4 w-full"

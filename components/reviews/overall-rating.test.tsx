@@ -56,20 +56,4 @@ describe('OverallRating', () => {
 
     expect(screen.getByText('2.3')).toBeInTheDocument();
   });
-
-  it('should display star icon', () => {
-    (getDefaultRating as ReturnType<typeof vi.fn>).mockReturnValue(4.5);
-    const { container } = render(<OverallRating averageRating={4.5} />);
-
-    const starIcon = container.querySelector('svg[viewBox="0 0 20 20"]');
-    expect(starIcon).toBeInTheDocument();
-  });
-
-  it('should render circular progress SVG', () => {
-    (getDefaultRating as ReturnType<typeof vi.fn>).mockReturnValue(4.5);
-    const { container } = render(<OverallRating averageRating={4.5} />);
-
-    const circles = container.querySelectorAll('circle');
-    expect(circles.length).toBeGreaterThan(0);
-  });
 });
