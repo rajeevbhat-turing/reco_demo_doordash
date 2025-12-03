@@ -449,6 +449,16 @@ export default function CheckoutPage() {
   };
 
   const handlePlaceOrder = () => {
+    // Check if restaurant is closed (for restaurant orders only)
+    if (
+      currentCategory === 'restaurant' &&
+      currentRestaurant &&
+      currentRestaurant.isOpen === false
+    ) {
+      // Prevent order placement when restaurant is closed
+      return;
+    }
+
     const newOrderId = generateOrderId();
 
     // Get validated store name (ensures it's not a number)
@@ -1581,11 +1591,32 @@ export default function CheckoutPage() {
             </div>
 
             {/* Place Order Button */}
+            {currentCategory === 'restaurant' &&
+              currentRestaurant &&
+              currentRestaurant.isOpen === false && (
+                <div className="mb-3 p-3 bg-red-50 border border-red-200 rounded-lg">
+                  <p className="text-sm text-red-600 font-medium text-center">
+                    This restaurant is currently closed. Please schedule your order for later.
+                  </p>
+                </div>
+              )}
             <button
               onClick={handlePlaceOrder}
-              disabled={!selectedPaymentMethodObj || isOutsideDeliveryArea}
+              disabled={
+                !selectedPaymentMethodObj ||
+                isOutsideDeliveryArea ||
+                (currentCategory === 'restaurant' &&
+                  currentRestaurant &&
+                  currentRestaurant.isOpen === false)
+              }
               className={`w-full font-medium py-4 rounded-lg text-lg ${
-                selectedPaymentMethodObj && !isOutsideDeliveryArea
+                selectedPaymentMethodObj &&
+                !isOutsideDeliveryArea &&
+                !(
+                  currentCategory === 'restaurant' &&
+                  currentRestaurant &&
+                  currentRestaurant.isOpen === false
+                )
                   ? 'bg-red-600 hover:bg-red-700 text-white cursor-pointer'
                   : 'bg-gray-300 text-gray-500 cursor-not-allowed'
               }`}
@@ -1668,11 +1699,33 @@ export default function CheckoutPage() {
 
               {/* Place Order Button */}
               <div className="px-4 pt-4">
+                {/* Show warning if restaurant is closed */}
+                {currentCategory === 'restaurant' &&
+                  currentRestaurant &&
+                  currentRestaurant.isOpen === false && (
+                    <div className="mb-3 p-3 bg-red-50 border border-red-200 rounded-lg">
+                      <p className="text-sm text-red-600 font-medium text-center">
+                        This restaurant is currently closed. Please schedule your order for later.
+                      </p>
+                    </div>
+                  )}
                 <button
                   onClick={handlePlaceOrder}
-                  disabled={!selectedPaymentMethodObj || isOutsideDeliveryArea}
+                  disabled={
+                    !selectedPaymentMethodObj ||
+                    isOutsideDeliveryArea ||
+                    (currentCategory === 'restaurant' &&
+                      currentRestaurant &&
+                      currentRestaurant.isOpen === false)
+                  }
                   className={`w-full font-semibold py-3 rounded-full transition-colors ${
-                    selectedPaymentMethodObj && !isOutsideDeliveryArea
+                    selectedPaymentMethodObj &&
+                    !isOutsideDeliveryArea &&
+                    !(
+                      currentCategory === 'restaurant' &&
+                      currentRestaurant &&
+                      currentRestaurant.isOpen === false
+                    )
                       ? 'bg-red-600 hover:bg-red-700 text-white cursor-pointer'
                       : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                   }`}
