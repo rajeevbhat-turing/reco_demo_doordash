@@ -1,11 +1,11 @@
 'use client';
 
-import React, { useEffect, useRef, useState, useMemo } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { X, AlertCircle } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { type Deal } from '@/types/deal-types';
 import { useDealsStore } from '@/store/deals-store';
-import { DashDoorLogoMark } from '../common/Icons';
+// import { DashDoorLogoMark } from '../common/Icons';
 import { checkDealCriteria } from '@/lib/utils/deal-utils';
 import { useCheckoutDeals } from '@/lib/hooks/use-deals';
 
@@ -28,7 +28,7 @@ export default function PromoCodeModal({
 }: PromoCodeModalProps) {
   const modalRef = useRef<HTMLDivElement>(null);
   const [promoCode, setPromoCode] = useState('');
-  const [giftCardPin, setGiftCardPin] = useState('');
+  // const [giftCardPin, setGiftCardPin] = useState('');
   const [error, setError] = useState<{
     promocode: string | null;
     giftCard: string | null;
@@ -46,11 +46,6 @@ export default function PromoCodeModal({
 
   // Get deals from API: restaurant-specific + common deals (no DashPass deal)
   const { data: allDeals } = useCheckoutDeals(restaurantId);
-
-  // Filter out free item deals for now
-  const availableDeals = useMemo(() => {
-    return allDeals.filter(deal => !deal.freeItems || deal?.freeItems?.length === 0);
-  }, [allDeals]);
 
   useEffect(() => {
     if (isOpen) {
@@ -85,10 +80,8 @@ export default function PromoCodeModal({
 
     setError({ promocode: null, giftCard: null, deals: null });
 
-    // Find deal by promocode (only search in available deals, excluding free item deals for now)
-    const deal = availableDeals.find(
-      d => d.promocode?.toUpperCase() === promoCode.trim().toUpperCase()
-    );
+    // Find deal by promocode
+    const deal = allDeals?.find(d => d.promocode?.toUpperCase() === promoCode.trim().toUpperCase());
 
     if (!deal) {
       setError({ promocode: 'Invalid promo code', giftCard: null, deals: null });
@@ -109,6 +102,7 @@ export default function PromoCodeModal({
 
     // Apply the deal (for both discount and free item deals)
     if (cartId) {
+      console.log('cartId', cartId);
       // For free item deals, get the free item IDs from cart
       const freeItemIds: string[] = [];
       if (deal.freeItems && deal.freeItems.length > 0) {
@@ -116,7 +110,6 @@ export default function PromoCodeModal({
         // Find matching cart items
         cartItems.forEach(item => {
           let itemId = typeof item.id === 'string' ? item.id : item.id.toString();
-          const itemName = (item.itemName || '').toLowerCase().trim();
 
           // If item ID starts with store ID, remove it before checking
           if (deal.restaurantId && itemId.startsWith(deal.restaurantId + '-')) {
@@ -124,15 +117,10 @@ export default function PromoCodeModal({
           }
 
           dealFreeItemIds.forEach(freeId => {
-            // Check if cart item matches the free item ID (by ID and name)
+            // Check if cart item matches the free item ID
             const matchesById = itemId.startsWith(freeId + '-') || itemId === freeId;
-            const freeItemName = deal.freeItems
-              ?.find(fi => fi.id === freeId)
-              ?.name.toLowerCase()
-              .trim();
-            const matchesByName = freeItemName && itemName === freeItemName;
 
-            if (matchesById && matchesByName) {
+            if (matchesById) {
               // Use the free item ID from the deal, not extracted from cart item
               if (!freeItemIds.includes(freeId)) {
                 freeItemIds.push(freeId);
@@ -180,7 +168,6 @@ export default function PromoCodeModal({
           if (foundFirstFreeItem) return; // Stop after finding first free item
 
           let itemId = typeof item.id === 'string' ? item.id : item.id.toString();
-          const itemName = (item.itemName || '').toLowerCase().trim();
 
           // If item ID starts with store ID, remove it before checking
           if (deal.restaurantId && itemId.startsWith(deal.restaurantId + '-')) {
@@ -188,14 +175,10 @@ export default function PromoCodeModal({
           }
 
           for (const freeId of dealFreeItemIds) {
+            // Check if cart item matches the free item ID (by ID only)
             const matchesById = itemId.startsWith(freeId + '-') || itemId === freeId;
-            const freeItemName = deal.freeItems
-              ?.find(fi => fi.id === freeId)
-              ?.name.toLowerCase()
-              .trim();
-            const matchesByName = freeItemName && itemName === freeItemName;
 
-            if (matchesById && matchesByName) {
+            if (matchesById) {
               // Found the first free item - only track this one
               freeItemIds.push(freeId);
               foundFirstFreeItem = true;
@@ -220,19 +203,19 @@ export default function PromoCodeModal({
   };
 
   // Handle redeem gift card
-  const handleRedeemGiftCard = () => {
-    if (!giftCardPin.trim()) return;
+  // const handleRedeemGiftCard = () => {
+  //   if (!giftCardPin.trim()) return;
 
-    setError({ promocode: null, giftCard: null, deals: null });
+  //   setError({ promocode: null, giftCard: null, deals: null });
 
-    // For now, always show error (as requested - no validation)
-    setError({
-      promocode: null,
-      giftCard: 'Unable to redeem gift card. Enter your gift card PIN again.',
-      deals: null,
-    });
-    // TODO: Implement gift card redemption
-  };
+  //   // For now, always show error (as requested - no validation)
+  //   setError({
+  //     promocode: null,
+  //     giftCard: 'Unable to redeem gift card. Enter your gift card PIN again.',
+  //     deals: null,
+  //   });
+  //   // TODO: Implement gift card redemption
+  // };
 
   if (!isOpen) return null;
 
@@ -301,7 +284,7 @@ export default function PromoCodeModal({
           </div>
 
           {/* Redeem Your Gift Card Section */}
-          <div className="mb-6">
+          {/* <div className="mb-6">
             <h3 className="text-base font-bold text-[#191919ff] mb-1.5">Redeem Your Gift Card</h3>
             <div className="flex-1 relative">
               <div className="absolute left-3 top-1/2 transform -translate-y-1/2 bg-red-500 rounded-sm px-1.5 py-0.5 z-10">
@@ -333,21 +316,21 @@ export default function PromoCodeModal({
               >
                 Redeem
               </button>
-            </div>
-            {/* Gift Card Error Message */}
-            {error.giftCard && (
+            </div> */}
+          {/* Gift Card Error Message */}
+          {/* {error.giftCard && (
               <div className="flex items-center gap-2 mt-2">
                 <AlertCircle className="w-4 h-4 text-[#b71000ff]" fill="white" strokeWidth={3} />
                 <p className="text-sm text-[#b71000ff] font-medium">{error.giftCard}</p>
               </div>
             )}
-          </div>
+          </div> */}
 
           {/* Rewards & Deals Section */}
           <div className="mb-4">
             <h3 className="text-base font-bold text-[#191919ff] mb-3">Rewards & Deals</h3>
             <div className="space-y-3">
-              {availableDeals.map(deal => (
+              {allDeals?.map(deal => (
                 <div key={deal.id}>
                   <div
                     className={`border rounded-lg p-4 border-text-gray-200 ${

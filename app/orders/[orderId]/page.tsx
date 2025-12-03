@@ -589,9 +589,7 @@ export default function OrderReceiptPage() {
                 </div>
                 <div>
                   <p className="font-semibold text-sm">
-                    {deliveryPreference === 'location'
-                      ? 'Meet at a location'
-                      : 'Leave it at my door'}
+                    {deliveryPreference === 'meet' ? 'Meet at a location' : 'Leave it at my door'}
                   </p>
                   {deliveryInstructions && (
                     <p className="text-xs text-gray-600">{deliveryInstructions}</p>
