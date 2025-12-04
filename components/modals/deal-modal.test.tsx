@@ -353,4 +353,271 @@ describe('DealModal', () => {
 
     expect(screen.getByText('$5 off')).toBeInTheDocument();
   });
+
+  it('should not display free items when they are not found in menu', () => {
+    mockUseRestaurantMenu.mockReturnValue({
+      data: {
+        menuItems: [
+          {
+            id: 'item2', // Different ID, not matching free item 'item1'
+            name: 'Burger',
+            price: '12.99',
+            description: 'Delicious burger',
+            image: 'burger.jpg',
+            restaurantId: 'restaurant1',
+          },
+        ],
+      },
+    });
+
+    const Wrapper = createWrapper();
+    render(
+      <Wrapper>
+        <DealModal isOpen={true} onClose={mockOnClose} deal={mockDeal} />
+      </Wrapper>
+    );
+
+    // Free item should not be displayed since it's not in menu
+    expect(screen.queryByText('Free Pizza')).not.toBeInTheDocument();
+  });
+
+  it('should open menu item dialog when free item has modifications', async () => {
+    mockUseRestaurantMenu.mockReturnValue({
+      data: {
+        menuItems: [
+          {
+            id: 'item1',
+            name: 'Free Pizza',
+            price: '15.99',
+            description: 'Delicious pizza',
+            image: 'pizza.jpg',
+            restaurantId: 'restaurant1',
+            modifications: [
+              {
+                id: 'mod1',
+                name: 'Size',
+                options: [{ id: 'opt1', name: 'Small', price: 0 }],
+              },
+            ],
+          },
+        ],
+      },
+    });
+
+    const Wrapper = createWrapper();
+    render(
+      <Wrapper>
+        <DealModal isOpen={true} onClose={mockOnClose} deal={mockDeal} />
+      </Wrapper>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('Free Pizza')).toBeInTheDocument();
+    });
+
+    const addButton = screen.getByLabelText('Add Free Pizza');
+    fireEvent.click(addButton);
+
+    // Should open menu item dialog
+    await waitFor(() => {
+      expect(screen.getByTestId('menu-item-dialog')).toBeInTheDocument();
+    });
+    expect(mockAddItem).not.toHaveBeenCalled(); // Should not add directly
+  });
+
+  it('should add free item directly to cart when it has no modifications', async () => {
+    mockUseRestaurantMenu.mockReturnValue({
+      data: {
+        menuItems: [
+          {
+            id: 'item1',
+            name: 'Free Pizza',
+            price: '15.99',
+            description: 'Delicious pizza',
+            image: 'pizza.jpg',
+            restaurantId: 'restaurant1',
+            modifications: [], // No modifications
+          },
+        ],
+      },
+    });
+
+    const Wrapper = createWrapper();
+    render(
+      <Wrapper>
+        <DealModal isOpen={true} onClose={mockOnClose} deal={mockDeal} />
+      </Wrapper>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('Free Pizza')).toBeInTheDocument();
+    });
+
+    const addButton = screen.getByLabelText('Add Free Pizza');
+    fireEvent.click(addButton);
+
+    // Should add directly to cart
+    expect(mockAddItem).toHaveBeenCalledWith(
+      expect.objectContaining({
+        id: 'item1',
+        itemName: 'Free Pizza',
+        price: '15.99',
+      }),
+      'restaurant',
+      'Test Restaurant',
+      'restaurant1'
+    );
+    expect(mockSetSnackbar).toHaveBeenCalledWith({
+      message: 'Item added',
+      autoHideDuration: 3000,
+    });
+  });
+
+  it('should display multiple free items when deal has multiple free items', async () => {
+    const dealWithMultipleFreeItems: Deal = {
+      id: 'deal2',
+      restaurantId: 'restaurant1',
+      title: 'Free Items Deal',
+      description: 'Get multiple free items',
+      minimumPurchase: 20,
+      freeItems: [
+        {
+          id: 'item1',
+          name: 'Free Pizza',
+        },
+        {
+          id: 'item2',
+          name: 'Free Burger',
+        },
+      ],
+    };
+
+    mockUseRestaurantMenu.mockReturnValue({
+      data: {
+        menuItems: [
+          {
+            id: 'item1',
+            name: 'Free Pizza',
+            price: '15.99',
+            description: 'Delicious pizza',
+            image: 'pizza.jpg',
+            restaurantId: 'restaurant1',
+          },
+          {
+            id: 'item2',
+            name: 'Free Burger',
+            price: '12.99',
+            description: 'Delicious burger',
+            image: 'burger.jpg',
+            restaurantId: 'restaurant1',
+          },
+        ],
+      },
+    });
+
+    const Wrapper = createWrapper();
+    render(
+      <Wrapper>
+        <DealModal isOpen={true} onClose={mockOnClose} deal={dealWithMultipleFreeItems} />
+      </Wrapper>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('Free Pizza')).toBeInTheDocument();
+      expect(screen.getByText('Free Burger')).toBeInTheDocument();
+    });
+  });
+
+  it('should display free item with image', async () => {
+    mockUseRestaurantMenu.mockReturnValue({
+      data: {
+        menuItems: [
+          {
+            id: 'item1',
+            name: 'Free Pizza',
+            price: '15.99',
+            description: 'Delicious pizza',
+            image: 'pizza.jpg',
+            restaurantId: 'restaurant1',
+          },
+        ],
+      },
+    });
+
+    const Wrapper = createWrapper();
+    render(
+      <Wrapper>
+        <DealModal isOpen={true} onClose={mockOnClose} deal={mockDeal} />
+      </Wrapper>
+    );
+
+    await waitFor(() => {
+      const image = screen.getByAltText('Free Pizza');
+      expect(image).toBeInTheDocument();
+      expect(image).toHaveAttribute('src', 'pizza.jpg');
+    });
+  });
+
+  it('should display placeholder when free item has no image', async () => {
+    mockUseRestaurantMenu.mockReturnValue({
+      data: {
+        menuItems: [
+          {
+            id: 'item1',
+            name: 'Free Pizza',
+            price: '15.99',
+            description: 'Delicious pizza',
+            image: '', // No image
+            restaurantId: 'restaurant1',
+          },
+        ],
+      },
+    });
+
+    const Wrapper = createWrapper();
+    render(
+      <Wrapper>
+        <DealModal isOpen={true} onClose={mockOnClose} deal={mockDeal} />
+      </Wrapper>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('Free Pizza')).toBeInTheDocument();
+      expect(screen.getByText('No image')).toBeInTheDocument();
+    });
+  });
+
+  it('should handle empty menu data gracefully', () => {
+    mockUseRestaurantMenu.mockReturnValue({
+      data: {
+        menuItems: [],
+      },
+    });
+
+    const Wrapper = createWrapper();
+    render(
+      <Wrapper>
+        <DealModal isOpen={true} onClose={mockOnClose} deal={mockDeal} />
+      </Wrapper>
+    );
+
+    // Should not display free items when menu is empty
+    expect(screen.queryByText('Free Pizza')).not.toBeInTheDocument();
+  });
+
+  it('should handle null menu data gracefully', () => {
+    mockUseRestaurantMenu.mockReturnValue({
+      data: null,
+    });
+
+    const Wrapper = createWrapper();
+    render(
+      <Wrapper>
+        <DealModal isOpen={true} onClose={mockOnClose} deal={mockDeal} />
+      </Wrapper>
+    );
+
+    // Should not display free items when menu data is null
+    expect(screen.queryByText('Free Pizza')).not.toBeInTheDocument();
+  });
 });

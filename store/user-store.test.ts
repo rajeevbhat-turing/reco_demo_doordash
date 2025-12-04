@@ -461,4 +461,216 @@ describe('user-store', () => {
       expect(addresses[1].default).toBe(true);
     });
   });
+
+  describe('updateAddress', () => {
+    it('should update address fields', () => {
+      const address: Address = {
+        id: 'addr1',
+        street: '123 Main St',
+        city: 'New York',
+        state: 'NY',
+        zipCode: '10001',
+        lat: 40.7128,
+        lng: -74.006,
+        addressType: 'house',
+        default: true,
+      };
+
+      useUserStore.setState({
+        currentUser: { ...mockUser, addresses: [address] },
+      });
+
+      useUserStore.getState().updateAddress('addr1', {
+        street: '456 New St',
+        city: 'Brooklyn',
+      });
+
+      const updatedAddress = useUserStore.getState().currentUser?.addresses[0];
+      expect(updatedAddress?.street).toBe('456 New St');
+      expect(updatedAddress?.city).toBe('Brooklyn');
+      expect(updatedAddress?.state).toBe('NY'); // unchanged
+    });
+
+    it('should not update when no current user', () => {
+      expect(() =>
+        useUserStore.getState().updateAddress('addr1', { street: 'New St' })
+      ).not.toThrow();
+    });
+  });
+
+  describe('getAddresses', () => {
+    it('should return all addresses for current user', () => {
+      const address1: Address = {
+        id: 'addr1',
+        street: '123 Main St',
+        city: 'New York',
+        state: 'NY',
+        zipCode: '10001',
+        lat: 40.7128,
+        lng: -74.006,
+        addressType: 'house',
+        default: true,
+      };
+      const address2: Address = {
+        id: 'addr2',
+        street: '456 Oak Ave',
+        city: 'Los Angeles',
+        state: 'CA',
+        zipCode: '90001',
+        lat: 34.0522,
+        lng: -118.2437,
+        addressType: 'house',
+        default: false,
+      };
+
+      useUserStore.setState({
+        currentUser: { ...mockUser, addresses: [address1, address2] },
+      });
+
+      const addresses = useUserStore.getState().getAddresses();
+      expect(addresses).toHaveLength(2);
+    });
+
+    it('should return empty array when no current user', () => {
+      const addresses = useUserStore.getState().getAddresses();
+      expect(addresses).toEqual([]);
+    });
+  });
+
+  describe('addPaymentMethod', () => {
+    it('should add payment method to current user', () => {
+      useUserStore.setState({ currentUser: mockUser });
+
+      const newMethod = {
+        cardNumber: '4111111111111111',
+        expirationDate: '12/32',
+        cvv: '123',
+        cvc: '123',
+        expiry: '12/32',
+        nameOnCard: 'John Doe',
+        zipCode: '10001',
+        default: false,
+      };
+
+      const addedMethod = useUserStore.getState().addPaymentMethod(newMethod);
+
+      expect(addedMethod.id).toBeDefined();
+      expect(addedMethod.type).toBe('MasterCard'); // Store hardcodes type to MasterCard
+      expect(addedMethod.lastFour).toBe('1111');
+      expect(useUserStore.getState().currentUser?.paymentMethods).toHaveLength(1);
+    });
+
+    it('should throw error when no current user', () => {
+      const newMethod = {
+        cardNumber: '4111111111111111',
+        expirationDate: '12/32',
+        cvv: '123',
+        cvc: '123',
+        expiry: '12/32',
+        nameOnCard: 'John Doe',
+        zipCode: '10001',
+        default: false,
+      };
+
+      expect(() => useUserStore.getState().addPaymentMethod(newMethod)).toThrow('No current user');
+    });
+  });
+
+  describe('removePaymentMethod', () => {
+    it('should remove payment method from current user', () => {
+      const paymentMethod = {
+        id: 'pm1',
+        type: 'Visa' as const,
+        cardNumber: '4111111111111111',
+        lastFour: '1111',
+        expirationDate: '12/32',
+        cvv: '123',
+        cvc: '123',
+        expiry: '12/32',
+        nameOnCard: 'John Doe',
+        zipCode: '10001',
+        default: true,
+      };
+
+      useUserStore.setState({
+        currentUser: { ...mockUser, paymentMethods: [paymentMethod] },
+      });
+
+      useUserStore.getState().removePaymentMethod('pm1');
+
+      expect(useUserStore.getState().currentUser?.paymentMethods).toHaveLength(0);
+    });
+  });
+
+  describe('setDefaultPaymentMethod', () => {
+    it('should set payment method as default', () => {
+      const pm1 = {
+        id: 'pm1',
+        type: 'Visa' as const,
+        cardNumber: '4111111111111111',
+        lastFour: '1111',
+        expirationDate: '12/32',
+        cvv: '123',
+        cvc: '123',
+        expiry: '12/32',
+        nameOnCard: 'John Doe',
+        zipCode: '10001',
+        default: true,
+      };
+      const pm2 = {
+        id: 'pm2',
+        type: 'Mastercard' as const,
+        cardNumber: '5500000000000004',
+        lastFour: '0004',
+        expirationDate: '06/26',
+        cvv: '456',
+        cvc: '456',
+        expiry: '06/26',
+        nameOnCard: 'John Doe',
+        zipCode: '10001',
+        default: false,
+      };
+
+      useUserStore.setState({
+        currentUser: { ...mockUser, paymentMethods: [pm1, pm2] },
+      });
+
+      useUserStore.getState().setDefaultPaymentMethod('pm2');
+
+      const methods = useUserStore.getState().currentUser?.paymentMethods || [];
+      expect(methods[0].default).toBe(false);
+      expect(methods[1].default).toBe(true);
+    });
+  });
+
+  describe('getPaymentMethods', () => {
+    it('should return all payment methods for current user', () => {
+      const paymentMethod = {
+        id: 'pm1',
+        type: 'Visa' as const,
+        cardNumber: '4111111111111111',
+        lastFour: '1111',
+        expirationDate: '12/32',
+        cvv: '123',
+        cvc: '123',
+        expiry: '12/32',
+        nameOnCard: 'John Doe',
+        zipCode: '10001',
+        default: true,
+      };
+
+      useUserStore.setState({
+        currentUser: { ...mockUser, paymentMethods: [paymentMethod] },
+      });
+
+      const methods = useUserStore.getState().getPaymentMethods();
+      expect(methods).toHaveLength(1);
+      expect(methods[0].id).toBe('pm1');
+    });
+
+    it('should return empty array when no current user', () => {
+      const methods = useUserStore.getState().getPaymentMethods();
+      expect(methods).toEqual([]);
+    });
+  });
 });

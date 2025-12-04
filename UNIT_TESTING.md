@@ -1,6 +1,15 @@
 # Unit Testing Guide
 
-This project uses Vitest and React Testing Library for unit testing. Unit tests are co-located with their source files using the `.test.ts` or `.test.tsx` extension.
+This project uses **Vitest** and **React Testing Library** for unit testing.
+
+## Why Vitest?
+
+- **Fast**: Native ESM support and Vite-powered, significantly faster than Jest
+- **Compatible**: Jest-compatible API (`describe`, `it`, `expect`, `vi.mock()`)
+- **Built-in**: TypeScript support out of the box
+- **Watch mode**: Instant feedback during development
+
+Unit tests are co-located with their source files using the `.test.ts` or `.test.tsx` extension.
 
 ### Uses of Unit Tests
 
@@ -8,7 +17,7 @@ This project uses Vitest and React Testing Library for unit testing. Unit tests 
 - **API Functions**: Verify API call logic, error handling, and data transformation
 - **Hooks**: Test custom React hooks and their state management
 - **Components**: Verify component rendering, user interactions, and form validation
-- **Store Logic**: Test state management actions and reducers
+- **Store Logic**: Test state management actions and reducers in zustand store
 - **Edge Cases**: Cover boundary conditions and error scenarios
 
 ## Running Tests
@@ -73,4 +82,3 @@ External dependencies are mocked to isolate the code being tested:
 - **Zustand Stores**: Mock store state and actions using `vi.mock()`
 - **API Calls**: Mock fetch or API functions using `vi.fn()`
 - **React Query**: Use QueryClientProvider wrapper
-

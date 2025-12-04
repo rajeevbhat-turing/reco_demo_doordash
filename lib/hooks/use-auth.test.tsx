@@ -192,6 +192,81 @@ describe('useAuth', () => {
         expect(mockStore.setState).toHaveBeenCalled();
       });
     });
+
+    it('should set existing address as default when tempAddress matches', async () => {
+      const existingAddress: Address = {
+        id: 'existing-addr',
+        street: '123 Main St',
+        city: 'New York',
+        state: 'NY',
+        zipCode: '10001',
+        lat: 40.7128,
+        lng: -74.006,
+        addressType: 'house',
+        default: false,
+      };
+
+      const tempAddress: Address = {
+        id: 'temp-id',
+        street: '123 Main St',
+        city: 'New York',
+        state: 'NY',
+        zipCode: '10001',
+        lat: 40.7128,
+        lng: -74.006,
+        addressType: 'house',
+        default: true,
+      };
+
+      const userWithExistingAddress: User = {
+        ...mockUser,
+        addresses: [existingAddress],
+      };
+
+      (loginUser as ReturnType<typeof vi.fn>).mockResolvedValue(userWithExistingAddress);
+
+      const mockStore = useUserStore as unknown as ReturnType<typeof vi.fn> & {
+        getState: ReturnType<typeof vi.fn>;
+        setState: ReturnType<typeof vi.fn>;
+      };
+      mockStore.mockImplementation((selector?: any) => {
+        if (selector) {
+          return selector({
+            getTempAddress: () => tempAddress,
+          });
+        }
+        return {
+          getTempAddress: () => tempAddress,
+        };
+      });
+      mockStore.getState.mockReturnValue({
+        users: [],
+        currentUser: null,
+        changePasswordPhoneVerified: false,
+      });
+
+      const { result } = renderHook(() => useAuth(), {
+        wrapper: createWrapper(),
+      });
+
+      await result.current.login({
+        email: 'john@example.com',
+        password: 'password123',
+      });
+
+      await waitFor(() => {
+        expect(mockStore.setState).toHaveBeenCalledWith(
+          expect.objectContaining({
+            currentUser: expect.objectContaining({
+              addresses: expect.arrayContaining([
+                expect.objectContaining({ id: 'existing-addr', default: true }),
+              ]),
+            }),
+            tempAddress: null,
+          })
+        );
+      });
+    });
   });
 
   describe('generateOTP', () => {

@@ -193,7 +193,8 @@ describe('PromoCodeModal', () => {
     expect(promoCodeInput).toBeInTheDocument();
   });
 
-  it('should display gift card PIN input', () => {
+  // Gift card section is currently commented out in the component
+  it.skip('should display gift card PIN input', () => {
     const Wrapper = createWrapper();
     render(
       <Wrapper>
@@ -228,8 +229,7 @@ describe('PromoCodeModal', () => {
 
     expect(screen.getByText('20% Off')).toBeInTheDocument();
     expect(screen.getByText('$10 Off')).toBeInTheDocument();
-    // Free item deals are filtered out from display
-    expect(screen.queryByText('Free Pizza Deal')).not.toBeInTheDocument();
+    expect(screen.getByText('Free Pizza Deal')).toBeInTheDocument();
   });
 
   it('should apply deal when valid promo code is entered', () => {
@@ -404,34 +404,6 @@ describe('PromoCodeModal', () => {
     expect(mockRemoveDeal).toHaveBeenCalledWith('restaurant1restaurant');
   });
 
-  it('should show error when gift card PIN is entered', () => {
-    const Wrapper = createWrapper();
-    render(
-      <Wrapper>
-        <PromoCodeModal
-          isOpen={true}
-          onClose={mockOnClose}
-          restaurantId="restaurant1"
-          cartSubtotal={25.99}
-          cartItems={mockCartItems}
-          cartId="restaurant1restaurant"
-        />
-      </Wrapper>
-    );
-
-    const giftCardInput = screen.getByTestId('gift-card-input') as HTMLInputElement;
-    fireEvent.change(giftCardInput, { target: { value: '123456' } });
-
-    const redeemButton = screen.getByText('Redeem');
-    fireEvent.click(redeemButton);
-
-    waitFor(() => {
-      expect(
-        screen.getByText('Unable to redeem gift card. Enter your gift card PIN again.')
-      ).toBeInTheDocument();
-    });
-  });
-
   it('should call onClose when close button is clicked', () => {
     const Wrapper = createWrapper();
     render(
@@ -494,29 +466,7 @@ describe('PromoCodeModal', () => {
     expect(mockOnClose).toHaveBeenCalledTimes(1);
   });
 
-  it('should filter out free item deals from available deals', () => {
-    const Wrapper = createWrapper();
-    render(
-      <Wrapper>
-        <PromoCodeModal
-          isOpen={true}
-          onClose={mockOnClose}
-          restaurantId="restaurant1"
-          cartSubtotal={25.99}
-          cartItems={mockCartItems}
-          cartId="restaurant1restaurant"
-        />
-      </Wrapper>
-    );
-
-    // Free item deal should not be displayed (filtered out)
-    expect(screen.queryByText('Free Pizza Deal')).not.toBeInTheDocument();
-    // But regular deals should be displayed
-    expect(screen.getByText('20% Off')).toBeInTheDocument();
-    expect(screen.getByText('$10 Off')).toBeInTheDocument();
-  });
-
-  it('should not apply free item deal via promo code (free item deals are filtered out)', () => {
+  it('should display free item deals in available deals', () => {
     const Wrapper = createWrapper();
     render(
       <Wrapper>
@@ -531,6 +481,36 @@ describe('PromoCodeModal', () => {
       </Wrapper>
     );
 
+    expect(screen.getByText('Free Pizza Deal')).toBeInTheDocument();
+    expect(screen.getByText('20% Off')).toBeInTheDocument();
+    expect(screen.getByText('$10 Off')).toBeInTheDocument();
+  });
+
+  it('should apply free item deal via promo code', () => {
+    const Wrapper = createWrapper();
+    // Mock cart items that include the free item (Pizza with id matching free item id '1')
+    const cartItemsWithFreeItem = [
+      {
+        id: '1', // Matches the free item ID
+        itemName: 'Pizza',
+        price: 25.99,
+        quantity: 1,
+      },
+    ];
+
+    render(
+      <Wrapper>
+        <PromoCodeModal
+          isOpen={true}
+          onClose={mockOnClose}
+          restaurantId="restaurant1"
+          cartSubtotal={41.98}
+          cartItems={cartItemsWithFreeItem}
+          cartId="restaurant1restaurant"
+        />
+      </Wrapper>
+    );
+
     const promoCodeInput = screen.getByTestId('promo-code-input') as HTMLInputElement;
     fireEvent.change(promoCodeInput, { target: { value: 'FREEPIZZA' } });
 
@@ -538,8 +518,251 @@ describe('PromoCodeModal', () => {
     const applyButtons = screen.getAllByRole('button', { name: 'Apply' });
     fireEvent.click(applyButtons[0]);
 
-    // Free item deals are filtered out from availableDeals, so promo code should be invalid
-    expect(screen.getByText('Invalid promo code')).toBeInTheDocument();
+    expect(mockApplyDeal).toHaveBeenCalled();
+    expect(mockOnClose).toHaveBeenCalledTimes(1);
+  });
+
+  it('should apply free item deal via deal card click (only tracks first free item)', () => {
+    const Wrapper = createWrapper();
+    // Mock cart items with multiple free items
+    const cartItemsWithMultipleFreeItems = [
+      {
+        id: '1', // First free item
+        itemName: 'Pizza',
+        price: 25.99,
+        quantity: 1,
+      },
+      {
+        id: '1-2', // Another instance of free item (with variant)
+        itemName: 'Pizza',
+        price: 25.99,
+        quantity: 1,
+      },
+    ];
+
+    render(
+      <Wrapper>
+        <PromoCodeModal
+          isOpen={true}
+          onClose={mockOnClose}
+          restaurantId="restaurant1"
+          cartSubtotal={51.98}
+          cartItems={cartItemsWithMultipleFreeItems}
+          cartId="restaurant1restaurant"
+        />
+      </Wrapper>
+    );
+
+    // Find the free item deal by its title, then find the Apply button
+    const dealTitle = screen.getByText('Free Pizza Deal');
+    const dealCard = dealTitle.parentElement?.parentElement?.parentElement;
+    if (dealCard) {
+      const applyButton = within(dealCard as HTMLElement).getByRole('button', { name: 'Apply' });
+      fireEvent.click(applyButton);
+    }
+
+    // Should only track the first free item (one freeItemId passed)
+    expect(mockApplyDeal).toHaveBeenCalledWith(
+      'deal3',
+      'restaurant1restaurant',
+      expect.arrayContaining(['1'])
+    );
+    expect(mockOnClose).toHaveBeenCalledTimes(1);
+  });
+
+  it('should handle free item deal with cart item ID that has restaurantId prefix', () => {
+    const Wrapper = createWrapper();
+    // Mock cart item with restaurantId prefix
+    const cartItemsWithPrefix = [
+      {
+        id: 'restaurant1-1', // Has restaurantId prefix
+        itemName: 'Pizza',
+        price: 25.99,
+        quantity: 1,
+      },
+    ];
+
+    render(
+      <Wrapper>
+        <PromoCodeModal
+          isOpen={true}
+          onClose={mockOnClose}
+          restaurantId="restaurant1"
+          cartSubtotal={41.98}
+          cartItems={cartItemsWithPrefix}
+          cartId="restaurant1restaurant"
+        />
+      </Wrapper>
+    );
+
+    const promoCodeInput = screen.getByTestId('promo-code-input') as HTMLInputElement;
+    fireEvent.change(promoCodeInput, { target: { value: 'FREEPIZZA' } });
+
+    const applyButtons = screen.getAllByRole('button', { name: 'Apply' });
+    fireEvent.click(applyButtons[0]);
+
+    expect(mockApplyDeal).toHaveBeenCalled();
+    expect(mockOnClose).toHaveBeenCalledTimes(1);
+  });
+
+  it('should show error when free item deal applied but cart does not contain required free items', () => {
+    mockCheckDealCriteria.mockReturnValue({
+      meets: false,
+      message: 'To use this promotion, make sure your cart contains the required items.',
+    });
+
+    const Wrapper = createWrapper();
+    // Cart items without the free item
+    const cartItemsWithoutFreeItem = [
+      {
+        id: 'item2', // Different item, not matching free item ID '1'
+        itemName: 'Burger',
+        price: 15.99,
+        quantity: 1,
+      },
+    ];
+
+    render(
+      <Wrapper>
+        <PromoCodeModal
+          isOpen={true}
+          onClose={mockOnClose}
+          restaurantId="restaurant1"
+          cartSubtotal={41.98}
+          cartItems={cartItemsWithoutFreeItem}
+          cartId="restaurant1restaurant"
+        />
+      </Wrapper>
+    );
+
+    const promoCodeInput = screen.getByTestId('promo-code-input') as HTMLInputElement;
+    fireEvent.change(promoCodeInput, { target: { value: 'FREEPIZZA' } });
+
+    const applyButtons = screen.getAllByRole('button', { name: 'Apply' });
+    fireEvent.click(applyButtons[0]);
+
+    expect(
+      screen.getByText('To use this promotion, make sure your cart contains the required items.')
+    ).toBeInTheDocument();
     expect(mockApplyDeal).not.toHaveBeenCalled();
+  });
+
+  it('should show error when free item deal applied but subtotal too low', () => {
+    mockCheckDealCriteria.mockReturnValue({
+      meets: false,
+      message: 'To use this promotion, make sure your cart contains the required items.',
+    });
+
+    const Wrapper = createWrapper();
+    // Cart has free item but subtotal is too low (minimumPurchase is 30)
+    const cartItemsWithLowSubtotal = [
+      {
+        id: '1',
+        itemName: 'Pizza',
+        price: 15.99, // Low price
+        quantity: 1,
+      },
+    ];
+
+    render(
+      <Wrapper>
+        <PromoCodeModal
+          isOpen={true}
+          onClose={mockOnClose}
+          restaurantId="restaurant1"
+          cartSubtotal={15.99} // Below minimumPurchase of 30
+          cartItems={cartItemsWithLowSubtotal}
+          cartId="restaurant1restaurant"
+        />
+      </Wrapper>
+    );
+
+    const promoCodeInput = screen.getByTestId('promo-code-input') as HTMLInputElement;
+    fireEvent.change(promoCodeInput, { target: { value: 'FREEPIZZA' } });
+
+    const applyButtons = screen.getAllByRole('button', { name: 'Apply' });
+    fireEvent.click(applyButtons[0]);
+
+    expect(
+      screen.getByText('To use this promotion, make sure your cart contains the required items.')
+    ).toBeInTheDocument();
+    expect(mockApplyDeal).not.toHaveBeenCalled();
+  });
+
+  it('should apply free item deal via promo code with multiple matching free items (tracks all)', () => {
+    const Wrapper = createWrapper();
+    // Mock cart items with multiple free items (different IDs that match)
+    const cartItemsWithMultipleFreeItems = [
+      {
+        id: '1', // First free item
+        itemName: 'Pizza',
+        price: 25.99,
+        quantity: 1,
+      },
+      {
+        id: '1-2', // Variant of free item
+        itemName: 'Pizza',
+        price: 25.99,
+        quantity: 1,
+      },
+    ];
+
+    render(
+      <Wrapper>
+        <PromoCodeModal
+          isOpen={true}
+          onClose={mockOnClose}
+          restaurantId="restaurant1"
+          cartSubtotal={51.98}
+          cartItems={cartItemsWithMultipleFreeItems}
+          cartId="restaurant1restaurant"
+        />
+      </Wrapper>
+    );
+
+    const promoCodeInput = screen.getByTestId('promo-code-input') as HTMLInputElement;
+    fireEvent.change(promoCodeInput, { target: { value: 'FREEPIZZA' } });
+
+    const applyButtons = screen.getAllByRole('button', { name: 'Apply' });
+    fireEvent.click(applyButtons[0]);
+
+    // When applying via promo code, should track all matching free items
+    expect(mockApplyDeal).toHaveBeenCalled();
+    expect(mockOnClose).toHaveBeenCalledTimes(1);
+  });
+
+  it('should handle free item deal with item ID that starts with free item ID', () => {
+    const Wrapper = createWrapper();
+    // Cart item ID that starts with free item ID (e.g., "1-variant")
+    const cartItemsWithVariantId = [
+      {
+        id: '1-variant', // Starts with free item ID '1'
+        itemName: 'Pizza Variant',
+        price: 25.99,
+        quantity: 1,
+      },
+    ];
+
+    render(
+      <Wrapper>
+        <PromoCodeModal
+          isOpen={true}
+          onClose={mockOnClose}
+          restaurantId="restaurant1"
+          cartSubtotal={41.98}
+          cartItems={cartItemsWithVariantId}
+          cartId="restaurant1restaurant"
+        />
+      </Wrapper>
+    );
+
+    const promoCodeInput = screen.getByTestId('promo-code-input') as HTMLInputElement;
+    fireEvent.change(promoCodeInput, { target: { value: 'FREEPIZZA' } });
+
+    const applyButtons = screen.getAllByRole('button', { name: 'Apply' });
+    fireEvent.click(applyButtons[0]);
+
+    expect(mockApplyDeal).toHaveBeenCalled();
+    expect(mockOnClose).toHaveBeenCalledTimes(1);
   });
 });

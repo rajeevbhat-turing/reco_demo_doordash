@@ -185,4 +185,64 @@ describe('SignIn Component', () => {
       });
     });
   });
+
+  describe('OTP Form', () => {
+    it('should show OTP form after successful email submission', async () => {
+      const mockUser = {
+        id: '1',
+        email: 'john@example.com',
+        phoneNumber: '1234567890',
+        country: {
+          dialCode: '+1',
+          code: 'US',
+          name: 'United States',
+        },
+      };
+      mockGenerateOTP.mockResolvedValue({
+        otp: '123456',
+        user: mockUser,
+      });
+
+      render(<SignIn onSuccess={mockOnSuccess} setMode={mockSetMode} />);
+
+      const emailInput = screen.getByLabelText(/email/i);
+      fireEvent.change(emailInput, { target: { value: 'john@example.com' } });
+
+      const submitButton = screen.getByRole('button', { name: /continue to sign in/i });
+      fireEvent.click(submitButton);
+
+      await waitFor(() => {
+        expect(screen.getByText(/Enter the 6 digit code/i)).toBeInTheDocument();
+      });
+    });
+
+    it('should display user email in OTP form', async () => {
+      const mockUser = {
+        id: '1',
+        email: 'john@example.com',
+        phoneNumber: '1234567890',
+        country: {
+          dialCode: '+1',
+          code: 'US',
+          name: 'United States',
+        },
+      };
+      mockGenerateOTP.mockResolvedValue({
+        otp: '123456',
+        user: mockUser,
+      });
+
+      render(<SignIn onSuccess={mockOnSuccess} setMode={mockSetMode} />);
+
+      const emailInput = screen.getByLabelText(/email/i);
+      fireEvent.change(emailInput, { target: { value: 'john@example.com' } });
+
+      const submitButton = screen.getByRole('button', { name: /continue to sign in/i });
+      fireEvent.click(submitButton);
+
+      await waitFor(() => {
+        expect(screen.getByText('john@example.com')).toBeInTheDocument();
+      });
+    });
+  });
 });

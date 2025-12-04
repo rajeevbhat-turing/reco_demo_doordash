@@ -85,11 +85,13 @@ export default function FoodCategories({
         ref={containerRef}
         className="flex overflow-x-auto py-4 scrollbar-hide -mx-4 px-4 space-x-8"
         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+        data-testid="food-categories-container"
       >
         {foodCategorySvgs.map(category => (
           <button
             key={category.id}
             data-category={category.name}
+            data-selected={selectedCategory === category.name ? 'true' : 'false'}
             className={`category-icon flex-shrink-0`}
             onClick={() =>
               onCategorySelect(selectedCategory === category.name ? null : category.name)

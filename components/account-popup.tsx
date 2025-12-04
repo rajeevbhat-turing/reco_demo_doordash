@@ -105,7 +105,7 @@ export default function AccountPopup({ isOpen, onClose, anchorElement }: Account
         {/* User Profile Section */}
         <div className="flex items-center p-3 hover:bg-gray-100 cursor-pointer">
           <div className="w-[56px] h-[56px] bg-[#91a5f9] rounded-full flex items-center justify-center mr-4 flex-shrink-0">
-            <span className="text-white font-bold text-[32px]">
+            <span className="text-white font-bold text-[32px]" data-testid="avatar-initial">
               {currentUser?.name?.charAt(0) || 'U'}
             </span>
           </div>

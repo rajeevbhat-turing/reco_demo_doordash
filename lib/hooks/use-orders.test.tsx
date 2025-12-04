@@ -266,4 +266,23 @@ describe('useOrders', () => {
     // Check if error occurred - React Query sets error
     expect(result.current.error).toBeTruthy();
   });
+
+  it('should initialize with empty array when user orders already exist in store', async () => {
+    (fetchUserOrders as ReturnType<typeof vi.fn>).mockResolvedValue(mockOrders);
+
+    const mockInitializeOrdersFromDB = vi.fn();
+    setOrdersStoreState({
+      initializeOrdersFromDB: mockInitializeOrdersFromDB,
+      isInitialized: false,
+      orders: [{ id: 'existing-order', userId: 'user1' }], // User already has orders
+    });
+
+    renderHook(() => useOrders(), {
+      wrapper: createWrapper(),
+    });
+
+    await waitFor(() => {
+      expect(mockInitializeOrdersFromDB).toHaveBeenCalledWith([]);
+    });
+  });
 });

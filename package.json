@@ -35,7 +35,7 @@
     "test:unit": "vitest run",
     "test:unit:watch": "vitest",
     "test:unit:coverage": "vitest run --coverage",
-    "test:unit:ci": "vitest run --coverage"
+    "test:unit:ci": "vitest run --coverage --reporter=verbose --no-color"
   },
   "dependencies": {
     "@date-fns/utc": "^2.1.1",

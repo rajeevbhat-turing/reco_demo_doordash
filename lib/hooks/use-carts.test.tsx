@@ -235,4 +235,23 @@ describe('useCarts', () => {
     // Check if error occurred - React Query sets error
     expect(result.current.error).toBeTruthy();
   });
+
+  it('should initialize with empty array when user carts already exist in store', async () => {
+    (fetchUserCarts as ReturnType<typeof vi.fn>).mockResolvedValue(mockCarts);
+
+    const mockInitializeCartsFromDB = vi.fn();
+    setCartStoreState({
+      initializeCartsFromDB: mockInitializeCartsFromDB,
+      isInitialized: false,
+      carts: [{ storeId: 'existing-store', userId: 'user1', items: [] }], // User already has carts
+    });
+
+    renderHook(() => useCarts(), {
+      wrapper: createWrapper(),
+    });
+
+    await waitFor(() => {
+      expect(mockInitializeCartsFromDB).toHaveBeenCalledWith([]);
+    });
+  });
 });
