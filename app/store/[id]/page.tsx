@@ -601,6 +601,11 @@ export default function RestaurantPage() {
   }
 
   const handleAddToCart = (item: any) => {
+    // Check if restaurant is closed
+    if (restaurant && restaurant.isOpen === false) {
+      return; // Prevent adding to cart when restaurant is closed
+    }
+
     // Check if item has modifications
     if (item.modifications && item.modifications.length > 0) {
       // Item has modifications - open dialog instead
@@ -1048,14 +1053,27 @@ export default function RestaurantPage() {
                                 loading="lazy"
                               />
                               <button
-                                className="absolute bottom-1 right-1 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-md hover:bg-gray-50 transition-colors"
+                                className={`absolute bottom-1 right-1 w-8 h-8 rounded-full flex items-center justify-center shadow-md transition-colors ${
+                                  restaurant && restaurant.isOpen === false
+                                    ? 'bg-gray-200 cursor-not-allowed'
+                                    : 'bg-white hover:bg-gray-50'
+                                }`}
                                 onClick={e => {
                                   e.stopPropagation(); // Prevent opening the dialog
                                   handleAddToCart(item);
                                 }}
+                                disabled={restaurant && restaurant.isOpen === false}
                                 aria-label="Add to cart"
                               >
-                                <span className="text-lg font-bold text-gray-900">+</span>
+                                <span
+                                  className={`text-lg font-bold ${
+                                    restaurant && restaurant.isOpen === false
+                                      ? 'text-gray-400'
+                                      : 'text-gray-900'
+                                  }`}
+                                >
+                                  +
+                                </span>
                               </button>
                             </div>
                           </div>
@@ -1193,14 +1211,27 @@ export default function RestaurantPage() {
                               loading="lazy"
                             />
                             <button
-                              className="absolute bottom-3 right-3 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-md hover:bg-gray-50 transition-colors"
+                              className={`absolute bottom-3 right-3 w-8 h-8 rounded-full flex items-center justify-center shadow-md transition-colors ${
+                                restaurant && restaurant.isOpen === false
+                                  ? 'bg-gray-200 cursor-not-allowed'
+                                  : 'bg-white hover:bg-gray-50'
+                              }`}
                               onClick={e => {
                                 e.stopPropagation(); // Prevent opening the dialog
                                 handleAddToCart(item);
                               }}
+                              disabled={restaurant && restaurant.isOpen === false}
                               aria-label="Add to cart"
                             >
-                              <span className="text-lg font-bold text-gray-900">+</span>
+                              <span
+                                className={`text-lg font-bold ${
+                                  restaurant && restaurant.isOpen === false
+                                    ? 'text-gray-400'
+                                    : 'text-gray-900'
+                                }`}
+                              >
+                                +
+                              </span>
                             </button>
                           </div>
                           <div className="p-3">
@@ -1245,14 +1276,27 @@ export default function RestaurantPage() {
                               loading="lazy"
                             />
                             <button
-                              className="absolute bottom-3 right-3 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-md hover:bg-gray-50 transition-colors"
+                              className={`absolute bottom-3 right-3 w-8 h-8 rounded-full flex items-center justify-center shadow-md transition-colors ${
+                                restaurant && restaurant.isOpen === false
+                                  ? 'bg-gray-200 cursor-not-allowed'
+                                  : 'bg-white hover:bg-gray-50'
+                              }`}
                               onClick={e => {
                                 e.stopPropagation(); // Prevent opening the dialog
                                 handleAddToCart(item);
                               }}
+                              disabled={restaurant && restaurant.isOpen === false}
                               aria-label="Add to cart"
                             >
-                              <span className="text-lg font-bold text-gray-900">+</span>
+                              <span
+                                className={`text-lg font-bold ${
+                                  restaurant && restaurant.isOpen === false
+                                    ? 'text-gray-400'
+                                    : 'text-gray-900'
+                                }`}
+                              >
+                                +
+                              </span>
                             </button>
                           </div>
                           <div className="p-3">
@@ -1324,14 +1368,27 @@ export default function RestaurantPage() {
                                   className="w-full h-full object-cover rounded-lg"
                                 />
                                 <button
-                                  className="absolute bottom-1 right-1 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-md hover:bg-gray-50 transition-colors"
+                                  className={`absolute bottom-1 right-1 w-8 h-8 rounded-full flex items-center justify-center shadow-md transition-colors ${
+                                    restaurant && restaurant.isOpen === false
+                                      ? 'bg-gray-200 cursor-not-allowed'
+                                      : 'bg-white hover:bg-gray-50'
+                                  }`}
                                   onClick={e => {
                                     e.stopPropagation(); // Prevent opening the dialog
                                     handleAddToCart(item);
                                   }}
+                                  disabled={restaurant && restaurant.isOpen === false}
                                   aria-label="Add to cart"
                                 >
-                                  <span className="text-lg font-bold text-gray-900">+</span>
+                                  <span
+                                    className={`text-lg font-bold ${
+                                      restaurant && restaurant.isOpen === false
+                                        ? 'text-gray-400'
+                                        : 'text-gray-900'
+                                    }`}
+                                  >
+                                    +
+                                  </span>
                                 </button>
                               </div>
                             </div>
@@ -1350,6 +1407,7 @@ export default function RestaurantPage() {
         isOpen={menuItemDialogOpen}
         onClose={handleCloseMenuItemDialog}
         item={selectedItem}
+        restaurant={restaurant}
       />
       {/* Group Order Dialog */}
       <GroupOrderDialog isOpen={groupOrderDialogOpen} onClose={handleCloseGroupOrderDialog} />
