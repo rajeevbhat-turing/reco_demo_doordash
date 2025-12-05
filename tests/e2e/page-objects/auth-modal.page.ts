@@ -92,7 +92,7 @@ export class AuthModalPage {
       lastName: 'User',
       email: uniqueEmail,
       mobileNumber: '5551234567',
-      password: 'StrongPass1234',
+      password: 'StrongPass1234@',
     });
     await this.submitSignup();
     await this.completeOtp();

@@ -118,7 +118,7 @@ export const testDataGenerators = {
     lastName: 'Tester',
     email: testDataGenerators.generateEmail(),
     phone: testDataGenerators.generatePhone(),
-    password: 'TestPassword123!',
+    password: 'TestPassword123!@',
   }),
 };
 
@@ -164,7 +164,7 @@ export const testHelpers = {
       lastName: userData?.lastName || 'User',
       email: userData?.email || testDataGenerators.generateEmail(),
       mobileNumber: userData?.phone || testDataGenerators.generatePhone(),
-      password: userData?.password || 'StrongPass1234',
+      password: userData?.password || 'StrongPass1234@',
     };
 
     await authModalPage.openSignupModalFromLanding();

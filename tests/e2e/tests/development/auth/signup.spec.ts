@@ -30,7 +30,7 @@ test.describe('Customer Signup via Authentication Modal', () => {
       lastName: 'User',
       email: 'not-an-email',
       mobileNumber: '5551234567',
-      password: 'StrongPass1234',
+      password: 'StrongPass1234@',
     });
     await authModalPage.submitSignup();
     await expect(authModalPage.emailError).toBeVisible();
@@ -68,7 +68,7 @@ test.describe('Customer Signup via Authentication Modal', () => {
       lastName: 'Test',
       email: uniqueEmail,
       mobileNumber: '5559876543',
-      password: 'SecurePassword123',
+      password: 'SecurePassword123@',
     });
     await authModalPage.submitSignup();
     await authModalPage.otpInput.waitFor({ state: 'visible', timeout: 10000 });
@@ -83,7 +83,7 @@ test.describe('Customer Signup via Authentication Modal', () => {
       lastName: 'Test',
       email: `e2e.persist+${timestamp}@example.com`,
       mobileNumber: '5551112222',
-      password: 'PersistPass123',
+      password: 'PersistPass123@',
     };
     await authModalPage.openSignupModalFromLanding();
     await authModalPage.fillSignupForm(userData);
