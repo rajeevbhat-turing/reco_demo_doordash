@@ -266,7 +266,11 @@ export default function AuthenticationModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/50" onClick={handleClose} />
+      <div
+        className="absolute inset-0 bg-black/50"
+        onClick={handleClose}
+        data-testid="authentication-modal-backdrop"
+      />
 
       {/* Modal */}
       <div
@@ -280,6 +284,7 @@ export default function AuthenticationModal({
               <button
                 onClick={handleClose}
                 className="text-[#191919ff] hover:bg-gray-100 rounded-full p-2 transition-colors"
+                aria-label="Close modal"
               >
                 <X className="h-6 w-6" />
               </button>
@@ -295,6 +300,7 @@ export default function AuthenticationModal({
             <button
               onClick={handleClose}
               className="text-[#191919ff] hover:bg-gray-100 rounded-full p-2 transition-colors ml-[-8px]"
+              aria-label="Close modal"
             >
               <X className="h-6 w-6" />
             </button>

@@ -1,90 +1,102 @@
-"use client"
+'use client';
 
-import { forwardRef, useImperativeHandle } from "react"
-import { ChevronDown, Tag, DollarSign, Check } from "lucide-react"
-import { useFilterOptions } from "@/hooks/use-filter-options"
+import { forwardRef, useImperativeHandle } from 'react';
+import { ChevronDown, Tag, Check } from 'lucide-react';
+import { useFilterOptions } from '@/lib/hooks/use-filter-options';
 
 export interface FilterState {
-  underThirtyMins: boolean
-  deals: boolean
-  overRating: number | null
-  price: string[] | null // DEPRECATED: Keeping for backward compatibility during migration
-  minPrice?: number | null // Min price in dollars
-  maxPrice?: number | null // Max price in dollars
-  dashPass: boolean
-  location?: string | null // "under-1mi", "under-3mi", "under-5mi"
-  cuisine?: string[] | null // Array of selected cuisines
-  dietaryPreferences?: string[] | null // Array of dietary preferences
+  underThirtyMins: boolean;
+  deals: boolean;
+  overRating: number | null;
+  price: string[] | null; // DEPRECATED: Keeping for backward compatibility during migration
+  minPrice?: number | null; // Min price in dollars
+  maxPrice?: number | null; // Max price in dollars
+  dashPass: boolean;
+  location?: string | null; // "under-1mi", "under-3mi", "under-5mi"
+  cuisine?: string[] | null; // Array of selected cuisines
+  dietaryPreferences?: string[] | null; // Array of dietary preferences
 }
 
 export interface FilterOptionsRef {
-  resetFilters: () => void
+  resetFilters: () => void;
 }
 
 interface FilterOption {
-  id: string
-  name: string
-  icon: string
+  id: string;
+  name: string;
+  icon: string;
 }
 
 interface FilterOptionsProps {
-  isGrocery?: boolean
-  onFilterChange?: (filters: FilterState) => void
-  onReset?: () => void
-  filters?: FilterState
-  filterData?: FilterOption[]
-  showPriceFilter?: boolean
-  hideCuisineFilter?: boolean  // Hide cuisine filter (for Pets, Grocery, Retail)
-  hideDietaryFilter?: boolean   // Hide dietary filter (for Pets, Retail)
+  isGrocery?: boolean;
+  onFilterChange?: (filters: FilterState) => void;
+  onReset?: () => void;
+  filters?: FilterState;
+  filterData?: FilterOption[];
+  showPriceFilter?: boolean;
+  hideCuisineFilter?: boolean; // Hide cuisine filter (for Pets, Grocery, Retail)
+  hideDietaryFilter?: boolean; // Hide dietary filter (for Pets, Retail)
 }
 
-interface ScheduleOption {
-  day: string
-  date: string
-  fullDate: Date
-}
+// interface ScheduleOption {
+//   day: string;
+//   date: string;
+//   fullDate: Date;
+// }
 
-interface TimeOption {
-  time: string
-  selected: boolean
-}
+// interface TimeOption {
+//   time: string;
+//   selected: boolean;
+// }
 
 const FilterOptions = forwardRef<FilterOptionsRef, FilterOptionsProps>(
-  ({ isGrocery = false, onFilterChange, onReset, filters: externalFilters, filterData = [], showPriceFilter = true, hideCuisineFilter = false, hideDietaryFilter = false }, ref) => {
+  (
+    {
+      isGrocery = false,
+      onFilterChange,
+      onReset,
+      filters: externalFilters,
+      filterData = [],
+      showPriceFilter = true,
+      hideCuisineFilter = false,
+      hideDietaryFilter = false,
+    },
+    ref
+  ) => {
     // Use the custom hook for all filter logic
     const {
       // State
       filters,
       ratingDropdownOpen,
       priceDropdownOpen,
-      locationDropdownOpen,
+      // locationDropdownOpen,
       cuisineDropdownOpen,
       dietaryDropdownOpen,
       selectedRating,
       selectedPrices,
-      selectedLocation,
+      // selectedLocation,
       selectedCuisines,
       selectedDietaryPreferences,
-      
+
       // Refs
       ratingButtonRef,
       priceButtonRef,
-      locationButtonRef,
+      // locationButtonRef,
       cuisineButtonRef,
       dietaryButtonRef,
-      ratingDropdownRef,
-      priceDropdownRef,
-      locationDropdownRef,
-      cuisineDropdownRef,
-      dietaryDropdownRef,
-      
+      // ratingDropdownRef,
+      // priceDropdownRef,
+      // locationDropdownRef,
+      // cuisineDropdownRef,
+      // dietaryDropdownRef,
+
       // Positioned refs (callback refs for immediate positioning)
       ratingDropdownPositionedRef,
       priceDropdownPositionedRef,
-      locationDropdownPositionedRef,
+      // locationDropdownPositionedRef,
       cuisineDropdownPositionedRef,
       dietaryDropdownPositionedRef,
-      
+
       // Handlers
       toggleFilter,
       handleRatingSelect,
@@ -92,9 +104,9 @@ const FilterOptions = forwardRef<FilterOptionsRef, FilterOptionsProps>(
       resetRatingFilter,
       resetPriceFilter,
       applyPriceFilter,
-      handleLocationSelect,
-      resetLocationFilter,
-      applyLocationFilter,
+      // handleLocationSelect,
+      // resetLocationFilter,
+      // applyLocationFilter,
       handleCuisineToggle,
       resetCuisineFilter,
       applyCuisineFilter,
@@ -103,17 +115,17 @@ const FilterOptions = forwardRef<FilterOptionsRef, FilterOptionsProps>(
       applyDietaryFilter,
       applyRatingFilter,
       resetAllFilters,
-      
+
       // Setters
       setRatingDropdownOpen,
       setPriceDropdownOpen,
       setLocationDropdownOpen,
       setCuisineDropdownOpen,
       setDietaryDropdownOpen,
-      
+
       // Labels
       getPriceLabel,
-      getLocationLabel,
+      // getLocationLabel,
       getCuisineLabel,
       getDietaryLabel,
       getRatingLabel,
@@ -126,47 +138,47 @@ const FilterOptions = forwardRef<FilterOptionsRef, FilterOptionsProps>(
       showPriceFilter,
       hideCuisineFilter,
       hideDietaryFilter,
-    })
+    });
 
     // Expose the reset function to parent components
     useImperativeHandle(ref, () => ({
       resetFilters: resetAllFilters,
-    }))
+    }));
 
     return (
       <div className="sticky top-16 z-40 bg-white py-2 border-b border-gray-100">
         <div className="flex gap-2 overflow-x-auto">
           {/* Dynamic filter buttons from filterData */}
           {filterData.length > 0 ? (
-            filterData.map((filter) => {
+            filterData.map(filter => {
               // Map filter id to corresponding filter state property
               let filterKey: keyof FilterState | null = null;
-              
+
               switch (filter.id) {
-                case "1": // Delivery
+                case '1': // Delivery
                   return null; // Skip - default filter
-                case "2": // Pickup - REMOVED
+                case '2': // Pickup - REMOVED
                   return null; // Skip - removed filter
-                case "3": // DashPass
-                  filterKey = "dashPass";
+                case '3': // DashPass
+                  filterKey = 'dashPass';
                   break;
-                case "4": // Under 30 min
-                  filterKey = "underThirtyMins";
+                case '4': // Under 30 min
+                  filterKey = 'underThirtyMins';
                   break;
-                case "5": // Price: $
+                case '5': // Price: $
                   return (
                     <div key={filter.id} className="relative">
                       <button
                         ref={priceButtonRef}
                         className={`rounded-full h-9 px-4 text-xs font-semibold ${
                           filters.price && filters.price.length > 0
-                            ? "bg-gray-900 text-white" 
-                            : "bg-gray-100 hover:bg-gray-200 text-gray-900"
+                            ? 'bg-gray-900 text-white'
+                            : 'bg-gray-100 hover:bg-gray-200 text-gray-900'
                         } flex items-center gap-1`}
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          setPriceDropdownOpen(!priceDropdownOpen)
-                          setRatingDropdownOpen(false)
+                        onClick={e => {
+                          e.stopPropagation();
+                          setPriceDropdownOpen(!priceDropdownOpen);
+                          setRatingDropdownOpen(false);
                         }}
                       >
                         {filter.icon} {getPriceLabel()}
@@ -180,13 +192,13 @@ const FilterOptions = forwardRef<FilterOptionsRef, FilterOptionsProps>(
                         >
                           <h3 className="text-xl font-bold mb-6">Price</h3>
                           <div className="flex gap-3 mb-6">
-                            {["$", "$$", "$$$", "$$$$"].map((price) => (
+                            {['$', '$$', '$$$', '$$$$'].map(price => (
                               <button
                                 key={price}
                                 className={`px-6 py-2 rounded-full text-sm font-medium ${
                                   selectedPrices.includes(price)
-                                    ? "bg-black text-white"
-                                    : "bg-gray-100 text-gray-900 hover:bg-gray-200"
+                                    ? 'bg-black text-white'
+                                    : 'bg-gray-100 text-gray-900 hover:bg-gray-200'
                                 }`}
                                 onClick={() => handlePriceToggle(price)}
                               >
@@ -195,7 +207,10 @@ const FilterOptions = forwardRef<FilterOptionsRef, FilterOptionsProps>(
                             ))}
                           </div>
                           <div className="flex justify-between">
-                            <button className="text-gray-900 font-medium" onClick={resetPriceFilter}>
+                            <button
+                              className="text-gray-900 font-medium"
+                              onClick={resetPriceFilter}
+                            >
                               Reset
                             </button>
                             <button
@@ -210,13 +225,15 @@ const FilterOptions = forwardRef<FilterOptionsRef, FilterOptionsProps>(
                     </div>
                   );
               }
-              
+
               if (filterKey) {
                 return (
                   <button
                     key={filter.id}
                     className={`rounded-full h-9 px-4 text-xs font-semibold ${
-                      filters[filterKey] ? "bg-gray-900 text-white" : "bg-gray-100 hover:bg-gray-200 text-gray-900"
+                      filters[filterKey]
+                        ? 'bg-gray-900 text-white'
+                        : 'bg-gray-100 hover:bg-gray-200 text-gray-900'
                     } flex items-center gap-1`}
                     onClick={() => toggleFilter(filterKey as keyof FilterState)}
                   >
@@ -224,7 +241,7 @@ const FilterOptions = forwardRef<FilterOptionsRef, FilterOptionsProps>(
                   </button>
                 );
               }
-              
+
               return null;
             })
           ) : (
@@ -232,9 +249,11 @@ const FilterOptions = forwardRef<FilterOptionsRef, FilterOptionsProps>(
             <>
               <button
                 className={`rounded-full h-9 px-4 text-xs font-semibold ${
-                  filters.underThirtyMins ? "bg-gray-900 text-white" : "bg-gray-100 hover:bg-gray-200 text-gray-900"
+                  filters.underThirtyMins
+                    ? 'bg-gray-900 text-white'
+                    : 'bg-gray-100 hover:bg-gray-200 text-gray-900'
                 }`}
-                onClick={() => toggleFilter("underThirtyMins")}
+                onClick={() => toggleFilter('underThirtyMins')}
               >
                 Under 30 min
               </button>
@@ -244,26 +263,28 @@ const FilterOptions = forwardRef<FilterOptionsRef, FilterOptionsProps>(
           {!isGrocery && (
             <button
               className={`rounded-full h-9 px-4 text-xs font-semibold ${
-                filters.deals ? "bg-gray-900 text-white" : "bg-gray-100 hover:bg-gray-200 text-gray-900"
+                filters.deals
+                  ? 'bg-gray-900 text-white'
+                  : 'bg-gray-100 hover:bg-gray-200 text-gray-900'
               } flex items-center gap-1`}
-              onClick={() => toggleFilter("deals")}
+              onClick={() => toggleFilter('deals')}
             >
               <Tag className="h-4 w-4 mr-1" />
               Deals
             </button>
           )}
 
-
-
           <div className="relative">
             <button
               ref={ratingButtonRef}
               className={`rounded-full h-9 px-4 text-xs font-semibold ${
-                filters.overRating ? "bg-gray-900 text-white" : "bg-gray-100 hover:bg-gray-200 text-gray-900"
+                filters.overRating
+                  ? 'bg-gray-900 text-white'
+                  : 'bg-gray-100 hover:bg-gray-200 text-gray-900'
               } flex items-center gap-1`}
-              onClick={(e) => {
-                e.stopPropagation()
-                setRatingDropdownOpen(!ratingDropdownOpen)
+              onClick={e => {
+                e.stopPropagation();
+                setRatingDropdownOpen(!ratingDropdownOpen);
               }}
             >
               {getRatingLabel()}
@@ -278,22 +299,21 @@ const FilterOptions = forwardRef<FilterOptionsRef, FilterOptionsProps>(
                 <h3 className="text-xl font-bold mb-6">Ratings</h3>
                 <div className="mb-6">
                   <div className="font-medium mb-4">
-                    {selectedRating 
-                      ? `Over ${selectedRating}`
-                      : "Over 1"
-                    }
+                    {selectedRating ? `Over ${selectedRating}` : 'Over 1'}
                   </div>
                   <div className="relative flex items-center justify-between mb-2">
                     <div className="absolute w-full h-[2px] bg-gray-300"></div>
-                    {[1, 2, 3, 4].map((rating) => (
+                    {[1, 2, 3, 4].map(rating => (
                       <button
                         key={rating}
                         className={`relative z-10 w-6 h-6 rounded-full ${
-                          selectedRating === rating ? "bg-black" : "bg-gray-300"
+                          selectedRating === rating ? 'bg-black' : 'bg-gray-300'
                         } flex items-center justify-center`}
                         onClick={() => handleRatingSelect(rating)}
                       >
-                        {selectedRating === rating && <div className="w-2 h-2 rounded-full bg-white"></div>}
+                        {selectedRating === rating && (
+                          <div className="w-2 h-2 rounded-full bg-white"></div>
+                        )}
                       </button>
                     ))}
                   </div>
@@ -388,16 +408,16 @@ const FilterOptions = forwardRef<FilterOptionsRef, FilterOptionsProps>(
                 ref={cuisineButtonRef}
                 className={`rounded-full h-9 px-4 text-xs font-semibold ${
                   filters.cuisine && filters.cuisine.length > 0
-                    ? "bg-gray-900 text-white"
-                    : "bg-gray-100 hover:bg-gray-200 text-gray-900"
+                    ? 'bg-gray-900 text-white'
+                    : 'bg-gray-100 hover:bg-gray-200 text-gray-900'
                 } flex items-center gap-1`}
-                onClick={(e) => {
-                  e.stopPropagation()
-                  setCuisineDropdownOpen(!cuisineDropdownOpen)
-                  setRatingDropdownOpen(false)
-                  setPriceDropdownOpen(false)
-                  setLocationDropdownOpen(false)
-                  setDietaryDropdownOpen(false)
+                onClick={e => {
+                  e.stopPropagation();
+                  setCuisineDropdownOpen(!cuisineDropdownOpen);
+                  setRatingDropdownOpen(false);
+                  setPriceDropdownOpen(false);
+                  setLocationDropdownOpen(false);
+                  setDietaryDropdownOpen(false);
                 }}
               >
                 {getCuisineLabel()}
@@ -415,33 +435,33 @@ const FilterOptions = forwardRef<FilterOptionsRef, FilterOptionsProps>(
                   <div className="flex-1 overflow-y-auto px-6 pb-4 min-h-0">
                     <div className="space-y-2">
                       {[
-                        "American",
-                        "Italian",
-                        "Asian",
-                        "Mexican",
-                        "Chinese",
-                        "Japanese",
-                        "Indian",
-                        "Thai",
-                        "Mediterranean",
-                        "French",
-                        "Greek",
-                        "Korean",
-                        "Vietnamese",
-                        "Middle Eastern",
-                        "Spanish",
-                        "Seafood",
-                        "Steakhouse",
-                        "Pizza",
-                        "Fast Food",
-                        "Barbecue",
-                      ].map((cuisine) => (
+                        'American',
+                        'Italian',
+                        'Asian',
+                        'Mexican',
+                        'Chinese',
+                        'Japanese',
+                        'Indian',
+                        'Thai',
+                        'Mediterranean',
+                        'French',
+                        'Greek',
+                        'Korean',
+                        'Vietnamese',
+                        'Middle Eastern',
+                        'Spanish',
+                        'Seafood',
+                        'Steakhouse',
+                        'Pizza',
+                        'Fast Food',
+                        'Barbecue',
+                      ].map(cuisine => (
                         <button
                           key={cuisine}
                           className={`w-full px-4 py-3 rounded-lg text-left text-sm font-medium flex items-center justify-between ${
                             selectedCuisines.includes(cuisine)
-                              ? "bg-black text-white"
-                              : "bg-gray-100 text-gray-900 hover:bg-gray-200"
+                              ? 'bg-black text-white'
+                              : 'bg-gray-100 text-gray-900 hover:bg-gray-200'
                           }`}
                           onClick={() => handleCuisineToggle(cuisine)}
                         >
@@ -474,16 +494,16 @@ const FilterOptions = forwardRef<FilterOptionsRef, FilterOptionsProps>(
                 ref={dietaryButtonRef}
                 className={`rounded-full h-9 px-4 text-xs font-semibold ${
                   filters.dietaryPreferences && filters.dietaryPreferences.length > 0
-                    ? "bg-gray-900 text-white"
-                    : "bg-gray-100 hover:bg-gray-200 text-gray-900"
+                    ? 'bg-gray-900 text-white'
+                    : 'bg-gray-100 hover:bg-gray-200 text-gray-900'
                 } flex items-center gap-1`}
-                onClick={(e) => {
-                  e.stopPropagation()
-                  setDietaryDropdownOpen(!dietaryDropdownOpen)
-                  setRatingDropdownOpen(false)
-                  setPriceDropdownOpen(false)
-                  setLocationDropdownOpen(false)
-                  setCuisineDropdownOpen(false)
+                onClick={e => {
+                  e.stopPropagation();
+                  setDietaryDropdownOpen(!dietaryDropdownOpen);
+                  setRatingDropdownOpen(false);
+                  setPriceDropdownOpen(false);
+                  setLocationDropdownOpen(false);
+                  setCuisineDropdownOpen(false);
                 }}
               >
                 {getDietaryLabel()}
@@ -501,27 +521,29 @@ const FilterOptions = forwardRef<FilterOptionsRef, FilterOptionsProps>(
                   <div className="flex-1 overflow-y-auto px-6 pb-4 min-h-0">
                     <div className="space-y-2">
                       {[
-                        "Vegan",
-                        "Vegetarian",
-                        "Gluten-free",
-                        "Halal",
-                        "Kosher",
-                        "Dairy-free",
-                        "Nut-free",
-                        "Low-carb",
-                        "Keto-friendly",
-                      ].map((dietary) => (
+                        'Vegan',
+                        'Vegetarian',
+                        'Gluten-free',
+                        'Halal',
+                        'Kosher',
+                        'Dairy-free',
+                        'Nut-free',
+                        'Low-carb',
+                        'Keto-friendly',
+                      ].map(dietary => (
                         <button
                           key={dietary}
                           className={`w-full px-4 py-3 rounded-lg text-left text-sm font-medium flex items-center justify-between ${
                             selectedDietaryPreferences.includes(dietary)
-                              ? "bg-black text-white"
-                              : "bg-gray-100 text-gray-900 hover:bg-gray-200"
+                              ? 'bg-black text-white'
+                              : 'bg-gray-100 text-gray-900 hover:bg-gray-200'
                           }`}
                           onClick={() => handleDietaryToggle(dietary)}
                         >
                           <span>{dietary}</span>
-                          {selectedDietaryPreferences.includes(dietary) && <Check className="h-4 w-4" />}
+                          {selectedDietaryPreferences.includes(dietary) && (
+                            <Check className="h-4 w-4" />
+                          )}
                         </button>
                       ))}
                     </div>
@@ -548,12 +570,12 @@ const FilterOptions = forwardRef<FilterOptionsRef, FilterOptionsProps>(
                 ref={priceButtonRef}
                 className={`rounded-full h-9 px-4 text-xs font-semibold ${
                   filters.price && filters.price.length > 0
-                    ? "bg-gray-900 text-white"
-                    : "bg-gray-100 hover:bg-gray-200 text-gray-900"
+                    ? 'bg-gray-900 text-white'
+                    : 'bg-gray-100 hover:bg-gray-200 text-gray-900'
                 } flex items-center gap-1`}
-                onClick={(e) => {
-                  e.stopPropagation()
-                  setPriceDropdownOpen(!priceDropdownOpen)
+                onClick={e => {
+                  e.stopPropagation();
+                  setPriceDropdownOpen(!priceDropdownOpen);
                 }}
               >
                 {getPriceLabel()}
@@ -567,13 +589,13 @@ const FilterOptions = forwardRef<FilterOptionsRef, FilterOptionsProps>(
                 >
                   <h3 className="text-xl font-bold mb-6">Price</h3>
                   <div className="flex gap-3 mb-6">
-                    {["$", "$$", "$$$", "$$$$"].map((price) => (
+                    {['$', '$$', '$$$', '$$$$'].map(price => (
                       <button
                         key={price}
                         className={`px-6 py-2 rounded-full text-sm font-medium ${
                           selectedPrices.includes(price)
-                            ? "bg-black text-white"
-                            : "bg-gray-100 text-gray-900 hover:bg-gray-200"
+                            ? 'bg-black text-white'
+                            : 'bg-gray-100 text-gray-900 hover:bg-gray-200'
                         }`}
                         onClick={() => handlePriceToggle(price)}
                       >
@@ -598,11 +620,10 @@ const FilterOptions = forwardRef<FilterOptionsRef, FilterOptionsProps>(
           )}
         </div>
       </div>
-    )
-  },
-)
+    );
+  }
+);
 
-FilterOptions.displayName = "FilterOptions"
+FilterOptions.displayName = 'FilterOptions';
 
-export default FilterOptions
-
+export default FilterOptions;

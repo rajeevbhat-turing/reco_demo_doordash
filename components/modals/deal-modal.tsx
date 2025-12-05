@@ -148,6 +148,7 @@ export default function DealModal({ isOpen, onClose, deal }: DealModalProps) {
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
       onClick={handleBackdropClick}
+      data-testid="deal-modal-backdrop"
     >
       <div
         ref={modalRef}
@@ -194,7 +195,7 @@ export default function DealModal({ isOpen, onClose, deal }: DealModalProps) {
           </div>
 
           {/* Terms and Conditions Link */}
-          <a
+          {/* <a
             href="#"
             className="text-xs font-medium text-[#313131ff] underline mb-6 block"
             onClick={e => {
@@ -203,7 +204,7 @@ export default function DealModal({ isOpen, onClose, deal }: DealModalProps) {
             }}
           >
             Terms and Conditions
-          </a>
+          </a> */}
 
           {/* Free Items List */}
           {freeItemsMenuData.length > 0 && (

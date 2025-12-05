@@ -191,12 +191,17 @@ export default function TwoStepVerificationModal({
       className="fixed inset-0 z-[150] flex items-center justify-center"
       style={{ backgroundColor: 'rgba(0, 0, 0, 0.65)' }}
       onClick={handleOutsideClick}
+      data-testid="two-step-verification-modal-backdrop"
     >
-      <div className="bg-white rounded-xl shadow-xl max-w-md w-full mx-4 pt-6 relative">
+      <div
+        className="bg-white rounded-xl shadow-xl max-w-md w-full mx-4 pt-6 relative"
+        data-testid="two-step-verification-modal-content"
+      >
         {/* Close Button */}
         <button
           onClick={onClose}
           className="absolute top-4 left-4 text-[#191919ff] hover:text-gray-700 transition-colors z-10"
+          aria-label="Close modal"
         >
           <X className="h-6 w-6" />
         </button>
@@ -220,10 +225,14 @@ export default function TwoStepVerificationModal({
           <>
             {/* Code Input */}
             <div className="mb-4 px-4 mt-8">
-              <label className="block text-[15px] font-bold text-[#191919ff] mb-2">
+              <label
+                htmlFor="verification-code-input"
+                className="block text-[15px] font-bold text-[#191919ff] mb-2"
+              >
                 Enter 6-digit code
               </label>
               <Input
+                id="verification-code-input"
                 type="text"
                 inputMode="numeric"
                 pattern="[0-9]*"

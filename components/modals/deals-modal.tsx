@@ -77,6 +77,7 @@ export default function DealsModal({ isOpen, onClose, restaurantId }: DealsModal
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
       onClick={handleBackdropClick}
+      data-testid="deals-modal-backdrop"
     >
       <div
         ref={modalRef}
@@ -180,6 +181,7 @@ function DealCard({
       className={`bg-white rounded-xl py-2 px-3 flex items-center gap-4 border border-gray-200 ${
         !deal.buttonText || deal.buttonText === '' ? 'cursor-pointer' : ''
       }`}
+      data-testid={`deal-card-${deal.id}`}
     >
       {/* Icon */}
       <div className="flex-shrink-0">

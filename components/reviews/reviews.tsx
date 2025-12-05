@@ -160,6 +160,7 @@ export default function Reviews({ vendorId, vendorName }: ReviewsProps) {
                     onMouseEnter={() => handleStarHover(star)}
                     onMouseLeave={handleStarLeave}
                     onClick={() => handleStarClick(star)}
+                    data-testid={`rating-star-${star}`}
                   />
                 ))}
 

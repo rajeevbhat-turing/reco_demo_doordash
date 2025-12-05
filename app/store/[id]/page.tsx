@@ -20,9 +20,9 @@ import GroupOrderDialog from '@/components/group-order-dialog';
 import StoreDetailsDialog from '@/components/store-details-dialog';
 import OutsideDeliveryAreaModal from '@/components/modals/outside-delivery-area-modal';
 import { Reviews } from '@/components/reviews';
-// import { type Deal } from '@/types/deal-types';
-// import { useDealsByRestaurantId } from '@/lib/hooks/use-deals';
-// import { Deals } from '@/components/deals';
+import { type Deal } from '@/types/deal-types';
+import { useDealsByRestaurantId } from '@/lib/hooks/use-deals';
+import { Deals } from '@/components/deals';
 import ServiceFeesInfo from '@/components/service-fees-info';
 import { getDefaultRating } from '@/utils/rating-utils';
 import {
@@ -545,36 +545,36 @@ export default function RestaurantPage() {
   };
 
   // Get deals from API
-  // const { restaurantDeals } = useDealsByRestaurantId(id || '');
+  const { restaurantDeals } = useDealsByRestaurantId(id || '');
 
   // Get first deal (excluding dashpass)
-  // const firstDeal = useMemo(() => {
-  //   return restaurantDeals.length > 0 ? restaurantDeals[0] : null;
-  // }, [restaurantDeals]);
+  const firstDeal = useMemo(() => {
+    return restaurantDeals.length > 0 ? restaurantDeals[0] : null;
+  }, [restaurantDeals]);
 
   // Format deal banner text
-  // const getDealBannerText = (deal: Deal) => {
-  //   if (
-  //     deal.discountType === 'percentage' &&
-  //     deal.minimumPurchase &&
-  //     deal.discountValue &&
-  //     deal.maximumDiscount
-  //   ) {
-  //     return `Spend $${deal.minimumPurchase}, get ${deal.discountValue}% off up to $${deal.maximumDiscount}`;
-  //   } else if (deal.discountType === 'percentage' && deal.minimumPurchase && deal.discountValue) {
-  //     return `Spend $${deal.minimumPurchase}, get ${deal.discountValue}% off`;
-  //   } else if (deal.discountType === 'fixed' && deal.minimumPurchase && deal.discountValue) {
-  //     return `Spend $${deal.minimumPurchase}, get $${deal.discountValue} off`;
-  //   } else if (deal.freeItems && deal.freeItems.length > 0 && deal.minimumPurchase) {
-  //     // If single free item, show its name; otherwise show "free items"
-  //     if (deal.freeItems.length === 1) {
-  //       return `Spend $${deal.minimumPurchase}, get ${deal.freeItems[0].name} free`;
-  //     } else {
-  //       return `Spend $${deal.minimumPurchase}, get free items`;
-  //     }
-  //   }
-  //   return deal.title;
-  // };
+  const getDealBannerText = (deal: Deal) => {
+    if (
+      deal.discountType === 'percentage' &&
+      deal.minimumPurchase &&
+      deal.discountValue &&
+      deal.maximumDiscount
+    ) {
+      return `Spend $${deal.minimumPurchase}, get ${deal.discountValue}% off up to $${deal.maximumDiscount}`;
+    } else if (deal.discountType === 'percentage' && deal.minimumPurchase && deal.discountValue) {
+      return `Spend $${deal.minimumPurchase}, get ${deal.discountValue}% off`;
+    } else if (deal.discountType === 'fixed' && deal.minimumPurchase && deal.discountValue) {
+      return `Spend $${deal.minimumPurchase}, get $${deal.discountValue} off`;
+    } else if (deal.freeItems && deal.freeItems.length > 0 && deal.minimumPurchase) {
+      // If single free item, show its name; otherwise show "free items"
+      if (deal.freeItems.length === 1) {
+        return `Spend $${deal.minimumPurchase}, get ${deal.freeItems[0].name} free`;
+      } else {
+        return `Spend $${deal.minimumPurchase}, get free items`;
+      }
+    }
+    return deal.title;
+  };
 
   // Handle close menu item dialog
   const handleCloseMenuItemDialog = useCallback(() => {
@@ -1141,7 +1141,7 @@ export default function RestaurantPage() {
             {!isSearching && (
               <>
                 {/* Deals & Benefits Section */}
-                {/* <Deals restaurantId={id} /> */}
+                <Deals restaurantId={id} />
 
                 {/* Featured Items */}
                 {featuredItems.length > 0 && (
@@ -1368,7 +1368,7 @@ export default function RestaurantPage() {
       />
 
       {/* Deal Banner */}
-      {/* {firstDeal && (
+      {firstDeal && (
         <div
           className="fixed bottom-0 left-0 md:left-[220px] right-0 bg-[#fef0ed] px-4 py-2 flex items-center justify-center gap-3 z-40 
         border-t border-gray-200"
@@ -1389,7 +1389,7 @@ export default function RestaurantPage() {
             </span>
           </div>
         </div>
-      )} */}
+      )}
     </div>
   );
 }

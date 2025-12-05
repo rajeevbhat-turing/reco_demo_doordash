@@ -149,24 +149,18 @@ export default function CheckoutPage() {
 
     items.forEach(item => {
       let itemId = typeof item.id === 'string' ? item.id : item.id.toString();
-      const itemName = (item.itemName || '').toLowerCase().trim();
 
       // If item ID starts with store ID, remove it before checking
       if (appliedDeal.restaurantId && itemId.startsWith(appliedDeal.restaurantId + '-')) {
         itemId = itemId.substring(appliedDeal.restaurantId.length + 1);
       }
 
-      // Check if this item matches any free item (by ID and name)
+      // Check if this item matches any free item
       let matchedFreeItemId: string | null = null;
       for (const freeId of freeItemIds) {
         const matchesById = itemId.startsWith(freeId + '-') || itemId === freeId;
-        const freeItemName = appliedDeal.freeItems
-          ?.find((fi: any) => fi.id === freeId)
-          ?.name.toLowerCase()
-          .trim();
-        const matchesByName = freeItemName && itemName === freeItemName;
 
-        if (matchesById && matchesByName) {
+        if (matchesById) {
           matchedFreeItemId = freeId;
           break;
         }
@@ -601,24 +595,18 @@ export default function CheckoutPage() {
     appliedDeal: any
   ) => {
     let itemId = typeof item.id === 'string' ? item.id : item.id.toString();
-    const itemName = (item.itemName || '').toLowerCase().trim();
 
     // If item ID starts with store ID, remove it before checking
     if (appliedDeal?.restaurantId && itemId.startsWith(appliedDeal.restaurantId + '-')) {
       itemId = itemId.substring(appliedDeal.restaurantId.length + 1);
     }
 
-    // Check if this item matches any free item (by ID and name)
+    // Check if this item matches any free item
     let matchedFreeItemId: string | null = null;
     for (const freeId of freeItemIds) {
       const matchesById = itemId.startsWith(freeId + '-') || itemId === freeId;
-      const freeItemName = appliedDeal?.freeItems
-        ?.find((fi: any) => fi.id === freeId)
-        ?.name.toLowerCase()
-        .trim();
-      const matchesByName = freeItemName && itemName === freeItemName;
 
-      if (matchesById && matchesByName) {
+      if (matchesById) {
         matchedFreeItemId = freeId;
         break;
       }
@@ -1352,7 +1340,7 @@ export default function CheckoutPage() {
                           <Package className="w-5 h-5 text-gray-600 mr-3 flex-shrink-0" />
                           <div>
                             <p className="font-medium text-sm">
-                              {selectedAddress.deliveryPreference === 'location'
+                              {selectedAddress.deliveryPreference === 'meet'
                                 ? 'Meet at a location'
                                 : 'Leave it at my door'}
                             </p>

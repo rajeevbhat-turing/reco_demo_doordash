@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useMemo } from 'react';
 import { X, ChevronDown, ChevronUp, Minus, Plus } from 'lucide-react';
 import { useCartStore } from '@/store/cart-store';
 import type { MenuItem } from '@/constants/menu-items';
-import { getDefaultRating } from '@/utils/rating-utils';
+import { getDefaultRating } from '@/lib/utils/rating-utils';
 import {
   Modification,
   ModificationOption,
@@ -433,7 +433,7 @@ export default function MenuItemDialog({ isOpen, onClose, item }: MenuItemDialog
     );
 
     // Create the cart item to compare
-    const itemWithCategory = item as MenuItem
+    const itemWithCategory = item as MenuItem;
     const cartItem = {
       id: uniqueCartItemId, // Use unique ID that includes modifications
       itemName: item.name,
@@ -443,8 +443,8 @@ export default function MenuItemDialog({ isOpen, onClose, item }: MenuItemDialog
       appliedModifications: formattedModifications.length > 0 ? formattedModifications : undefined,
       menuCategoryId: itemWithCategory.categoryId,
       menuCategoryName: itemWithCategory.categoryName || itemWithCategory.category,
-    }
-    
+    };
+
     // Use haveSameModifications to check if item with same modifications exists
     const existingItem = cart?.items.find(i => haveSameModifications(i, cartItem as any));
 
@@ -845,7 +845,10 @@ function ModificationOptionCard({
   // Regular option (radio or checkbox)
   return (
     <button
-      onClick={() => onSelect(!isSelected)}
+      onClick={e => {
+        e.stopPropagation();
+        onSelect(!isSelected);
+      }}
       className="w-full flex items-center gap-3 px-4 py-3 border-b border-gray-200 last:border-b-0 hover:bg-gray-50 transition-colors text-left"
     >
       {/* Radio or Checkbox */}

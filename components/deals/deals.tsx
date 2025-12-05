@@ -137,6 +137,7 @@ export default function Deals({ restaurantId }: DealsProps) {
               disabled={!canScrollLeft}
               className="w-8 h-8 rounded-full bg-[#f1f1f1] flex items-center justify-center hover:bg-gray-200 
               disabled:bg-[#f7f7f7] disabled:cursor-not-allowed text-[#191919ff] disabled:text-gray-400"
+              data-testid="deals-scroll-left-button"
             >
               <ChevronLeft className="w-4 h-4" strokeWidth={3} />
             </button>
@@ -145,6 +146,7 @@ export default function Deals({ restaurantId }: DealsProps) {
               disabled={!canScrollRight}
               className="w-8 h-8 rounded-full bg-[#f1f1f1] flex items-center justify-center hover:bg-gray-200 
               disabled:bg-[#f7f7f7] disabled:cursor-not-allowed text-[#191919ff] disabled:text-gray-400"
+              data-testid="deals-scroll-right-button"
             >
               <ChevronRight className="w-4 h-4" strokeWidth={3} />
             </button>
@@ -155,6 +157,7 @@ export default function Deals({ restaurantId }: DealsProps) {
       {/* Deals Slider */}
       <div
         ref={scrollContainerRef}
+        data-testid="deals-scroll-container"
         className="flex gap-4 overflow-x-auto scrollbar-hide"
         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         onScroll={updateScrollButtons}

@@ -42,6 +42,7 @@ export default function ProfileBadgesModal({ isOpen, onClose }: ProfileBadgesMod
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
       onClick={handleBackdropClick}
+      data-testid="profile-badges-modal-backdrop"
     >
       <div
         ref={modalRef}
@@ -54,7 +55,7 @@ export default function ProfileBadgesModal({ isOpen, onClose }: ProfileBadgesMod
         <div className="px-6 pb-6 pt-1">
           {/* Introductory Text */}
           <p className="text-sm text-[#606060ff] font-medium mb-5">
-            Earn badges and gain influence on Dashdoor. Your profile must be public to participate.
+            Earn badges and gain influence on DashDoor. Your profile must be public to participate.
           </p>
 
           {/* Emerging Expert Badge */}

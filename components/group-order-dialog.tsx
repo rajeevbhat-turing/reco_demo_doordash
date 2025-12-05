@@ -153,6 +153,7 @@ export default function GroupOrderDialog({ isOpen, onClose }: GroupOrderDialogPr
       <div
         ref={dialogRef}
         className="relative bg-white rounded-[8px] w-full max-w-[480px] max-h-[80vh] overflow-auto"
+        data-testid="group-order-dialog"
       >
         {currentView === 'main' ? (
           <>
@@ -175,7 +176,9 @@ export default function GroupOrderDialog({ isOpen, onClose }: GroupOrderDialogPr
                 />
               </div>
 
-              <h2 className="text-[28px] font-bold text-left mb-2">Start Group Order</h2>
+              <h2 className="text-[28px] font-bold text-left mb-2" data-testid="group-order-title">
+                Start Group Order
+              </h2>
               <p className="text-gray-600 text-left mb-8">
                 Share your group order link with others. They can add their favorite items. Checkout
                 and get it all delivered together.
@@ -188,6 +191,8 @@ export default function GroupOrderDialog({ isOpen, onClose }: GroupOrderDialogPr
                   <div
                     className="flex items-center justify-between py-4 border-b border-gray-100 cursor-pointer"
                     onClick={handlePayingClick}
+                    role="button"
+                    data-testid="paying-option"
                   >
                     <div className="flex items-center">
                       <div className="bg-gray-100 rounded-full p-2 mr-4 flex items-center justify-center w-10 h-10">
@@ -222,6 +227,8 @@ export default function GroupOrderDialog({ isOpen, onClose }: GroupOrderDialogPr
                   <div
                     className="flex items-center justify-between py-4 border-b border-gray-100 cursor-pointer"
                     onClick={handleDeliveryClick}
+                    role="button"
+                    data-testid="delivery-option"
                   >
                     <div className="flex items-center">
                       <div className="bg-gray-100 rounded-full p-2 mr-4 flex items-center justify-center w-10 h-10">
@@ -257,6 +264,8 @@ export default function GroupOrderDialog({ isOpen, onClose }: GroupOrderDialogPr
                   <div
                     className="flex items-center justify-between py-4 border-b border-gray-100 cursor-pointer"
                     onClick={handleDeadlineClick}
+                    role="button"
+                    data-testid="deadline-option"
                   >
                     <div className="flex items-center">
                       <div className="bg-gray-100 rounded-full p-2 mr-4 flex items-center justify-center w-10 h-10">

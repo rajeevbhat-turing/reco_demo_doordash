@@ -27,7 +27,10 @@ export default function NavigationLoader() {
   if (!isLoading) return null;
 
   return (
-    <div className="fixed inset-0 z-[9999] bg-white/80 backdrop-blur-sm flex items-center justify-center">
+    <div
+      className="fixed inset-0 z-[9999] bg-white/80 backdrop-blur-sm flex items-center justify-center"
+      data-testid="navigation-loader"
+    >
       <div className="relative">
         <div className="w-10 h-10 border-4 border-dashed border-gray-200 border-t-red-600 rounded-full animate-spin"></div>
       </div>
