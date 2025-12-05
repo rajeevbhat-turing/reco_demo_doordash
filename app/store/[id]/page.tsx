@@ -1096,13 +1096,13 @@ export default function RestaurantPage() {
               <>
                 <div className="flex items-center justify-between mb-4 border border-gray-200 rounded-lg p-4">
                   <div>
-                    <button
+                    {/* <button
                       className="border border-gray-200 px-4 py-2 flex items-center rounded-full"
                       style={{ background: '#f1f1f1' }}
                       onClick={openGroupOrderDialog}
                     >
                       <span className="mr-1">Group Order</span>
-                    </button>
+                    </button> */}
                   </div>
                   <div className="flex items-center space-x-4">
                     <div className="bg-[#e8f7f7] rounded-lg p-4">
@@ -1410,7 +1410,7 @@ export default function RestaurantPage() {
         restaurant={restaurant}
       />
       {/* Group Order Dialog */}
-      <GroupOrderDialog isOpen={groupOrderDialogOpen} onClose={handleCloseGroupOrderDialog} />
+      {/* <GroupOrderDialog isOpen={groupOrderDialogOpen} onClose={handleCloseGroupOrderDialog} /> */}
       {/* Store Details Dialog */}
       <StoreDetailsDialog
         isOpen={storeDetailsDialogOpen}
