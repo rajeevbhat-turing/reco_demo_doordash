@@ -45,7 +45,7 @@ describe('AccountPopup', () => {
     lastName: 'Doe',
     email: 'john@example.com',
     phoneNumber: '+1234567890',
-    password: 'hashedPassword',
+    password: 'HashedPassword123!',
     country: {
       dialCode: '+1',
       code: 'US',

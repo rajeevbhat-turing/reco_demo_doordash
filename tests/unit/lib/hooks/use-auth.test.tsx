@@ -69,7 +69,7 @@ describe('useAuth', () => {
     name: 'John Doe',
     email: 'john@example.com',
     phoneNumber: '1234567890',
-    password: 'password123',
+    password: 'Password123!',
     country: {
       dialCode: '+1',
       code: 'US',
@@ -110,14 +110,14 @@ describe('useAuth', () => {
 
       await result.current.login({
         email: 'john@example.com',
-        password: 'password123',
+        password: 'Password123!',
       });
 
       await waitFor(() => {
         expect(loginUser).toHaveBeenCalled();
         const callArgs = (loginUser as ReturnType<typeof vi.fn>).mock.calls[0][0];
         expect(callArgs.email).toBe('john@example.com');
-        expect(callArgs.password).toBe('password123');
+        expect(callArgs.password).toBe('Password123!');
         const mockStore = useUserStore as unknown as ReturnType<typeof vi.fn> & {
           setState: ReturnType<typeof vi.fn>;
         };
@@ -140,7 +140,7 @@ describe('useAuth', () => {
       await expect(
         result.current.login({
           email: 'john@example.com',
-          password: 'wrongpassword',
+          password: 'WrongPassword123!',
         })
       ).rejects.toThrow('Invalid credentials');
     });
@@ -181,7 +181,7 @@ describe('useAuth', () => {
 
       await result.current.login({
         email: 'john@example.com',
-        password: 'password123',
+        password: 'Password123!',
       });
 
       await waitFor(() => {
@@ -251,7 +251,7 @@ describe('useAuth', () => {
 
       await result.current.login({
         email: 'john@example.com',
-        password: 'password123',
+        password: 'Password123!',
       });
 
       await waitFor(() => {

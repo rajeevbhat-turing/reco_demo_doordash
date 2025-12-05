@@ -107,7 +107,7 @@ vi.mock('@/components/authentication/sign-up', () => ({
             email: 'john@example.com',
             phoneNumber: '1234567890',
             country: selectedCountry,
-            password: 'password123',
+            password: 'Password123!',
           })
         }
       >

@@ -15,7 +15,7 @@ describe('user-store', () => {
     name: 'John Doe',
     email: 'john@example.com',
     phoneNumber: '1234567890',
-    password: 'password123',
+    password: 'Password123!',
     country: {
       dialCode: '+1',
       code: 'US',
@@ -133,7 +133,7 @@ describe('user-store', () => {
         name: 'Jane Doe',
         email: 'jane@example.com',
         phoneNumber: '0987654321',
-        password: 'password456',
+        password: 'Password456!',
         country: mockUser.country,
         userCountry: 'United States',
         avatar: null,
@@ -154,7 +154,7 @@ describe('user-store', () => {
         name: 'Jane Doe',
         email: 'jane@example.com',
         phoneNumber: '0987654321',
-        password: 'password456',
+        password: 'Password456!',
         country: mockUser.country,
         userCountry: 'United States',
         avatar: null,
@@ -187,7 +187,7 @@ describe('user-store', () => {
         name: 'Jane Doe',
         email: 'jane@example.com',
         phoneNumber: '0987654321',
-        password: 'password456',
+        password: 'Password456!',
         country: mockUser.country,
         userCountry: 'United States',
         avatar: null,
@@ -256,23 +256,23 @@ describe('user-store', () => {
   describe('changePassword', () => {
     it('should change password when old password is correct', () => {
       useUserStore.setState({ currentUser: mockUser });
-      const result = useUserStore.getState().changePassword('password123', 'newpassword456');
+      const result = useUserStore.getState().changePassword('Password123!', 'NewPassword456!');
 
       expect(result).toBe(true);
-      expect(useUserStore.getState().currentUser?.password).toBe('newpassword456');
+      expect(useUserStore.getState().currentUser?.password).toBe('NewPassword456!');
       expect(useUserStore.getState().changePasswordPhoneVerified).toBe(false);
     });
 
     it('should return false when old password is incorrect', () => {
       useUserStore.setState({ currentUser: mockUser });
-      const result = useUserStore.getState().changePassword('wrongpassword', 'newpassword456');
+      const result = useUserStore.getState().changePassword('WrongPassword123!', 'NewPassword456!');
 
       expect(result).toBe(false);
-      expect(useUserStore.getState().currentUser?.password).toBe('password123');
+      expect(useUserStore.getState().currentUser?.password).toBe('Password123!');
     });
 
     it('should return false when no current user', () => {
-      const result = useUserStore.getState().changePassword('password123', 'newpassword456');
+      const result = useUserStore.getState().changePassword('Password123!', 'NewPassword456!');
       expect(result).toBe(false);
     });
 
@@ -281,10 +281,10 @@ describe('user-store', () => {
         users: [mockUser],
         currentUser: mockUser,
       });
-      useUserStore.getState().changePassword('password123', 'newpassword456');
+      useUserStore.getState().changePassword('Password123!', 'NewPassword456!');
 
       const user = useUserStore.getState().getUser('1');
-      expect(user?.password).toBe('newpassword456');
+      expect(user?.password).toBe('NewPassword456!');
     });
   });
 

@@ -380,13 +380,14 @@ describe('SignUp Component', () => {
         fireEvent.blur(passwordInput);
 
         await waitFor(() => {
+          // Password "short" fails all requirements, so it should show multiple errors
           expect(
-            screen.getByText('Password must contain at least 10 characters')
+            screen.getByText('Password must be at least 10 characters long')
           ).toBeInTheDocument();
         });
       });
 
-      it('should accept password with exactly 10 characters', async () => {
+      it('should show error when password is 10 characters but missing number', async () => {
         render(
           <SignUp
             onShowOTP={mockOnShowOTP}
@@ -396,12 +397,38 @@ describe('SignUp Component', () => {
         );
 
         const passwordInput = screen.getByLabelText(/password/i);
-        fireEvent.change(passwordInput, { target: { value: '1234567890' } });
+        fireEvent.change(passwordInput, { target: { value: 'aPassword!' } });
         fireEvent.blur(passwordInput);
 
         await waitFor(() => {
           expect(
-            screen.queryByText('Password must contain at least 10 characters')
+            screen.getByText('Password must contain at least one number (0-9)')
+          ).toBeInTheDocument();
+          expect(
+            screen.queryByText('Password must be at least 10 characters long')
+          ).not.toBeInTheDocument();
+        });
+      });
+
+      it('should show error when password is 10 characters but missing special character', async () => {
+        render(
+          <SignUp
+            onShowOTP={mockOnShowOTP}
+            selectedCountry={mockSelectedCountry}
+            setShowCountryDropdown={mockSetShowCountryDropdown}
+          />
+        );
+
+        const passwordInput = screen.getByLabelText(/password/i);
+        fireEvent.change(passwordInput, { target: { value: 'aPassword1' } });
+        fireEvent.blur(passwordInput);
+
+        await waitFor(() => {
+          expect(
+            screen.getByText('Password must contain at least one special character (!@#$%^&*...)')
+          ).toBeInTheDocument();
+          expect(
+            screen.queryByText('Password must be at least 10 characters long')
           ).not.toBeInTheDocument();
         });
       });
@@ -448,7 +475,7 @@ describe('SignUp Component', () => {
         target: { value: '1234567890' },
       });
       fireEvent.change(screen.getByLabelText(/password/i), {
-        target: { value: 'password123' },
+        target: { value: 'Password123!' },
       });
 
       const submitButton = screen.getByRole('button', { name: /sign up/i });
@@ -497,7 +524,7 @@ describe('SignUp Component', () => {
         target: { value: '1234567890' },
       });
       fireEvent.change(screen.getByLabelText(/password/i), {
-        target: { value: 'password123' },
+        target: { value: 'Password123!' },
       });
 
       const submitButton = screen.getByRole('button', { name: /sign up/i });
@@ -551,7 +578,7 @@ describe('SignUp Component', () => {
         target: { value: '1234567890' },
       });
       fireEvent.change(screen.getByLabelText(/password/i), {
-        target: { value: 'password123' },
+        target: { value: 'Password123!' },
       });
 
       const submitButton = screen.getByRole('button', { name: /sign up/i });

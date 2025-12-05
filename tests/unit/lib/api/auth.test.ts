@@ -19,7 +19,7 @@ describe('auth API', () => {
     name: 'John Doe',
     email: 'john@example.com',
     phoneNumber: '9999999999',
-    password: 'password123',
+    password: 'Password123!',
     country: {
       dialCode: '+1',
       code: 'US',
@@ -48,7 +48,7 @@ describe('auth API', () => {
 
       const result = await loginUser({
         email: 'john@example.com',
-        password: 'password123',
+        password: 'Password123!',
       });
 
       expect(result).toEqual(mockUser);
@@ -65,7 +65,7 @@ describe('auth API', () => {
       await expect(
         loginUser({
           email: 'john@example.com',
-          password: 'wrongpassword',
+          password: 'WrongPassword123!',
         })
       ).rejects.toThrow('Invalid email or password');
 
@@ -87,7 +87,7 @@ describe('auth API', () => {
 
       const result = await loginUser({
         email: 'john@example.com',
-        password: 'password123',
+        password: 'Password123!',
       });
 
       expect(result).toEqual(mockUser);
@@ -98,7 +98,7 @@ describe('auth API', () => {
         },
         body: JSON.stringify({
           email: 'john@example.com',
-          password: 'password123',
+          password: 'Password123!',
           deletedUserIds: [],
         }),
       });
@@ -114,7 +114,7 @@ describe('auth API', () => {
 
       const result = await loginUser({
         email: 'JOHN@EXAMPLE.COM',
-        password: 'password123',
+        password: 'Password123!',
       });
 
       expect(result).toEqual(mockUser);
@@ -138,7 +138,7 @@ describe('auth API', () => {
       await expect(
         loginUser({
           email: 'john@example.com',
-          password: 'password123',
+          password: 'Password123!',
         })
       ).rejects.toThrow('Invalid credentials');
     });
@@ -158,7 +158,7 @@ describe('auth API', () => {
 
       await loginUser({
         email: 'john@example.com',
-        password: 'password123',
+        password: 'Password123!',
       });
 
       expect(fetch).toHaveBeenCalledWith('/api/auth/login', {
@@ -168,7 +168,7 @@ describe('auth API', () => {
         },
         body: JSON.stringify({
           email: 'john@example.com',
-          password: 'password123',
+          password: 'Password123!',
           deletedUserIds: ['deleted1', 'deleted2'],
         }),
       });

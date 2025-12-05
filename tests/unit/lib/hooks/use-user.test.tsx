@@ -50,7 +50,7 @@ describe('useUser', () => {
     name: 'John Doe',
     email: 'john@example.com',
     phoneNumber: '1234567890',
-    password: 'password123',
+    password: 'Password123!',
     country: {
       dialCode: '+1',
       code: 'US',
@@ -170,7 +170,7 @@ describe('useUserByEmail', () => {
     name: 'John Doe',
     email: 'john@example.com',
     phoneNumber: '1234567890',
-    password: 'password123',
+    password: 'Password123!',
     country: {
       dialCode: '+1',
       code: 'US',
