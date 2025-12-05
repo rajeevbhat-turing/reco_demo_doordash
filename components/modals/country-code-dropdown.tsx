@@ -98,6 +98,7 @@ export default function CountryCodeDropdown({
             <button
               onClick={onClose}
               className="text-[#191919ff] hover:bg-gray-100 rounded-full p-2 transition-colors"
+              aria-label="Close modal"
             >
               <X className="h-6 w-6" />
             </button>
@@ -113,6 +114,7 @@ export default function CountryCodeDropdown({
           <button
             onClick={onClose}
             className="text-[#191919ff] hover:bg-gray-100 rounded-full p-2 transition-colors ml-[-8px]"
+            aria-label="Close modal"
           >
             <X className="h-6 w-6" />
           </button>

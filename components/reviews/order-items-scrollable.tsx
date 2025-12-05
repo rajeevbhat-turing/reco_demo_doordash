@@ -107,12 +107,14 @@ export default function OrderItemsScrollable({
         ref={scrollContainerRef}
         className="flex gap-2 overflow-x-auto scrollbar-hide"
         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+        data-testid="order-items-scroll-container"
       >
         {items.map(item => (
           <div
             key={`order-item-${item.id}`}
-            className="rounded-lg flex items-center justify-between gap-3 min-w-[150px] flex-shrink-0 border border-[#e4e4e4] 
+            className="rounded-lg flex items-center justify-between gap-3 min-w-[150px] flex-shrink-0 border border-[#e4e4e4]
             cursor-pointer hover:border-gray-300 transition-colors"
+            data-testid={`order-item-${item.id}`}
             onClick={() => openItemDialog(item)}
           >
             {/* Left Section - Text Content */}

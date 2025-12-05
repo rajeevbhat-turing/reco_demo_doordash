@@ -371,7 +371,7 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
 
   if (userCarts.length === 0 && isOpen) {
     return (
-      <div ref={sidebarRef} className={cartClasses}>
+      <div ref={sidebarRef} className={cartClasses} data-testid="cart-sidebar">
         <div className="p-4 border-b flex items-center justify-between">
           <h2 className="text-lg font-bold">Your cart</h2>
           <button onClick={onClose} className="p-2 rounded-full hover:bg-gray-100">
@@ -389,7 +389,7 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
   const displayThreshold = categoryConfig.freeDeliveryThreshold;
 
   return (
-    <div ref={sidebarRef} className={cartClasses}>
+    <div ref={sidebarRef} className={cartClasses} data-testid="cart-sidebar">
       {/* Header */}
       <div className="p-4 border-b flex items-center justify-between">
         <button onClick={onClose} className="p-2">

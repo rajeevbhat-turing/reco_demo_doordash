@@ -218,7 +218,10 @@ export default function ScheduleDeliveryModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4"
+      data-testid="schedule-delivery-modal-backdrop"
+    >
       <div
         ref={dialogRef}
         className="relative bg-white rounded-2xl w-full max-w-lg mx-4 p-6 max-h-[95vh] overflow-y-auto"
@@ -251,6 +254,7 @@ export default function ScheduleDeliveryModal({
                   ? 'bg-black text-white'
                   : 'bg-gray-100 text-gray-900 hover:bg-gray-200'
               }`}
+              data-selected={selectedDate === dateObj.date}
             >
               <div className="text-xs font-medium">{dateObj.day}</div>
               <div className="text-md font-bold">{dateObj.date}</div>

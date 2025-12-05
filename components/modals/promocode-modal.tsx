@@ -223,6 +223,7 @@ export default function PromoCodeModal({
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
       onClick={handleBackdropClick}
+      data-testid="promocode-modal-backdrop"
     >
       <div
         ref={modalRef}
@@ -255,6 +256,7 @@ export default function PromoCodeModal({
                   setError({ ...error, promocode: null });
                 }}
                 placeholder=""
+                data-testid="promo-code-input"
                 className={`flex-1 px-4 py-4 rounded-lg border-2 border-transparent focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0
                 text-[#191919ff] bg-[#f7f7f7] focus-visible:border-[#191919ff] pr-20 ${
                   error.promocode ? 'border-[#b71000ff] bg-[#fef0ed]' : ''
@@ -298,6 +300,7 @@ export default function PromoCodeModal({
                   setError({ ...error, giftCard: null });
                 }}
                 placeholder="Enter gift card PIN"
+                data-testid="gift-card-input"
                 className={`w-full pl-12 pr-[88px] py-4 border-2 border-transparent focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 
                   rounded-lg text-[#191919ff] bg-[#f7f7f7] focus-visible:border-[#191919ff] ${
                     error.giftCard ? 'border-[#b71000ff] bg-[#fef0ed]' : ''

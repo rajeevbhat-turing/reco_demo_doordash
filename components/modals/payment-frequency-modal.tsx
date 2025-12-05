@@ -62,9 +62,13 @@ export default function PaymentFrequencyModal({
                 className={`w-6 h-6 rounded-full border-2 flex items-center justify-center mr-4 ${
                   selectedFrequency === 'once-a-day' ? 'border-gray-900' : 'border-gray-300'
                 }`}
+                data-testid="radio-indicator-once-a-day"
               >
                 {selectedFrequency === 'once-a-day' && (
-                  <div className="w-3 h-3 rounded-full bg-gray-900"></div>
+                  <div
+                    className="w-3 h-3 rounded-full bg-gray-900"
+                    data-testid="radio-dot-once-a-day"
+                  ></div>
                 )}
               </div>
               <span className="text-base text-gray-900">Pay once a day</span>
@@ -79,9 +83,13 @@ export default function PaymentFrequencyModal({
                 className={`w-6 h-6 rounded-full border-2 flex items-center justify-center mr-4 ${
                   selectedFrequency === 'after-each-order' ? 'border-gray-900' : 'border-gray-300'
                 }`}
+                data-testid="radio-indicator-after-each-order"
               >
                 {selectedFrequency === 'after-each-order' && (
-                  <div className="w-3 h-3 rounded-full bg-gray-900"></div>
+                  <div
+                    className="w-3 h-3 rounded-full bg-gray-900"
+                    data-testid="radio-dot-after-each-order"
+                  ></div>
                 )}
               </div>
               <span className="text-base text-gray-900">Pay after each order</span>

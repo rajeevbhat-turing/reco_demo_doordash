@@ -333,8 +333,8 @@ export default function Header() {
         lng: selectedPopoverAddress.lng || 0,
         addressType: 'house', // default type for popover
         apartmentSuite: apartmentSuite,
-        deliveryPreference: dropOffOption === 'door' ? 'door' : 'location',
-        meetLocation: dropOffOption === 'door' ? '' : 'door',
+        deliveryPreference: dropOffOption === 'door' ? 'leave' : 'meet',
+        deliveryLocation: dropOffOption === 'door' ? '' : 'door',
         deliveryInstructions: deliveryInstructions,
       };
       setTempAddress(tempAddressData);
@@ -407,6 +407,7 @@ export default function Header() {
                 <button
                   onClick={handleBackToStore}
                   className="flex items-center space-x-2 text-gray-700 hover:text-gray-900 transition-colors"
+                  data-testid="back-to-store-button"
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path
@@ -473,6 +474,7 @@ export default function Header() {
                         }
                       }}
                       className="flex items-center mr-4 bg-[#f1f1f1] rounded-full px-5 h-8 hover:bg-gray-200 transition-colors cursor-pointer"
+                      data-testid="address-button"
                     >
                       {displayAddress && <MapPin className="h-5 w-5 text-gray-700 mr-1" />}
                       <span className="text-sm font-medium mr-1">
@@ -503,7 +505,10 @@ export default function Header() {
                         />
 
                         {/* Popover */}
-                        <div className="absolute top-full left-0 mt-2 w-[400px] bg-white rounded-lg shadow-lg border border-gray-200 z-50">
+                        <div
+                          className="absolute top-full left-0 mt-2 w-[400px] bg-white rounded-lg shadow-lg border border-gray-200 z-50"
+                          data-testid="address-popover"
+                        >
                           {showManualEntryError ? (
                             <>
                               {/* Address review error view */}
@@ -939,9 +944,12 @@ export default function Header() {
                       className="relative h-8 w-14 rounded-full bg-[#2563EB] text-white text-sm font-semibold flex items-center justify-center"
                       onClick={toggleCart}
                       aria-label="Cart"
+                      data-testid="cart-button"
                     >
                       <ShoppingCart className="h-4 w-4 text-white mr-1" />
-                      <span className="font-medium">{cartItemCount}</span>
+                      <span className="font-medium" data-testid="cart-count">
+                        {cartItemCount}
+                      </span>
                     </button>
                   </div>
 

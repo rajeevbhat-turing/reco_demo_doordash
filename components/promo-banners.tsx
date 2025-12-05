@@ -237,6 +237,7 @@ export default function PromoBanners() {
         style={{ scrollSnapType: 'x mandatory' }}
         onMouseEnter={() => setIsAutoScrolling(false)}
         onMouseLeave={() => setIsAutoScrolling(true)}
+        data-testid="promo-banners-container"
       >
         {filteredBanners.map(banner => (
           <Link
@@ -245,6 +246,7 @@ export default function PromoBanners() {
             className={`promo-card flex-shrink-0 w-full max-w-xl bg-gradient-to-r ${banner.gradient} overflow-hidden cursor-pointer hover:shadow-lg transition-all duration-300 hover:scale-[1.02] rounded-lg`}
             style={{ scrollSnapAlign: 'start' }}
             prefetch={false}
+            data-testid={`promo-banner-${banner.restaurantId}`}
           >
             <div className="flex">
               <div className="p-6 flex-1">

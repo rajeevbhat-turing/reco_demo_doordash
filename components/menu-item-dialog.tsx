@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useMemo } from 'react';
 import { X, ChevronDown, ChevronUp, Minus, Plus } from 'lucide-react';
 import { useCartStore } from '@/store/cart-store';
 import type { MenuItem } from '@/constants/menu-items';
-import { getDefaultRating } from '@/utils/rating-utils';
+import { getDefaultRating } from '@/lib/utils/rating-utils';
 import {
   Modification,
   ModificationOption,

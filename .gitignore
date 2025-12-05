@@ -49,3 +49,6 @@ poc-database.sqlite
 lhci-reports/
 .lighthouseci/
 puppeteer-login.js
+
+# Unit test coverage
+coverage/

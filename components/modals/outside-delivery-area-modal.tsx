@@ -180,7 +180,10 @@ export default function OutsideDeliveryAreaModal({
     <>
       {/* Outside Delivery Area Modal */}
       {isOpen && !showAddressesModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
+          data-testid="outside-delivery-area-modal-backdrop"
+        >
           <div className="relative bg-white rounded-xl w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto">
             {/* Close button */}
             <button

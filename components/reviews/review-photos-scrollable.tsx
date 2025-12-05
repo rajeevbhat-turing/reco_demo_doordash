@@ -71,6 +71,7 @@ export default function ReviewPhotosScrollable({
         ref={scrollContainerRef}
         className="flex gap-2 overflow-x-auto scrollbar-hide"
         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+        data-testid="review-photos-scroll-container"
       >
         {photos.map((photo, index) => (
           <div
