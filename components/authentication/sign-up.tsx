@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { useUserStore } from '@/store/user-store';
 import { isValidEmail, isValidName } from '@/lib/utils/helperFunctions';
 import { User } from '@/lib/types/user-types';
+import { validatePassword } from '@/lib/utils/password-validation';
 interface SignUpProps {
   onShowOTP: (user: User) => void;
   selectedCountry: any;
@@ -29,7 +30,7 @@ export default function SignUp({
     mobileNumber: '',
     password: '',
   });
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [errors, setErrors] = useState<Record<string, string | string[]>>({});
   const [showPassword, setShowPassword] = useState(false);
 
   // Updates form data and clears field-specific errors when user types
@@ -84,10 +85,13 @@ export default function SignUp({
     } else if (field === 'password') {
       if (!value.trim()) {
         newErrors.password = 'Password is required';
-      } else if (value.length < 10) {
-        newErrors.password = 'Password must contain at least 10 characters';
       } else {
-        delete newErrors.password;
+        const passwordValidation = validatePassword(value);
+        if (!passwordValidation.isValid) {
+          newErrors.password = passwordValidation.errors;
+        } else {
+          delete newErrors.password;
+        }
       }
     }
 
@@ -96,7 +100,7 @@ export default function SignUp({
 
   // Validates all form fields and returns true if valid, false otherwise
   const validateForm = () => {
-    const newErrors: Record<string, string> = {};
+    const newErrors: Record<string, string | string[]> = {};
 
     if (!formData.firstName.trim()) {
       newErrors.firstName = 'First name is required';
@@ -127,8 +131,11 @@ export default function SignUp({
 
     if (!formData.password.trim()) {
       newErrors.password = 'Password is required';
-    } else if (formData.password.length < 10) {
-      newErrors.password = 'Password must contain at least 10 characters';
+    } else {
+      const passwordValidation = validatePassword(formData.password);
+      if (!passwordValidation.isValid) {
+        newErrors.password = passwordValidation.errors;
+      }
     }
 
     setErrors(newErrors);
@@ -173,9 +180,10 @@ export default function SignUp({
         return;
       }
 
-      if (formData.password.length < 10) {
+      const passwordValidation = validatePassword(formData.password);
+      if (!passwordValidation.isValid) {
         setErrors({
-          password: 'Password must contain at least 10 characters',
+          password: passwordValidation.errors,
         });
         return;
       }
@@ -329,12 +337,9 @@ export default function SignUp({
 
       {/* Password Field */}
       <div className="mb-6">
-        <div className="flex items-center justify-between mb-2">
-          <Label htmlFor="password" className="text-[15px] font-bold text-gray-900">
-            Password
-          </Label>
-          <span className="text-[14px] font-medium text-[#191919ff]">At least 10 characters</span>
-        </div>
+        <Label htmlFor="password" className="text-[15px] font-bold text-gray-900 mb-2 block">
+          Password
+        </Label>
         <div className="relative">
           <Input
             id="password"
@@ -358,11 +363,24 @@ export default function SignUp({
           </div>
         </div>
         {errors.password && (
-          <div className="flex mt-1 text-[#b71000ff]">
-            <div className="h-4 w-4 mr-2 flex-shrink-0 rounded-full flex items-center justify-center bg-[#b71000ff]">
-              <span className="text-white text-xs font-bold">!</span>
-            </div>
-            <span className="text-sm font-semibold">{errors.password}</span>
+          <div className="mt-2 space-y-1">
+            {Array.isArray(errors.password) ? (
+              errors.password.map((error, index) => (
+                <div key={index} className="flex items-start text-[#b71000ff]">
+                  <div className="h-4 w-4 mr-2 flex-shrink-0 rounded-full flex items-center justify-center bg-[#b71000ff] mt-0.5">
+                    <span className="text-white text-xs font-bold">!</span>
+                  </div>
+                  <span className="text-sm font-semibold">{error}</span>
+                </div>
+              ))
+            ) : (
+              <div className="flex items-start text-[#b71000ff]">
+                <div className="h-4 w-4 mr-2 flex-shrink-0 rounded-full flex items-center justify-center bg-[#b71000ff] mt-0.5">
+                  <span className="text-white text-xs font-bold">!</span>
+                </div>
+                <span className="text-sm font-semibold">{errors.password}</span>
+              </div>
+            )}
           </div>
         )}
       </div>
