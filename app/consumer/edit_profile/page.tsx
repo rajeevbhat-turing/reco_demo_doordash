@@ -10,6 +10,7 @@ import { isValidName } from '@/lib/utils/helperFunctions';
 
 export default function AccountSettingsPage() {
   const currentUser = useUserStore(state => state.currentUser);
+  const users = useUserStore(state => state.users);
   const updateUser = useUserStore(state => state.updateUser);
   const [country, setCountry] = useState('United States');
   const [phoneCountry, setPhoneCountry] = useState('+1 (US)');
@@ -51,12 +52,18 @@ export default function AccountSettingsPage() {
       setCountry(currentUser.userCountry || 'United States');
       setPhoneCountry(`${currentUser.country?.dialCode} (${currentUser.country?.code})`);
 
+      // Extract phone number without dial code if it starts with the dial code
+      let phoneNumber = currentUser.phoneNumber || '';
+      if (currentUser.country?.dialCode && phoneNumber.startsWith(currentUser.country.dialCode)) {
+        phoneNumber = phoneNumber.substring(currentUser.country.dialCode.length);
+      }
+
       // Set initial form data
       setFormData({
         firstName: currentUser.name?.split(' ')[0] || '',
         lastName: currentUser.name?.split(' ').slice(1).join(' ') || '',
         email: currentUser.email || '',
-        phoneNumber: currentUser.phoneNumber || '',
+        phoneNumber: phoneNumber,
       });
     }
   }, [currentUser]);
@@ -305,6 +312,19 @@ export default function AccountSettingsPage() {
           const emailError = validateField('email', formData.email);
           if (emailError) {
             validationErrors.push(emailError);
+          } else {
+            // Check for duplicate email (excluding current user)
+            const existingUserByEmail = users.find(
+              user => user.email.toLowerCase() === formData.email.toLowerCase() && user.id !== currentUser.id
+            );
+
+            if (existingUserByEmail) {
+              setGeneralError(
+                'The email address you entered is already associated with an account. Please enter a different email address.'
+              );
+              setIsSaving(false);
+              return;
+            }
           }
         }
 
@@ -317,6 +337,28 @@ export default function AccountSettingsPage() {
             setGeneralError(phoneError);
             setIsSaving(false);
             return;
+          }
+        }
+
+        // Check for duplicate phone number if phone or phone country changed
+        if (phoneChanged || phoneCountryChanged) {
+          // Extract dial code from phoneCountry (format: "+1 (US)")
+          const selectedCountryData = countriesData.find(
+            c => `${c.dial_code} (${c.code})` === phoneCountry
+          );
+          if (selectedCountryData) {
+            const fullPhoneNumber = `${selectedCountryData.dial_code}${formData.phoneNumber}`;
+            const existingUserByPhone = users.find(
+              user => user.phoneNumber === fullPhoneNumber && user.id !== currentUser.id
+            );
+
+            if (existingUserByPhone) {
+              setGeneralError(
+                'The phone number you entered is already associated with an account. Please enter a different phone number.'
+              );
+              setIsSaving(false);
+              return;
+            }
           }
         }
 
@@ -334,16 +376,14 @@ export default function AccountSettingsPage() {
           updateData.email = formData.email;
         }
 
-        if (phoneChanged) {
-          updateData.phoneNumber = formData.phoneNumber;
-        }
-
-        if (phoneCountryChanged) {
+        if (phoneChanged || phoneCountryChanged) {
           // Find the country data from the selected phone country
           const selectedCountryData = countriesData.find(
             c => `${c.dial_code} (${c.code})` === phoneCountry
           );
           if (selectedCountryData) {
+            // Store phone number with dial code (format: "+11234567890")
+            updateData.phoneNumber = `${selectedCountryData.dial_code}${formData.phoneNumber}`;
             updateData.country = {
               dialCode: selectedCountryData.dial_code,
               code: selectedCountryData.code,
