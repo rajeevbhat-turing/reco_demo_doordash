@@ -244,57 +244,13 @@ export default function OrderReceiptPage() {
       : '';
 
   return (
-    <div className="h-screen flex flex-col bg-gray-50 mt-16">
-      {/* Main Layout: Map + Sidebar */}
-      <div className="flex-1 flex overflow-hidden">
-        {/* Map Section */}
-        <div className="flex-1 relative bg-gray-200 no-print">
-          {/* Placeholder for map - to be implemented */}
-          <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-300">
-            <div className="text-center text-gray-500">
-              <svg
-                className="w-16 h-16 mx-auto mb-2 text-gray-400"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"
-                  clipRule="evenodd"
-                />
-              </svg>
-              <p className="text-sm">Map View (To be implemented)</p>
-            </div>
-
-            {/* Back button */}
-            <button
-              className="p-2.5 bg-white hover:bg-gray-50 rounded-full transition-colors absolute top-5 left-5 shadow-md"
-              onClick={() => router.replace('/orders')}
-            >
-              <ArrowLeft className="w-5.5 h-5.5" />
-            </button>
-
-            {/* Help button */}
-            {/* <button className="px-3 py-1.5 bg-white hover:bg-gray-50 rounded-2xl shadow-md absolute top-5 right-5 text-sm font-bold text-[#191919ff]">
-              Help
-            </button> */}
-          </div>
-
-          {/* Map Controls */}
-          <div className="absolute bottom-6 right-6 flex flex-col gap-2">
-            <button className="w-10 h-10 bg-white rounded-lg shadow-md flex items-center justify-center hover:bg-gray-50">
-              <span className="text-xl font-light">+</span>
-            </button>
-            <button className="w-10 h-10 bg-white rounded-lg shadow-md flex items-center justify-center hover:bg-gray-50">
-              <span className="text-xl font-light">−</span>
-            </button>
-          </div>
-        </div>
-
-        {/* Receipt Sidebar - Original Design */}
+    <div className="min-h-screen flex flex-col bg-gray-50 mt-16">
+      {/* Main Layout: Centered Receipt */}
+      <div className="flex-1 flex justify-center overflow-hidden py-6">
+        {/* Receipt - Centered */}
         <div
           id="receipt-sidebar"
-          className="w-[420px] bg-white border-l border-gray-200 overflow-y-auto flex-shrink-0"
+          className="w-full max-w-[480px] bg-white border border-gray-200 rounded-lg shadow-sm overflow-y-auto mx-4"
         >
           <div className="h-full">
             {/* Dashdoor Logo - Only visible in print */}
@@ -339,8 +295,18 @@ export default function OrderReceiptPage() {
               </div>
             </div>
 
+            {/* Back Button */}
+            <div className="p-4 pb-0 no-print">
+              <button
+                className="p-2 hover:bg-gray-100 rounded-full transition-colors -ml-2"
+                onClick={() => router.replace('/orders')}
+              >
+                <ArrowLeft className="w-5 h-5" />
+              </button>
+            </div>
+
             {/* Order Complete Header */}
-            <div className="p-4 border-b border-gray-200">
+            <div className="p-4 pt-2 border-b border-gray-200">
               <div className="flex items-start justify-between mb-3">
                 <div>
                   <h2 className="text-xl font-bold mb-1">{getOrderStatusMessage(order.status)}</h2>
@@ -366,7 +332,11 @@ export default function OrderReceiptPage() {
                   {completionDate && <p className="text-gray-600 text-xs">{completionDate}</p>}
                 </div>
                 <div className="w-10 h-10 bg-gray-100 rounded flex items-center justify-center">
-                  <img src="/placeholder-logo.svg" alt="Store" width={24} height={24} />
+                  <img
+                    src={orderRestaurant?.logo || '/placeholder-logo.svg'}
+                    alt="Store"
+                    className="w-full h-full object-cover"
+                  />
                 </div>
               </div>
 
@@ -482,12 +452,11 @@ export default function OrderReceiptPage() {
             <div className="px-4 py-3 border-b border-gray-200">
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
-                  <div className="w-10 h-10 bg-gray-100 rounded flex items-center justify-center">
+                  <div className="w-10 h-10 bg-gray-100 rounded flex items-center justify-center overflow-hidden">
                     <img
-                      src="/placeholder-logo.svg"
+                      src={orderRestaurant?.logo || '/placeholder-logo.svg'}
                       alt={getStoreName(order)}
-                      width={24}
-                      height={24}
+                      className="w-full h-full object-cover"
                     />
                   </div>
                   <div>
@@ -512,46 +481,66 @@ export default function OrderReceiptPage() {
               {/* Order Items */}
               {order.items && order.items.length > 0 && (
                 <div className="space-y-2">
-                  {order.items.map(item => (
-                    <div key={item.id} className="flex items-start gap-2">
-                      <div className="w-10 h-10 bg-gray-100 rounded flex items-center justify-center flex-shrink-0">
-                        <img src="/placeholder.svg" alt={item.name} width={24} height={24} />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex justify-between items-start gap-2">
-                          <p className="text-sm font-medium truncate">
-                            {item.quantity}x {item.name}
-                          </p>
-                          <div className="flex items-center gap-2 flex-shrink-0">
-                            {(() => {
-                              const finalPrice =
-                                (item as any).final_price !== undefined
-                                  ? (item as any).final_price
-                                  : item.price;
-                              const originalTotal = item.price * item.quantity;
-                              const finalTotal = finalPrice * item.quantity;
-                              const hasDiscount = finalTotal < originalTotal;
+                  {order.items.map(item => {
+                    // Find menu item image from restaurant menu data
+                    // Order item IDs may include modification hash suffix (e.g., "123-abcdef")
+                    // Extract base ID by matching the start of the item ID with menu item IDs
+                    const menuItem = orderMenuData?.menuItems.find(mi => {
+                      const menuItemId = mi.id?.toString();
+                      const orderItemId = item.id?.toString();
+                      // Check if order item ID starts with the menu item ID
+                      // This handles both exact matches and IDs with modification suffixes
+                      return (
+                        orderItemId === menuItemId || orderItemId?.startsWith(menuItemId + '-')
+                      );
+                    });
+                    const itemImage = menuItem?.image || (item as any).image || '/placeholder.svg';
 
-                              return hasDiscount ? (
-                                <>
-                                  <span className="text-sm font-medium text-[#eb1700ff]">
+                    return (
+                      <div key={item.id} className="flex items-start gap-2">
+                        <div className="w-10 h-10 bg-gray-100 rounded flex items-center justify-center flex-shrink-0 overflow-hidden">
+                          <img
+                            src={itemImage}
+                            alt={item.name}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex justify-between items-start gap-2">
+                            <p className="text-sm font-medium truncate">
+                              {item.quantity}x {item.name}
+                            </p>
+                            <div className="flex items-center gap-2 flex-shrink-0">
+                              {(() => {
+                                const finalPrice =
+                                  (item as any).final_price !== undefined
+                                    ? (item as any).final_price
+                                    : item.price;
+                                const originalTotal = item.price * item.quantity;
+                                const finalTotal = finalPrice * item.quantity;
+                                const hasDiscount = finalTotal < originalTotal;
+
+                                return hasDiscount ? (
+                                  <>
+                                    <span className="text-sm font-medium text-[#eb1700ff]">
+                                      ${finalTotal.toFixed(2)}
+                                    </span>
+                                    <span className="text-sm text-[#606060ff] line-through">
+                                      ${originalTotal.toFixed(2)}
+                                    </span>
+                                  </>
+                                ) : (
+                                  <span className="text-sm font-medium text-gray-900">
                                     ${finalTotal.toFixed(2)}
                                   </span>
-                                  <span className="text-sm text-[#606060ff] line-through">
-                                    ${originalTotal.toFixed(2)}
-                                  </span>
-                                </>
-                              ) : (
-                                <span className="text-sm font-medium text-gray-900">
-                                  ${finalTotal.toFixed(2)}
-                                </span>
-                              );
-                            })()}
+                                );
+                              })()}
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
             </div>
