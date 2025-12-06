@@ -40,7 +40,7 @@ export interface Order {
   storeCategory?: string;
 
   userId?: string;
-  
+
   // Order items
   items?: OrderItem[];
 
@@ -73,6 +73,8 @@ export interface Order {
   // Order metadata
   orderDate: string;
   status: string;
+  orderStatusUpdatedAt?: string;
+  remainingTime?: string; // Remaining time until delivery (e.g., "20-30 min")
   orderType?: 'Personal' | 'Business';
 
   // Optional features

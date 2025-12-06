@@ -577,13 +577,11 @@ export default function CheckoutPage() {
             discountValue: appliedDeal.discountValue,
           }
         : null,
-      // Order metadata
-      orderDate: new Date().toLocaleDateString('en-US', {
-        weekday: 'short',
-        month: 'short',
-        day: 'numeric',
-      }),
-      status: 'Confirmed',
+      // Order date should be iso string formatting should only done in the UI
+      orderDate: new Date().toISOString(),
+      status: 'pending', // Initial status is pending and waiting for confirmation
+      orderStatusUpdatedAt: new Date().toISOString(), // To track when the order status was last updated
+      remainingTime: deliveryTime, // Initialize with original delivery time
       orderType: 'Personal' as const, // Default to Personal
     };
 

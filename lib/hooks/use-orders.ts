@@ -3,6 +3,7 @@ import { fetchUserOrders } from '@/lib/api/orders';
 import { useUserStore } from '@/store/user-store';
 import { useOrdersStore } from '@/store/orders-store';
 import { useEffect } from 'react';
+import { calculateOrderCompletionTime, COMPLETED_STATUSES } from '@/lib/utils/order-utils';
 
 export function useOrders() {
   const currentUser = useUserStore(state => state.currentUser);
@@ -41,13 +42,30 @@ export function useOrders() {
         console.log('✅ User orders already present in store, initializing with empty array');
         initializeOrdersFromDB([]);
       } else {
-        // Otherwise, add userId to each order and initialize
+        // Otherwise, add userId and orderStatusUpdatedAt to each order and initialize
         console.log('✅ Initializing orders store with', orders.length, 'orders from database');
-        const ordersWithUserId = orders.map(order => ({
-          ...order,
-          userId: userId,
-        }));
-        initializeOrdersFromDB(ordersWithUserId);
+
+        const ordersWithMetadata = orders.map(order => {
+          const isCompleted = COMPLETED_STATUSES.includes(order.status.toLowerCase());
+
+          // Add orderStatusUpdatedAt for completed orders if not already present
+          const orderStatusUpdatedAt =
+            isCompleted && !order.orderStatusUpdatedAt
+              ? calculateOrderCompletionTime(
+                  order.orderDate,
+                  order.status,
+                  order.deliveryOption?.deliveryTime
+                )
+              : order.orderStatusUpdatedAt;
+
+          return {
+            ...order,
+            userId: userId,
+            orderStatusUpdatedAt,
+          };
+        });
+
+        initializeOrdersFromDB(ordersWithMetadata);
       }
     }
   }, [orders, isInitialized, initializeOrdersFromDB, userId, existingOrders]);

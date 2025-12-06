@@ -9,6 +9,7 @@ import Snackbar from '@/components/snackbar';
 import { useUserStore } from '@/store/user-store';
 import { useCarts } from '@/lib/hooks/use-carts';
 import { useOrders } from '@/lib/hooks/use-orders';
+import { useOrderStatus } from '@/lib/hooks/use-order-status';
 import { StateWindowInitializer } from '@/components/state-window-initializer';
 import NavigationLoader from '@/components/navigation-loader';
 
@@ -46,6 +47,9 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
 
   // Load user's orders from database
   useOrders();
+
+  // Update order statuses
+  useOrderStatus();
 
   // Track when component has mounted (client-side hydration complete)
   useEffect(() => {
