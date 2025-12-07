@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { MoreHorizontal, Plus, Search } from 'lucide-react';
+import { MoreHorizontal, Plus, Search, X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 
 type MenuItemRef = {
@@ -19,6 +19,7 @@ interface CreateModifierModalProps {
     name: string;
     options: string[];
     usedIn: Array<{ id: string; name: string }>;
+    timing: string;
   }) => void;
 }
 
@@ -39,6 +40,7 @@ export default function CreateModifierModal({
   const [allowMultipleOptions, setAllowMultipleOptions] = useState(false);
   const [allowMultipleSame, setAllowMultipleSame] = useState(false);
   const [allowFreeOptions, setAllowFreeOptions] = useState(false);
+  const [timing, setTiming] = useState('All Day');
 
   useEffect(() => {
     if (!isOpen) {
@@ -89,6 +91,7 @@ export default function CreateModifierModal({
       name: cleanName,
       options: cleanOptions,
       usedIn,
+      timing,
     });
   };
 
@@ -98,31 +101,38 @@ export default function CreateModifierModal({
     <div className="fixed inset-0 z-50 -top-6">
       <div className="absolute inset-0 bg-black/40" />
       <div className="absolute inset-x-0 bottom-0 top-6 bg-white overflow-hidden rounded-t-3xl">
-        <div className="h-full overflow-y-auto px-6 py-6">
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h2 className="text-2xl font-bold text-gray-900">Create new modifier</h2>
-              <p className="text-sm text-gray-600">
-                You can edit the availability of this modifier after saving.
-              </p>
-            </div>
+        <div className="h-full overflow-y-auto">
+          <div className="sticky top-0 z-30 bg-white px-6 py-3 border-b border-gray-200 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <button
                 onClick={onClose}
-                className="rounded-md px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100"
+                className="p-2 rounded-full hover:bg-gray-100"
+                aria-label="Close"
               >
-                Cancel
+                <X className="h-5 w-5 text-[#191919ff]"/>
               </button>
+              <h2 className="text-base font-semibold text-gray-900">Create new modifier</h2>
+            </div>
+            <div className="flex items-center gap-2">
               <button
                 onClick={handleCreate}
-                className="rounded-md bg-red-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-700"
+                className="rounded-[28px] bg-red-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-700"
               >
                 Create modifier
               </button>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="px-6 mb-6 mt-4 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900">Create new modifier</h1>
+              <p className="text-sm text-gray-600">
+                You can edit the availability of this modifier after saving.
+              </p>
+            </div>
+          </div>
+
+          <div className="px-6 pb-6 grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2 space-y-8">
               {/* Modifier details */}
               <div className="space-y-4">
@@ -140,6 +150,18 @@ export default function CreateModifierModal({
 
                   <div className="space-y-2">
                     <label className="text-sm font-medium text-gray-700">Items</label>
+                  <div className="flex items-center justify-between text-xs text-gray-600 px-1">
+                    <select
+                      value={timing}
+                      onChange={e => setTiming(e.target.value)}
+                      className="rounded-md px-2 py-1 bg-white text-[#191919ff] text-sm font-semibold"
+                    >
+                      <option>All Day</option>
+                      <option>Breakfast</option>
+                      <option>Lunch</option>
+                      <option>Dinner</option>
+                    </select>
+                  </div>
                     <div className="rounded-lg border border-gray-200">
                       <div className="flex items-center gap-2 px-3 py-2 border-b border-gray-100 relative">
                         <Search className="h-4 w-4 text-gray-400" />

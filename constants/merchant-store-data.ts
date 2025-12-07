@@ -112,6 +112,7 @@ export interface Modifier {
   options: string[]
   usedIn: Array<{ id: string; name: string }>
   status: ModifierStatus
+  timing?: string
 }
 
 export const merchantStoreData: Record<string, StoreMerchantData> = {
@@ -195,14 +196,16 @@ export const merchantStoreData: Record<string, StoreMerchantData> = {
             { id: "1", name: "Mint Mojito Iced Coffee" },
             { id: "2", name: "Tesora" }
           ],
-          status: "In stock"
+          status: "In stock",
+          timing: "All Day"
         },
         {
           id: "sweetener",
           name: "Sweetener",
           options: ["Classic", "Less Sweet", "Sugar-Free"],
           usedIn: [{ id: "1", name: "Mint Mojito Iced Coffee" }],
-          status: "In stock"
+          status: "In stock",
+          timing: "All Day"
         },
         {
           id: "temp-preference",
@@ -212,7 +215,8 @@ export const merchantStoreData: Record<string, StoreMerchantData> = {
             { id: "1", name: "Mint Mojito Iced Coffee" },
             { id: "2", name: "Tesora" }
           ],
-          status: "In stock"
+          status: "In stock",
+          timing: "All Day"
         }
       ]
     },
@@ -329,7 +333,8 @@ export const merchantStoreData: Record<string, StoreMerchantData> = {
             { id: "1", name: "Butter Chicken" },
             { id: "2", name: "Chicken Tikka Masala" }
           ],
-          status: "In stock"
+          status: "In stock",
+          timing: "All Day"
         },
         {
           id: "protein-choice",
@@ -339,7 +344,8 @@ export const merchantStoreData: Record<string, StoreMerchantData> = {
             { id: "1", name: "Butter Chicken" },
             { id: "2", name: "Chicken Tikka Masala" }
           ],
-          status: "In stock"
+          status: "In stock",
+          timing: "All Day"
         }
       ]
     },
@@ -444,14 +450,16 @@ export const merchantStoreData: Record<string, StoreMerchantData> = {
           name: "Add Gift Wrap",
           options: ["Standard Wrap", "Premium Wrap"],
           usedIn: [{ id: "1", name: "Prescription Pickup" }],
-          status: "In stock"
+          status: "In stock",
+          timing: "All Day"
         },
         {
           id: "delivery-speed",
           name: "Delivery Speed",
           options: ["Standard", "Express"],
           usedIn: [{ id: "1", name: "Prescription Pickup" }],
-          status: "In stock"
+          status: "In stock",
+          timing: "All Day"
         }
       ]
     },

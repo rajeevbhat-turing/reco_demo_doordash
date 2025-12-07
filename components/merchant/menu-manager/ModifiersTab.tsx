@@ -1,17 +1,9 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import {
-  Search,
-  Plus,
-  Pencil,
-  Trash2,
-  ChevronLeft,
-  ChevronRight,
-} from 'lucide-react';
+import { Search, Plus, Pencil, Trash2, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { useMerchantModifiersStore } from '@/store/merchant-modifiers-store';
-import { ModifierStatus } from '@/constants/merchant-store-data';
 import { useMerchantPersistedState } from '@/lib/hooks/useMerchantPersistedState';
 import { useMerchantMenuStore } from '@/store/merchant-menu-store';
 import { useGlobalContext } from '@/app/global-context';
@@ -19,7 +11,7 @@ import CreateModifierModal from './CreateModifierModal';
 import ConfirmModal from '@/components/merchant/modals/ConfirmModal';
 
 export default function ModifiersTab() {
-  const { modifiers, deleteModifier, addModifier, updateModifier } = useMerchantModifiersStore();
+  const { modifiers, deleteModifier, addModifier } = useMerchantModifiersStore();
   const { categories: menuCategories } = useMerchantMenuStore();
   const { setSnackbar } = useGlobalContext();
 
@@ -29,10 +21,10 @@ export default function ModifiersTab() {
     'searchQuery',
     ''
   );
-  const [selectedDayPart, setSelectedDayPart] = useMerchantPersistedState(
+  const [selectedTiming, setSelectedTiming] = useMerchantPersistedState(
     'menu',
     'modifiers',
-    'dayPart',
+    'selectedTiming',
     'All Day'
   );
   const [isCreateOpen, setIsCreateOpen] = useState(false);
@@ -40,19 +32,18 @@ export default function ModifiersTab() {
 
   const filteredModifiers = useMemo(() => {
     const query = searchValue.trim().toLowerCase();
-    if (!query) return modifiers;
+    const timingFiltered = modifiers.filter(modifier =>
+      selectedTiming === 'All Day' ? true : modifier.timing === selectedTiming
+    );
 
-    return modifiers.filter(modifier => {
+    if (!query) return timingFiltered;
+
+    return timingFiltered.filter(modifier => {
       const usedInNames = modifier.usedIn.map(ref => ref.name);
       const values = [modifier.name, ...modifier.options, ...usedInNames].join(' ').toLowerCase();
       return values.includes(query);
     });
-  }, [modifiers, searchValue]);
-
-  const toggleStatus = (modifierId: string, currentStatus: ModifierStatus) => {
-    const nextStatus = currentStatus === 'In stock' ? 'Out of stock' : 'In stock';
-    updateModifier(modifierId, { status: nextStatus });
-  };
+  }, [modifiers, searchValue, selectedTiming]);
 
   const menuItems = useMemo(
     () =>
@@ -71,12 +62,14 @@ export default function ModifiersTab() {
     name: string;
     options: string[];
     usedIn: Array<{ id: string; name: string }>;
+    timing: string;
   }) => {
     addModifier({
       id: `modifier-${Date.now()}`,
       name: payload.name,
       options: payload.options,
       usedIn: payload.usedIn,
+      timing: payload.timing,
       status: 'In stock',
     });
     setSnackbar({ message: 'Modifier has been created', autoHideDuration: 3000 });
@@ -98,9 +91,9 @@ export default function ModifiersTab() {
         </div>
         <div className="flex items-center gap-3">
           <select
-            value={selectedDayPart}
-            onChange={e => setSelectedDayPart(e.target.value)}
-            className="rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-700"
+            value={selectedTiming}
+            onChange={e => setSelectedTiming(e.target.value)}
+            className="rounded-[28px] border border-gray-300 bg-white px-3 py-2 text-sm text-[#191919ff] font-medium"
           >
             <option>All Day</option>
             <option>Breakfast</option>
@@ -109,7 +102,7 @@ export default function ModifiersTab() {
           </select>
           <button
             onClick={() => setIsCreateOpen(true)}
-            className="inline-flex items-center gap-2 rounded-md bg-red-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-red-700"
+            className="inline-flex items-center gap-2 rounded-[28px] bg-red-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-red-700"
           >
             <Plus className="h-4 w-4" />
             New Modifier
@@ -117,12 +110,14 @@ export default function ModifiersTab() {
         </div>
       </div>
 
-      <CreateModifierModal
-        isOpen={isCreateOpen}
-        onClose={() => setIsCreateOpen(false)}
-        menuItems={menuItems}
-        onCreate={handleCreate}
-      />
+      {isCreateOpen && (
+        <CreateModifierModal
+          isOpen={isCreateOpen}
+          onClose={() => setIsCreateOpen(false)}
+          menuItems={menuItems}
+          onCreate={handleCreate}
+        />
+      )}
 
       <ConfirmModal
         isOpen={!!pendingDeleteModifier}
@@ -177,17 +172,14 @@ export default function ModifiersTab() {
                       : '—'}
                   </td>
                   <td className="px-4 py-3">
-                    <button
-                      onClick={() => toggleStatus(modifier.id, modifier.status)}
-                      className="inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold text-emerald-700 transition hover:bg-emerald-50"
-                    >
+                    <div className="inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold text-emerald-700 bg-emerald-50">
                       <span
                         className={`h-2.5 w-2.5 rounded-full ${
                           modifier.status === 'In stock' ? 'bg-emerald-500' : 'bg-amber-500'
                         }`}
                       />
                       {modifier.status}
-                    </button>
+                    </div>
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex items-center justify-end gap-2">
@@ -231,5 +223,3 @@ export default function ModifiersTab() {
     </div>
   );
 }
-
-
