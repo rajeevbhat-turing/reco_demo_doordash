@@ -33,6 +33,7 @@ interface MerchantMenuStore {
   categories: MenuCategory[]
   expandedCategories: Set<string>
   showBanner: boolean
+  deletedItemIds: Set<string>
   
   // Actions
   setCategories: (categories: MenuCategory[]) => void
@@ -42,6 +43,7 @@ interface MerchantMenuStore {
   addItem: (categoryId: string, item: MenuItem) => void
   updateItem: (itemId: string, updates: Partial<MenuItem>) => void
   deleteItem: (itemId: string) => void
+  addDeletedItem: (itemId: string) => void
 }
 
 const initialCategories: MenuCategory[] = [
@@ -220,6 +222,7 @@ export const useMerchantMenuStore = create<MerchantMenuStore>()(
       categories: initialCategories,
       expandedCategories: new Set(["paninis"]),
       showBanner: true,
+      deletedItemIds: new Set(),
 
       setCategories: (categories) => {
         set({ categories })
@@ -227,7 +230,8 @@ export const useMerchantMenuStore = create<MerchantMenuStore>()(
           setStoreScopedStorage(currentStoreId, 'menu', {
             categories,
             expandedCategories: Array.from(get().expandedCategories),
-            showBanner: get().showBanner
+            showBanner: get().showBanner,
+            deletedItemIds: Array.from(get().deletedItemIds)
           })
         }
       },
@@ -240,7 +244,8 @@ export const useMerchantMenuStore = create<MerchantMenuStore>()(
               items: category.items.map((item) =>
                 item.id === itemId ? { ...item, status } : item
               )
-            }))
+            })),
+            deletedItemIds: state.deletedItemIds
           }
           if (typeof window !== 'undefined') {
             setStoreScopedStorage(currentStoreId, 'menu', {
@@ -254,10 +259,11 @@ export const useMerchantMenuStore = create<MerchantMenuStore>()(
 
       toggleCategory: (categoryId) =>
         set((state) => {
-          const currentSet = state.expandedCategories instanceof Set 
-            ? state.expandedCategories 
-            : new Set(state.expandedCategories as any)
-          const newExpanded = new Set(currentSet)
+          const currentSet =
+            state.expandedCategories instanceof Set
+              ? (state.expandedCategories as Set<string>)
+              : new Set<string>(state.expandedCategories as any)
+          const newExpanded = new Set<string>(currentSet)
           if (newExpanded.has(categoryId)) {
             newExpanded.delete(categoryId)
           } else {
@@ -291,7 +297,8 @@ export const useMerchantMenuStore = create<MerchantMenuStore>()(
               category.id === categoryId
                 ? { ...category, items: [...category.items, item] }
                 : category
-            )
+            ),
+            deletedItemIds: state.deletedItemIds
           }
           if (typeof window !== 'undefined') {
             setStoreScopedStorage(currentStoreId, 'menu', {
@@ -311,7 +318,8 @@ export const useMerchantMenuStore = create<MerchantMenuStore>()(
               items: category.items.map((item) =>
                 item.id === itemId ? { ...item, ...updates } : item
               )
-            }))
+            })),
+            deletedItemIds: state.deletedItemIds
           }
           if (typeof window !== 'undefined') {
             setStoreScopedStorage(currentStoreId, 'menu', {
@@ -325,11 +333,14 @@ export const useMerchantMenuStore = create<MerchantMenuStore>()(
 
       deleteItem: (itemId) =>
         set((state) => {
+          const updatedDeleted = new Set(state.deletedItemIds)
+          updatedDeleted.add(itemId)
           const updated = {
             categories: state.categories.map((category) => ({
               ...category,
               items: category.items.filter((item) => item.id !== itemId)
-            }))
+            })),
+            deletedItemIds: updatedDeleted
           }
           if (typeof window !== 'undefined') {
             setStoreScopedStorage(currentStoreId, 'menu', {
@@ -339,6 +350,21 @@ export const useMerchantMenuStore = create<MerchantMenuStore>()(
             })
           }
           return updated
+        }),
+
+      addDeletedItem: (itemId) =>
+        set((state) => {
+          const updatedDeleted = new Set(state.deletedItemIds)
+          updatedDeleted.add(itemId)
+          if (typeof window !== 'undefined') {
+            setStoreScopedStorage(currentStoreId, 'menu', {
+              categories: state.categories,
+              expandedCategories: Array.from(state.expandedCategories),
+              showBanner: state.showBanner,
+              deletedItemIds: Array.from(updatedDeleted)
+            })
+          }
+          return { deletedItemIds: updatedDeleted }
         })
     }),
     {
@@ -347,12 +373,16 @@ export const useMerchantMenuStore = create<MerchantMenuStore>()(
       partialize: (state) => ({
         categories: state.categories,
         expandedCategories: Array.from(state.expandedCategories),
-        showBanner: state.showBanner
+        showBanner: state.showBanner,
+        deletedItemIds: Array.from(state.deletedItemIds)
       }),
       // Custom deserialization for Set
       onRehydrateStorage: () => (state) => {
         if (state && state.expandedCategories && !(state.expandedCategories instanceof Set)) {
           state.expandedCategories = new Set(state.expandedCategories as string[])
+        }
+        if (state && state.deletedItemIds && !(state.deletedItemIds instanceof Set)) {
+          state.deletedItemIds = new Set(state.deletedItemIds as string[])
         }
       }
     }
@@ -377,9 +407,22 @@ if (typeof window !== 'undefined') {
     } catch (e) {
       // Use default from storeData
     }
-    
-    useMerchantMenuStore.getState().setCategories(storedData.categories)
+
+    const categories = (storedData.categories || []).map((cat: any) => ({
+      ...cat,
+      items: (cat.items || []).map((item: any) => ({
+        ...item,
+        status: item.status as ItemStatus
+      }))
+    }))
+
+    useMerchantMenuStore.getState().setCategories(categories)
     useMerchantMenuStore.getState().setShowBanner(storedData.showBanner)
+    const storedDeleted = (storedData as any)?.deletedItemIds
+    if (storedDeleted) {
+      const ids = new Set<string>(storedDeleted as string[])
+      useMerchantMenuStore.setState({ deletedItemIds: ids })
+    }
     
     // Set expanded categories
     const expandedSet = new Set(storedData.expandedCategories || [])

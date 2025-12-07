@@ -23,6 +23,7 @@ export function initializeStoreData(storeId: string) {
     `merchant.${storeId}.home`,
     `merchant.${storeId}.orders`,
     `merchant.${storeId}.menu`,
+    `merchant.${storeId}.modifiers`,
     `merchant.${storeId}.users`,
     `merchant.${storeId}.settings`,
     `merchant.${storeId}.store-availability`
@@ -37,6 +38,7 @@ export function initializeStoreData(storeId: string) {
         storeData.home,
         storeData.orders,
         storeData.menu,
+        storeData.modifiers,
         storeData.users,
         storeData.settings,
         storeData.storeAvailability

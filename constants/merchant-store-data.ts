@@ -6,6 +6,11 @@
 export interface StoreMerchantData {
   storeId: string
   storeName: string
+
+  // Modifiers
+  modifiers: {
+    modifiers: Modifier[]
+  }
   
   // Home/Analytics
   home: {
@@ -99,6 +104,16 @@ export interface StoreMerchantData {
   }
 }
 
+export type ModifierStatus = 'In stock' | 'Out of stock'
+
+export interface Modifier {
+  id: string
+  name: string
+  options: string[]
+  usedIn: Array<{ id: string; name: string }>
+  status: ModifierStatus
+}
+
 export const merchantStoreData: Record<string, StoreMerchantData> = {
   "philz-coffee": {
     storeId: "philz-coffee",
@@ -169,6 +184,37 @@ export const merchantStoreData: Record<string, StoreMerchantData> = {
       ],
       expandedCategories: ["coffee"],
       showBanner: true
+    },
+    modifiers: {
+      modifiers: [
+        {
+          id: "milk-choice",
+          name: "Milk Choice",
+          options: ["Whole", "Skim", "Oat"],
+          usedIn: [
+            { id: "1", name: "Mint Mojito Iced Coffee" },
+            { id: "2", name: "Tesora" }
+          ],
+          status: "In stock"
+        },
+        {
+          id: "sweetener",
+          name: "Sweetener",
+          options: ["Classic", "Less Sweet", "Sugar-Free"],
+          usedIn: [{ id: "1", name: "Mint Mojito Iced Coffee" }],
+          status: "In stock"
+        },
+        {
+          id: "temp-preference",
+          name: "Temperature",
+          options: ["Hot", "Iced"],
+          usedIn: [
+            { id: "1", name: "Mint Mojito Iced Coffee" },
+            { id: "2", name: "Tesora" }
+          ],
+          status: "In stock"
+        }
+      ]
     },
     users: {
       users: [
@@ -273,6 +319,30 @@ export const merchantStoreData: Record<string, StoreMerchantData> = {
       expandedCategories: ["curries"],
       showBanner: false
     },
+    modifiers: {
+      modifiers: [
+        {
+          id: "spice-level",
+          name: "Spice Level",
+          options: ["Mild", "Medium", "Hot"],
+          usedIn: [
+            { id: "1", name: "Butter Chicken" },
+            { id: "2", name: "Chicken Tikka Masala" }
+          ],
+          status: "In stock"
+        },
+        {
+          id: "protein-choice",
+          name: "Choose Protein",
+          options: ["Paneer", "Chicken", "Lamb"],
+          usedIn: [
+            { id: "1", name: "Butter Chicken" },
+            { id: "2", name: "Chicken Tikka Masala" }
+          ],
+          status: "In stock"
+        }
+      ]
+    },
     users: {
       users: [
         {
@@ -366,6 +436,24 @@ export const merchantStoreData: Record<string, StoreMerchantData> = {
       ],
       expandedCategories: ["pharmacy"],
       showBanner: false
+    },
+    modifiers: {
+      modifiers: [
+        {
+          id: "gift-wrap",
+          name: "Add Gift Wrap",
+          options: ["Standard Wrap", "Premium Wrap"],
+          usedIn: [{ id: "1", name: "Prescription Pickup" }],
+          status: "In stock"
+        },
+        {
+          id: "delivery-speed",
+          name: "Delivery Speed",
+          options: ["Standard", "Express"],
+          usedIn: [{ id: "1", name: "Prescription Pickup" }],
+          status: "In stock"
+        }
+      ]
     },
     users: {
       users: [

@@ -32,14 +32,13 @@ export default function MerchantLayout({ children }: { children: React.ReactNode
           <div
             className="flex-1"
             style={{
-              margin: '0 auto',
               padding: '0 32px',
               display: 'grid',
               columnGap: '24px',
               rowGap: '24px',
               gridTemplateColumns: 'repeat(12, 1fr)',
               width: '100%',
-              maxWidth: '1352px',
+              maxWidth: 'calc(100% - 256px)',
             }}
           >
             {/* Content wrapper */}

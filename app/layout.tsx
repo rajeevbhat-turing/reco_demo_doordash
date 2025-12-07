@@ -2,9 +2,9 @@ import type React from 'react';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
-import Header from '@/components/header';
-import LayoutWrapper from '@/components/layout-wrapper';
+import MerchantLayout from './merchant-layout';
 import LocalStorageSync from '@/components/LocalStorageSync';
+import { GlobalContextProvider } from './global-context';
 import { QueryProvider } from '@/lib/providers/query-provider';
 
 const inter = Inter({ subsets: ['latin'] });
@@ -24,15 +24,14 @@ export default function RootLayout({
       <body className={inter.className}>
         <QueryProvider>
           <LocalStorageSync />
-          <div className="flex flex-col min-h-screen">
-            <Header />
-            <LayoutWrapper>{children}</LayoutWrapper>
-          </div>
+          <GlobalContextProvider>
+            <MerchantLayout>{children}</MerchantLayout>
+          </GlobalContextProvider>
 
-        {/* Global Functions Script */}
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
+          {/* Global Functions Script */}
+          <script
+            dangerouslySetInnerHTML={{
+              __html: `
               /** ===== Run bootstrap (sets run_id) ===== */
               // Only run on client-side
               if (typeof window !== 'undefined') {
@@ -218,8 +217,8 @@ export default function RootLayout({
               };
               } // End client-side check
             `,
-          }}
-        />
+            }}
+          />
         </QueryProvider>
       </body>
     </html>

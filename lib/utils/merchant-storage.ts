@@ -18,6 +18,7 @@ export const MerchantStorageKeys = {
   HOME: 'merchant.home',
   ORDERS: 'merchant.orders',
   MENU: 'merchant.menu',
+  MODIFIERS: 'merchant.modifiers',
   USERS: 'merchant.users',
   SETTINGS: 'merchant.settings',
   FINANCIALS: 'merchant.financials',
