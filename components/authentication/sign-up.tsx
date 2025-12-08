@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -9,6 +9,13 @@ import { useUserStore } from '@/store/user-store';
 import { isValidEmail, isValidName } from '@/lib/utils/helperFunctions';
 import { User } from '@/lib/types/user-types';
 import { validatePassword } from '@/lib/utils/password-validation';
+import {
+  formatPhoneNumber,
+  extractDigits,
+  validatePhoneNumber,
+  getMaxDigits,
+  getPhonePlaceholder,
+} from '@/lib/utils/phone-validation';
 interface SignUpProps {
   onShowOTP: (user: User) => void;
   selectedCountry: any;
@@ -32,13 +39,46 @@ export default function SignUp({
   });
   const [errors, setErrors] = useState<Record<string, string | string[]>>({});
   const [showPassword, setShowPassword] = useState(false);
+  const prevCountryRef = useRef(selectedCountry.code);
+
+  // Handle country change - reformat phone number for new country
+  useEffect(() => {
+    if (prevCountryRef.current !== selectedCountry.code && formData.mobileNumber) {
+      const digits = extractDigits(formData.mobileNumber);
+      const maxDigits = getMaxDigits(selectedCountry.code);
+      const limitedDigits = digits.slice(0, maxDigits);
+      const formattedNumber = formatPhoneNumber(limitedDigits, selectedCountry.code);
+      setFormData(prev => ({ ...prev, mobileNumber: formattedNumber }));
+      // Clear phone error since format changed
+      setErrors(prev => {
+        const newErrors = { ...prev };
+        delete newErrors.mobileNumber;
+        return newErrors;
+      });
+    }
+    prevCountryRef.current = selectedCountry.code;
+  }, [selectedCountry.code, formData.mobileNumber]);
 
   // Updates form data and clears field-specific errors when user types
   const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-    // If there are errors for the field, do validation again
-    if (errors[field]) {
-      validateField(field, value);
+    if (field === 'mobileNumber') {
+      // Extract digits and limit to max allowed for the country
+      const digits = extractDigits(value);
+      const maxDigits = getMaxDigits(selectedCountry.code);
+      const limitedDigits = digits.slice(0, maxDigits);
+      // Format the phone number based on country
+      const formattedNumber = formatPhoneNumber(limitedDigits, selectedCountry.code);
+      setFormData(prev => ({ ...prev, [field]: formattedNumber }));
+      // If there are errors for the field, do validation again
+      if (errors[field]) {
+        validateField(field, formattedNumber);
+      }
+    } else {
+      setFormData(prev => ({ ...prev, [field]: value }));
+      // If there are errors for the field, do validation again
+      if (errors[field]) {
+        validateField(field, value);
+      }
     }
   };
 
@@ -73,12 +113,9 @@ export default function SignUp({
         delete newErrors.email;
       }
     } else if (field === 'mobileNumber') {
-      if (!value.trim() || value.length <= 1) {
-        newErrors.mobileNumber = 'Phone number is required';
-      } else if (!/^\d+$/.test(value)) {
-        newErrors.mobileNumber = 'Phone number is required';
-      } else if (![8, 9, 10, 11].includes(value.length)) {
-        newErrors.mobileNumber = 'Phone number is invalid';
+      const phoneValidation = validatePhoneNumber(value, selectedCountry.code);
+      if (!phoneValidation.isValid) {
+        newErrors.mobileNumber = phoneValidation.error || 'Phone number is invalid';
       } else {
         delete newErrors.mobileNumber;
       }
@@ -121,12 +158,9 @@ export default function SignUp({
       newErrors.email = 'Email format is invalid';
     }
 
-    if (!formData.mobileNumber.trim() || formData.mobileNumber.length <= 1) {
-      newErrors.mobileNumber = 'Phone number is required';
-    } else if (!/^\d+$/.test(formData.mobileNumber)) {
-      newErrors.mobileNumber = 'Phone number is required';
-    } else if (![8, 9, 10, 11].includes(formData.mobileNumber.length)) {
-      newErrors.mobileNumber = 'Phone number is invalid';
+    const phoneValidation = validatePhoneNumber(formData.mobileNumber, selectedCountry.code);
+    if (!phoneValidation.isValid) {
+      newErrors.mobileNumber = phoneValidation.error || 'Phone number is invalid';
     }
 
     if (!formData.password.trim()) {
@@ -159,8 +193,9 @@ export default function SignUp({
       }
 
       // If email doesn't already exist, check phone number
+      const phoneDigits = extractDigits(formData.mobileNumber);
       const existingUserByPhone = users.find(
-        user => user.phoneNumber === `${selectedCountry.dial_code}${formData.mobileNumber}`
+        user => user.phoneNumber === `${selectedCountry.dial_code}${phoneDigits}`
       );
 
       if (existingUserByPhone) {
@@ -194,7 +229,7 @@ export default function SignUp({
         name: `${formData.firstName} ${formData.lastName}`,
         // Convert email address to lowercase
         email: formData.email?.toLowerCase(),
-        phoneNumber: formData.mobileNumber,
+        phoneNumber: extractDigits(formData.mobileNumber),
         password: formData.password,
         country: {
           dialCode: selectedCountry.dial_code,
@@ -313,12 +348,10 @@ export default function SignUp({
           <Input
             id="mobileNumber"
             type="tel"
-            placeholder=""
+            placeholder={getPhonePlaceholder(selectedCountry.code)}
             value={formData.mobileNumber}
-            onChange={e => {
-              handleInputChange('mobileNumber', e.target.value);
-              validateField('mobileNumber', e.target.value);
-            }}
+            onChange={e => handleInputChange('mobileNumber', e.target.value)}
+            onBlur={e => validateField('mobileNumber', e.target.value)}
             className={`flex-1 rounded-l-none border-2 focus-visible:ring-0 focus-visible:ring-offset-0 border-transparent 
             rounded-r-lg focus-visible:border-[#191919ff] ${
               errors.mobileNumber ? 'border-[#b71000ff] bg-[#fef0ed]' : 'bg-[#f7f7f7]'
