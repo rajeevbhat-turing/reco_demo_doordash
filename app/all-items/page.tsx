@@ -9,6 +9,7 @@ import { RestaurantsSkeleton } from '@/components/skeletons/restaurant-skeleton'
 import { useAllDeals } from '@/lib/hooks/use-deals';
 import type { Deal } from '@/types/deal-types';
 import { hasValidLogo } from '@/lib/utils/helperFunctions';
+import { parseDistance, calculateDeliveryTime } from '@/lib/utils/restaurant-utils';
 
 // Inner component that uses searchParams
 function AllItemsContent() {
@@ -53,9 +54,17 @@ function AllItemsContent() {
           break;
         case 'fastest-near-you':
           filteredRestaurants = restaurants.filter(r => {
-            const timeStr = r.time;
-            const minutes = parseInt(timeStr.match(/\d+/)?.[0] || '100');
-            return minutes < 30 && hasValidLogo(r.logo);
+            if (!hasValidLogo(r.logo)) return false;
+            
+            // Use the same delivery time calculation as checkout to ensure consistency
+            const distance = parseDistance(r.distance);
+            const deliveryTimeStr = calculateDeliveryTime(distance, 'standard');
+            
+            // Extract max time from "min-max min" format
+            const maxTimeMatch = deliveryTimeStr.match(/-(\d+)\s*min/);
+            const maxMinutes = maxTimeMatch ? parseInt(maxTimeMatch[1]) : 100;
+            
+            return maxMinutes <= 30;
           });
           break;
         case 'deals-for-you':

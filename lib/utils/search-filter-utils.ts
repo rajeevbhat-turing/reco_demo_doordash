@@ -2,6 +2,7 @@ import type { FilterState } from '@/components/filter-options';
 import { getDefaultRating } from './rating-utils';
 import { restaurantHasItemsInPriceRange } from './price-filter-utils';
 import type { SearchResultRestaurant } from './search-utils';
+import { parseDistance, calculateDeliveryTime } from './restaurant-utils';
 
 /**
  * Apply all filters to search results
@@ -22,13 +23,17 @@ export function applySearchFilters(
   // Filter by under 30 min
   if (filters.underThirtyMins) {
     filteredResults = filteredResults.filter(restaurant => {
-      const timeString = restaurant.time || '';
-      // Handle different time formats: "18 min", "Express 56 min", "Fast 33 min"
-      const timeMatch = timeString.match(/(\d+)\s*min/);
-      const minutes = timeMatch ? parseInt(timeMatch[1]) : 100;
-      const isUnder30 = minutes < 30;
+      // Use the same delivery time calculation as checkout to ensure consistency
+      const distance = parseDistance(restaurant.distance);
+      const deliveryTimeStr = calculateDeliveryTime(distance, 'standard');
+      
+      // Extract max time from "min-max min" format
+      const maxTimeMatch = deliveryTimeStr.match(/-(\d+)\s*min/);
+      const maxMinutes = maxTimeMatch ? parseInt(maxTimeMatch[1]) : 100;
+      const isUnder30 = maxMinutes <= 30;
+      
       console.log(
-        `[SEARCH] ${restaurant.name}: ${timeString} (${minutes} min) - Under 30: ${isUnder30}`
+        `[SEARCH] ${restaurant.name}: calculated delivery ${deliveryTimeStr} (max ${maxMinutes} min) - Under 30: ${isUnder30}`
       );
       return isUnder30;
     });
