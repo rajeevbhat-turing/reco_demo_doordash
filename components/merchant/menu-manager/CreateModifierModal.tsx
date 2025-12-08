@@ -20,6 +20,10 @@ interface CreateModifierModalProps {
     options: string[];
     usedIn: Array<{ id: string; name: string }>;
     timing: string;
+    required: boolean;
+    allowMultipleOptions: boolean;
+    allowMultipleSameOption: boolean;
+    allowFreeOptions: boolean;
   }) => void;
 }
 
@@ -92,6 +96,10 @@ export default function CreateModifierModal({
       options: cleanOptions,
       usedIn,
       timing,
+      required: makeRequired,
+      allowMultipleOptions,
+      allowMultipleSameOption: allowMultipleSame,
+      allowFreeOptions,
     });
   };
 

@@ -63,6 +63,10 @@ export default function ModifiersTab() {
     options: string[];
     usedIn: Array<{ id: string; name: string }>;
     timing: string;
+    required: boolean;
+    allowMultipleOptions: boolean;
+    allowMultipleSameOption: boolean;
+    allowFreeOptions: boolean;
   }) => {
     addModifier({
       id: `modifier-${Date.now()}`,
@@ -70,6 +74,10 @@ export default function ModifiersTab() {
       options: payload.options,
       usedIn: payload.usedIn,
       timing: payload.timing,
+      required: payload.required,
+      allowMultipleOptions: payload.allowMultipleOptions,
+      allowMultipleSameOption: payload.allowMultipleSameOption,
+      allowFreeOptions: payload.allowFreeOptions,
       status: 'In stock',
     });
     setSnackbar({ message: 'Modifier has been created', autoHideDuration: 3000 });

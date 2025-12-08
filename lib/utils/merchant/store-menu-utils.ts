@@ -36,9 +36,8 @@ export function mergeMenuCategories({
   storeCategories.forEach(storeCat => {
     if (!dbMap.has(storeCat.id)) {
       const items = storeCat.items.filter(item => !deletedSet.has(item.id));
-      if (items.length > 0) {
-        merged.push({ ...storeCat, items });
-      }
+      // Keep store-only categories even if currently empty
+      merged.push({ ...storeCat, items });
     }
   });
 

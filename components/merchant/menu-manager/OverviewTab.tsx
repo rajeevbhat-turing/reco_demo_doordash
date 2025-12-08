@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { Search, Settings, Eye, Plus, ChevronDown, Pencil, Trash2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { useMerchantMenuStore } from '@/store/merchant-menu-store';
@@ -11,6 +11,8 @@ import ItemEditorPanel from '@/components/merchant/ItemEditorPanel';
 import { MenuItem } from '@/store/merchant-menu-store';
 import { useMerchantPersistedState } from '@/lib/hooks/useMerchantPersistedState';
 import ConfirmModal from '@/components/merchant/modals/ConfirmModal';
+import NewItemModal from '@/components/merchant/modals/NewItemModal';
+import NewCategoryModal from '@/components/merchant/modals/NewCategoryModal';
 
 interface OverviewTabProps {
   isLoadingMenu: boolean;
@@ -55,6 +57,20 @@ export default function OverviewTab({ isLoadingMenu, isMounted }: OverviewTabPro
     'selectedFilter',
     'All items'
   );
+  const [showAddMenu, setShowAddMenu] = useState(false);
+  const [showNewItemModal, setShowNewItemModal] = useState(false);
+  const [showNewCategoryModal, setShowNewCategoryModal] = useState(false);
+  const addMenuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (addMenuRef.current && !addMenuRef.current.contains(e.target as Node)) {
+        setShowAddMenu(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
 
   const {
     categories: storeCategories,
@@ -63,7 +79,21 @@ export default function OverviewTab({ isLoadingMenu, isMounted }: OverviewTabPro
     updateItemStatus,
     updateItem,
     deleteItem,
+    setCategories,
   } = useMerchantMenuStore();
+
+  const handleCreateCategory = useCallback(
+    (name: string) => {
+      const trimmed = name.trim();
+      if (!trimmed) return;
+      const idBase = trimmed.toLowerCase().replace(/\s+/g, '-');
+      const exists = storeCategories.some(cat => cat.id === idBase);
+      const finalId = exists ? `${idBase}-${Date.now()}` : idBase;
+      setCategories([...storeCategories, { id: finalId, name: trimmed, items: [] }]);
+      setShowNewCategoryModal(false);
+    },
+    [setCategories, storeCategories]
+  );
 
   // Filter items within categories, but keep all categories visible
   const filteredCategories = storeCategories
@@ -112,11 +142,38 @@ export default function OverviewTab({ isLoadingMenu, isMounted }: OverviewTabPro
               <Eye className="h-4 w-4" />
               Preview Menu
             </button>
-            <button className="inline-flex items-center gap-2 px-3 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md text-sm font-medium">
-              <Plus className="h-4 w-4" />
-              Add
-              <ChevronDown className="h-4 w-4" />
-            </button>
+            <div className="relative" ref={addMenuRef}>
+              <button
+                onClick={() => setShowAddMenu(prev => !prev)}
+                className="inline-flex items-center gap-2 px-3 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md text-sm font-medium"
+              >
+                <Plus className="h-4 w-4" />
+                Add
+                <ChevronDown className="h-4 w-4" />
+              </button>
+              {showAddMenu && (
+                <div className="absolute right-0 mt-2 w-44 rounded-md border border-gray-200 bg-white shadow-lg z-20">
+                  <button
+                    className="w-full text-left px-3 py-2 text-sm hover:bg-gray-50"
+                    onClick={() => {
+                      setShowAddMenu(false);
+                      setShowNewCategoryModal(true);
+                    }}
+                  >
+                    New category
+                  </button>
+                  <button
+                    className="w-full text-left px-3 py-2 text-sm hover:bg-gray-50"
+                    onClick={() => {
+                      setShowAddMenu(false);
+                      setShowNewItemModal(true);
+                    }}
+                  >
+                    New item
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
@@ -299,6 +356,17 @@ export default function OverviewTab({ isLoadingMenu, isMounted }: OverviewTabPro
             setPendingDeleteItem(null);
           }
         }}
+      />
+
+      <NewItemModal
+        isOpen={showNewItemModal}
+        onClose={() => setShowNewItemModal(false)}
+        categories={storeCategories}
+      />
+      <NewCategoryModal
+        isOpen={showNewCategoryModal}
+        onClose={() => setShowNewCategoryModal(false)}
+        onCreate={handleCreateCategory}
       />
     </>
   );

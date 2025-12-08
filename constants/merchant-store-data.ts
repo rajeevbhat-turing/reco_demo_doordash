@@ -113,6 +113,10 @@ export interface Modifier {
   usedIn: Array<{ id: string; name: string }>
   status: ModifierStatus
   timing?: string
+  required?: boolean
+  allowMultipleOptions?: boolean
+  allowMultipleSameOption?: boolean
+  allowFreeOptions?: boolean
 }
 
 export const merchantStoreData: Record<string, StoreMerchantData> = {
@@ -197,7 +201,11 @@ export const merchantStoreData: Record<string, StoreMerchantData> = {
             { id: "2", name: "Tesora" }
           ],
           status: "In stock",
-          timing: "All Day"
+          timing: "All Day",
+          required: false,
+          allowMultipleOptions: false,
+          allowMultipleSameOption: false,
+          allowFreeOptions: false
         },
         {
           id: "sweetener",
@@ -205,7 +213,11 @@ export const merchantStoreData: Record<string, StoreMerchantData> = {
           options: ["Classic", "Less Sweet", "Sugar-Free"],
           usedIn: [{ id: "1", name: "Mint Mojito Iced Coffee" }],
           status: "In stock",
-          timing: "All Day"
+          timing: "All Day",
+          required: false,
+          allowMultipleOptions: false,
+          allowMultipleSameOption: false,
+          allowFreeOptions: false
         },
         {
           id: "temp-preference",
@@ -216,7 +228,11 @@ export const merchantStoreData: Record<string, StoreMerchantData> = {
             { id: "2", name: "Tesora" }
           ],
           status: "In stock",
-          timing: "All Day"
+          timing: "All Day",
+          required: false,
+          allowMultipleOptions: false,
+          allowMultipleSameOption: false,
+          allowFreeOptions: false
         }
       ]
     },
@@ -334,7 +350,11 @@ export const merchantStoreData: Record<string, StoreMerchantData> = {
             { id: "2", name: "Chicken Tikka Masala" }
           ],
           status: "In stock",
-          timing: "All Day"
+          timing: "All Day",
+          required: false,
+          allowMultipleOptions: false,
+          allowMultipleSameOption: false,
+          allowFreeOptions: false
         },
         {
           id: "protein-choice",
@@ -345,7 +365,11 @@ export const merchantStoreData: Record<string, StoreMerchantData> = {
             { id: "2", name: "Chicken Tikka Masala" }
           ],
           status: "In stock",
-          timing: "All Day"
+          timing: "All Day",
+          required: false,
+          allowMultipleOptions: false,
+          allowMultipleSameOption: false,
+          allowFreeOptions: false
         }
       ]
     },
@@ -451,7 +475,11 @@ export const merchantStoreData: Record<string, StoreMerchantData> = {
           options: ["Standard Wrap", "Premium Wrap"],
           usedIn: [{ id: "1", name: "Prescription Pickup" }],
           status: "In stock",
-          timing: "All Day"
+          timing: "All Day",
+          required: false,
+          allowMultipleOptions: false,
+          allowMultipleSameOption: false,
+          allowFreeOptions: false
         },
         {
           id: "delivery-speed",
@@ -459,7 +487,11 @@ export const merchantStoreData: Record<string, StoreMerchantData> = {
           options: ["Standard", "Express"],
           usedIn: [{ id: "1", name: "Prescription Pickup" }],
           status: "In stock",
-          timing: "All Day"
+          timing: "All Day",
+          required: false,
+          allowMultipleOptions: false,
+          allowMultipleSameOption: false,
+          allowFreeOptions: false
         }
       ]
     },

@@ -95,6 +95,7 @@ export default function MerchantStoreMenuPage() {
   );
 
   const {
+    categories: storeCategories,
     expandedCategories,
     showBanner,
     toggleCategory,
@@ -111,10 +112,9 @@ export default function MerchantStoreMenuPage() {
   // Update store when database categories change (only after mount)
   useEffect(() => {
     if (isMounted && dbCategories.length > 0) {
-      const currentStoreCategories = useMerchantMenuStore.getState().categories;
       const merged = mergeMenuCategories({
         dbCategories,
-        storeCategories: currentStoreCategories,
+        storeCategories,
         deletedItemIds,
       });
       setStoreCategories(merged);
@@ -126,7 +126,6 @@ export default function MerchantStoreMenuPage() {
   }, [
     isMounted,
     dbCategories,
-    setStoreCategories,
     expandedCategories,
     toggleCategory,
     deletedItemIds,

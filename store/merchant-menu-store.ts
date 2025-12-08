@@ -407,7 +407,7 @@ if (typeof window !== 'undefined') {
     } catch (e) {
       // Use default from storeData
     }
-
+    
     const categories = (storedData.categories || []).map((cat: any) => ({
       ...cat,
       items: (cat.items || []).map((item: any) => ({
