@@ -19,9 +19,15 @@ interface StoreDetailsDialogProps {
     openingHours: string;
     phone: string;
   };
+  isRestaurantOpen?: boolean;
 }
 
-export default function StoreDetailsDialog({ isOpen, onClose, store }: StoreDetailsDialogProps) {
+export default function StoreDetailsDialog({
+  isOpen,
+  onClose,
+  store,
+  isRestaurantOpen,
+}: StoreDetailsDialogProps) {
   const dialogRef = useRef<HTMLDivElement>(null);
   const [showHours, setShowHours] = useState(false);
 
@@ -123,7 +129,7 @@ export default function StoreDetailsDialog({ isOpen, onClose, store }: StoreDeta
                 </button>
               </div>
               <p className="text-gray-700">
-                {store.isOpen ? (
+                {isRestaurantOpen ? (
                   <span className="text-green-600 font-medium">Open now</span>
                 ) : (
                   <span className="text-red-600 font-medium">Closed now</span>
