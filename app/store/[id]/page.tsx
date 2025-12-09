@@ -17,7 +17,6 @@ import { useCartStore } from '@/store/cart-store';
 import { useAppStore } from '@/store/app-store';
 import { useVerifierStore } from '@/store/verifier-store';
 import MenuItemDialog from '@/components/menu-item-dialog';
-import GroupOrderDialog from '@/components/group-order-dialog';
 import StoreDetailsDialog from '@/components/store-details-dialog';
 import OutsideDeliveryAreaModal from '@/components/modals/outside-delivery-area-modal';
 import { Reviews } from '@/components/reviews';
@@ -151,7 +150,7 @@ export default function RestaurantPage() {
   // Dialog states
   const [menuItemDialogOpen, setMenuItemDialogOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<any>(null);
-  const [groupOrderDialogOpen, setGroupOrderDialogOpen] = useState(false);
+  // const [groupOrderDialogOpen, setGroupOrderDialogOpen] = useState(false);
   const [storeDetailsDialogOpen, setStoreDetailsDialogOpen] = useState(false);
   const [serviceFeesInfoOpen, setServiceFeesInfoOpen] = useState(false);
   // const [menuDropdownOpen, setMenuDropdownOpen] = useState(false);
@@ -586,9 +585,9 @@ export default function RestaurantPage() {
   }, []);
 
   // Handle close group order dialog
-  const handleCloseGroupOrderDialog = useCallback(() => {
-    setGroupOrderDialogOpen(false);
-  }, []);
+  // const handleCloseGroupOrderDialog = useCallback(() => {
+  //   setGroupOrderDialogOpen(false);
+  // }, []);
 
   // Handle close store details dialog
   const handleCloseStoreDetailsDialog = useCallback(() => {
@@ -644,9 +643,9 @@ export default function RestaurantPage() {
     setMenuItemDialogOpen(true);
   };
 
-  const openGroupOrderDialog = () => {
-    setGroupOrderDialogOpen(true);
-  };
+  // const openGroupOrderDialog = () => {
+  //   setGroupOrderDialogOpen(true);
+  // };
 
   // const toggleMenuDropdown = () => {
   //   setMenuDropdownOpen(!menuDropdownOpen);
@@ -1427,6 +1426,7 @@ export default function RestaurantPage() {
         isOpen={storeDetailsDialogOpen}
         onClose={handleCloseStoreDetailsDialog}
         store={restaurant}
+        isRestaurantOpen={isRestaurantOpen}
       />
       {/* Service Fees Info Dialog */}
       <ServiceFeesInfo isOpen={serviceFeesInfoOpen} onClose={handleCloseServiceFeesInfo} />
