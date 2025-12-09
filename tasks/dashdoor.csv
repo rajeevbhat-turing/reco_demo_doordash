@@ -1,0 +1,2269 @@
+full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_model,sumpass@10,difficulty,grader_summary
+"{
+  ""task_id"": ""002"",
+  ""url"": ""https://dashdoor.rlgym.turing.com/home"",
+  ""task"": ""Log in using email 'quinn.bennett2227@inbox.local' and password 'A6A4UaZcsiIp'. Order from the nearest vegetarian restaurant. Get either a grain bowl or a cucumber salad, choosing the cheaper option, and if they cost the same, pick the one with the higher rating. Have it delivered to my apartment address."",
+  ""simulator_config"": {
+    ""start_date"": ""today"",
+    ""user_persona"": ""quinn.bennett2227@inbox.local""
+  },
+  ""grader_config"": {
+    ""state_grader_configs"": [
+      {
+        ""assertions"": [
+          {
+            ""operator"": ""STRING_EQUALS"",
+            ""paths_to_expected"": [
+              ""$.address.id""
+            ]
+          }
+        ],
+        ""path_to_actual"": ""$.orders[0].deliveryAddress.id""
+      },
+      {
+        ""assertions"": [
+          {
+            ""operator"": ""STRING_EQUALS"",
+            ""path_to_actual"": ""$.items[0].id"",
+            ""paths_to_expected"": [
+              ""$.items[0].id""
+            ]
+          },
+          {
+            ""expected"": [
+              ""==1""
+            ],
+            ""operator"": ""ARRAY_LENGTH_MATCH"",
+            ""path_to_actual"": ""$.items[*]""
+          }
+        ],
+        ""path_to_actual"": ""$.orders[0]""
+      }
+    ],
+    ""extract_states_config"": {
+      ""expected_state_functions"": [
+        {
+          ""args"": {
+            ""type"": ""apartment"",
+            ""user"": ""quinn.bennett2227@inbox.local""
+          },
+          ""function"": ""get_user_address""
+        },
+        {
+          ""args"": {
+            ""lat"": ""$[0].address.lat"",
+            ""lng"": ""$[0].address.lng"",
+            ""limit"": 1,
+            ""filters"": {
+              ""cuisines"": [""vegetarian""]
+            },
+            ""sort_type"": [
+              {
+                ""key"": ""distance"",
+                ""order"": ""asc""
+              }
+            ]
+          },
+          ""function"": ""get_restaurants""
+        },
+        {
+          ""args"": {
+            ""limit"": 1,
+            ""keywords"": [
+              ""cucumber salad"",
+              ""grain bowl""
+            ],
+            ""sort_type"": [
+              {
+                ""key"": ""price"",
+                ""order"": ""asc""
+              },
+              {
+                ""key"": ""rating"",
+                ""order"": ""desc""
+              }
+            ],
+            ""restaurant_id"": ""$[1].restaurants[0].id""
+          },
+          ""function"": ""get_items""
+        }
+      ]
+    }
+  }
+}","[""Menu Viewing""]","[""Restaurant discovery & filtering"", ""Price & rating tradeoffs""]","[""Search and filtering"", ""Decision making"", ""Instruction following""]","Log in using email 'quinn.bennett2227@inbox.local' and password 'A6A4UaZcsiIp'. Order from the nearest vegetarian restaurant. Get either a grain bowl or a cucumber salad, choosing the cheaper option, and if they cost the same, pick the one with the higher rating. Have it delivered to my apartment address.",,3,Medium,
+"{
+  ""task_id"": ""003"",
+  ""url"": ""https://dashdoor.rlgym.turing.com/home"",
+  ""task"": ""Log in using email 'gavin.quintero980@example.com' and password 'EjhU7tqizInA'. Help me find the best cheapest vegan or vegetarian restaurant option that I have not ordered from in the past."",
+  ""simulator_config"": {
+    ""start_date"": ""today"",
+    ""user_persona"": ""gavin.quintero980@example.com""
+  },
+  ""grader_config"": {
+    ""answer_grader_config"": {
+      ""assertions"": [
+        {
+          ""operator"": ""STRING_CONTAINS"",
+          ""paths_to_expected"": [
+            ""$.restaurants[0].name""
+          ]
+        }
+      ]
+    },
+    ""extract_states_config"": {
+      ""expected_state_functions"": [
+        {
+          ""function"": ""get_orders"",
+          ""args"": {}
+        },
+        {
+          ""function"": ""get_restaurants"",
+          ""args"": {
+            ""filters"": {
+              ""cuisines"": [""vegetarian"", ""vegan""],
+              ""restaurant_ids_not_in"": ""$[0].orders[*].storeId""
+            },
+            ""sort_type"": [
+              { ""key"": ""priceRange"", ""order"": ""asc"" },
+              { ""key"": ""rating"", ""order"": ""desc"" }
+            ],
+            ""limit"": 1
+          }
+        }
+      ]
+    }
+  }
+}","[""Order History""]","[""Restaurant discovery & filtering"", ""Reorder & past orders""]","[""Order history analysis"", ""Search and filtering"", ""Decision making""]",Log in using email 'gavin.quintero980@example.com' and password 'EjhU7tqizInA'. Help me find the best cheapest vegan or vegetarian restaurant option that I have not ordered from in the past.,,6,Medium,
+"{
+  ""task_id"": ""004"",
+  ""url"": ""https://dashdoor.rlgym.turing.com/home"",
+  ""task"": ""Log in using email 'gavin.quintero980@example.com' and password 'EjhU7tqizInA'. Add the address 456 Park Avenue, New york for the hotel I am currently staying at. My room number is 304 and hotel name is heaven heights. Have an express delivery of the cheapest chocolate lava pots nearby to my hotel. I want the delivery person to meet me at the hotel lobby."",
+  ""simulator_config"": {
+    ""start_date"": ""today"",
+    ""user_persona"": ""gavin.quintero980@example.com""
+  },
+  ""grader_config"": {
+    ""state_grader_configs"": [
+      {
+        ""assertions"": [
+          {
+            ""operator"": ""STRING_EQUALS"",
+            ""expected"": [
+              ""hotel""
+            ],
+            ""path_to_actual"": ""$.addressType""
+          },
+          {
+            ""operator"": ""STRING_EQUALS"",
+            ""expected"": [
+              ""456 Park Avenue""
+            ],
+            ""path_to_actual"": ""$.street""
+          },
+          {
+            ""operator"": ""STRING_EQUALS"",
+            ""expected"": [
+              ""New York""
+            ],
+            ""path_to_actual"": ""$.city""
+          },
+          {
+            ""operator"": ""STRING_EQUALS"",
+            ""expected"": [
+              ""meet""
+            ],
+            ""path_to_actual"": ""$.deliveryPreference""
+          },
+          {
+            ""operator"": ""STRING_EQUALS"",
+            ""expected"": [
+              ""lobby""
+            ],
+            ""path_to_actual"": ""$.deliveryLocation""
+          }
+        ],
+        ""path_to_actual"": ""$.orders[0].deliveryAddress""
+      },
+      {
+        ""assertions"": [
+          {
+            ""operator"": ""STRING_EQUALS"",
+            ""path_to_actual"": ""$.items[0].id"",
+            ""paths_to_expected"": [
+              ""$.items[0].id""
+            ]
+          },
+          {
+            ""expected"": [
+              ""==1""
+            ],
+            ""operator"": ""ARRAY_LENGTH_MATCH"",
+            ""path_to_actual"": ""$.items[*]""
+          }
+        ],
+        ""path_to_actual"": ""$.orders[0]""
+      }
+    ],
+    ""extract_states_config"": {
+      ""expected_state_functions"": [
+        {
+          ""args"": {
+            ""limit"": 1,
+            ""keywords"": [
+              ""chocolate lava pots""
+            ],
+            ""sort_type"": [
+              {
+                ""key"": ""price"",
+                ""order"": ""asc""
+              }
+            ]
+          },
+          ""function"": ""get_items""
+        }
+      ]
+    }
+  }
+}","[""Address Entry & Validation""]","[""Address & delivery instructions"", ""Price filtering""]","[""Instruction following"", ""Search and filtering"", ""Order Placement""]","Log in using email 'gavin.quintero980@example.com' and password 'EjhU7tqizInA'. Add the address 456 Park Avenue, New york for the hotel I am currently staying at. My room number is 304 and hotel name is heaven heights. Have an express delivery of the cheapest chocolate lava pots nearby to my hotel. I want the delivery person to meet me at the hotel lobby.",,0,Hard,
+"{
+  ""task_id"": ""005"",
+  ""url"": ""https://dashdoor.rlgym.turing.com/home"",
+  ""task"": ""Log in using email 'gavin.quintero980@example.com' and password 'EjhU7tqizInA'. Delete my current card details and add a new card 7867 7867 7867 7867 with CVV 111 and expiry date june 2029. Use the zipcode of my current address."",
+  ""simulator_config"": {
+    ""start_date"": ""today"",
+    ""user_persona"": ""gavin.quintero980@example.com""
+  },
+  ""grader_config"": {
+    ""state_grader_configs"": [
+      {
+        ""assertions"": [
+          {
+            ""expected"": [
+              ""==1""
+            ],
+            ""operator"": ""ARRAY_LENGTH_MATCH""
+          },
+          {
+            ""operator"": ""STRING_EQUALS"",
+            ""expected"": [
+              ""7867 7867 7867 7867""
+            ],
+            ""path_to_actual"": ""$[0].cardNumber""
+          },
+          {
+            ""operator"": ""STRING_EQUALS"",
+            ""expected"": [
+              ""111""
+            ],
+            ""path_to_actual"": ""$[0].cvc""
+          },
+          {
+            ""operator"": ""STRING_EQUALS"",
+            ""expected"": [
+              ""06 / 29""
+            ],
+            ""path_to_actual"": ""$[0].expiry""
+          },
+          {
+            ""operator"": ""STRING_EQUALS"",
+            ""paths_to_expected"": [
+              ""$.address.zipCode""
+            ],
+            ""path_to_actual"": ""$[0].zipCode""
+          }
+        ],
+        ""path_to_actual"": ""$.user.currentUser.paymentMethods""
+      }
+    ],
+    ""extract_states_config"": {
+      ""expected_state_functions"": [
+        {
+          ""args"": {
+            ""type"": ""house"",
+            ""user"": ""gavin.quintero980@example.com""
+          },
+          ""function"": ""get_user_address""
+        }
+      ]
+    }
+  }
+}","[""Payment & Checkout""]","[""Payment method management""]","[""Instruction following"", ""Form filling"", ""UI Elements: Text Fields""]",Log in using email 'gavin.quintero980@example.com' and password 'EjhU7tqizInA'. Delete my current card details and add a new card 7867 7867 7867 7867 with CVV 111 and expiry date june 2029. Use the zipcode of my current address.,,5,Medium,
+"{
+  ""task_id"": ""006"",
+  ""url"": ""https://dashdoor.rlgym.turing.com/home"",
+  ""task"": ""Log in using email 'gavin.quintero980@example.com' and password 'EjhU7tqizInA'. Rate my last order from Fiona Kitchen a 1 star because the cardomom churros were soggy and definitely not worth the high price tag"",
+  ""simulator_config"": {
+    ""start_date"": ""today"",
+    ""user_persona"": ""gavin.quintero980@example.com""
+  },
+  ""grader_config"": {
+    ""state_grader_configs"": [
+      {
+        ""assertions"": [
+          {
+            ""operator"": ""STRING_EQUALS"",
+            ""path_to_actual"": ""$.vendorName"",
+            ""expected"": [
+              ""Fiona's Kitchen""
+            ]
+          },
+          {
+            ""operator"": ""NUMERIC_MATCH"",
+            ""path_to_actual"": ""$.rating"",
+            ""expected"": [
+              ""==1""
+            ]
+          },
+          {
+            ""operator"": ""STRING_CONTAINS"",
+            ""path_to_actual"": ""$.content"",
+            ""expected"": [
+              ""soggy"",
+              ""not worth"",
+              ""high price"",
+              ""cardamom churros""
+            ]
+          }
+        ],
+        ""path_to_actual"": ""$.reviews.newReviews[0]""
+      }
+    ],
+    ""extract_states_config"": {
+      ""expected_state_functions"": [
+        {
+          ""args"": { },
+          ""function"": ""get_user_address""
+        }
+      ]
+    }
+  }
+}","[""Ratings & Reviews""]","[""Review creation""]","[""Instruction following"", ""Text generation""]",Log in using email 'gavin.quintero980@example.com' and password 'EjhU7tqizInA'. Rate my last order from Fiona Kitchen a 1 star because the cardomom churros were soggy and definitely not worth the high price tag,,8,Easy,
+"{
+  ""task_id"": ""007"",
+  ""url"": ""https://dashdoor.rlgym.turing.com/home"",
+  ""task"": ""Log in using email 'yuna.lopez1959@mail.test' and password 'vv7sqJGGkNct'. I recently changed my address so remove all the carts from restaurants no longer in my area."",
+  ""simulator_config"": {
+    ""start_date"": ""today"",
+    ""user_persona"": ""yuna.lopez1959@mail.test""
+  },
+  ""grader_config"": {
+    ""state_grader_configs"": [
+      {
+        ""assertions"": [
+          {
+            ""operator"": ""ARRAY_STRING_EQUALS"",
+            ""path_to_actual"": ""$.carts[*].storeId"",
+            ""paths_to_expected"": [""$.carts[*].storeId""]
+          }
+        ]
+      }
+    ],
+    ""extract_states_config"": {
+      ""expected_state_functions"": [
+        {
+          ""args"": {
+            ""user"": ""yuna.lopez1959@mail.test""
+          },
+          ""function"": ""get_user_address""
+        },
+        {
+          ""args"": {
+            ""lat"": ""$[0].address.lat"",
+            ""lng"": ""$[0].address.lng""
+          },
+          ""function"": ""get_restaurants""
+        },
+        {
+          ""args"": {
+            ""limit"": 1,
+            ""filters"": {
+              ""restaurant_names"": ""$[1].restaurants[*].name""
+            }
+          },
+          ""function"": ""get_carts""
+        }
+      ]
+    }
+  }
+}","[""Cart Management""]","[""Cart cleanup""]","[""Search and filtering"", ""Instruction following""]",Log in using email 'yuna.lopez1959@mail.test' and password 'vv7sqJGGkNct'. I recently changed my address so remove all the carts from restaurants no longer in my area.,,0,Hard,
+"{
+  ""task_id"": ""008"",
+  ""url"": ""https://dashdoor.rlgym.turing.com/home"",
+  ""task"": ""Log in using email 'yuna.lopez1959@mail.test' and password 'vv7sqJGGkNct'. I created a cart from Desserts Cellar not too long ago, replace one of the smoked salmon tartine with a Truffle Smash Burger and place an order for 3:15 PM tomorrow."",
+  ""simulator_config"": {
+    ""start_date"": ""today"",
+    ""user_persona"": ""yuna.lopez1959@mail.test""
+  },
+  ""grader_config"": {
+    ""state_grader_configs"": [
+      {
+        ""assertions"": [
+          {
+            ""operator"": ""ARRAY_STRING_EQUALS"",
+            ""path_to_actual"": ""$.items[*].id"",
+            ""paths_to_expected"": [
+              ""$.carts[0].items[*].id"",
+              ""$.items[0].id""
+            ]
+          },
+          {
+            ""operator"": ""NUMERIC_MATCH"",
+            ""path_to_actual"": ""$.items[?(@.name == 'Smoked Salmon Tartine')].quantity"",
+            ""expected"": [""==1""]
+          },
+          {
+            ""operator"": ""STRING_CONTAINS"",
+            ""path_to_actual"": ""$.deliveryOption.deliveryTime"",
+            ""paths_to_expected"": [""$.date""]
+          },
+          {
+            ""operator"": ""STRING_CONTAINS"",
+            ""path_to_actual"": ""$.deliveryOption.deliveryTime"",
+            ""paths_to_expected"": [""$.slot""]
+          }
+        ],
+        ""path_to_actual"": ""$.orders[0]""
+      }
+    ],
+    ""extract_states_config"": {
+      ""expected_state_functions"": [
+        {
+          ""args"": {
+            ""limit"": 1,
+            ""filters"": {
+              ""restaurant_names"": [""Desserts Cellar""]
+            }
+          },
+          ""function"": ""get_carts""
+        },
+        {
+          ""args"": {
+            ""limit"": 1,
+            ""keywords"": [""Truffle Smash Burger""],
+            ""restaurant_id"": ""$[0].carts[0].storeId""
+          },
+          ""function"": ""get_items""
+        },
+        {
+          ""function"": ""get_date_N_days_from_today"",
+          ""args"": {
+            ""days"": 1
+          }
+        },
+        {
+          ""function"": ""get_time_slot"",
+          ""args"": {
+            ""time"": ""3:15 PM""
+          }
+        }
+      ]
+    }
+  }
+}","[""Cart Management""]","[""Cart editing & item swaps"", ""Delivery scheduling""]","[""Cart manipulation"", ""Scheduling"", ""Order Placement""]","Log in using email 'yuna.lopez1959@mail.test' and password 'vv7sqJGGkNct'. I created a cart from Desserts Cellar not too long ago, replace one of the smoked salmon tartine with a Truffle Smash Burger and place an order for 3:15 PM tomorrow.",,7,Medium,
+"{
+  ""task_id"": ""009"",
+  ""url"": ""https://dashdoor.rlgym.turing.com/home"",
+  ""task"": ""Log in using email 'lena.bennett40@example.com' and password '3FkyOt9PO5kg'. Lets order desserts from Rosa's pantry. But since I am on a diet make sure you pick the two different lowest calorie options. And also add chicken bites for my nephew, keep the spice level mild. Apply the SAVE20 coupon. Use the card ending with 7957 for payment."",
+  ""simulator_config"": {
+    ""start_date"": ""today"",
+    ""user_persona"": ""lena.bennett40@example.com""
+  },
+  ""grader_config"": {
+    ""state_grader_configs"": [
+      {
+        ""assertions"": [
+          {
+            ""operator"": ""STRING_EQUALS"",
+            ""paths_to_expected"": [
+              ""$.deal.id""
+            ]
+          }
+        ],
+        ""path_to_actual"": ""$.orders[0].appliedDeal.id""
+      },
+      {
+        ""assertions"": [
+          {
+            ""operator"": ""STRING_EQUALS"",
+            ""paths_to_expected"": [
+              ""$.paymentMethod.lastFour""
+            ]
+          }
+        ],
+        ""path_to_actual"": ""$.orders[0].paymentCard.lastFour""
+      },
+      {
+        ""assertions"": [
+          {
+            ""operator"": ""ARRAY_STRING_EQUALS"",
+            ""path_to_actual"": ""$.restaurantId"",
+            ""paths_to_expected"": [
+              ""$.restaurants[0].id""
+            ]
+          },
+          {
+            ""operator"": ""ARRAY_STRING_EQUALS"",
+            ""path_to_actual"": ""$.items[*].name"",
+            ""paths_to_expected"": [
+              ""$.items[*].name""
+            ]
+          },
+          {
+            ""operator"": ""STRING_EQUALS"",
+            ""path_to_actual"": ""$.items[?(@.name == 'Crispy Chicken Bites')].modifications[0].options[0].optionName"",
+            ""expected"": [
+              ""Mild""
+            ]
+          },
+          {
+            ""expected"": [
+              ""==3""
+            ],
+            ""operator"": ""ARRAY_LENGTH_MATCH"",
+            ""path_to_actual"": ""$.items[*]""
+          }
+        ],
+        ""path_to_actual"": ""$.orders[0]""
+      }
+    ],
+    ""extract_states_config"": {
+      ""expected_state_functions"": [
+        {
+          ""args"": {
+            ""user"": ""lena.bennett40@example.com""
+          },
+          ""function"": ""get_user_address""
+        },
+        {
+          ""args"": {
+            ""promocode"": ""SAVE20""
+          },
+          ""function"": ""get_deal""
+        },
+        {
+          ""args"": {
+            ""lat"": ""$[0].address.lat"",
+            ""lng"": ""$[0].address.lng"",
+            ""limit"": 1,
+            ""name"": ""Rosa's Pantry""
+          },
+          ""function"": ""get_restaurants""
+        },
+        {
+          ""args"": {
+            ""limit"": 2,
+            ""filters"": {
+              ""menu_categories"": [
+                ""desserts""
+              ]
+            },
+            ""sort_type"": [
+              {
+                ""key"": ""calories"",
+                ""order"": ""asc""
+              }
+            ],
+            ""restaurant_id"": ""$[2].restaurants[0].id""
+          },
+          ""function"": ""get_items""
+        },
+        {
+          ""args"": {
+            ""limit"": 1,
+            ""keywords"": [
+              ""chicken bites""
+            ],
+            ""restaurant_id"": ""$[2].restaurants[0].id""
+          },
+          ""function"": ""get_items""
+        },
+        {
+          ""args"": {
+            ""filters"": {
+              ""last_four_digits"": ""7957""
+            }
+          },
+          ""function"": ""get_user_payment_method""
+        }
+      ]
+    }
+  }
+}","[""Menu Viewing""]","[""Diet & calorie filtering"", ""Item customization"", ""Coupon application""]","[""Search and filtering"", ""Decision making"", ""Order Placement""]","Log in using email 'lena.bennett40@example.com' and password '3FkyOt9PO5kg'. Lets order desserts from Rosa's pantry. But since I am on a diet make sure you pick the two different lowest calorie options. And also add chicken bites for my nephew, keep the spice level mild. Apply the SAVE20 coupon. Use the card ending with 7957 for payment.",,9,Easy,
+"{
+  ""task_id"": ""010"",
+  ""url"": ""https://dashdoor.rlgym.turing.com/home"",
+  ""task"": ""Log in using email 'aiden.kaufman2119@mail.test' and password 'sBmjm9uG7SYH'. Reorder my last order from Hannah's Cantina, also add 2 servings of Crispy Cauliflower Tacos this time. Place the order to my apartment on 555 Elm Avenue. The apartment number is 205 and 782 is the entry code. Apply SAVE20 coupon"",
+  ""simulator_config"": {
+    ""start_date"": ""today"",
+    ""user_persona"": ""aiden.kaufman2119@mail.test""
+  },
+  ""grader_config"": {
+    ""state_grader_configs"": [
+      {
+        ""assertions"": [
+          {
+            ""operator"": ""STRING_EQUALS"",
+            ""expected"": [
+              ""apartment""
+            ],
+            ""path_to_actual"": ""$.addressType""
+          },
+          {
+            ""operator"": ""STRING_EQUALS"",
+            ""expected"": [
+              ""555 Elm Avenue""
+            ],
+            ""path_to_actual"": ""$.street""
+          },
+          {
+            ""operator"": ""STRING_EQUALS"",
+            ""expected"": [
+              ""782""
+            ],
+            ""path_to_actual"": ""$.entryCode""
+          },
+          {
+            ""operator"": ""STRING_EQUALS"",
+            ""expected"": [
+              ""205""
+            ],
+            ""path_to_actual"": ""$.apartmentSuite""
+          }
+        ],
+        ""path_to_actual"": ""$.orders[0].deliveryAddress""
+      },
+      {
+        ""assertions"": [
+          {
+            ""operator"": ""STRING_EQUALS"",
+            ""paths_to_expected"": [
+              ""$.deal.id""
+            ]
+          }
+        ],
+        ""path_to_actual"": ""$.orders[0].appliedDeal.id""
+      },
+      {
+        ""assertions"": [
+          {
+            ""operator"": ""ARRAY_STRING_EQUALS"",
+            ""path_to_actual"": ""$.items[*].name"",
+            ""paths_to_expected"": [
+              ""$.orders[0].items[*].name"",
+              ""$.items[*].name""
+            ]
+          },
+          {
+            ""operator"": ""NUMERIC_MATCH"",
+            ""path_to_actual"": ""$.items[?(@.name == 'Crispy Cauliflower Tacos')].quantity"",
+            ""expected"": [
+              ""==2""
+            ]
+          }
+        ],
+        ""path_to_actual"": ""$.orders[0]""
+      }
+    ],
+    ""extract_states_config"": {
+      ""expected_state_functions"": [
+        {
+          ""args"": {
+            ""promocode"": ""SAVE20""
+          },
+          ""function"": ""get_deal""
+        },
+        {
+          ""args"": {
+            ""name"": ""Hannah's Cantina""
+          },
+          ""function"": ""get_restaurants""
+        },
+        {
+          ""args"": {
+            ""limit"": 1,
+            ""email"": ""aiden.kaufman2119@mail.test"",
+            ""restaurant_id"": ""$[1].restaurants[0].id"",
+            ""sort_type"": [
+              {
+                ""key"": ""orderDate"",
+                ""order"": ""desc""
+              }
+            ]
+          },
+          ""function"": ""get_orders""
+        },
+        {
+          ""args"": {
+            ""limit"": 1,
+            ""keywords"": [
+              ""cauliflower tacos""
+            ],
+            ""restaurant_id"": ""$[1].restaurants[0].id""
+          },
+          ""function"": ""get_items""
+        }
+      ]
+    }
+  }
+}","[""Reorder""]","[""Reorder & past orders"", ""Cart editing & item swaps"", ""Coupon application""]","[""Order history analysis"", ""Instruction following"", ""Order Placement""]","Log in using email 'aiden.kaufman2119@mail.test' and password 'sBmjm9uG7SYH'. Reorder my last order from Hannah's Cantina, also add 2 servings of Crispy Cauliflower Tacos this time. Place the order to my apartment on 555 Elm Avenue. The apartment number is 205 and 782 is the entry code. Apply SAVE20 coupon",,1,Hard,
+"{
+  ""task_id"": ""011"",
+  ""url"": ""https://dashdoor.rlgym.turing.com/home"",
+  ""task"": ""Log in using email 'lena.bennett71@example.com' and password 'c69fieW7G93U'. Order express delivery of a ginger salmon bowl from the nearest dashpass restaurant from my house address. Apply SAVE10"",
+  ""simulator_config"": {
+    ""start_date"": ""today"",
+    ""user_persona"": ""lena.bennett71@example.com""
+  },
+  ""grader_config"": {
+    ""state_grader_configs"": [
+      {
+        ""assertions"": [
+          {
+            ""operator"": ""STRING_EQUALS"",
+            ""paths_to_expected"": [
+              ""$.deal.id""
+            ]
+          }
+        ],
+        ""path_to_actual"": ""$.orders[0].appliedDeal.id""
+      },
+      {
+        ""assertions"": [
+          {
+            ""operator"": ""STRING_EQUALS"",
+            ""paths_to_expected"": [
+              ""$.address.id""
+            ]
+          }
+        ],
+        ""path_to_actual"": ""$.orders[0].deliveryAddress.id""
+      },
+      {
+        ""assertions"": [
+          {
+            ""operator"": ""STRING_EQUALS"",
+            ""expected"": [
+              ""express""
+            ]
+          }
+        ],
+        ""path_to_actual"": ""$.orders[0].deliveryOption.type""
+      },
+      {
+        ""assertions"": [
+          {
+            ""operator"": ""STRING_EQUALS"",
+            ""path_to_actual"": ""$.items[0].name"",
+            ""paths_to_expected"": [
+              ""$.items[0].name""
+            ]
+          },
+          {
+            ""expected"": [
+              ""==1""
+            ],
+            ""operator"": ""ARRAY_LENGTH_MATCH"",
+            ""path_to_actual"": ""$.items[*]""
+          }
+        ],
+        ""path_to_actual"": ""$.orders[0]""
+      }
+    ],
+    ""extract_states_config"": {
+      ""expected_state_functions"": [
+        {
+          ""args"": {
+            ""type"": ""house"",
+            ""user"": ""lena.bennett71@example.com""
+          },
+          ""function"": ""get_user_address""
+        },
+        {
+          ""args"": {
+            ""promocode"": ""SAVE10""
+          },
+          ""function"": ""get_deal""
+        },
+        {
+          ""args"": {
+            ""lat"": ""$[0].address.lat"",
+            ""lng"": ""$[0].address.lng"",
+            ""limit"": 1,
+            ""filters"": {
+              ""item_keyword"": ""ginger salmon bowl"",
+              ""dashpass"": true
+            },
+            ""sort_type"": [
+              {
+                ""key"": ""distance"",
+                ""order"": ""asc""
+              }
+            ]
+          },
+          ""function"": ""get_restaurants""
+        },
+        {
+          ""args"": {
+            ""limit"": 1,
+            ""keywords"": [
+              ""ginger salmon bowl""
+            ],
+            ""restaurant_id"": ""$[2].restaurants[0].id""
+          },
+          ""function"": ""get_items""
+        }
+      ]
+    }
+  }
+}","[""Menu Viewing""]","[""Restaurant discovery & filtering"", ""Delivery options"", ""Coupon application""]","[""Search and filtering"", ""Decision making"", ""Order Placement""]",Log in using email 'lena.bennett71@example.com' and password 'c69fieW7G93U'. Order express delivery of a ginger salmon bowl from the nearest dashpass restaurant from my house address. Apply SAVE10,,1,Hard,
+"{
+  ""task_id"": ""012"",
+  ""url"": ""https://dashdoor.rlgym.turing.com/home"",
+  ""task"": ""Log in using email 'lena.bennett71@example.com' and password 'c69fieW7G93U'. Order the cheapest cauliflower tacos you can find, just don't order from desserts table, they were terrible last time"",
+  ""simulator_config"": {
+    ""start_date"": ""today"",
+    ""user_persona"": ""lena.bennett71@example.com""
+  },
+  ""grader_config"": {
+    ""state_grader_configs"": [
+      {
+        ""assertions"": [
+          {
+            ""operator"": ""STRING_EQUALS"",
+            ""path_to_actual"": ""$.items[0].name"",
+            ""paths_to_expected"": [
+              ""$.items[0].name""
+            ]
+          },
+          {
+            ""expected"": [
+              ""==1""
+            ],
+            ""operator"": ""ARRAY_LENGTH_MATCH"",
+            ""path_to_actual"": ""$.items[*]""
+          },
+          {
+            ""operator"": ""STRING_EQUALS"",
+            ""path_to_actual"": ""$.storeId"",
+            ""paths_to_expected"": [
+              ""$.items[0].restaurantId""
+            ]
+          }
+        ],
+        ""path_to_actual"": ""$.orders[0]""
+      }
+    ],
+    ""extract_states_config"": {
+      ""expected_state_functions"": [
+        {
+          ""args"": {
+            ""user"": ""lena.bennett71@example.com""
+          },
+          ""function"": ""get_user_address""
+        },
+        {
+          ""args"": {
+            ""lat"": ""$[0].address.lat"",
+            ""lng"": ""$[0].address.lng"",
+            ""limit"": 1,
+            ""name"": ""desserts table""
+          },
+          ""function"": ""get_restaurants""
+        },
+        {
+          ""args"": {
+            ""limit"": 1,
+            ""keywords"": [
+              ""cauliflower tacos""
+            ],
+            ""filters"": {
+              ""restaurant_ids_not_in"": ""$[1].restaurants[*].id""
+            },
+            ""sort_type"": [
+              {
+                ""key"": ""price"",
+                ""order"": ""asc""
+              }
+            ]
+          },
+          ""function"": ""get_items""
+        }
+      ]
+    }
+  }
+}","[""Cart Management""]","[""Price filtering"", ""Restaurant exclusion""]","[""Search and filtering"", ""Decision making""]","Log in using email 'lena.bennett71@example.com' and password 'c69fieW7G93U'. Order the cheapest cauliflower tacos you can find, just don't order from desserts table, they were terrible last time",,0,Hard,
+"{
+  ""task_id"": ""013"",
+  ""url"": ""https://dashdoor.rlgym.turing.com/home"",
+  ""task"": ""Log in using email 'lena.bennett71@example.com' and password 'c69fieW7G93U'. I wanted to try Greek House, can you order the best rated item from the Family Meals?"",
+  ""simulator_config"": {
+    ""start_date"": ""today"",
+    ""user_persona"": ""lena.bennett71@example.com""
+  },
+  ""grader_config"": {
+    ""state_grader_configs"": [
+      {
+        ""assertions"": [
+          {
+            ""operator"": ""STRING_EQUALS"",
+            ""path_to_actual"": ""$.items[0].name"",
+            ""paths_to_expected"": [
+              ""$.items[0].name""
+            ]
+          },
+          {
+            ""expected"": [
+              ""==1""
+            ],
+            ""operator"": ""ARRAY_LENGTH_MATCH"",
+            ""path_to_actual"": ""$.items[*]""
+          },
+          {
+            ""operator"": ""STRING_EQUALS"",
+            ""path_to_actual"": ""$.storeId"",
+            ""paths_to_expected"": [
+              ""$.items[0].restaurantId""
+            ]
+          }
+        ],
+        ""path_to_actual"": ""$.orders[0]""
+      }
+    ],
+    ""extract_states_config"": {
+      ""expected_state_functions"": [
+        {
+          ""args"": {
+            ""user"": ""lena.bennett71@example.com""
+          },
+          ""function"": ""get_user_address""
+        },
+        {
+          ""args"": {
+            ""lat"": ""$[0].address.lat"",
+            ""lng"": ""$[0].address.lng"",
+            ""limit"": 1,
+            ""name"": ""Greek House""
+          },
+          ""function"": ""get_restaurants""
+        },
+        {
+          ""args"": {
+            ""limit"": 1,
+            ""restaurant_id"": ""$[1].restaurants[0].id"",
+            ""filters"": {
+              ""menu_categories"": [""Family Meals""]
+            },
+            ""sort_type"": [
+              {
+                ""key"": ""rating"",
+                ""order"": ""desc""
+              }
+            ]
+          },
+          ""function"": ""get_items""
+        }
+      ]
+    }
+  }
+}","[""Ratings & Reviews""]","[""Review-based recommendations""]","[""Ratings analysis"", ""Decision making"", ""Order Placement""]","Log in using email 'lena.bennett71@example.com' and password 'c69fieW7G93U'. I wanted to try Greek House, can you order the best rated item from the Family Meals?",,1,Hard,
+"{
+  ""task_id"": ""014"",
+  ""url"": ""https://dashdoor.rlgym.turing.com/home"",
+  ""task"": ""Log in using email 'elias.kaufman88@dashdoor.test' and password 'rn4bgFlzdANy'. I need to place a order at my home address. Look for cheapest restaurants with deals and pick the best one. Order enough desserts to meet the spending limit for the deal."",
+  ""simulator_config"": {
+    ""start_date"": ""today"",
+    ""user_persona"": ""elias.kaufman88@dashdoor.test""
+  },
+  ""grader_config"": {
+    ""state_grader_configs"": [
+      {
+        ""assertions"": [
+          {
+            ""operator"": ""STRING_EQUALS"",
+            ""paths_to_expected"": [
+              ""$.address.id""
+            ]
+          }
+        ],
+        ""path_to_actual"": ""$.orders[0].deliveryAddress.id""
+      },
+      {
+        ""assertions"": [
+          {
+            ""operator"": ""STRING_EQUALS"",
+            ""paths_to_expected"": [
+              ""$.restaurants[0].deals[0].id""
+            ]
+          }
+        ],
+        ""path_to_actual"": ""$.orders[0].appliedDeal.id""
+      },
+      {
+        ""assertions"": [
+          {
+            ""operator"": ""STRING_EQUALS"",
+            ""path_to_actual"": ""$.items[*].menuCategoryId"",
+            ""paths_to_expected"": [
+              ""$.categories[0].id""
+            ]
+          },
+          {
+            ""operator"": ""STRING_EQUALS"",
+            ""path_to_actual"": ""$.storeId"",
+            ""paths_to_expected"": [
+              ""$.restaurants[0].id""
+            ]
+          }
+        ],
+        ""path_to_actual"": ""$.orders[0]""
+      }
+    ],
+    ""extract_states_config"": {
+      ""expected_state_functions"": [
+        {
+          ""args"": {
+            ""type"": ""house"",
+            ""user"": ""elias.kaufman88@dashdoor.test""
+          },
+          ""function"": ""get_user_address""
+        },
+        {
+          ""args"": {
+            ""lat"": ""$[0].address.lat"",
+            ""lng"": ""$[0].address.lng"",
+            ""limit"": 1,
+            ""filters"": {
+              ""has_deals"": true
+            },
+            ""sort_type"": [
+              {
+                ""key"": ""priceRange"",
+                ""order"": ""asc""
+              },
+              {
+                ""key"": ""rating"",
+                ""order"": ""desc""
+              }
+            ]
+          },
+          ""function"": ""get_restaurants""
+        },
+        {
+          ""args"": {
+            ""restaurant_id"": ""$[1].restaurants[0].id"",
+            ""keyword"": ""desserts"",
+            ""limit"": 1
+          },
+          ""function"": ""get_menu_categories""
+        }
+      ]
+    }
+  }
+}","[""Menu Viewing""]","[""Price & deal optimization"", ""Restaurant discovery & filtering""]","[""Search and filtering"", ""Decision making"", ""Order Placement""]",Log in using email 'elias.kaufman88@dashdoor.test' and password 'rn4bgFlzdANy'. I need to place a order at my home address. Look for cheapest restaurants with deals and pick the best one. Order enough desserts to meet the spending limit for the deal.,,0,Hard,
+"{
+  ""task_id"": ""015"",
+  ""url"": ""https://dashdoor.rlgym.turing.com/home"",
+  ""task"": ""Log in using email 'lena.bennett71@example.com' and password 'c69fieW7G93U'. Order two truffle smash burgers from cedar kitchen, make sure no customizations are selected. Also order 2 of the cheapest available drinks. Change the contact number for the order to 7137834912"",
+  ""simulator_config"": {
+    ""start_date"": ""today"",
+    ""user_persona"": ""lena.bennett71@example.com""
+  },
+  ""grader_config"": {
+    ""state_grader_configs"": [
+      {
+        ""assertions"": [
+          {
+            ""operator"": ""STRING_EQUALS"",
+            ""paths_to_expected"": [
+              ""$.address.id""
+            ]
+          }
+        ],
+        ""path_to_actual"": ""$.orders[0].deliveryAddress.id""
+      },
+      {
+        ""assertions"": [
+          {
+            ""operator"": ""STRING_EQUALS"",
+            ""expected"": [
+              ""7137834912""
+            ]
+          }
+        ],
+        ""path_to_actual"": ""$.orders[0].phoneNumber.number""
+      },
+      {
+        ""assertions"": [
+          {
+            ""operator"": ""ARRAY_STRING_EQUALS"",
+            ""path_to_actual"": ""$.items[*].id"",
+            ""paths_to_expected"": [
+              ""$.items[*].id""
+            ]
+          },
+          {
+            ""expected"": [
+              ""==2""
+            ],
+            ""operator"": ""ARRAY_LENGTH_MATCH"",
+            ""path_to_actual"": ""$.items[*]""
+          },
+          {
+            ""operator"": ""NUMERIC_MATCH"",
+            ""path_to_actual"": ""$.items[0].quantity"",
+            ""expected"": [
+              ""==2""
+            ]
+          },
+          {
+            ""operator"": ""NUMERIC_MATCH"",
+            ""path_to_actual"": ""$.items[1].quantity"",
+            ""expected"": [
+              ""==2""
+            ]
+          },
+          {
+            ""operator"": ""STRING_EQUALS"",
+            ""path_to_actual"": ""$.items[?(@.name == 'Truffle Smash Burger')].modifications[*]"",
+            ""expected"": [
+              """"
+            ]
+          }
+        ],
+        ""path_to_actual"": ""$.orders[0]""
+      }
+    ],
+    ""extract_states_config"": {
+      ""expected_state_functions"": [
+        {
+          ""args"": {
+            ""user"": ""lena.bennett71@example.com""
+          },
+          ""function"": ""get_user_address""
+        },
+        {
+          ""args"": {
+            ""lat"": ""$[0].address.lat"",
+            ""lng"": ""$[0].address.lng"",
+            ""limit"": 1,
+            ""name"": ""cedar kitchen"",
+            ""sort_type"": [
+              {
+                ""key"": ""priceRange"",
+                ""order"": ""asc""
+              },
+              {
+                ""key"": ""rating"",
+                ""order"": ""desc""
+              }
+            ]
+          },
+          ""function"": ""get_restaurants""
+        },
+        {
+          ""args"": {
+            ""limit"": 1,
+            ""keywords"": [
+              ""truffle smash burger""
+            ],
+            ""restaurant_id"": ""$[1].restaurants[0].id""
+          },
+          ""function"": ""get_items""
+        },
+        {
+          ""args"": {
+            ""limit"": 1,
+            ""filters"": {
+              ""menu_categories"": [""beverages""]
+            },
+            ""sort_type"": [
+              {
+                ""key"": ""price"",
+                ""order"": ""asc""
+              },
+              {
+                ""key"": ""rating"",
+                ""order"": ""desc""
+              }
+            ],
+            ""restaurant_id"": ""$[1].restaurants[0].id""
+          },
+          ""function"": ""get_items""
+        }
+      ]
+    }
+  }
+}","[""Cart Management""]","[""Cart editing & item swaps"", ""Price filtering"", ""Contact info management""]","[""Instruction following"", ""Search and filtering"", ""UI Elements: Text Fields""]","Log in using email 'lena.bennett71@example.com' and password 'c69fieW7G93U'. Order two truffle smash burgers from cedar kitchen, make sure no customizations are selected. Also order 2 of the cheapest available drinks. Change the contact number for the order to 7137834912",,4,Medium,
+"{
+  ""task_id"": ""016"",
+  ""url"": ""https://dashdoor.rlgym.turing.com/home"",
+  ""task"": ""Log in using email 'elias.kaufman88@dashdoor.test' and password 'rn4bgFlzdANy'. My apartment building recently had an entry code added. The code is 4280. Also delivery folks are no longer allowed to go beyond the lobby, so make sure you update the drop off location and the delivery instructions accordingly"",
+  ""simulator_config"": {
+    ""start_date"": ""today"",
+    ""user_persona"": ""elias.kaufman88@dashdoor.test""
+  },
+  ""grader_config"": {
+    ""state_grader_configs"": [
+      {
+        ""assertions"": [
+          {
+            ""operator"": ""STRING_EQUALS"",
+            ""expected"": [
+              ""4280""
+            ],
+            ""path_to_actual"": ""$.entryCode""
+          },
+          {
+            ""operator"": ""STRING_EQUALS"",
+            ""expected"": [
+              ""leave""
+            ],
+            ""path_to_actual"": ""$.deliveryPreference""
+          },
+          {
+            ""operator"": ""STRING_EQUALS"",
+            ""expected"": [
+              ""lobby""
+            ],
+            ""path_to_actual"": ""$.deliveryLocation""
+          },
+          {
+            ""operator"": ""STRING_CONTAINS"",
+            ""expected"": [
+              ""lobby""
+            ],
+            ""path_to_actual"": ""$.deliveryInstructions""
+          },
+          {
+            ""operator"": ""STRING_NOT_CONTAINS"",
+            ""paths_to_expected"": [
+              ""$.address.deliveryInstructions""
+            ],
+            ""path_to_actual"": ""$.deliveryInstructions""
+          }
+        ],
+        ""path_to_actual"": ""$.user.currentUser.addresses[?(@.addressType == 'apartment' )]""
+      }
+    ],
+    ""extract_states_config"": {
+      ""expected_state_functions"": [
+        {
+          ""args"": {
+            ""type"": ""apartment"",
+            ""user"": ""elias.kaufman88@dashdoor.test""
+          },
+          ""function"": ""get_user_address""
+        }
+      ]
+    }
+  }
+}","[""Address Entry & Validation""]","[""Address & delivery instructions""]","[""Instruction following"", ""UI Elements: Text Fields""]","Log in using email 'elias.kaufman88@dashdoor.test' and password 'rn4bgFlzdANy'. My apartment building recently had an entry code added. The code is 4280. Also delivery folks are no longer allowed to go beyond the lobby, so make sure you update the drop off location and the delivery instructions accordingly",,0,Hard,
+"{
+  ""task_id"": ""017"",
+  ""url"": ""https://dashdoor.rlgym.turing.com/home"",
+  ""task"": ""Log in using email 'elias.kaufman88@dashdoor.test' and password 'rn4bgFlzdANy'. Find the best healthy restaurant near my house and order 3 servings of the lowest calorie dessert. If there is an option for caramel sauce add it with one of the servings."",
+  ""simulator_config"": {
+    ""start_date"": ""today"",
+    ""user_persona"": ""elias.kaufman88@dashdoor.test""
+  },
+  ""grader_config"": {
+    ""state_grader_configs"": [
+      {
+        ""assertions"": [
+          {
+            ""operator"": ""STRING_EQUALS"",
+            ""paths_to_expected"": [
+              ""$.address.id""
+            ]
+          }
+        ],
+        ""path_to_actual"": ""$.orders[0].deliveryAddress.id""
+      },
+      {
+        ""assertions"": [
+          {
+            ""operator"": ""STRING_EQUALS"",
+            ""path_to_actual"": ""$.items[*].name"",
+            ""paths_to_expected"": [
+              ""$.items[*].name""
+            ]
+          },
+          {
+            ""expected"": [
+              ""==2""
+            ],
+            ""operator"": ""ARRAY_LENGTH_MATCH"",
+            ""path_to_actual"": ""$.items[*]""
+          },
+          {
+            ""operator"": ""STRING_EQUALS"",
+            ""path_to_actual"": ""$.storeId"",
+            ""paths_to_expected"": [
+              ""$.restaurants[0].id""
+            ]
+          },
+          {
+            ""expected"": [
+              ""==1""
+            ],
+            ""operator"": ""ARRAY_LENGTH_MATCH"",
+            ""path_to_actual"": ""$.items[?(@.modifications[*].options[*].optionName == 'Caramel Sauce')]""
+          }
+        ],
+        ""path_to_actual"": ""$.orders[0]""
+      }
+    ],
+    ""extract_states_config"": {
+      ""expected_state_functions"": [
+        {
+          ""args"": {
+            ""type"": ""house"",
+            ""user"": ""elias.kaufman88@dashdoor.test""
+          },
+          ""function"": ""get_user_address""
+        },
+        {
+          ""args"": {
+            ""lat"": ""$[0].address.lat"",
+            ""lng"": ""$[0].address.lng"",
+            ""limit"": 1,
+            ""filters"": {
+              ""categories"": [""healthy""]
+            },
+            ""sort_type"": [
+              {
+                ""key"": ""rating"",
+                ""order"": ""desc""
+              },
+              {
+                ""key"": ""ratingCount"",
+                ""order"": ""desc""
+              }
+            ]
+          },
+          ""function"": ""get_restaurants""
+        },
+        {
+          ""args"": {
+            ""limit"": 1,
+            ""filters"": {
+              ""menu_categories"": [
+                ""desserts""
+              ]
+            },
+            ""sort_type"": [
+              {
+                ""key"": ""calories"",
+                ""order"": ""asc""
+              }
+            ],
+            ""restaurant_id"": ""$[1].restaurants[0].id""
+          },
+          ""function"": ""get_items""
+        }
+      ]
+    }
+  }
+}","[""Cart Management""]","[""Diet & calorie filtering"", ""Item customization""]","[""Search and filtering"", ""Decision making"", ""Order Placement""]",Log in using email 'elias.kaufman88@dashdoor.test' and password 'rn4bgFlzdANy'. Find the best healthy restaurant near my house and order 3 servings of the lowest calorie dessert. If there is an option for caramel sauce add it with one of the servings.,,1,Hard,
+"{
+  ""task_id"": ""018"",
+  ""url"": ""https://dashdoor.rlgym.turing.com/home"",
+  ""task"": ""Log in using email 'willow.bennett2904@example.com' and password 'aV3aVaMQ2PBW'. Go through the reviews that I've given for restaurants and pick the one that I've given the highest rating and order the best rated featured item from it."",
+  ""simulator_config"": {
+    ""start_date"": ""today"",
+    ""user_persona"": ""willow.bennett2904@example.com""
+  },
+  ""grader_config"": {
+    ""state_grader_configs"": [
+      {
+        ""assertions"": [
+          {
+            ""operator"": ""BOOL"",
+            ""path_to_actual"": ""$.orders[0].deliveryAddress.default""
+          }
+        ]
+      },
+      {
+        ""assertions"": [
+          {
+            ""operator"": ""STRING_EQUALS"",
+            ""path_to_actual"": ""$.items[*].name"",
+            ""paths_to_expected"": [
+              ""$.items[*].name""
+            ]
+          },
+          {
+            ""expected"": [
+              ""==1""
+            ],
+            ""operator"": ""ARRAY_LENGTH_MATCH"",
+            ""path_to_actual"": ""$.items[*]""
+          },
+          {
+            ""operator"": ""STRING_EQUALS"",
+            ""path_to_actual"": ""$.storeId"",
+            ""paths_to_expected"": [
+              ""$.items[0].restaurantId""
+            ]
+          }
+        ],
+        ""path_to_actual"": ""$.orders[0]""
+      }
+    ],
+    ""extract_states_config"": {
+      ""expected_state_functions"": [
+        {
+          ""args"": {
+            ""user"": ""willow.bennett2904@example.com""
+          },
+          ""function"": ""get_user_address""
+        },
+        {
+          ""args"": {
+            ""email"": ""willow.bennett2904@example.com"",
+            ""sort_type"": [
+              {
+                ""key"": ""rating"",
+                ""order"": ""desc""
+              }
+            ]
+          },
+          ""function"": ""get_reviews""
+        },
+        {
+          ""args"": {
+            ""limit"": 1,
+            ""filters"": {
+              ""featured"": true
+            },
+            ""sort_type"": [
+              {
+                ""key"": ""rating"",
+                ""order"": ""desc""
+              }
+            ],
+            ""restaurant_id"": ""$[1].reviews[0].storeId""
+          },
+          ""function"": ""get_items""
+        }
+      ]
+    }
+  }
+}","[""Ratings & Reviews""]","[""Review-based recommendations""]","[""Ratings analysis"", ""Search and filtering"", ""Decision making""]",Log in using email 'willow.bennett2904@example.com' and password 'aV3aVaMQ2PBW'. Go through the reviews that I've given for restaurants and pick the one that I've given the highest rating and order the best rated featured item from it.,,2,Hard,
+"{
+  ""task_id"": ""019"",
+  ""url"": ""https://dashdoor.rlgym.turing.com/home"",
+  ""task"": ""Log in using email 'lena.bennett71@example.com' and password 'c69fieW7G93U'. Somebody recommended Mediterranean Kitchen to me, could you go through the reviews and find the review that people found the most helpful and add the liked items from it to my cart"",
+  ""simulator_config"": {
+    ""start_date"": ""today"",
+    ""user_persona"": ""lena.bennett71@example.com""
+  },
+    ""grader_config"": {
+      ""state_grader_configs"": [
+        {
+          ""assertions"": [
+            {
+              ""operator"": ""ARRAY_STRING_EQUALS"",
+              ""path_to_actual"": ""$.items[*].itemName"",
+              ""paths_to_expected"": [
+                ""$.reviews[0].likedItems[*].itemName""
+              ]
+            },
+            {
+              ""operator"": ""STRING_EQUALS"",
+              ""path_to_actual"": ""$.storeId"",
+              ""paths_to_expected"": [
+                ""$.reviews[0].storeId""
+              ]
+            }
+          ],
+          ""path_to_actual"": ""$.carts[?(@.storeName == 'Mediterranean Kitchen')]""
+        }
+      ],
+      ""extract_states_config"": {
+        ""expected_state_functions"": [
+          {
+            ""args"": {
+              ""name"": ""Mediterranean Kitchen""
+            },
+            ""function"": ""get_restaurants""
+          },
+          {
+            ""args"": {
+              ""limit"": 1,
+              ""restaurant_id"": ""$[0].restaurants[0].id"",
+              ""has_liked_items"": true,
+              ""sort_type"": [
+                {
+                  ""key"": ""helpfulCount"",
+                  ""order"": ""desc""
+                }
+              ]
+            },
+            ""function"": ""get_reviews""
+          }
+        ]
+      }
+    }
+}","[""Ratings & Reviews""]","[""Review-based recommendations""]","[""Ratings analysis"", ""Instruction following""]","Log in using email 'lena.bennett71@example.com' and password 'c69fieW7G93U'. Somebody recommended Mediterranean Kitchen to me, could you go through the reviews and find the review that people found the most helpful and add the liked items from it to my cart",,2,Hard,
+"{
+  ""task_id"": ""020"",
+  ""url"": ""https://dashdoor.rlgym.turing.com/home"",
+  ""task"": ""Log in using email 'lena.bennett71@example.com' and password 'c69fieW7G93U'. Order mango sticky rice from sushi pantry with berry compote sauce"",
+  ""simulator_config"": {
+    ""start_date"": ""today"",
+    ""user_persona"": ""lena.bennett71@example.com""
+  },
+  ""grader_config"": {
+    ""state_grader_configs"": [
+      {
+        ""assertions"": [
+          {
+            ""operator"": ""STRING_EQUALS"",
+            ""path_to_actual"": ""$.items[0].name"",
+            ""paths_to_expected"": [
+              ""$.items[0].name""
+            ]
+          },
+          {
+            ""expected"": [
+              ""==1""
+            ],
+            ""operator"": ""ARRAY_LENGTH_MATCH"",
+            ""path_to_actual"": ""$.items[*]""
+          },
+          {
+            ""expected"": [
+              ""==1""
+            ],
+            ""operator"": ""ARRAY_LENGTH_MATCH"",
+            ""path_to_actual"": ""$.items[0].modifications[*]""
+          },
+          {
+            ""expected"": [
+              ""==1""
+            ],
+            ""operator"": ""ARRAY_LENGTH_MATCH"",
+            ""path_to_actual"": ""$.items[?(@.modifications[*].options[*].optionName == 'Berry Compote')]""
+          },
+          {
+            ""operator"": ""STRING_EQUALS"",
+            ""path_to_actual"": ""$.restaurantId"",
+            ""paths_to_expected"": [
+              ""$.items[0].restaurantId""
+            ]
+          }
+        ],
+        ""path_to_actual"": ""$.orders[0]""
+      }
+    ],
+    ""extract_states_config"": {
+      ""expected_state_functions"": [
+        {
+          ""args"": {
+            ""name"": ""sushi pantry""
+          },
+          ""function"": ""get_restaurants""
+        },
+        {
+          ""args"": {
+            ""limit"": 1,
+            ""keywords"": [""mango sticky rice""],
+            ""restaurant_id"": ""$[0].restaurants[0].id""
+          },
+          ""function"": ""get_items""
+        }
+      ]
+    }
+  }
+}","[""Cart Management""]","[""Item customization""]","[""Instruction following"", ""Order Placement""]",Log in using email 'lena.bennett71@example.com' and password 'c69fieW7G93U'. Order mango sticky rice from sushi pantry with berry compote sauce,,7,Medium,
+"{
+  ""task_id"": ""021"",
+  ""url"": ""https://dashdoor.rlgym.turing.com/"",
+  ""task"": ""Log in using the email 'lena.bennett71@example.com' and password 'c69fieW7G93U'. Select my apartment address and add sweet potato wedges, with beef as the protein option, to my cart from Nora's Pizzeria"",
+  ""grader_config"": {
+    ""state_grader_configs"": [
+      {
+        ""assertions"": [
+          {
+            ""operator"": ""STRING_EQUALS"",
+            ""path_to_actual"": ""$.id"",
+            ""paths_to_expected"": [
+              ""$[0].address.id""
+            ]
+          }
+        ],
+        ""path_to_actual"": ""$.user.currentUser.addresses[?(@.default == true)]""
+      },
+      {
+        ""assertions"": [
+          {
+            ""operator"": ""ARRAY_LENGTH_MATCH"",
+            ""path_to_actual"": ""$"",
+            ""expected"": [
+              ""==1""
+            ]
+          },
+          {
+            ""operator"": ""NUMERIC_MATCH"",
+            ""path_to_actual"": ""$[0].quantity"",
+            ""expected"": [
+              ""==1""
+            ]
+          },
+          {
+            ""operator"": ""STRING_EQUALS"",
+            ""path_to_actual"": ""$[0].itemName"",
+            ""paths_to_expected"": [
+              ""$[2].items[0].name""
+            ]
+          },
+          {
+            ""operator"": ""STRING_EQUALS"",
+            ""path_to_actual"": ""$[0].appliedModifications[0].appliedOptions[0].optionName"",
+            ""expected"": [
+              ""Beef""
+            ]
+          }
+        ],
+        ""path_to_actual"": ""$.carts[0].items""
+      },
+      {
+        ""assertions"": [
+          {
+            ""operator"": ""STRING_EQUALS"",
+            ""path_to_actual"": ""$.carts[0].storeId"",
+            ""paths_to_expected"": [
+              ""$[1].restaurants[0].id""
+            ]
+          }
+        ]
+      }
+    ],
+    ""extract_states_config"": {
+      ""expected_state_functions"": [
+        {
+          ""args"": {
+            ""type"": ""apartment"",
+            ""email"": ""lena.bennett71@example.com""
+          },
+          ""function"": ""get_user_address""
+        },
+        {
+          ""args"": {
+            ""lat"": ""$[0].address.lat"",
+            ""lng"": ""$[0].address.lng"",
+            ""limit"": 1,
+            ""name"": ""Nora's Pizzeria""
+          },
+          ""function"": ""get_restaurants""
+        },
+        {
+          ""args"": {
+            ""limit"": 1,
+            ""keywords"": [
+              ""sweet potato wedges""
+            ],
+            ""restaurant_id"": ""$[1].restaurants[0].id""
+          },
+          ""function"": ""get_items""
+        }
+      ]
+    }
+  }
+}","[""Menu Viewing"" ""Checkout""] ","[""Address selection"", ""Item customization"", ""Order placement & checkout""]","[""Instruction following"", ""UI Elements: Dropdowns"", ""Order Placement""]","Log in using the email 'lena.bennett71@example.com' and password 'c69fieW7G93U'. Select my apartment address and add sweet potato wedges, with beef as the protein option, to my cart from Nora's Pizzeria",,8,Easy,
+"{
+  ""task_id"": ""022"",
+  ""url"": ""https://dashdoor.rlgym.turing.com/home"",
+  ""task"": ""Log in using email 'lena.bennett71@example.com' and password 'c69fieW7G93U'. I recently moved and want to explore pizzerias near my new apartment. Order two of the cheapest slices available at the nearest 4 star or above pizza place."",
+  ""simulator_config"": {
+    ""start_date"": ""today"",
+    ""user_persona"": ""lena.bennett71@example.com""
+  },
+  ""grader_config"": {
+    ""state_grader_configs"": [
+      {
+        ""path_to_actual"": ""$.orders[0].deliveryAddress"",
+        ""assertions"": [
+          {
+            ""operator"": ""STRING_EQUALS"",
+            ""path_to_actual"": ""$.id"",
+            ""paths_to_expected"": [
+              ""$[0].address.id""
+            ]
+          }
+        ]
+      },
+      {
+        ""path_to_actual"": ""$.orders[0]"",
+        ""assertions"": [
+          {
+            ""operator"": ""ARRAY_STRING_EQUALS"",
+            ""path_to_actual"": ""$.items[*].name"",
+            ""paths_to_expected"": [
+              ""$[2].items[*].name""
+            ]
+          },
+          {
+            ""operator"": ""STRING_EQUALS"",
+            ""path_to_actual"": ""$.storeId"",
+            ""paths_to_expected"": [
+              ""$[1].restaurants[0].id""
+            ]
+          },
+          {
+            ""operator"": ""STRING_EQUALS"",
+            ""path_to_actual"": ""$.storeName"",
+            ""paths_to_expected"": [
+              ""$[1].restaurants[0].name""
+            ]
+          }
+        ]
+      }
+    ],
+    ""extract_states_config"": {
+      ""expected_state_functions"": [
+        {
+          ""function"": ""get_user_address"",
+          ""args"": {
+            ""user"": ""lena.bennett71@example.com"",
+            ""type"": ""apartment""
+          }
+        },
+        {
+          ""function"": ""get_restaurants"",
+          ""args"": {
+            ""lat"": ""$[0].address.lat"",
+            ""lng"": ""$[0].address.lng"",
+            ""filters"": {
+              ""cuisines"": [
+                ""pizza""
+              ],
+              ""ratingXAndAbove"": 4
+            },
+            ""sort_type"": [
+              {
+                ""key"": ""distance"",
+                ""order"": ""asc""
+              }
+            ],
+            ""limit"": 1
+          }
+        },
+        {
+          ""function"": ""get_items"",
+          ""args"": {
+            ""restaurant_id"": ""$[1].restaurants[0].id"",
+            ""filters"": {
+              ""menu_categories"": [
+                ""slices""
+              ]
+            },
+            ""sort_type"": [
+              {
+                ""key"": ""price"",
+                ""order"": ""asc""
+              }
+            ],
+            ""limit"": 2
+          }
+        }
+      ]
+    }
+  }
+}","[""Menu Viewing"" ""Cart Management""] ","[""Restaurant discovery & filtering"", ""Menu exploration""]","[""Search and filtering"", ""Decision making"", ""Order Placement""]",Log in using email 'lena.bennett71@example.com' and password 'c69fieW7G93U'. I recently moved and want to explore pizzerias near my new apartment. Order two of the cheapest slices available at the nearest 4 star or above pizza place.,,0,Hard,
+"{
+  ""task_id"": ""023"",
+  ""url"": ""https://dashdoor.rlgym.turing.com/"",
+  ""task"": ""Log in using email 'elias.kaufman88@dashdoor.test' and password 'rn4bgFlzdANy'. I want to order from di fara pizza. Order the cheapest and most liked one of the classic pizzas and also add a soda can."",
+  ""grader_config"": {
+    ""state_grader_configs"": [
+      {
+        ""assertions"": [
+          {
+            ""operator"": ""ARRAY_STRING_EQUALS"",
+            ""path_to_actual"": ""$.items[*].name"",
+            ""paths_to_expected"": [
+              ""$[1].items[0].name"",
+              ""$[2].items[0].name""
+            ]
+          },
+          {
+            ""expected"": [
+              ""==2""
+            ],
+            ""operator"": ""ARRAY_LENGTH_MATCH"",
+            ""path_to_actual"": ""$.items[*]""
+          }
+        ],
+        ""path_to_actual"": ""$.orders[0]""
+      }
+    ],
+    ""extract_states_config"": {
+      ""expected_state_functions"": [
+        {
+          ""args"": {
+            ""name"": ""Di Fara Pizza""
+          },
+          ""function"": ""get_restaurants""
+        },
+        {
+          ""args"": {
+            ""restaurant_id"": ""$[0].restaurants[0].id"",
+            ""filters"": {
+              ""menu_categories"": [""Classic Pizzas""]
+            },
+            ""sort_type"": [
+                {
+                  ""key"": ""price"",
+                  ""order"": ""asc""
+                },
+                {
+                  ""key"": ""rating"",
+                  ""order"": ""desc""
+                }
+            ],
+            ""limit"": 1
+          },
+          ""function"": ""get_items""
+        },
+        {
+          ""args"": {
+            ""restaurant_id"": ""$[0].restaurants[0].id"",
+            ""keywords"": [""soda""],
+            ""limit"": 1
+          },
+          ""function"": ""get_items""
+        }
+      ]
+    }
+  }
+}
+
+
+
+
+
+
+","[""Menu Viewing"" ""Cart Management""] ","[""Price & rating tradeoffs"", ""Item selection""]","[""Search and filtering"", ""Decision making"", ""Order Placement""]",Log in using email 'elias.kaufman88@dashdoor.test' and password 'rn4bgFlzdANy'. I want to order from di fara pizza. Order the cheapest and most liked one of the classic pizzas and also add a soda can.,,10,Easy,
+"{
+  ""task_id"": ""024"",
+  ""url"": ""https://dashdoor.rlgym.turing.com/home"",
+  ""task"": ""Log in using email 'lena.bennett71@example.com' and password 'c69fieW7G93U'. Order the cheapest sushi roll from the japanese restaurant nearest to my apartment."",
+  ""simulator_config"": {
+    ""start_date"": ""today"",
+    ""user_persona"": ""lena.bennett71@example.com""
+  },
+  ""grader_config"": {
+    ""state_grader_configs"": [
+      {
+        ""assertions"": [
+          {
+            ""operator"": ""STRING_EQUALS"",
+            ""path_to_actual"": ""$.deliveryAddress.id"",
+            ""paths_to_expected"": [
+              ""$[0].address.id""
+            ]
+          },
+          {
+            ""operator"": ""STRING_EQUALS"",
+            ""path_to_actual"": ""$.items[0].name"",
+            ""paths_to_expected"": [
+              ""$[2].items[0].name""
+            ]
+          },
+          {
+            ""operator"": ""ARRAY_LENGTH_MATCH"",
+            ""path_to_actual"": ""$.items[*]"",
+            ""expected"": [
+              ""==1""
+            ]
+          },
+          {
+            ""operator"": ""STRING_EQUALS"",
+            ""path_to_actual"": ""$.storeId"",
+            ""paths_to_expected"": [
+              ""$[1].restaurants[0].id""
+            ]
+          }
+        ],
+        ""path_to_actual"": ""$.orders[0]""
+      }
+    ],
+    ""extract_states_config"": {
+      ""expected_state_functions"": [
+        {
+          ""function"": ""get_user_address"",
+          ""args"": {
+            ""user"": ""lena.bennett71@example.com"",
+            ""type"": ""apartment""
+          }
+        },
+        {
+          ""function"": ""get_restaurants"",
+          ""args"": {
+            ""lat"": ""$[0].address.lat"",
+            ""lng"": ""$[0].address.lng"",
+            ""filters"": {
+              ""cuisines"": [
+                ""japanese""
+              ]
+            },
+            ""sort_type"": [
+              {
+                ""key"": ""distance"",
+                ""order"": ""asc""
+              }
+            ],
+            ""limit"": 1
+          }
+        },
+        {
+          ""function"": ""get_items"",
+          ""args"": {
+            ""restaurant_id"": ""$[1].restaurants[0].id"",
+            ""filters"": {
+              ""menu_categories"": [
+                ""Sushi Rolls""
+              ]
+            },
+            ""sort_type"": [
+              {
+                ""key"": ""price"",
+                ""order"": ""asc""
+              }
+            ],
+            ""limit"": 1
+          }
+        }
+      ]
+    }
+  }
+}","[""Menu Viewing""]","[""Cuisine filtering"", ""Price filtering""]","[""Search and filtering"", ""Decision making"", ""Order Placement""]",Log in using email 'lena.bennett71@example.com' and password 'c69fieW7G93U'. Order the cheapest sushi roll from the japanese restaurant nearest to my apartment.,,8,Easy,
+"{
+  ""task_id"": ""025"",
+  ""url"": ""https://dashdoor.rlgym.turing.com/"",
+  ""task"": ""Log in using email 'lena.bennett71@example.com' and password 'c69fieW7G93U'. First place an order for a dragon and rainbow rolls from Tokyo Japanese Kitchen. Also place an order for thai fried rice from the best rated thai restaurant available. Make sure you mark both for express delivery"",
+  ""grader_config"": {
+    ""state_grader_configs"": [
+      {  
+        ""assertions"": [
+          {
+            ""operator"": ""ARRAY_STRING_EQUALS"",
+            ""path_to_actual"": ""$.items[*].name"",
+            ""paths_to_expected"": [""$[2].items[*].name""]
+          },
+          {
+            ""operator"": ""STRING_EQUALS"",
+            ""path_to_actual"": ""$.storeId"",
+            ""paths_to_expected"": [
+                ""$[1].restaurants[0].id""
+            ]
+          }
+        ],
+        ""path_to_actual"": ""$.orders[0]""
+      },
+      {  
+        ""assertions"": [
+          {
+            ""operator"": ""STRING_EQUALS"",
+            ""path_to_actual"": ""$.orders[0].deliveryOption.type"",
+            ""expected"": [""express""]
+          }
+        ]
+      },
+      {  
+        ""assertions"": [
+          {
+            ""operator"": ""ARRAY_STRING_EQUALS"",
+            ""path_to_actual"": ""$.items[*].name"",
+            ""paths_to_expected"": [""$[4].items[*].name""]
+          },
+          {
+            ""operator"": ""STRING_EQUALS"",
+            ""path_to_actual"": ""$.storeId"",
+            ""paths_to_expected"": [
+                ""$[3].restaurants[0].id""
+            ]
+          }
+        ],
+        ""path_to_actual"": ""$.orders[1]""
+      },
+      {  
+        ""assertions"": [
+          {
+            ""operator"": ""STRING_EQUALS"",
+            ""path_to_actual"": ""$.orders[1].deliveryOption.type"",
+            ""expected"": [""express""]
+          }
+        ]
+      }
+    ],
+    ""extract_states_config"": {
+      ""expected_state_functions"": [
+        {
+          ""args"": {
+            ""user"": ""lena.bennett71@example.com""
+          },
+          ""function"": ""get_user_address""
+        },
+        {
+          ""function"": ""get_restaurants"",
+          ""args"": {
+            ""lat"": ""$[0].address.lat"",
+            ""lng"": ""$[0].address.lng"",
+            ""filters"": {
+              ""cuisines"": [""Thai""]
+            },
+            ""sort_type"": [
+              { ""key"": ""rating"", ""order"": ""desc"" }
+            ],
+            ""limit"": 1
+          }
+        },
+        {
+          ""function"": ""get_items"",
+          ""args"": {
+            ""restaurant_id"": ""$[1].restaurants[0].id"",
+            ""keywords"": [""Thai Fried Rice""],
+            ""limit"": 1
+          }
+        },
+        {
+          ""function"": ""get_restaurants"",
+          ""args"": {
+            ""lat"": ""$[0].address.lat"",
+            ""lng"": ""$[0].address.lng"",
+            ""name"": ""Tokyo Japanese Kitchen"",
+            ""limit"": 1
+          }
+        },
+        {
+          ""function"": ""get_items"",
+          ""args"": {
+            ""restaurant_id"": ""$[3].restaurants[0].id"",
+            ""keywords"": [""Dragon roll"", ""Rainbow Roll""],
+            ""limit"": 2
+          }
+        }
+      ]
+    }
+  }
+}
+
+
+
+
+
+
+","[""Menu Viewing"" ""Cart Management"" ""Checkout""] ","[""Multi-restaurant ordering"", ""Review-based recommendations"", ""Delivery scheduling""]","[""Search and filtering"", ""Decision making"", ""Order Placement"", ""Scheduling""]",Log in using email 'lena.bennett71@example.com' and password 'c69fieW7G93U'. First place an order for a dragon and rainbow rolls from Tokyo Japanese Kitchen. Also place an order for thai fried rice from the best rated thai restaurant available. Make sure you mark both for express delivery,,0,Hard,
+"{
+  ""task_id"": ""026"",
+  ""url"": ""https://dashdoor.rlgym.turing.com/home"",
+  ""task"": ""Log in using email 'lena.bennett71@example.com' and password 'c69fieW7G93U'. I need to send coffee for my mum at the house address on my profile. Find the best coffee place near that address that has iced coffee and order two."",
+  ""simulator_config"": {
+    ""start_date"": ""today"",
+    ""user_persona"": ""lena.bennett71@example.com""
+  },
+  ""grader_config"": {
+    ""state_grader_configs"": [
+      {
+        ""path_to_actual"": ""$.orders[0]"",
+        ""assertions"": [
+          {
+            ""operator"": ""STRING_EQUALS"",
+            ""path_to_actual"": ""$.deliveryAddress.id"",
+            ""paths_to_expected"": [
+              ""$[0].address.id""
+            ]
+          },
+          {
+            ""operator"": ""ARRAY_LENGTH_MATCH"",
+            ""path_to_actual"": ""$.items[*]"",
+            ""expected"": [
+              ""==1""
+            ]
+          },
+          {
+            ""operator"": ""STRING_EQUALS"",
+            ""path_to_actual"": ""$.items[0].name"",
+            ""paths_to_expected"": [
+              ""$[2].items[0].name""
+            ]
+          },
+          {
+            ""operator"": ""NUMERIC_MATCH"",
+            ""path_to_actual"": ""$.items[0].quantity"",
+            ""expected"": [
+              ""==2""
+            ]
+          },
+          {
+            ""operator"": ""STRING_EQUALS"",
+            ""path_to_actual"": ""$.storeId"",
+            ""paths_to_expected"": [
+              ""$[1].restaurants[0].id""
+            ]
+          }
+        ]
+      }
+    ],
+    ""extract_states_config"": {
+      ""expected_state_functions"": [
+        {
+          ""function"": ""get_user_address"",
+          ""args"": {
+            ""user"": ""lena.bennett71@example.com"",
+            ""type"": ""house""
+          }
+        },
+        {
+          ""function"": ""get_restaurants"",
+          ""args"": {
+            ""lat"": ""$[0].address.lat"",
+            ""lng"": ""$[0].address.lng"",
+            ""filters"": {
+              ""item_keyword"": ""iced coffee""
+            },
+            ""sort_type"": [
+              {
+                ""key"": ""rating"",
+                ""order"": ""asc""
+              }
+            ],
+            ""limit"": 1
+          }
+        },
+        {
+          ""function"": ""get_items"",
+          ""args"": {
+            ""restaurant_id"": ""$[1].restaurants[0].id"",
+            ""keywords"": [
+              ""iced coffee""
+            ],
+            ""limit"": 1
+          }
+        }
+      ]
+    }
+  }
+}","[""Menu Viewing"" ""Cart Management"" ""Checkout""] ","[""Multi-address ordering"", ""Restaurant discovery & filtering""]","[""Search and filtering"", ""Decision making"", ""Order Placement""]",Log in using email 'lena.bennett71@example.com' and password 'c69fieW7G93U'. I need to send coffee for my mum at the house address on my profile. Find the best coffee place near that address that has iced coffee and order two.,,4,Medium,
+"{
+  ""task_id"": ""027"",
+  ""url"": ""https://dashdoor.rlgym.turing.com/home"",
+  ""task"": ""Log in using email 'elias.kaufman88@dashdoor.test' and password 'rn4bgFlzdANy'. I want to eat Indian cuisine today. Can you find a restaurant nearby which serves Indian cuisine? Tell me the top 3 most affordable restaurant names that are nearest to me."",
+  ""simulator_config"": {
+    ""start_date"": ""today"",
+    ""user_persona"": ""elias.kaufman88@dashdoor.test""
+  },
+  ""grader_config"": {
+    ""answer_grader_config"": {
+      ""assertions"": [
+        {
+          ""operator"": ""STRING_CONTAINS"",
+          ""paths_to_expected"": [
+            ""$[0].restaurants[*].name""
+          ]
+        }
+      ]
+    },
+    ""extract_states_config"": {
+      ""expected_state_functions"": [
+        {
+          ""function"": ""get_restaurants"",
+          ""args"": {
+            ""filters"": {
+              ""cuisines"": [
+                ""Indian""
+              ]
+            },
+            ""sort_type"": [
+              {
+                ""key"": ""priceRange"",
+                ""order"": ""asc""
+              },
+              {
+                ""key"": ""distance"",
+                ""order"": ""asc""
+              }
+            ],
+            ""limit"": 3
+          }
+        }
+      ]
+    }
+  }
+}","[""Item Selection & Customization""]","[""Restaurant comparison"", ""Price filtering""]","[""Search and filtering"", ""Decision making""]",Log in using email 'elias.kaufman88@dashdoor.test' and password 'rn4bgFlzdANy'. I want to eat Indian cuisine today. Can you find a restaurant nearby which serves Indian cuisine? Tell me the top 3 most affordable restaurant names that are nearest to me.,,3,Medium,
+"{
+  ""task_id"": ""028"",
+  ""url"": ""https://dashdoor.rlgym.turing.com/"",
+  ""task"": ""Log in using email 'elias.kaufman88@dashdoor.test' and password 'rn4bgFlzdANy'. I really liked the food that I ordered last time from Buffalo Wild Wings. Leave a 5 star rating on that order and add a review as follows- food tasted really good especially the traditional wings, those were great."",
+  ""simulator_config"": {
+    ""start_date"": ""today"",
+    ""user_persona"": ""elias.kaufman88@dashdoor.test""
+  },
+  ""grader_config"": {
+    ""state_grader_configs"": [
+      {
+        ""assertions"": [
+          {
+            ""operator"": ""ARRAY_LENGTH_MATCH"",
+            ""expected"": [
+              ""==1""
+            ]
+          },
+          {
+            ""operator"": ""STRING_EQUALS"",
+            ""paths_to_expected"": [
+              ""$.orders[0].id""
+            ],
+            ""path_to_actual"": ""$[0].orderId""
+          },
+          {
+            ""operator"": ""NUMERIC_MATCH"",
+            ""expected"": [
+              5
+            ],
+            ""path_to_actual"": ""$[0].rating""
+          },
+          {
+            ""operator"": ""STRING_CONTAINS"",
+            ""expected"": [
+              ""food"",
+              ""tasted"",
+              ""good"",
+              ""traditional"",
+              ""wings"",
+              ""great""
+            ],
+            ""path_to_actual"": ""$[0].content""
+          }
+        ],
+        ""path_to_actual"": ""$.reviews.newReviews""
+      }
+    ],
+    ""extract_states_config"": {
+      ""expected_state_functions"": [
+        {
+          ""args"": {
+            ""name"": ""Buffalo Wild Wings"",
+            ""limit"": 1
+          },
+          ""function"": ""get_restaurants""
+        },
+        {
+          ""args"": {
+            ""restaurant_id"": ""$[0].restaurants[0].id"",
+            ""user"": ""elias.kaufman88@dashdoor.test"",
+            ""limit"": 1,
+            ""sort_type"": {
+              ""key"": ""orderDate"",
+              ""order"": ""desc""
+            }
+          },
+          ""function"": ""get_orders""
+        }
+      ]
+    }
+  }
+}","[""Ratings & Reviews""]","[""Delivery time filtering"", ""Price & rating tradeoffs""]","[""Search and filtering"", ""Decision making"", ""Order Placement""]","Log in using email 'elias.kaufman88@dashdoor.test' and password 'rn4bgFlzdANy'. I really liked the food that I ordered last time from Buffalo Wild Wings. Leave a 5 star rating on that order and add a review as follows- food tasted really good especially the traditional wings, those were great.",,8,Easy,
