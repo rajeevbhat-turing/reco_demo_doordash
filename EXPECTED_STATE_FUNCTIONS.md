@@ -329,6 +329,7 @@ Gets restaurants with optional filtering, sorting, and radius filtering.
     dashpass?: boolean;            // Optional: Filter by DashPass availability
     has_deals?: boolean;           // Optional: Filter by restaurants with deals (default: false). When true, includes deals in response
     restaurant_ids_not_in?: string[];  // Optional: Exclude these restaurant IDs
+    ratingXAndAbove?: number;      // Optional: Filter by minimum rating (returns restaurants with rating >= this value)
   };
 }
 ```
@@ -513,6 +514,38 @@ Returns only restaurants that have deals, including the deals data in the respon
 }
 ```
 Returns the top 10 highest-rated restaurants (based on approved user reviews).
+
+**Filter by minimum rating (4 stars and above):**
+```json
+{
+  "function": "get_restaurants",
+  "args": {
+    "filters": {
+      "ratingXAndAbove": 4
+    },
+    "limit": 10
+  }
+}
+```
+Returns only restaurants with a rating of 4.0 or higher, sorted by nearest first.
+
+**Filter by minimum rating combined with cuisine:**
+```json
+{
+  "function": "get_restaurants",
+  "args": {
+    "filters": {
+      "cuisines": ["Italian"],
+      "ratingXAndAbove": 4.5
+    },
+    "sort_type": [
+      { "key": "distance", "order": "asc" }
+    ],
+    "limit": 5
+  }
+}
+```
+Returns the 5 nearest Italian restaurants with a rating of 4.5 or higher.
 
 **Sort by rating, then by distance:**
 ```json

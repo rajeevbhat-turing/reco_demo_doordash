@@ -52,6 +52,7 @@ export interface GetRestaurantsArgs {
     dashpass?: boolean; // Filter by DashPass availability
     has_deals?: boolean; // Filter by restaurants with deals (default: false). When true, includes deals in response
     restaurant_ids_not_in?: string[]; // Exclude these restaurant IDs
+    ratingXAndAbove?: number; // Filter by minimum rating (returns restaurants with rating >= this value)
   };
 }
 
@@ -153,6 +154,10 @@ export async function get_restaurants(
     
     if (filters.restaurant_ids_not_in && filters.restaurant_ids_not_in.length > 0) {
       params.append('restaurant_ids_not_in', JSON.stringify(filters.restaurant_ids_not_in));
+    }
+    
+    if (filters.ratingXAndAbove !== undefined) {
+      params.append('ratingXAndAbove', String(filters.ratingXAndAbove));
     }
 
     // Call API route
