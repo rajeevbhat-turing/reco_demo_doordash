@@ -2,7 +2,7 @@
 
 import { useParams, useRouter } from 'next/navigation';
 import { useOrdersStore } from '@/store/orders-store';
-import { Download, Home, ArrowLeft } from 'lucide-react';
+import { Download, Home, ArrowLeft, CalendarClock } from 'lucide-react';
 import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { useState, useEffect, useCallback } from 'react';
@@ -17,6 +17,8 @@ import {
   getEstimatedDeliveryTime,
   getOrderStatusMessage,
   getOrderUpdationMessage,
+  formatScheduledTime,
+  SCHEDULED_STATUSES,
 } from '@/lib/utils/order-utils';
 import { COMPLETED_STATUSES, getCurrentOrderStep } from '@/lib/utils/order-utils';
 import './print.css';
@@ -310,7 +312,20 @@ export default function OrderReceiptPage() {
               <div className="flex items-start justify-between mb-3">
                 <div>
                   <h2 className="text-xl font-bold mb-1">{getOrderStatusMessage(order.status)}</h2>
+                  {/* Scheduled Order Info */}
+                  {SCHEDULED_STATUSES.includes(order.status?.toLowerCase()) &&
+                    order?.deliveryOption?.scheduledDate && (
+                      <p className="text-[#191919ff] text-sm font-semibold">
+                        Delivery:{' '}
+                        {formatScheduledTime(
+                          order.deliveryOption.scheduledDate,
+                          order.deliveryOption.scheduledTimeSlot
+                        )}
+                      </p>
+                    )}
+                  {/* In Progress Order Info */}
                   {!COMPLETED_STATUSES.includes(order.status?.toLowerCase()) &&
+                    !SCHEDULED_STATUSES.includes(order.status?.toLowerCase()) &&
                     order?.orderDate &&
                     order?.deliveryOption?.deliveryTime && (
                       <p
@@ -340,8 +355,27 @@ export default function OrderReceiptPage() {
                 </div>
               </div>
 
+              {/* Scheduled Order Indicator */}
+              {order.status === 'scheduled' && (
+                <div className="flex items-center gap-3 mb-3 p-3 bg-blue-50 rounded-lg no-print">
+                  <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                    <CalendarClock className="w-5 h-5 text-blue-600" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-blue-900">
+                      Your order is scheduled
+                    </p>
+                    <p className="text-xs text-blue-700">
+                      We&apos;ll start preparing it closer to your delivery time
+                    </p>
+                  </div>
+                </div>
+              )}
+
               {/* Order Status Timeline - Hidden in print */}
-              {order.status !== 'cancelled' &&
+              {/* Show timeline for in-progress orders, hide for scheduled/cancelled/returned/abandoned */}
+              {order.status !== 'scheduled' &&
+                order.status !== 'cancelled' &&
                 order.status !== 'returned' &&
                 order.status !== 'abandoned' && (
                   <div className="flex items-center justify-between mb-3 no-print">

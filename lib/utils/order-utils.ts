@@ -1,6 +1,8 @@
 // Get order status message
 export const getOrderStatusMessage = (orderStatus: string): string => {
   switch (orderStatus) {
+    case 'scheduled':
+      return 'Scheduled for later';
     case 'pending':
       return 'Order placed';
     case 'confirmed':
@@ -35,6 +37,8 @@ export const getOrderStatusMessage = (orderStatus: string): string => {
 // Get order updation message
 export const getOrderUpdationMessage = (orderStatus: string, storeName: string): string => {
   switch (orderStatus) {
+    case 'scheduled':
+      return `Your order is scheduled for later delivery.`;
     case 'pending':
       return `We sent your order to ${storeName} for final confirmation.`;
     case 'confirmed':
@@ -63,6 +67,9 @@ export const getOrderUpdationMessage = (orderStatus: string, storeName: string):
 // Completed order statuses
 export const COMPLETED_STATUSES = ['delivered', 'cancelled', 'returned', 'abandoned'];
 
+// Scheduled order statuses (waiting for scheduled time)
+export const SCHEDULED_STATUSES = ['scheduled'];
+
 // In progress order statuses
 export const IN_PROGRESS_STATUSES = [
   'pending',
@@ -78,7 +85,10 @@ export const IN_PROGRESS_STATUSES = [
 
 // Get current order step
 export const getCurrentOrderStep = (orderStatus: string): number => {
-  if (orderStatus === 'pending' || orderStatus === 'confirmed') {
+  // Scheduled orders haven't started processing yet
+  if (orderStatus === 'scheduled') {
+    return 0;
+  } else if (orderStatus === 'pending' || orderStatus === 'confirmed') {
     return 1;
   } else if (orderStatus === 'preparing' || orderStatus === 'dasher_assigned') {
     return 2;
@@ -232,5 +242,76 @@ export const getEstimatedDeliveryTime = (orderDate: string, deliveryTime: string
   } catch (error) {
     console.error('Error calculating estimated delivery time:', error);
     return '';
+  }
+};
+
+// Check if a scheduled order's time has been reached
+export const isScheduledTimeReached = (
+  scheduledDate: Date | string | null | undefined,
+  scheduledTimeSlot: string | null | undefined
+): boolean => {
+  if (!scheduledDate || !scheduledTimeSlot) {
+    return true; // If no scheduled time, treat as ready
+  }
+
+  try {
+    const now = new Date();
+
+    // Parse the scheduled date
+    const schedDate =
+      typeof scheduledDate === 'string' ? new Date(scheduledDate) : scheduledDate;
+
+    // Parse the time slot (e.g., "2:00 PM - 3:00 PM" or "2:00 PM")
+    const timeMatch = scheduledTimeSlot.match(/(\d{1,2}):(\d{2})\s*(AM|PM)/i);
+    if (!timeMatch) {
+      return true; // If can't parse time, treat as ready
+    }
+
+    let hours = parseInt(timeMatch[1]);
+    const minutes = parseInt(timeMatch[2]);
+    const period = timeMatch[3].toUpperCase();
+
+    // Convert to 24-hour format
+    if (period === 'PM' && hours !== 12) {
+      hours += 12;
+    } else if (period === 'AM' && hours === 12) {
+      hours = 0;
+    }
+
+    // Create the scheduled datetime
+    const scheduledDateTime = new Date(schedDate);
+    scheduledDateTime.setHours(hours, minutes, 0, 0);
+
+    // Check if current time has reached or passed the scheduled time
+    return now >= scheduledDateTime;
+  } catch (error) {
+    console.error('Error checking scheduled time:', error);
+    return true; // If error, treat as ready
+  }
+};
+
+// Format scheduled delivery time for display
+export const formatScheduledTime = (
+  scheduledDate: Date | string | null | undefined,
+  scheduledTimeSlot: string | null | undefined
+): string => {
+  if (!scheduledDate || !scheduledTimeSlot) {
+    return '';
+  }
+
+  try {
+    const schedDate =
+      typeof scheduledDate === 'string' ? new Date(scheduledDate) : scheduledDate;
+
+    const formattedDate = schedDate.toLocaleDateString('en-US', {
+      weekday: 'short',
+      month: 'short',
+      day: 'numeric',
+    });
+
+    return `${formattedDate} at ${scheduledTimeSlot}`;
+  } catch (error) {
+    console.error('Error formatting scheduled time:', error);
+    return scheduledTimeSlot || '';
   }
 };

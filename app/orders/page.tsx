@@ -17,9 +17,12 @@ import { OrderItem as ReviewOrderItem } from '@/types/review-types';
 import {
   COMPLETED_STATUSES,
   IN_PROGRESS_STATUSES,
+  SCHEDULED_STATUSES,
   getOrderStatusMessage,
   getEstimatedDeliveryTime,
+  formatScheduledTime,
 } from '@/lib/utils/order-utils';
+import { CalendarClock } from 'lucide-react';
 
 export default function Orders() {
   const router = useRouter();
@@ -155,8 +158,12 @@ export default function Orders() {
     return '';
   };
 
-  // Filter orders by status (in progress vs completed) and current user
+  // Filter orders by status (scheduled, in progress, completed) and current user
   const userOrders = orders.filter(order => !currentUser || order.userId === currentUser.id);
+
+  const scheduledOrders = userOrders.filter(order =>
+    SCHEDULED_STATUSES.includes(order.status.toLowerCase())
+  );
 
   const inProgressOrders = userOrders.filter(order =>
     IN_PROGRESS_STATUSES.includes(order.status.toLowerCase())
@@ -289,6 +296,66 @@ export default function Orders() {
                       {estimatedDelivery && formattedDate && (
                         <p className="text-sm text-gray-600 font-medium">
                           Estimated Delivery: {formattedDate}, {estimatedDelivery}
+                        </p>
+                      )}
+                    </div>
+                    <Button
+                      variant="secondary"
+                      className="rounded-full bg-gray-200 hover:bg-gray-300 text-gray-900 font-medium px-4 py-2 text-sm h-auto"
+                      onClick={(e: MouseEvent<HTMLButtonElement>) => {
+                        e.stopPropagation();
+                        router.push(`/orders/${order.id}`);
+                      }}
+                    >
+                      View Order
+                    </Button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* Scheduled Orders Section */}
+      {scheduledOrders.length > 0 && (
+        <div className="mb-8">
+          <h2 className="text-2xl font-semibold mb-4 flex items-center gap-2">
+            <CalendarClock className="w-6 h-6" />
+            Scheduled
+          </h2>
+          <div className="space-y-4">
+            {scheduledOrders.map(order => {
+              const storeName = getStoreName(order);
+              const scheduledTime = formatScheduledTime(
+                order.deliveryOption?.scheduledDate,
+                order.deliveryOption?.scheduledTimeSlot
+              );
+
+              return (
+                <div
+                  key={order.id}
+                  className="bg-white border border-gray-200 rounded-lg p-4 hover:bg-gray-50 hover:cursor-pointer transition-colors"
+                  onClick={() => router.push(`/orders/${order.id}`)}
+                >
+                  <div className="flex items-end justify-between">
+                    <div className="flex-1">
+                      <h3 className="text-base font-semibold mb-1">{storeName}</h3>
+                      <p className="text-base text-[#191919ff] font-semibold mb-1 mt-3">
+                        Scheduled for later
+                      </p>
+                      {scheduledTime && (
+                        <p className="text-sm text-gray-600 font-medium">
+                          Delivery: {scheduledTime}
+                        </p>
+                      )}
+                      {order.items && order.items.length > 0 && (
+                        <p className="text-sm text-gray-500 mt-2">
+                          {order.items.reduce((sum, item) => sum + item.quantity, 0)} item
+                          {order.items.reduce((sum, item) => sum + item.quantity, 0) !== 1
+                            ? 's'
+                            : ''}{' '}
+                          • ${getTotal(order).toFixed(2)}
                         </p>
                       )}
                     </div>

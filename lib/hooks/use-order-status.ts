@@ -2,7 +2,12 @@ import { useEffect } from 'react';
 import { useOrdersStore } from '@/store/orders-store';
 import { useUserStore } from '@/store/user-store';
 import { Order } from '@/constants/order-data';
-import { COMPLETED_STATUSES, IN_PROGRESS_STATUSES } from '@/lib/utils/order-utils';
+import {
+  COMPLETED_STATUSES,
+  IN_PROGRESS_STATUSES,
+  SCHEDULED_STATUSES,
+  isScheduledTimeReached,
+} from '@/lib/utils/order-utils';
 
 // Configuration constants
 const UPDATE_INTERVAL = 3000; // Interval in milliseconds to check for status updates (3 seconds)
@@ -21,6 +26,23 @@ function calculateNextStatus(order: Order): { newStatus: string; remainingTime: 
 
   // Don't update completed orders
   if (COMPLETED_STATUSES.includes(currentStatus)) {
+    return null;
+  }
+
+  // Handle scheduled orders - only transition to pending when scheduled time is reached
+  if (SCHEDULED_STATUSES.includes(currentStatus)) {
+    const scheduledDate = order.deliveryOption?.scheduledDate;
+    const scheduledTimeSlot = order.deliveryOption?.scheduledTimeSlot;
+
+    if (isScheduledTimeReached(scheduledDate, scheduledTimeSlot)) {
+      // Scheduled time has been reached, transition to pending
+      return {
+        newStatus: 'pending',
+        remainingTime: order.deliveryOption?.deliveryTime || '45-60 min',
+      };
+    }
+
+    // Scheduled time not yet reached, don't update
     return null;
   }
 
