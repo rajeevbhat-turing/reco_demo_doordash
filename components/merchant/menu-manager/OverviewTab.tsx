@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useRef, useState, useCallback } from 'react';
-import { Search, Settings, Eye, Plus, ChevronDown, Pencil, Trash2 } from 'lucide-react';
+import { Search, Settings, Plus, ChevronDown, Pencil, Trash2, MoreVertical } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { useMerchantMenuStore } from '@/store/merchant-menu-store';
 import ItemStatusDropdown from '@/components/merchant/ItemStatusDropdown';
@@ -13,6 +13,8 @@ import { useMerchantPersistedState } from '@/lib/hooks/useMerchantPersistedState
 import ConfirmModal from '@/components/merchant/modals/ConfirmModal';
 import NewItemModal from '@/components/merchant/modals/NewItemModal';
 import NewCategoryModal from '@/components/merchant/modals/NewCategoryModal';
+import RearrangeCategoriesModal from '@/components/merchant/modals/RearrangeCategoriesModal';
+import RearrangeItemsModal from '@/components/merchant/modals/RearrangeItemsModal';
 
 interface OverviewTabProps {
   isLoadingMenu: boolean;
@@ -60,12 +62,20 @@ export default function OverviewTab({ isLoadingMenu, isMounted }: OverviewTabPro
   const [showAddMenu, setShowAddMenu] = useState(false);
   const [showNewItemModal, setShowNewItemModal] = useState(false);
   const [showNewCategoryModal, setShowNewCategoryModal] = useState(false);
+  const [prefillCategory, setPrefillCategory] = useState<string | null>(null);
+  const [showRearrangeModal, setShowRearrangeModal] = useState(false);
+  const [rearrangeItemsCategoryId, setRearrangeItemsCategoryId] = useState<string | null>(null);
+  const [openItemsMenu, setOpenItemsMenu] = useState<string | null>(null);
   const addMenuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
       if (addMenuRef.current && !addMenuRef.current.contains(e.target as Node)) {
         setShowAddMenu(false);
+      }
+      const target = e.target as HTMLElement;
+      if (!target.closest('[data-items-menu="true"]')) {
+        setOpenItemsMenu(null);
       }
     };
     document.addEventListener('mousedown', handler);
@@ -136,12 +146,16 @@ export default function OverviewTab({ isLoadingMenu, isMounted }: OverviewTabPro
               <MenuSettingsDropdown
                 isOpen={isMenuSettingsOpen}
                 onClose={() => setIsMenuSettingsOpen(false)}
+                onRearrangeCategories={() => {
+                  setIsMenuSettingsOpen(false);
+                  setShowRearrangeModal(true);
+                }}
               />
             </div>
-            <button className="inline-flex items-center gap-2 px-3 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">
+            {/* <button className="inline-flex items-center gap-2 px-3 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">
               <Eye className="h-4 w-4" />
               Preview Menu
-            </button>
+            </button> */}
             <div className="relative" ref={addMenuRef}>
               <button
                 onClick={() => setShowAddMenu(prev => !prev)}
@@ -157,6 +171,7 @@ export default function OverviewTab({ isLoadingMenu, isMounted }: OverviewTabPro
                     className="w-full text-left px-3 py-2 text-sm hover:bg-gray-50"
                     onClick={() => {
                       setShowAddMenu(false);
+                      setPrefillCategory(null);
                       setShowNewCategoryModal(true);
                     }}
                   >
@@ -166,6 +181,7 @@ export default function OverviewTab({ isLoadingMenu, isMounted }: OverviewTabPro
                     className="w-full text-left px-3 py-2 text-sm hover:bg-gray-50"
                     onClick={() => {
                       setShowAddMenu(false);
+                      setPrefillCategory(null);
                       setShowNewItemModal(true);
                     }}
                   >
@@ -258,12 +274,39 @@ export default function OverviewTab({ isLoadingMenu, isMounted }: OverviewTabPro
                           </th>
                           <th className="w-12"></th>
                           <th className="w-12"></th>
+                          <th className="text-right font-medium px-4 py-3 text-gray-700 w-12">
+                            <div className="relative inline-block" data-items-menu="true">
+                              <button
+                                onClick={e => {
+                                  e.stopPropagation();
+                                  setOpenItemsMenu(prev => (prev === category.id ? null : category.id));
+                                }}
+                                className="p-1.5 rounded hover:bg-gray-100"
+                                aria-label="More actions"
+                              >
+                                <MoreVertical className="h-4 w-4 text-gray-500" />
+                              </button>
+                              {openItemsMenu === category.id && (
+                                <div className="absolute right-0 mt-2 w-40 rounded-md border border-gray-200 bg-white shadow-lg z-10">
+                                  <button
+                                    onClick={() => {
+                                      setOpenItemsMenu(null);
+                                      setRearrangeItemsCategoryId(category.id);
+                                    }}
+                                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                                  >
+                                    Rearrange items
+                                  </button>
+                                </div>
+                              )}
+                            </div>
+                          </th>
                         </tr>
                       </thead>
                       <tbody>
                         {category.items.length === 0 ? (
                           <tr>
-                            <td colSpan={7} className="px-4 py-8 text-center text-gray-500">
+                            <td colSpan={8} className="px-4 py-8 text-center text-gray-500">
                               No items in this category
                             </td>
                           </tr>
@@ -318,7 +361,13 @@ export default function OverviewTab({ isLoadingMenu, isMounted }: OverviewTabPro
 
                     {/* Add Item Button */}
                     <div className="px-4 py-3 border-t border-gray-200 bg-gray-50">
-                      <button className="inline-flex items-center gap-2 text-sm font-medium text-gray-700 hover:text-gray-900">
+                      <button
+                        className="inline-flex items-center gap-2 text-sm font-medium text-gray-700 hover:text-gray-900"
+                        onClick={() => {
+                          setPrefillCategory(category.name);
+                          setShowNewItemModal(true);
+                        }}
+                      >
                         <Plus className="h-4 w-4" />
                         Add Item
                       </button>
@@ -360,13 +409,41 @@ export default function OverviewTab({ isLoadingMenu, isMounted }: OverviewTabPro
 
       <NewItemModal
         isOpen={showNewItemModal}
-        onClose={() => setShowNewItemModal(false)}
+        onClose={() => {
+          setShowNewItemModal(false);
+          setPrefillCategory(null);
+        }}
         categories={storeCategories}
+        prefillCategory={prefillCategory ?? undefined}
+        lockCategory={prefillCategory ? true : false}
       />
       <NewCategoryModal
         isOpen={showNewCategoryModal}
         onClose={() => setShowNewCategoryModal(false)}
         onCreate={handleCreateCategory}
+      />
+      <RearrangeCategoriesModal
+        isOpen={showRearrangeModal}
+        onClose={() => setShowRearrangeModal(false)}
+        categories={storeCategories}
+        onSave={updated => setCategories(updated)}
+      />
+      <RearrangeItemsModal
+        isOpen={!!rearrangeItemsCategoryId}
+        onClose={() => setRearrangeItemsCategoryId(null)}
+        items={
+          rearrangeItemsCategoryId
+            ? (storeCategories.find(cat => cat.id === rearrangeItemsCategoryId)?.items || [])
+            : []
+        }
+        onSave={updatedItems => {
+          setCategories(
+            storeCategories.map(cat =>
+              cat.id === rearrangeItemsCategoryId ? { ...cat, items: updatedItems } : cat
+            )
+          );
+          setRearrangeItemsCategoryId(null);
+        }}
       />
     </>
   );

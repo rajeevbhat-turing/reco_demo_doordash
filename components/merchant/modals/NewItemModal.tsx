@@ -13,10 +13,18 @@ interface NewItemModalProps {
   isOpen: boolean;
   onClose: () => void;
   categories: MenuCategory[];
+  prefillCategory?: string;
+  lockCategory?: boolean;
 }
 
 // New item creation side panel modal
-export default function NewItemModal({ isOpen, onClose, categories }: NewItemModalProps) {
+export default function NewItemModal({
+  isOpen,
+  onClose,
+  categories,
+  prefillCategory,
+  lockCategory = false,
+}: NewItemModalProps) {
   const [name, setName] = useState('');
   const [price, setPrice] = useState('');
   const [taxRate, setTaxRate] = useState('');
@@ -49,13 +57,24 @@ export default function NewItemModal({ isOpen, onClose, categories }: NewItemMod
   const addItem = useMerchantMenuStore(state => state.addItem);
   const updateModifier = useMerchantModifiersStore(state => state.updateModifier);
   const { modifiers } = useMerchantModifiersStore();
+  const itemsWithModifiers = useMemo(() => {
+    const ids = new Set<string>();
+    modifiers.forEach(mod => {
+      mod.usedIn?.forEach(ref => ids.add(ref.id));
+    });
+    return menuItems.filter(item => ids.has(item.id));
+  }, [menuItems, modifiers]);
   const { setSnackbar } = useGlobalContext();
 
   useEffect(() => {
     if (categoryNames.length > 0) {
-      setCategory(categoryNames[0]);
+      const target =
+        prefillCategory && categoryNames.includes(prefillCategory)
+          ? prefillCategory
+          : categoryNames[0];
+      setCategory(target);
     }
-  }, [categoryNames]);
+  }, [categoryNames, prefillCategory]);
 
   useEffect(() => {
     if (!isOpen) {
@@ -74,8 +93,17 @@ export default function NewItemModal({ isOpen, onClose, categories }: NewItemMod
       } else {
         setCategory('');
       }
+      return;
     }
-  }, [isOpen, categoryNames]);
+
+    if (prefillCategory && categoryNames.includes(prefillCategory)) {
+      setCategory(prefillCategory);
+    } else if (categoryNames.length > 0) {
+      setCategory(categoryNames[0]);
+    } else {
+      setCategory('');
+    }
+  }, [isOpen, categoryNames, prefillCategory]);
 
   // Create and persist new menu item with attached modifiers
   const handleCreate = () => {
@@ -245,7 +273,10 @@ export default function NewItemModal({ isOpen, onClose, categories }: NewItemMod
               <select
                 value={category}
                 onChange={e => setCategory(e.target.value)}
-                className="w-full border border-transparent focus:border-[#191919ff] focus:border-2 rounded-md px-3 py-2 text-sm bg-gray-50 focus-visible:ring-0 focus-visible:ring-offset-0"
+                disabled={lockCategory}
+                className={`w-full border border-transparent focus:border-[#191919ff] focus:border-2 rounded-md px-3 py-2 text-sm bg-gray-50 focus-visible:ring-0 focus-visible:ring-offset-0 ${
+                  lockCategory ? 'text-gray-500 cursor-not-allowed' : ''
+                }`}
               >
                 {categoryNames.map(cat => (
                   <option key={cat}>{cat}</option>
@@ -272,7 +303,7 @@ export default function NewItemModal({ isOpen, onClose, categories }: NewItemMod
               />
               {modifierSearch && (
                 <div className="absolute left-0 right-0 bottom-full mb-1 rounded-md border border-gray-200 bg-white shadow-lg max-h-48 overflow-y-auto z-30">
-                  {menuItems
+                  {itemsWithModifiers
                     .filter(item => item.name.toLowerCase().includes(modifierSearch.toLowerCase()))
                     .map(item => (
                       <button
@@ -299,8 +330,17 @@ export default function NewItemModal({ isOpen, onClose, categories }: NewItemMod
             {attachedModifiers.length > 0 ? (
               <div className="space-y-1 text-sm text-gray-800">
                 {attachedModifiers.map(mod => (
-                  <div key={mod.id} className="px-2 py-1 rounded-md bg-gray-100">
-                    {mod.name}
+                  <div key={mod.id} className="px-2 py-1 rounded-md bg-gray-100 flex items-center justify-between">
+                    <span>{mod.name}</span>
+                    <button
+                      onClick={() =>
+                        setAttachedModifiers(prev => prev.filter(existing => existing.id !== mod.id))
+                      }
+                      className="p-1 text-gray-500 hover:text-gray-800"
+                      aria-label="Remove modifier"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
                   </div>
                 ))}
               </div>

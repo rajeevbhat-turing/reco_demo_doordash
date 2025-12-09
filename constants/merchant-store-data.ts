@@ -104,7 +104,14 @@ export interface StoreMerchantData {
   }
 }
 
-export type ModifierStatus = 'In stock' | 'Out of stock'
+export type ModifierStatus =
+  | 'In stock'
+  | 'Out of stock'
+  | 'Out of stock - 4 hours'
+  | 'Out of stock - Today'
+  | 'Out of stock - 1 week'
+  | 'Out of stock - Custom'
+  | 'Out of stock - Indefinitely'
 
 export interface Modifier {
   id: string

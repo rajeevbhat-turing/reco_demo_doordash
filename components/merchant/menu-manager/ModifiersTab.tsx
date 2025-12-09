@@ -7,11 +7,12 @@ import { useMerchantModifiersStore } from '@/store/merchant-modifiers-store';
 import { useMerchantPersistedState } from '@/lib/hooks/useMerchantPersistedState';
 import { useMerchantMenuStore } from '@/store/merchant-menu-store';
 import { useGlobalContext } from '@/app/global-context';
-import CreateModifierModal from './CreateModifierModal';
+import CreateModifierModal from '@/components/merchant/modals/CreateModifierModal';
 import ConfirmModal from '@/components/merchant/modals/ConfirmModal';
+import type { ModifierStatus } from '@/constants/merchant-store-data';
 
 export default function ModifiersTab() {
-  const { modifiers, deleteModifier, addModifier } = useMerchantModifiersStore();
+  const { modifiers, deleteModifier, addModifier, updateModifier } = useMerchantModifiersStore();
   const { categories: menuCategories } = useMerchantMenuStore();
   const { setSnackbar } = useGlobalContext();
 
@@ -28,6 +29,7 @@ export default function ModifiersTab() {
     'All Day'
   );
   const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [editingModifierId, setEditingModifierId] = useState<string | null>(null);
   const [pendingDeleteModifier, setPendingDeleteModifier] = useState<string | null>(null);
 
   const filteredModifiers = useMemo(() => {
@@ -58,6 +60,7 @@ export default function ModifiersTab() {
     [menuCategories]
   );
 
+  // Handle create modifier
   const handleCreate = (payload: {
     name: string;
     options: string[];
@@ -82,6 +85,36 @@ export default function ModifiersTab() {
     });
     setSnackbar({ message: 'Modifier has been created', autoHideDuration: 3000 });
     setIsCreateOpen(false);
+  };
+
+  // Handle update modifier
+  const handleSave = (
+    modifierId: string,
+    payload: {
+      name: string;
+      options: string[];
+      usedIn: Array<{ id: string; name: string }>;
+      timing: string;
+      required: boolean;
+      allowMultipleOptions: boolean;
+      allowMultipleSameOption: boolean;
+      allowFreeOptions: boolean;
+      status: ModifierStatus;
+    }
+  ) => {
+    updateModifier(modifierId, {
+      name: payload.name,
+      options: payload.options,
+      usedIn: payload.usedIn,
+      timing: payload.timing,
+      required: payload.required,
+      allowMultipleOptions: payload.allowMultipleOptions,
+      allowMultipleSameOption: payload.allowMultipleSameOption,
+      allowFreeOptions: payload.allowFreeOptions,
+      status: payload.status,
+    });
+    setSnackbar({ message: 'Modifier updated', autoHideDuration: 3000 });
+    setEditingModifierId(null);
   };
 
   return (
@@ -124,6 +157,21 @@ export default function ModifiersTab() {
           onClose={() => setIsCreateOpen(false)}
           menuItems={menuItems}
           onCreate={handleCreate}
+        />
+      )}
+      {editingModifierId && (
+        <CreateModifierModal
+          isOpen={!!editingModifierId}
+          onClose={() => setEditingModifierId(null)}
+          menuItems={menuItems}
+          mode="edit"
+          modifier={modifiers.find(m => m.id === editingModifierId)}
+          onSave={handleSave}
+          onDelete={id => {
+            deleteModifier(id);
+            setSnackbar({ message: 'Modifier deleted', autoHideDuration: 3000 });
+            setEditingModifierId(null);
+          }}
         />
       )}
 
@@ -194,7 +242,7 @@ export default function ModifiersTab() {
                       <button
                         className="rounded p-1.5 text-gray-400 transition hover:text-gray-700"
                         aria-label="Edit modifier"
-                        title="Edit (coming soon)"
+                        onClick={() => setEditingModifierId(modifier.id)}
                       >
                         <Pencil className="h-4 w-4" />
                       </button>

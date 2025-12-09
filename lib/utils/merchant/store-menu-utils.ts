@@ -22,23 +22,27 @@ export function mergeMenuCategories({
   const deletedSet = deletedItemIds || new Set<string>();
   const dbMap = new Map(dbCategories.map(cat => [cat.id, cat]));
 
-  const merged: MenuCategory[] = dbCategories.map(cat => {
-    const storeCat = storeCategories.find(c => c.id === cat.id);
-    const dbItems = cat.items.filter(item => !deletedSet.has(item.id));
-    const storeOnly =
-      storeCat?.items.filter(
-        item => !deletedSet.has(item.id) && !dbItems.find(dbItem => dbItem.id === item.id)
-      ) || [];
-    return { ...cat, items: [...dbItems, ...storeOnly] };
+  const merged: MenuCategory[] = storeCategories.map(storeCat => {
+    const dbCat = dbMap.get(storeCat.id);
+    const storeItems = (storeCat.items || []).filter(item => !deletedSet.has(item.id));
+    const storeIds = new Set(storeItems.map(item => item.id));
+
+    const missingDbItems =
+      dbCat?.items.filter(item => !deletedSet.has(item.id) && !storeIds.has(item.id)) || [];
+
+    return {
+      ...(dbCat || storeCat),
+      id: storeCat.id,
+      name: storeCat.name,
+      items: [...storeItems, ...missingDbItems],
+    };
   });
 
-  // Add store-only categories not present in db (after filtering deletions)
-  storeCategories.forEach(storeCat => {
-    if (!dbMap.has(storeCat.id)) {
-      const items = storeCat.items.filter(item => !deletedSet.has(item.id));
-      // Keep store-only categories even if currently empty
-      merged.push({ ...storeCat, items });
-    }
+  dbCategories.forEach(dbCat => {
+    const exists = storeCategories.find(cat => cat.id === dbCat.id);
+    if (exists) return;
+    const items = dbCat.items.filter(item => !deletedSet.has(item.id));
+    merged.push({ ...dbCat, items });
   });
 
   return merged;
