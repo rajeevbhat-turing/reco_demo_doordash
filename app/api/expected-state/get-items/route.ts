@@ -239,6 +239,7 @@ export async function GET(request: NextRequest) {
       SELECT DISTINCT
         mi.id,
         mi.restaurant_id,
+        r.name AS restaurant_name,
         mi.category_id,
         mi.name,
         mi.description,
@@ -250,6 +251,7 @@ export async function GET(request: NextRequest) {
         mi.popular,
         mi.featured
       FROM menu_items mi
+      INNER JOIN restaurants r ON mi.restaurant_id = r.id
     `;
     
     // Join with menu_categories if filtering by categories
@@ -318,6 +320,7 @@ export async function GET(request: NextRequest) {
     const results = menuItems.map((item: any) => ({
       id: String(item.id),
       restaurantId: String(item.restaurant_id),
+      restaurantName: item.restaurant_name,
       categoryId: String(item.category_id),
       name: item.name,
       description: item.description,
