@@ -165,6 +165,8 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       dashPass: restaurantRaw.dash_pass === 1,
       isOpen: isOpen,
       openingHours: formatHours(restaurantRaw.opening_hour, restaurantRaw.closing_hour),
+      openingHour: restaurantRaw.opening_hour,
+      closingHour: restaurantRaw.closing_hour,
       street: restaurantRaw.street,
       city: restaurantRaw.city,
       state: restaurantRaw.state,

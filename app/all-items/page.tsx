@@ -10,6 +10,7 @@ import { useAllDeals } from '@/lib/hooks/use-deals';
 import type { Deal } from '@/types/deal-types';
 import { hasValidLogo } from '@/lib/utils/helperFunctions';
 import { parseDistance, calculateDeliveryTime } from '@/lib/utils/restaurant-utils';
+import { useRestaurantsOpenStatus } from '@/lib/hooks/use-restaurant-open-status';
 
 // Inner component that uses searchParams
 function AllItemsContent() {
@@ -26,6 +27,9 @@ function AllItemsContent() {
     defaultAddress?.lng,
     10 // 10 mile radius
   );
+
+  // Calculate open status based on user's local time (not server time)
+  const openStatusMap = useRestaurantsOpenStatus(restaurants);
 
   // Get parameters from the URL
   const title = decodeURIComponent(searchParams.get('title') || 'All Items');
@@ -106,7 +110,7 @@ function AllItemsContent() {
         cuisine: restaurant.cuisine,
         tags: restaurant.tags,
         dashPass: restaurant.dashPass,
-        isOpen: restaurant.isOpen,
+        isOpen: openStatusMap.get(restaurant.id) ?? restaurant.isOpen,
         discount: restaurant.discount,
         featured: restaurant.featured,
         new: restaurant.new,
@@ -118,7 +122,7 @@ function AllItemsContent() {
 
     // Default to empty array for other types
     return [];
-  }, [restaurants, section, type, allDeals]);
+  }, [restaurants, section, type, allDeals, openStatusMap]);
 
   const handleBack = () => {
     // Redirect to the appropriate home page based on the type

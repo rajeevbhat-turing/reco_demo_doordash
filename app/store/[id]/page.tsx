@@ -12,6 +12,7 @@ import {
   calculateDeliveryTime,
   parseDistance,
 } from '@/lib/utils/restaurant-utils';
+import { useRestaurantOpenStatus } from '@/lib/hooks/use-restaurant-open-status';
 import { useCartStore } from '@/store/cart-store';
 import { useAppStore } from '@/store/app-store';
 import { useVerifierStore } from '@/store/verifier-store';
@@ -120,6 +121,9 @@ export default function RestaurantPage() {
 
   // Fetch this specific restaurant immediately - we have the ID from URL
   const { data: specificRestaurant, isLoading: isLoadingRestaurant } = useRestaurant(id);
+
+  // Calculate open status based on user's local time (not server time)
+  const isRestaurantOpen = useRestaurantOpenStatus(restaurant);
 
   // Fetch menu for this restaurant in parallel
   const { data: menuData, isLoading: isLoadingMenu, error: menuError } = useRestaurantMenu(id);
@@ -601,8 +605,8 @@ export default function RestaurantPage() {
   }
 
   const handleAddToCart = (item: any) => {
-    // Check if restaurant is closed
-    if (restaurant && restaurant.isOpen === false) {
+    // Check if restaurant is closed (using client-side calculated status)
+    if (restaurant && !isRestaurantOpen) {
       return; // Prevent adding to cart when restaurant is closed
     }
 
@@ -733,6 +737,13 @@ export default function RestaurantPage() {
           </div>
         )}
       </div>
+
+      {/* Closed Banner - shown when restaurant is closed */}
+      {!isRestaurantOpen && (
+        <div className="w-full bg-amber-100 rounder-sm mt-1 px-4 py-3 flex items-center justify-between">
+          <span className="text-[#191919] font-medium">Closed</span>
+        </div>
+      )}
 
       {/* Restaurant Info */}
       <div className="max-w-7xl mx-auto px-4">
@@ -1054,7 +1065,7 @@ export default function RestaurantPage() {
                               />
                               <button
                                 className={`absolute bottom-1 right-1 w-8 h-8 rounded-full flex items-center justify-center shadow-md transition-colors ${
-                                  restaurant && restaurant.isOpen === false
+                                  restaurant && !isRestaurantOpen
                                     ? 'bg-gray-200 cursor-not-allowed'
                                     : 'bg-white hover:bg-gray-50'
                                 }`}
@@ -1062,12 +1073,12 @@ export default function RestaurantPage() {
                                   e.stopPropagation(); // Prevent opening the dialog
                                   handleAddToCart(item);
                                 }}
-                                disabled={restaurant && restaurant.isOpen === false}
+                                disabled={restaurant && !isRestaurantOpen}
                                 aria-label="Add to cart"
                               >
                                 <span
                                   className={`text-lg font-bold ${
-                                    restaurant && restaurant.isOpen === false
+                                    restaurant && !isRestaurantOpen
                                       ? 'text-gray-400'
                                       : 'text-gray-900'
                                   }`}
@@ -1212,7 +1223,7 @@ export default function RestaurantPage() {
                             />
                             <button
                               className={`absolute bottom-3 right-3 w-8 h-8 rounded-full flex items-center justify-center shadow-md transition-colors ${
-                                restaurant && restaurant.isOpen === false
+                                restaurant && !isRestaurantOpen
                                   ? 'bg-gray-200 cursor-not-allowed'
                                   : 'bg-white hover:bg-gray-50'
                               }`}
@@ -1220,12 +1231,12 @@ export default function RestaurantPage() {
                                 e.stopPropagation(); // Prevent opening the dialog
                                 handleAddToCart(item);
                               }}
-                              disabled={restaurant && restaurant.isOpen === false}
+                              disabled={restaurant && !isRestaurantOpen}
                               aria-label="Add to cart"
                             >
                               <span
                                 className={`text-lg font-bold ${
-                                  restaurant && restaurant.isOpen === false
+                                  restaurant && !isRestaurantOpen
                                     ? 'text-gray-400'
                                     : 'text-gray-900'
                                 }`}
@@ -1277,7 +1288,7 @@ export default function RestaurantPage() {
                             />
                             <button
                               className={`absolute bottom-3 right-3 w-8 h-8 rounded-full flex items-center justify-center shadow-md transition-colors ${
-                                restaurant && restaurant.isOpen === false
+                                restaurant && !isRestaurantOpen
                                   ? 'bg-gray-200 cursor-not-allowed'
                                   : 'bg-white hover:bg-gray-50'
                               }`}
@@ -1285,12 +1296,12 @@ export default function RestaurantPage() {
                                 e.stopPropagation(); // Prevent opening the dialog
                                 handleAddToCart(item);
                               }}
-                              disabled={restaurant && restaurant.isOpen === false}
+                              disabled={restaurant && !isRestaurantOpen}
                               aria-label="Add to cart"
                             >
                               <span
                                 className={`text-lg font-bold ${
-                                  restaurant && restaurant.isOpen === false
+                                  restaurant && !isRestaurantOpen
                                     ? 'text-gray-400'
                                     : 'text-gray-900'
                                 }`}
@@ -1369,7 +1380,7 @@ export default function RestaurantPage() {
                                 />
                                 <button
                                   className={`absolute bottom-1 right-1 w-8 h-8 rounded-full flex items-center justify-center shadow-md transition-colors ${
-                                    restaurant && restaurant.isOpen === false
+                                    restaurant && !isRestaurantOpen
                                       ? 'bg-gray-200 cursor-not-allowed'
                                       : 'bg-white hover:bg-gray-50'
                                   }`}
@@ -1377,12 +1388,12 @@ export default function RestaurantPage() {
                                     e.stopPropagation(); // Prevent opening the dialog
                                     handleAddToCart(item);
                                   }}
-                                  disabled={restaurant && restaurant.isOpen === false}
+                                  disabled={restaurant && !isRestaurantOpen}
                                   aria-label="Add to cart"
                                 >
                                   <span
                                     className={`text-lg font-bold ${
-                                      restaurant && restaurant.isOpen === false
+                                      restaurant && !isRestaurantOpen
                                         ? 'text-gray-400'
                                         : 'text-gray-900'
                                     }`}
