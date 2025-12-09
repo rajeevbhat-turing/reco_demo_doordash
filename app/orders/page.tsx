@@ -612,6 +612,7 @@ export default function Orders() {
           orderDate={formatOrderDate(reviewingOrder)}
           vendorLogo={orderRestaurant?.logo || undefined}
           onSubmit={handleReviewSubmit}
+          orderId={reviewingOrder.id}
         />
       )}
     </div>

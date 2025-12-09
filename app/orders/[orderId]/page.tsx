@@ -725,6 +725,7 @@ export default function OrderReceiptPage() {
           orderDate={formatOrderDate(order)}
           vendorLogo={orderRestaurant?.logo || undefined}
           onSubmit={handleReviewSubmit}
+          orderId={order.id}
         />
       )}
     </div>

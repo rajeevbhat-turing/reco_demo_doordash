@@ -19,6 +19,7 @@ interface ReviewDialogProps {
   defaultRating?: number;
   orderItems?: OrderItem[]; // Order items for selection (only for order reviews)
   orderDate?: string; // Order date/time for order reviews (e.g., "Oct 29, 2025, 4:39 PM")
+  orderId?: string; // Order ID to associate the review with a specific order
 }
 
 export default function ReviewDialog({
@@ -31,6 +32,7 @@ export default function ReviewDialog({
   onSubmit,
   orderItems,
   orderDate,
+  orderId,
 }: ReviewDialogProps) {
   const currentUser = useUserStore(state => state.currentUser);
   const { addReview } = useReviewStore();
@@ -79,6 +81,7 @@ export default function ReviewDialog({
           photos: [],
           ratedHelpfulBy: [],
           likedItems: submittedLikedItems,
+          orderId: orderId,
         });
       }
 
@@ -87,7 +90,7 @@ export default function ReviewDialog({
     }
     onClose();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [onSubmit, submittedRating, submittedText, submittedLikedItems, onClose]);
+  }, [onSubmit, submittedRating, submittedText, submittedLikedItems, onClose, orderId]);
 
   useEffect(() => {
     if (isOpen) {
@@ -255,6 +258,7 @@ export default function ReviewDialog({
         photos: [],
         ratedHelpfulBy: [],
         likedItems: [],
+        orderId: orderId,
       });
     }
     // Note: onSubmit callback will be called when user clicks "Done" on success screen
