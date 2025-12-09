@@ -12,6 +12,7 @@ import {
   calculateDeliveryTime,
   parseDistance,
 } from '@/lib/utils/restaurant-utils';
+import { useRestaurantOpenStatus } from '@/lib/hooks/use-restaurant-open-status';
 import { useCartStore } from '@/store/cart-store';
 import { useAppStore } from '@/store/app-store';
 import { useVerifierStore } from '@/store/verifier-store';
@@ -20,9 +21,9 @@ import GroupOrderDialog from '@/components/group-order-dialog';
 import StoreDetailsDialog from '@/components/store-details-dialog';
 import OutsideDeliveryAreaModal from '@/components/modals/outside-delivery-area-modal';
 import { Reviews } from '@/components/reviews';
-// import { type Deal } from '@/types/deal-types';
-// import { useDealsByRestaurantId } from '@/lib/hooks/use-deals';
-// import { Deals } from '@/components/deals';
+import { type Deal } from '@/types/deal-types';
+import { useDealsByRestaurantId } from '@/lib/hooks/use-deals';
+import { Deals } from '@/components/deals';
 import ServiceFeesInfo from '@/components/service-fees-info';
 import { getDefaultRating } from '@/utils/rating-utils';
 import {
@@ -120,6 +121,9 @@ export default function RestaurantPage() {
 
   // Fetch this specific restaurant immediately - we have the ID from URL
   const { data: specificRestaurant, isLoading: isLoadingRestaurant } = useRestaurant(id);
+
+  // Calculate open status based on user's local time (not server time)
+  const isRestaurantOpen = useRestaurantOpenStatus(restaurant);
 
   // Fetch menu for this restaurant in parallel
   const { data: menuData, isLoading: isLoadingMenu, error: menuError } = useRestaurantMenu(id);
@@ -545,36 +549,36 @@ export default function RestaurantPage() {
   };
 
   // Get deals from API
-  // const { restaurantDeals } = useDealsByRestaurantId(id || '');
+  const { restaurantDeals } = useDealsByRestaurantId(id || '');
 
   // Get first deal (excluding dashpass)
-  // const firstDeal = useMemo(() => {
-  //   return restaurantDeals.length > 0 ? restaurantDeals[0] : null;
-  // }, [restaurantDeals]);
+  const firstDeal = useMemo(() => {
+    return restaurantDeals.length > 0 ? restaurantDeals[0] : null;
+  }, [restaurantDeals]);
 
   // Format deal banner text
-  // const getDealBannerText = (deal: Deal) => {
-  //   if (
-  //     deal.discountType === 'percentage' &&
-  //     deal.minimumPurchase &&
-  //     deal.discountValue &&
-  //     deal.maximumDiscount
-  //   ) {
-  //     return `Spend $${deal.minimumPurchase}, get ${deal.discountValue}% off up to $${deal.maximumDiscount}`;
-  //   } else if (deal.discountType === 'percentage' && deal.minimumPurchase && deal.discountValue) {
-  //     return `Spend $${deal.minimumPurchase}, get ${deal.discountValue}% off`;
-  //   } else if (deal.discountType === 'fixed' && deal.minimumPurchase && deal.discountValue) {
-  //     return `Spend $${deal.minimumPurchase}, get $${deal.discountValue} off`;
-  //   } else if (deal.freeItems && deal.freeItems.length > 0 && deal.minimumPurchase) {
-  //     // If single free item, show its name; otherwise show "free items"
-  //     if (deal.freeItems.length === 1) {
-  //       return `Spend $${deal.minimumPurchase}, get ${deal.freeItems[0].name} free`;
-  //     } else {
-  //       return `Spend $${deal.minimumPurchase}, get free items`;
-  //     }
-  //   }
-  //   return deal.title;
-  // };
+  const getDealBannerText = (deal: Deal) => {
+    if (
+      deal.discountType === 'percentage' &&
+      deal.minimumPurchase &&
+      deal.discountValue &&
+      deal.maximumDiscount
+    ) {
+      return `Spend $${deal.minimumPurchase}, get ${deal.discountValue}% off up to $${deal.maximumDiscount}`;
+    } else if (deal.discountType === 'percentage' && deal.minimumPurchase && deal.discountValue) {
+      return `Spend $${deal.minimumPurchase}, get ${deal.discountValue}% off`;
+    } else if (deal.discountType === 'fixed' && deal.minimumPurchase && deal.discountValue) {
+      return `Spend $${deal.minimumPurchase}, get $${deal.discountValue} off`;
+    } else if (deal.freeItems && deal.freeItems.length > 0 && deal.minimumPurchase) {
+      // If single free item, show its name; otherwise show "free items"
+      if (deal.freeItems.length === 1) {
+        return `Spend $${deal.minimumPurchase}, get ${deal.freeItems[0].name} free`;
+      } else {
+        return `Spend $${deal.minimumPurchase}, get free items`;
+      }
+    }
+    return deal.title;
+  };
 
   // Handle close menu item dialog
   const handleCloseMenuItemDialog = useCallback(() => {
@@ -601,6 +605,11 @@ export default function RestaurantPage() {
   }
 
   const handleAddToCart = (item: any) => {
+    // Check if restaurant is closed (using client-side calculated status)
+    if (restaurant && !isRestaurantOpen) {
+      return; // Prevent adding to cart when restaurant is closed
+    }
+
     // Check if item has modifications
     if (item.modifications && item.modifications.length > 0) {
       // Item has modifications - open dialog instead
@@ -728,6 +737,13 @@ export default function RestaurantPage() {
           </div>
         )}
       </div>
+
+      {/* Closed Banner - shown when restaurant is closed */}
+      {!isRestaurantOpen && (
+        <div className="w-full bg-amber-100 rounder-sm mt-1 px-4 py-3 flex items-center justify-between">
+          <span className="text-[#191919] font-medium">Closed</span>
+        </div>
+      )}
 
       {/* Restaurant Info */}
       <div className="max-w-7xl mx-auto px-4">
@@ -1048,14 +1064,27 @@ export default function RestaurantPage() {
                                 loading="lazy"
                               />
                               <button
-                                className="absolute bottom-1 right-1 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-md hover:bg-gray-50 transition-colors"
+                                className={`absolute bottom-1 right-1 w-8 h-8 rounded-full flex items-center justify-center shadow-md transition-colors ${
+                                  restaurant && !isRestaurantOpen
+                                    ? 'bg-gray-200 cursor-not-allowed'
+                                    : 'bg-white hover:bg-gray-50'
+                                }`}
                                 onClick={e => {
                                   e.stopPropagation(); // Prevent opening the dialog
                                   handleAddToCart(item);
                                 }}
+                                disabled={restaurant && !isRestaurantOpen}
                                 aria-label="Add to cart"
                               >
-                                <span className="text-lg font-bold text-gray-900">+</span>
+                                <span
+                                  className={`text-lg font-bold ${
+                                    restaurant && !isRestaurantOpen
+                                      ? 'text-gray-400'
+                                      : 'text-gray-900'
+                                  }`}
+                                >
+                                  +
+                                </span>
                               </button>
                             </div>
                           </div>
@@ -1078,13 +1107,13 @@ export default function RestaurantPage() {
               <>
                 <div className="flex items-center justify-between mb-4 border border-gray-200 rounded-lg p-4">
                   <div>
-                    <button
+                    {/* <button
                       className="border border-gray-200 px-4 py-2 flex items-center rounded-full"
                       style={{ background: '#f1f1f1' }}
                       onClick={openGroupOrderDialog}
                     >
                       <span className="mr-1">Group Order</span>
-                    </button>
+                    </button> */}
                   </div>
                   <div className="flex items-center space-x-4">
                     <div className="bg-[#e8f7f7] rounded-lg p-4">
@@ -1141,7 +1170,7 @@ export default function RestaurantPage() {
             {!isSearching && (
               <>
                 {/* Deals & Benefits Section */}
-                {/* <Deals restaurantId={id} /> */}
+                <Deals restaurantId={id} />
 
                 {/* Featured Items */}
                 {featuredItems.length > 0 && (
@@ -1193,14 +1222,27 @@ export default function RestaurantPage() {
                               loading="lazy"
                             />
                             <button
-                              className="absolute bottom-3 right-3 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-md hover:bg-gray-50 transition-colors"
+                              className={`absolute bottom-3 right-3 w-8 h-8 rounded-full flex items-center justify-center shadow-md transition-colors ${
+                                restaurant && !isRestaurantOpen
+                                  ? 'bg-gray-200 cursor-not-allowed'
+                                  : 'bg-white hover:bg-gray-50'
+                              }`}
                               onClick={e => {
                                 e.stopPropagation(); // Prevent opening the dialog
                                 handleAddToCart(item);
                               }}
+                              disabled={restaurant && !isRestaurantOpen}
                               aria-label="Add to cart"
                             >
-                              <span className="text-lg font-bold text-gray-900">+</span>
+                              <span
+                                className={`text-lg font-bold ${
+                                  restaurant && !isRestaurantOpen
+                                    ? 'text-gray-400'
+                                    : 'text-gray-900'
+                                }`}
+                              >
+                                +
+                              </span>
                             </button>
                           </div>
                           <div className="p-3">
@@ -1245,14 +1287,27 @@ export default function RestaurantPage() {
                               loading="lazy"
                             />
                             <button
-                              className="absolute bottom-3 right-3 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-md hover:bg-gray-50 transition-colors"
+                              className={`absolute bottom-3 right-3 w-8 h-8 rounded-full flex items-center justify-center shadow-md transition-colors ${
+                                restaurant && !isRestaurantOpen
+                                  ? 'bg-gray-200 cursor-not-allowed'
+                                  : 'bg-white hover:bg-gray-50'
+                              }`}
                               onClick={e => {
                                 e.stopPropagation(); // Prevent opening the dialog
                                 handleAddToCart(item);
                               }}
+                              disabled={restaurant && !isRestaurantOpen}
                               aria-label="Add to cart"
                             >
-                              <span className="text-lg font-bold text-gray-900">+</span>
+                              <span
+                                className={`text-lg font-bold ${
+                                  restaurant && !isRestaurantOpen
+                                    ? 'text-gray-400'
+                                    : 'text-gray-900'
+                                }`}
+                              >
+                                +
+                              </span>
                             </button>
                           </div>
                           <div className="p-3">
@@ -1324,14 +1379,27 @@ export default function RestaurantPage() {
                                   className="w-full h-full object-cover rounded-lg"
                                 />
                                 <button
-                                  className="absolute bottom-1 right-1 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-md hover:bg-gray-50 transition-colors"
+                                  className={`absolute bottom-1 right-1 w-8 h-8 rounded-full flex items-center justify-center shadow-md transition-colors ${
+                                    restaurant && !isRestaurantOpen
+                                      ? 'bg-gray-200 cursor-not-allowed'
+                                      : 'bg-white hover:bg-gray-50'
+                                  }`}
                                   onClick={e => {
                                     e.stopPropagation(); // Prevent opening the dialog
                                     handleAddToCart(item);
                                   }}
+                                  disabled={restaurant && !isRestaurantOpen}
                                   aria-label="Add to cart"
                                 >
-                                  <span className="text-lg font-bold text-gray-900">+</span>
+                                  <span
+                                    className={`text-lg font-bold ${
+                                      restaurant && !isRestaurantOpen
+                                        ? 'text-gray-400'
+                                        : 'text-gray-900'
+                                    }`}
+                                  >
+                                    +
+                                  </span>
                                 </button>
                               </div>
                             </div>
@@ -1350,9 +1418,10 @@ export default function RestaurantPage() {
         isOpen={menuItemDialogOpen}
         onClose={handleCloseMenuItemDialog}
         item={selectedItem}
+        restaurant={restaurant}
       />
       {/* Group Order Dialog */}
-      <GroupOrderDialog isOpen={groupOrderDialogOpen} onClose={handleCloseGroupOrderDialog} />
+      {/* <GroupOrderDialog isOpen={groupOrderDialogOpen} onClose={handleCloseGroupOrderDialog} /> */}
       {/* Store Details Dialog */}
       <StoreDetailsDialog
         isOpen={storeDetailsDialogOpen}
@@ -1368,7 +1437,7 @@ export default function RestaurantPage() {
       />
 
       {/* Deal Banner */}
-      {/* {firstDeal && (
+      {firstDeal && (
         <div
           className="fixed bottom-0 left-0 md:left-[220px] right-0 bg-[#fef0ed] px-4 py-2 flex items-center justify-center gap-3 z-40 
         border-t border-gray-200"
@@ -1389,7 +1458,7 @@ export default function RestaurantPage() {
             </span>
           </div>
         </div>
-      )} */}
+      )}
     </div>
   );
 }

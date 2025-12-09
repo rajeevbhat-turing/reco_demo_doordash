@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useMemo } from 'react';
 import { X, ChevronDown, ChevronUp, Minus, Plus } from 'lucide-react';
 import { useCartStore } from '@/store/cart-store';
 import type { MenuItem } from '@/constants/menu-items';
-import { getDefaultRating } from '@/utils/rating-utils';
+import { getDefaultRating } from '@/lib/utils/rating-utils';
 import {
   Modification,
   ModificationOption,
@@ -39,9 +39,13 @@ interface MenuItemDialogProps {
     ratingCount?: number;
     calories?: string;
   } | null;
+  restaurant?: {
+    isOpen?: boolean;
+    name?: string;
+  } | null;
 }
 
-export default function MenuItemDialog({ isOpen, onClose, item }: MenuItemDialogProps) {
+export default function MenuItemDialog({ isOpen, onClose, item, restaurant }: MenuItemDialogProps) {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [appliedModifications, setAppliedModifications] = useState<
@@ -363,6 +367,12 @@ export default function MenuItemDialog({ isOpen, onClose, item }: MenuItemDialog
 
   const canAddToCart = useMemo((): boolean => {
     if (!item) return false;
+    
+    // Check if restaurant is closed
+    if (restaurant && restaurant.isOpen === false) {
+      return false;
+    }
+    
     const menuItem = item as MenuItem;
     if (!menuItem.modifications) return true;
 
@@ -378,7 +388,7 @@ export default function MenuItemDialog({ isOpen, onClose, item }: MenuItemDialog
     }
 
     return true;
-  }, [visibleModifications, appliedModifications, item]);
+  }, [visibleModifications, appliedModifications, item, restaurant]);
 
   if (!isOpen || !item) return null;
 
@@ -433,7 +443,7 @@ export default function MenuItemDialog({ isOpen, onClose, item }: MenuItemDialog
     );
 
     // Create the cart item to compare
-    const itemWithCategory = item as MenuItem
+    const itemWithCategory = item as MenuItem;
     const cartItem = {
       id: uniqueCartItemId, // Use unique ID that includes modifications
       itemName: item.name,
@@ -443,8 +453,8 @@ export default function MenuItemDialog({ isOpen, onClose, item }: MenuItemDialog
       appliedModifications: formattedModifications.length > 0 ? formattedModifications : undefined,
       menuCategoryId: itemWithCategory.categoryId,
       menuCategoryName: itemWithCategory.categoryName || itemWithCategory.category,
-    }
-    
+    };
+
     // Use haveSameModifications to check if item with same modifications exists
     const existingItem = cart?.items.find(i => haveSameModifications(i, cartItem as any));
 
@@ -611,6 +621,8 @@ export default function MenuItemDialog({ isOpen, onClose, item }: MenuItemDialog
                               • Select{' '}
                               {modification.select_up_to === 1
                                 ? '1'
+                                : restaurant?.name === "Fiona's Tavern"
+                                ? `up to ${Math.min(modification.select_up_to, modification.options.length)}`
                                 : `up to ${modification.select_up_to}`}
                             </span>
                           </div>
@@ -683,6 +695,8 @@ export default function MenuItemDialog({ isOpen, onClose, item }: MenuItemDialog
                                     • Select{' '}
                                     {childMod.select_up_to === 1
                                       ? '1'
+                                      : restaurant?.name === "Fiona's Tavern"
+                                      ? `up to ${Math.min(childMod.select_up_to, childMod.options.length)}`
                                       : `up to ${childMod.select_up_to}`}
                                   </span>
                                 </div>
@@ -761,15 +775,22 @@ export default function MenuItemDialog({ isOpen, onClose, item }: MenuItemDialog
             </div>
 
             {/* Add to Cart Button */}
-            <button
-              className={`flex-1 py-3 ${
-                canAddToCart ? 'bg-red-600' : 'bg-gray-300'
-              } text-white font-medium rounded-lg`}
-              disabled={!canAddToCart}
-              onClick={handleAddToCart}
-            >
-              Add to cart - ${totalPrice}
-            </button>
+            <div className="flex-1 flex flex-col gap-2">
+              {restaurant && restaurant.isOpen === false && (
+                <p className="text-sm text-red-600 font-medium text-center">
+                  This restaurant is currently closed.
+                </p>
+              )}
+              <button
+                className={`w-full py-3 ${
+                  canAddToCart ? 'bg-red-600 hover:bg-red-700' : 'bg-gray-300'
+                } text-white font-medium rounded-lg transition-colors disabled:cursor-not-allowed`}
+                disabled={!canAddToCart}
+                onClick={handleAddToCart}
+              >
+                Add to cart - ${totalPrice}
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -845,7 +866,10 @@ function ModificationOptionCard({
   // Regular option (radio or checkbox)
   return (
     <button
-      onClick={() => onSelect(!isSelected)}
+      onClick={e => {
+        e.stopPropagation();
+        onSelect(!isSelected);
+      }}
       className="w-full flex items-center gap-3 px-4 py-3 border-b border-gray-200 last:border-b-0 hover:bg-gray-50 transition-colors text-left"
     >
       {/* Radio or Checkbox */}

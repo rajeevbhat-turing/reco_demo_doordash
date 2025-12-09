@@ -2,7 +2,8 @@
 
 import { useParams, useRouter } from 'next/navigation';
 import { useOrdersStore } from '@/store/orders-store';
-import { Download, Home, ArrowLeft } from 'lucide-react';
+import { Download, Home, ArrowLeft, CalendarClock } from 'lucide-react';
+import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { useState, useEffect, useCallback } from 'react';
 import { Order } from '@/constants/order-data';
@@ -11,6 +12,15 @@ import { useRestaurant } from '@/lib/hooks/use-restaurant';
 import { useRestaurantMenu } from '@/lib/hooks/use-restaurant-menu';
 import { OrderItem as ReviewOrderItem } from '@/types/review-types';
 import { useUserStore } from '@/store/user-store';
+import {
+  getDeliveryStatus,
+  getEstimatedDeliveryTime,
+  getOrderStatusMessage,
+  getOrderUpdationMessage,
+  formatScheduledTime,
+  SCHEDULED_STATUSES,
+} from '@/lib/utils/order-utils';
+import { COMPLETED_STATUSES, getCurrentOrderStep } from '@/lib/utils/order-utils';
 import './print.css';
 
 export default function OrderReceiptPage() {
@@ -151,7 +161,12 @@ export default function OrderReceiptPage() {
     ? `${order.paymentCard.type} ...${order.paymentCard.lastFour}`
     : 'Payment method';
   const paymentDate = order.orderDate;
-  const completionDate = order.orderDate;
+
+  // Format completion date for completed orders only
+  const completionDate =
+    COMPLETED_STATUSES.includes(order.status.toLowerCase()) && order.orderStatusUpdatedAt
+      ? format(new Date(order.orderStatusUpdatedAt), "EEEE, MMMM d, yyyy 'at' h:mm a")
+      : '';
 
   // Handle download receipt
   const handleDownloadReceipt = () => {
@@ -214,58 +229,30 @@ export default function OrderReceiptPage() {
     }
   };
 
+  // Get delivery status
+  const deliveryStatus = getDeliveryStatus(
+    order.orderDate,
+    order.remainingTime,
+    order.deliveryOption?.deliveryTime || ''
+  );
+
+  // Estimated delivery time
+  const estimatedDeliveryTime =
+    order?.orderDate && order?.deliveryOption?.deliveryTime
+      ? getEstimatedDeliveryTime(
+          order.orderDate,
+          order.remainingTime || order.deliveryOption.deliveryTime
+        )
+      : '';
+
   return (
-    <div className="h-screen flex flex-col bg-gray-50 mt-16">
-      {/* Main Layout: Map + Sidebar */}
-      <div className="flex-1 flex overflow-hidden">
-        {/* Map Section */}
-        <div className="flex-1 relative bg-gray-200 no-print">
-          {/* Placeholder for map - to be implemented */}
-          <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-300">
-            <div className="text-center text-gray-500">
-              <svg
-                className="w-16 h-16 mx-auto mb-2 text-gray-400"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"
-                  clipRule="evenodd"
-                />
-              </svg>
-              <p className="text-sm">Map View (To be implemented)</p>
-            </div>
-
-            {/* Back button */}
-            <button
-              className="p-2.5 bg-white hover:bg-gray-50 rounded-full transition-colors absolute top-5 left-5 shadow-md"
-              onClick={() => router.replace('/orders')}
-            >
-              <ArrowLeft className="w-5.5 h-5.5" />
-            </button>
-
-            {/* Help button */}
-            {/* <button className="px-3 py-1.5 bg-white hover:bg-gray-50 rounded-2xl shadow-md absolute top-5 right-5 text-sm font-bold text-[#191919ff]">
-              Help
-            </button> */}
-          </div>
-
-          {/* Map Controls */}
-          <div className="absolute bottom-6 right-6 flex flex-col gap-2">
-            <button className="w-10 h-10 bg-white rounded-lg shadow-md flex items-center justify-center hover:bg-gray-50">
-              <span className="text-xl font-light">+</span>
-            </button>
-            <button className="w-10 h-10 bg-white rounded-lg shadow-md flex items-center justify-center hover:bg-gray-50">
-              <span className="text-xl font-light">−</span>
-            </button>
-          </div>
-        </div>
-
-        {/* Receipt Sidebar - Original Design */}
+    <div className="min-h-screen flex flex-col bg-gray-50 mt-16">
+      {/* Main Layout: Centered Receipt */}
+      <div className="flex-1 flex justify-center overflow-hidden py-6">
+        {/* Receipt - Centered */}
         <div
           id="receipt-sidebar"
-          className="w-[420px] bg-white border-l border-gray-200 overflow-y-auto flex-shrink-0"
+          className="w-full max-w-[480px] bg-white border border-gray-200 rounded-lg shadow-sm overflow-y-auto mx-4"
         >
           <div className="h-full">
             {/* Dashdoor Logo - Only visible in print */}
@@ -310,59 +297,165 @@ export default function OrderReceiptPage() {
               </div>
             </div>
 
+            {/* Back Button */}
+            <div className="p-4 pb-0 no-print">
+              <button
+                className="p-2 hover:bg-gray-100 rounded-full transition-colors -ml-2"
+                onClick={() => router.replace('/orders')}
+              >
+                <ArrowLeft className="w-5 h-5" />
+              </button>
+            </div>
+
             {/* Order Complete Header */}
-            <div className="p-4 border-b border-gray-200">
+            <div className="p-4 pt-2 border-b border-gray-200">
               <div className="flex items-start justify-between mb-3">
                 <div>
-                  <h2 className="text-xl font-bold mb-1">Order Complete</h2>
-                  <p className="text-gray-600 text-xs">{completionDate}</p>
+                  <h2 className="text-xl font-bold mb-1">{getOrderStatusMessage(order.status)}</h2>
+                  {/* Scheduled Order Info */}
+                  {SCHEDULED_STATUSES.includes(order.status?.toLowerCase()) &&
+                    order?.deliveryOption?.scheduledDate && (
+                      <p className="text-[#191919ff] text-sm font-semibold">
+                        Delivery:{' '}
+                        {formatScheduledTime(
+                          order.deliveryOption.scheduledDate,
+                          order.deliveryOption.scheduledTimeSlot
+                        )}
+                      </p>
+                    )}
+                  {/* In Progress Order Info */}
+                  {!COMPLETED_STATUSES.includes(order.status?.toLowerCase()) &&
+                    !SCHEDULED_STATUSES.includes(order.status?.toLowerCase()) &&
+                    order?.orderDate &&
+                    order?.deliveryOption?.deliveryTime && (
+                      <p
+                        className={`${!estimatedDeliveryTime?.includes('-') ? 'text-gray-600' : 'text-[#191919ff]'} text-sm font-semibold`}
+                      >
+                        {deliveryStatus ? (
+                          <span
+                            className={`bg 
+                            ${deliveryStatus === 'Late' ? 'bg-yellow-200 text-yellow-600' : 'bg-green-100 text-green-600'} 
+                            text-xs font-medium px-1 py-0.5 rounded-md mr-1`}
+                          >
+                            {deliveryStatus}
+                          </span>
+                        ) : null}
+                        {!estimatedDeliveryTime?.includes('-') ? 'Arrives at ' : ''}
+                        {estimatedDeliveryTime}
+                      </p>
+                    )}
+                  {completionDate && <p className="text-gray-600 text-xs">{completionDate}</p>}
                 </div>
                 <div className="w-10 h-10 bg-gray-100 rounded flex items-center justify-center">
-                  <img src="/placeholder-logo.svg" alt="Store" width={24} height={24} />
+                  <img
+                    src={orderRestaurant?.logo || '/placeholder-logo.svg'}
+                    alt="Store"
+                    className="w-full h-full object-cover"
+                  />
                 </div>
               </div>
+
+              {/* Scheduled Order Indicator */}
+              {order.status === 'scheduled' && (
+                <div className="flex items-center gap-3 mb-3 p-3 bg-blue-50 rounded-lg no-print">
+                  <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                    <CalendarClock className="w-5 h-5 text-blue-600" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-blue-900">
+                      Your order is scheduled
+                    </p>
+                    <p className="text-xs text-blue-700">
+                      We&apos;ll start preparing it closer to your delivery time
+                    </p>
+                  </div>
+                </div>
+              )}
 
               {/* Order Status Timeline - Hidden in print */}
-              <div className="flex items-center justify-between mb-3 no-print">
-                <div className="w-8 h-8 bg-black rounded-full flex items-center justify-center text-white">
-                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M10 2a8 8 0 100 16 8 8 0 000-16zm0 14a6 6 0 110-12 6 6 0 010 12z" />
-                  </svg>
-                </div>
-                <div className="flex-1 h-0.5 bg-black mx-1"></div>
-                <div className="w-8 h-8 bg-black rounded-full flex items-center justify-center text-white">
-                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 11.846 4.632 14 6.414 14H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 3H6.28l-.31-1.243A1 1 0 005 1H3zM16 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM6.5 18a1.5 1.5 0 100-3 1.5 1.5 0 000 3z" />
-                  </svg>
-                </div>
-                <div className="flex-1 h-0.5 bg-black mx-1"></div>
-                <div className="w-8 h-8 bg-black rounded-full flex items-center justify-center text-white">
-                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M8 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM15 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z" />
-                    <path d="M3 4a1 1 0 00-1 1v10a1 1 0 001 1h1.05a2.5 2.5 0 014.9 0H10a1 1 0 001-1V5a1 1 0 00-1-1H3zM14 7a1 1 0 00-1 1v6.05A2.5 2.5 0 0115.95 16H17a1 1 0 001-1v-5a1 1 0 00-.293-.707l-2-2A1 1 0 0015 7h-1z" />
-                  </svg>
-                </div>
-                <div className="flex-1 h-0.5 bg-black mx-1"></div>
-                <div className="w-8 h-8 bg-black rounded-full flex items-center justify-center text-white">
-                  <Home className="w-4 h-4" />
-                </div>
-              </div>
+              {/* Show timeline for in-progress orders, hide for scheduled/cancelled/returned/abandoned */}
+              {order.status !== 'scheduled' &&
+                order.status !== 'cancelled' &&
+                order.status !== 'returned' &&
+                order.status !== 'abandoned' && (
+                  <div className="flex items-center justify-between mb-3 no-print">
+                    <div className="w-8 h-8 bg-black rounded-full flex items-center justify-center text-white">
+                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M10 2a8 8 0 100 16 8 8 0 000-16zm0 14a6 6 0 110-12 6 6 0 010 12z" />
+                      </svg>
+                    </div>
+                    {/* Progress Line 1 */}
+                    <div
+                      className={`flex-1 h-0.5 mx-1 ${
+                        getCurrentOrderStep(order.status) === 1
+                          ? 'bg-gradient-to-r from-black from-50% to-gray-200 to-50%'
+                          : getCurrentOrderStep(order.status) >= 2
+                            ? 'bg-black'
+                            : 'bg-gray-200'
+                      }`}
+                    ></div>
+                    <div
+                      className={`w-8 h-8 bg-${getCurrentOrderStep(order.status) < 2 ? 'gray-200' : 'black'} rounded-full flex items-center justify-center text-white`}
+                    >
+                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 11.846 4.632 14 6.414 14H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 3H6.28l-.31-1.243A1 1 0 005 1H3zM16 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM6.5 18a1.5 1.5 0 100-3 1.5 1.5 0 000 3z" />
+                      </svg>
+                    </div>
+                    {/* Progress Line 2 */}
+                    <div
+                      className={`flex-1 h-0.5 mx-1 ${
+                        getCurrentOrderStep(order.status) === 1
+                          ? 'bg-gray-200'
+                          : getCurrentOrderStep(order.status) === 2
+                            ? 'bg-gradient-to-r from-black from-50% to-gray-200 to-50%'
+                            : getCurrentOrderStep(order.status) >= 3
+                              ? 'bg-black'
+                              : 'bg-gray-200'
+                      }`}
+                    ></div>
+                    <div
+                      className={`w-8 h-8 bg-${getCurrentOrderStep(order.status) < 3 ? 'gray-200' : 'black'} rounded-full flex items-center justify-center text-white`}
+                    >
+                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M8 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM15 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z" />
+                        <path d="M3 4a1 1 0 00-1 1v10a1 1 0 001 1h1.05a2.5 2.5 0 014.9 0H10a1 1 0 001-1V5a1 1 0 00-1-1H3zM14 7a1 1 0 00-1 1v6.05A2.5 2.5 0 0115.95 16H17a1 1 0 001-1v-5a1 1 0 00-.293-.707l-2-2A1 1 0 0015 7h-1z" />
+                      </svg>
+                    </div>
+                    {/* Progress Line 3 */}
+                    <div
+                      className={`flex-1 h-0.5 mx-1 ${
+                        getCurrentOrderStep(order.status) <= 2
+                          ? 'bg-gray-200'
+                          : getCurrentOrderStep(order.status) === 3
+                            ? 'bg-gradient-to-r from-black from-50% to-gray-200 to-50%'
+                            : 'bg-black'
+                      }`}
+                    ></div>
+                    <div
+                      className={`w-8 h-8 bg-${getCurrentOrderStep(order.status) < 4 ? 'gray-200' : 'black'} rounded-full flex items-center justify-center text-white`}
+                    >
+                      <Home className="w-4 h-4" />
+                    </div>
+                  </div>
+                )}
 
-              <p className="text-center text-xs text-gray-600 mb-3 no-print">
-                Your order is complete. Enjoy!
+              <p className="text-xs text-gray-600 mb-3 no-print">
+                {getOrderUpdationMessage(order.status, getStoreName(order))}
               </p>
               <p className="hidden print:block text-left text-xs text-gray-600 mb-3">
-                Your order is complete. Enjoy!
+                {getOrderUpdationMessage(order.status, getStoreName(order))}
               </p>
 
               {/* Download Receipt Button */}
-              <button
-                onClick={handleDownloadReceipt}
-                className="w-full py-2 border border-gray-300 rounded-lg flex items-center justify-center gap-2 hover:bg-gray-50 transition-colors text-sm no-print"
-              >
-                <Download className="w-4 h-4" />
-                <span className="font-medium">Download receipt</span>
-              </button>
+              {order.status?.toLowerCase() === 'delivered' && (
+                <button
+                  onClick={handleDownloadReceipt}
+                  className="w-full py-2 border border-gray-300 rounded-lg flex items-center justify-center gap-2 hover:bg-gray-50 transition-colors text-sm no-print"
+                >
+                  <Download className="w-4 h-4" />
+                  <span className="font-medium">Download receipt</span>
+                </button>
+              )}
             </div>
 
             {/* Dasher Info */}
@@ -393,12 +486,11 @@ export default function OrderReceiptPage() {
             <div className="px-4 py-3 border-b border-gray-200">
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
-                  <div className="w-10 h-10 bg-gray-100 rounded flex items-center justify-center">
+                  <div className="w-10 h-10 bg-gray-100 rounded flex items-center justify-center overflow-hidden">
                     <img
-                      src="/placeholder-logo.svg"
+                      src={orderRestaurant?.logo || '/placeholder-logo.svg'}
                       alt={getStoreName(order)}
-                      width={24}
-                      height={24}
+                      className="w-full h-full object-cover"
                     />
                   </div>
                   <div>
@@ -410,7 +502,7 @@ export default function OrderReceiptPage() {
                 </div>
 
                 {/* Rate store button - only show if order is not reviewed */}
-                {!isOrderReviewed && (
+                {!isOrderReviewed && order.status?.toLowerCase() === 'delivered' && (
                   <button
                     onClick={handleRateStore}
                     className="px-3 py-1.5 bg-gray-200 hover:bg-gray-300 rounded-2xl shadow-sm text-sm font-bold text-[#191919ff]"
@@ -423,46 +515,66 @@ export default function OrderReceiptPage() {
               {/* Order Items */}
               {order.items && order.items.length > 0 && (
                 <div className="space-y-2">
-                  {order.items.map(item => (
-                    <div key={item.id} className="flex items-start gap-2">
-                      <div className="w-10 h-10 bg-gray-100 rounded flex items-center justify-center flex-shrink-0">
-                        <img src="/placeholder.svg" alt={item.name} width={24} height={24} />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex justify-between items-start gap-2">
-                          <p className="text-sm font-medium truncate">
-                            {item.quantity}x {item.name}
-                          </p>
-                          <div className="flex items-center gap-2 flex-shrink-0">
-                            {(() => {
-                              const finalPrice =
-                                (item as any).final_price !== undefined
-                                  ? (item as any).final_price
-                                  : item.price;
-                              const originalTotal = item.price * item.quantity;
-                              const finalTotal = finalPrice * item.quantity;
-                              const hasDiscount = finalTotal < originalTotal;
+                  {order.items.map(item => {
+                    // Find menu item image from restaurant menu data
+                    // Order item IDs may include modification hash suffix (e.g., "123-abcdef")
+                    // Extract base ID by matching the start of the item ID with menu item IDs
+                    const menuItem = orderMenuData?.menuItems.find(mi => {
+                      const menuItemId = mi.id?.toString();
+                      const orderItemId = item.id?.toString();
+                      // Check if order item ID starts with the menu item ID
+                      // This handles both exact matches and IDs with modification suffixes
+                      return (
+                        orderItemId === menuItemId || orderItemId?.startsWith(menuItemId + '-')
+                      );
+                    });
+                    const itemImage = menuItem?.image || (item as any).image || '/placeholder.svg';
 
-                              return hasDiscount ? (
-                                <>
-                                  <span className="text-sm font-medium text-[#eb1700ff]">
+                    return (
+                      <div key={item.id} className="flex items-start gap-2">
+                        <div className="w-10 h-10 bg-gray-100 rounded flex items-center justify-center flex-shrink-0 overflow-hidden">
+                          <img
+                            src={itemImage}
+                            alt={item.name}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex justify-between items-start gap-2">
+                            <p className="text-sm font-medium truncate">
+                              {item.quantity}x {item.name}
+                            </p>
+                            <div className="flex items-center gap-2 flex-shrink-0">
+                              {(() => {
+                                const finalPrice =
+                                  (item as any).final_price !== undefined
+                                    ? (item as any).final_price
+                                    : item.price;
+                                const originalTotal = item.price * item.quantity;
+                                const finalTotal = finalPrice * item.quantity;
+                                const hasDiscount = finalTotal < originalTotal;
+
+                                return hasDiscount ? (
+                                  <>
+                                    <span className="text-sm font-medium text-[#eb1700ff]">
+                                      ${finalTotal.toFixed(2)}
+                                    </span>
+                                    <span className="text-sm text-[#606060ff] line-through">
+                                      ${originalTotal.toFixed(2)}
+                                    </span>
+                                  </>
+                                ) : (
+                                  <span className="text-sm font-medium text-gray-900">
                                     ${finalTotal.toFixed(2)}
                                   </span>
-                                  <span className="text-sm text-[#606060ff] line-through">
-                                    ${originalTotal.toFixed(2)}
-                                  </span>
-                                </>
-                              ) : (
-                                <span className="text-sm font-medium text-gray-900">
-                                  ${finalTotal.toFixed(2)}
-                                </span>
-                              );
-                            })()}
+                                );
+                              })()}
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
             </div>
@@ -589,9 +701,7 @@ export default function OrderReceiptPage() {
                 </div>
                 <div>
                   <p className="font-semibold text-sm">
-                    {deliveryPreference === 'location'
-                      ? 'Meet at a location'
-                      : 'Leave it at my door'}
+                    {deliveryPreference === 'meet' ? 'Meet at a location' : 'Leave it at my door'}
                   </p>
                   {deliveryInstructions && (
                     <p className="text-xs text-gray-600">{deliveryInstructions}</p>
@@ -615,6 +725,7 @@ export default function OrderReceiptPage() {
           orderDate={formatOrderDate(order)}
           vendorLogo={orderRestaurant?.logo || undefined}
           onSubmit={handleReviewSubmit}
+          orderId={order.id}
         />
       )}
     </div>

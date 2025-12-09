@@ -75,7 +75,10 @@ export default function AddressesModal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
+      data-testid="addresses-modal-backdrop"
+    >
       <div
         ref={dialogRef}
         className="relative bg-white rounded-2xl w-full max-w-md mx-4 max-h-[90vh] flex flex-col pb-4"
@@ -198,9 +201,14 @@ export default function AddressesModal({
                     className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
                       selectedAddressId === address.id ? 'border-red-500' : 'border-gray-300'
                     }`}
+                    data-testid={`radio-indicator-${address.id}`}
+                    data-selected={selectedAddressId === address.id}
                   >
                     {selectedAddressId === address.id && (
-                      <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+                      <div
+                        className="w-3 h-3 bg-red-500 rounded-full"
+                        data-testid={`radio-dot-${address.id}`}
+                      ></div>
                     )}
                   </div>
                 </div>
@@ -236,6 +244,7 @@ export default function AddressesModal({
                       onEditAddress(address.id);
                     }
                   }}
+                  data-testid={`edit-address-button-${address.id}`}
                 >
                   <Edit2 className="w-5 h-5 text-gray-600" />
                 </button>

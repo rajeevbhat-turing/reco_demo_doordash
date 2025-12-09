@@ -322,6 +322,20 @@ export const useUserStore = create<UserStore>()(
             return false;
           }
 
+          // Validate password strength
+          // Import validation function dynamically to avoid circular dependencies
+          const hasUppercase = /[A-Z]/.test(newPassword);
+          const hasLowercase = /[a-z]/.test(newPassword);
+          const hasNumber = /[0-9]/.test(newPassword);
+          const hasSpecialChar = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(newPassword);
+          const isLongEnough = newPassword.length >= 10;
+          const isNotReused = newPassword !== oldPassword;
+
+          if (!hasUppercase || !hasLowercase || !hasNumber || !hasSpecialChar || !isLongEnough || !isNotReused) {
+            console.error('Password does not meet security requirements');
+            return false;
+          }
+
           // Update password and ensure current user is in users array
           const updatedUser = { ...state.currentUser, password: newPassword };
           const userExists = state.users.some(u => u.id === state.currentUser!.id);

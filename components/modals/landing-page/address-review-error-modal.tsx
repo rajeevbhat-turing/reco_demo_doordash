@@ -49,7 +49,10 @@ export default function AddressReviewErrorModal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4"
+      data-testid="address-review-error-modal-backdrop"
+    >
       <div
         ref={dialogRef}
         className="relative bg-white rounded-xl w-full max-w-md md:max-w-xl mx-4"

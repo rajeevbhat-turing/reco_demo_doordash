@@ -73,6 +73,7 @@ export default function CustomerPhotosScrollable({
           ref={scrollContainerRef}
           className="flex gap-4 overflow-x-auto scrollbar-hide pr-4"
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+          data-testid="customer-photos-scroll-container"
         >
           {photos.map((photo, index) => {
             const photoInfo = photosWithInfo?.[index];

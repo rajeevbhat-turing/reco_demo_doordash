@@ -166,8 +166,6 @@ export async function POST(request: NextRequest) {
       })),
     };
 
-    console.log(`✅ OTP generated for user: ${userData.email} (ID: ${userData.id})`);
-
     return NextResponse.json({
       success: true,
       data: {

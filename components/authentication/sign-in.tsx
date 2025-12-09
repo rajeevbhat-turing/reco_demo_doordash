@@ -135,8 +135,6 @@ export default function SignIn({
 
     try {
       const { otp, user } = await generateOTP({ email: formData.email });
-      // Print the OTP to the console
-      console.log('OTP:', otp);
 
       // Save the OTP to the form data
       handleFormDataChange('otp', otp);
@@ -161,9 +159,6 @@ export default function SignIn({
     try {
       // Call generate OTP API
       const { otp, user } = await generateOTP({ email: formData.email });
-
-      // Print the OTP to the console
-      console.log('OTP:', otp);
 
       // Save the OTP to the form data
       handleFormDataChange('otp', otp);
@@ -620,6 +615,7 @@ export default function SignIn({
               onClick={clearEmail}
               className="absolute right-3 top-1/2 transform -translate-y-1/2 text-white hover:opacity-80 
               transition-colors bg-black rounded-full p-1"
+              aria-label="Clear email"
             >
               <X className="h-3 w-3" />
             </button>

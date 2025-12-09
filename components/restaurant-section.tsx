@@ -4,7 +4,8 @@ import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import type { Restaurant } from '@/constants/restaurants';
-import { getDefaultRating } from '@/utils/rating-utils';
+import { getDefaultRating } from '@/lib/utils/rating-utils';
+import { useRestaurantsOpenStatus } from '@/lib/hooks/use-restaurant-open-status';
 
 interface RestaurantSectionProps {
   title: string;
@@ -23,6 +24,9 @@ export default function RestaurantSection({
   const [_cardWidth, setCardWidth] = useState(350);
   const [_visibleCards, setVisibleCards] = useState(3);
   const [_containerWidth, setContainerWidth] = useState(0);
+
+  // Calculate open status based on user's local time
+  const openStatusMap = useRestaurantsOpenStatus(restaurants);
 
   // Calculate how many cards can fit and their optimal width
   useEffect(() => {
@@ -114,7 +118,11 @@ export default function RestaurantSection({
                       <span className="mx-1">•</span>
                     </>
                   )}
-                  <span>{restaurant.time}</span>
+                  <span>
+                    {openStatusMap.get(restaurant.id) ?? restaurant.isOpen
+                      ? restaurant.time
+                      : 'Closed'}
+                  </span>
                 </div>
 
                 <div className="text-sm text-gray-500">{restaurant.deliveryFee}</div>

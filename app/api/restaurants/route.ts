@@ -135,6 +135,8 @@ export async function GET(request: NextRequest) {
         dashPass: r.dash_pass === 1,
         isOpen: isOpen,
         openingHours: formatHours(r.opening_hour, r.closing_hour),
+        openingHour: r.opening_hour,
+        closingHour: r.closing_hour,
         street: r.street,
         city: r.city,
         state: r.state,

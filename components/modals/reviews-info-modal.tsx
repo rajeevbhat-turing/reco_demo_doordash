@@ -45,6 +45,7 @@ export default function ReviewsInfoModal({ isOpen, onClose }: ReviewsInfoModalPr
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
       onClick={handleBackdropClick}
+      data-testid="reviews-info-modal-backdrop"
     >
       <div
         ref={modalRef}
@@ -72,7 +73,7 @@ export default function ReviewsInfoModal({ isOpen, onClose }: ReviewsInfoModalPr
         {/* Content Section */}
         <div className="px-5 pt-4">
           {/* Title */}
-          <h2 className="text-3xl font-bold text-[#191919ff] mb-6">Public reviews on Dashdoor</h2>
+          <h2 className="text-3xl font-bold text-[#191919ff] mb-6">Public reviews on DashDoor</h2>
 
           {/* Bullet Points */}
           <div className="space-y-2 mb-6 pl-3">

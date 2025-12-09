@@ -117,7 +117,10 @@ export default function OrderConfirmationModal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
+      data-testid="order-confirmation-modal-backdrop"
+    >
       <div ref={dialogRef} className="relative bg-white rounded-lg w-full max-w-md mx-4 p-6">
         <button
           onClick={handleClose}

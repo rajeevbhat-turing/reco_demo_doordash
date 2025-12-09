@@ -9,6 +9,7 @@ import { Label } from '@/components/ui/label';
 import { useUserStore } from '@/store/user-store';
 import { DashDoorLogoMark, DashDoorWordMark } from '@/components/common/Icons';
 import { useUser } from '@/lib/hooks/use-user';
+import { validatePassword, getPasswordErrorMessage } from '@/lib/utils/password-validation';
 
 // Password Reset Header Component
 function PasswordResetHeader() {
@@ -49,17 +50,18 @@ export default function PasswordResetPage() {
     password: false,
     confirmPassword: false,
   });
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [errors, setErrors] = useState<Record<string, string | string[]>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
   // Validates password field
-  const validatePassword = (password: string) => {
+  const validatePasswordField = (password: string): string | string[] => {
     if (!password.trim()) {
       return 'Password is required';
     }
-    if (password.length < 10) {
-      return 'Password must be atleast 10 characters';
+    const validation = validatePassword(password);
+    if (!validation.isValid) {
+      return validation.errors; // Return array of errors for list display
     }
     return '';
   };
@@ -84,7 +86,7 @@ export default function PasswordResetPage() {
 
     // Validate on change
     if (field === 'password') {
-      const passwordError = validatePassword(value);
+      const passwordError = validatePasswordField(value);
       setErrors(prev => ({ ...prev, password: passwordError }));
 
       // Always validate confirm password when password changes
@@ -103,10 +105,10 @@ export default function PasswordResetPage() {
 
   // Validates form fields on submit
   const validateForm = () => {
-    const newErrors: Record<string, string> = {};
+    const newErrors: Record<string, string | string[]> = {};
 
     // Validate password field
-    const passwordError = validatePassword(formData.password);
+    const passwordError = validatePasswordField(formData.password);
     if (passwordError) {
       newErrors.password = passwordError;
     }
@@ -279,11 +281,24 @@ export default function PasswordResetPage() {
                 </div>
               </div>
               {errors.password && (
-                <div className="flex mt-1 text-[#b71000ff]">
-                  <div className="h-4 w-4 mr-2 flex-shrink-0 rounded-full flex items-center justify-center bg-[#b71000ff]">
-                    <span className="text-white text-xs font-medium">!</span>
-                  </div>
-                  <span className="text-sm font-medium">{errors.password}</span>
+                <div className="mt-2 space-y-1">
+                  {Array.isArray(errors.password) ? (
+                    errors.password.map((error, index) => (
+                      <div key={index} className="flex items-start text-[#b71000ff]">
+                        <div className="h-4 w-4 mr-2 flex-shrink-0 rounded-full flex items-center justify-center bg-[#b71000ff] mt-0.5">
+                          <span className="text-white text-xs font-medium">!</span>
+                        </div>
+                        <span className="text-sm font-medium">{error}</span>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="flex items-start text-[#b71000ff]">
+                      <div className="h-4 w-4 mr-2 flex-shrink-0 rounded-full flex items-center justify-center bg-[#b71000ff] mt-0.5">
+                        <span className="text-white text-xs font-medium">!</span>
+                      </div>
+                      <span className="text-sm font-medium">{errors.password}</span>
+                    </div>
+                  )}
                 </div>
               )}
             </div>

@@ -70,7 +70,10 @@ export default function AddressTypeModal({
   const fullAddress = `${addressData.street}, ${addressData.city} ${addressData.state} ${addressData.zipCode}`;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4"
+      data-testid="address-type-modal-backdrop"
+    >
       <div ref={dialogRef} className="relative bg-white rounded-2xl w-full max-w-md mx-4">
         <div className="p-6">
           {/* Close button */}

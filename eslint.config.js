@@ -4,6 +4,8 @@ import typescriptEslint from '@typescript-eslint/eslint-plugin';
 import typescriptParser from '@typescript-eslint/parser';
 import prettier from 'eslint-plugin-prettier';
 import prettierConfig from 'eslint-config-prettier';
+import vitest from 'eslint-plugin-vitest';
+import globals from 'globals';
 
 const compat = new FlatCompat({
   baseDirectory: import.meta.dirname,
@@ -28,6 +30,7 @@ const eslintConfig = [
     plugins: {
       '@typescript-eslint': typescriptEslint,
       prettier: prettier,
+      vitest: vitest,
     },
     rules: {
       '@typescript-eslint/no-unused-vars': [
@@ -44,6 +47,21 @@ const eslintConfig = [
       'no-var': 'error',
       'prettier/prettier': ['error', { endOfLine: 'auto' }],
       '@next/next/no-img-element': 'off', // Ignore the eslint warning about using the html img element
+    },
+  },
+  {
+    files: ['**/*.{test,spec}.{js,jsx,ts,tsx}'],
+    languageOptions: {
+      globals: {
+        ...globals.node,
+        ...vitest.environments.env.globals,
+      },
+    },
+    plugins: {
+      vitest: vitest,
+    },
+    rules: {
+      ...vitest.configs.recommended.rules,
     },
   },
 ];

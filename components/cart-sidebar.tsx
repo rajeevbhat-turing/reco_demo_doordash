@@ -276,6 +276,15 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
   };
 
   const handleAddComplementItem = (item: any) => {
+    // Check if restaurant is closed
+    if (
+      currentCart?.storeCategory === 'restaurant' &&
+      restaurant &&
+      restaurant.isOpen === false
+    ) {
+      return; // Prevent adding items when restaurant is closed
+    }
+
     // Verify the item belongs to the same restaurant as the current cart
     if (
       currentCart &&
@@ -307,6 +316,15 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
 
   // Handle navigation to checkout
   const handleContinueToCheckout = () => {
+    // Check if restaurant is closed
+    if (
+      currentCart?.storeCategory === 'restaurant' &&
+      restaurant &&
+      restaurant.isOpen === false
+    ) {
+      return; // Prevent navigation to checkout when restaurant is closed
+    }
+
     if (currentCart) {
       // Pass cart identifier via query params for multi-tab support
       router.push(`/checkout?category=${currentCart.storeCategory}&storeId=${currentCart.storeId}`);
@@ -316,6 +334,15 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
     }
     onClose(); // Close the cart sidebar
   };
+
+  // Check if restaurant is closed (for restaurant carts only)
+  const isRestaurantClosed = useMemo(() => {
+    return (
+      currentCart?.storeCategory === 'restaurant' &&
+      restaurant &&
+      restaurant.isOpen === false
+    );
+  }, [currentCart?.storeCategory, restaurant]);
 
   // Handle removing a cart from other carts section
   const handleRemoveCart = (storeId: string, storeCategory: string) => {
@@ -371,7 +398,7 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
 
   if (userCarts.length === 0 && isOpen) {
     return (
-      <div ref={sidebarRef} className={cartClasses}>
+      <div ref={sidebarRef} className={cartClasses} data-testid="cart-sidebar">
         <div className="p-4 border-b flex items-center justify-between">
           <h2 className="text-lg font-bold">Your cart</h2>
           <button onClick={onClose} className="p-2 rounded-full hover:bg-gray-100">
@@ -389,7 +416,7 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
   const displayThreshold = categoryConfig.freeDeliveryThreshold;
 
   return (
-    <div ref={sidebarRef} className={cartClasses}>
+    <div ref={sidebarRef} className={cartClasses} data-testid="cart-sidebar">
       {/* Header */}
       <div className="p-4 border-b flex items-center justify-between">
         <button onClick={onClose} className="p-2">
@@ -504,9 +531,21 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
             )}
 
             {/* Continue button */}
+            {isRestaurantClosed && (
+              <div className="mb-3 p-3 bg-red-50 border border-red-200 rounded-lg">
+                <p className="text-sm text-red-600 font-medium text-center">
+                  This restaurant is currently closed. Please schedule your order for later.
+                </p>
+              </div>
+            )}
             <button
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-full mb-3 text-lg"
+              className={`w-full font-medium py-3 rounded-full mb-3 text-lg transition-colors ${
+                isRestaurantClosed
+                  ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                  : 'bg-blue-600 hover:bg-blue-700 text-white'
+              }`}
               onClick={handleContinueToCheckout}
+              disabled={isRestaurantClosed}
             >
               Continue
             </button>
@@ -529,9 +568,21 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
                 <ChevronRight className="h-5 w-5 ml-1" />
               </div>
             </div>
+            {isRestaurantClosed && (
+              <div className="mb-3 p-3 bg-red-50 border border-red-200 rounded-lg">
+                <p className="text-sm text-red-600 font-medium text-center">
+                  This restaurant is currently closed. Please schedule your order for later.
+                </p>
+              </div>
+            )}
             <button
-              className="w-full bg-[#e03a19] text-white py-3 rounded-full font-medium"
+              className={`w-full py-3 rounded-full font-medium transition-colors ${
+                isRestaurantClosed
+                  ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                  : 'bg-[#e03a19] hover:bg-[#c83216] text-white'
+              }`}
               onClick={handleContinueToCheckout}
+              disabled={isRestaurantClosed}
             >
               Continue
             </button>
@@ -660,10 +711,19 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
                           loading="lazy"
                         />
                         <button
-                          className="absolute bottom-1 right-1 bg-white rounded-full p-1 shadow-md hover:bg-gray-50 transition-colors"
+                          className={`absolute bottom-1 right-1 rounded-full p-1 shadow-md transition-colors ${
+                            isRestaurantClosed
+                              ? 'bg-gray-200 cursor-not-allowed'
+                              : 'bg-white hover:bg-gray-50'
+                          }`}
                           onClick={() => handleAddComplementItem(item)}
+                          disabled={isRestaurantClosed}
                         >
-                          <Plus className="h-3 w-3" />
+                          <Plus
+                            className={`h-3 w-3 ${
+                              isRestaurantClosed ? 'text-gray-400' : 'text-gray-900'
+                            }`}
+                          />
                         </button>
                       </div>
                       <h4 className="text-xs text-center line-clamp-2 mb-1">{item.name}</h4>
@@ -691,6 +751,7 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
         <MenuItemDialog
           isOpen={menuItemDialogOpen}
           onClose={handleCloseMenuItemDialog}
+          restaurant={restaurant}
           item={{
             ...selectedItem,
             image: selectedItem.image || '',

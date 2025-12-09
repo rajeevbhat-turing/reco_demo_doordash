@@ -138,7 +138,11 @@ export default function VerticalListPage({
                       </>
                     )}
 
-                    {item.time && <span>{item.time}</span>}
+                    {item.isOpen === false ? (
+                      <span className="text-red-600 font-medium">Closed</span>
+                    ) : (
+                      item.time && <span>{item.time}</span>
+                    )}
 
                     {item.priceRange && (
                       <>
@@ -190,17 +194,6 @@ export default function VerticalListPage({
                   item.tags.map((tag, index) => (
                     <span key={index} className="text-xs bg-gray-100 px-2 py-1 rounded-full">
                       {tag}
-                    </span>
-                  ))}
-
-                {item.isOpen !== undefined &&
-                  (item.isOpen ? (
-                    <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">
-                      Open
-                    </span>
-                  ) : (
-                    <span className="text-xs bg-red-100 text-red-800 px-2 py-1 rounded-full">
-                      Closed
                     </span>
                   ))}
 

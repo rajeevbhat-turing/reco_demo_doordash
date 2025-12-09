@@ -149,24 +149,18 @@ export default function CheckoutPage() {
 
     items.forEach(item => {
       let itemId = typeof item.id === 'string' ? item.id : item.id.toString();
-      const itemName = (item.itemName || '').toLowerCase().trim();
 
       // If item ID starts with store ID, remove it before checking
       if (appliedDeal.restaurantId && itemId.startsWith(appliedDeal.restaurantId + '-')) {
         itemId = itemId.substring(appliedDeal.restaurantId.length + 1);
       }
 
-      // Check if this item matches any free item (by ID and name)
+      // Check if this item matches any free item
       let matchedFreeItemId: string | null = null;
       for (const freeId of freeItemIds) {
         const matchesById = itemId.startsWith(freeId + '-') || itemId === freeId;
-        const freeItemName = appliedDeal.freeItems
-          ?.find((fi: any) => fi.id === freeId)
-          ?.name.toLowerCase()
-          .trim();
-        const matchesByName = freeItemName && itemName === freeItemName;
 
-        if (matchesById && matchesByName) {
+        if (matchesById) {
           matchedFreeItemId = freeId;
           break;
         }
@@ -449,6 +443,16 @@ export default function CheckoutPage() {
   };
 
   const handlePlaceOrder = () => {
+    // Check if restaurant is closed (for restaurant orders only)
+    if (
+      currentCategory === 'restaurant' &&
+      currentRestaurant &&
+      currentRestaurant.isOpen === false
+    ) {
+      // Prevent order placement when restaurant is closed
+      return;
+    }
+
     const newOrderId = generateOrderId();
 
     // Get validated store name (ensures it's not a number)
@@ -573,13 +577,12 @@ export default function CheckoutPage() {
             discountValue: appliedDeal.discountValue,
           }
         : null,
-      // Order metadata
-      orderDate: new Date().toLocaleDateString('en-US', {
-        weekday: 'short',
-        month: 'short',
-        day: 'numeric',
-      }),
-      status: 'Confirmed',
+      // Order date should be iso string formatting should only done in the UI
+      orderDate: new Date().toISOString(),
+      // Set status to 'scheduled' if this is a scheduled delivery, otherwise 'pending'
+      status: selectedDeliveryOption === 'schedule' && scheduledDate ? 'scheduled' : 'pending',
+      orderStatusUpdatedAt: new Date().toISOString(), // To track when the order status was last updated
+      remainingTime: deliveryTime, // Initialize with original delivery time
       orderType: 'Personal' as const, // Default to Personal
     };
 
@@ -601,24 +604,18 @@ export default function CheckoutPage() {
     appliedDeal: any
   ) => {
     let itemId = typeof item.id === 'string' ? item.id : item.id.toString();
-    const itemName = (item.itemName || '').toLowerCase().trim();
 
     // If item ID starts with store ID, remove it before checking
     if (appliedDeal?.restaurantId && itemId.startsWith(appliedDeal.restaurantId + '-')) {
       itemId = itemId.substring(appliedDeal.restaurantId.length + 1);
     }
 
-    // Check if this item matches any free item (by ID and name)
+    // Check if this item matches any free item
     let matchedFreeItemId: string | null = null;
     for (const freeId of freeItemIds) {
       const matchesById = itemId.startsWith(freeId + '-') || itemId === freeId;
-      const freeItemName = appliedDeal?.freeItems
-        ?.find((fi: any) => fi.id === freeId)
-        ?.name.toLowerCase()
-        .trim();
-      const matchesByName = freeItemName && itemName === freeItemName;
 
-      if (matchesById && matchesByName) {
+      if (matchesById) {
         matchedFreeItemId = freeId;
         break;
       }
@@ -1010,7 +1007,6 @@ export default function CheckoutPage() {
   const generateOTP = () => {
     const newOtp = Math.floor(100000 + Math.random() * 900000).toString();
     setGeneratedOtp(newOtp);
-    console.log('Generated OTP:', newOtp);
     return newOtp;
   };
 
@@ -1352,7 +1348,7 @@ export default function CheckoutPage() {
                           <Package className="w-5 h-5 text-gray-600 mr-3 flex-shrink-0" />
                           <div>
                             <p className="font-medium text-sm">
-                              {selectedAddress.deliveryPreference === 'location'
+                              {selectedAddress.deliveryPreference === 'meet'
                                 ? 'Meet at a location'
                                 : 'Leave it at my door'}
                             </p>
@@ -1581,11 +1577,32 @@ export default function CheckoutPage() {
             </div>
 
             {/* Place Order Button */}
+            {currentCategory === 'restaurant' &&
+              currentRestaurant &&
+              currentRestaurant.isOpen === false && (
+                <div className="mb-3 p-3 bg-red-50 border border-red-200 rounded-lg">
+                  <p className="text-sm text-red-600 font-medium text-center">
+                    This restaurant is currently closed. Please schedule your order for later.
+                  </p>
+                </div>
+              )}
             <button
               onClick={handlePlaceOrder}
-              disabled={!selectedPaymentMethodObj || isOutsideDeliveryArea}
+              disabled={
+                !selectedPaymentMethodObj ||
+                isOutsideDeliveryArea ||
+                (currentCategory === 'restaurant' &&
+                  currentRestaurant &&
+                  currentRestaurant.isOpen === false)
+              }
               className={`w-full font-medium py-4 rounded-lg text-lg ${
-                selectedPaymentMethodObj && !isOutsideDeliveryArea
+                selectedPaymentMethodObj &&
+                !isOutsideDeliveryArea &&
+                !(
+                  currentCategory === 'restaurant' &&
+                  currentRestaurant &&
+                  currentRestaurant.isOpen === false
+                )
                   ? 'bg-red-600 hover:bg-red-700 text-white cursor-pointer'
                   : 'bg-gray-300 text-gray-500 cursor-not-allowed'
               }`}
@@ -1668,11 +1685,33 @@ export default function CheckoutPage() {
 
               {/* Place Order Button */}
               <div className="px-4 pt-4">
+                {/* Show warning if restaurant is closed */}
+                {currentCategory === 'restaurant' &&
+                  currentRestaurant &&
+                  currentRestaurant.isOpen === false && (
+                    <div className="mb-3 p-3 bg-red-50 border border-red-200 rounded-lg">
+                      <p className="text-sm text-red-600 font-medium text-center">
+                        This restaurant is currently closed. Please schedule your order for later.
+                      </p>
+                    </div>
+                  )}
                 <button
                   onClick={handlePlaceOrder}
-                  disabled={!selectedPaymentMethodObj || isOutsideDeliveryArea}
+                  disabled={
+                    !selectedPaymentMethodObj ||
+                    isOutsideDeliveryArea ||
+                    (currentCategory === 'restaurant' &&
+                      currentRestaurant &&
+                      currentRestaurant.isOpen === false)
+                  }
                   className={`w-full font-semibold py-3 rounded-full transition-colors ${
-                    selectedPaymentMethodObj && !isOutsideDeliveryArea
+                    selectedPaymentMethodObj &&
+                    !isOutsideDeliveryArea &&
+                    !(
+                      currentCategory === 'restaurant' &&
+                      currentRestaurant &&
+                      currentRestaurant.isOpen === false
+                    )
                       ? 'bg-red-600 hover:bg-red-700 text-white cursor-pointer'
                       : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                   }`}

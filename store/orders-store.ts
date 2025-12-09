@@ -8,6 +8,7 @@ interface OrdersStore {
   addOrder: (order: Order) => void;
   getOrders: () => Order[];
   updateOrderReview: (orderId: string, rating: number, reviewText: string) => void;
+  updateOrderStatus: (orderId: string, newStatus: string, remainingTime?: string) => void;
   initializeOrdersFromDB: (orders: Order[]) => void;
 }
 
@@ -39,13 +40,29 @@ export const useOrdersStore = create<OrdersStore>()(
           }));
         },
 
-        initializeOrdersFromDB: (orders) => {
-          console.log(`[ORDERS STORE] Initializing ${orders.length} orders from database`)
+        updateOrderStatus: (orderId, newStatus, remainingTime) => {
+          set(state => ({
+            orders: state.orders.map(o => {
+              if (o.id === orderId) {
+                return {
+                  ...o,
+                  status: newStatus,
+                  orderStatusUpdatedAt: new Date().toISOString(),
+                  remainingTime: remainingTime || o?.remainingTime || '0 min',
+                };
+              }
+              return o;
+            }),
+          }));
+        },
+
+        initializeOrdersFromDB: orders => {
+          console.log(`[ORDERS STORE] Initializing ${orders.length} orders from database`);
           set(state => {
-            const newOrders = [...orders, ...state.orders]
-            return { orders: newOrders, isInitialized: true }
-          })
-        }
+            const newOrders = [...orders, ...state.orders];
+            return { orders: newOrders, isInitialized: true };
+          });
+        },
       }),
       {
         name: 'orders-store',

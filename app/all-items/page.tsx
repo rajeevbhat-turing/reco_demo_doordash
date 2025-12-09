@@ -9,6 +9,8 @@ import { RestaurantsSkeleton } from '@/components/skeletons/restaurant-skeleton'
 import { useAllDeals } from '@/lib/hooks/use-deals';
 import type { Deal } from '@/types/deal-types';
 import { hasValidLogo } from '@/lib/utils/helperFunctions';
+import { parseDistance, calculateDeliveryTime } from '@/lib/utils/restaurant-utils';
+import { useRestaurantsOpenStatus } from '@/lib/hooks/use-restaurant-open-status';
 
 // Inner component that uses searchParams
 function AllItemsContent() {
@@ -25,6 +27,9 @@ function AllItemsContent() {
     defaultAddress?.lng,
     10 // 10 mile radius
   );
+
+  // Calculate open status based on user's local time (not server time)
+  const openStatusMap = useRestaurantsOpenStatus(restaurants);
 
   // Get parameters from the URL
   const title = decodeURIComponent(searchParams.get('title') || 'All Items');
@@ -53,9 +58,17 @@ function AllItemsContent() {
           break;
         case 'fastest-near-you':
           filteredRestaurants = restaurants.filter(r => {
-            const timeStr = r.time;
-            const minutes = parseInt(timeStr.match(/\d+/)?.[0] || '100');
-            return minutes < 30 && hasValidLogo(r.logo);
+            if (!hasValidLogo(r.logo)) return false;
+            
+            // Use the same delivery time calculation as checkout to ensure consistency
+            const distance = parseDistance(r.distance);
+            const deliveryTimeStr = calculateDeliveryTime(distance, 'standard');
+            
+            // Extract max time from "min-max min" format
+            const maxTimeMatch = deliveryTimeStr.match(/-(\d+)\s*min/);
+            const maxMinutes = maxTimeMatch ? parseInt(maxTimeMatch[1]) : 100;
+            
+            return maxMinutes <= 30;
           });
           break;
         case 'deals-for-you':
@@ -97,7 +110,7 @@ function AllItemsContent() {
         cuisine: restaurant.cuisine,
         tags: restaurant.tags,
         dashPass: restaurant.dashPass,
-        isOpen: restaurant.isOpen,
+        isOpen: openStatusMap.get(restaurant.id) ?? restaurant.isOpen,
         discount: restaurant.discount,
         featured: restaurant.featured,
         new: restaurant.new,
@@ -109,7 +122,7 @@ function AllItemsContent() {
 
     // Default to empty array for other types
     return [];
-  }, [restaurants, section, type, allDeals]);
+  }, [restaurants, section, type, allDeals, openStatusMap]);
 
   const handleBack = () => {
     // Redirect to the appropriate home page based on the type
