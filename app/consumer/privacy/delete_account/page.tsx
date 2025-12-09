@@ -155,10 +155,6 @@ export default function DeleteAccountPage() {
                 Your account and customer data will be permanently removed from Dashdoor. Any
                 credits and gift card balances will also be forfeited.
               </p>
-              <p className="text-[#191919ff] text-[12px] font-medium">
-                For more information on how we collect and use customer data, visit our Privacy
-                Policy
-              </p>
             </div>
 
             {/* Action Buttons */}
