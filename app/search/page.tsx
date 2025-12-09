@@ -17,6 +17,7 @@ import { getDefaultRating } from '@/utils/rating-utils';
 import { RestaurantsSkeleton } from '@/components/skeletons/restaurant-skeleton';
 import MenuItemDialog from '@/components/menu-item-dialog';
 import RestaurantSection from '@/components/restaurant-section';
+import { parseDistance, calculateDeliveryTime } from '@/lib/utils/restaurant-utils';
 
 interface MenuItemWithRestaurant extends MenuItem {
   restaurant_id: string;
@@ -289,9 +290,15 @@ export default function SearchPage() {
     // Apply filters
     if (filters.underThirtyMins) {
       filtered = filtered.filter(restaurant => {
-        const timeStr = restaurant.time;
-        const minutes = Number.parseInt(timeStr.match(/\d+/)?.[0] || '100');
-        return minutes < 30;
+        // Use the same delivery time calculation as checkout to ensure consistency
+        const distance = parseDistance(restaurant.distance);
+        const deliveryTimeStr = calculateDeliveryTime(distance, 'standard');
+        
+        // Extract max time from "min-max min" format
+        const maxTimeMatch = deliveryTimeStr.match(/-(\d+)\s*min/);
+        const maxMinutes = maxTimeMatch ? parseInt(maxTimeMatch[1]) : 100;
+        
+        return maxMinutes <= 30;
       });
     }
 

@@ -19,6 +19,7 @@ import { useUserStore } from '@/store/user-store';
 import { useAppStore } from '@/store/app-store';
 import { getDefaultRating } from '@/utils/rating-utils';
 import { RestaurantsSkeleton } from '@/components/skeletons/restaurant-skeleton';
+import { parseDistance, calculateDeliveryTime } from '@/lib/utils/restaurant-utils';
 
 export default function Home() {
   const [filters, setFilters] = useState<FilterState>({
@@ -140,10 +141,20 @@ export default function Home() {
     const sections: { [key: string]: Restaurant[] } = {};
 
     // Under 30 Minutes section
+    // Use the same delivery time calculation as checkout to ensure consistency
     const under30Minutes = actualRestaurants
       .filter(restaurant => {
-        const minutes = getDeliveryTimeMinutes(restaurant.time);
-        return minutes < 30 && hasValidLogo(restaurant.logo);
+        if (!hasValidLogo(restaurant.logo)) return false;
+        
+        // Calculate actual delivery time based on distance
+        const distance = parseDistance(restaurant.distance);
+        const deliveryTimeStr = calculateDeliveryTime(distance, 'standard');
+        
+        // Extract max time from "min-max min" format
+        const maxTimeMatch = deliveryTimeStr.match(/-(\d+)\s*min/);
+        const maxMinutes = maxTimeMatch ? parseInt(maxTimeMatch[1]) : 100;
+        
+        return maxMinutes <= 30;
       })
       .sort((a, b) => {
         const timeA = getDeliveryTimeMinutes(a.time);
@@ -316,9 +327,15 @@ export default function Home() {
       // Apply other filters
       if (filters.underThirtyMins) {
         filtered = filtered.filter(restaurant => {
-          const timeStr = restaurant.time;
-          const minutes = Number.parseInt(timeStr.match(/\d+/)?.[0] || '100');
-          return minutes < 30;
+          // Use the same delivery time calculation as checkout to ensure consistency
+          const distance = parseDistance(restaurant.distance);
+          const deliveryTimeStr = calculateDeliveryTime(distance, 'standard');
+          
+          // Extract max time from "min-max min" format
+          const maxTimeMatch = deliveryTimeStr.match(/-(\d+)\s*min/);
+          const maxMinutes = maxTimeMatch ? parseInt(maxTimeMatch[1]) : 100;
+          
+          return maxMinutes <= 30;
         });
       }
 
