@@ -2267,3 +2267,224 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
     }
   }
 }","[""Ratings & Reviews""]","[""Delivery time filtering"", ""Price & rating tradeoffs""]","[""Search and filtering"", ""Decision making"", ""Order Placement""]","Log in using email 'elias.kaufman88@dashdoor.test' and password 'rn4bgFlzdANy'. I really liked the food that I ordered last time from Buffalo Wild Wings. Leave a 5 star rating on that order and add a review as follows- food tasted really good especially the traditional wings, those were great.",,8,Easy,
+"{
+  ""task_id"": ""029"",
+  ""url"": ""https://dashdoor.rlgym.turing.com/home"",
+  ""task"": ""Log in using the email 'omar.walsh1396@dashdoor.test' and password 'aMORYrXC2ohy'. Look for the nearest coffee shop and add a coffee to my cart."",
+  ""simulator_config"": {
+    ""start_date"": ""today"",
+    ""user_persona"": ""omar.walsh1396@dashdoor.test""
+  },
+  ""grader_config"": {
+    ""state_grader_configs"": [
+      {
+        ""assertions"": [
+          {
+            ""operator"": ""ARRAY_LENGTH_MATCH"",
+            ""path_to_actual"": ""$.items"",
+            ""expected"": [
+              ""==1""
+            ]
+          },
+          {
+            ""operator"": ""STRING_CONTAINS"",
+            ""path_to_actual"": ""$.items[0].itemName"",
+            ""paths_to_expected"": [
+              ""$[2].items[0].name""
+            ]
+          },
+          {
+            ""operator"": ""NUMERIC_MATCH"",
+            ""path_to_actual"": ""$.items[0].quantity"",
+            ""expected"": [
+              ""==1""
+            ]
+          },
+          {
+            ""operator"": ""STRING_EQUALS"",
+            ""path_to_actual"": ""$.storeId"",
+            ""paths_to_expected"": [
+              ""$[1].restaurants[0].id""
+            ]
+          }
+        ],
+        ""path_to_actual"": ""$.carts[-1]""
+      }
+    ],
+    ""extract_states_config"": {
+      ""expected_state_functions"": [
+        {
+          ""args"": {
+            ""user"": ""omar.walsh1396@dashdoor.test""
+          }, 
+          ""function"": ""get_user_address""
+        },
+        {
+          ""args"": {
+            ""lat"": ""$[0].address.lat"",
+            ""lng"": ""$[0].address.lng"",
+            ""limit"": 1,
+            ""filters"": {
+              ""item_keyword"": ""coffee""
+            },
+            ""sort_type"": [
+              {
+                ""key"": ""distance"",
+                ""order"": ""asc""
+              }
+            ]
+          },
+          ""function"": ""get_restaurants""
+        },
+        {
+          ""args"": {
+            ""restaurant_id"": ""$[1].restaurants[0].id"",
+            ""keywords"": [
+              ""coffee""
+            ],
+            ""limit"": 1
+          },
+          ""function"": ""get_items""
+        }
+      ]
+    }
+  }
+}","[""Search""]","[""Item selection""]","[""Instruction following"", ""Search and filtering"", ""Decision making""]",Log in using the email 'omar.walsh1396@dashdoor.test' and password 'aMORYrXC2ohy'. Look for the nearest coffee shop and add a coffee to my cart.,,7,Medium,
+"{
+  ""task_id"": ""030"",
+  ""url"": ""https://dashdoor.rlgym.turing.com/home"",
+  ""task"": ""Log in using email 'lena.bennett71@example.com' and password 'c69fieW7G93U'. Search for blueberry pancakes and order them from the closest restaurant, make an express delivery."",
+  ""simulator_config"": {
+    ""start_date"": ""today"",
+    ""user_persona"": ""lena.bennett71@example.com""
+  },
+  ""grader_config"": {
+    ""state_grader_configs"": [
+      {
+        ""assertions"": [
+          {
+            ""operator"": ""ARRAY_LENGTH_MATCH"",
+            ""path_to_actual"": ""$.items"",
+            ""expected"": [
+              ""==1""
+            ]
+          },
+          {
+            ""operator"": ""STRING_CONTAINS"",
+            ""path_to_actual"": ""$.items[0].name"",
+            ""paths_to_expected"": [
+              ""$[2].items[0].name""
+            ]
+          },
+          {
+            ""operator"": ""NUMERIC_MATCH"",
+            ""path_to_actual"": ""$.items[0].quantity"",
+            ""expected"": [
+              ""==1""
+            ]
+          },
+          {
+            ""operator"": ""STRING_EQUALS"",
+            ""path_to_actual"": ""$.storeId"",
+            ""paths_to_expected"": [
+              ""$[1].restaurants[0].id""
+            ]
+          },
+          {
+            ""operator"": ""STRING_EQUALS"",
+            ""path_to_actual"": ""$.deliveryOption.type"",
+            ""expected"": [
+              ""express""
+            ]
+          }
+        ],
+        ""path_to_actual"": ""$.orders[0]""
+      }
+    ],
+    ""extract_states_config"": {
+      ""expected_state_functions"": [
+        {
+          ""args"": {
+            ""user"": ""lena.bennett71@example.com""
+          }, 
+          ""function"": ""get_user_address""
+        },
+        {
+          ""args"": {
+            ""lat"": ""$[0].address.lat"",
+            ""lng"": ""$[0].address.lng"",
+            ""limit"": 1,
+            ""filters"": {
+              ""item_keyword"": ""blueberry pancakes""
+            },
+            ""sort_type"": [
+              {
+                ""key"": ""distance"",
+                ""order"": ""asc""
+              }
+            ]
+          },
+          ""function"": ""get_restaurants""
+        },
+        {
+          ""args"": {
+            ""restaurant_id"": ""$[1].restaurants[0].id"",
+            ""keywords"": [
+              ""blueberry pancakes""
+            ],
+            ""limit"": 1
+          },
+          ""function"": ""get_items""
+        }
+      ]
+    }
+  }
+}","[""Order placement""]","[""Search""]","[""Instruction following"", ""Search and filtering"", ""Decision making""]","Log in using email 'lena.bennett71@example.com' and password 'c69fieW7G93U'. Search for blueberry pancakes and order them from the closest restaurant, make an express delivery.",,6,Medium,
+"{
+  ""task_id"": ""031"",
+  ""url"": ""https://dashdoor.rlgym.turing.com/home"",
+  ""task"": ""Log in using email 'lena.bennett71@example.com' and password 'c69fieW7G93U'. Can you search for truffle smash burger and list 3 restaurants that sell them the cheapest"",
+  ""simulator_config"": {
+    ""start_date"": ""today"",
+    ""user_persona"": ""lena.bennett71@example.com""
+  },
+  ""grader_config"": {
+    ""answer_grader_config"": {
+      ""assertions"": [
+        {
+          ""operator"": ""STRING_CONTAINS"",
+          ""paths_to_expected"": [
+            ""$[1].items[*].restaurantName""
+          ]
+        }
+      ]
+    },
+    ""extract_states_config"": {
+      ""expected_state_functions"": [
+        {
+          ""args"": {
+            ""user"": ""lena.bennett71@example.com""
+          }, 
+          ""function"": ""get_user_address""
+        },
+        {
+          ""args"": {
+            ""lat"": ""$[0].address.lat"",
+            ""lng"": ""$[0].address.lng"",
+            ""keywords"": [
+              ""truffle smash burger""
+            ],
+            ""sort_type"": [
+              {
+                ""key"": ""price"",
+                ""order"": ""asc""
+              }
+            ],
+            ""limit"": 3
+          },
+          ""function"": ""get_items""
+        }
+      ]
+    }
+  }
+}","[""Search""]",-,"[""Scrolling"", ""Decision making""]",Log in using email 'lena.bennett71@example.com' and password 'c69fieW7G93U'. Can you search for truffle smash burger and list 3 restaurants that sell them the cheapest,,0,Hard,
