@@ -3,6 +3,7 @@ import { useUserStore } from '@/store/user-store';
 export interface MenuItemResult {
   id: string;
   restaurantId: string;
+  restaurantName: string;
   name: string;
   description: string | null;
   price: number; // in cents
