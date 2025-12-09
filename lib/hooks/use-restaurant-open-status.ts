@@ -129,4 +129,3 @@ export function getRestaurantOpenStatus(restaurant: Restaurant | null | undefine
   const currentHour = new Date().getHours();
   return checkIfOpen(restaurant.openingHour, restaurant.closingHour, currentHour);
 }
-
