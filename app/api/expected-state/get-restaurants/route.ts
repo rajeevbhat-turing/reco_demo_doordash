@@ -28,6 +28,7 @@ interface SortSpec {
  * - dashpass: Boolean to filter by DashPass availability (optional)
  * - has_deals: Boolean to filter by restaurants with deals (optional, default: false). When true, includes deals in response
  * - restaurant_ids_not_in: JSON array of restaurant IDs to exclude (optional)
+ * - ratingXAndAbove: Number to filter by minimum rating (optional, returns restaurants with rating >= this value)
  * 
  * Finds restaurants with optional filtering and sorting:
  * 1. Fetches all restaurants from database
@@ -54,6 +55,8 @@ export async function GET(request: NextRequest) {
     const hasDealsParam = searchParams.get('has_deals');
     const hasDeals = hasDealsParam === 'true';
     const restaurantIdsNotInParam = searchParams.get('restaurant_ids_not_in');
+    const ratingXAndAboveParam = searchParams.get('ratingXAndAbove');
+    const ratingXAndAbove = ratingXAndAboveParam ? parseFloat(ratingXAndAboveParam) : null;
     const lat = searchParams.get('lat');
     const lng = searchParams.get('lng');
 
@@ -372,6 +375,13 @@ export async function GET(request: NextRequest) {
 
     // Filter restaurants within 10 mile radius
     results = results.filter((restaurant: any) => restaurant.distance <= maxRadius);
+
+    // Apply ratingXAndAbove filter if provided
+    if (ratingXAndAbove !== null) {
+      results = results.filter((restaurant: any) => 
+        restaurant.rating !== null && restaurant.rating >= ratingXAndAbove
+      );
+    }
 
     // Apply multi-level sorting if sort_type is provided
     if (sortSpecs.length > 0) {
