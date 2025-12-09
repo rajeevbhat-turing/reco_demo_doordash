@@ -157,7 +157,6 @@ export default function AuthenticationModal({
   const generateOTP = () => {
     const newOtp = Math.floor(100000 + Math.random() * 900000).toString();
     setOtp(newOtp);
-    console.log('Generated OTP:', newOtp);
     return newOtp;
   };
 

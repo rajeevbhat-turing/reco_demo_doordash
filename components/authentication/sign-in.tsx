@@ -135,8 +135,6 @@ export default function SignIn({
 
     try {
       const { otp, user } = await generateOTP({ email: formData.email });
-      // Print the OTP to the console
-      console.log('OTP:', otp);
 
       // Save the OTP to the form data
       handleFormDataChange('otp', otp);
@@ -161,9 +159,6 @@ export default function SignIn({
     try {
       // Call generate OTP API
       const { otp, user } = await generateOTP({ email: formData.email });
-
-      // Print the OTP to the console
-      console.log('OTP:', otp);
 
       // Save the OTP to the form data
       handleFormDataChange('otp', otp);

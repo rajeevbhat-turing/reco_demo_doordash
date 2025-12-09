@@ -1007,7 +1007,6 @@ export default function CheckoutPage() {
   const generateOTP = () => {
     const newOtp = Math.floor(100000 + Math.random() * 900000).toString();
     setGeneratedOtp(newOtp);
-    console.log('Generated OTP:', newOtp);
     return newOtp;
   };
 
