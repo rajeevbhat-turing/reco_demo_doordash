@@ -695,6 +695,7 @@ Gets menu items with optional filtering and multi-level sorting.
   items: Array<{
     id: string;
     restaurantId: string;
+    restaurantName: string;
     categoryId: string;
     name: string;
     description: string | null;
