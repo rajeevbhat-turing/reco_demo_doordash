@@ -110,7 +110,7 @@ const phoneValidationRules: Record<string, PhoneValidationRule> = {
 
 // Default rule for countries not explicitly defined
 const defaultRule: PhoneValidationRule = {
-  length: [8, 9, 10, 11],
+  length: [10],
   format: (digits: string) => digits,
   placeholder: '',
 };
