@@ -77,9 +77,11 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
       !tempAddress &&
       pathname !== '/' &&
       !pathname.startsWith('/auth') &&
+      !pathname.startsWith('/delivery') &&
       !isPasswordResetPage
     ) {
-      // If user is not logged in, has no temp address, and is not on "/" or "/auth" paths, redirect to "/"
+      // If user is not logged in, has no temp address, and is not on "/" or "/auth" or "/delivery" paths, redirect to "/"
+      // Note: /delivery paths have their own authentication flow handled by the delivery layout
       router.replace('/');
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
