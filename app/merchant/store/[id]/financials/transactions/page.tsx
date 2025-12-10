@@ -1,162 +1,163 @@
-'use client'
-import { useState, useEffect } from "react"
-import { useParams } from "next/navigation"
-import MerchantLayout from "@/components/merchant/MerchantLayout"
-import { ChevronDown, Info } from "lucide-react"
-import { useCurrentStore } from "@/lib/hooks/useCurrentStore"
-import { useAllRestaurants } from "@/lib/hooks/use-restaurants"
+'use client';
+import { useState, useEffect } from 'react';
+import { useParams } from 'next/navigation';
+import MerchantLayout from '@/components/merchant/MerchantLayout';
+import { ChevronDown, Info } from 'lucide-react';
+import { useCurrentStore } from '@/lib/hooks/useCurrentStore';
+import { useAllRestaurants } from '@/lib/hooks/merchant/use-restaurants';
 
 interface Transaction {
-  transactionId: string
-  date: string
-  time: string
-  orderId: string
-  channel: string
-  transactionType: string
-  description: string
-  subtotal: string
-  tax: string
-  customerFees: string
-  taxCustomerFees: string
-  totalTips: string
-  commission: string
-  merchantFees: string
-  taxMerchantFees: string
-  errorCharges: string
+  transactionId: string;
+  date: string;
+  time: string;
+  orderId: string;
+  channel: string;
+  transactionType: string;
+  description: string;
+  subtotal: string;
+  tax: string;
+  customerFees: string;
+  taxCustomerFees: string;
+  totalTips: string;
+  commission: string;
+  merchantFees: string;
+  taxMerchantFees: string;
+  errorCharges: string;
 }
 
 const mockTransactions: Transaction[] = [
   {
-    transactionId: "13190595786",
-    date: "4/22/2025",
-    time: "11:18 PM",
-    orderId: "87C36FE2",
-    channel: "Marketplace",
-    transactionType: "Order",
-    description: "",
-    subtotal: "$5.00",
-    tax: "$0.51",
-    customerFees: "$0.30",
-    taxCustomerFees: "$0.03",
-    totalTips: "$0.00",
-    commission: "-$0.30",
-    merchantFees: "$0.00",
-    taxMerchantFees: "$0.00",
-    errorCharges: "$0.00"
+    transactionId: '13190595786',
+    date: '4/22/2025',
+    time: '11:18 PM',
+    orderId: '87C36FE2',
+    channel: 'Marketplace',
+    transactionType: 'Order',
+    description: '',
+    subtotal: '$5.00',
+    tax: '$0.51',
+    customerFees: '$0.30',
+    taxCustomerFees: '$0.03',
+    totalTips: '$0.00',
+    commission: '-$0.30',
+    merchantFees: '$0.00',
+    taxMerchantFees: '$0.00',
+    errorCharges: '$0.00',
   },
   {
-    transactionId: "13190580270",
-    date: "4/22/2025",
-    time: "11:12 PM",
-    orderId: "0A5B17C0",
-    channel: "Marketplace",
-    transactionType: "Order",
-    description: "",
-    subtotal: "$5.87",
-    tax: "$0.60",
-    customerFees: "$0.30",
-    taxCustomerFees: "$0.03",
-    totalTips: "$0.00",
-    commission: "-$0.35",
-    merchantFees: "$0.00",
-    taxMerchantFees: "$0.00",
-    errorCharges: "$0.00"
+    transactionId: '13190580270',
+    date: '4/22/2025',
+    time: '11:12 PM',
+    orderId: '0A5B17C0',
+    channel: 'Marketplace',
+    transactionType: 'Order',
+    description: '',
+    subtotal: '$5.87',
+    tax: '$0.60',
+    customerFees: '$0.30',
+    taxCustomerFees: '$0.03',
+    totalTips: '$0.00',
+    commission: '-$0.35',
+    merchantFees: '$0.00',
+    taxMerchantFees: '$0.00',
+    errorCharges: '$0.00',
   },
   {
-    transactionId: "13187852274",
-    date: "4/22/2025",
-    time: "5:06 PM",
-    orderId: "0FCCB375",
-    channel: "Marketplace",
-    transactionType: "Order",
-    description: "",
-    subtotal: "$10.18",
-    tax: "$1.03",
-    customerFees: "$0.30",
-    taxCustomerFees: "$0.04",
-    totalTips: "$0.00",
-    commission: "-$0.61",
-    merchantFees: "$0.00",
-    taxMerchantFees: "$0.00",
-    errorCharges: "$0.00"
+    transactionId: '13187852274',
+    date: '4/22/2025',
+    time: '5:06 PM',
+    orderId: '0FCCB375',
+    channel: 'Marketplace',
+    transactionType: 'Order',
+    description: '',
+    subtotal: '$10.18',
+    tax: '$1.03',
+    customerFees: '$0.30',
+    taxCustomerFees: '$0.04',
+    totalTips: '$0.00',
+    commission: '-$0.61',
+    merchantFees: '$0.00',
+    taxMerchantFees: '$0.00',
+    errorCharges: '$0.00',
   },
   {
-    transactionId: "13165642736",
-    date: "4/20/2025",
-    time: "4:03 AM",
-    orderId: "",
-    channel: "",
-    transactionType: "Fee",
-    description: "Tablet fee",
-    subtotal: "$0.00",
-    tax: "$0.00",
-    customerFees: "$0.00",
-    taxCustomerFees: "$0.00",
-    totalTips: "$0.00",
-    commission: "$0.00",
-    merchantFees: "-$6.00",
-    taxMerchantFees: "$0.00",
-    errorCharges: "$0.00"
-  }
-]
+    transactionId: '13165642736',
+    date: '4/20/2025',
+    time: '4:03 AM',
+    orderId: '',
+    channel: '',
+    transactionType: 'Fee',
+    description: 'Tablet fee',
+    subtotal: '$0.00',
+    tax: '$0.00',
+    customerFees: '$0.00',
+    taxCustomerFees: '$0.00',
+    totalTips: '$0.00',
+    commission: '$0.00',
+    merchantFees: '-$6.00',
+    taxMerchantFees: '$0.00',
+    errorCharges: '$0.00',
+  },
+];
 
 /**
  * Route: /merchant/store/[id]/financials/transactions
- * 
+ *
  * Transactions page for a specific store
  */
 export default function TransactionsPage() {
-  const params = useParams()
-  const { setCurrentStoreId, currentStoreId: contextStoreId } = useCurrentStore()
-  const { data: restaurants, isLoading } = useAllRestaurants()
-  const [storeSet, setStoreSet] = useState(false)
-  const [selectedTimeframe, setSelectedTimeframe] = useState("Last 7 days")
-  const [selectedChannel, setSelectedChannel] = useState("All channels")
-  const [selectedTransactionType, setSelectedTransactionType] = useState("All transaction types")
+  const params = useParams();
+  const { setCurrentStoreId, currentStoreId: contextStoreId } = useCurrentStore();
+  const { data: restaurants, isLoading } = useAllRestaurants();
+  const [storeSet, setStoreSet] = useState(false);
+  const [selectedTimeframe, setSelectedTimeframe] = useState('Last 7 days');
+  const [selectedChannel, setSelectedChannel] = useState('All channels');
+  const [selectedTransactionType, setSelectedTransactionType] = useState('All transaction types');
 
-  const storeIdParam = params.id as string
+  const storeIdParam = params.id as string;
 
   // Set the store ID when component mounts or storeIdParam changes
   useEffect(() => {
-    if (isLoading || !restaurants || storeSet) return
+    if (isLoading || !restaurants || storeSet) return;
 
     // Try to find restaurant by numeric ID first
-    let restaurant = restaurants.find(r => r.id === storeIdParam)
-    
+    let restaurant = restaurants.find(r => r.id === storeIdParam);
+
     // If not found, try to find by name (slug)
     if (!restaurant) {
-      restaurant = restaurants.find(r => 
-        r.name.toLowerCase().replace(/\s+/g, '-') === storeIdParam.toLowerCase() ||
-        r.name === storeIdParam
-      )
+      restaurant = restaurants.find(
+        r =>
+          r.name.toLowerCase().replace(/\s+/g, '-') === storeIdParam.toLowerCase() ||
+          r.name === storeIdParam
+      );
     }
 
     if (restaurant) {
       if (contextStoreId !== restaurant.id) {
-        setCurrentStoreId(restaurant.id)
+        setCurrentStoreId(restaurant.id);
       }
       if (typeof window !== 'undefined') {
-        localStorage.setItem('merchant-mode', 'true')
+        localStorage.setItem('merchant-mode', 'true');
       }
-      setStoreSet(true)
+      setStoreSet(true);
     } else {
       if (contextStoreId !== '1') {
-        setCurrentStoreId('1')
+        setCurrentStoreId('1');
       }
-      setStoreSet(true)
+      setStoreSet(true);
     }
-  }, [storeIdParam, restaurants, isLoading, setCurrentStoreId, contextStoreId, storeSet])
+  }, [storeIdParam, restaurants, isLoading, setCurrentStoreId, contextStoreId, storeSet]);
 
   // Calculate summary values
-  const netTotal = "$16.93"
-  const sales = "$24.19"
-  const commissionAndFees = "-$7.26"
-  const subtotal = "$21.05"
-  const taxSubtotal = "$2.14"
-  const customerFees = "$0.90"
-  const taxCustomerFees = "$0.10"
-  const marketingSpend = "$0.00"
-  const amendments = "$0.00"
+  const netTotal = '$16.93';
+  const sales = '$24.19';
+  const commissionAndFees = '-$7.26';
+  const subtotal = '$21.05';
+  const taxSubtotal = '$2.14';
+  const customerFees = '$0.90';
+  const taxCustomerFees = '$0.10';
+  const marketingSpend = '$0.00';
+  const amendments = '$0.00';
 
   // Show loading state while finding store
   if (isLoading) {
@@ -168,7 +169,7 @@ export default function TransactionsPage() {
           </div>
         </div>
       </MerchantLayout>
-    )
+    );
   }
 
   return (
@@ -178,24 +179,31 @@ export default function TransactionsPage() {
         <div className="mb-6">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Transactions</h1>
           <p className="text-sm text-gray-600 mb-4">
-            All charges from all orders, campaigns, fees, and adjustments associated with your DashDoor account. To track real-time orders, go to{" "}
-            <a href={`/merchant/store/${storeIdParam}/orders`} className="text-blue-600 hover:underline">Orders</a>.
+            All charges from all orders, campaigns, fees, and adjustments associated with your
+            DashDoor account. To track real-time orders, go to{' '}
+            <a
+              href={`/merchant/store/${storeIdParam}/orders`}
+              className="text-blue-600 hover:underline"
+            >
+              Orders
+            </a>
+            .
           </p>
-          
+
           {/* Filters */}
           <div className="flex items-center gap-3">
-            <select 
+            <select
               value={selectedTimeframe}
-              onChange={(e) => setSelectedTimeframe(e.target.value)}
+              onChange={e => setSelectedTimeframe(e.target.value)}
               className="border border-gray-300 rounded-md text-sm px-3 py-1.5 bg-white text-gray-700"
             >
               <option>Last 7 days</option>
               <option>Last 30 days</option>
               <option>Last 90 days</option>
             </select>
-            <select 
+            <select
               value={selectedChannel}
-              onChange={(e) => setSelectedChannel(e.target.value)}
+              onChange={e => setSelectedChannel(e.target.value)}
               className="border border-gray-300 rounded-md text-sm px-3 py-1.5 bg-white text-gray-700"
             >
               <option>All channels</option>
@@ -211,7 +219,11 @@ export default function TransactionsPage() {
             <Info className="h-5 w-5 text-gray-600 mt-0.5 flex-shrink-0" />
             <div>
               <p className="text-sm text-gray-700 mb-1">
-                <span className="font-semibold">Introducing a new metric - marketing spend.</span> To help you better track and understand your marketing efforts, we're unveiling a new metric--marketing spend. This number represents the total you paid to DashDoor to run marketing after marketing credits and third-party contributions have been deducted. You'll also be downloaded reports.
+                <span className="font-semibold">Introducing a new metric - marketing spend.</span>{' '}
+                To help you better track and understand your marketing efforts, we're unveiling a
+                new metric--marketing spend. This number represents the total you paid to DashDoor
+                to run marketing after marketing credits and third-party contributions have been
+                deducted. You'll also be downloaded reports.
               </p>
             </div>
           </div>
@@ -334,10 +346,12 @@ export default function TransactionsPage() {
         {/* Transactions Table Section */}
         <div className="bg-white border border-gray-200 rounded-lg p-6">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-gray-900">{mockTransactions.length} Transactions</h2>
-            <select 
+            <h2 className="text-lg font-semibold text-gray-900">
+              {mockTransactions.length} Transactions
+            </h2>
+            <select
               value={selectedTransactionType}
-              onChange={(e) => setSelectedTransactionType(e.target.value)}
+              onChange={e => setSelectedTransactionType(e.target.value)}
               className="border border-gray-300 rounded-md text-sm px-3 py-1.5 bg-white text-gray-700"
             >
               <option>All transaction types</option>
@@ -356,37 +370,50 @@ export default function TransactionsPage() {
                   <th className="text-left font-medium px-3 py-2 text-gray-700">Time</th>
                   <th className="text-left font-medium px-3 py-2 text-gray-700">Order ID</th>
                   <th className="text-left font-medium px-3 py-2 text-gray-700">Channel</th>
-                  <th className="text-left font-medium px-3 py-2 text-gray-700">Transaction type</th>
+                  <th className="text-left font-medium px-3 py-2 text-gray-700">
+                    Transaction type
+                  </th>
                   <th className="text-left font-medium px-3 py-2 text-gray-700">Description</th>
                   <th className="text-right font-medium px-3 py-2 text-gray-700">Subtotal</th>
                   <th className="text-right font-medium px-3 py-2 text-gray-700">Tax</th>
                   <th className="text-right font-medium px-3 py-2 text-gray-700">Customer fees</th>
-                  <th className="text-right font-medium px-3 py-2 text-gray-700">Tax (customer fees)</th>
+                  <th className="text-right font-medium px-3 py-2 text-gray-700">
+                    Tax (customer fees)
+                  </th>
                   <th className="text-right font-medium px-3 py-2 text-gray-700">Total tips</th>
                   <th className="text-right font-medium px-3 py-2 text-gray-700">Commission</th>
                   <th className="text-right font-medium px-3 py-2 text-gray-700">Merchant fees</th>
-                  <th className="text-right font-medium px-3 py-2 text-gray-700">Tax (merchant fees)</th>
+                  <th className="text-right font-medium px-3 py-2 text-gray-700">
+                    Tax (merchant fees)
+                  </th>
                   <th className="text-right font-medium px-3 py-2 text-gray-700">Error charges</th>
                 </tr>
               </thead>
               <tbody>
-                {mockTransactions.map((transaction) => (
-                  <tr key={transaction.transactionId} className="border-b border-gray-100 hover:bg-gray-50">
+                {mockTransactions.map(transaction => (
+                  <tr
+                    key={transaction.transactionId}
+                    className="border-b border-gray-100 hover:bg-gray-50"
+                  >
                     <td className="px-3 py-2 text-gray-900">{transaction.transactionId}</td>
                     <td className="px-3 py-2 text-gray-600">{transaction.date}</td>
                     <td className="px-3 py-2 text-gray-600">{transaction.time}</td>
-                    <td className="px-3 py-2 text-gray-600">{transaction.orderId || "-"}</td>
-                    <td className="px-3 py-2 text-gray-600">{transaction.channel || "-"}</td>
+                    <td className="px-3 py-2 text-gray-600">{transaction.orderId || '-'}</td>
+                    <td className="px-3 py-2 text-gray-600">{transaction.channel || '-'}</td>
                     <td className="px-3 py-2 text-gray-600">{transaction.transactionType}</td>
-                    <td className="px-3 py-2 text-gray-600">{transaction.description || "-"}</td>
+                    <td className="px-3 py-2 text-gray-600">{transaction.description || '-'}</td>
                     <td className="px-3 py-2 text-right font-medium">{transaction.subtotal}</td>
                     <td className="px-3 py-2 text-right font-medium">{transaction.tax}</td>
                     <td className="px-3 py-2 text-right font-medium">{transaction.customerFees}</td>
-                    <td className="px-3 py-2 text-right font-medium">{transaction.taxCustomerFees}</td>
+                    <td className="px-3 py-2 text-right font-medium">
+                      {transaction.taxCustomerFees}
+                    </td>
                     <td className="px-3 py-2 text-right font-medium">{transaction.totalTips}</td>
                     <td className="px-3 py-2 text-right font-medium">{transaction.commission}</td>
                     <td className="px-3 py-2 text-right font-medium">{transaction.merchantFees}</td>
-                    <td className="px-3 py-2 text-right font-medium">{transaction.taxMerchantFees}</td>
+                    <td className="px-3 py-2 text-right font-medium">
+                      {transaction.taxMerchantFees}
+                    </td>
                     <td className="px-3 py-2 text-right font-medium">{transaction.errorCharges}</td>
                   </tr>
                 ))}
@@ -396,17 +423,24 @@ export default function TransactionsPage() {
 
           {/* Pagination */}
           <div className="flex items-center justify-center gap-2 mt-4 pt-4 border-t border-gray-200">
-            <button className="p-1 rounded hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+            <button
+              className="p-1 rounded hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled
+            >
               <span className="text-sm text-gray-600">&lt;</span>
             </button>
-            <span className="px-3 py-1 text-sm font-medium text-gray-900 bg-gray-100 rounded">1</span>
-            <button className="p-1 rounded hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+            <span className="px-3 py-1 text-sm font-medium text-gray-900 bg-gray-100 rounded">
+              1
+            </span>
+            <button
+              className="p-1 rounded hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled
+            >
               <span className="text-sm text-gray-600">&gt;</span>
             </button>
           </div>
         </div>
       </div>
     </MerchantLayout>
-  )
+  );
 }
-

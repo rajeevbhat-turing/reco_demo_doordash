@@ -1,26 +1,26 @@
-'use client'
-import { useEffect } from 'react'
-import { useRouter } from 'next/navigation'
-import { useCurrentStore } from '@/lib/hooks/useCurrentStore'
+'use client';
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { useCurrentStore } from '@/lib/hooks/useCurrentStore';
 
 /**
  * Route: /merchant/financials/transactions
- * 
+ *
  * Redirects to /merchant/store/[id]/financials/transactions with the current store ID
  */
 export default function TransactionsRedirect() {
-  const router = useRouter()
-  const { currentStoreId } = useCurrentStore()
+  const router = useRouter();
+  const { currentStoreId } = useCurrentStore();
 
   useEffect(() => {
     // Redirect to the store-specific transactions route
     if (currentStoreId) {
-      router.replace(`/merchant/store/${currentStoreId}/financials/transactions`)
+      router.replace(`/merchant/store/${currentStoreId}/financials/transactions`);
     } else {
-      // Fallback to default store if no store ID is set
-      router.replace('/merchant/store/1/financials/transactions')
+      // Redirect to merchant landing page if no store ID is set
+      router.replace('/merchant');
     }
-  }, [currentStoreId, router])
+  }, [currentStoreId, router]);
 
   return (
     <div className="min-h-screen flex items-center justify-center">
@@ -28,5 +28,5 @@ export default function TransactionsRedirect() {
         <p className="text-gray-600">Redirecting to transactions...</p>
       </div>
     </div>
-  )
+  );
 }

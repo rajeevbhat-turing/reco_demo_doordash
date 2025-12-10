@@ -20,7 +20,7 @@ export default function OnboardingLayout({
 
       {/* Main area */}
       <div className="ml-[240px] px-8 py-8">
-        <div className="max-w-3xl">{children}</div>
+        <div className="max-w-4xl">{children}</div>
       </div>
     </div>
   );

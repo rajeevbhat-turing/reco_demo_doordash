@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { X } from 'lucide-react';
 import { useMerchantAuthStore } from '@/store/merchant-auth-store';
@@ -124,7 +124,7 @@ export default function MerchantAuthPage() {
             New to DashDoor?{' '}
             <button
               type="button"
-              onClick={() => router.push('/merchant/auth/signup')}
+              onClick={() => router.push('/merchant/auth/user/signup')}
               className="text-[#eb1700] font-semibold hover:underline"
             >
               Sign Up

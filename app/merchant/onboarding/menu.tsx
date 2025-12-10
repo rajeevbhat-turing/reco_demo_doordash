@@ -1,72 +1,120 @@
-'use client'
-import { useState, useRef } from "react"
-import { useRouter } from "next/navigation"
-import { ChevronLeft, Upload, X, Check } from "lucide-react"
-import { Input } from "@/components/ui/input"
-import { useMerchantAuthStore } from "@/store/merchant-auth-store"
+'use client';
+
+import React, { useState, useRef, useMemo } from 'react';
+import { useRouter } from 'next/navigation';
+import { ChevronLeft, Upload, X, Check } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { useMerchantAuthStore } from '@/store/merchant-auth-store';
 
 export default function MenuStep() {
-  const router = useRouter()
-  const saveOnboardingMenuCompleted = useMerchantAuthStore(state => state.saveOnboardingMenuCompleted)
-  const fileInputRef = useRef<HTMLInputElement>(null)
-  const [menuMethod, setMenuMethod] = useState<'link' | 'upload'>('link')
-  const [menuLink, setMenuLink] = useState('')
-  const [uploadedFile, setUploadedFile] = useState<File | null>(null)
-  const [uploadStatus, setUploadStatus] = useState<'idle' | 'uploading' | 'uploaded'>('idle')
+  const router = useRouter();
+  const saveOnboardingMenuCompleted = useMerchantAuthStore(
+    state => state.saveOnboardingMenuCompleted
+  );
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [menuMethod, setMenuMethod] = useState<'link' | 'upload'>('link');
+  const [menuLink, setMenuLink] = useState('');
+  const [menuLinkError, setMenuLinkError] = useState('');
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const [uploadStatus, setUploadStatus] = useState<'idle' | 'uploading' | 'uploaded'>('idle');
+
+  // Validate URL format
+  const isValidUrl = useMemo(() => {
+    if (!menuLink.trim()) return false;
+    // Accept URLs with or without protocol
+    const urlPattern = /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/i;
+    return urlPattern.test(menuLink);
+  }, [menuLink]);
+
+  // Validate menu link on blur
+  const handleMenuLinkBlur = () => {
+    if (menuLink.trim() && !isValidUrl) {
+      setMenuLinkError('Please enter a valid URL (e.g., yourwebsite.com/menus)');
+    } else {
+      setMenuLinkError('');
+    }
+  };
+
+  // Handle menu link change
+  const handleMenuLinkChange = (value: string) => {
+    setMenuLink(value);
+    // Clear error if URL becomes valid
+    if (menuLinkError) {
+      const urlPattern = /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/i;
+      if (value.trim() && urlPattern.test(value)) {
+        setMenuLinkError('');
+      }
+    }
+  };
 
   const handleBack = () => {
-    router.push('/merchant/onboarding?step=hours')
-  }
+    router.push('/merchant/onboarding?step=hours');
+  };
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
+    const file = e.target.files?.[0];
     if (file) {
       // Validate file type
-      const validTypes = ['image/png', 'image/jpeg', 'image/jpg', 'application/pdf']
+      const validTypes = ['image/png', 'image/jpeg', 'image/jpg', 'application/pdf'];
       if (!validTypes.includes(file.type)) {
-        alert('Please upload a PNG, JPG, JPEG, or PDF file')
-        return
+        alert('Please upload a PNG, JPG, JPEG, or PDF file');
+        return;
       }
-      
+
       // Validate file size (4MB)
       if (file.size > 4 * 1024 * 1024) {
-        alert('File size must be less than 4MB')
-        return
+        alert('File size must be less than 4MB');
+        return;
       }
 
-      setUploadedFile(file)
-      setUploadStatus('uploading')
-      
+      setUploadedFile(file);
+      setUploadStatus('uploading');
+
       // Simulate upload
       setTimeout(() => {
-        setUploadStatus('uploaded')
-      }, 1000)
+        setUploadStatus('uploaded');
+      }, 1000);
     }
-  }
+  };
 
   const handleRemoveFile = () => {
-    setUploadedFile(null)
-    setUploadStatus('idle')
+    setUploadedFile(null);
+    setUploadStatus('idle');
     if (fileInputRef.current) {
-      fileInputRef.current.value = ''
+      fileInputRef.current.value = '';
     }
-  }
+  };
+
+  const [uploadError, setUploadError] = useState('');
 
   const handleSave = () => {
+    // Validate based on method
+    if (menuMethod === 'link') {
+      if (!menuLink.trim()) {
+        setMenuLinkError('Menu link is required');
+        return;
+      }
+      if (!isValidUrl) {
+        setMenuLinkError('Please enter a valid URL (e.g., yourwebsite.com/menus)');
+        return;
+      }
+    } else {
+      if (!uploadedFile || uploadStatus !== 'uploaded') {
+        setUploadError('Please upload a menu file');
+        return;
+      }
+    }
+
+    // Clear errors
+    setMenuLinkError('');
+    setUploadError('');
+
     // Save to merchant auth store
-    saveOnboardingMenuCompleted()
+    saveOnboardingMenuCompleted();
 
     // Navigate to next step
-    router.push('/merchant/onboarding?step=pricing')
-  }
-
-  const canSave = () => {
-    if (menuMethod === 'link') {
-      return menuLink.trim().length > 0
-    } else {
-      return uploadStatus === 'uploaded' && uploadedFile !== null
-    }
-  }
+    router.push('/merchant/onboarding?step=pricing');
+  };
 
   return (
     <div className="bg-white border border-gray-200 rounded-lg p-8">
@@ -78,17 +126,15 @@ export default function MenuStep() {
         Back
       </button>
 
-      <h1 className="text-3xl font-bold text-gray-900 mb-2">
-        Let's build your menu
-      </h1>
+      <h1 className="text-3xl font-bold text-gray-900 mb-2">Let&apos;s build your menu</h1>
       <p className="text-gray-600 mb-8">
-        Share your menu with us and we'll help you build one for DashDoor.
+        Share your menu with us and we&apos;ll help you build one for DashDoor.
       </p>
 
       {/* Method selection */}
       <div className="mb-6">
         <p className="text-sm font-medium text-gray-900 mb-3">
-          Choose how you'd like to provide your menu
+          Choose how you&apos;d like to provide your menu
         </p>
         <div className="flex gap-3">
           <button
@@ -117,19 +163,26 @@ export default function MenuStep() {
       {/* Menu link input */}
       {menuMethod === 'link' && (
         <div className="mb-8">
-          <label className="block text-sm font-medium text-gray-900 mb-2">
-            Enter menu link
-          </label>
+          <label className="block text-sm font-medium text-gray-900 mb-2">Enter menu link</label>
           <div className="flex items-center gap-2">
             <Input
               type="text"
               placeholder="yourwebsite.com/menus"
               value={menuLink}
-              onChange={(e) => setMenuLink(e.target.value)}
-              className="flex-1"
+              onChange={e => handleMenuLinkChange(e.target.value)}
+              onBlur={handleMenuLinkBlur}
+              className={`flex-1 ${menuLinkError ? 'border-[#b71000] focus:border-[#b71000]' : ''}`}
             />
             <span className="text-sm text-gray-500">Required</span>
           </div>
+          {menuLinkError && (
+            <div className="flex items-center gap-2 mt-2 text-[#b71000]">
+              <div className="h-4 w-4 flex-shrink-0 rounded-full flex items-center justify-center bg-[#b71000]">
+                <span className="text-white text-[10px] font-bold">!</span>
+              </div>
+              <span className="text-xs font-medium">{menuLinkError}</span>
+            </div>
+          )}
         </div>
       )}
 
@@ -139,19 +192,19 @@ export default function MenuStep() {
           <div
             className="border-2 border-dashed border-gray-300 rounded-lg p-12 text-center cursor-pointer hover:border-gray-400 transition-colors"
             onClick={() => fileInputRef.current?.click()}
-            onDrop={(e) => {
-              e.preventDefault()
-              const file = e.dataTransfer.files[0]
+            onDrop={e => {
+              e.preventDefault();
+              const file = e.dataTransfer.files[0];
               if (file) {
-                const validTypes = ['image/png', 'image/jpeg', 'image/jpg', 'application/pdf']
+                const validTypes = ['image/png', 'image/jpeg', 'image/jpg', 'application/pdf'];
                 if (validTypes.includes(file.type) && file.size <= 4 * 1024 * 1024) {
-                  setUploadedFile(file)
-                  setUploadStatus('uploading')
-                  setTimeout(() => setUploadStatus('uploaded'), 1000)
+                  setUploadedFile(file);
+                  setUploadStatus('uploading');
+                  setTimeout(() => setUploadStatus('uploaded'), 1000);
                 }
               }
             }}
-            onDragOver={(e) => e.preventDefault()}
+            onDragOver={e => e.preventDefault()}
           >
             <Upload className="h-12 w-12 text-gray-400 mx-auto mb-4" />
             <p className="text-sm font-medium text-gray-900 mb-1">Drag and drop here</p>
@@ -192,12 +245,17 @@ export default function MenuStep() {
                   </div>
                 )}
               </div>
-              <button
-                onClick={handleRemoveFile}
-                className="text-gray-400 hover:text-gray-600"
-              >
+              <button onClick={handleRemoveFile} className="text-gray-400 hover:text-gray-600">
                 <X className="h-5 w-5" />
               </button>
+            </div>
+          )}
+          {uploadError && !uploadedFile && (
+            <div className="flex items-center gap-2 mt-4 text-[#b71000]">
+              <div className="h-4 w-4 flex-shrink-0 rounded-full flex items-center justify-center bg-[#b71000]">
+                <span className="text-white text-[10px] font-bold">!</span>
+              </div>
+              <span className="text-xs font-medium">{uploadError}</span>
             </div>
           )}
         </div>
@@ -205,9 +263,7 @@ export default function MenuStep() {
 
       {/* Menu requirements */}
       <div className="mb-8 p-4 bg-gray-50 rounded-lg">
-        <p className="text-sm font-medium text-gray-900 mb-3">
-          What your menu should include
-        </p>
+        <p className="text-sm font-medium text-gray-900 mb-3">What your menu should include</p>
         <ul className="space-y-2">
           <li className="flex items-start gap-2 text-sm text-gray-600">
             <span className="text-lg">🍽️</span>
@@ -226,12 +282,10 @@ export default function MenuStep() {
 
       <button
         onClick={handleSave}
-        disabled={!canSave()}
-        className="w-full py-3 bg-red-600 hover:bg-red-700 text-white font-medium rounded-md transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
+        className="w-full py-3 bg-red-600 hover:bg-red-700 text-white font-medium rounded-md transition-colors"
       >
         {menuMethod === 'upload' && uploadStatus === 'uploaded' ? 'Save' : 'Next'}
       </button>
     </div>
-  )
+  );
 }
-

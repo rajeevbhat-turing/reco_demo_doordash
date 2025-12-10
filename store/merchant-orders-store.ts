@@ -58,7 +58,7 @@ interface OrdersStore {
   searchQuery: string;
   selectedFilter: string;
   activeTab: 'Active' | 'Scheduled' | 'History';
-
+  
   // Actions
   setOrders: (orders: MerchantOrder[]) => void;
   addOrder: (order: MerchantOrder) => void;
@@ -207,11 +207,11 @@ if (typeof window !== 'undefined') {
   ) => {
     const { storeId, storeData } = event.detail;
     currentStoreId = storeId;
-
+    
     // Load store-specific data from localStorage or use default from storeData
     const storageKey = `merchant.${storeId}.orders`;
     let storedData = storeData.orders;
-
+    
     try {
       const stored = localStorage.getItem(storageKey);
       if (stored) {
@@ -220,7 +220,7 @@ if (typeof window !== 'undefined') {
     } catch (e) {
       // Use default from storeData
     }
-
+    
     const orders = (storedData.orders || []).map((o: any) => ({
       // ID (required)
       id: o.id || o.orderId || `order-${Date.now()}-${Math.random().toString(36).slice(2)}`,

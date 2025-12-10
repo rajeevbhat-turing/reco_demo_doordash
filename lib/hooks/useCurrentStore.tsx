@@ -8,10 +8,12 @@ import {
   ReactNode,
   useMemo,
   useCallback,
+  useRef,
 } from 'react';
 import { useMerchantPersistedState } from './useMerchantPersistedState';
 import { StoreMerchantData } from '@/constants/merchant-store-data';
 import { initializeStoreData, loadStoreDataIntoStores } from '@/lib/utils/store-data-loader';
+import { useMerchantAuthStore } from '@/store/merchant-auth-store';
 
 interface CurrentStoreContextType {
   currentStoreId: string;
@@ -40,10 +42,28 @@ export function CurrentStoreProvider({ children }: { children: ReactNode }) {
   );
   const [currentStoreData, setCurrentStoreData] = useState<StoreMerchantData | null>(null);
 
+  // Track current merchant to force reload when user changes
+  const currentMerchant = useMerchantAuthStore(state => state.currentMerchant);
+  const prevMerchantIdRef = useRef<string | null>(null);
+
   // Set mounted flag after hydration
   useEffect(() => {
     setIsMounted(true);
   }, []);
+
+  // Force reload when merchant changes (login/logout)
+  useEffect(() => {
+    if (!isMounted) return;
+
+    const newMerchantId = currentMerchant?.id || null;
+
+    // If merchant changed, clear current store data to force reload
+    if (prevMerchantIdRef.current !== null && prevMerchantIdRef.current !== newMerchantId) {
+      setCurrentStoreData(null);
+    }
+
+    prevMerchantIdRef.current = newMerchantId;
+  }, [currentMerchant?.id, isMounted]);
 
   useEffect(() => {
     if (!isMounted || !currentStoreId) return;
@@ -64,7 +84,7 @@ export function CurrentStoreProvider({ children }: { children: ReactNode }) {
     return () => {
       cancelled = true;
     };
-  }, [currentStoreId, isMounted]);
+  }, [currentStoreId, isMounted, currentMerchant?.id]);
 
   // Note: currentStoreId can be either:
   // 1. Numeric ID as string from database (e.g., "24") - used when restaurant is selected from StoreSelector

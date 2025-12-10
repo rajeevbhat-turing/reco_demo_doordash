@@ -1,106 +1,113 @@
-'use client'
-import { useState, useEffect, useMemo } from "react"
-import { useParams } from "next/navigation"
-import MerchantLayout from "@/components/merchant/MerchantLayout"
-import { ChevronDown } from "lucide-react"
-import { useCurrentStore } from "@/lib/hooks/useCurrentStore"
-import { useAllRestaurants } from "@/lib/hooks/use-restaurants"
-import { useQuery } from "@tanstack/react-query"
-import { useOrdersStore } from "@/store/orders-store"
+'use client';
+import { useState, useEffect, useMemo } from 'react';
+import { useParams } from 'next/navigation';
+import MerchantLayout from '@/components/merchant/MerchantLayout';
+import { ChevronDown } from 'lucide-react';
+import { useCurrentStore } from '@/lib/hooks/useCurrentStore';
+import { useAllRestaurants } from '@/lib/hooks/merchant/use-restaurants';
+import { useQuery } from '@tanstack/react-query';
+import { useOrdersStore } from '@/store/orders-store';
 
 /**
  * Route: /merchant/store/[id]/customers/insights
- * 
+ *
  * Customer Insights page for a specific store
  */
 export default function CustomerInsightsPage() {
-  const params = useParams()
-  const { setCurrentStoreId, currentStoreId: contextStoreId } = useCurrentStore()
-  const { data: restaurants, isLoading } = useAllRestaurants()
-  const [storeSet, setStoreSet] = useState(false)
-  const [mounted, setMounted] = useState(false)
-  const [selectedPeriod, setSelectedPeriod] = useState("This month")
-  const [selectedCustomerType, setSelectedCustomerType] = useState("All")
+  const params = useParams();
+  const { setCurrentStoreId, currentStoreId: contextStoreId } = useCurrentStore();
+  const { data: restaurants, isLoading } = useAllRestaurants();
+  const [storeSet, setStoreSet] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  const [selectedPeriod, setSelectedPeriod] = useState('This month');
+  const [selectedCustomerType, setSelectedCustomerType] = useState('All');
 
-  const storeIdParam = params.id as string
+  const storeIdParam = params.id as string;
 
   // Track mounted state to avoid hydration issues
   useEffect(() => {
-    setMounted(true)
-  }, [])
+    setMounted(true);
+  }, []);
 
   // Get orders from localStorage
-  const { orders: allOrders } = useOrdersStore()
-  
+  const { orders: allOrders } = useOrdersStore();
+
   // Filter orders for this store
   const storeOrders = useMemo(() => {
-    if (!storeIdParam) return []
+    if (!storeIdParam) return [];
     return allOrders.filter((order: any) => {
-      const orderStoreId = order.storeId || order.restaurantId
-      return String(orderStoreId) === String(storeIdParam)
-    })
-  }, [allOrders, storeIdParam])
+      const orderStoreId = order.storeId || order.restaurantId;
+      return String(orderStoreId) === String(storeIdParam);
+    });
+  }, [allOrders, storeIdParam]);
 
   // Calculate customer insights from localStorage orders
   const calculatedInsights = useMemo(() => {
-    const now = new Date()
-    let startDate: Date
-    let endDate = now
-    
+    const now = new Date();
+    let startDate: Date;
+    let endDate = now;
+
     // Determine date range based on selected period
     if (selectedPeriod === 'This month') {
-      startDate = new Date(now.getFullYear(), now.getMonth(), 1)
+      startDate = new Date(now.getFullYear(), now.getMonth(), 1);
     } else if (selectedPeriod === 'Last month') {
-      startDate = new Date(now.getFullYear(), now.getMonth() - 1, 1)
-      endDate = new Date(now.getFullYear(), now.getMonth(), 0)
-    } else { // This year
-      startDate = new Date(now.getFullYear(), 0, 1)
+      startDate = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+      endDate = new Date(now.getFullYear(), now.getMonth(), 0);
+    } else {
+      // This year
+      startDate = new Date(now.getFullYear(), 0, 1);
     }
-    
+
     // Filter orders in the selected period
     const periodOrders = storeOrders.filter((order: any) => {
-      const orderDate = order.orderDate ? new Date(order.orderDate) : null
-      if (!orderDate) return false
-      return orderDate >= startDate && orderDate <= endDate
-    })
-    
+      const orderDate = order.orderDate ? new Date(order.orderDate) : null;
+      if (!orderDate) return false;
+      return orderDate >= startDate && orderDate <= endDate;
+    });
+
     // Get unique customers
-    const customerMap = new Map<string, { orders: any[], userId: string | null }>()
+    const customerMap = new Map<string, { orders: any[]; userId: string | null }>();
     periodOrders.forEach((order: any) => {
-      const customerKey = order.userId || order.userName || order.deliveryAddress?.street || 'anonymous'
+      const customerKey =
+        order.userId || order.userName || order.deliveryAddress?.street || 'anonymous';
       if (!customerMap.has(customerKey)) {
-        customerMap.set(customerKey, { orders: [], userId: order.userId || null })
+        customerMap.set(customerKey, { orders: [], userId: order.userId || null });
       }
-      customerMap.get(customerKey)!.orders.push(order)
-    })
-    
-    const totalCustomers = customerMap.size
-    const customers = Array.from(customerMap.values())
-    
+      customerMap.get(customerKey)!.orders.push(order);
+    });
+
+    const totalCustomers = customerMap.size;
+    const customers = Array.from(customerMap.values());
+
     // Categorize customers
-    const newCustomers = customers.filter(c => c.orders.length === 1).length
-    const occasionalCustomers = customers.filter(c => c.orders.length >= 2 && c.orders.length <= 4).length
-    const frequentCustomers = customers.filter(c => c.orders.length >= 5).length
-    
-    const newCustomersPercent = totalCustomers > 0 ? Math.round((newCustomers / totalCustomers) * 100) : 0
-    const occasionalCustomersPercent = totalCustomers > 0 ? Math.round((occasionalCustomers / totalCustomers) * 100) : 0
-    const frequentCustomersPercent = totalCustomers > 0 ? Math.round((frequentCustomers / totalCustomers) * 100) : 0
-    
+    const newCustomers = customers.filter(c => c.orders.length === 1).length;
+    const occasionalCustomers = customers.filter(
+      c => c.orders.length >= 2 && c.orders.length <= 4
+    ).length;
+    const frequentCustomers = customers.filter(c => c.orders.length >= 5).length;
+
+    const newCustomersPercent =
+      totalCustomers > 0 ? Math.round((newCustomers / totalCustomers) * 100) : 0;
+    const occasionalCustomersPercent =
+      totalCustomers > 0 ? Math.round((occasionalCustomers / totalCustomers) * 100) : 0;
+    const frequentCustomersPercent =
+      totalCustomers > 0 ? Math.round((frequentCustomers / totalCustomers) * 100) : 0;
+
     // Get customer locations (zip codes)
-    const zipCodeMap = new Map<string, number>()
+    const zipCodeMap = new Map<string, number>();
     periodOrders.forEach((order: any) => {
-      const zipCode = order.deliveryAddress?.zipCode
+      const zipCode = order.deliveryAddress?.zipCode;
       if (zipCode) {
-        zipCodeMap.set(zipCode, (zipCodeMap.get(zipCode) || 0) + 1)
+        zipCodeMap.set(zipCode, (zipCodeMap.get(zipCode) || 0) + 1);
       }
-    })
-    
+    });
+
     // Filter zip codes with at least 2 customers
     const customerLocations = Array.from(zipCodeMap.entries())
       .filter(([_, count]) => count >= 2)
       .map(([zipCode, customerCount]) => ({ zipCode, customerCount }))
-      .sort((a, b) => b.customerCount - a.customerCount)
-    
+      .sort((a, b) => b.customerCount - a.customerCount);
+
     return {
       totalCustomers,
       newCustomers,
@@ -111,8 +118,8 @@ export default function CustomerInsightsPage() {
       frequentCustomersPercent,
       customerLocations,
       totalCustomersChange: 0, // Can't calculate change without prior period data
-    }
-  }, [storeOrders, selectedPeriod])
+    };
+  }, [storeOrders, selectedPeriod]);
 
   // Fetch customer insights data from API (for comparison/fallback)
   const { data: apiInsightsData, isLoading: isLoadingApiInsights } = useQuery({
@@ -122,50 +129,56 @@ export default function CustomerInsightsPage() {
         'This month': 'this_month',
         'Last month': 'last_month',
         'This year': 'this_year',
-      }
-      const period = periodMap[selectedPeriod] || 'this_month'
-      const response = await fetch(`/api/stores/${storeIdParam}/customers/insights?period=${period}`)
-      if (!response.ok) throw new Error('Failed to fetch customer insights')
-      const result = await response.json()
-      return result.data
+      };
+      const period = periodMap[selectedPeriod] || 'this_month';
+      const response = await fetch(
+        `/api/stores/${storeIdParam}/customers/insights?period=${period}`
+      );
+      if (!response.ok) throw new Error('Failed to fetch customer insights');
+      const result = await response.json();
+      return result.data;
     },
     enabled: !!storeIdParam && storeSet && mounted,
-  })
+  });
 
   // Use calculated insights from localStorage, fallback to API if available
-  const insightsData = calculatedInsights.totalCustomers > 0 ? calculatedInsights : (apiInsightsData || calculatedInsights)
-  const isLoadingInsights = false // No loading since we're using localStorage
+  const insightsData =
+    calculatedInsights.totalCustomers > 0
+      ? calculatedInsights
+      : apiInsightsData || calculatedInsights;
+  const isLoadingInsights = false; // No loading since we're using localStorage
 
   // Set the store ID when component mounts or storeIdParam changes
   useEffect(() => {
-    if (isLoading || !restaurants || storeSet) return
+    if (isLoading || !restaurants || storeSet) return;
 
     // Try to find restaurant by numeric ID first
-    let restaurant = restaurants.find(r => r.id === storeIdParam)
-    
+    let restaurant = restaurants.find(r => r.id === storeIdParam);
+
     // If not found, try to find by name (slug)
     if (!restaurant) {
-      restaurant = restaurants.find(r => 
-        r.name.toLowerCase().replace(/\s+/g, '-') === storeIdParam.toLowerCase() ||
-        r.name === storeIdParam
-      )
+      restaurant = restaurants.find(
+        r =>
+          r.name.toLowerCase().replace(/\s+/g, '-') === storeIdParam.toLowerCase() ||
+          r.name === storeIdParam
+      );
     }
 
     if (restaurant) {
       if (contextStoreId !== restaurant.id) {
-        setCurrentStoreId(restaurant.id)
+        setCurrentStoreId(restaurant.id);
       }
       if (typeof window !== 'undefined') {
-        localStorage.setItem('merchant-mode', 'true')
+        localStorage.setItem('merchant-mode', 'true');
       }
-      setStoreSet(true)
+      setStoreSet(true);
     } else {
       if (contextStoreId !== '1') {
-        setCurrentStoreId('1')
+        setCurrentStoreId('1');
       }
-      setStoreSet(true)
+      setStoreSet(true);
     }
-  }, [storeIdParam, restaurants, isLoading, setCurrentStoreId, contextStoreId, storeSet])
+  }, [storeIdParam, restaurants, isLoading, setCurrentStoreId, contextStoreId, storeSet]);
 
   // Show loading state while finding store or not mounted
   if (isLoading || !mounted) {
@@ -177,7 +190,7 @@ export default function CustomerInsightsPage() {
           </div>
         </div>
       </MerchantLayout>
-    )
+    );
   }
 
   return (
@@ -209,14 +222,7 @@ export default function CustomerInsightsPage() {
             <div className="text-center">
               <div className="relative w-32 h-32 mx-auto mb-3">
                 <svg className="w-32 h-32 transform -rotate-90">
-                  <circle
-                    cx="64"
-                    cy="64"
-                    r="56"
-                    stroke="#e5e7eb"
-                    strokeWidth="8"
-                    fill="none"
-                  />
+                  <circle cx="64" cy="64" r="56" stroke="#e5e7eb" strokeWidth="8" fill="none" />
                   <circle
                     cx="64"
                     cy="64"
@@ -236,8 +242,14 @@ export default function CustomerInsightsPage() {
                 </div>
               </div>
               <div className="text-sm font-medium text-gray-900 mb-1">Total customers</div>
-              <div className={`text-sm ${insightsData?.totalCustomersChange && parseFloat(insightsData.totalCustomersChange) > 0 ? 'text-green-600' : insightsData?.totalCustomersChange && parseFloat(insightsData.totalCustomersChange) < 0 ? 'text-red-600' : 'text-gray-500'}`}>
-                {isLoadingInsights ? '--%' : insightsData?.totalCustomersChange ? `${insightsData.totalCustomersChange > 0 ? '+' : ''}${insightsData.totalCustomersChange}%` : '--%'}
+              <div
+                className={`text-sm ${insightsData?.totalCustomersChange && parseFloat(insightsData.totalCustomersChange) > 0 ? 'text-green-600' : insightsData?.totalCustomersChange && parseFloat(insightsData.totalCustomersChange) < 0 ? 'text-red-600' : 'text-gray-500'}`}
+              >
+                {isLoadingInsights
+                  ? '--%'
+                  : insightsData?.totalCustomersChange
+                    ? `${insightsData.totalCustomersChange > 0 ? '+' : ''}${insightsData.totalCustomersChange}%`
+                    : '--%'}
               </div>
             </div>
 
@@ -278,7 +290,8 @@ export default function CustomerInsightsPage() {
           {/* DashPass Description */}
           <div className="pt-4 border-t border-gray-200">
             <p className="text-sm text-gray-600">
-              DashPass is a loyalty subscription service for customers. DashPass customers frequently place high-value orders.
+              DashPass is a loyalty subscription service for customers. DashPass customers
+              frequently place high-value orders.
             </p>
           </div>
         </div>
@@ -288,17 +301,17 @@ export default function CustomerInsightsPage() {
           <div className="mb-4">
             <h2 className="text-xl font-semibold text-gray-900 mb-1">Customer locations</h2>
             <p className="text-sm text-gray-600 mb-4">Top delivery destinations</p>
-            
+
             {/* Customer Type Filters */}
             <div className="flex items-center gap-2 mb-4">
-              {["All", "New", "Occasional", "Frequent"].map((type) => (
+              {['All', 'New', 'Occasional', 'Frequent'].map(type => (
                 <button
                   key={type}
                   onClick={() => setSelectedCustomerType(type)}
                   className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
                     selectedCustomerType === type
-                      ? "bg-gray-900 text-white"
-                      : "bg-white border border-gray-300 text-gray-700 hover:bg-gray-50"
+                      ? 'bg-gray-900 text-white'
+                      : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50'
                   }`}
                 >
                   {type}
@@ -307,7 +320,8 @@ export default function CustomerInsightsPage() {
             </div>
 
             <p className="text-sm text-gray-600 mb-4">
-              This map shows customer locations when at least 2 customers place orders from the same zip code.
+              This map shows customer locations when at least 2 customers place orders from the same
+              zip code.
             </p>
           </div>
 
@@ -315,17 +329,27 @@ export default function CustomerInsightsPage() {
           {insightsData?.customerLocations && insightsData.customerLocations.length > 0 ? (
             <div className="space-y-2 mb-4">
               {insightsData.customerLocations.map((location: any, index: number) => (
-                <div key={location.zipCode} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                <div
+                  key={location.zipCode}
+                  className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                >
                   <div>
-                    <p className="text-sm font-medium text-gray-900">Zip Code: {location.zipCode}</p>
-                    <p className="text-xs text-gray-600">{location.customerCount} {location.customerCount === 1 ? 'customer' : 'customers'}</p>
+                    <p className="text-sm font-medium text-gray-900">
+                      Zip Code: {location.zipCode}
+                    </p>
+                    <p className="text-xs text-gray-600">
+                      {location.customerCount}{' '}
+                      {location.customerCount === 1 ? 'customer' : 'customers'}
+                    </p>
                   </div>
                 </div>
               ))}
             </div>
           ) : (
             <div className="mb-4">
-              <p className="text-sm text-gray-500">No customer locations with multiple customers found.</p>
+              <p className="text-sm text-gray-500">
+                No customer locations with multiple customers found.
+              </p>
             </div>
           )}
 
@@ -343,6 +367,5 @@ export default function CustomerInsightsPage() {
         </div>
       </div>
     </MerchantLayout>
-  )
+  );
 }
-

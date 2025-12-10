@@ -1,49 +1,50 @@
-'use client'
+'use client';
 
-import { useEffect } from 'react'
-import { useParams, useRouter } from 'next/navigation'
-import { useCurrentStore } from '@/lib/hooks/useCurrentStore'
-import { useAllRestaurants } from '@/lib/hooks/use-restaurants'
+import { useEffect } from 'react';
+import { useParams, useRouter } from 'next/navigation';
+import { useCurrentStore } from '@/lib/hooks/useCurrentStore';
+import { useAllRestaurants } from '@/lib/hooks/merchant/use-restaurants';
 
 /**
  * Route: /store/[id]/merchant
- * 
+ *
  * Merchant-specific route for store pages
  * Sets the current store in the merchant portal and redirects to merchant home
  */
 export default function StoreMerchantPage() {
-  const params = useParams()
-  const router = useRouter()
-  const { setCurrentStoreId } = useCurrentStore()
-  const { data: restaurants, isLoading } = useAllRestaurants()
+  const params = useParams();
+  const router = useRouter();
+  const { setCurrentStoreId } = useCurrentStore();
+  const { data: restaurants, isLoading } = useAllRestaurants();
 
-  const storeIdParam = params.id as string
+  const storeIdParam = params.id as string;
 
   useEffect(() => {
-    if (isLoading) return
+    if (isLoading) return;
 
     // Try to find restaurant by numeric ID first
-    let restaurant = restaurants?.find(r => r.id === storeIdParam)
-    
+    let restaurant = restaurants?.find(r => r.id === storeIdParam);
+
     // If not found, try to find by name (slug)
     if (!restaurant) {
-      restaurant = restaurants?.find(r => 
-        r.name.toLowerCase().replace(/\s+/g, '-') === storeIdParam.toLowerCase() ||
-        r.name === storeIdParam
-      )
+      restaurant = restaurants?.find(
+        r =>
+          r.name.toLowerCase().replace(/\s+/g, '-') === storeIdParam.toLowerCase() ||
+          r.name === storeIdParam
+      );
     }
 
     if (restaurant) {
       // Set the current store ID (numeric ID as string)
-      setCurrentStoreId(restaurant.id)
+      setCurrentStoreId(restaurant.id);
       // Redirect to merchant home
-      router.replace('/merchant')
+      router.replace('/merchant');
     } else {
       // Store not found, redirect to merchant home with default store
-      console.warn(`Store not found: ${storeIdParam}`)
-      router.replace('/merchant')
+      console.warn(`Store not found: ${storeIdParam}`);
+      router.replace('/merchant');
     }
-  }, [storeIdParam, restaurants, isLoading, setCurrentStoreId, router])
+  }, [storeIdParam, restaurants, isLoading, setCurrentStoreId, router]);
 
   // Show loading state while finding store
   return (
@@ -52,6 +53,5 @@ export default function StoreMerchantPage() {
         <p className="text-gray-600">Loading store...</p>
       </div>
     </div>
-  )
+  );
 }
-

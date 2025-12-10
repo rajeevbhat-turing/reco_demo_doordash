@@ -2,9 +2,8 @@
 import { useState, useMemo, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Check, Lock, ChevronDown, X } from 'lucide-react';
-import { DashDoorLogoMark } from '@/components/common/Icons';
 import { useCurrentStore } from '@/lib/hooks/useCurrentStore';
-import { useAllRestaurants } from '@/lib/hooks/use-restaurants';
+import { useAllRestaurants } from '@/lib/hooks/merchant/use-restaurants';
 import { useMerchantAuthStore } from '@/store/merchant-auth-store';
 import type { Restaurant } from '@/constants/restaurants';
 
@@ -279,10 +278,10 @@ export default function OnboardingSidebar({ currentStep, completedSteps }: Onboa
                 isActive
                   ? 'bg-red-50 text-red-700'
                   : isCompleted
-                  ? 'text-gray-700'
-                  : isLocked
-                  ? 'text-gray-400'
-                  : 'text-gray-700'
+                    ? 'text-gray-700'
+                    : isLocked
+                      ? 'text-gray-400'
+                      : 'text-gray-700'
               }`}
             >
               <div className="flex items-center gap-2 flex-1">

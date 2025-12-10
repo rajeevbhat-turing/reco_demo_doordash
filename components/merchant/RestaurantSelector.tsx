@@ -1,76 +1,82 @@
-'use client'
+'use client';
 
-import { useState, useMemo, useRef, useEffect } from "react"
-import { ChevronDown, X } from "lucide-react"
-import { useAllRestaurants } from "@/lib/hooks/use-restaurants"
-import type { Restaurant } from "@/constants/restaurants"
+import { useState, useMemo, useRef, useEffect } from 'react';
+import { ChevronDown, X } from 'lucide-react';
+import { useAllRestaurants } from '@/lib/hooks/merchant/use-restaurants';
+import type { Restaurant } from '@/constants/restaurants';
 
 interface RestaurantSelectorProps {
-  selectedRestaurantId?: string
-  onSelectRestaurant?: (restaurantId: string) => void
+  selectedRestaurantId?: string;
+  onSelectRestaurant?: (restaurantId: string) => void;
 }
 
-export default function RestaurantSelector({ selectedRestaurantId, onSelectRestaurant }: RestaurantSelectorProps) {
-  const [isOpen, setIsOpen] = useState(false)
-  const [searchValue, setSearchValue] = useState("")
-  const dropdownRef = useRef<HTMLDivElement>(null)
-  
-  // Fetch restaurants from database
-  const { data: restaurants = [], isLoading } = useAllRestaurants()
+export default function RestaurantSelector({
+  selectedRestaurantId,
+  onSelectRestaurant,
+}: RestaurantSelectorProps) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [searchValue, setSearchValue] = useState('');
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const selectedRestaurant = restaurants.find(r => r.id === selectedRestaurantId) || restaurants[0]
+  // Fetch restaurants from database
+  const { data: restaurants = [], isLoading } = useAllRestaurants();
+
+  const selectedRestaurant = restaurants.find(r => r.id === selectedRestaurantId) || restaurants[0];
 
   const filteredRestaurants = useMemo(() => {
     if (!searchValue.trim()) {
-      return restaurants
+      return restaurants;
     }
-    const searchLower = searchValue.toLowerCase()
-    return restaurants.filter(restaurant =>
-      restaurant.name.toLowerCase().includes(searchLower) ||
-      `${restaurant.street}, ${restaurant.city}, ${restaurant.state} ${restaurant.zipCode}`.toLowerCase().includes(searchLower)
-    )
-  }, [searchValue, restaurants])
+    const searchLower = searchValue.toLowerCase();
+    return restaurants.filter(
+      restaurant =>
+        restaurant.name.toLowerCase().includes(searchLower) ||
+        `${restaurant.street}, ${restaurant.city}, ${restaurant.state} ${restaurant.zipCode}`
+          .toLowerCase()
+          .includes(searchLower)
+    );
+  }, [searchValue, restaurants]);
 
   const formatAddress = (restaurant: Restaurant) => {
-    return `${restaurant.street}, ${restaurant.city}, ${restaurant.state} ${restaurant.zipCode}, USA`
-  }
-  
+    return `${restaurant.street}, ${restaurant.city}, ${restaurant.state} ${restaurant.zipCode}, USA`;
+  };
+
   // Show loading state or empty state
   if (isLoading) {
     return (
       <div className="px-3 py-2 bg-gray-50 border border-gray-200 rounded-md">
         <div className="text-sm text-gray-500">Loading restaurants...</div>
       </div>
-    )
+    );
   }
-  
+
   if (restaurants.length === 0) {
     return (
       <div className="px-3 py-2 bg-gray-50 border border-gray-200 rounded-md">
         <div className="text-sm text-gray-500">No restaurants available</div>
       </div>
-    )
+    );
   }
-  
+
   if (!selectedRestaurant) {
-    return null
+    return null;
   }
 
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setIsOpen(false)
+        setIsOpen(false);
       }
-    }
+    };
 
     if (isOpen) {
-      document.addEventListener('mousedown', handleClickOutside)
+      document.addEventListener('mousedown', handleClickOutside);
       return () => {
-        document.removeEventListener('mousedown', handleClickOutside)
-      }
+        document.removeEventListener('mousedown', handleClickOutside);
+      };
     }
-  }, [isOpen])
+  }, [isOpen]);
 
   return (
     <div className="relative" ref={dropdownRef}>
@@ -88,15 +94,10 @@ export default function RestaurantSelector({ selectedRestaurantId, onSelectResta
       {isOpen && (
         <>
           {/* Overlay backdrop */}
-          <div 
-            className="fixed inset-0 bg-black/20 z-40"
-            onClick={() => setIsOpen(false)}
-          />
-          
+          <div className="fixed inset-0 bg-black/20 z-40" onClick={() => setIsOpen(false)} />
+
           {/* Dropdown Panel */}
-          <div 
-            className="absolute left-0 top-full mt-1 w-[400px] max-h-[400px] bg-white z-50 shadow-2xl rounded-lg flex flex-col border border-gray-200"
-          >
+          <div className="absolute left-0 top-full mt-1 w-[400px] max-h-[400px] bg-white z-50 shadow-2xl rounded-lg flex flex-col border border-gray-200">
             {/* Header Section */}
             <div className="p-4 border-b border-gray-200 flex-shrink-0">
               <div className="flex items-center justify-between mb-4">
@@ -115,25 +116,25 @@ export default function RestaurantSelector({ selectedRestaurantId, onSelectResta
             <div className="flex-1 overflow-y-auto">
               <div className="p-4">
                 <div className="space-y-0">
-                  {filteredRestaurants.map((restaurant) => {
-                    const isSelected = selectedRestaurantId === restaurant.id
+                  {filteredRestaurants.map(restaurant => {
+                    const isSelected = selectedRestaurantId === restaurant.id;
                     return (
                       <button
                         key={restaurant.id}
                         onClick={() => {
-                          onSelectRestaurant?.(restaurant.id)
-                          setIsOpen(false)
+                          onSelectRestaurant?.(restaurant.id);
+                          setIsOpen(false);
                         }}
                         className={`w-full text-left px-3 py-2.5 rounded-md transition-colors ${
-                          isSelected
-                            ? "bg-gray-100"
-                            : "hover:bg-gray-50"
+                          isSelected ? 'bg-gray-100' : 'hover:bg-gray-50'
                         }`}
                       >
                         <div className="flex items-start gap-2.5">
-                          <div className={`w-2.5 h-2.5 rounded-full mt-1 flex-shrink-0 ${
-                            isSelected ? "bg-green-500" : "bg-gray-300"
-                          }`} />
+                          <div
+                            className={`w-2.5 h-2.5 rounded-full mt-1 flex-shrink-0 ${
+                              isSelected ? 'bg-green-500' : 'bg-gray-300'
+                            }`}
+                          />
                           <div className="flex-1 min-w-0">
                             <div className="text-sm font-medium text-gray-900">
                               {restaurant.name}
@@ -144,7 +145,7 @@ export default function RestaurantSelector({ selectedRestaurantId, onSelectResta
                           </div>
                         </div>
                       </button>
-                    )
+                    );
                   })}
                 </div>
               </div>
@@ -153,6 +154,5 @@ export default function RestaurantSelector({ selectedRestaurantId, onSelectResta
         </>
       )}
     </div>
-  )
+  );
 }
-

@@ -1,10 +1,13 @@
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import React, { useState, useMemo, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { ChevronDown, X, Check } from 'lucide-react';
 import { isValidEmail } from '@/lib/utils/helperFunctions';
 import countryData from '@/lib/utils/countryCode.json';
+import OTPVerificationModal from '@/components/modals/otp-verification-modal';
+import { useMerchantAuthStore } from '@/store/merchant-auth-store';
+import { useMerchantStoresStore } from '@/store/merchant-stores-store';
 
 // Country type from countryCode.json
 interface Country {
@@ -18,11 +21,19 @@ interface Country {
 
 export default function MerchantSignUpPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const storeEmail = searchParams.get('store_email');
+
+  const tempStore = useMerchantAuthStore(state => state.tempStore);
+  const clearTempStore = useMerchantAuthStore(state => state.clearTempStore);
+  const registerMerchant = useMerchantAuthStore(state => state.registerMerchant);
+  const addStore = useMerchantStoresStore(state => state.addStore);
+
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
     mobileNumber: '',
-    email: '',
+    email: storeEmail || '',
     password: '',
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -32,6 +43,22 @@ export default function MerchantSignUpPage() {
   );
   const [showCountryDropdown, setShowCountryDropdown] = useState(false);
   const [countrySearchValue, setCountrySearchValue] = useState('');
+  const [showOTPModal, setShowOTPModal] = useState(false);
+  const [generatedOTP, setGeneratedOTP] = useState('');
+
+  // Redirect to /merchant if store_email is not provided
+  useEffect(() => {
+    if (!storeEmail) {
+      router.replace('/merchant');
+    }
+  }, [storeEmail, router]);
+
+  // Update email from URL params on mount
+  useEffect(() => {
+    if (storeEmail) {
+      setFormData(prev => ({ ...prev, email: storeEmail }));
+    }
+  }, [storeEmail]);
 
   // Detect user's country on component mount
   useEffect(() => {
@@ -73,12 +100,17 @@ export default function MerchantSignUpPage() {
   const passwordValidation = useMemo(() => {
     const password = formData.password;
     const emailUsername = formData.email.split('@')[0].toLowerCase();
-    
+
     return {
-      noEmailUsername: password.length > 0 && (emailUsername.length === 0 || !password.toLowerCase().includes(emailUsername)),
+      noEmailUsername:
+        password.length > 0 &&
+        (emailUsername.length === 0 || !password.toLowerCase().includes(emailUsername)),
       noSpaceStartEnd: password.length > 0 && password === password.trim(),
       minLength: password.length >= 10,
-      hasUpperLowerSymbol: /[A-Z]/.test(password) && /[a-z]/.test(password) && /[!@#$%^&*(),.?":{}|<>_\-+=\[\]\\;'/`~]/.test(password),
+      hasUpperLowerSymbol:
+        /[A-Z]/.test(password) &&
+        /[a-z]/.test(password) &&
+        /[!@#$%^&*(),.?":{}|<>_\-+=[\]\\;'/`~]/.test(password),
     };
   }, [formData.password, formData.email]);
 
@@ -182,13 +214,101 @@ export default function MerchantSignUpPage() {
     return Object.keys(newErrors).length === 0;
   };
 
+  // Generate 6 digit OTP
+  const generateOTP = () => {
+    return Math.floor(100000 + Math.random() * 900000).toString();
+  };
+
   // Handles form submission
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (validateForm()) {
-      // TODO: Implement actual sign up functionality
-      console.log('Form submitted:', formData);
+      const otp = generateOTP();
+      setGeneratedOTP(otp);
+      console.log('Generated OTP:', otp); // For testing
+      setShowOTPModal(true);
     }
+  };
+
+  // Handle OTP verification
+  const handleOTPVerify = (
+    enteredOtp: string,
+    _generatedOtp: string,
+    setOtpError: (error: string) => void,
+    setAttemptsLeft: (attempts: number) => void,
+    attemptsLeft: number,
+    setShowTooManyAttempts: (show: boolean) => void
+  ) => {
+    // Accept any 6-digit OTP as valid
+    if (enteredOtp.length === 6) {
+      // Create merchant user
+      const merchantId = `merchant-${Date.now()}`;
+
+      // Create store from temp store data
+      let storeId = '';
+      if (tempStore) {
+        storeId = addStore({
+          storeName: tempStore.storeName,
+          storeAddress: tempStore.storeAddress,
+          email: tempStore.email,
+          phone: tempStore.phone,
+          businessType: tempStore.businessType,
+          ownerId: merchantId,
+          lat: tempStore.lat,
+          lng: tempStore.lng,
+        });
+      }
+
+      // Parse address for merchant profile (simplified)
+      const addressParts = tempStore?.storeAddress?.split(',') || [];
+      const street = addressParts[0]?.trim() || '';
+      const city = addressParts[1]?.trim() || '';
+      const stateZip = addressParts[2]?.trim()?.split(' ') || [];
+      const state = stateZip[0] || '';
+      const zipCode = stateZip[1] || '';
+
+      // Register merchant
+      registerMerchant({
+        email: formData.email,
+        password: formData.password,
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        userPhone: `${selectedCountry.dial_code} ${formData.mobileNumber}`,
+        primaryStoreName: tempStore?.storeName || '',
+        primaryStoreAddress: {
+          street,
+          city,
+          state,
+          zipCode,
+        },
+        primaryStorePhone: tempStore?.phone || '',
+        primaryBusinessType: tempStore?.businessType || '',
+        primaryStoreId: storeId,
+        storeIds: storeId ? [storeId] : [],
+      });
+
+      // Clear temp store
+      clearTempStore();
+
+      // Close modal and navigate to onboarding
+      setShowOTPModal(false);
+      router.push('/merchant/onboarding');
+    } else {
+      setOtpError('Invalid code');
+      if (attemptsLeft <= 1) {
+        setShowTooManyAttempts(true);
+      } else {
+        setAttemptsLeft(attemptsLeft - 1);
+      }
+    }
+  };
+
+  // Format phone number for display
+  const formatPhoneNumber = (phone: string) => {
+    if (phone.length >= 10) {
+      return `${phone.slice(0, 3)}-${phone.slice(3, 6)}-${phone.slice(6, 10)}`;
+    }
+    return phone;
   };
 
   // Renders password validation indicator
@@ -207,14 +327,16 @@ export default function MerchantSignUpPage() {
           <X className="h-3 w-3 text-gray-400" />
         </div>
       )}
-      <span className={`text-sm ${formData.password.length > 0 && isValid ? 'text-green-600' : 'text-gray-600'}`}>
+      <span
+        className={`text-sm ${formData.password.length > 0 && isValid ? 'text-green-600' : 'text-gray-600'}`}
+      >
         {text}
       </span>
     </div>
   );
 
   return (
-    <div className="min-h-screen bg-white flex flex-col items-center justify-start py-8 px-4">
+    <div className="min-h-screen bg-white flex flex-col items-center justify-start py-8 px-4 relative">
       <div className="w-full max-w-md">
         {/* Logo and Title */}
         <div className="mb-6">
@@ -224,9 +346,7 @@ export default function MerchantSignUpPage() {
             </svg>
             <span className="text-[#eb1700] font-medium text-sm">for Merchants</span>
           </div>
-          <h1 className="text-[28px] font-bold text-gray-900 leading-tight mb-2">
-            Create account
-          </h1>
+          <h1 className="text-[28px] font-bold text-gray-900 leading-tight mb-2">Create account</h1>
           <p className="text-sm text-gray-600 mb-1">
             Sign up for DashDoor for Merchants to get 0% commission for up to 30 days.
           </p>
@@ -300,7 +420,10 @@ export default function MerchantSignUpPage() {
 
           {/* Mobile Number */}
           <div className="mb-1">
-            <label htmlFor="mobileNumber" className="block text-sm font-medium text-gray-900 mb-1.5">
+            <label
+              htmlFor="mobileNumber"
+              className="block text-sm font-medium text-gray-900 mb-1.5"
+            >
               Mobile Number
             </label>
             <div className="flex">
@@ -386,11 +509,8 @@ export default function MerchantSignUpPage() {
               id="email"
               type="email"
               value={formData.email}
-              onChange={e => handleInputChange('email', e.target.value)}
-              onBlur={e => validateField('email', e.target.value)}
-              className={`w-full px-3 py-2.5 border-2 rounded-lg text-gray-900 text-sm
-                focus:outline-none transition-colors
-                ${errors.email ? 'border-[#b71000] bg-[#fef0ed]' : 'border-transparent bg-[#f7f7f7] focus:border-[#191919]'}`}
+              disabled
+              className="w-full px-3 py-2.5 border-2 rounded-lg text-gray-500 text-sm border-transparent bg-[#f0f0f0] cursor-not-allowed"
             />
             {errors.email && (
               <div className="flex items-start mt-1 text-[#b71000]">
@@ -469,8 +589,8 @@ export default function MerchantSignUpPage() {
 
           {/* Terms Text */}
           <p className="text-xs text-gray-500 mb-4">
-            By tapping &quot;Create account&quot; or &quot;Continue with Google, Facebook or Apple,&quot; you agree to
-            DashDoor&apos;s{' '}
+            By tapping &quot;Create account&quot; or &quot;Continue with Google, Facebook or
+            Apple,&quot; you agree to DashDoor&apos;s{' '}
             <button type="button" className="underline hover:text-gray-700">
               Terms and Conditions
             </button>{' '}
@@ -491,7 +611,17 @@ export default function MerchantSignUpPage() {
           </button>
         </form>
       </div>
+
+      {/* OTP Verification Modal */}
+      <OTPVerificationModal
+        isOpen={showOTPModal}
+        onClose={() => setShowOTPModal(false)}
+        onVerify={handleOTPVerify}
+        phoneNumber={formatPhoneNumber(formData.mobileNumber)}
+        countryCode={selectedCountry.dial_code}
+        generatedOTP={generatedOTP}
+        containerClassName="fixed"
+      />
     </div>
   );
 }
-

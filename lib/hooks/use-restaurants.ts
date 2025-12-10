@@ -1,7 +1,7 @@
 'use client';
 
 import { useQuery } from '@tanstack/react-query';
-import { fetchRestaurants, fetchAllRestaurants } from '@/lib/api/restaurants';
+import { fetchRestaurants } from '@/lib/api/restaurants';
 import type { Restaurant } from '@/constants/restaurants';
 
 /**
@@ -33,20 +33,6 @@ export function useRestaurants(lat?: number, lng?: number, radius: number = 10) 
       return fetchRestaurants({ lat, lng, radius });
     },
     enabled: !!lat && !!lng, // Only fetch if coordinates are provided
-    staleTime: 10 * 60 * 1000, // Cache for 10 minutes
-    retry: 1, // Retry once on failure
-  });
-}
-
-/**
- * Hook to fetch all restaurants (for merchant portal, etc.)
- *
- * @returns Query result with all restaurants data
- */
-export function useAllRestaurants() {
-  return useQuery<Restaurant[]>({
-    queryKey: ['allRestaurants'],
-    queryFn: () => fetchAllRestaurants(),
     staleTime: 10 * 60 * 1000, // Cache for 10 minutes
     retry: 1, // Retry once on failure
   });

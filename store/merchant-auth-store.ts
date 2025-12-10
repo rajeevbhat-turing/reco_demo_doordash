@@ -53,6 +53,17 @@ export interface OnboardingData {
   payout?: OnboardingPayout;
 }
 
+// Temporary store data from landing page
+export interface TempStoreData {
+  storeName: string;
+  storeAddress: string;
+  email: string;
+  phone: string;
+  businessType: string;
+  lat?: number;
+  lng?: number;
+}
+
 // Merchant user interface
 export interface MerchantUser {
   id: string;
@@ -88,11 +99,19 @@ interface MerchantAuthStore {
   currentMerchant: MerchantUser | null;
   // All registered merchants
   merchants: MerchantUser[];
+  // Temporary store data from landing page
+  tempStore: TempStoreData | null;
   // Actions
   setCurrentMerchant: (merchant: MerchantUser | null) => void;
   signOut: () => void;
   getMerchantByEmail: (email: string) => MerchantUser | undefined;
+  registerMerchant: (
+    merchant: Omit<MerchantUser, 'id' | 'onboardingCompleted' | 'onboardingStep'>
+  ) => MerchantUser;
   completeOnboarding: () => void;
+  // Temp store actions
+  setTempStore: (data: TempStoreData) => void;
+  clearTempStore: () => void;
   // Onboarding step actions
   saveOnboardingOrderProtocol: (data: OnboardingOrderProtocol) => void;
   saveOnboardingStoreHours: (data: OnboardingStoreHours) => void;
@@ -189,13 +208,32 @@ export const useMerchantAuthStore = create<MerchantAuthStore>()(
     (set, get) => ({
       currentMerchant: null,
       merchants: sampleMerchants,
+      tempStore: null,
 
       setCurrentMerchant: merchant => set({ currentMerchant: merchant }),
 
       signOut: () => set({ currentMerchant: null }),
 
+      setTempStore: data => set({ tempStore: data }),
+
+      clearTempStore: () => set({ tempStore: null }),
+
       getMerchantByEmail: email => {
         return get().merchants.find(m => m.email.toLowerCase() === email.toLowerCase());
+      },
+
+      registerMerchant: merchantData => {
+        const newMerchant: MerchantUser = {
+          ...merchantData,
+          id: `merchant-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
+          onboardingCompleted: false,
+          onboardingStep: 0,
+        };
+        set(state => ({
+          merchants: [...state.merchants, newMerchant],
+          currentMerchant: newMerchant,
+        }));
+        return newMerchant;
       },
 
       completeOnboarding: () => {

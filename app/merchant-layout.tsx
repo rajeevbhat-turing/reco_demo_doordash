@@ -77,8 +77,11 @@ export default function MerchantLayout({ children }: { children: React.ReactNode
   // Handle authentication and onboarding redirects
   useLayoutEffect(() => {
     // Auth pages handling (sign-in and sign-up)
-    const isAuthPage = pathname === '/merchant/auth' || pathname?.startsWith('/merchant/auth/');
-    
+    const isAuthPage =
+      pathname === '/merchant/auth' ||
+      pathname?.startsWith('/merchant/auth/') ||
+      pathname === '/merchant';
+
     if (isAuthPage) {
       // If logged in, redirect away from auth pages
       if (currentMerchant) {
@@ -92,9 +95,9 @@ export default function MerchantLayout({ children }: { children: React.ReactNode
       return;
     }
 
-    // Not logged in - redirect to auth
+    // Not logged in - redirect to merchant landing page
     if (!currentMerchant) {
-      router.replace('/merchant/auth');
+      router.replace('/merchant');
       return;
     }
 
@@ -131,7 +134,10 @@ export default function MerchantLayout({ children }: { children: React.ReactNode
   }, [pathname, currentMerchant, router]);
 
   // Show auth pages without wrapper components (only if not logged in)
-  const isAuthPage = pathname === '/merchant/auth' || pathname?.startsWith('/merchant/auth/');
+  const isAuthPage =
+    pathname === '/merchant/auth' ||
+    pathname?.startsWith('/merchant/auth/') ||
+    pathname === '/merchant';
   if (isAuthPage) {
     // If logged in, show nothing while redirecting
     if (currentMerchant) {
