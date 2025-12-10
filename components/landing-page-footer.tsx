@@ -1,6 +1,5 @@
 'use client';
 
-import Link from 'next/link';
 import { Globe, ChevronDown } from 'lucide-react';
 import { foodCategorySvgs } from '@/constants/food-category-svgs';
 import { DashDoorLogoMark } from '@/components/common/Icons';
@@ -96,21 +95,12 @@ export default function LandingPageFooter() {
             <ul className="space-y-2">
               {doingBusinessData.map(item => (
                 <li key={item}>
-                  {item === 'DoorDash Merchant' ? (
-                    <Link
-                      href="/merchant"
-                      className="text-sm font-medium text-[#c4c4c4] hover:text-white transition-colors"
-                    >
-                      {item}
-                    </Link>
-                  ) : (
-                    <a
-                      href=""
-                      className="text-sm font-medium text-[#c4c4c4] hover:text-white transition-colors"
-                    >
-                      {item}
-                    </a>
-                  )}
+                  <a
+                    href=""
+                    className="text-sm font-medium text-[#c4c4c4] hover:text-white transition-colors"
+                  >
+                    {item}
+                  </a>
                 </li>
               ))}
             </ul>
@@ -274,11 +264,3 @@ export default function LandingPageFooter() {
     </footer>
   );
 }
-
-
-
-
-
-
-
-

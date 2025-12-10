@@ -32,7 +32,7 @@ export default function ArchiveRequestPage() {
 
   // Handles return to home navigation
   const handleReturnToHome = () => {
-    router.push('/');
+    router.push('/home');
   };
 
   return (

@@ -17,6 +17,7 @@ export default function AccountPopup({ isOpen, onClose, anchorElement }: Account
   const popupRef = useRef<HTMLDivElement>(null);
   const currentUser = useUserStore(state => state.currentUser);
   const setCurrentUser = useUserStore(state => state.setCurrentUser);
+  const setTempAddress = useUserStore(state => state.setTempAddress);
 
   useEffect(() => {
     // Position the popup next to the anchor element
@@ -71,6 +72,7 @@ export default function AccountPopup({ isOpen, onClose, anchorElement }: Account
 
   const handleSignOut = () => {
     setCurrentUser(null);
+    setTempAddress(null); // Clear temp address on logout
 
     // Navigate to home page
     router.push('/');
