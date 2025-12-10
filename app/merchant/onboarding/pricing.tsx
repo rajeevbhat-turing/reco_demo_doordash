@@ -1,25 +1,19 @@
 'use client'
-import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { ChevronLeft, ArrowRight, MapPin, DollarSign, Sparkles, Shield, Camera, CreditCard } from "lucide-react"
+import { useMerchantAuthStore } from "@/store/merchant-auth-store"
 
 export default function PricingStep() {
   const router = useRouter()
-  const [selectedPlan, setSelectedPlan] = useState<'basic' | 'plus' | 'premier' | null>(null)
+  const saveOnboardingPricing = useMerchantAuthStore(state => state.saveOnboardingPricing)
 
   const handleBack = () => {
     router.push('/merchant/onboarding?step=menu')
   }
 
   const handleContinue = (plan: 'basic' | 'plus' | 'premier') => {
-    // Save to localStorage
-    const completedSteps = JSON.parse(localStorage.getItem('merchant.onboarding.completedSteps') || '[]')
-    if (!completedSteps.includes('pricing')) {
-      completedSteps.push('pricing')
-      localStorage.setItem('merchant.onboarding.completedSteps', JSON.stringify(completedSteps))
-    }
-    
-    localStorage.setItem('merchant.onboarding.selectedPlan', plan)
+    // Save to merchant auth store
+    saveOnboardingPricing({ selectedPlan: plan })
 
     router.push('/merchant/onboarding?step=payout')
   }

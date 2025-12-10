@@ -5,6 +5,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import Header from '@/components/header';
 import LandingPageFooter from '@/components/landing-page-footer';
 import LayoutWrapper from '@/components/layout-wrapper';
+import MerchantLayout from './merchant-layout';
 import Snackbar from '@/components/snackbar';
 import { useUserStore } from '@/store/user-store';
 import { useCarts } from '@/lib/hooks/use-carts';
@@ -77,6 +78,10 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
         <Snackbar />
       </div>
     );
+  }
+
+  if (pathname?.startsWith('/merchant')) {
+    return <MerchantLayout>{children}</MerchantLayout>;
   }
 
   return (

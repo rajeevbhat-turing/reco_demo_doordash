@@ -160,7 +160,7 @@ function FilterBar({
 
 /**
  * Route: /merchant/store/[id]/orders
- *
+ * 
  * Orders page for a specific store - displays all orders for that store
  * Gets store ID from URL params and ensures orders are filtered correctly
  */
@@ -217,18 +217,18 @@ export default function MerchantStoreOrdersPage() {
 
     return storeOrders
       .map((order: any) => {
-        // Parse order date - handle both ISO string and formatted string
+      // Parse order date - handle both ISO string and formatted string
         let orderDate: Date;
-        try {
-          if (order.orderDate && order.orderDate.includes(',')) {
-            // Already formatted date, try to parse it
+      try {
+        if (order.orderDate && order.orderDate.includes(',')) {
+          // Already formatted date, try to parse it
             orderDate = new Date(order.orderDate);
-          } else if (order.orderDate) {
-            // ISO string
+        } else if (order.orderDate) {
+          // ISO string
             orderDate = new Date(order.orderDate);
-          } else {
+        } else {
             orderDate = new Date();
-          }
+        }
         } catch {
           orderDate = new Date();
         }
@@ -253,13 +253,13 @@ export default function MerchantStoreOrdersPage() {
           totalSecondsElapsed = totalSeconds;
           minutesElapsed = Math.floor(totalSeconds / 60);
           secondsElapsed = totalSeconds % 60;
-        }
+      }
 
-        // Get customer name - prioritize user name, then business name, then address
+      // Get customer name - prioritize user name, then business name, then address
         const customerName =
           order.userName ||
-          order.deliveryAddress?.businessName ||
-          order.deliveryAddress?.street ||
+                          order.deliveryAddress?.businessName || 
+                          order.deliveryAddress?.street || 
           'Customer';
 
         // Parse subtotal
@@ -292,9 +292,9 @@ export default function MerchantStoreOrdersPage() {
           channel: order.channel || 'DashDoor',
           subtotal: `$${subtotalValue.toFixed(2)}`,
           rawOrderDate: orderDate,
-          minutesElapsed,
-          secondsElapsed,
-          totalSecondsElapsed,
+        minutesElapsed,
+        secondsElapsed,
+        totalSecondsElapsed,
           // Extended fields
           userName: order.userName || order.customer,
           userEmail: order.userEmail,
@@ -311,12 +311,12 @@ export default function MerchantStoreOrdersPage() {
         } as ProcessedOrder;
       })
       .map(order => {
-        // Debug logging for new orders
-        if (order.minutesElapsed !== undefined && order.minutesElapsed < 5) {
+      // Debug logging for new orders
+      if (order.minutesElapsed !== undefined && order.minutesElapsed < 5) {
           console.log(
             `🆕 New order found: ${order.orderId}, Status: ${order.status}, Minutes: ${order.minutesElapsed}`
           );
-        }
+      }
         return order;
       });
   }, [storeOrders, currentTime]);
@@ -444,7 +444,7 @@ export default function MerchantStoreOrdersPage() {
 
       {/* Tabs */}
       <div className="flex items-center gap-1 mb-6 border-b border-gray-200">
-        <button
+        <button 
           onClick={() => handleTabChange('Active')}
           className={`px-4 py-2 text-sm font-medium relative ${
             activeTab === 'Active'
@@ -455,10 +455,10 @@ export default function MerchantStoreOrdersPage() {
           Active
           {orders.filter(order => order.tabStatus === 'Active').length > 0 &&
             activeTab !== 'Active' && (
-              <span className="absolute -top-1 -right-1 w-2 h-2 bg-blue-600 rounded-full" />
-            )}
+            <span className="absolute -top-1 -right-1 w-2 h-2 bg-blue-600 rounded-full" />
+          )}
         </button>
-        <button
+        <button 
           onClick={() => handleTabChange('Scheduled')}
           className={`px-4 py-2 text-sm font-medium ${
             activeTab === 'Scheduled'
@@ -468,7 +468,7 @@ export default function MerchantStoreOrdersPage() {
         >
           Scheduled
         </button>
-        <button
+        <button 
           onClick={() => handleTabChange('History')}
           className={`px-4 py-2 text-sm font-medium ${
             activeTab === 'History'

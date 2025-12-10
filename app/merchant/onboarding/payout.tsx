@@ -4,9 +4,12 @@ import { useRouter } from "next/navigation"
 import { ChevronLeft, ChevronDown } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { useMerchantAuthStore } from "@/store/merchant-auth-store"
 
 export default function PayoutStep() {
   const router = useRouter()
+  const saveOnboardingPayout = useMerchantAuthStore(state => state.saveOnboardingPayout)
+  const currentMerchant = useMerchantAuthStore(state => state.currentMerchant)
   
   // Bank account information
   const [accountNumber, setAccountNumber] = useState('')
@@ -14,7 +17,7 @@ export default function PayoutStep() {
   const [transitNumber, setTransitNumber] = useState('')
   
   // Company information
-  const [legalBusinessName, setLegalBusinessName] = useState('10000 Ontario, Inc.')
+  const [legalBusinessName, setLegalBusinessName] = useState('')
   const [registeredBusinessAddress, setRegisteredBusinessAddress] = useState('')
   const [sameAsStoreAddress, setSameAsStoreAddress] = useState(false)
   const [entityType, setEntityType] = useState('')
@@ -42,15 +45,8 @@ export default function PayoutStep() {
       return
     }
 
-    // Save to localStorage
-    const completedSteps = JSON.parse(localStorage.getItem('merchant.onboarding.completedSteps') || '[]')
-    if (!completedSteps.includes('payout')) {
-      completedSteps.push('payout')
-      localStorage.setItem('merchant.onboarding.completedSteps', JSON.stringify(completedSteps))
-    }
-    
-    // Save payout info
-    localStorage.setItem('merchant.onboarding.payoutInfo', JSON.stringify({
+    // Save payout info to merchant auth store (also marks onboarding as complete)
+    saveOnboardingPayout({
       bankAccount: {
         accountNumber,
         financialInstitutionNumber,
@@ -74,10 +70,10 @@ export default function PayoutStep() {
         email,
         phone
       }
-    }))
+    })
 
-    // Redirect to merchant home page
-    router.push('/merchant')
+    // Redirect to merchant store page
+    router.push(`/merchant/store/${currentMerchant?.primaryStoreId || '1'}`)
   }
 
   const formatDateOfBirth = (value: string) => {

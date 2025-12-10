@@ -2,9 +2,11 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { ChevronLeft, ChevronDown, Plus } from "lucide-react"
+import { useMerchantAuthStore } from "@/store/merchant-auth-store"
 
 export default function StoreHoursStep() {
   const router = useRouter()
+  const saveOnboardingStoreHours = useMerchantAuthStore(state => state.saveOnboardingStoreHours)
   const [applyToAllDays, setApplyToAllDays] = useState(true)
   const [allDaysOpen, setAllDaysOpen] = useState('08:00 AM')
   const [allDaysClose, setAllDaysClose] = useState('10:00 PM')
@@ -14,19 +16,12 @@ export default function StoreHoursStep() {
   }
 
   const handleNext = () => {
-    // Save to localStorage
-    const completedSteps = JSON.parse(localStorage.getItem('merchant.onboarding.completedSteps') || '[]')
-    if (!completedSteps.includes('hours')) {
-      completedSteps.push('hours')
-      localStorage.setItem('merchant.onboarding.completedSteps', JSON.stringify(completedSteps))
-    }
-    
-    // Save hours
-    localStorage.setItem('merchant.onboarding.storeHours', JSON.stringify({
+    // Save to merchant auth store
+    saveOnboardingStoreHours({
       applyToAllDays,
       allDaysOpen,
       allDaysClose
-    }))
+    })
 
     router.push('/merchant/onboarding?step=menu')
   }

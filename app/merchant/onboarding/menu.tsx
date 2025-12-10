@@ -3,9 +3,11 @@ import { useState, useRef } from "react"
 import { useRouter } from "next/navigation"
 import { ChevronLeft, Upload, X, Check } from "lucide-react"
 import { Input } from "@/components/ui/input"
+import { useMerchantAuthStore } from "@/store/merchant-auth-store"
 
 export default function MenuStep() {
   const router = useRouter()
+  const saveOnboardingMenuCompleted = useMerchantAuthStore(state => state.saveOnboardingMenuCompleted)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [menuMethod, setMenuMethod] = useState<'link' | 'upload'>('link')
   const [menuLink, setMenuLink] = useState('')
@@ -51,18 +53,8 @@ export default function MenuStep() {
   }
 
   const handleSave = () => {
-    // Save to localStorage
-    const completedSteps = JSON.parse(localStorage.getItem('merchant.onboarding.completedSteps') || '[]')
-    if (!completedSteps.includes('menu')) {
-      completedSteps.push('menu')
-      localStorage.setItem('merchant.onboarding.completedSteps', JSON.stringify(completedSteps))
-    }
-    
-    if (menuMethod === 'link') {
-      localStorage.setItem('merchant.onboarding.menuLink', menuLink)
-    } else if (uploadedFile) {
-      localStorage.setItem('merchant.onboarding.menuFile', uploadedFile.name)
-    }
+    // Save to merchant auth store
+    saveOnboardingMenuCompleted()
 
     // Navigate to next step
     router.push('/merchant/onboarding?step=pricing')

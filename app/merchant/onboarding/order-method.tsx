@@ -2,9 +2,11 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { ChevronDown } from "lucide-react"
+import { useMerchantAuthStore } from "@/store/merchant-auth-store"
 
 export default function OrderMethodStep() {
   const router = useRouter()
+  const saveOnboardingOrderProtocol = useMerchantAuthStore(state => state.saveOnboardingOrderProtocol)
   const [selectedMethod, setSelectedMethod] = useState<'tablet' | 'pos' | 'email'>('pos')
   const [posPartner, setPosPartner] = useState('')
   const [showPosDropdown, setShowPosDropdown] = useState(false)
@@ -21,18 +23,11 @@ export default function OrderMethodStep() {
   ]
 
   const handleNext = () => {
-    // Save to localStorage
-    const completedSteps = JSON.parse(localStorage.getItem('merchant.onboarding.completedSteps') || '[]')
-    if (!completedSteps.includes('order-protocol')) {
-      completedSteps.push('order-protocol')
-      localStorage.setItem('merchant.onboarding.completedSteps', JSON.stringify(completedSteps))
-    }
-    
-    // Save selected method
-    localStorage.setItem('merchant.onboarding.orderMethod', selectedMethod)
-    if (selectedMethod === 'pos' && posPartner) {
-      localStorage.setItem('merchant.onboarding.posPartner', posPartner)
-    }
+    // Save to merchant auth store
+    saveOnboardingOrderProtocol({
+      orderMethod: selectedMethod,
+      posPartner: selectedMethod === 'pos' ? posPartner : undefined
+    })
 
     router.push('/merchant/onboarding?step=hours')
   }

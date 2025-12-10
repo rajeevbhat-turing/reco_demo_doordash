@@ -2,7 +2,7 @@ import type React from 'react';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
-import MerchantLayout from './merchant-layout';
+import MainLayout from './main-layout';
 import LocalStorageSync from '@/components/LocalStorageSync';
 import { GlobalContextProvider } from './global-context';
 import { QueryProvider } from '@/lib/providers/query-provider';
@@ -25,7 +25,7 @@ export default function RootLayout({
         <QueryProvider>
           <LocalStorageSync />
           <GlobalContextProvider>
-            <MerchantLayout>{children}</MerchantLayout>
+            <MainLayout>{children}</MainLayout>
           </GlobalContextProvider>
 
           {/* Global Functions Script */}
