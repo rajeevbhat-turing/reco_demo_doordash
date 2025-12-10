@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useMemo, useRef, useSyncExternalStore } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import Image from 'next/image';
 import Link from 'next/link';
 import { Heart, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useRestaurants } from '@/lib/hooks/use-restaurants';
@@ -18,6 +17,7 @@ import { getDefaultRating } from '@/utils/rating-utils';
 import { RestaurantsSkeleton } from '@/components/skeletons/restaurant-skeleton';
 import MenuItemDialog from '@/components/menu-item-dialog';
 import RestaurantSection from '@/components/restaurant-section';
+import { parseDistance, calculateDeliveryTime } from '@/lib/utils/restaurant-utils';
 
 interface MenuItemWithRestaurant extends MenuItem {
   restaurant_id: string;
@@ -30,7 +30,7 @@ export default function SearchPage() {
   const searchParams = useSearchParams();
   const searchQuery = searchParams.get('q') || '';
   const router = useRouter();
-  
+
   const [filters, setFilters] = useState<FilterState>({
     underThirtyMins: false,
     deals: false,
@@ -66,7 +66,7 @@ export default function SearchPage() {
 
   // Get user's address for location-based filtering
   const currentUser = useUserStore(state => state.currentUser);
-  const defaultAddress = currentUser?.addresses.find(a => a.default);
+  const defaultAddress = currentUser?.addresses?.find(a => a.default);
 
   // Get temp address for guest users
   const tempAddress = useSyncExternalStore(
@@ -79,10 +79,7 @@ export default function SearchPage() {
   const activeAddress = isAuthenticated ? defaultAddress : tempAddress;
 
   // Fetch restaurants near user's address
-  const {
-    data: restaurants,
-    isLoading: isLoadingRestaurants,
-  } = useRestaurants(
+  const { data: restaurants, isLoading: isLoadingRestaurants } = useRestaurants(
     activeAddress?.lat,
     activeAddress?.lng,
     10
@@ -100,7 +97,7 @@ export default function SearchPage() {
       favoritesLoadedRef.current = false; // Reset when user changes
       const saved = localStorage.getItem('favorites');
       let userFavorites: string[] = [];
-      
+
       if (saved) {
         try {
           const favoritesObj: { [userId: string]: string[] } = JSON.parse(saved);
@@ -113,12 +110,12 @@ export default function SearchPage() {
           userFavorites = [];
         }
       }
-      
+
       loadedFavoritesRef.current = [...userFavorites];
       isInitializingRef.current = true; // Prevent save during load
       setFavorites(userFavorites);
       favoritesLoadedRef.current = true;
-      
+
       // Allow saves after load completes (next tick)
       requestAnimationFrame(() => {
         isInitializingRef.current = false;
@@ -141,16 +138,16 @@ export default function SearchPage() {
     if (isInitializingRef.current) {
       return;
     }
-    
+
     if (currentUser && favoritesLoadedRef.current) {
       // Only save if favorites have actually changed from what was loaded
       const currentFavsStr = JSON.stringify([...favorites].sort());
       const loadedFavsStr = JSON.stringify([...loadedFavoritesRef.current].sort());
-      
+
       if (currentFavsStr !== loadedFavsStr) {
         const saved = localStorage.getItem('favorites');
         let favoritesObj: { [userId: string]: string[] } = {};
-        
+
         if (saved) {
           try {
             favoritesObj = JSON.parse(saved);
@@ -243,7 +240,7 @@ export default function SearchPage() {
     // Apply search query
     if (searchQuery) {
       const lowerQuery = searchQuery.toLowerCase();
-      
+
       // Find restaurants that match by name, cuisine, or categories
       const directMatches = filtered.filter(
         restaurant =>
@@ -255,7 +252,7 @@ export default function SearchPage() {
 
       // Find restaurants that have menu items matching the search query
       const restaurantIdsWithMatchingItems = new Set<string>();
-      
+
       if (allMenuItems.length > 0) {
         allMenuItems.forEach(item => {
           if (item.name.toLowerCase().includes(lowerQuery)) {
@@ -293,9 +290,15 @@ export default function SearchPage() {
     // Apply filters
     if (filters.underThirtyMins) {
       filtered = filtered.filter(restaurant => {
-        const timeStr = restaurant.time;
-        const minutes = Number.parseInt(timeStr.match(/\d+/)?.[0] || '100');
-        return minutes < 30;
+        // Use the same delivery time calculation as checkout to ensure consistency
+        const distance = parseDistance(restaurant.distance);
+        const deliveryTimeStr = calculateDeliveryTime(distance, 'standard');
+        
+        // Extract max time from "min-max min" format
+        const maxTimeMatch = deliveryTimeStr.match(/-(\d+)\s*min/);
+        const maxMinutes = maxTimeMatch ? parseInt(maxTimeMatch[1]) : 100;
+        
+        return maxMinutes <= 30;
       });
     }
 
@@ -371,15 +374,11 @@ export default function SearchPage() {
 
     if (searchQuery) {
       const lowerQuery = searchQuery.toLowerCase();
-      return allMenuItems
-        .filter(item => item.name.toLowerCase().includes(lowerQuery))
-        .slice(0, 20);
+      return allMenuItems.filter(item => item.name.toLowerCase().includes(lowerQuery)).slice(0, 20);
     }
 
     // If no search query, show popular menu items
-    return allMenuItems
-      .filter(item => item.popular || item.featured)
-      .slice(0, 20);
+    return allMenuItems.filter(item => item.popular || item.featured).slice(0, 20);
   }, [allMenuItems, searchQuery]);
 
   // Remaining restaurants (after popular, shown below dishes)
@@ -414,7 +413,9 @@ export default function SearchPage() {
       (filters.price !== null && filters.price.length > 0) ||
       filters.dashPass ||
       (filters.cuisine !== null && filters.cuisine !== undefined && filters.cuisine.length > 0) ||
-      (filters.dietaryPreferences !== null && filters.dietaryPreferences !== undefined && filters.dietaryPreferences.length > 0)
+      (filters.dietaryPreferences !== null &&
+        filters.dietaryPreferences !== undefined &&
+        filters.dietaryPreferences.length > 0)
     );
   };
 
@@ -430,20 +431,27 @@ export default function SearchPage() {
   };
 
   // Check scroll position for arrows
-  useEffect(() => {
-    const checkScroll = () => {
-      if (dishesScrollRef.current) {
-        const { scrollLeft, scrollWidth, clientWidth } = dishesScrollRef.current;
-        setShowLeftArrow(scrollLeft > 0);
-        setShowRightArrow(scrollLeft < scrollWidth - clientWidth - 10);
-      }
-    };
+  const checkScroll = () => {
+    if (dishesScrollRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } = dishesScrollRef.current;
+      setShowLeftArrow(scrollLeft > 0);
+      setShowRightArrow(scrollLeft < scrollWidth - clientWidth - 10);
+    }
+  };
 
+  useEffect(() => {
     const scrollContainer = dishesScrollRef.current;
     if (scrollContainer) {
+      // Initial check
       checkScroll();
+      // Listen for scroll events
       scrollContainer.addEventListener('scroll', checkScroll);
-      return () => scrollContainer.removeEventListener('scroll', checkScroll);
+      // Also listen for scrollend event if available (for smooth scrolling)
+      scrollContainer.addEventListener('scrollend', checkScroll);
+      return () => {
+        scrollContainer.removeEventListener('scroll', checkScroll);
+        scrollContainer.removeEventListener('scrollend', checkScroll);
+      };
     }
   }, [matchedMenuItems]);
 
@@ -454,6 +462,20 @@ export default function SearchPage() {
         left: direction === 'left' ? -scrollAmount : scrollAmount,
         behavior: 'smooth',
       });
+
+      // Check scroll position immediately and after animation
+      // This ensures arrow states update even if scroll events don't fire reliably
+      checkScroll();
+
+      // Check again after a short delay to catch the position during smooth scroll
+      setTimeout(() => {
+        checkScroll();
+      }, 50);
+
+      // Final check after smooth scroll animation should complete (typically 300-500ms)
+      setTimeout(() => {
+        checkScroll();
+      }, 500);
     }
   };
 
@@ -499,13 +521,9 @@ export default function SearchPage() {
       />
 
       <div className="mt-20">
-
         {/* Popular Restaurants - First Row (2-3 restaurants) */}
         {!hasActiveFilters() && !searchQuery && popularRestaurants.length > 0 && (
-          <RestaurantSection
-            title="Popular Restaurants"
-            restaurants={popularRestaurants}
-          />
+          <RestaurantSection title="Popular Restaurants" restaurants={popularRestaurants} />
         )}
 
         {/* Popular Dishes Carousel */}
@@ -518,7 +536,9 @@ export default function SearchPage() {
                   onClick={() => scrollDishes('left')}
                   disabled={!showLeftArrow}
                   className={`bg-gray-100 rounded-full p-2 transition-colors ${
-                    showLeftArrow ? 'hover:bg-gray-200 cursor-pointer' : 'opacity-40 cursor-not-allowed'
+                    showLeftArrow
+                      ? 'hover:bg-gray-200 cursor-pointer'
+                      : 'opacity-40 cursor-not-allowed'
                   }`}
                   aria-label="Scroll left"
                 >
@@ -528,7 +548,9 @@ export default function SearchPage() {
                   onClick={() => scrollDishes('right')}
                   disabled={!showRightArrow}
                   className={`bg-gray-100 rounded-full p-2 transition-colors ${
-                    showRightArrow ? 'hover:bg-gray-200 cursor-pointer' : 'opacity-40 cursor-not-allowed'
+                    showRightArrow
+                      ? 'hover:bg-gray-200 cursor-pointer'
+                      : 'opacity-40 cursor-not-allowed'
                   }`}
                   aria-label="Scroll right"
                 >
@@ -546,7 +568,7 @@ export default function SearchPage() {
                   const handleAddToCart = (e: React.MouseEvent) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    
+
                     // Check if item has modifications
                     if (item.modifications && item.modifications.length > 0) {
                       // Item has modifications - open dialog instead
@@ -554,11 +576,24 @@ export default function SearchPage() {
                       setMenuItemDialogOpen(true);
                       return;
                     }
-                    
+
                     // Parse price to number
                     const priceStr = item.price.startsWith('$') ? item.price.slice(1) : item.price;
                     const price = parseFloat(priceStr);
-                    
+
+                    // Ensure we have a valid restaurant name
+                    // If restaurantName is missing, try to get it from the restaurants array
+                    let restaurantName = item.restaurantName;
+                    if (!restaurantName || restaurantName.trim() === '') {
+                      const restaurantId = item.restaurant_id || item.restaurantId;
+                      if (restaurantId && restaurants) {
+                        const restaurant = restaurants.find(r => r.id === restaurantId);
+                        restaurantName = restaurant?.name || 'Restaurant';
+                      } else {
+                        restaurantName = 'Restaurant';
+                      }
+                    }
+
                     // No modifications - add directly to cart
                     addItem(
                       {
@@ -568,10 +603,10 @@ export default function SearchPage() {
                         image: item.image || '/placeholder.svg',
                       },
                       'restaurant',
-                      item.restaurantName || 'Restaurant',
+                      restaurantName, // Use the resolved restaurant name
                       item.restaurant_id || item.restaurantId || ''
                     );
-                    
+
                     // Navigate to restaurant page
                     router.push(`/store/${item.restaurant_id || item.restaurantId}`);
                   };
@@ -579,21 +614,22 @@ export default function SearchPage() {
                   return (
                     <div
                       key={item.id}
-                      className="flex-shrink-0 w-[180px] cursor-pointer hover:shadow-lg transition-shadow"
-                      onClick={() => router.push(`/store/${item.restaurant_id || item.restaurantId}`)}
+                      className="flex-shrink-0 w-[220px] cursor-pointer hover:shadow-lg transition-shadow flex flex-col"
+                      onClick={() =>
+                        router.push(`/store/${item.restaurant_id || item.restaurantId}`)
+                      }
                     >
                       <div className="relative h-[180px] bg-gray-100 rounded-lg overflow-hidden mb-2">
-                        <Image
+                        <img
                           src={item.image || '/placeholder.svg?height=180&width=180'}
                           alt={item.name}
-                          fill
-                          className="object-cover"
+                          className="w-full h-full object-cover"
                         />
                       </div>
-                      <div className="px-1">
+                      <div className="px-1 flex flex-col flex-1">
                         <h3 className="font-semibold text-sm line-clamp-2 mb-1">{item.name}</h3>
                         <p className="text-xs text-gray-600 mb-1">{item.restaurantName}</p>
-                        <div className="flex items-center justify-between">
+                        <div className="flex items-center justify-between mt-auto">
                           <span className="text-sm font-bold">
                             {item.price.startsWith('$') ? item.price : `$${item.price}`}
                           </span>
@@ -618,45 +654,62 @@ export default function SearchPage() {
           // Show all restaurants in one section when filters are active or when searching
           filteredRestaurants.length > 0 ? (
             <RestaurantSection
-              title={searchQuery ? `Results for "${searchQuery}"` : `${filteredRestaurants.length} results`}
+              title={
+                searchQuery
+                  ? `Results for "${searchQuery}"`
+                  : `${filteredRestaurants.length} results`
+              }
               restaurants={filteredRestaurants}
             />
           ) : null
         ) : (
           // Show remaining restaurants when no filters are active and no search query
-          !searchQuery && remainingRestaurants.length > 0 && (
-            <RestaurantSection
-              title="All Restaurants"
-              restaurants={remainingRestaurants}
-            />
+          !searchQuery &&
+          remainingRestaurants.length > 0 && (
+            <RestaurantSection title="All Restaurants" restaurants={remainingRestaurants} />
           )
         )}
 
         {/* Loading Spinner - Show when loading restaurants or menu items (if searching) */}
-        {filteredRestaurants.length === 0 && (isLoadingRestaurants || (isLoadingMenuItems && searchQuery)) && (
-          <div className="text-center py-16">
-            <div className="flex justify-center">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+        {filteredRestaurants.length === 0 &&
+          (isLoadingRestaurants || (isLoadingMenuItems && searchQuery)) && (
+            <div className="text-center py-16">
+              <div className="flex justify-center">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
         {/* No Results - Only show when not loading and no results */}
-        {filteredRestaurants.length === 0 && !isLoadingRestaurants && !(isLoadingMenuItems && searchQuery) && (
-          <div className="text-center py-16">
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">No restaurants found</h2>
-            <p className="text-gray-600">Try adjusting your search or filters</p>
-          </div>
-        )}
+        {filteredRestaurants.length === 0 &&
+          !isLoadingRestaurants &&
+          !(isLoadingMenuItems && searchQuery) && (
+            <div className="text-center py-16">
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">No restaurants found</h2>
+              <p className="text-gray-600">Try adjusting your search or filters</p>
+            </div>
+          )}
       </div>
 
       {/* Menu Item Dialog */}
-      <MenuItemDialog
-        isOpen={menuItemDialogOpen}
-        onClose={() => setMenuItemDialogOpen(false)}
-        item={selectedItem}
-      />
+      {selectedItem && (
+        <MenuItemDialog
+          isOpen={menuItemDialogOpen}
+          onClose={() => setMenuItemDialogOpen(false)}
+          item={{
+            ...selectedItem,
+            image: selectedItem.image || '',
+            description: selectedItem.description || undefined,
+            rating:
+              typeof selectedItem.rating === 'number'
+                ? selectedItem.rating
+                : typeof selectedItem.rating === 'string'
+                ? parseFloat(selectedItem.rating) || undefined
+                : undefined,
+            ratingCount: selectedItem.ratingCount ?? undefined,
+          }}
+        />
+      )}
     </div>
   );
 }
-

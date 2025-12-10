@@ -65,8 +65,9 @@ const buildOrdersSection = (storeId: string, orders: any[], storeName?: string) 
     const orderDate = order.orderDate ? new Date(order.orderDate) : new Date();
 
     const isPickup = order.deliveryOption?.type === 'pickup';
-    const fulfillmentType: 'Customer pickup' | 'DashDoor delivery' =
-      isPickup ? 'Customer pickup' : 'DashDoor delivery';
+    const fulfillmentType: 'Customer pickup' | 'DashDoor delivery' = isPickup
+      ? 'Customer pickup'
+      : 'DashDoor delivery';
     const channel = isPickup ? 'Pickup' : 'DashDoor';
 
     const id = order.id ? String(order.id) : `order-${Date.now()}`;
@@ -244,14 +245,14 @@ export async function initializeStoreData(storeId: string): Promise<StoreMerchan
 
   try {
     const [restaurantResp, menuResp, ordersResp, modifiersResp] = await Promise.all([
-      fetchJson<{ success: boolean; data: any }>(`/api/restaurants/${storeId}`),
+      fetchJson<{ success: boolean; data: any }>(`/api/merchant/restaurants/${storeId}`),
       fetchJson<{
         success: boolean;
         data: { menuItems: ApiMenuItem[]; categories: ApiCategory[] };
-      }>(`/api/restaurants/${storeId}/menu?includeUnavailable=true`),
-      fetchJson<{ success: boolean; data: any[] }>(`/api/orders?storeId=${storeId}`),
+      }>(`/api/merchant/restaurants/${storeId}/menu?includeUnavailable=true`),
+      fetchJson<{ success: boolean; data: any[] }>(`/api/merchant/orders?storeId=${storeId}`),
       fetchJson<{ success: boolean; data: { modifiers: ApiModifier[] } }>(
-        `/api/restaurants/${storeId}/modifiers`
+        `/api/merchant/restaurants/${storeId}/modifiers`
       ),
     ]);
 

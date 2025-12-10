@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { X } from 'lucide-react';
 import countryData from '@/lib/utils/countryCode.json';
 import { useUserStore } from '@/store/user-store';
@@ -14,11 +14,13 @@ import ForgotPassword from '../authentication/forgot-password';
 interface AuthenticationModalProps {
   onClose: () => void;
   defaultMode?: 'signin' | 'signup' | 'forgot-password' | null;
+  initialEmail?: string;
 }
 
 export default function AuthenticationModal({
   onClose,
   defaultMode = 'signin',
+  initialEmail,
 }: AuthenticationModalProps) {
   const addUser = useUserStore(state => state.addUser);
   const [mode, setMode] = useState<'signin' | 'signup' | 'forgot-password' | null>(defaultMode);
@@ -35,6 +37,15 @@ export default function AuthenticationModal({
   const [signUpUser, setSignUpUser] = useState<User | null>(null);
 
   const dialogRef = useRef<HTMLDivElement>(null);
+
+  // Closes the modal and resets all data
+  const handleClose = useCallback(() => {
+    onClose();
+    setMode(defaultMode);
+    setLastVerifiedUser(null);
+    setSignUpUser(null);
+    setShowOtpModal(false);
+  }, [onClose, defaultMode]);
 
   // Disable body scroll and limit height when modal is open
   useEffect(() => {
@@ -66,7 +77,7 @@ export default function AuthenticationModal({
       document.removeEventListener('keydown', handleEscapeKey);
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [defaultMode]);
+  }, [defaultMode, handleClose]);
 
   // Detect user's country on component mount
   useEffect(() => {
@@ -107,7 +118,7 @@ export default function AuthenticationModal({
             }
           }
         }
-      } catch (error) {
+      } catch (_error) {
         // Could not detect user country from browser, using default (USA)
       }
 
@@ -146,80 +157,76 @@ export default function AuthenticationModal({
   const generateOTP = () => {
     const newOtp = Math.floor(100000 + Math.random() * 900000).toString();
     setOtp(newOtp);
-    console.log('Generated OTP:', newOtp);
     return newOtp;
   };
 
   // Handle user creation
-  const handleUserCreation = (user: User) => {
-    const newUser = {
-      id: `user-${Date.now().toString()}`,
-      name: user.name,
-      email: user.email,
-      phoneNumber: user.phoneNumber,
-      password: user.password,
-      country: user.country,
-      userCountry: user.userCountry,
-      avatar: null,
-      paymentMethods: [],
-      addresses: [],
-      is_restricted: false,
-      reviews: [],
-    };
+  const handleUserCreation = useCallback(
+    (user: User) => {
+      const newUser = {
+        id: `user-${Date.now().toString()}`,
+        name: user.name,
+        email: user.email,
+        phoneNumber: user.phoneNumber,
+        password: user.password,
+        country: user.country,
+        userCountry: user.userCountry,
+        avatar: null,
+        paymentMethods: [],
+        addresses: [],
+        is_restricted: false,
+        reviews: [],
+      };
 
-    addUser(newUser, true);
-    setSignUpUser(null);
-    handleClose();
-  };
+      addUser(newUser, true);
+      setSignUpUser(null);
+      handleClose();
+    },
+    [addUser, handleClose]
+  );
 
   // Handles OTP verification from the OTP modal
-  const handleOTPVerification = (
-    enteredOtp: string,
-    generatedOtp: string,
-    setOtpError: (error: string) => void,
-    setAttemptsLeft: (attempts: number) => void,
-    attemptsLeft: number,
-    setShowTooManyAttempts: (show: boolean) => void
-  ) => {
-    // Accept any 6-digit OTP for development/testing
-    if (enteredOtp.length === 6) {
-      // OTP is correct - check if sign up user exists
-      if (signUpUser) {
-        // Set last verified user
-        setLastVerifiedUser({ ...signUpUser });
+  const handleOTPVerification = useCallback(
+    (
+      enteredOtp: string,
+      generatedOtp: string,
+      setOtpError: (error: string) => void,
+      setAttemptsLeft: (attempts: number) => void,
+      attemptsLeft: number,
+      setShowTooManyAttempts: (show: boolean) => void
+    ) => {
+      // Accept any 6-digit OTP for development/testing
+      if (enteredOtp.length === 6) {
+        // OTP is correct - check if sign up user exists
+        if (signUpUser) {
+          // Set last verified user
+          setLastVerifiedUser({ ...signUpUser });
 
-        // Check password length from sign up user
-        if (signUpUser.password.length < 10) {
-          // Password too short - show error in auth modal
-          setShowOtpModal(false);
+          // Check password length from sign up user
+          if (signUpUser.password.length < 10) {
+            // Password too short - show error in auth modal
+            setShowOtpModal(false);
+            return;
+          }
+
+          // Password is valid - create user and close modal
+          handleUserCreation(signUpUser);
           return;
         }
+      } else {
+        // OTP is incorrect - show error
+        const newAttemptsLeft = attemptsLeft - 1;
+        setAttemptsLeft(newAttemptsLeft);
+        setOtpError('Invalid or incorrect code');
 
-        // Password is valid - create user and close modal
-        handleUserCreation(signUpUser);
-        return;
+        if (newAttemptsLeft <= 0) {
+          // No attempts left - show too many attempts message
+          setShowTooManyAttempts(true);
+        }
       }
-    } else {
-      // OTP is incorrect - show error
-      const newAttemptsLeft = attemptsLeft - 1;
-      setAttemptsLeft(newAttemptsLeft);
-      setOtpError('Invalid or incorrect code');
-
-      if (newAttemptsLeft <= 0) {
-        // No attempts left - show too many attempts message
-        setShowTooManyAttempts(true);
-      }
-    }
-  };
-
-  // Closes the modal and resets all data
-  const handleClose = () => {
-    onClose();
-    setMode(defaultMode);
-    setLastVerifiedUser(null);
-    setSignUpUser(null);
-    setShowOtpModal(false);
-  };
+    },
+    [signUpUser, handleUserCreation]
+  );
 
   // Handles successful authentication
   const handleAuthSuccess = () => {
@@ -258,10 +265,17 @@ export default function AuthenticationModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/50" onClick={handleClose} />
+      <div
+        className="absolute inset-0 bg-black/50"
+        onClick={handleClose}
+        data-testid="authentication-modal-backdrop"
+      />
 
       {/* Modal */}
-      <div ref={dialogRef} className="relative bg-white rounded-xl shadow-xl max-w-xl w-full mx-4 h-[90vh] overflow-hidden">
+      <div
+        ref={dialogRef}
+        className="relative bg-white rounded-xl shadow-xl max-w-xl w-full mx-4 h-[90vh] overflow-hidden"
+      >
         {/* Fixed Header - appears when original header is out of view */}
         {showFixedHeader && (
           <div className="absolute top-0 left-0 right-0 z-30 bg-white border-b border-gray-300 p-4 rounded-t-xl">
@@ -269,6 +283,7 @@ export default function AuthenticationModal({
               <button
                 onClick={handleClose}
                 className="text-[#191919ff] hover:bg-gray-100 rounded-full p-2 transition-colors"
+                aria-label="Close modal"
               >
                 <X className="h-6 w-6" />
               </button>
@@ -284,6 +299,7 @@ export default function AuthenticationModal({
             <button
               onClick={handleClose}
               className="text-[#191919ff] hover:bg-gray-100 rounded-full p-2 transition-colors ml-[-8px]"
+              aria-label="Close modal"
             >
               <X className="h-6 w-6" />
             </button>
@@ -351,7 +367,11 @@ export default function AuthenticationModal({
           {/* Authentication Forms */}
           <div className="pb-6">
             {mode === 'signin' ? (
-              <SignIn onSuccess={handleAuthSuccess} setMode={handleSetMode} />
+              <SignIn
+                onSuccess={handleAuthSuccess}
+                setMode={handleSetMode}
+                initialEmail={initialEmail}
+              />
             ) : mode === 'signup' ? (
               <SignUp
                 onShowOTP={handleShowOTP}
@@ -362,6 +382,7 @@ export default function AuthenticationModal({
               <ForgotPassword
                 onBackToSignIn={() => setMode('signin')}
                 email={forgotPasswordEmail}
+                setMode={handleSetMode}
               />
             )}
           </div>

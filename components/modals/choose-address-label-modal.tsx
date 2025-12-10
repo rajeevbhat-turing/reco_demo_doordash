@@ -1,97 +1,100 @@
-"use client"
+'use client';
 
-import { useState, useMemo, useEffect, useRef } from "react"
-import { X, Search, ChevronRight } from "lucide-react"
-import { Address } from "@/lib/types/user-types"
-import addressesData from "@/data/addresses.json"
+import { useState, useMemo, useEffect, useRef } from 'react';
+import { X, Search, ChevronRight } from 'lucide-react';
+import { Address } from '@/lib/types/user-types';
+import addressesData from '@/data/addresses.json';
 
 interface ChooseAddressLabelModalProps {
-  isOpen: boolean
-  onClose: () => void
-  addresses: Address[]
-  onSelectAddress: (addressId: string) => void
-  onSelectSearchAddress?: (address: Address) => void
-  onManualEntry?: () => void
+  isOpen: boolean;
+  onClose: () => void;
+  addresses: Address[];
+  onSelectAddress: (addressId: string) => void;
+  onSelectSearchAddress?: (address: Address) => void;
+  onManualEntry?: () => void;
 }
 
-export default function ChooseAddressLabelModal({ 
-  isOpen, 
-  onClose, 
+export default function ChooseAddressLabelModal({
+  isOpen,
+  onClose,
   addresses,
   onSelectAddress,
   onSelectSearchAddress,
-  onManualEntry
+  onManualEntry,
 }: ChooseAddressLabelModalProps) {
-  const dialogRef = useRef<HTMLDivElement>(null)
-  const [searchQuery, setSearchQuery] = useState("")
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const [searchQuery, setSearchQuery] = useState('');
 
   // Filter searchable addresses from JSON data (API simulation) - for dropdown
   const filteredSearchAddresses = useMemo(() => {
     if (!searchQuery.trim()) {
-      return []
+      return [];
     }
-    const query = searchQuery.toLowerCase()
-    return (addressesData as Address[]).filter((address) => {
-      const fullAddress = `${address.street} ${address.city} ${address.state} ${address.zipCode}`.toLowerCase()
-      return fullAddress.includes(query)
-    })
-  }, [searchQuery])
+    const query = searchQuery.toLowerCase();
+    return (addressesData as Address[]).filter(address => {
+      const fullAddress =
+        `${address.street} ${address.city} ${address.state} ${address.zipCode}`.toLowerCase();
+      return fullAddress.includes(query);
+    });
+  }, [searchQuery]);
 
   // Filter user's saved addresses for the list below
-  const filteredAddresses = addresses.filter((address) => {
-    if (!searchQuery.trim()) return true
-    const query = searchQuery.toLowerCase()
-    const fullAddress = `${address.street} ${address.city} ${address.state} ${address.zipCode}`.toLowerCase()
-    return fullAddress.includes(query)
-  })
+  const filteredAddresses = addresses.filter(address => {
+    if (!searchQuery.trim()) return true;
+    const query = searchQuery.toLowerCase();
+    const fullAddress =
+      `${address.street} ${address.city} ${address.state} ${address.zipCode}`.toLowerCase();
+    return fullAddress.includes(query);
+  });
 
   useEffect(() => {
     const handleEscapeKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        onClose()
+      if (event.key === 'Escape') {
+        onClose();
       }
-    }
+    };
 
     const handleClickOutside = (event: MouseEvent) => {
       if (dialogRef.current && !dialogRef.current.contains(event.target as Node)) {
-        onClose()
+        onClose();
       }
-    }
+    };
 
     if (isOpen) {
-      document.body.style.overflow = "hidden"
-      document.addEventListener("keydown", handleEscapeKey)
-      document.addEventListener("mousedown", handleClickOutside)
+      document.body.style.overflow = 'hidden';
+      document.addEventListener('keydown', handleEscapeKey);
+      document.addEventListener('mousedown', handleClickOutside);
     } else {
-      document.body.style.overflow = "auto"
+      document.body.style.overflow = 'auto';
     }
 
     return () => {
-      document.body.style.overflow = "auto"
-      document.removeEventListener("keydown", handleEscapeKey)
-      document.removeEventListener("mousedown", handleClickOutside)
-    }
-  }, [isOpen, onClose])
+      document.body.style.overflow = 'auto';
+      document.removeEventListener('keydown', handleEscapeKey);
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isOpen, onClose]);
 
-  if (!isOpen) return null
+  if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
+      data-testid="choose-address-label-modal-backdrop"
+    >
       <div ref={dialogRef} className="relative bg-white rounded-2xl w-full max-w-md mx-4">
         <div className="p-6">
           {/* Close button */}
-          <button 
+          <button
             onClick={onClose}
-            className="absolute top-5 left-5 p-1 hover:bg-gray-100 rounded-full transition-colors" 
+            className="absolute top-5 left-5 p-1 hover:bg-gray-100 rounded-full transition-colors"
             aria-label="Close modal"
           >
             <X className="h-6 w-6 text-gray-700" />
           </button>
 
           {/* Title */}
-          <h2 className="text-2xl font-bold text-gray-900 mb-6 mt-6">
-            Choose address to label
-          </h2>
+          <h2 className="text-2xl font-bold text-gray-900 mb-6 mt-6">Choose address to label</h2>
 
           {/* Search Bar */}
           <div className="relative mb-6">
@@ -99,21 +102,21 @@ export default function ChooseAddressLabelModal({
             <input
               type="text"
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={e => setSearchQuery(e.target.value)}
               placeholder="Enter Your Address"
               className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 bg-gray-50"
             />
-            
+
             {/* Dropdown with search results */}
             {searchQuery.trim().length > 0 && (
               <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-64 overflow-y-auto z-10">
-                {filteredSearchAddresses.map((address) => (
+                {filteredSearchAddresses.map(address => (
                   <div
                     key={address.id}
                     className="flex items-center justify-between p-3 hover:bg-gray-100 cursor-pointer transition-colors"
                     onClick={() => {
-                      onSelectSearchAddress?.(address as Address)
-                      setSearchQuery("")
+                      onSelectSearchAddress?.(address as Address);
+                      setSearchQuery('');
                     }}
                   >
                     <div className="flex-1 mr-2">
@@ -128,8 +131,8 @@ export default function ChooseAddressLabelModal({
                   <div
                     className="flex items-center justify-between p-3 hover:bg-gray-100 cursor-pointer transition-colors border-t border-gray-200"
                     onClick={() => {
-                      onManualEntry()
-                      setSearchQuery("")
+                      onManualEntry();
+                      setSearchQuery('');
                     }}
                   >
                     <p className="text-gray-900 text-sm">Enter address manually</p>
@@ -144,9 +147,9 @@ export default function ChooseAddressLabelModal({
         {/* Address List */}
         <div className="max-h-96 overflow-y-auto">
           {filteredAddresses.map((address, index) => {
-            const isLastAddress = index === filteredAddresses.length - 1
+            const isLastAddress = index === filteredAddresses.length - 1;
             return (
-              <div 
+              <div
                 key={address.id}
                 className={`flex items-start justify-between p-4 hover:bg-gray-100 cursor-pointer transition-colors border-t border-gray-200 ${
                   isLastAddress ? 'rounded-b-2xl' : ''
@@ -158,7 +161,8 @@ export default function ChooseAddressLabelModal({
                   {address.personalLabel ? (
                     <>
                       <p className="font-medium text-gray-900">
-                        {address.personalLabel.charAt(0).toUpperCase() + address.personalLabel.slice(1)}
+                        {address.personalLabel.charAt(0).toUpperCase() +
+                          address.personalLabel.slice(1)}
                       </p>
                       <p className="text-sm text-gray-600">
                         {address.street}, {address.city}, {address.state} {address.zipCode}
@@ -167,7 +171,9 @@ export default function ChooseAddressLabelModal({
                   ) : (
                     <>
                       <p className="font-medium text-gray-900">{address.street}</p>
-                      <p className="text-sm text-gray-600">{address.city}, {address.state} {address.zipCode}</p>
+                      <p className="text-sm text-gray-600">
+                        {address.city}, {address.state} {address.zipCode}
+                      </p>
                     </>
                   )}
                 </div>
@@ -175,7 +181,7 @@ export default function ChooseAddressLabelModal({
                 {/* Right Arrow Icon */}
                 <ChevronRight className="w-5 h-5 text-gray-400 flex-shrink-0 ml-2" />
               </div>
-            )
+            );
           })}
         </div>
 
@@ -184,6 +190,5 @@ export default function ChooseAddressLabelModal({
         )}
       </div>
     </div>
-  )
+  );
 }
-

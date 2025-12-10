@@ -160,6 +160,7 @@ export const SupportHistoryIcon = ({
     ></path>
   </svg>
 );
+
 export const MarketIcon = ({ width = 32, height = 32 }: { width?: number; height?: number }) => (
   <svg
     width={width}

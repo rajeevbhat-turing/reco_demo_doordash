@@ -1,11 +1,9 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { X, ExternalLink, ChevronRight } from 'lucide-react';
-import Image from 'next/image';
 import DealModal from './deal-modal';
 import { type Deal } from '@/types/deal-types';
-import { DashDoorLogoMark } from '../common/Icons';
 import { useDealsByRestaurantId } from '@/lib/hooks/use-deals';
 
 interface DealsModalProps {
@@ -40,6 +38,12 @@ export default function DealsModal({ isOpen, onClose, restaurantId }: DealsModal
     }
   };
 
+  // Handle closing deal modal
+  const handleCloseDealModal = useCallback(() => {
+    setIsDealModalOpen(false);
+    setSelectedDeal(null);
+  }, []);
+
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
@@ -73,6 +77,7 @@ export default function DealsModal({ isOpen, onClose, restaurantId }: DealsModal
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
       onClick={handleBackdropClick}
+      data-testid="deals-modal-backdrop"
     >
       <div
         ref={modalRef}
@@ -147,14 +152,7 @@ export default function DealsModal({ isOpen, onClose, restaurantId }: DealsModal
       </div>
 
       {/* Deal Modal */}
-      <DealModal
-        isOpen={isDealModalOpen}
-        onClose={() => {
-          setIsDealModalOpen(false);
-          setSelectedDeal(null);
-        }}
-        deal={selectedDeal}
-      />
+      <DealModal isOpen={isDealModalOpen} onClose={handleCloseDealModal} deal={selectedDeal} />
     </div>
   );
 }
@@ -183,12 +181,13 @@ function DealCard({
       className={`bg-white rounded-xl py-2 px-3 flex items-center gap-4 border border-gray-200 ${
         !deal.buttonText || deal.buttonText === '' ? 'cursor-pointer' : ''
       }`}
+      data-testid={`deal-card-${deal.id}`}
     >
       {/* Icon */}
       <div className="flex-shrink-0">
         <div className="w-12 h-12 flex items-center justify-center">
           {deal.id === 'dashpass-delivery-fee' ? (
-            <Image
+            <img
               src="/dashpass-icon-green.svg"
               alt={deal.title}
               width={30}
@@ -196,7 +195,7 @@ function DealCard({
               className="object-contain"
             />
           ) : (
-            <Image
+            <img
               src="/offer-icon.svg"
               alt={deal.title}
               width={30}

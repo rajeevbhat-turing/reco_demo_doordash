@@ -3,7 +3,7 @@ import { db } from '@/lib/db';
 
 /**
  * GET /api/expected-state/get-default-payment-method?userId=123
- * 
+ *
  * Gets the default payment method for a user from the database
  */
 export async function GET(request: NextRequest) {
@@ -13,9 +13,9 @@ export async function GET(request: NextRequest) {
 
     if (!userId) {
       return NextResponse.json(
-        { 
-          success: false, 
-          error: 'userId is required' 
+        {
+          success: false,
+          error: 'userId is required',
         },
         { status: 400 }
       );
@@ -35,14 +35,14 @@ export async function GET(request: NextRequest) {
       WHERE user_id = ? AND is_default = 1`,
       [userId]
     );
-    
+
     if (!defaultPaymentMethod) {
       return NextResponse.json({
         success: true,
         data: null,
       });
     }
-    
+
     const result = {
       id: String(defaultPaymentMethod.id),
       type: defaultPaymentMethod.type,
@@ -58,16 +58,14 @@ export async function GET(request: NextRequest) {
       success: true,
       data: result,
     });
-
   } catch (error) {
     console.error('❌ Get default payment method error:', error);
     return NextResponse.json(
-      { 
-        success: false, 
-        error: error instanceof Error ? error.message : 'An error occurred'
+      {
+        success: false,
+        error: error instanceof Error ? error.message : 'An error occurred',
       },
       { status: 500 }
     );
   }
 }
-

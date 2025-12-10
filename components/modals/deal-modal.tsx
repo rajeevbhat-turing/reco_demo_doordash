@@ -1,8 +1,7 @@
 'use client';
 
-import { useEffect, useRef, useMemo } from 'react';
+import React, { useEffect, useRef, useMemo, useCallback } from 'react';
 import { X, Plus, ThumbsUp } from 'lucide-react';
-import Image from 'next/image';
 import { type Deal } from '@/types/deal-types';
 import { type MenuItem } from '@/constants/menu-items';
 import { useCartStore } from '@/store/cart-store';
@@ -66,13 +65,11 @@ export default function DealModal({ isOpen, onClose, deal }: DealModalProps) {
   const freeItemsMenuData = useMemo(() => {
     if (!deal?.freeItems || deal.freeItems.length === 0) return [];
     if (!menuData?.menuItems) return [];
-    
+
     return deal.freeItems
       .map(freeItem => {
         // Match by ID (both are strings)
-        const menuItem = menuData.menuItems.find(
-          item => item.id === freeItem.id
-        );
+        const menuItem = menuData.menuItems.find(item => item.id === freeItem.id);
         return menuItem ? { ...menuItem, freeItemId: freeItem.id } : null;
       })
       .filter((item): item is MenuItem & { freeItemId: string } => item !== null);
@@ -94,6 +91,11 @@ export default function DealModal({ isOpen, onClose, deal }: DealModalProps) {
     if (!deal?.restaurantId || !restaurants) return null;
     return getRestaurantById(restaurants, deal.restaurantId);
   }, [deal?.restaurantId, restaurants]);
+
+  // Handle closing menu item dialog
+  const handleCloseMenuItemDialog = useCallback(() => {
+    setMenuItemDialogOpen(false);
+  }, []);
 
   // Handle add to cart
   const handleAddToCart = (item: MenuItem) => {
@@ -146,6 +148,7 @@ export default function DealModal({ isOpen, onClose, deal }: DealModalProps) {
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
       onClick={handleBackdropClick}
+      data-testid="deal-modal-backdrop"
     >
       <div
         ref={modalRef}
@@ -192,7 +195,7 @@ export default function DealModal({ isOpen, onClose, deal }: DealModalProps) {
           </div>
 
           {/* Terms and Conditions Link */}
-          <a
+          {/* <a
             href="#"
             className="text-xs font-medium text-[#313131ff] underline mb-6 block"
             onClick={e => {
@@ -201,7 +204,7 @@ export default function DealModal({ isOpen, onClose, deal }: DealModalProps) {
             }}
           >
             Terms and Conditions
-          </a>
+          </a> */}
 
           {/* Free Items List */}
           {freeItemsMenuData.length > 0 && (
@@ -240,11 +243,10 @@ export default function DealModal({ isOpen, onClose, deal }: DealModalProps) {
                   {/* Item Image */}
                   <div className="flex-shrink-0 w-[100px] h-[100px] relative">
                     {item.image ? (
-                      <Image
+                      <img
                         src={item.image}
                         alt={item.name}
-                        fill
-                        className="object-cover rounded-md"
+                        className="w-full h-full object-cover rounded-md"
                       />
                     ) : (
                       <div className="w-[100px] h-[100px] bg-gray-200 rounded-md flex items-center justify-center">
@@ -281,11 +283,24 @@ export default function DealModal({ isOpen, onClose, deal }: DealModalProps) {
       </div>
 
       {/* Menu Item Dialog */}
-      <MenuItemDialog
-        isOpen={menuItemDialogOpen}
-        onClose={() => setMenuItemDialogOpen(false)}
-        item={selectedItem}
-      />
+      {selectedItem && (
+        <MenuItemDialog
+          isOpen={menuItemDialogOpen}
+          onClose={handleCloseMenuItemDialog}
+          item={{
+            ...selectedItem,
+            image: selectedItem.image || '',
+            description: selectedItem.description || undefined,
+            rating:
+              typeof selectedItem.rating === 'number'
+                ? selectedItem.rating
+                : typeof selectedItem.rating === 'string'
+                  ? parseFloat(selectedItem.rating) || undefined
+                  : undefined,
+            ratingCount: selectedItem.ratingCount ?? undefined,
+          }}
+        />
+      )}
     </div>
   );
 }

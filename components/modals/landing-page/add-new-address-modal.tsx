@@ -1,9 +1,16 @@
 'use client';
 
-import { useState, useEffect, useMemo, useRef } from 'react';
-import { X, ChevronDown } from 'lucide-react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
+import { X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Address } from '@/lib/types/user-types';
 import countriesData from '@/lib/utils/countries.json';
 
@@ -115,9 +122,60 @@ export default function AddNewAddressModal({
     };
 
     const handleClickOutside = (event: MouseEvent) => {
-      if (dialogRef.current && !dialogRef.current.contains(event.target as Node)) {
-        onClose();
+      const target = event.target as HTMLElement;
+
+      if (!dialogRef.current) {
+        return;
       }
+
+      // Check the event path FIRST to see if any ancestor is the modal
+      // This catches clicks even when Select Portal might interfere
+      const path = event.composedPath ? event.composedPath() : [];
+      const isClickInsideModal = path.some(node => {
+        if (node instanceof Node && dialogRef.current) {
+          return dialogRef.current.contains(node);
+        }
+        return false;
+      });
+
+      // FIRST: Always check if clicking inside the modal - if so, NEVER close
+      // This must be checked first and must always prevent closing
+      // Check both direct contains and event path to be absolutely sure
+      const isInsideModal = dialogRef.current.contains(target) || isClickInsideModal;
+
+      if (isInsideModal) {
+        // Click is inside modal - NEVER close the modal, let Select handle its own closing
+        return;
+      }
+
+      // Don't close if clicking on Select elements (even if outside modal, they're related)
+      const isSelectElement =
+        target.closest('[data-radix-select-content]') ||
+        target.closest('[data-radix-select-viewport]') ||
+        target.closest('[data-radix-select-item]') ||
+        target.closest('[data-radix-select-trigger]') ||
+        target.closest('[role="listbox"]') ||
+        target.closest('[data-radix-popper-content-wrapper]');
+
+      const isSelectInPath = path.some(node => {
+        if (node instanceof Element) {
+          return (
+            node.hasAttribute('data-radix-select-content') ||
+            node.hasAttribute('data-radix-select-viewport') ||
+            node.hasAttribute('data-radix-select-item') ||
+            node.hasAttribute('data-radix-select-trigger') ||
+            node.getAttribute('role') === 'listbox'
+          );
+        }
+        return false;
+      });
+
+      if (isSelectElement || isSelectInPath) {
+        return; // Don't close when interacting with Select
+      }
+
+      // Only close if clicking outside the modal and not on Select elements
+      onClose();
     };
 
     if (isOpen) {
@@ -208,7 +266,10 @@ export default function AddNewAddressModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
-      <div ref={dialogRef} className="relative bg-white rounded-xl w-full max-w-md md:max-w-xl mx-4">
+      <div
+        ref={dialogRef}
+        className="relative bg-white rounded-xl w-full max-w-md md:max-w-xl mx-4"
+      >
         <div className="py-6 px-8 md:px-4">
           {/* Close button */}
           <button
@@ -231,23 +292,22 @@ export default function AddNewAddressModal({
               <Label htmlFor="country" className="text-[15px] font-bold text-gray-900 mb-2 block">
                 Country
               </Label>
-              <div className="relative">
-                <select
-                  id="country"
-                  value={country}
-                  onChange={e => setCountry(e.target.value)}
+              <Select value={country} onValueChange={setCountry}>
+                <SelectTrigger
                   className="w-full px-4 py-2 border-2 border-transparent focus:outline-none focus:ring-0 focus:ring-offset-0 
                   focus-visible:ring-0 focus-visible:ring-offset-0 rounded-lg focus:border-[#191919ff] 
-                  focus-visible:border-[#191919ff] bg-[#f7f7f7] appearance-none text-sm"
+                  focus-visible:border-[#191919ff] bg-[#f7f7f7] text-sm h-auto"
                 >
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="z-[70]">
                   {countries.map(c => (
-                    <option key={c.name} value={c.name}>
+                    <SelectItem key={c.name} value={c.name}>
                       {c.name}
-                    </option>
+                    </SelectItem>
                   ))}
-                </select>
-                <ChevronDown className="absolute right-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-600 pointer-events-none" />
-              </div>
+                </SelectContent>
+              </Select>
             </div>
 
             {/* Street Address */}
@@ -324,23 +384,22 @@ export default function AddNewAddressModal({
                 <Label htmlFor="state" className="text-[15px] font-bold text-gray-900 mb-2 block">
                   State
                 </Label>
-                <div className="relative">
-                  <select
-                    id="state"
-                    value={state}
-                    onChange={e => setState(e.target.value)}
+                <Select value={state} onValueChange={setState}>
+                  <SelectTrigger
                     className="w-full px-4 py-2 border-2 border-transparent focus:outline-none focus:ring-0 focus:ring-offset-0 
                     focus-visible:ring-0 focus-visible:ring-offset-0 rounded-lg focus:border-[#191919ff] 
-                    focus-visible:border-[#191919ff] bg-[#f7f7f7] appearance-none text-sm"
+                    focus-visible:border-[#191919ff] bg-[#f7f7f7] text-sm h-auto"
                   >
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="z-[70]">
                     {states.map((stateName: string) => (
-                      <option key={stateName} value={stateName}>
+                      <SelectItem key={stateName} value={stateName}>
                         {stateName}
-                      </option>
+                      </SelectItem>
                     ))}
-                  </select>
-                  <ChevronDown className="absolute right-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-600 pointer-events-none" />
-                </div>
+                  </SelectContent>
+                </Select>
               </div>
               <div>
                 <Label htmlFor="zipCode" className="text-[15px] font-bold text-gray-900 mb-2 block">

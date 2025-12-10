@@ -4,7 +4,7 @@ import { calculateDistance } from '@/lib/utils/distance-utils';
 
 /**
  * GET /api/expected-state/get-cheapest-restaurant-by-frequent-cuisine?userId=123&lat=37.7749&lng=-122.4194&radius=10
- * 
+ *
  * Finds the restaurant with the lowest delivery fee for user's most frequent cuisine:
  * 1. Gets user's previous orders
  * 2. Finds the most frequently ordered cuisine
@@ -22,9 +22,9 @@ export async function GET(request: NextRequest) {
 
     if (!userId) {
       return NextResponse.json(
-        { 
-          success: false, 
-          error: 'userId is required' 
+        {
+          success: false,
+          error: 'userId is required',
         },
         { status: 400 }
       );
@@ -32,9 +32,9 @@ export async function GET(request: NextRequest) {
 
     if (!lat || !lng) {
       return NextResponse.json(
-        { 
-          success: false, 
-          error: 'lat and lng are required' 
+        {
+          success: false,
+          error: 'lat and lng are required',
         },
         { status: 400 }
       );
@@ -69,7 +69,7 @@ export async function GET(request: NextRequest) {
           reason: 'No previous orders found',
           mostFrequentCuisine: null,
           lowestDeliveryFee: null,
-        }
+        },
       });
     }
 
@@ -80,15 +80,16 @@ export async function GET(request: NextRequest) {
       cuisineCount[cuisine] = (cuisineCount[cuisine] || 0) + 1;
     }
 
-    const mostFrequentCuisine = Object.entries(cuisineCount)
-      .sort(([, a], [, b]) => b - a)[0][0];
+    const mostFrequentCuisine = Object.entries(cuisineCount).sort(([, a], [, b]) => b - a)[0][0];
 
     // Step 3: Find the lowest delivery fee from orders of that cuisine
     const cuisineOrders = orders.filter(order => order.cuisine === mostFrequentCuisine);
     const lowestDeliveryFee = Math.min(...cuisineOrders.map(order => order.delivery_fee));
-    
+
     // Find the restaurant with the lowest delivery fee from previous orders
-    const orderWithLowestFee = cuisineOrders.find(order => order.delivery_fee === lowestDeliveryFee);
+    const orderWithLowestFee = cuisineOrders.find(
+      order => order.delivery_fee === lowestDeliveryFee
+    );
     const restaurantIdWithLowestFee = orderWithLowestFee?.store_id;
 
     // Step 4: Get all restaurants of that cuisine
@@ -144,7 +145,7 @@ export async function GET(request: NextRequest) {
           reason: 'No restaurant found',
           mostFrequentCuisine,
           lowestDeliveryFee,
-        }
+        },
       });
     }
 
@@ -156,20 +157,17 @@ export async function GET(request: NextRequest) {
           name: selectedRestaurant.name,
           cuisine: selectedRestaurant.cuisine,
           minDeliveryFee: selectedRestaurant.min_delivery_fee,
-        }
+        },
       },
     });
-
   } catch (error) {
     console.error('❌ Get cheapest restaurant by frequent cuisine error:', error);
     return NextResponse.json(
-      { 
-        success: false, 
-        error: error instanceof Error ? error.message : 'An error occurred'
+      {
+        success: false,
+        error: error instanceof Error ? error.message : 'An error occurred',
       },
       { status: 500 }
     );
   }
 }
-
-

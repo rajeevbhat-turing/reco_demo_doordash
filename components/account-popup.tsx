@@ -3,9 +3,9 @@
 import { useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Heart, Globe, Lock, ArrowRight, Plane, UsersRound } from 'lucide-react';
+import { Globe, Lock } from 'lucide-react';
 import { useUserStore } from '@/store/user-store';
-import { GiftIcon, GlitterIcon, MedalIcon, MessageIcon } from '@/utils/icons';
+// import { GiftIcon, GlitterIcon, MedalIcon, MessageIcon } from '@/utils/icons';
 interface AccountPopupProps {
   isOpen: boolean;
   onClose: () => void;
@@ -27,12 +27,20 @@ export default function AccountPopup({ isOpen, onClose, anchorElement }: Account
     }
   }, [anchorElement, isOpen]);
 
-  // Close popup when clicking outside
+  // Close popup when clicking outside (but not when clicking the anchor element)
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (popupRef.current && !popupRef.current.contains(event.target as Node)) {
-        onClose();
+      const target = event.target as Node;
+      // Don't close if clicking inside the popup
+      if (popupRef.current && popupRef.current.contains(target)) {
+        return;
       }
+      // Don't close if clicking on the anchor element (Account button) - let the toggle handle it
+      if (anchorElement && anchorElement.contains(target)) {
+        return;
+      }
+      // Close if clicking anywhere else
+      onClose();
     };
 
     if (isOpen) {
@@ -42,7 +50,7 @@ export default function AccountPopup({ isOpen, onClose, anchorElement }: Account
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [isOpen, onClose]);
+  }, [isOpen, onClose, anchorElement]);
 
   // Close popup on escape key
   useEffect(() => {
@@ -70,6 +78,12 @@ export default function AccountPopup({ isOpen, onClose, anchorElement }: Account
     onClose();
   };
 
+  // Go to profile page
+  const handleProfileClick = () => {
+    router.push(`/consumer/profile/${currentUser?.id}`);
+    onClose();
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -89,16 +103,19 @@ export default function AccountPopup({ isOpen, onClose, anchorElement }: Account
         {/* User Profile Section */}
         <div className="flex items-center p-3 hover:bg-gray-100 cursor-pointer">
           <div className="w-[56px] h-[56px] bg-[#91a5f9] rounded-full flex items-center justify-center mr-4 flex-shrink-0">
-            <span className="text-white font-bold text-[32px]">
+            <span className="text-white font-bold text-[32px]" data-testid="avatar-initial">
               {currentUser?.name?.charAt(0) || 'U'}
             </span>
           </div>
-          <div className="flex-1">
+          <div className="flex-1" onClick={handleProfileClick}>
             <div className="flex items-center">
               <span className="font-bold text-lg text-[#191919ff]">
                 {currentUser?.name || 'User'}
               </span>
-              <Lock className="h-4 w-4 ml-1 text-[#191919ff]" />
+              {/* Display lock icon if the user is restricted */}
+              {currentUser?.is_restricted ? (
+                <Lock className="h-4 w-4 ml-1 text-[#191919ff]" />
+              ) : null}
             </div>
             <div className="text-[16px] font-medium text-[#191919ff]">View Profile</div>
           </div>

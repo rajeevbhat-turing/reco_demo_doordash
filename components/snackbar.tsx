@@ -8,11 +8,16 @@ export default function Snackbar() {
 
   // Hide snackbar after autoHideDuration
   useEffect(() => {
-    if (snackbar) {
-      setTimeout(() => {
-        setSnackbar(null);
-      }, snackbar.autoHideDuration);
-    }
+    if (!snackbar) return;
+
+    const timeoutId = setTimeout(() => {
+      setSnackbar(null);
+    }, snackbar.autoHideDuration);
+
+    return () => {
+      clearTimeout(timeoutId);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [snackbar]);
 
   if (!snackbar) return null;

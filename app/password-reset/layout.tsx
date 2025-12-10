@@ -4,11 +4,7 @@ import { useEffect, type ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
 import { useUserStore } from '@/store/user-store';
 
-export default function PasswordResetLayout({
-  children,
-}: {
-  children: ReactNode;
-}) {
+export default function PasswordResetLayout({ children }: { children: ReactNode }) {
   const router = useRouter();
   const currentUser = useUserStore(state => state.currentUser);
 
@@ -26,4 +22,3 @@ export default function PasswordResetLayout({
 
   return <>{children}</>;
 }
-

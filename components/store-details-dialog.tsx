@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { X, MapPin, Clock, Phone, ChevronDown, ChevronUp } from 'lucide-react';
-import Image from 'next/image';
 
 interface StoreDetailsDialogProps {
   isOpen: boolean;
@@ -20,9 +19,15 @@ interface StoreDetailsDialogProps {
     openingHours: string;
     phone: string;
   };
+  isRestaurantOpen?: boolean;
 }
 
-export default function StoreDetailsDialog({ isOpen, onClose, store }: StoreDetailsDialogProps) {
+export default function StoreDetailsDialog({
+  isOpen,
+  onClose,
+  store,
+  isRestaurantOpen,
+}: StoreDetailsDialogProps) {
   const dialogRef = useRef<HTMLDivElement>(null);
   const [showHours, setShowHours] = useState(false);
 
@@ -71,7 +76,7 @@ export default function StoreDetailsDialog({ isOpen, onClose, store }: StoreDeta
           <div className="flex items-center mb-6">
             {store.logo && (
               <div className="mr-3 w-12 h-12 rounded-full overflow-hidden border-2 border-gray-200">
-                <Image
+                <img
                   src={store.logo}
                   alt={store.name}
                   width={48}
@@ -84,16 +89,15 @@ export default function StoreDetailsDialog({ isOpen, onClose, store }: StoreDeta
           </div>
 
           {/* Map Location */}
-          <div className="mb-6">
+          {/* <div className="mb-6">
             <div className="relative h-48 w-full bg-gray-200 rounded-lg overflow-hidden mb-2">
-              {/* This would be replaced with an actual map integration */}
               <div className="absolute inset-0 flex items-center justify-center">
                 <MapPin className="h-8 w-8 text-red-600" />
                 <span className="text-gray-500 ml-2">Map integration would go here</span>
               </div>
             </div>
             <p className="text-sm text-gray-500">Map data would be shown here</p>
-          </div>
+          </div> */}
 
           {/* Address */}
           <div className="flex items-start mb-4 pb-4 border-b border-gray-100">
@@ -125,7 +129,7 @@ export default function StoreDetailsDialog({ isOpen, onClose, store }: StoreDeta
                 </button>
               </div>
               <p className="text-gray-700">
-                {store.isOpen ? (
+                {isRestaurantOpen ? (
                   <span className="text-green-600 font-medium">Open now</span>
                 ) : (
                   <span className="text-red-600 font-medium">Closed now</span>

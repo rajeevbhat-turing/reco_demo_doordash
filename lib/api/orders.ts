@@ -35,4 +35,3 @@ export async function fetchMerchantOrders(storeId: string): Promise<Order[]> {
 
   return result.data;
 }
-

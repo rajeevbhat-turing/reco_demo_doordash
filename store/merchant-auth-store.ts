@@ -130,7 +130,11 @@ const sampleMerchants: MerchantUser[] = [
       menuCompleted: true,
       pricing: { selectedPlan: 'premier' },
       payout: {
-        bankAccount: { accountNumber: '123456789', financialInstitutionNumber: '001', transitNumber: '12345' },
+        bankAccount: {
+          accountNumber: '123456789',
+          financialInstitutionNumber: '001',
+          transitNumber: '12345',
+        },
         company: {
           legalBusinessName: 'Portland Grill Inc.',
           registeredBusinessAddress: '33 N Square, Boston, MA 02113',
@@ -191,9 +195,7 @@ export const useMerchantAuthStore = create<MerchantAuthStore>()(
       signOut: () => set({ currentMerchant: null }),
 
       getMerchantByEmail: email => {
-        return get().merchants.find(
-          m => m.email.toLowerCase() === email.toLowerCase()
-        );
+        return get().merchants.find(m => m.email.toLowerCase() === email.toLowerCase());
       },
 
       completeOnboarding: () => {
@@ -297,4 +299,3 @@ export const useMerchantAuthStore = create<MerchantAuthStore>()(
     }
   )
 );
-

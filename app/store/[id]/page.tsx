@@ -1,9 +1,8 @@
 'use client';
 
 import { useEffect, useState, useRef, useCallback, useMemo } from 'react';
-import Image from 'next/image';
-import { useParams, usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { ChevronDown, Info, ChevronLeft, ChevronRight, Heart, Search, X, ThumbsUp } from 'lucide-react';
+import { useParams } from 'next/navigation';
+import { Info, ChevronLeft, ChevronRight, Heart, Search, X, ThumbsUp } from 'lucide-react';
 import { useRestaurants } from '@/lib/hooks/use-restaurants';
 import { useRestaurant } from '@/lib/hooks/use-restaurant';
 import { useRestaurantMenu } from '@/lib/hooks/use-restaurant-menu';
@@ -13,36 +12,44 @@ import {
   calculateDeliveryTime,
   parseDistance,
 } from '@/lib/utils/restaurant-utils';
+import { useRestaurantOpenStatus } from '@/lib/hooks/use-restaurant-open-status';
 import { useCartStore } from '@/store/cart-store';
 import { useAppStore } from '@/store/app-store';
 import { useVerifierStore } from '@/store/verifier-store';
 import MenuItemDialog from '@/components/menu-item-dialog';
-import GroupOrderDialog from '@/components/group-order-dialog';
 import StoreDetailsDialog from '@/components/store-details-dialog';
+import OutsideDeliveryAreaModal from '@/components/modals/outside-delivery-area-modal';
 import { Reviews } from '@/components/reviews';
 import { type Deal } from '@/types/deal-types';
 import { useDealsByRestaurantId } from '@/lib/hooks/use-deals';
 import { Deals } from '@/components/deals';
 import ServiceFeesInfo from '@/components/service-fees-info';
 import { getDefaultRating } from '@/utils/rating-utils';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+  TooltipArrow,
+} from '@/components/ui/tooltip';
 
-const menuTypes = [
-  {
-    id: 'overnight',
-    name: 'Overnight Menu',
-    hours: '12:00 AM - 3:59 AM',
-  },
-  {
-    id: 'regular',
-    name: 'Regular Menu',
-    hours: '10:30 AM - 11:59 PM',
-  },
-  {
-    id: 'breakfast',
-    name: 'Breakfast Menu',
-    hours: '4:00 AM - 10:29 AM',
-  },
-];
+// const menuTypes = [
+//   {
+//     id: 'overnight',
+//     name: 'Overnight Menu',
+//     hours: '12:00 AM - 3:59 AM',
+//   },
+//   {
+//     id: 'regular',
+//     name: 'Regular Menu',
+//     hours: '10:30 AM - 11:59 PM',
+//   },
+//   {
+//     id: 'breakfast',
+//     name: 'Breakfast Menu',
+//     hours: '4:00 AM - 10:29 AM',
+//   },
+// ];
 
 function SearchBar({
   restaurantName,
@@ -80,21 +87,15 @@ function SearchBar({
 
 export default function RestaurantPage() {
   const params = useParams();
-  const pathname = usePathname();
-  const router = useRouter();
-  const searchParams = useSearchParams();
   const rawId = params.id as string;
   const id = decodeURIComponent(rawId); // Decode URL-encoded characters like %26 to &
   const [restaurant, setRestaurant] = useState<any>(null);
-  
-  // Note: Merchant redirect logic removed - merchant routes handle their own routing
-  // This page is for customer-facing store pages only
   const [featuredItems, setFeaturedItems] = useState<any[]>([]);
   const [menuCategories, setMenuCategories] = useState<any[]>([]);
   const [activeCategory, setActiveCategory] = useState('Featured Items');
   const [mostOrderedItems, setMostOrderedItems] = useState<any[]>([]);
-  const [familySharingItems, setFamilySharingItems] = useState<any[]>([]);
-  const [beefItems, setBeefItems] = useState<any[]>([]);
+  const [_familySharingItems, setFamilySharingItems] = useState<any[]>([]);
+  const [_beefItems, setBeefItems] = useState<any[]>([]);
   const [menuTopPosition, setMenuTopPosition] = useState(0);
   const menuRef = useRef<HTMLDivElement>(null);
   const menuContainerRef = useRef<HTMLDivElement>(null);
@@ -105,14 +106,23 @@ export default function RestaurantPage() {
   const { addItem } = useCartStore();
   const ticking = useRef(false);
   const featuredItemsRef = useRef<HTMLDivElement>(null);
-  const dealsRef = useRef<HTMLDivElement>(null);
+  const timeoutRef = useRef<{
+    navigationRecord?: ReturnType<typeof setTimeout>;
+    scrollReenable?: ReturnType<typeof setTimeout>;
+  }>({});
+  // const dealsRef = useRef<HTMLDivElement>(null);
+  const [canScrollLeftFeatured, setCanScrollLeftFeatured] = useState(false);
+  const [canScrollRightFeatured, setCanScrollRightFeatured] = useState(true);
 
   // Fetch the specific restaurant directly (optimization: don't wait for nearby restaurants list)
   const currentUser = useUserStore(state => state.currentUser);
-  const defaultAddress = currentUser?.addresses.find(a => a.default);
-  
+  const defaultAddress = currentUser?.addresses?.find(a => a.default);
+
   // Fetch this specific restaurant immediately - we have the ID from URL
   const { data: specificRestaurant, isLoading: isLoadingRestaurant } = useRestaurant(id);
+
+  // Calculate open status based on user's local time (not server time)
+  const isRestaurantOpen = useRestaurantOpenStatus(restaurant);
 
   // Fetch menu for this restaurant in parallel
   const { data: menuData, isLoading: isLoadingMenu, error: menuError } = useRestaurantMenu(id);
@@ -128,24 +138,28 @@ export default function RestaurantPage() {
   // Check if restaurant is in nearby results (for delivery area validation)
   const restaurantInNearby = restaurants ? getRestaurantById(restaurants, id) : null;
 
-  // Set the category to restaurant when the page loads
+  // Show modal when restaurant is outside delivery area
   useEffect(() => {
-    cartStore.setCategory('restaurant');
-  }, []);
-  const menuDropdownRef = useRef<HTMLDivElement>(null);
+    if (restaurant && restaurants !== undefined && !restaurantInNearby) {
+      setOutsideDeliveryAreaModalOpen(true);
+    }
+  }, [restaurant, restaurants, restaurantInNearby]);
+
+  // const menuDropdownRef = useRef<HTMLDivElement>(null);
 
   // Dialog states
   const [menuItemDialogOpen, setMenuItemDialogOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<any>(null);
-  const [groupOrderDialogOpen, setGroupOrderDialogOpen] = useState(false);
+  // const [groupOrderDialogOpen, setGroupOrderDialogOpen] = useState(false);
   const [storeDetailsDialogOpen, setStoreDetailsDialogOpen] = useState(false);
   const [serviceFeesInfoOpen, setServiceFeesInfoOpen] = useState(false);
-  const [menuDropdownOpen, setMenuDropdownOpen] = useState(false);
+  // const [menuDropdownOpen, setMenuDropdownOpen] = useState(false);
+  const [outsideDeliveryAreaModalOpen, setOutsideDeliveryAreaModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearching, setIsSearching] = useState(false);
 
   const [isSaved, setIsSaved] = useState(false);
-  const [selectedMenuType, setSelectedMenuType] = useState('Regular Menu');
+  // const [selectedMenuType, setSelectedMenuType] = useState('Regular Menu');
   const [isStickyHeader, setIsStickyHeader] = useState(false);
   const [isStickyMenu, setIsStickyMenu] = useState(false);
   const [stickyHeaderHeight, setStickyHeaderHeight] = useState(0);
@@ -189,7 +203,7 @@ export default function RestaurantPage() {
           if (typeof favoritesObj !== 'object' || favoritesObj === null) {
             favoritesObj = {};
           }
-        } catch (error) {
+        } catch (_error) {
           favoritesObj = {};
         }
       }
@@ -218,17 +232,34 @@ export default function RestaurantPage() {
       if (referrer.includes('/search')) {
         console.log('[NAVIGATION] User came from search page, recording navigation');
         // Small delay to ensure search info is set before navigation
-        setTimeout(() => {
+        timeoutRef.current.navigationRecord = setTimeout(() => {
           recordNavigationFromSearch();
         }, 100);
       }
     }
+    const timeout = timeoutRef.current.navigationRecord;
+    return () => {
+      if (timeout) {
+        clearTimeout(timeout);
+      }
+    };
   }, [recordNavigationFromSearch]);
+
+  // Cleanup scrollReenable timeout on unmount
+  useEffect(() => {
+    const timeouts = timeoutRef.current;
+    return () => {
+      if (timeouts.scrollReenable) {
+        clearTimeout(timeouts.scrollReenable);
+      }
+    };
+  }, []);
 
   // Set the cart category to restaurant when the component mounts
   useEffect(() => {
     // Set the category to restaurant
     cartStore.setCategory('restaurant');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -242,11 +273,15 @@ export default function RestaurantPage() {
       }
       setRestaurant(restaurantData);
 
+      // Safely access menuItems and categories with null checks to prevent crashes
+      const menuItems = menuData?.menuItems || [];
+      const categories = menuData?.categories || [];
+
       // Get featured items using the featured flag from database
-      const featuredItemsData = menuData.menuItems.filter(item => item.featured === true);
+      const featuredItemsData = menuItems.filter(item => item.featured === true);
 
       // Get most ordered items - prioritize popular flag, then sort by rating_count
-      const mostOrderedItemsData = menuData.menuItems
+      const mostOrderedItemsData = menuItems
         .filter(item => item.popular === true || (item.ratingCount && item.ratingCount > 0))
         .sort((a, b) => {
           // First prioritize items with popular flag
@@ -259,13 +294,11 @@ export default function RestaurantPage() {
         })
         .slice(0, 5); // Take top 5
 
-      const familySharingItemsData = menuData.menuItems.filter(
-        item => item.category === 'Family & Sharing'
-      );
-      const beefItemsData = menuData.menuItems.filter(item => item.category === 'Beef');
+      const familySharingItemsData = menuItems.filter(item => item.category === 'Family & Sharing');
+      const beefItemsData = menuItems.filter(item => item.category === 'Beef');
 
       // Transform categories to match expected format
-      const menuCategoriesData = menuData.categories.map(cat => ({
+      const menuCategoriesData = categories.map(cat => ({
         id: cat.id,
         name: cat.name,
         description: cat.description,
@@ -281,6 +314,7 @@ export default function RestaurantPage() {
     return () => {
       clearCurrentStore();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, restaurantInNearby, specificRestaurant, menuData]);
 
   // Use restaurant.time (already calculated by API using calculateDeliveryTime) or calculate from distance
@@ -430,10 +464,59 @@ export default function RestaurantPage() {
     }
   }, [activeCategory, menuTopPosition]);
 
+  // Updates arrow button states based on scroll position for featured items
+  const updateFeaturedItemsScrollButtons = useCallback(() => {
+    if (featuredItemsRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } = featuredItemsRef.current;
+      setCanScrollLeftFeatured(scrollLeft > 0);
+      setCanScrollRightFeatured(scrollLeft < scrollWidth - clientWidth - 1); // -1 for rounding errors
+    }
+  }, []);
+
+  // Scrolls featured items left by one card width smoothly
+  const handleFeaturedItemsPrevious = useCallback(() => {
+    if (featuredItemsRef.current && canScrollLeftFeatured) {
+      const cardWidth = 200 + 16; // card width + gap
+      featuredItemsRef.current.scrollBy({
+        left: -cardWidth,
+        behavior: 'smooth',
+      });
+    }
+  }, [canScrollLeftFeatured]);
+
+  // Scrolls featured items right by one card width smoothly
+  const handleFeaturedItemsNext = useCallback(() => {
+    if (featuredItemsRef.current && canScrollRightFeatured) {
+      const cardWidth = 200 + 16; // card width + gap
+      featuredItemsRef.current.scrollBy({
+        left: cardWidth,
+        behavior: 'smooth',
+      });
+    }
+  }, [canScrollRightFeatured]);
+
   useEffect(() => {
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, [handleScroll]);
+
+  // Update featured items scroll button states on mount and when featured items change
+  useEffect(() => {
+    updateFeaturedItemsScrollButtons();
+  }, [featuredItems, updateFeaturedItemsScrollButtons]);
+
+  // Add scroll event listener to featured items container
+  useEffect(() => {
+    const scrollContainer = featuredItemsRef.current;
+    if (scrollContainer) {
+      scrollContainer.addEventListener('scroll', updateFeaturedItemsScrollButtons);
+      window.addEventListener('resize', updateFeaturedItemsScrollButtons);
+      return () => {
+        scrollContainer.removeEventListener('scroll', updateFeaturedItemsScrollButtons);
+        window.removeEventListener('resize', updateFeaturedItemsScrollButtons);
+      };
+    }
+  }, [featuredItems, updateFeaturedItemsScrollButtons]);
 
   const scrollToSection = (category: string) => {
     setActiveCategory(category);
@@ -451,9 +534,14 @@ export default function RestaurantPage() {
 
       window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
 
+      // Clear existing timeout if any
+      if (timeoutRef.current.scrollReenable) {
+        clearTimeout(timeoutRef.current.scrollReenable);
+      }
+
       // Re-enable scroll-based highlight changes after scroll animation completes
       // Smooth scroll typically takes ~500-1000ms, using 1200ms to be safe
-      setTimeout(() => {
+      timeoutRef.current.scrollReenable = setTimeout(() => {
         isProgrammaticScroll.current = false;
       }, 1200);
     }
@@ -491,11 +579,36 @@ export default function RestaurantPage() {
     return deal.title;
   };
 
+  // Handle close menu item dialog
+  const handleCloseMenuItemDialog = useCallback(() => {
+    setMenuItemDialogOpen(false);
+  }, []);
+
+  // Handle close group order dialog
+  // const handleCloseGroupOrderDialog = useCallback(() => {
+  //   setGroupOrderDialogOpen(false);
+  // }, []);
+
+  // Handle close store details dialog
+  const handleCloseStoreDetailsDialog = useCallback(() => {
+    setStoreDetailsDialogOpen(false);
+  }, []);
+
+  // Handle close service fees info dialog
+  const handleCloseServiceFeesInfo = useCallback(() => {
+    setServiceFeesInfoOpen(false);
+  }, []);
+
   if (!restaurant) {
     return <div className="p-8 text-center">Loading...</div>;
   }
 
   const handleAddToCart = (item: any) => {
+    // Check if restaurant is closed (using client-side calculated status)
+    if (restaurant && !isRestaurantOpen) {
+      return; // Prevent adding to cart when restaurant is closed
+    }
+
     // Check if item has modifications
     if (item.modifications && item.modifications.length > 0) {
       // Item has modifications - open dialog instead
@@ -520,21 +633,6 @@ export default function RestaurantPage() {
     addItem(cartItem, 'restaurant', restaurant?.name, restaurantId);
   };
 
-  const scrollContainer = (
-    containerRef: React.RefObject<HTMLDivElement | null>,
-    direction: 'left' | 'right'
-  ) => {
-    if (!containerRef.current) return;
-
-    const scrollAmount = 600; // Adjust this value based on how far you want to scroll
-    const currentScroll = containerRef.current.scrollLeft;
-
-    containerRef.current.scrollTo({
-      left: direction === 'left' ? currentScroll - scrollAmount : currentScroll + scrollAmount,
-      behavior: 'smooth',
-    });
-  };
-
   const openItemDialog = (item: any) => {
     // Ensure the item has the restaurantId property
     const itemWithRestaurantId = {
@@ -545,21 +643,27 @@ export default function RestaurantPage() {
     setMenuItemDialogOpen(true);
   };
 
-  const openGroupOrderDialog = () => {
-    setGroupOrderDialogOpen(true);
-  };
+  // const openGroupOrderDialog = () => {
+  //   setGroupOrderDialogOpen(true);
+  // };
 
-  const toggleMenuDropdown = () => {
-    setMenuDropdownOpen(!menuDropdownOpen);
-  };
+  // const toggleMenuDropdown = () => {
+  //   setMenuDropdownOpen(!menuDropdownOpen);
+  // };
 
-  const selectMenuType = (menuType: string) => {
-    setSelectedMenuType(menuType);
-    setMenuDropdownOpen(false);
+  // const selectMenuType = (menuType: string) => {
+  //   setSelectedMenuType(menuType);
+  //   setMenuDropdownOpen(false);
+  // };
+
+  // Handle clear search
+  const handleClearSearch = () => {
+    setSearchQuery('');
+    setIsSearching(false);
   };
 
   // Find the selected menu type object
-  const selectedMenuTypeObj = menuTypes.find(menu => menu.name === selectedMenuType);
+  // const selectedMenuTypeObj = menuTypes.find(menu => menu.name === selectedMenuType);
 
   // Show loading state
   if (isLoadingMenu || isLoadingRestaurant || !restaurant) {
@@ -599,16 +703,15 @@ export default function RestaurantPage() {
     <div className="px-8 py-16">
       {/* Banner Image */}
       <div className="relative w-full h-[220px] rounded-bl-xl rounded-br-xl overflow-hidden">
-        <Image
+        <img
           src={restaurant.detailsBanner}
           alt={`${restaurant.name}'s Banner`}
-          fill
-          className="object-cover"
+          className="w-full h-full object-cover"
         />
         {restaurant.logo && (
           <div className="absolute left-6 bottom-6 z-10">
             <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-white shadow-md bg-red-600">
-              <Image
+              <img
                 src={restaurant.logo}
                 alt={restaurant.name}
                 width={80}
@@ -633,6 +736,13 @@ export default function RestaurantPage() {
           </div>
         )}
       </div>
+
+      {/* Closed Banner - shown when restaurant is closed */}
+      {!isRestaurantOpen && (
+        <div className="w-full bg-amber-100 rounder-sm mt-1 px-4 py-3 flex items-center justify-between">
+          <span className="text-[#191919] font-medium">Closed</span>
+        </div>
+      )}
 
       {/* Restaurant Info */}
       <div className="max-w-7xl mx-auto px-4">
@@ -723,7 +833,7 @@ export default function RestaurantPage() {
 
         <div className="flex flex-wrap mb-6">
           <div className="w-full md:w-1/4 mb-4 md:mb-0">
-            <div className="bg-white rounded-lg p-4 pl-0 pt-0">
+            <div className="bg-white p-4 pl-0 pt-0 border-b border-gray-200">
               <svg
                 width="20"
                 height="20"
@@ -809,7 +919,7 @@ export default function RestaurantPage() {
               }
             >
               <div ref={menuRef} className="overflow-hidden">
-                <div className="p-4 relative" ref={menuDropdownRef}>
+                {/* <div className="p-4 relative" ref={menuDropdownRef}>
                   <button
                     className="w-full flex items-center justify-between font-medium"
                     onClick={toggleMenuDropdown}
@@ -819,7 +929,6 @@ export default function RestaurantPage() {
                   </button>
                   <div className="text-sm text-gray-600 mt-1">{selectedMenuTypeObj?.hours}</div>
 
-                  {/* Menu Type Dropdown */}
                   {menuDropdownOpen && (
                     <div className="absolute left-0 top-full mt-1 w-[350px] bg-white rounded-lg shadow-lg z-20 py-2">
                       {menuTypes.map(menuType => (
@@ -847,7 +956,14 @@ export default function RestaurantPage() {
                       ))}
                     </div>
                   )}
-                </div>
+                </div> */}
+
+                {/* Displaying full menu since time based menu is not available */}
+                <p className="text-lg font-bold text-[#191919ff]">Full Menu</p>
+                <p className="text-sm font-medium text-[#191919ff] lowercase mb-2">
+                  {restaurant?.openingHours}
+                </p>
+
                 <div className="p-2 max-h-[calc(100vh-200px)] overflow-y-auto">
                   <ul className="space-y-1">
                     {/* Featured Items section */}
@@ -940,21 +1056,34 @@ export default function RestaurantPage() {
                               <p className="text-gray-900 mt-1">{item.price}</p>
                             </div>
                             <div className="relative w-24 h-24">
-                              <Image
+                              <img
                                 src={item.image || '/placeholder.svg'}
                                 alt={item.name}
-                                fill
-                                className="object-cover rounded-lg"
+                                className="w-full h-full object-cover rounded-lg"
+                                loading="lazy"
                               />
                               <button
-                                className="absolute bottom-1 right-1 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-md hover:bg-gray-50 transition-colors"
+                                className={`absolute bottom-1 right-1 w-8 h-8 rounded-full flex items-center justify-center shadow-md transition-colors ${
+                                  restaurant && !isRestaurantOpen
+                                    ? 'bg-gray-200 cursor-not-allowed'
+                                    : 'bg-white hover:bg-gray-50'
+                                }`}
                                 onClick={e => {
                                   e.stopPropagation(); // Prevent opening the dialog
                                   handleAddToCart(item);
                                 }}
+                                disabled={restaurant && !isRestaurantOpen}
                                 aria-label="Add to cart"
                               >
-                                <span className="text-lg font-bold text-gray-900">+</span>
+                                <span
+                                  className={`text-lg font-bold ${
+                                    restaurant && !isRestaurantOpen
+                                      ? 'text-gray-400'
+                                      : 'text-gray-900'
+                                  }`}
+                                >
+                                  +
+                                </span>
                               </button>
                             </div>
                           </div>
@@ -962,8 +1091,10 @@ export default function RestaurantPage() {
                       ))
                     ) : (
                       <div className="col-span-2 py-8 text-center">
-                        <p className="text-gray-500">No items found matching "{searchQuery}"</p>
-                        <button className="mt-2 text-red-600" onClick={() => setSearchQuery('')}>
+                        <p className="text-gray-500">
+                          No items found matching &quot;{searchQuery}&quot;
+                        </p>
+                        <button className="mt-2 text-red-600" onClick={handleClearSearch}>
                           Clear search
                         </button>
                       </div>
@@ -975,13 +1106,13 @@ export default function RestaurantPage() {
               <>
                 <div className="flex items-center justify-between mb-4 border border-gray-200 rounded-lg p-4">
                   <div>
-                    <button
+                    {/* <button
                       className="border border-gray-200 px-4 py-2 flex items-center rounded-full"
                       style={{ background: '#f1f1f1' }}
                       onClick={openGroupOrderDialog}
                     >
                       <span className="mr-1">Group Order</span>
-                    </button>
+                    </button> */}
                   </div>
                   <div className="flex items-center space-x-4">
                     <div className="bg-[#e8f7f7] rounded-lg p-4">
@@ -989,18 +1120,45 @@ export default function RestaurantPage() {
                         <span className="font-medium text-[#3d8f8f]">
                           {restaurant.isFreeDelivery
                             ? '$0 delivery fee'
-                            : `$${(restaurant.minDeliveryFee / 100).toFixed(2)} delivery fee`}
+                            : `$${(restaurant.minDeliveryFee / 100).toFixed(
+                                2
+                              )} minimum delivery fee`}
                         </span>
-                        <div className="flex items-center text-gray-800 text-sm">
+                        {/* <div className="flex items-center text-gray-800 text-sm">
                           <span>pricing & fees</span>
-                          {/* <Info className="h-4 w-4 ml-1 text-gray-500" /> */}
-                        </div>
+                          <Info className="h-4 w-4 ml-1 text-gray-500" />
+                        </div> */}
                       </div>
                     </div>
-                    <div className="text-right">
-                      <div className="font-medium">{deliveryTime}</div>
-                      <div className="text-sm text-gray-600">delivery time</div>
-                    </div>
+                    {restaurantInNearby ? (
+                      <div className="text-right">
+                        <div className="font-medium">{deliveryTime}</div>
+                        <div className="text-sm text-gray-600">delivery time</div>
+                      </div>
+                    ) : (
+                      <div className="text-center">
+                        <div className="font-medium text-[#191919ff] text-sm">Unavailable</div>
+                        <div className="text-sm text-[#606060ff] font-medium flex items-center gap-1 justify-center">
+                          <span>Too far away</span>
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Info className="w-3.5 h-3.5" />
+                              </TooltipTrigger>
+                              <TooltipContent
+                                side="bottom"
+                                className="bg-[#191919ff] text-white p-3 max-w-[250px] text-left rounded-lg"
+                              >
+                                <TooltipArrow className="fill-[#191919ff]" />
+                                <p className="text-sm">
+                                  Your address is not in the store&apos;s delivery area
+                                </p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -1023,24 +1181,29 @@ export default function RestaurantPage() {
                   >
                     <div className="flex items-center justify-between mb-4">
                       <h2 className="text-xl font-bold">Featured Items</h2>
-                      <div className="flex">
+                      <div className="flex gap-1">
                         <button
-                          className="p-2 rounded-full border border-gray-200 mr-2"
-                          onClick={() => scrollContainer(featuredItemsRef, 'left')}
+                          onClick={handleFeaturedItemsPrevious}
+                          disabled={!canScrollLeftFeatured}
+                          className="w-8 h-8 rounded-full bg-[#f1f1f1] flex items-center justify-center hover:bg-gray-200 
+                          disabled:bg-[#f7f7f7] disabled:cursor-not-allowed text-[#191919ff] disabled:text-gray-400"
                         >
-                          <ChevronLeft className="h-5 w-5" />
+                          <ChevronLeft className="w-4 h-4" strokeWidth={3} />
                         </button>
                         <button
-                          className="p-2 rounded-full border border-gray-200"
-                          onClick={() => scrollContainer(featuredItemsRef, 'right')}
+                          onClick={handleFeaturedItemsNext}
+                          disabled={!canScrollRightFeatured}
+                          className="w-8 h-8 rounded-full bg-[#f1f1f1] flex items-center justify-center hover:bg-gray-200 
+                          disabled:bg-[#f7f7f7] disabled:cursor-not-allowed text-[#191919ff] disabled:text-gray-400"
                         >
-                          <ChevronRight className="h-5 w-5" />
+                          <ChevronRight className="w-4 h-4" strokeWidth={3} />
                         </button>
                       </div>
                     </div>
                     <div
                       ref={featuredItemsRef}
                       className="flex overflow-x-auto space-x-4 pb-4 hide-scrollbar"
+                      onScroll={updateFeaturedItemsScrollButtons}
                     >
                       {featuredItems.map(item => (
                         <div
@@ -1049,24 +1212,36 @@ export default function RestaurantPage() {
                           onClick={() => openItemDialog(item)}
                         >
                           <div className="relative h-40">
-                            <Image
-                              src={item.image || '/placeholder.svg?height=160&width=200&query=burger'}
+                            <img
+                              src={
+                                item.image || '/placeholder.svg?height=160&width=200&query=burger'
+                              }
                               alt={item.name}
-                              fill
-                              className="object-cover"
+                              className="w-full h-full object-cover"
                               loading="lazy"
-                              priority={false}
-                              sizes="(max-width: 768px) 200px, 200px"
                             />
                             <button
-                              className="absolute bottom-3 right-3 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-md hover:bg-gray-50 transition-colors"
+                              className={`absolute bottom-3 right-3 w-8 h-8 rounded-full flex items-center justify-center shadow-md transition-colors ${
+                                restaurant && !isRestaurantOpen
+                                  ? 'bg-gray-200 cursor-not-allowed'
+                                  : 'bg-white hover:bg-gray-50'
+                              }`}
                               onClick={e => {
                                 e.stopPropagation(); // Prevent opening the dialog
                                 handleAddToCart(item);
                               }}
+                              disabled={restaurant && !isRestaurantOpen}
                               aria-label="Add to cart"
                             >
-                              <span className="text-lg font-bold text-gray-900">+</span>
+                              <span
+                                className={`text-lg font-bold ${
+                                  restaurant && !isRestaurantOpen
+                                    ? 'text-gray-400'
+                                    : 'text-gray-900'
+                                }`}
+                              >
+                                +
+                              </span>
                             </button>
                           </div>
                           <div className="p-3">
@@ -1104,21 +1279,34 @@ export default function RestaurantPage() {
                           onClick={() => openItemDialog(item)}
                         >
                           <div className="relative h-40">
-                            <Image
+                            <img
                               src={item.image || '/placeholder.svg'}
                               alt={item.name}
-                              fill
-                              className="object-cover"
+                              className="w-full h-full object-cover"
+                              loading="lazy"
                             />
                             <button
-                              className="absolute bottom-3 right-3 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-md hover:bg-gray-50 transition-colors"
+                              className={`absolute bottom-3 right-3 w-8 h-8 rounded-full flex items-center justify-center shadow-md transition-colors ${
+                                restaurant && !isRestaurantOpen
+                                  ? 'bg-gray-200 cursor-not-allowed'
+                                  : 'bg-white hover:bg-gray-50'
+                              }`}
                               onClick={e => {
                                 e.stopPropagation(); // Prevent opening the dialog
                                 handleAddToCart(item);
                               }}
+                              disabled={restaurant && !isRestaurantOpen}
                               aria-label="Add to cart"
                             >
-                              <span className="text-lg font-bold text-gray-900">+</span>
+                              <span
+                                className={`text-lg font-bold ${
+                                  restaurant && !isRestaurantOpen
+                                    ? 'text-gray-400'
+                                    : 'text-gray-900'
+                                }`}
+                              >
+                                +
+                              </span>
                             </button>
                           </div>
                           <div className="p-3">
@@ -1152,7 +1340,8 @@ export default function RestaurantPage() {
                   .filter(category => !['Featured Items', 'Most Ordered'].includes(category.name))
                   .filter(category => {
                     // Only show categories that have items
-                    const categoryItems = menuData?.menuItems.filter(item => item.category === category.name) || [];
+                    const categoryItems =
+                      menuData?.menuItems.filter(item => item.category === category.name) || [];
                     return categoryItems.length > 0;
                   })
                   .map(category => (
@@ -1183,21 +1372,33 @@ export default function RestaurantPage() {
                                 <p className="text-gray-900 mt-1">{item.price}</p>
                               </div>
                               <div className="relative w-24 h-24">
-                                <Image
+                                <img
                                   src={item.image || '/placeholder.svg'}
                                   alt={item.name}
-                                  fill
-                                  className="object-cover rounded-lg"
+                                  className="w-full h-full object-cover rounded-lg"
                                 />
                                 <button
-                                  className="absolute bottom-1 right-1 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-md hover:bg-gray-50 transition-colors"
+                                  className={`absolute bottom-1 right-1 w-8 h-8 rounded-full flex items-center justify-center shadow-md transition-colors ${
+                                    restaurant && !isRestaurantOpen
+                                      ? 'bg-gray-200 cursor-not-allowed'
+                                      : 'bg-white hover:bg-gray-50'
+                                  }`}
                                   onClick={e => {
                                     e.stopPropagation(); // Prevent opening the dialog
                                     handleAddToCart(item);
                                   }}
+                                  disabled={restaurant && !isRestaurantOpen}
                                   aria-label="Add to cart"
                                 >
-                                  <span className="text-lg font-bold text-gray-900">+</span>
+                                  <span
+                                    className={`text-lg font-bold ${
+                                      restaurant && !isRestaurantOpen
+                                        ? 'text-gray-400'
+                                        : 'text-gray-900'
+                                    }`}
+                                  >
+                                    +
+                                  </span>
                                 </button>
                               </div>
                             </div>
@@ -1214,22 +1415,26 @@ export default function RestaurantPage() {
       {/* Menu Item Dialog */}
       <MenuItemDialog
         isOpen={menuItemDialogOpen}
-        onClose={() => setMenuItemDialogOpen(false)}
+        onClose={handleCloseMenuItemDialog}
         item={selectedItem}
+        restaurant={restaurant}
       />
       {/* Group Order Dialog */}
-      <GroupOrderDialog
-        isOpen={groupOrderDialogOpen}
-        onClose={() => setGroupOrderDialogOpen(false)}
-      />
+      {/* <GroupOrderDialog isOpen={groupOrderDialogOpen} onClose={handleCloseGroupOrderDialog} /> */}
       {/* Store Details Dialog */}
       <StoreDetailsDialog
         isOpen={storeDetailsDialogOpen}
-        onClose={() => setStoreDetailsDialogOpen(false)}
+        onClose={handleCloseStoreDetailsDialog}
         store={restaurant}
+        isRestaurantOpen={isRestaurantOpen}
       />
       {/* Service Fees Info Dialog */}
-      <ServiceFeesInfo isOpen={serviceFeesInfoOpen} onClose={() => setServiceFeesInfoOpen(false)} />
+      <ServiceFeesInfo isOpen={serviceFeesInfoOpen} onClose={handleCloseServiceFeesInfo} />
+      {/* Outside Delivery Area Modal */}
+      <OutsideDeliveryAreaModal
+        isOpen={outsideDeliveryAreaModalOpen}
+        onClose={() => setOutsideDeliveryAreaModalOpen(false)}
+      />
 
       {/* Deal Banner */}
       {firstDeal && (
@@ -1239,11 +1444,12 @@ export default function RestaurantPage() {
         >
           <div className="flex items-center gap-3">
             <div className="flex-shrink-0">
-              <Image
+              <img
                 src="/offer-icon.svg"
                 alt="Deal"
                 width={24}
                 height={24}
+                loading="lazy"
                 className="object-contain"
               />
             </div>

@@ -60,13 +60,15 @@ export default function PaymentFrequencyModal({
             >
               <div
                 className={`w-6 h-6 rounded-full border-2 flex items-center justify-center mr-4 ${
-                  selectedFrequency === 'once-a-day'
-                    ? 'border-gray-900'
-                    : 'border-gray-300'
+                  selectedFrequency === 'once-a-day' ? 'border-gray-900' : 'border-gray-300'
                 }`}
+                data-testid="radio-indicator-once-a-day"
               >
                 {selectedFrequency === 'once-a-day' && (
-                  <div className="w-3 h-3 rounded-full bg-gray-900"></div>
+                  <div
+                    className="w-3 h-3 rounded-full bg-gray-900"
+                    data-testid="radio-dot-once-a-day"
+                  ></div>
                 )}
               </div>
               <span className="text-base text-gray-900">Pay once a day</span>
@@ -79,13 +81,15 @@ export default function PaymentFrequencyModal({
             >
               <div
                 className={`w-6 h-6 rounded-full border-2 flex items-center justify-center mr-4 ${
-                  selectedFrequency === 'after-each-order'
-                    ? 'border-gray-900'
-                    : 'border-gray-300'
+                  selectedFrequency === 'after-each-order' ? 'border-gray-900' : 'border-gray-300'
                 }`}
+                data-testid="radio-indicator-after-each-order"
               >
                 {selectedFrequency === 'after-each-order' && (
-                  <div className="w-3 h-3 rounded-full bg-gray-900"></div>
+                  <div
+                    className="w-3 h-3 rounded-full bg-gray-900"
+                    data-testid="radio-dot-after-each-order"
+                  ></div>
                 )}
               </div>
               <span className="text-base text-gray-900">Pay after each order</span>
@@ -95,12 +99,12 @@ export default function PaymentFrequencyModal({
           {/* Description Text */}
           <div className="space-y-4 mb-6">
             <p className="text-sm text-gray-700 leading-relaxed">
-              Choose to pay once for all your orders in a day or pay after each order. Available
-              for personal profile orders using Mastercard, Visa, Apple Pay, or Discover.
+              Choose to pay once for all your orders in a day or pay after each order. Available for
+              personal profile orders using Mastercard, Visa, Apple Pay, or Discover.
             </p>
             <p className="text-sm text-gray-700 leading-relaxed">
-              Not available for business profiles, orders over $100.00, or orders paid with
-              American Express, PayPal, Venmo, Cash App, Klarna, SNAP/EBT, or HSA/FSA cards.
+              Not available for business profiles, orders over $100.00, or orders paid with American
+              Express, PayPal, Venmo, Cash App, Klarna, SNAP/EBT, or HSA/FSA cards.
             </p>
           </div>
         </div>
@@ -124,4 +128,3 @@ export default function PaymentFrequencyModal({
     </div>
   );
 }
-

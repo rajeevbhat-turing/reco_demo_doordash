@@ -8,10 +8,7 @@ export async function GET(request: NextRequest) {
     const userId = searchParams.get('userId');
 
     if (!userId) {
-      return NextResponse.json(
-        { success: false, message: 'User ID is required' },
-        { status: 400 }
-      );
+      return NextResponse.json({ success: false, message: 'User ID is required' }, { status: 400 });
     }
 
     // Fetch all carts for the user
@@ -52,8 +49,10 @@ export async function GET(request: NextRequest) {
     const menuItemIds = [...new Set(cartItemsRaw.map(ci => ci.menu_item_id))];
 
     // Fetch menu items with their restaurant info
-    const menuItemsRaw = menuItemIds.length > 0 ? await db.query<any>(
-      `SELECT 
+    const menuItemsRaw =
+      menuItemIds.length > 0
+        ? await db.query<any>(
+            `SELECT 
         mi.id,
         mi.restaurant_id,
         mi.name,
@@ -69,15 +68,18 @@ export async function GET(request: NextRequest) {
       JOIN restaurants r ON mi.restaurant_id = r.id
       JOIN menu_categories mc ON mi.category_id = mc.id
       WHERE mi.id IN (${menuItemIds.map(() => '?').join(',')})`,
-      menuItemIds
-    ) : [];
+            menuItemIds
+          )
+        : [];
 
     // Get unique restaurant IDs from carts
     const restaurantIds = [...new Set(cartsRaw.map(c => c.store_id).filter(id => id))];
 
     // Fetch restaurant details
-    const restaurantsRaw = restaurantIds.length > 0 ? await db.query<any>(
-      `SELECT 
+    const restaurantsRaw =
+      restaurantIds.length > 0
+        ? await db.query<any>(
+            `SELECT 
         id,
         name,
         logo,
@@ -85,26 +87,32 @@ export async function GET(request: NextRequest) {
         section
       FROM restaurants
       WHERE id IN (${restaurantIds.map(() => '?').join(',')})`,
-      restaurantIds
-    ) : [];
+            restaurantIds
+          )
+        : [];
 
     // Fetch applied modifications for cart items
     const cartItemIds = cartItemsRaw.map(ci => ci.id);
-    const appliedModsRaw = cartItemIds.length > 0 ? await db.query<any>(
-      `SELECT 
+    const appliedModsRaw =
+      cartItemIds.length > 0
+        ? await db.query<any>(
+            `SELECT 
         ciam.id,
         ciam.cart_item_id,
         ciam.modification_id,
         ciam.modification_desc
       FROM cart_item_applied_modifications ciam
       WHERE ciam.cart_item_id IN (${cartItemIds.map(() => '?').join(',')})`,
-      cartItemIds
-    ) : [];
+            cartItemIds
+          )
+        : [];
 
     // Fetch applied options for modifications
     const appliedModIds = appliedModsRaw.map(mod => mod.id);
-    const appliedOptionsRaw = appliedModIds.length > 0 ? await db.query<any>(
-      `SELECT 
+    const appliedOptionsRaw =
+      appliedModIds.length > 0
+        ? await db.query<any>(
+            `SELECT 
         ciao.id,
         ciao.cart_item_applied_mod_id,
         ciao.option_id,
@@ -113,14 +121,15 @@ export async function GET(request: NextRequest) {
         ciao.quantity
       FROM cart_item_applied_options ciao
       WHERE ciao.cart_item_applied_mod_id IN (${appliedModIds.map(() => '?').join(',')})`,
-      appliedModIds
-    ) : [];
+            appliedModIds
+          )
+        : [];
 
     // Create lookup maps
     const menuItemsMap = new Map(menuItemsRaw.map(mi => [mi.id, mi]));
     const restaurantsMap = new Map(restaurantsRaw.map(r => [r.id, r]));
     const appliedOptionsMap = new Map<number, any[]>();
-    
+
     appliedOptionsRaw.forEach(opt => {
       if (!appliedOptionsMap.has(opt.cart_item_applied_mod_id)) {
         appliedOptionsMap.set(opt.cart_item_applied_mod_id, []);
@@ -133,7 +142,7 @@ export async function GET(request: NextRequest) {
       if (!appliedModsMap.has(mod.cart_item_id)) {
         appliedModsMap.set(mod.cart_item_id, []);
       }
-      
+
       const options = appliedOptionsMap.get(mod.id) || [];
       appliedModsMap.get(mod.cart_item_id)!.push({
         modificationId: String(mod.modification_id),
@@ -153,7 +162,7 @@ export async function GET(request: NextRequest) {
       if (!cartItemsMap.has(ci.cart_id)) {
         cartItemsMap.set(ci.cart_id, []);
       }
-      
+
       const menuItem = menuItemsMap.get(ci.menu_item_id);
       if (!menuItem) {
         console.warn(`Menu item ${ci.menu_item_id} not found for cart item ${ci.id}`);
@@ -161,7 +170,7 @@ export async function GET(request: NextRequest) {
       }
 
       const appliedModifications = appliedModsMap.get(ci.id) || [];
-      
+
       cartItemsMap.get(ci.cart_id)!.push({
         id: String(ci.menu_item_id), // Use menu_item_id as the cart item ID
         itemName: menuItem.name,
@@ -174,21 +183,23 @@ export async function GET(request: NextRequest) {
     });
 
     // Transform carts
-    const carts = cartsRaw.map(cart => {
-      const restaurant = restaurantsMap.get(cart.store_id);
-      const items = cartItemsMap.get(cart.id) || [];
+    const carts = cartsRaw
+      .map(cart => {
+        const restaurant = restaurantsMap.get(cart.store_id);
+        const items = cartItemsMap.get(cart.id) || [];
 
-      // All carts with store_id referring to restaurants table should have category 'restaurant'
-      // The store_category field in DB is actually the section (e.g., "Featured", "DashPass Favourites")
-      // For now, we only support restaurant carts from the DB
+        // All carts with store_id referring to restaurants table should have category 'restaurant'
+        // The store_category field in DB is actually the section (e.g., "Featured", "DashPass Favourites")
+        // For now, we only support restaurant carts from the DB
 
-      return {
-        storeId: String(cart.store_id),
-        storeName: restaurant?.name || 'Unknown Store',
-        storeCategory: 'restaurant', // Always restaurant for carts from restaurants table
-        items: items,
-      };
-    }).filter(cart => cart.items.length > 0); // Only return carts with items
+        return {
+          storeId: String(cart.store_id),
+          storeName: restaurant?.name || 'Unknown Store',
+          storeCategory: 'restaurant', // Always restaurant for carts from restaurants table
+          items: items,
+        };
+      })
+      .filter(cart => cart.items.length > 0); // Only return carts with items
 
     console.log(`✅ Fetched ${carts.length} carts for user ${userId}`);
 
@@ -198,10 +209,6 @@ export async function GET(request: NextRequest) {
     });
   } catch (error: any) {
     console.error('❌ Error fetching carts:', error);
-    return NextResponse.json(
-      { success: false, message: 'Internal server error' },
-      { status: 500 }
-    );
+    return NextResponse.json({ success: false, message: 'Internal server error' }, { status: 500 });
   }
 }
-

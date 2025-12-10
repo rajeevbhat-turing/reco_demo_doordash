@@ -1,18 +1,19 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { ChevronDown, Mail, CreditCard } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
 import Link from 'next/link';
 import OTPVerificationModal from '@/components/modals/otp-verification-modal';
 import { useUserStore } from '@/store/user-store';
 import countriesData from '@/lib/utils/countryCode.json';
+import { isValidName } from '@/lib/utils/helperFunctions';
 
 export default function AccountSettingsPage() {
   const currentUser = useUserStore(state => state.currentUser);
+  const users = useUserStore(state => state.users);
   const updateUser = useUserStore(state => state.updateUser);
   const [country, setCountry] = useState('United States');
   const [phoneCountry, setPhoneCountry] = useState('+1 (US)');
-  const [receiveUpdates, setReceiveUpdates] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [generalError, setGeneralError] = useState('');
   const [showOTPModal, setShowOTPModal] = useState(false);
@@ -27,6 +28,7 @@ export default function AccountSettingsPage() {
   const phoneCountrySelectRef = useRef<HTMLDivElement>(null);
   const phoneCountryButtonRef = useRef<HTMLButtonElement>(null);
   const phoneCountryDropdownRef = useRef<HTMLDivElement>(null);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Form data state
   const [formData, setFormData] = useState({
@@ -50,12 +52,18 @@ export default function AccountSettingsPage() {
       setCountry(currentUser.userCountry || 'United States');
       setPhoneCountry(`${currentUser.country?.dialCode} (${currentUser.country?.code})`);
 
+      // Extract phone number without dial code if it starts with the dial code
+      let phoneNumber = currentUser.phoneNumber || '';
+      if (currentUser.country?.dialCode && phoneNumber.startsWith(currentUser.country.dialCode)) {
+        phoneNumber = phoneNumber.substring(currentUser.country.dialCode.length);
+      }
+
       // Set initial form data
       setFormData({
         firstName: currentUser.name?.split(' ')[0] || '',
         lastName: currentUser.name?.split(' ').slice(1).join(' ') || '',
         email: currentUser.email || '',
-        phoneNumber: currentUser.phoneNumber || '',
+        phoneNumber: phoneNumber,
       });
     }
   }, [currentUser]);
@@ -83,13 +91,27 @@ export default function AccountSettingsPage() {
     };
   }, [showOTPModal]);
 
+  // Cleanup timeout on unmount
+  useEffect(
+    () => () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
+      }
+    },
+    []
+  );
+
   // Close country dropdown when clicking outside and position it below
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (countrySelectRef.current && !countrySelectRef.current.contains(event.target as Node)) {
         setShowCountryDropdown(false);
       }
-      if (phoneCountrySelectRef.current && !phoneCountrySelectRef.current.contains(event.target as Node)) {
+      if (
+        phoneCountrySelectRef.current &&
+        !phoneCountrySelectRef.current.contains(event.target as Node)
+      ) {
         setShowPhoneCountryDropdown(false);
       }
     };
@@ -102,7 +124,11 @@ export default function AccountSettingsPage() {
         countryDropdownRef.current.style.left = `${buttonRect.left}px`;
         countryDropdownRef.current.style.width = `${buttonRect.width}px`;
       }
-      if (showPhoneCountryDropdown && phoneCountryButtonRef.current && phoneCountryDropdownRef.current) {
+      if (
+        showPhoneCountryDropdown &&
+        phoneCountryButtonRef.current &&
+        phoneCountryDropdownRef.current
+      ) {
         const buttonRect = phoneCountryButtonRef.current.getBoundingClientRect();
         // Position dropdown below the button
         phoneCountryDropdownRef.current.style.top = `${buttonRect.bottom + 4}px`;
@@ -161,20 +187,22 @@ export default function AccountSettingsPage() {
         return value.trim() === '' ? 'First name is required' : '';
       case 'lastName':
         return value.trim() === '' ? 'Last name is required' : '';
-      case 'email':
+      case 'email': {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return value.trim() === ''
           ? 'Email is required'
           : !emailRegex.test(value)
-          ? 'Please enter a valid email address'
-          : '';
-      case 'phoneNumber':
+            ? 'Please enter a valid email address'
+            : '';
+      }
+      case 'phoneNumber': {
         const phoneRegex = /^\d{10}$/;
         return value.trim() === ''
           ? 'Phone number is required'
           : !phoneRegex.test(value)
-          ? 'Phone number is invalid'
-          : '';
+            ? 'Phone number is invalid'
+            : '';
+      }
       default:
         return '';
     }
@@ -188,7 +216,7 @@ export default function AccountSettingsPage() {
     if (errors[field as keyof typeof errors]) {
       setErrors(prev => ({ ...prev, [field]: '' }));
     }
-    
+
     // Clear general error when user starts typing in phone number field
     if (field === 'phoneNumber' && generalError) {
       setGeneralError('');
@@ -199,7 +227,6 @@ export default function AccountSettingsPage() {
   const generateOTP = () => {
     const newOtp = Math.floor(100000 + Math.random() * 900000).toString();
     setOtp(newOtp);
-    console.log('Generated OTP:', newOtp);
     return newOtp;
   };
 
@@ -242,6 +269,18 @@ export default function AccountSettingsPage() {
     setIsSaving(true);
     setGeneralError(''); // Clear any previous general error
 
+    // Validate first name and last name
+    if (
+      !formData.firstName.trim() ||
+      !formData.lastName.trim() ||
+      !isValidName(formData.firstName) ||
+      !isValidName(formData.lastName)
+    ) {
+      setGeneralError('Unable to update profile. Please try again later.');
+      setIsSaving(false);
+      return;
+    }
+
     try {
       // Check what has changed
       const originalData = {
@@ -272,6 +311,19 @@ export default function AccountSettingsPage() {
           const emailError = validateField('email', formData.email);
           if (emailError) {
             validationErrors.push(emailError);
+          } else {
+            // Check for duplicate email (excluding current user)
+            const existingUserByEmail = users.find(
+              user => user.email.toLowerCase() === formData.email.toLowerCase() && user.id !== currentUser.id
+            );
+
+            if (existingUserByEmail) {
+              setGeneralError(
+                'The email address you entered is already associated with an account. Please enter a different email address.'
+              );
+              setIsSaving(false);
+              return;
+            }
           }
         }
 
@@ -284,6 +336,28 @@ export default function AccountSettingsPage() {
             setGeneralError(phoneError);
             setIsSaving(false);
             return;
+          }
+        }
+
+        // Check for duplicate phone number if phone or phone country changed
+        if (phoneChanged || phoneCountryChanged) {
+          // Extract dial code from phoneCountry (format: "+1 (US)")
+          const selectedCountryData = countriesData.find(
+            c => `${c.dial_code} (${c.code})` === phoneCountry
+          );
+          if (selectedCountryData) {
+            const fullPhoneNumber = `${selectedCountryData.dial_code}${formData.phoneNumber}`;
+            const existingUserByPhone = users.find(
+              user => user.phoneNumber === fullPhoneNumber && user.id !== currentUser.id
+            );
+
+            if (existingUserByPhone) {
+              setGeneralError(
+                'The phone number you entered is already associated with an account. Please enter a different phone number.'
+              );
+              setIsSaving(false);
+              return;
+            }
           }
         }
 
@@ -301,16 +375,14 @@ export default function AccountSettingsPage() {
           updateData.email = formData.email;
         }
 
-        if (phoneChanged) {
-          updateData.phoneNumber = formData.phoneNumber;
-        }
-
-        if (phoneCountryChanged) {
+        if (phoneChanged || phoneCountryChanged) {
           // Find the country data from the selected phone country
           const selectedCountryData = countriesData.find(
             c => `${c.dial_code} (${c.code})` === phoneCountry
           );
           if (selectedCountryData) {
+            // Store phone number with dial code (format: "+11234567890")
+            updateData.phoneNumber = `${selectedCountryData.dial_code}${formData.phoneNumber}`;
             updateData.country = {
               dialCode: selectedCountryData.dial_code,
               code: selectedCountryData.code,
@@ -365,7 +437,7 @@ export default function AccountSettingsPage() {
       setGeneralError('Unable to update profile. Please try again later.');
     } finally {
       // Wait 500ms before hiding loading state
-      setTimeout(() => {
+      timeoutRef.current = setTimeout(() => {
         setIsSaving(false);
       }, 500);
     }
@@ -442,15 +514,17 @@ export default function AccountSettingsPage() {
                     className="w-full p-3 bg-gray-50 rounded-md pr-10 text-left flex items-center justify-between cursor-pointer hover:bg-gray-100 transition-colors"
                   >
                     <span>{phoneCountry}</span>
-                    <ChevronDown className={`h-5 w-5 text-gray-500 transition-transform ${showPhoneCountryDropdown ? 'transform rotate-180' : ''}`} />
+                    <ChevronDown
+                      className={`h-5 w-5 text-gray-500 transition-transform ${showPhoneCountryDropdown ? 'transform rotate-180' : ''}`}
+                    />
                   </button>
                   {showPhoneCountryDropdown && (
-                    <div 
+                    <div
                       ref={phoneCountryDropdownRef}
                       className="fixed bg-white border border-gray-200 rounded-md shadow-lg max-h-60 overflow-y-auto z-[1000]"
-                      style={{ 
+                      style={{
                         position: 'fixed',
-                        zIndex: 1000
+                        zIndex: 1000,
                       }}
                     >
                       {countriesData.map(country => (
@@ -462,7 +536,9 @@ export default function AccountSettingsPage() {
                             setShowPhoneCountryDropdown(false);
                           }}
                           className={`w-full text-left px-4 py-2 hover:bg-gray-100 transition-colors ${
-                            phoneCountry === `${country.dial_code} (${country.code})` ? 'bg-gray-50 font-medium' : ''
+                            phoneCountry === `${country.dial_code} (${country.code})`
+                              ? 'bg-gray-50 font-medium'
+                              : ''
                           }`}
                         >
                           {country.dial_code} ({country.code})
@@ -523,15 +599,17 @@ export default function AccountSettingsPage() {
                 className="w-full p-3 bg-gray-50 rounded-md pr-10 text-left flex items-center justify-between cursor-pointer hover:bg-gray-100 transition-colors"
               >
                 <span>{country}</span>
-                <ChevronDown className={`h-5 w-5 text-gray-500 transition-transform ${showCountryDropdown ? 'transform rotate-180' : ''}`} />
+                <ChevronDown
+                  className={`h-5 w-5 text-gray-500 transition-transform ${showCountryDropdown ? 'transform rotate-180' : ''}`}
+                />
               </button>
               {showCountryDropdown && (
-                <div 
+                <div
                   ref={countryDropdownRef}
                   className="fixed bg-white border border-gray-200 rounded-md shadow-lg max-h-60 overflow-y-auto z-[1000]"
-                  style={{ 
+                  style={{
                     position: 'fixed',
-                    zIndex: 1000
+                    zIndex: 1000,
                   }}
                 >
                   {countriesData.map(countryData => (
@@ -597,7 +675,8 @@ export default function AccountSettingsPage() {
       </div>
 
       {/* Business Profile Section */}
-      <div className="bg-white border border-gray-200 rounded-lg mb-6">
+      {/* Hidden business profile section for now since they are not implemented yet */}
+      {/* <div className="bg-white border border-gray-200 rounded-lg mb-6">
         <div className="p-6 border-b border-gray-200">
           <h2 className="text-xl font-semibold">Business profile</h2>
         </div>
@@ -623,7 +702,7 @@ export default function AccountSettingsPage() {
             </button>
           </div>
         </div>
-      </div>
+      </div> */}
 
       {/* Privacy Section */}
       <div className="bg-white border border-gray-200 rounded-lg mb-6">
@@ -635,13 +714,15 @@ export default function AccountSettingsPage() {
           <p className="text-gray-700 mb-2">
             DashDoor protects your privacy and personal information. You can choose to share your
             information with businesses so they can send you promotions and emails.
-            <span className="text-red-500 ml-1 font-medium">Learn More</span>
+            {/* Hidden learn more link for now since it is not implemented yet. */}
+            {/* <span className="text-red-500 ml-1 font-medium">Learn More</span> */}
           </p>
 
           <h3 className="text-lg font-semibold mt-6 mb-2">Marketing Choices</h3>
           <p className="text-gray-700">
             Learn about and control personalized ads.
-            <span className="text-red-500 ml-1 font-medium">Learn More</span>
+            {/* Hidden learn more link for now since it is not implemented yet. */}
+            {/* <span className="text-red-500 ml-1 font-medium">Learn More</span> */}
           </p>
         </div>
       </div>

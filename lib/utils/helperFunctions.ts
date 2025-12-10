@@ -1,33 +1,48 @@
 // Email validation
 export const isValidEmail = (email: string) => {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return false;
+  }
+  // Check if local part (before @) exceeds 64 characters
+  const localPart = email.split('@')[0];
+  return localPart.length <= 64;
+};
+
+// Name validation
+export const isValidName = (name: string) => {
+  // Check if name exceeds 119 characters or contains invalid characters
+  // Valid characters: letters, numbers, spaces, hyphens, apostrophes, periods, and commas
+  if (name.length > 119 || !/^[a-zA-Z0-9\s\-'.,]+$/.test(name)) {
+    return false;
+  }
+  return true;
 };
 
 // Generate a consistent color based on the name
 export const generateAvatarColor = (name: string) => {
   const colors = [
-    "#f44336",
-    "#e91e63",
-    "#9c27b0",
-    "#673ab7",
-    "#3f51b5",
-    "#2196f3",
-    "#03a9f4",
-    "#00bcd4",
-    "#009688",
-    "#4caf50",
-    "#8bc34a",
-    "#cddc39",
-    "#ffeb3b",
-    "#ffc107",
-    "#ff9800",
-    "#ff5722",
-    "#795548",
-    "#607d8b",
+    '#f44336',
+    '#e91e63',
+    '#9c27b0',
+    '#673ab7',
+    '#3f51b5',
+    '#2196f3',
+    '#03a9f4',
+    '#00bcd4',
+    '#009688',
+    '#4caf50',
+    '#8bc34a',
+    '#cddc39',
+    '#ffeb3b',
+    '#ffc107',
+    '#ff9800',
+    '#ff5722',
+    '#795548',
+    '#607d8b',
   ];
 
   // Handle undefined, null, or non-string names
-  if (!name || typeof name !== "string") {
+  if (!name || typeof name !== 'string') {
     return colors[0];
   }
 
@@ -64,4 +79,11 @@ export const isValidTaxRate = (value: string) => {
   if (!value) return false;
   const normalized = value.trim().replace(/%$/, '');
   return /^(\d+)(\.\d{1,2})?$/.test(normalized);
+};
+// Function to check if an image URL is valid (not placeholder/empty)
+export const hasValidLogo = (logoUrl: string | undefined): boolean => {
+  if (!logoUrl || logoUrl.trim() === '') return false;
+  if (logoUrl.includes('placeholder.svg')) return false;
+  if (logoUrl.includes('placeholder.png')) return false;
+  return true;
 };

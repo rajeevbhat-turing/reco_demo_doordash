@@ -1,12 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import TwoStepVerificationModal from '@/components/modals/two-step-verification-modal';
 import { useUserStore } from '@/store/user-store';
+import { validatePassword, getPasswordErrorMessage } from '@/lib/utils/password-validation';
 
 export default function PasswordResetPage() {
   const router = useRouter();
@@ -29,7 +30,8 @@ export default function PasswordResetPage() {
     confirmPassword: false,
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [passwordError, setPasswordError] = useState('');
+  const [passwordErrors, setPasswordErrors] = useState<string[]>([]);
+  const [oldPasswordError, setOldPasswordError] = useState('');
   const [showTwoStepModal, setShowTwoStepModal] = useState(false);
 
   // Handles input changes and clears relevant errors
@@ -41,12 +43,14 @@ export default function PasswordResetPage() {
       setErrors(prev => ({ ...prev, [field]: '' }));
     }
 
-    // Clear password error when user types in any password field
-    if (
-      passwordError &&
-      (field === 'oldPassword' || field === 'newPassword' || field === 'confirmPassword')
-    ) {
-      setPasswordError('');
+    // Clear password errors when user types in password fields
+    if (passwordErrors.length > 0 && (field === 'newPassword' || field === 'confirmPassword')) {
+      setPasswordErrors([]);
+    }
+
+    // Clear old password error when user types in old password field
+    if (oldPasswordError && field === 'oldPassword') {
+      setOldPasswordError('');
     }
   };
 
@@ -65,8 +69,12 @@ export default function PasswordResetPage() {
 
     if (!formData.newPassword.trim()) {
       newErrors.newPassword = 'New password is required';
-    } else if (formData.newPassword.length < 10) {
-      newErrors.newPassword = 'Password must be at least 10 characters';
+    } else {
+      // Validate password strength
+      const passwordValidation = validatePassword(formData.newPassword, formData.oldPassword);
+      if (!passwordValidation.isValid) {
+        newErrors.newPassword = getPasswordErrorMessage(passwordValidation);
+      }
     }
 
     if (!formData.confirmPassword.trim()) {
@@ -85,22 +93,26 @@ export default function PasswordResetPage() {
 
     // Clear previous errors
     setErrors({});
+    setPasswordErrors([]);
+    setOldPasswordError('');
 
-    // First check if passwords match
-    if (formData.newPassword !== formData.confirmPassword) {
-      setPasswordError('Passwords do not match');
-      return;
-    }
-
-    // Then check if password is at least 10 characters (only if passwords match)
-    if (formData.newPassword.length < 10) {
-      setPasswordError('Password is less than 10 characters');
-      return;
-    }
-
-    // Check if old password is correct
+    // Check if old password is correct first
     if (currentUser && formData.oldPassword !== currentUser.password) {
-      setPasswordError('Old password is not correct.');
+      setOldPasswordError('Old password is not correct.');
+      return;
+    }
+
+    // Then check if passwords match
+    if (formData.newPassword !== formData.confirmPassword) {
+      setPasswordErrors(['Passwords do not match']);
+      return;
+    }
+
+    // Validate password strength
+    const passwordValidation = validatePassword(formData.newPassword, formData.oldPassword);
+    if (!passwordValidation.isValid) {
+      setPasswordErrors(passwordValidation.errors);
+      return;
     }
 
     // If phone is already verified, change password immediately
@@ -111,7 +123,7 @@ export default function PasswordResetPage() {
         setCurrentUser(null);
         router.push('/');
       } else {
-        setPasswordError('Old password is not correct.');
+        setOldPasswordError('Old password is not correct.');
       }
       return;
     }
@@ -121,14 +133,6 @@ export default function PasswordResetPage() {
       setShowTwoStepModal(true);
     }
   };
-
-  // Checks if form is valid for enabling submit button
-  const isFormValid =
-    formData.oldPassword &&
-    formData.newPassword &&
-    formData.confirmPassword &&
-    formData.newPassword.length >= 10 &&
-    formData.newPassword === formData.confirmPassword;
 
   // Enable submit button if all fields are filled
   const enableSubmitButton =
@@ -142,20 +146,22 @@ export default function PasswordResetPage() {
     setChangePasswordPhoneVerified(true);
 
     // If there are no password errors, change password immediately
-    if (!passwordError) {
+    if (passwordErrors.length === 0 && !oldPasswordError) {
       const success = changePassword(formData.oldPassword, formData.newPassword);
       if (success) {
         // Logout user and navigate to landing page
         setCurrentUser(null);
         router.push('/');
+      } else {
+        setOldPasswordError('Old password is not correct.');
       }
     }
   };
 
   // Handles closing 2-step verification modal
-  const handleCloseTwoStepModal = () => {
+  const handleCloseTwoStepModal = useCallback(() => {
     setShowTwoStepModal(false);
-  };
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
@@ -182,7 +188,9 @@ export default function PasswordResetPage() {
                 value={formData.oldPassword}
                 onChange={e => handleInputChange('oldPassword', e.target.value)}
                 className={`w-full pr-20 border-2 focus-visible:ring-0 focus-visible:ring-offset-0 border-transparent 
-                 focus-visible:border-[#191919ff] rounded-lg bg-[#f7f7f7]`}
+                 focus-visible:border-[#191919ff] rounded-lg ${
+                   oldPasswordError ? 'border-[#b71000ff] bg-[#fef0ed]' : 'bg-[#f7f7f7]'
+                 }`}
               />
               <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
                 <button
@@ -194,6 +202,14 @@ export default function PasswordResetPage() {
                 </button>
               </div>
             </div>
+            {oldPasswordError && (
+              <div className="flex mt-1 text-[#b71000ff]">
+                <div className="h-4 w-4 mr-2 flex-shrink-0 rounded-full flex items-center justify-center bg-[#b71000ff]">
+                  <span className="text-white text-xs font-bold">!</span>
+                </div>
+                <span className="text-sm font-semibold">{oldPasswordError}</span>
+              </div>
+            )}
           </div>
 
           {/* New Password */}
@@ -212,7 +228,7 @@ export default function PasswordResetPage() {
                 onChange={e => handleInputChange('newPassword', e.target.value)}
                 className={`w-full pr-20 border-2 focus-visible:ring-0 focus-visible:ring-offset-0 border-transparent 
                  focus-visible:border-[#191919ff] rounded-lg ${
-                   passwordError ? 'border-[#b71000ff] bg-[#fef0ed]' : 'bg-[#f7f7f7]'
+                   passwordErrors.length > 0 ? 'border-[#b71000ff] bg-[#fef0ed]' : 'bg-[#f7f7f7]'
                  }`}
               />
               <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
@@ -251,7 +267,7 @@ export default function PasswordResetPage() {
                 onChange={e => handleInputChange('confirmPassword', e.target.value)}
                 className={`w-full pr-20 border-2 focus-visible:ring-0 focus-visible:ring-offset-0 border-transparent 
                  focus-visible:border-[#191919ff] rounded-lg ${
-                   passwordError ? 'border-[#b71000ff] bg-[#fef0ed]' : 'bg-[#f7f7f7]'
+                   passwordErrors.length > 0 ? 'border-[#b71000ff] bg-[#fef0ed]' : 'bg-[#f7f7f7]'
                  }`}
               />
               <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
@@ -264,12 +280,16 @@ export default function PasswordResetPage() {
                 </button>
               </div>
             </div>
-            {passwordError && (
-              <div className="flex mt-1 text-[#b71000ff]">
-                <div className="h-4 w-4 mr-2 flex-shrink-0 rounded-full flex items-center justify-center bg-[#b71000ff]">
-                  <span className="text-white text-xs font-bold">!</span>
-                </div>
-                <span className="text-sm font-semibold">{passwordError}</span>
+            {passwordErrors.length > 0 && (
+              <div className="mt-2 space-y-1">
+                {passwordErrors.map((error, index) => (
+                  <div key={index} className="flex items-start text-[#b71000ff]">
+                    <div className="h-4 w-4 mr-2 flex-shrink-0 rounded-full flex items-center justify-center bg-[#b71000ff] mt-0.5">
+                      <span className="text-white text-xs font-bold">!</span>
+                    </div>
+                    <span className="text-sm font-semibold">{error}</span>
+                  </div>
+                ))}
               </div>
             )}
           </div>

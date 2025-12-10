@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { CircleUserRound } from 'lucide-react';
 import TwoStepVerificationModal from '@/components/modals/two-step-verification-modal';
@@ -21,9 +21,9 @@ export default function ArchiveRequestPage() {
   };
 
   // Handles closing 2-step verification modal
-  const handleCloseTwoStepModal = () => {
+  const handleCloseTwoStepModal = useCallback(() => {
     setShowTwoStepModal(false);
-  };
+  }, []);
 
   // Handles archive request submission
   const handleRequestArchive = () => {
@@ -129,17 +129,18 @@ export default function ArchiveRequestPage() {
                 It will be ready within several days.
               </p>
               <p className="text-[#191919ff] text-sm font-medium">
-                We'll update this page and notify you via email when it's available to download.
+                We&apos;ll update this page and notify you via email when it&apos;s available to
+                download.
               </p>
             </div>
 
-            {/* Return to DoorDash Button */}
+            {/* Return to Dashdoor Button */}
             <button
               onClick={handleReturnToHome}
               className="w-full py-2 px-6 font-medium text-[16px] transition-colors bg-red-600 hover:bg-red-700 
                 text-white rounded-[28px]"
             >
-              Return to DoorDash
+              Return to Dashdoor
             </button>
           </div>
         </div>

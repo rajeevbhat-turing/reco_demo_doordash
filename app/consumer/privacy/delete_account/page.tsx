@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import TwoStepVerificationModal from '@/components/modals/two-step-verification-modal';
 import { useUserStore } from '@/store/user-store';
@@ -14,6 +14,18 @@ export default function DeleteAccountPage() {
   const [isVerified, setIsVerified] = useState(false);
   const [showConfirmPage, setShowConfirmPage] = useState(false);
   const [showDeletionPage, setShowDeletionPage] = useState(false);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Cleanup timeout on unmount
+  useEffect(
+    () => () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
+      }
+    },
+    []
+  );
 
   // Handles 2-step verification success
   const handleTwoStepSuccess = () => {
@@ -22,9 +34,9 @@ export default function DeleteAccountPage() {
   };
 
   // Handles closing 2-step verification modal
-  const handleCloseTwoStepModal = () => {
+  const handleCloseTwoStepModal = useCallback(() => {
     setShowTwoStepModal(false);
-  };
+  }, []);
 
   // Handles continue button - shows confirmation page
   const handleContinue = () => {
@@ -47,15 +59,14 @@ export default function DeleteAccountPage() {
           currentUser: null,
           deletedUserIds: [...parsedUserStore.state.deletedUserIds, currentUser?.id],
         },
-      }
+      };
 
       // Set new user store to local storage
       localStorage.setItem('user-store', JSON.stringify(newUserStore));
     }
 
-
     // After 3 seconds, delete user and navigate to home
-    setTimeout(() => {
+    timeoutRef.current = setTimeout(() => {
       // Delete user from store
       if (currentUser) {
         deleteUser(currentUser.id);
@@ -77,7 +88,7 @@ export default function DeleteAccountPage() {
             {/* Information */}
             <div className="mb-6">
               <p className="text-[#191919ff] font-medium text-sm mb-4">
-                Are you sure you want to delete your account and customer data from DoorDash?
+                Are you sure you want to delete your account and customer data from Dashdoor?
               </p>
               <p className="text-[#191919ff] font-medium text-sm">
                 This action is permanent and cannot be undone.
@@ -141,12 +152,8 @@ export default function DeleteAccountPage() {
             {/* Information */}
             <div className="mb-6">
               <p className="text-[#191919ff] text-sm font-medium mb-4">
-                Your account and customer data will be permanently removed from DoorDash. Any
+                Your account and customer data will be permanently removed from Dashdoor. Any
                 credits and gift card balances will also be forfeited.
-              </p>
-              <p className="text-[#191919ff] text-[12px] font-medium">
-                For more information on how we collect and use customer data, visit our Privacy
-                Policy
               </p>
             </div>
 

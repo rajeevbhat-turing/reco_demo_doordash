@@ -16,6 +16,8 @@ export interface Restaurant {
   dashPass: boolean;
   isOpen: boolean;
   openingHours: string;
+  openingHour?: number | string | null; // Raw opening hour for client-side calculation
+  closingHour?: number | string | null; // Raw closing hour for client-side calculation
   street: string;
   city: string;
   state: string;

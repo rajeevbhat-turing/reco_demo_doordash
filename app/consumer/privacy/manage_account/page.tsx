@@ -30,8 +30,8 @@ export default function ManageAccountPage() {
           <div className="mb-3">
             <h2 className="text-[16px] font-medium text-[#191919ff] mb-2">Account Data</h2>
             <p className="text-[#606060ff] mb-2 font-medium text-sm">
-              You can request an archive of your personal information. We'll notify you when it's
-              ready to download.
+              You can request an archive of your personal information. We&apos;ll notify you when
+              it&apos;s ready to download.
             </p>
             <button
               onClick={handleRequestArchive}

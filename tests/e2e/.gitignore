@@ -1,0 +1,16 @@
+# Playwright test artifacts (all in e2e folder)
+/test-results/
+/playwright-report/
+/playwright/.cache/
+
+# Test artifacts
+*.png
+*.jpg
+*.webm
+*.zip
+
+# Test credentials (never commit!)
+test-credentials.ts
+
+# Test run logs
+*.log

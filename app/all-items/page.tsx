@@ -4,10 +4,13 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import VerticalListPage from '@/components/vertical-list-page';
 import { useRestaurants } from '@/lib/hooks/use-restaurants';
 import { useUserStore } from '@/store/user-store';
-import { Suspense } from 'react';
+import { Suspense, useMemo } from 'react';
 import { RestaurantsSkeleton } from '@/components/skeletons/restaurant-skeleton';
 import { useAllDeals } from '@/lib/hooks/use-deals';
 import type { Deal } from '@/types/deal-types';
+import { hasValidLogo } from '@/lib/utils/helperFunctions';
+import { parseDistance, calculateDeliveryTime } from '@/lib/utils/restaurant-utils';
+import { useRestaurantsOpenStatus } from '@/lib/hooks/use-restaurant-open-status';
 
 // Inner component that uses searchParams
 function AllItemsContent() {
@@ -16,7 +19,7 @@ function AllItemsContent() {
 
   // Get user's address for location-based filtering
   const currentUser = useUserStore(state => state.currentUser);
-  const defaultAddress = currentUser?.addresses.find(a => a.default);
+  const defaultAddress = currentUser?.addresses?.find(a => a.default);
 
   // Fetch restaurants near user's address
   const { data: restaurants, isLoading } = useRestaurants(
@@ -25,9 +28,8 @@ function AllItemsContent() {
     10 // 10 mile radius
   );
 
-  // Only fetch all deals when needed for "deals-for-you" section (optimization)
-  const shouldFetchDeals = section === 'deals-for-you';
-  const { data: allDeals } = useAllDeals(shouldFetchDeals);
+  // Calculate open status based on user's local time (not server time)
+  const openStatusMap = useRestaurantsOpenStatus(restaurants);
 
   // Get parameters from the URL
   const title = decodeURIComponent(searchParams.get('title') || 'All Items');
@@ -36,16 +38,12 @@ function AllItemsContent() {
     ? decodeURIComponent(searchParams.get('section') || '')
     : '';
 
-  // Function to check if an image URL is valid (not placeholder/empty)
-  const hasValidLogo = (logoUrl: string | undefined): boolean => {
-    if (!logoUrl || logoUrl.trim() === '') return false;
-    if (logoUrl.includes('placeholder.svg')) return false;
-    if (logoUrl.includes('placeholder.png')) return false;
-    return true;
-  };
+  // Only fetch all deals when needed for "deals-for-you" section (optimization)
+  const shouldFetchDeals = section === 'deals-for-you';
+  const { data: allDeals } = useAllDeals(shouldFetchDeals);
 
-  // Get the items based on the section
-  const getItems = () => {
+  // Get the items based on the section - memoized to prevent unnecessary recalculations
+  const items = useMemo(() => {
     // Restaurant items
     if (type === 'restaurant') {
       if (!restaurants) return [];
@@ -60,9 +58,17 @@ function AllItemsContent() {
           break;
         case 'fastest-near-you':
           filteredRestaurants = restaurants.filter(r => {
-            const timeStr = r.time;
-            const minutes = parseInt(timeStr.match(/\d+/)?.[0] || '100');
-            return minutes < 30 && hasValidLogo(r.logo);
+            if (!hasValidLogo(r.logo)) return false;
+            
+            // Use the same delivery time calculation as checkout to ensure consistency
+            const distance = parseDistance(r.distance);
+            const deliveryTimeStr = calculateDeliveryTime(distance, 'standard');
+            
+            // Extract max time from "min-max min" format
+            const maxTimeMatch = deliveryTimeStr.match(/-(\d+)\s*min/);
+            const maxMinutes = maxTimeMatch ? parseInt(maxTimeMatch[1]) : 100;
+            
+            return maxMinutes <= 30;
           });
           break;
         case 'deals-for-you':
@@ -82,7 +88,7 @@ function AllItemsContent() {
             filteredRestaurants = [];
           }
           break;
-        case 'new-on-doordash':
+        case 'new-on-dashdoor':
           filteredRestaurants = restaurants.filter(r => r.new && hasValidLogo(r.logo));
           break;
         case 'all-stores':
@@ -104,19 +110,19 @@ function AllItemsContent() {
         cuisine: restaurant.cuisine,
         tags: restaurant.tags,
         dashPass: restaurant.dashPass,
-        isOpen: restaurant.isOpen,
+        isOpen: openStatusMap.get(restaurant.id) ?? restaurant.isOpen,
         discount: restaurant.discount,
         featured: restaurant.featured,
         new: restaurant.new,
       }));
     }
-    
+
     // Only restaurants are supported now
     // Return empty array for non-restaurant types
-    
+
     // Default to empty array for other types
     return [];
-  };
+  }, [restaurants, section, type, allDeals, openStatusMap]);
 
   const handleBack = () => {
     // Redirect to the appropriate home page based on the type
@@ -185,7 +191,7 @@ function AllItemsContent() {
   return (
     <VerticalListPage
       title={title}
-      items={getItems()}
+      items={items}
       onBackClick={handleBack}
       categoryType={type}
       urlPrefix={getUrlPrefix()}

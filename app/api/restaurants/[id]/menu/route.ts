@@ -2,14 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { getImageWithFallback } from '@/constants/image-placeholders';
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id: restaurantId } = await params;
-    const { searchParams } = new URL(request.url);
-    const includeUnavailable = searchParams.get('includeUnavailable') === 'true';
 
     if (!restaurantId) {
       return NextResponse.json(
@@ -17,9 +12,6 @@ export async function GET(
         { status: 400 }
       );
     }
-
-    // Build WHERE clause - include unavailable items for merchant view
-    const availabilityFilter = includeUnavailable ? '' : 'AND mi.is_available = 1';
 
     // Fetch menu items with their categories
     const menuItemsRaw = await db.query<any>(
@@ -38,10 +30,11 @@ export async function GET(
         mi.is_available,
         mi.discount_percentage,
         mi.discount_cap,
+        mi.category_id,
         mc.name AS category_name
       FROM menu_items mi
       JOIN menu_categories mc ON mi.category_id = mc.id
-      WHERE mi.restaurant_id = ? ${availabilityFilter}
+      WHERE mi.restaurant_id = ? AND mi.is_available = 1
       ORDER BY mc.display_order, mi.display_order`,
       [restaurantId]
     );
@@ -138,11 +131,17 @@ export async function GET(
 
     // Transform menu items and attach modifications
     const menuItems = menuItemsRaw.map((item: any) => {
-      // Format price
+      // Get modifications for this item
+      const itemModifications = modificationsMap.get(item.id) || [];
+
+      // Check if there are any required modifications
+      const hasRequiredModifications = itemModifications.some(
+        (mod: any) => mod.is_required === true
+      );
+
+      // Format price - add "+" if there are required modifications
       const priceInDollars = (item.price / 100).toFixed(2);
-      const priceDisplay = item.discount_percentage 
-        ? `$${priceInDollars}+` 
-        : `$${priceInDollars}`;
+      const priceDisplay = hasRequiredModifications ? `$${priceInDollars}+` : `$${priceInDollars}`;
 
       return {
         id: String(item.id),
@@ -152,16 +151,17 @@ export async function GET(
         price: priceDisplay,
         image: getImageWithFallback(item.image, 'image'),
         category: item.category_name,
+        categoryId: String(item.category_id),
+        categoryName: item.category_name,
         calories: item.calories ? String(item.calories) : undefined,
         rating: item.rating || null,
         ratingCount: item.rating_count || null,
         popular: item.popular === 1,
         featured: item.featured === 1,
-        isAvailable: item.is_available === 1,
-        discount: item.discount_percentage 
+        discount: item.discount_percentage
           ? `${item.discount_percentage}% off up to $${(item.discount_cap / 100).toFixed(2)}`
           : undefined,
-        modifications: modificationsMap.get(item.id) || [],
+        modifications: itemModifications,
       };
     });
 
@@ -174,8 +174,13 @@ export async function GET(
     }));
 
     // Count total modifications across all items
-    const totalModifications = menuItems.reduce((sum, item) => sum + (item.modifications?.length || 0), 0);
-    console.log(`✅ Fetched ${menuItems.length} menu items with ${totalModifications} total modifications for restaurant ${restaurantId}`);
+    const totalModifications = menuItems.reduce(
+      (sum, item) => sum + (item.modifications?.length || 0),
+      0
+    );
+    console.log(
+      `✅ Fetched ${menuItems.length} menu items with ${totalModifications} total modifications for restaurant ${restaurantId}`
+    );
 
     return NextResponse.json({
       success: true,
@@ -186,10 +191,6 @@ export async function GET(
     });
   } catch (error) {
     console.error('❌ Error fetching menu:', error);
-    return NextResponse.json(
-      { success: false, message: 'Failed to fetch menu' },
-      { status: 500 }
-    );
+    return NextResponse.json({ success: false, message: 'Failed to fetch menu' }, { status: 500 });
   }
 }
-

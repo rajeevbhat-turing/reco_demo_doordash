@@ -8,6 +8,8 @@ export interface MenuItem {
   price: string;
   image: string | null;
   category: string;
+  categoryId?: string;
+  categoryName?: string;
   calories?: string;
   rating?: number | string | null;
   ratingCount?: number | null;

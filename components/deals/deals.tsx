@@ -1,7 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect, useCallback } from 'react';
-import Image from 'next/image';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { ChevronRight, ChevronLeft, ExternalLink } from 'lucide-react';
 import DealsModal from '../modals/deals-modal';
 import DealModal from '../modals/deal-modal';
@@ -35,13 +34,12 @@ export default function Deals({ restaurantId }: DealsProps) {
   // Update scroll buttons on mount and when deals change
   useEffect(() => {
     updateScrollButtons();
-    if (scrollContainerRef.current) {
-      scrollContainerRef.current.addEventListener('scroll', updateScrollButtons);
+    const scrollContainer = scrollContainerRef.current;
+    if (scrollContainer) {
+      scrollContainer.addEventListener('scroll', updateScrollButtons);
       window.addEventListener('resize', updateScrollButtons);
       return () => {
-        if (scrollContainerRef.current) {
-          scrollContainerRef.current.removeEventListener('scroll', updateScrollButtons);
-        }
+        scrollContainer.removeEventListener('scroll', updateScrollButtons);
         window.removeEventListener('resize', updateScrollButtons);
       };
     }
@@ -105,6 +103,17 @@ export default function Deals({ restaurantId }: DealsProps) {
     }
   };
 
+  // Handle close deals modal
+  const handleCloseDealsModal = useCallback(() => {
+    setIsDealsModalOpen(false);
+  }, []);
+
+  // Handle close deal modal
+  const handleCloseDealModal = useCallback(() => {
+    setIsDealModalOpen(false);
+    setSelectedDeal(null);
+  }, []);
+
   // If loading or no deals exist, don't render anything
   if (isLoading || deals.length === 0) {
     return null;
@@ -128,6 +137,7 @@ export default function Deals({ restaurantId }: DealsProps) {
               disabled={!canScrollLeft}
               className="w-8 h-8 rounded-full bg-[#f1f1f1] flex items-center justify-center hover:bg-gray-200 
               disabled:bg-[#f7f7f7] disabled:cursor-not-allowed text-[#191919ff] disabled:text-gray-400"
+              data-testid="deals-scroll-left-button"
             >
               <ChevronLeft className="w-4 h-4" strokeWidth={3} />
             </button>
@@ -136,6 +146,7 @@ export default function Deals({ restaurantId }: DealsProps) {
               disabled={!canScrollRight}
               className="w-8 h-8 rounded-full bg-[#f1f1f1] flex items-center justify-center hover:bg-gray-200 
               disabled:bg-[#f7f7f7] disabled:cursor-not-allowed text-[#191919ff] disabled:text-gray-400"
+              data-testid="deals-scroll-right-button"
             >
               <ChevronRight className="w-4 h-4" strokeWidth={3} />
             </button>
@@ -146,6 +157,7 @@ export default function Deals({ restaurantId }: DealsProps) {
       {/* Deals Slider */}
       <div
         ref={scrollContainerRef}
+        data-testid="deals-scroll-container"
         className="flex gap-4 overflow-x-auto scrollbar-hide"
         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         onScroll={updateScrollButtons}
@@ -163,7 +175,7 @@ export default function Deals({ restaurantId }: DealsProps) {
             <div className="flex-shrink-0">
               <div className="w-12 h-12 flex items-center justify-center">
                 {deal.id === 'dashpass-delivery-fee' ? (
-                  <Image
+                  <img
                     src="/dashpass-icon-green.svg"
                     alt={deal.title}
                     width={30}
@@ -171,7 +183,7 @@ export default function Deals({ restaurantId }: DealsProps) {
                     className="object-contain"
                   />
                 ) : (
-                  <Image
+                  <img
                     src="/offer-icon.svg"
                     alt={deal.title}
                     width={30}
@@ -231,19 +243,12 @@ export default function Deals({ restaurantId }: DealsProps) {
       {/* Deals Modal */}
       <DealsModal
         isOpen={isDealsModalOpen}
-        onClose={() => setIsDealsModalOpen(false)}
+        onClose={handleCloseDealsModal}
         restaurantId={restaurantId}
       />
 
       {/* Deal Modal */}
-      <DealModal
-        isOpen={isDealModalOpen}
-        onClose={() => {
-          setIsDealModalOpen(false);
-          setSelectedDeal(null);
-        }}
-        deal={selectedDeal}
-      />
+      <DealModal isOpen={isDealModalOpen} onClose={handleCloseDealModal} deal={selectedDeal} />
     </div>
   );
 }

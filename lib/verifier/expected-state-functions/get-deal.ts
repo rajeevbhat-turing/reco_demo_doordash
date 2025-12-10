@@ -19,28 +19,30 @@ export interface Deal {
 
 /**
  * Get a deal/promotion by promo code from the database
- * 
+ *
  * @param args - Object containing promocode
  * @returns Deal object or null if not found
  */
 export async function get_deal(args: { promocode: string }): Promise<Deal | null> {
   try {
     const { promocode } = args;
-    
+
     if (!promocode) {
       console.error('Promocode is required');
       return null;
     }
 
     // Call API route to fetch deal from database
-    const response = await fetch(`/api/expected-state/get-deal?promocode=${encodeURIComponent(promocode)}`);
-    
+    const response = await fetch(
+      `/api/expected-state/get-deal?promocode=${encodeURIComponent(promocode)}`
+    );
+
     if (!response.ok) {
       throw new Error(`HTTP ${response.status}: ${response.statusText}`);
     }
 
     const result = await response.json();
-    
+
     if (!result.success) {
       throw new Error(result.error || 'Failed to fetch deal');
     }
@@ -51,4 +53,3 @@ export async function get_deal(args: { promocode: string }): Promise<Deal | null
     return null;
   }
 }
-

@@ -1,11 +1,9 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import Image from 'next/image';
 import {
   ChevronRight,
-  X,
   Trash2,
   Home,
   Package,
@@ -36,16 +34,20 @@ import ChooseAddressLabelModal from '@/components/modals/choose-address-label-mo
 import ChooseLabelModal from '@/components/modals/choose-label-modal';
 import SignIn from '@/components/authentication/sign-in';
 import SignUp from '@/components/authentication/sign-up';
+import ForgotPassword from '@/components/authentication/forgot-password';
 import OTPVerificationModal from '@/components/modals/otp-verification-modal';
 import CountryCodeDropdown from '@/components/modals/country-code-dropdown';
 import PromoCodeModal from '@/components/modals/promocode-modal';
 import { useRestaurants } from '@/lib/hooks/use-restaurants';
-import { getRestaurantById, calculateDeliveryTime, parseDistance } from '@/lib/utils/restaurant-utils';
+import {
+  getRestaurantById,
+  calculateDeliveryTime,
+  parseDistance,
+} from '@/lib/utils/restaurant-utils';
 import { calculateDistance } from '@/lib/utils/distance-utils';
 import { calculateFees, calculateEstimatedTax } from '@/lib/utils/fee-calculator';
 import { useDeals } from '@/lib/hooks/use-deals';
 import { Deal } from '@/types/deal-types';
-import { stores } from '@/data/store-data';
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -60,7 +62,6 @@ export default function CheckoutPage() {
     getSubtotal,
     getServiceFee,
     getDeliveryFee,
-    getTotal,
     getTotalItems,
     setSelectedCard,
     removeItem,
@@ -83,16 +84,18 @@ export default function CheckoutPage() {
   const { addOrder } = useOrdersStore();
   const { getAppliedDealId, getFreeItemIds } = useDealsStore();
 
-    // Find the cart using query params first (before fetching restaurants)
+  // Find the cart using query params first (before fetching restaurants)
   const currentCart = categoryParam && storeIdParam ? findCart(storeIdParam, categoryParam) : null;
-  const items = currentCart?.items || [];
+  const items = useMemo(() => currentCart?.items || [], [currentCart]);
   const currentCategory = currentCart?.storeCategory || categoryParam; // Use categoryParam as fallback for faster access
   const currentStoreId = currentCart?.storeId || null;
+  const [forgotPasswordEmail, setForgotPasswordEmail] = useState('');
 
   // Only fetch restaurants if this is a restaurant order (optimization: avoid unnecessary API calls)
   // Use categoryParam directly for faster check without waiting for cart lookup
-  const defaultAddress = currentUser?.addresses.find(a => a.default);
-  const shouldFetchRestaurants = categoryParam === 'restaurant' && defaultAddress?.lat && defaultAddress?.lng;
+  const defaultAddress = currentUser?.addresses?.find(a => a.default);
+  const shouldFetchRestaurants =
+    categoryParam === 'restaurant' && defaultAddress?.lat && defaultAddress?.lng;
   const { data: restaurants } = useRestaurants(
     shouldFetchRestaurants ? defaultAddress?.lat : undefined,
     shouldFetchRestaurants ? defaultAddress?.lng : undefined,
@@ -105,7 +108,7 @@ export default function CheckoutPage() {
   const userIsAuthenticated = isAuthenticated();
 
   // Auth state for non-authenticated users
-  const [authMode, setAuthMode] = useState<'signin' | 'signup'>('signin');
+  const [authMode, setAuthMode] = useState<'signin' | 'signup' | 'forgot-password'>('signin');
 
   // OTP state for sign up
   const [showOtpModal, setShowOtpModal] = useState(false);
@@ -128,9 +131,8 @@ export default function CheckoutPage() {
   const { data: allDeals } = useDeals(shouldFetchDeals ? currentStoreId : undefined);
 
   // Find the applied deal by ID
-  const appliedDeal: Deal | null = appliedDealId && allDeals
-    ? allDeals.find(deal => deal.id === appliedDealId) || null
-    : null;
+  const appliedDeal: Deal | null =
+    appliedDealId && allDeals ? allDeals.find(deal => deal.id === appliedDealId) || null : null;
 
   // Calculate values for this specific cart
   const baseSubtotal = getSubtotal(currentStoreId || undefined, currentCategory || undefined);
@@ -147,24 +149,18 @@ export default function CheckoutPage() {
 
     items.forEach(item => {
       let itemId = typeof item.id === 'string' ? item.id : item.id.toString();
-      const itemName = (item.itemName || '').toLowerCase().trim();
 
       // If item ID starts with store ID, remove it before checking
       if (appliedDeal.restaurantId && itemId.startsWith(appliedDeal.restaurantId + '-')) {
         itemId = itemId.substring(appliedDeal.restaurantId.length + 1);
       }
 
-      // Check if this item matches any free item (by ID and name)
+      // Check if this item matches any free item
       let matchedFreeItemId: string | null = null;
       for (const freeId of freeItemIds) {
         const matchesById = itemId.startsWith(freeId + '-') || itemId === freeId;
-        const freeItemName = appliedDeal.freeItems
-          ?.find((fi: any) => fi.id === freeId)
-          ?.name.toLowerCase()
-          .trim();
-        const matchesByName = freeItemName && itemName === freeItemName;
 
-        if (matchesById && matchesByName) {
+        if (matchesById) {
           matchedFreeItemId = freeId;
           break;
         }
@@ -199,7 +195,12 @@ export default function CheckoutPage() {
   const totalItems = getTotalItems(currentStoreId || undefined, currentCategory || undefined);
 
   // Check if restaurant is outside delivery area
-  const isOutsideDeliveryArea = Boolean(currentCategory === 'restaurant' && currentStoreId && restaurants && !restaurants.some((r: any) => r.id === currentStoreId));
+  const isOutsideDeliveryArea = Boolean(
+    currentCategory === 'restaurant' &&
+    currentStoreId &&
+    restaurants &&
+    !restaurants.some((r: any) => r.id === currentStoreId)
+  );
 
   // Get restaurant and calculate distance for delivery time calculation
   const currentRestaurant = useMemo(() => {
@@ -220,7 +221,7 @@ export default function CheckoutPage() {
   const [showOrderConfirmation, setShowOrderConfirmation] = useState(false);
   const [orderId, setOrderId] = useState('');
   const [showScheduleModal, setShowScheduleModal] = useState(false);
-  const [selectedScheduleTime, setSelectedScheduleTime] = useState('');
+  const [selectedScheduleTime, _setSelectedScheduleTime] = useState('');
   const [scheduledDate, setScheduledDate] = useState<Date | null>(null);
   const [scheduledTimeSlot, setScheduledTimeSlot] = useState('');
   const [isClient, setIsClient] = useState(false);
@@ -272,12 +273,12 @@ export default function CheckoutPage() {
   const [addressToLabel, setAddressToLabel] = useState<string>('');
   const [selectedAddressId, setSelectedAddressId] = useState(() => {
     // Find default address or use first address
-    const defaultAddress = addresses.find(a => a.default);
-    return defaultAddress?.id || addresses[0]?.id || '';
+    const defaultAddress = addresses?.find(a => a.default);
+    return defaultAddress?.id || addresses?.[0]?.id || '';
   });
 
   // Get the selected address object (needed for fee calculation)
-  const selectedAddress = addresses.find(a => a.id === selectedAddressId) || tempAddress || null;
+  const selectedAddress = addresses?.find(a => a.id === selectedAddressId) || tempAddress || null;
 
   // Calculate actual distance from customer address to restaurant
   const deliveryDistance = useMemo(() => {
@@ -285,7 +286,7 @@ export default function CheckoutPage() {
       // Fallback to restaurant distance from API if available
       return restaurantDistance;
     }
-    
+
     // Calculate actual distance using coordinates
     try {
       return calculateDistance(
@@ -294,7 +295,7 @@ export default function CheckoutPage() {
         currentRestaurant.lat,
         currentRestaurant.lng
       );
-    } catch (error) {
+    } catch (_error) {
       // Fallback to restaurant distance
       return restaurantDistance;
     }
@@ -304,9 +305,15 @@ export default function CheckoutPage() {
   const fees = useMemo(() => {
     // If we don't have restaurant data, fall back to old calculation
     if (!currentRestaurant || !selectedAddress) {
-      const oldServiceFee = getServiceFee(currentStoreId || undefined, currentCategory || undefined);
-      const oldDeliveryFee = getDeliveryFee(currentStoreId || undefined, currentCategory || undefined);
-      
+      const oldServiceFee = getServiceFee(
+        currentStoreId || undefined,
+        currentCategory || undefined
+      );
+      const oldDeliveryFee = getDeliveryFee(
+        currentStoreId || undefined,
+        currentCategory || undefined
+      );
+
       // Calculate tax even in fallback mode
       const fallbackTax = calculateEstimatedTax(
         subtotal,
@@ -314,7 +321,7 @@ export default function CheckoutPage() {
         oldServiceFee,
         selectedAddress || tempAddress || null
       );
-      
+
       return {
         deliveryFee: oldDeliveryFee,
         serviceFee: oldServiceFee,
@@ -346,14 +353,17 @@ export default function CheckoutPage() {
       total: feeResult.total,
     };
   }, [
-    subtotal,
-    deliveryDistance,
     currentRestaurant,
     selectedAddress,
+    subtotal,
+    deliveryDistance,
     appliedDeal,
     selectedDeliveryOption,
     currentCategory,
+    getServiceFee,
     currentStoreId,
+    getDeliveryFee,
+    tempAddress,
   ]);
 
   // Extract fees for backward compatibility
@@ -388,17 +398,17 @@ export default function CheckoutPage() {
 
   // Always sync with default address when addresses change
   useEffect(() => {
-    if (addresses.length > 0) {
+    if (addresses?.length > 0) {
       // Find default address
       const defaultAddress = addresses.find(a => a.default);
-      const defaultAddressId = defaultAddress?.id || addresses[0].id;
+      const defaultAddressId = defaultAddress?.id || addresses[0]?.id;
 
       // If there's a default address and it's different from current selection, update it
       if (defaultAddressId !== selectedAddressId) {
         setSelectedAddressId(defaultAddressId);
       }
     }
-  }, [addresses]);
+  }, [addresses, selectedAddressId]);
 
   // Update selected payment method when payment methods change
   useEffect(() => {
@@ -407,6 +417,7 @@ export default function CheckoutPage() {
       const defaultPaymentMethod = savedPaymentMethods.find(pm => pm.default);
       updateSelectedPaymentMethod(defaultPaymentMethod?.id || savedPaymentMethods[0].id);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [savedPaymentMethods, selectedPaymentMethod]);
 
   // Redirect if cart not found or empty
@@ -417,7 +428,7 @@ export default function CheckoutPage() {
         router.push('/home');
         return;
       }
-      
+
       // If cart doesn't exist or is empty, redirect to home
       if (!currentCart || !currentCart.items || currentCart.items.length === 0) {
         router.push('/home');
@@ -432,17 +443,33 @@ export default function CheckoutPage() {
   };
 
   const handlePlaceOrder = () => {
+    // Check if restaurant is closed (for restaurant orders only)
+    if (
+      currentCategory === 'restaurant' &&
+      currentRestaurant &&
+      currentRestaurant.isOpen === false
+    ) {
+      // Prevent order placement when restaurant is closed
+      return;
+    }
+
     const newOrderId = generateOrderId();
+
+    // Get validated store name (ensures it's not a number)
+    const validatedStoreName = getStoreName();
 
     const orderData = {
       // 1. Order ID
       id: newOrderId,
 
-      // 2. Cart fields extracted to root level (support both old and new field names)
+      // 2. User ID
+      userId: currentUser?.id,
+
+      // 3. Cart fields extracted to root level (support both old and new field names)
       storeId: currentCart?.storeId,
-      storeName: currentCart?.storeName,
+      storeName: validatedStoreName, // Use validated store name
       restaurantId: currentCart?.storeId, // Old field name for backward compatibility
-      restaurantName: currentCart?.storeName, // Old field name for backward compatibility
+      restaurantName: validatedStoreName, // Use validated store name for backward compatibility
       storeCategory: currentCart?.storeCategory,
       items: (() => {
         // Track if ANY free item from the deal has been applied (only one free item total)
@@ -458,25 +485,18 @@ export default function CheckoutPage() {
           );
 
           // Check if this is the first free item from the deal
-          let isFirstFreeItem = false;
+          // let isFirstFreeItem = false;
           if (isFreeItem && matchedFreeItemId && !hasAppliedFreeItem) {
             hasAppliedFreeItem = true;
-            isFirstFreeItem = true;
+            // isFirstFreeItem = true;
           }
 
-          // Calculate final_price: price per item after free item discount
-          let finalPrice = originalPrice;
-          if (isFreeItem && isFirstFreeItem) {
-            // First free item from deal: one quantity is free
-            if (item.quantity > 1) {
-              // Total price for remaining quantities divided by total quantity
-              finalPrice = (originalPrice * (item.quantity - 1)) / item.quantity;
-            } else {
-              // Only one quantity, so it's completely free
-              finalPrice = 0;
-            }
-          }
-          // If it's another free item or not a free item, finalPrice = originalPrice
+          // Calculate final_price: keep original price per item
+          // The discount is already applied to subtotal via freeItemDiscount
+          // We keep the original price per item for accurate display and calculation
+          const finalPrice = originalPrice;
+          // Note: The free item discount is handled at the subtotal level, not per-item
+          // This ensures accurate pricing display and calculations
 
           return {
             id: item.id.toString(),
@@ -487,6 +507,8 @@ export default function CheckoutPage() {
                 ? item.price
                 : parseFloat(item.price.toString().replace(/[^0-9.]/g, '')),
             final_price: finalPrice,
+            menuCategoryId: item.menuCategoryId,
+            menuCategoryName: item.menuCategoryName,
             modifications: item.appliedModifications?.map(appliedMod => ({
               modificationId: appliedMod.modificationId,
               modificationDescription: appliedMod.modificationDescription,
@@ -504,7 +526,7 @@ export default function CheckoutPage() {
         });
       })(),
 
-      // 3. Payment card as object
+      // 4. Payment card as object
       paymentCard: {
         type: selectedPaymentMethodObj?.type,
         cardNumber: selectedPaymentMethodObj?.cardNumber,
@@ -514,10 +536,10 @@ export default function CheckoutPage() {
         zipCode: selectedPaymentMethodObj?.zipCode,
       },
 
-      // 4. Address
+      // 5. Address
       deliveryAddress: selectedAddress,
 
-      // 5. Delivery option and related info
+      // 6. Delivery option and related info
       deliveryOption: {
         type: selectedDeliveryOption,
         deliveryTime: deliveryTime,
@@ -541,71 +563,36 @@ export default function CheckoutPage() {
       serviceFee: serviceFee,
       deliveryFee: deliveryFee, // Already includes express surcharge if applicable
       discount: discountAmount,
+      freeItemDiscount: freeItemDiscount, // Store free item discount for receipt calculation
+      estimatedTax: estimatedTax, // Store tax for receipt to avoid recalculation
       total: getTotalWithExtras(),
       totalAmount: getTotalWithExtras(), // Old field name for backward compatibility
       // Deal/Promotion info
-      appliedDeal: appliedDeal ? {
-        id: appliedDeal.id,
-        title: appliedDeal.title,
-        promoCode: appliedDeal.promocode,
-        discountType: appliedDeal.discountType,
-        discountValue: appliedDeal.discountValue,
-      } : null,
-      // Order metadata
-      orderDate: new Date().toISOString(), // Use ISO string for database compatibility
-      status: 'pending', // Start as pending for merchant portal
+      appliedDeal: appliedDeal
+        ? {
+            id: appliedDeal.id,
+            title: appliedDeal.title,
+            promoCode: appliedDeal.promocode,
+            discountType: appliedDeal.discountType,
+            discountValue: appliedDeal.discountValue,
+          }
+        : null,
+      // Order date should be iso string formatting should only done in the UI
+      orderDate: new Date().toISOString(),
+      // Set status to 'scheduled' if this is a scheduled delivery, otherwise 'pending'
+      status: selectedDeliveryOption === 'schedule' && scheduledDate ? 'scheduled' : 'pending',
+      orderStatusUpdatedAt: new Date().toISOString(), // To track when the order status was last updated
+      remainingTime: deliveryTime, // Initialize with original delivery time
       orderType: 'Personal' as const, // Default to Personal
     };
 
     console.log('ORDER DATA:', orderData);
 
-    // Save order to database via API
-    const saveOrderToDatabase = async () => {
-      try {
-        const userId = currentUser?.id;
-        const response = await fetch('/api/orders', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            ...orderData,
-            userId: userId || null,
-          }),
-        });
-
-        const result = await response.json();
-        if (result.success) {
-          console.log('✅ Order saved to database:', result.data.id);
-          // Update order ID with database ID
-          if (result.data.id) {
-            orderData.id = result.data.id;
-            orderData.orderId = result.data.id;
-          }
-        } else {
-          console.error('❌ Failed to save order to database:', result.message);
-          console.error('❌ Error details:', result.error);
-          console.error('❌ Full response:', result);
-        }
-      } catch (error) {
-        console.error('❌ Error saving order to database:', error);
-      }
-    };
-
-    // Save order to database (async, don't wait)
-    saveOrderToDatabase();
-
-    // Save order to store (for immediate UI update)
+    // Save order to store
     addOrder(orderData);
 
     setOrderId(newOrderId);
     setShowOrderConfirmation(true);
-  };
-
-  const getItemPrice = (item: any) => {
-    return typeof item.price === 'number'
-      ? item.price
-      : parseFloat(item.price.toString().replace(/[^0-9.]/g, ''));
   };
 
   // Helper function to check if item is free and get pricing info
@@ -617,24 +604,18 @@ export default function CheckoutPage() {
     appliedDeal: any
   ) => {
     let itemId = typeof item.id === 'string' ? item.id : item.id.toString();
-    const itemName = (item.itemName || '').toLowerCase().trim();
 
     // If item ID starts with store ID, remove it before checking
     if (appliedDeal?.restaurantId && itemId.startsWith(appliedDeal.restaurantId + '-')) {
       itemId = itemId.substring(appliedDeal.restaurantId.length + 1);
     }
 
-    // Check if this item matches any free item (by ID and name)
+    // Check if this item matches any free item
     let matchedFreeItemId: string | null = null;
     for (const freeId of freeItemIds) {
       const matchesById = itemId.startsWith(freeId + '-') || itemId === freeId;
-      const freeItemName = appliedDeal?.freeItems
-        ?.find((fi: any) => fi.id === freeId)
-        ?.name.toLowerCase()
-        .trim();
-      const matchesByName = freeItemName && itemName === freeItemName;
 
-      if (matchesById && matchesByName) {
+      if (matchesById) {
         matchedFreeItemId = freeId;
         break;
       }
@@ -660,13 +641,32 @@ export default function CheckoutPage() {
   const getStoreName = () => {
     // First, try to get store name from the cart itself
     if (currentCart) {
-      return currentCart.storeName;
+      const storeName = currentCart.storeName;
+      // Validate storeName - check if it's valid (not empty, not a number, not "Unknown Store")
+      if (
+        storeName &&
+        storeName.trim() !== '' &&
+        storeName !== 'Unknown Store' &&
+        !/^\d+$/.test(storeName)
+      ) {
+        return storeName;
+      }
+
+      // If storeName is invalid or missing, try to look up from restaurants array
+      if (currentCart.storeCategory === 'restaurant' && currentCart.storeId && restaurants) {
+        const foundRestaurant = restaurants.find(r => r.id === currentCart.storeId);
+        if (foundRestaurant?.name) {
+          return foundRestaurant.name;
+        }
+      }
     }
 
     // Fallback to looking up by ID if we have the params
     if (currentCategory === 'restaurant' && currentStoreId) {
       const restaurant = getRestaurantById(restaurants, currentStoreId);
-      return restaurant?.name || 'Restaurant';
+      if (restaurant?.name) {
+        return restaurant.name;
+      }
     }
 
     return currentCategory === 'restaurant' ? 'Restaurant' : 'Store';
@@ -681,40 +681,6 @@ export default function CheckoutPage() {
     }
   };
 
-  // Generate schedule times for the rest of the day
-  const generateScheduleTimes = () => {
-    const times = [];
-    const now = new Date();
-    const currentHour = now.getHours();
-    const currentMinute = now.getMinutes();
-
-    // Start from next 30-minute window
-    let startHour = currentHour;
-    let startMinute = currentMinute < 30 ? 30 : 0;
-    if (currentMinute >= 30) {
-      startHour += 1;
-    }
-
-    // Generate times until 11:30 PM
-    for (let hour = startHour; hour < 24; hour++) {
-      const startMin = hour === startHour ? startMinute : 0;
-      for (let minute = startMin; minute < 60; minute += 30) {
-        if (hour === 23 && minute === 30) break; // Stop at 11:30 PM
-        const timeString = `${hour.toString().padStart(2, '0')}:${minute
-          .toString()
-          .padStart(2, '0')}`;
-        const displayTime = new Date(2024, 0, 1, hour, minute).toLocaleTimeString('en-US', {
-          hour: 'numeric',
-          minute: '2-digit',
-          hour12: true,
-        });
-        times.push({ value: timeString, display: displayTime });
-      }
-    }
-
-    return times;
-  };
-
   const handleDeliveryOptionChange = (optionId: string) => {
     // Clear scheduled date and time when switching away from schedule option
     if (optionId !== 'schedule') {
@@ -726,23 +692,29 @@ export default function CheckoutPage() {
 
     switch (optionId) {
       case 'express':
-        setDeliveryTime(restaurantDistance > 0 
-          ? calculateDeliveryTime(restaurantDistance, 'express')
-          : '25-35 min');
+        setDeliveryTime(
+          restaurantDistance > 0
+            ? calculateDeliveryTime(restaurantDistance, 'express')
+            : '25-35 min'
+        );
         break;
       case 'standard':
-        setDeliveryTime(restaurantDistance > 0 
-          ? calculateDeliveryTime(restaurantDistance, 'standard')
-          : '45-60 min');
+        setDeliveryTime(
+          restaurantDistance > 0
+            ? calculateDeliveryTime(restaurantDistance, 'standard')
+            : '45-60 min'
+        );
         break;
       case 'schedule':
         setDeliveryTime('Choose a time');
         setShowScheduleModal(true);
         break;
       default:
-        setDeliveryTime(restaurantDistance > 0 
-          ? calculateDeliveryTime(restaurantDistance, 'standard')
-          : '45-60 min');
+        setDeliveryTime(
+          restaurantDistance > 0
+            ? calculateDeliveryTime(restaurantDistance, 'standard')
+            : '45-60 min'
+        );
     }
   };
 
@@ -756,9 +728,9 @@ export default function CheckoutPage() {
     if (timeType === 'asap' || !timeSlot) {
       // Revert to standard option
       setSelectedDeliveryOption('standard');
-      setDeliveryTime(restaurantDistance > 0 
-        ? calculateDeliveryTime(restaurantDistance, 'standard')
-        : '45-60 min');
+      setDeliveryTime(
+        restaurantDistance > 0 ? calculateDeliveryTime(restaurantDistance, 'standard') : '45-60 min'
+      );
       setScheduledDate(null);
       setScheduledTimeSlot('');
     } else {
@@ -902,14 +874,14 @@ export default function CheckoutPage() {
     setShowReviewErrorModal(false);
     if (pendingAddressData) {
       // Extract apartment/suite from street if it exists
-      const streetParts = pendingAddressData.street.split(',').map(s => s.trim());
-      const initialData = {
-        street: pendingAddressData.street,
-        apartmentSuite: streetParts[1] || '',
-        city: pendingAddressData.city,
-        state: pendingAddressData.state,
-        zipCode: pendingAddressData.zipCode,
-      };
+      // const streetParts = pendingAddressData.street.split(',').map(s => s.trim());
+      // const initialData = {
+      //   street: pendingAddressData.street,
+      //   apartmentSuite: streetParts[1] || '',
+      //   city: pendingAddressData.city,
+      //   state: pendingAddressData.state,
+      //   zipCode: pendingAddressData.zipCode,
+      // };
       // Store in a state that AddAddressModal can use
       setShowAddAddressModal(true);
       // The initialData will be passed via the modal's initialData prop
@@ -979,39 +951,38 @@ export default function CheckoutPage() {
     return subtotal + serviceFee + deliveryFee + estimatedTax - discountAmount;
   };
 
-  const deliveryOptions = useMemo(() => [
-    {
-      id: 'express',
-      name: 'Express',
-      time: restaurantDistance > 0 
-        ? calculateDeliveryTime(restaurantDistance, 'express')
-        : '25-35 min',
-      description: 'Direct to you',
-      price: 2.99,
-    },
-    {
-      id: 'standard',
-      name: 'Standard',
-      time: restaurantDistance > 0 
-        ? calculateDeliveryTime(restaurantDistance, 'standard')
-        : '45-60 min',
-      description: '',
-      price: 0,
-    },
-    {
-      id: 'schedule',
-      name: 'Schedule for later',
-      time: 'Choose a time',
-      description: '',
-      price: 0,
-    },
-  ], [restaurantDistance]);
-
-  // Calculate extra delivery fee based on selected delivery option
-  const extraDeliveryFee = useMemo(() => {
-    const selectedOption = deliveryOptions.find(opt => opt.id === selectedDeliveryOption);
-    return selectedOption?.price || 0;
-  }, [selectedDeliveryOption, deliveryOptions]);
+  const deliveryOptions = useMemo(
+    () => [
+      {
+        id: 'express',
+        name: 'Express',
+        time:
+          restaurantDistance > 0
+            ? calculateDeliveryTime(restaurantDistance, 'express')
+            : '25-35 min',
+        description: 'Direct to you',
+        price: 2.99,
+      },
+      {
+        id: 'standard',
+        name: 'Standard',
+        time:
+          restaurantDistance > 0
+            ? calculateDeliveryTime(restaurantDistance, 'standard')
+            : '45-60 min',
+        description: '',
+        price: 0,
+      },
+      {
+        id: 'schedule',
+        name: 'Schedule for later',
+        time: 'Choose a time',
+        description: '',
+        price: 0,
+      },
+    ],
+    [restaurantDistance]
+  );
 
   // Get the selected payment method object
   const selectedPaymentMethodObj = savedPaymentMethods.find(m => m.id === selectedPaymentMethod);
@@ -1023,9 +994,12 @@ export default function CheckoutPage() {
   };
 
   // Handler for changing auth mode
-  const handleSetMode = (mode: 'signin' | 'signup' | 'forgot-password') => {
+  const handleSetMode = (mode: 'signin' | 'signup' | 'forgot-password', email?: string) => {
     if (mode !== 'forgot-password') {
       setAuthMode(mode);
+    } else {
+      setForgotPasswordEmail(email || '');
+      setAuthMode('forgot-password');
     }
   };
 
@@ -1033,7 +1007,6 @@ export default function CheckoutPage() {
   const generateOTP = () => {
     const newOtp = Math.floor(100000 + Math.random() * 900000).toString();
     setGeneratedOtp(newOtp);
-    console.log('Generated OTP:', newOtp);
     return newOtp;
   };
 
@@ -1101,59 +1074,69 @@ export default function CheckoutPage() {
                 <h2 className="text-lg font-semibold mb-4">1. Sign in or sign up to place order</h2>
 
                 {/* Info banner */}
-                <div className="bg-cyan-50 border border-cyan-200 rounded-lg p-3 mb-4 flex items-center">
-                  <svg
-                    className="w-5 h-5 text-cyan-600 mr-2 flex-shrink-0"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M13 10V3L4 14h7v7l9-11h-7z"
-                    />
-                  </svg>
-                  <span className="text-sm text-gray-900">
-                    Sign in to access your credits and discounts
-                  </span>
-                </div>
+                {authMode !== 'forgot-password' && (
+                  <div className="bg-cyan-50 border border-cyan-200 rounded-lg p-3 mb-4 flex items-center">
+                    <svg
+                      className="w-5 h-5 text-cyan-600 mr-2 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M13 10V3L4 14h7v7l9-11h-7z"
+                      />
+                    </svg>
+                    <span className="text-sm text-gray-900">
+                      Sign in to access your credits and discounts
+                    </span>
+                  </div>
+                )}
 
                 {/* Sign In / Sign Up Tabs */}
-                <div className="flex justify-center mb-6">
-                  <div className="inline-flex bg-gray-100 rounded-full p-1">
-                    <button
-                      onClick={() => setAuthMode('signin')}
-                      className={`px-6 py-2 rounded-full text-sm font-semibold transition-colors ${
-                        authMode === 'signin'
-                          ? 'bg-gray-900 text-white'
-                          : 'text-gray-700 hover:text-gray-900'
-                      }`}
-                    >
-                      Sign In
-                    </button>
-                    <button
-                      onClick={() => setAuthMode('signup')}
-                      className={`px-6 py-2 rounded-full text-sm font-semibold transition-colors ${
-                        authMode === 'signup'
-                          ? 'bg-gray-900 text-white'
-                          : 'text-gray-700 hover:text-gray-900'
-                      }`}
-                    >
-                      Sign Up
-                    </button>
+                {authMode !== 'forgot-password' && (
+                  <div className="flex justify-center mb-6">
+                    <div className="inline-flex bg-gray-100 rounded-full p-1">
+                      <button
+                        onClick={() => setAuthMode('signin')}
+                        className={`px-6 py-2 rounded-full text-sm font-semibold transition-colors ${
+                          authMode === 'signin'
+                            ? 'bg-gray-900 text-white'
+                            : 'text-gray-700 hover:text-gray-900'
+                        }`}
+                      >
+                        Sign In
+                      </button>
+                      <button
+                        onClick={() => setAuthMode('signup')}
+                        className={`px-6 py-2 rounded-full text-sm font-semibold transition-colors ${
+                          authMode === 'signup'
+                            ? 'bg-gray-900 text-white'
+                            : 'text-gray-700 hover:text-gray-900'
+                        }`}
+                      >
+                        Sign Up
+                      </button>
+                    </div>
                   </div>
-                </div>
+                )}
 
                 {/* Authentication Forms */}
                 {authMode === 'signin' ? (
                   <SignIn onSuccess={handleAuthSuccess} setMode={handleSetMode} />
-                ) : (
+                ) : authMode === 'signup' ? (
                   <SignUp
                     onShowOTP={handleShowOTP}
                     selectedCountry={selectedCountry}
                     setShowCountryDropdown={setShowCountryDropdown}
+                  />
+                ) : (
+                  <ForgotPassword
+                    onBackToSignIn={() => setAuthMode('signin')}
+                    email={forgotPasswordEmail}
+                    setMode={handleSetMode}
                   />
                 )}
               </div>
@@ -1185,10 +1168,10 @@ export default function CheckoutPage() {
                               }`
                             : 'No address selected'
                           : tempAddress
-                          ? `${tempAddress.street.substring(0, 23)}${
-                              tempAddress.street.length > 23 ? '...' : ''
-                            }`
-                          : 'No address selected'}
+                            ? `${tempAddress.street.substring(0, 23)}${
+                                tempAddress.street.length > 23 ? '...' : ''
+                              }`
+                            : 'No address selected'}
                       </span>
                       {userIsAuthenticated && (
                         <button
@@ -1207,25 +1190,22 @@ export default function CheckoutPage() {
                   <h2 className="text-lg font-semibold mb-6">2. Shipping details</h2>
 
                   {/* Map Placeholder */}
-                  <div className="mb-6">
+                  {/* <div className="mb-6">
                     <div className="relative h-48 bg-gray-100 rounded-lg overflow-hidden">
-                      {/* Map Placeholder */}
                       <div className="absolute inset-0 bg-gradient-to-br from-gray-200 to-gray-300">
-                        {/* Pin Icon */}
                         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-full">
                           <svg className="w-10 h-10" viewBox="0 0 24 24" fill="black">
                             <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
                           </svg>
                         </div>
                       </div>
-                      {/* Adjust Pin Button */}
                       <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2">
                         <button className="bg-white px-4 py-2 rounded-full shadow-md text-sm font-medium hover:bg-gray-50 transition-colors">
                           Adjust pin
                         </button>
                       </div>
                     </div>
-                  </div>
+                  </div> */}
 
                   {/* Delivery Time */}
                   <div className="mb-6">
@@ -1367,11 +1347,16 @@ export default function CheckoutPage() {
                         <div className="flex items-center flex-1">
                           <Package className="w-5 h-5 text-gray-600 mr-3 flex-shrink-0" />
                           <div>
-                            <p className="font-medium text-sm">Leave it at my door</p>
-                            <p className="text-xs text-gray-600">
-                              Please ring the bell and drop off at the door, thank you. Its around
-                              the corner on the ground floor
+                            <p className="font-medium text-sm">
+                              {selectedAddress.deliveryPreference === 'meet'
+                                ? 'Meet at a location'
+                                : 'Leave it at my door'}
                             </p>
+                            {selectedAddress.deliveryInstructions && (
+                              <p className="text-xs text-gray-600">
+                                {selectedAddress.deliveryInstructions}
+                              </p>
+                            )}
                           </div>
                         </div>
                         <svg
@@ -1592,11 +1577,32 @@ export default function CheckoutPage() {
             </div>
 
             {/* Place Order Button */}
+            {currentCategory === 'restaurant' &&
+              currentRestaurant &&
+              currentRestaurant.isOpen === false && (
+                <div className="mb-3 p-3 bg-red-50 border border-red-200 rounded-lg">
+                  <p className="text-sm text-red-600 font-medium text-center">
+                    This restaurant is currently closed. Please schedule your order for later.
+                  </p>
+                </div>
+              )}
             <button
               onClick={handlePlaceOrder}
-              disabled={!selectedPaymentMethodObj || isOutsideDeliveryArea}
+              disabled={
+                !selectedPaymentMethodObj ||
+                isOutsideDeliveryArea ||
+                (currentCategory === 'restaurant' &&
+                  currentRestaurant &&
+                  currentRestaurant.isOpen === false)
+              }
               className={`w-full font-medium py-4 rounded-lg text-lg ${
-                selectedPaymentMethodObj && !isOutsideDeliveryArea
+                selectedPaymentMethodObj &&
+                !isOutsideDeliveryArea &&
+                !(
+                  currentCategory === 'restaurant' &&
+                  currentRestaurant &&
+                  currentRestaurant.isOpen === false
+                )
                   ? 'bg-red-600 hover:bg-red-700 text-white cursor-pointer'
                   : 'bg-gray-300 text-gray-500 cursor-not-allowed'
               }`}
@@ -1632,10 +1638,34 @@ export default function CheckoutPage() {
                 <div className="mx-4 mt-4 bg-yellow-50 border border-yellow-200 rounded-lg p-3 flex items-start justify-between">
                   <div className="flex items-start">
                     <div className="flex-shrink-0 mr-2 mt-0.5">
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M10.29 3.86L1.82 18C1.64537 18.3024 1.55299 18.6453 1.55201 18.9945C1.55103 19.3437 1.64151 19.6871 1.81445 19.9905C1.98738 20.2939 2.23675 20.5467 2.53773 20.7239C2.83871 20.9011 3.18082 20.9962 3.53 21H20.47C20.8192 20.9962 21.1613 20.9011 21.4623 20.7239C21.7633 20.5467 22.0126 20.2939 22.1856 19.9905C22.3585 19.6871 22.449 19.3437 22.448 18.9945C22.447 18.6453 22.3546 18.3024 22.18 18L13.71 3.86C13.5317 3.56611 13.2807 3.32312 12.9812 3.15448C12.6817 2.98585 12.3437 2.89725 12 2.89725C11.6563 2.89725 11.3183 2.98585 11.0188 3.15448C10.7193 3.32312 10.4683 3.56611 10.29 3.86Z" stroke="#D97706" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                        <path d="M12 9V13" stroke="#D97706" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                        <path d="M12 17H12.01" stroke="#D97706" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      <svg
+                        width="20"
+                        height="20"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M10.29 3.86L1.82 18C1.64537 18.3024 1.55299 18.6453 1.55201 18.9945C1.55103 19.3437 1.64151 19.6871 1.81445 19.9905C1.98738 20.2939 2.23675 20.5467 2.53773 20.7239C2.83871 20.9011 3.18082 20.9962 3.53 21H20.47C20.8192 20.9962 21.1613 20.9011 21.4623 20.7239C21.7633 20.5467 22.0126 20.2939 22.1856 19.9905C22.3585 19.6871 22.449 19.3437 22.448 18.9945C22.447 18.6453 22.3546 18.3024 22.18 18L13.71 3.86C13.5317 3.56611 13.2807 3.32312 12.9812 3.15448C12.6817 2.98585 12.3437 2.89725 12 2.89725C11.6563 2.89725 11.3183 2.98585 11.0188 3.15448C10.7193 3.32312 10.4683 3.56611 10.29 3.86Z"
+                          stroke="#D97706"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                        <path
+                          d="M12 9V13"
+                          stroke="#D97706"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                        <path
+                          d="M12 17H12.01"
+                          stroke="#D97706"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
                       </svg>
                     </div>
                     <div className="flex-1">
@@ -1655,11 +1685,33 @@ export default function CheckoutPage() {
 
               {/* Place Order Button */}
               <div className="px-4 pt-4">
+                {/* Show warning if restaurant is closed */}
+                {currentCategory === 'restaurant' &&
+                  currentRestaurant &&
+                  currentRestaurant.isOpen === false && (
+                    <div className="mb-3 p-3 bg-red-50 border border-red-200 rounded-lg">
+                      <p className="text-sm text-red-600 font-medium text-center">
+                        This restaurant is currently closed. Please schedule your order for later.
+                      </p>
+                    </div>
+                  )}
                 <button
                   onClick={handlePlaceOrder}
-                  disabled={!selectedPaymentMethodObj || isOutsideDeliveryArea}
+                  disabled={
+                    !selectedPaymentMethodObj ||
+                    isOutsideDeliveryArea ||
+                    (currentCategory === 'restaurant' &&
+                      currentRestaurant &&
+                      currentRestaurant.isOpen === false)
+                  }
                   className={`w-full font-semibold py-3 rounded-full transition-colors ${
-                    selectedPaymentMethodObj && !isOutsideDeliveryArea
+                    selectedPaymentMethodObj &&
+                    !isOutsideDeliveryArea &&
+                    !(
+                      currentCategory === 'restaurant' &&
+                      currentRestaurant &&
+                      currentRestaurant.isOpen === false
+                    )
                       ? 'bg-red-600 hover:bg-red-700 text-white cursor-pointer'
                       : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                   }`}
@@ -1674,10 +1726,10 @@ export default function CheckoutPage() {
                   <div className="flex items-start justify-between gap-1">
                     {/* Piggy Bank Icon */}
                     <div className="flex items-center justify-center flex-shrink-0">
-                      <Image src="/piggy-bank.png" alt="Piggy Bank" width={80} height={100} />
+                      <img src="/piggy-bank.png" alt="Piggy Bank" width={80} height={100} />
                     </div>
                     <div className="py-4 flex-1 flex flex-col items-center">
-                      <div className="text-sm text-[#191919ff]">You're saving</div>
+                      <div className="text-sm text-[#191919ff]">You&apos;re saving</div>
                       <div className="text-[40px] font-bold text-[#eb1700ff]">
                         ${(discountAmount + freeItemDiscount).toFixed(2)}
                       </div>
@@ -1688,7 +1740,7 @@ export default function CheckoutPage() {
                     </div>
                     {/* Person with coins icon */}
                     <div className="w-16 h-16 flex items-center justify-center mt-4">
-                      <Image src="/coins.png" alt="Coins" width={80} height={100} />
+                      <img src="/coins.png" alt="Coins" width={80} height={100} />
                     </div>
                   </div>
                 </div>
@@ -1734,7 +1786,7 @@ export default function CheckoutPage() {
                         let hasAppliedFreeItem = false;
                         return items.map(item => {
                           const freeItemIds = cartId ? getFreeItemIds(cartId) : [];
-                          const { isFreeItem, originalPrice, displayPrice, matchedFreeItemId } =
+                          const { isFreeItem, originalPrice, matchedFreeItemId } =
                             getItemPricingInfo(item, cartId, freeItemIds, appliedDeal);
 
                           // Check if this is the first free item from the deal
@@ -1766,11 +1818,10 @@ export default function CheckoutPage() {
                           return (
                             <div key={item.id} className="flex gap-3">
                               <div className="relative w-16 h-16 flex-shrink-0 rounded-lg overflow-hidden bg-gray-100">
-                                <Image
+                                <img
                                   src={item.image || '/placeholder.svg'}
                                   alt={item.itemName}
-                                  fill
-                                  className="object-cover"
+                                  className="w-full h-full object-cover"
                                 />
                               </div>
                               <div className="flex w-full gap-2 justify-between">
@@ -1888,7 +1939,8 @@ export default function CheckoutPage() {
                 <div className="flex justify-between text-sm">
                   <div className="flex items-center">
                     <span className="text-gray-700">Delivery Fee</span>
-                    <svg
+                    {/* Hidden for now */}
+                    {/* <svg
                       className="w-4 h-4 ml-1 text-gray-400"
                       fill="none"
                       stroke="currentColor"
@@ -1901,16 +1953,15 @@ export default function CheckoutPage() {
                         strokeWidth="2"
                         d="M12 16v-4m0-4h.01"
                       />
-                    </svg>
+                    </svg> */}
                   </div>
-                  <span className="text-gray-900 font-medium">
-                    ${deliveryFee.toFixed(2)}
-                  </span>
+                  <span className="text-gray-900 font-medium">${deliveryFee.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <div className="flex items-center">
                     <span className="text-gray-700">Fees & Estimated Tax</span>
-                    <svg
+                    {/* Hidden for now */}
+                    {/* <svg
                       className="w-4 h-4 ml-1 text-gray-400"
                       fill="none"
                       stroke="currentColor"
@@ -1923,9 +1974,11 @@ export default function CheckoutPage() {
                         strokeWidth="2"
                         d="M12 16v-4m0-4h.01"
                       />
-                    </svg>
+                    </svg> */}
                   </div>
-                  <span className="text-gray-900 font-medium">${(serviceFee + estimatedTax).toFixed(2)}</span>
+                  <span className="text-gray-900 font-medium">
+                    ${(serviceFee + estimatedTax).toFixed(2)}
+                  </span>
                 </div>
                 {discountAmount > 0 && (
                   <div className="flex justify-between text-sm">
@@ -1960,9 +2013,11 @@ export default function CheckoutPage() {
           // Revert to standard if modal is closed without selection
           if (selectedDeliveryOption === 'schedule' && !scheduledTimeSlot) {
             setSelectedDeliveryOption('standard');
-            setDeliveryTime(restaurantDistance > 0 
-              ? calculateDeliveryTime(restaurantDistance, 'standard')
-              : '45-60 min');
+            setDeliveryTime(
+              restaurantDistance > 0
+                ? calculateDeliveryTime(restaurantDistance, 'standard')
+                : '45-60 min'
+            );
           }
         }}
         onSelectTime={handleScheduleTimeSelect}
@@ -2040,7 +2095,7 @@ export default function CheckoutPage() {
       <ChooseLabelModal
         isOpen={showChooseLabelModal}
         onClose={() => setShowChooseLabelModal(false)}
-        currentLabel={addresses.find(a => a.id === addressToLabel)?.personalLabel}
+        currentLabel={addresses?.find(a => a.id === addressToLabel)?.personalLabel}
         onSave={label => {
           if (addressToLabel) {
             updateAddress(addressToLabel, { personalLabel: label });

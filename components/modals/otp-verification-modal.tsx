@@ -31,6 +31,7 @@ export default function OTPVerificationModal({
   containerClassName = '',
 }: OTPVerificationModalProps) {
   const dialogRef = useRef<HTMLDivElement>(null);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const [otpInput, setOtpInput] = useState<string>('');
   const [otpError, setOtpError] = useState<string>('');
   const [attemptsLeft, setAttemptsLeft] = useState(5);
@@ -39,11 +40,18 @@ export default function OTPVerificationModal({
 
   // Starts the resend timer countdown
   const startResendTimer = () => {
+    // Clear existing interval if any
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+    }
     setResendTimer(30);
-    const interval = setInterval(() => {
+    intervalRef.current = setInterval(() => {
       setResendTimer(prev => {
         if (prev <= 1) {
-          clearInterval(interval);
+          if (intervalRef.current) {
+            clearInterval(intervalRef.current);
+            intervalRef.current = null;
+          }
           return 0;
         }
         return prev - 1;
@@ -72,9 +80,9 @@ export default function OTPVerificationModal({
   };
 
   // Handles Get Help button click - closes OTP modal
-  const handleGetHelp = () => {
-    onClose();
-  };
+  // const handleGetHelp = () => {
+  //   onClose();
+  // };
 
   // Handle escape key and outside click
   useEffect(() => {
@@ -110,6 +118,14 @@ export default function OTPVerificationModal({
       setShowTooManyAttempts(false);
       startResendTimer();
     }
+
+    return () => {
+      // Clear interval on unmount or when modal closes
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    };
   }, [isOpen]);
 
   if (!isOpen) return null;
@@ -119,8 +135,12 @@ export default function OTPVerificationModal({
       ref={dialogRef}
       className={`absolute inset-0 z-[100] flex items-center justify-center ${containerClassName}`}
       style={{ backgroundColor: 'rgba(0, 0, 0, 0.65)' }}
+      data-testid="otp-verification-modal-backdrop"
     >
-      <div className="bg-white rounded-xl shadow-xl max-w-md w-full mx-4 pt-6">
+      <div
+        className="bg-white rounded-xl shadow-xl max-w-md w-full mx-4 pt-6"
+        data-testid="otp-verification-modal-content"
+      >
         {/* Header */}
         <div className="text-center mt-5 mb-4 px-4">
           <div className="w-16 h-16 mx-auto mb-3 rounded-full flex items-center justify-center text-red-600">
@@ -129,7 +149,7 @@ export default function OTPVerificationModal({
           <h2 className="text-2xl font-bold text-[#191919ff] mb-2">Phone Number Verification</h2>
           {!showTooManyAttempts && (
             <p className="text-[#191919ff] text-[15px] font-medium">
-              For your security, we want to make sure it's really you.
+              For your security, we want to make sure it&apos;s really you.
             </p>
           )}
         </div>
@@ -138,10 +158,14 @@ export default function OTPVerificationModal({
           <>
             {/* OTP Input */}
             <div className="mb-4 px-4 mt-4">
-              <label className="block text-[15px] font-bold text-[#191919ff] mb-2">
+              <label
+                htmlFor="otp-input"
+                className="block text-[15px] font-bold text-[#191919ff] mb-2"
+              >
                 Enter 6-digit code
               </label>
               <Input
+                id="otp-input"
                 type="text"
                 inputMode="numeric"
                 pattern="[0-9]*"
@@ -154,9 +178,17 @@ export default function OTPVerificationModal({
                 onKeyDown={e => {
                   // Allow: backspace, delete, tab, escape, enter, and arrow keys
                   if (
-                    ['Backspace', 'Delete', 'Tab', 'Escape', 'Enter', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(
-                      e.key
-                    )
+                    [
+                      'Backspace',
+                      'Delete',
+                      'Tab',
+                      'Escape',
+                      'Enter',
+                      'ArrowLeft',
+                      'ArrowRight',
+                      'ArrowUp',
+                      'ArrowDown',
+                    ].includes(e.key)
                   ) {
                     return; // Allow these keys
                   }
@@ -257,7 +289,8 @@ export default function OTPVerificationModal({
             <div className="border-t border-gray-200 mb-4"></div>
 
             {/* Get Help Button */}
-            <div className="px-4 pb-4">
+            {/* Get Help button hidden for now. */}
+            {/* <div className="px-4 pb-4">
               <button
                 onClick={handleGetHelp}
                 className="w-full py-2 px-4 bg-red-600 hover:bg-red-700 text-white font-semibold text-[16px] rounded-lg transition-colors"
@@ -265,7 +298,7 @@ export default function OTPVerificationModal({
               >
                 Get Help
               </button>
-            </div>
+            </div> */}
           </>
         )}
       </div>

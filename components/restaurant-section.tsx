@@ -1,11 +1,11 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import Image from 'next/image';
 import Link from 'next/link';
-import { Heart, ChevronLeft, ChevronRight, Star } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import type { Restaurant } from '@/constants/restaurants';
-import { getDefaultRating } from '@/utils/rating-utils';
+import { getDefaultRating } from '@/lib/utils/rating-utils';
+import { useRestaurantsOpenStatus } from '@/lib/hooks/use-restaurant-open-status';
 
 interface RestaurantSectionProps {
   title: string;
@@ -16,15 +16,17 @@ interface RestaurantSectionProps {
 export default function RestaurantSection({
   title,
   restaurants,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   seeAllLink = '/all-items',
 }: RestaurantSectionProps) {
+  const router = useRouter();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const [showLeftArrow, setShowLeftArrow] = useState(false);
-  const [showRightArrow, setShowRightArrow] = useState(true);
-  const [cardWidth, setCardWidth] = useState(350);
-  const [visibleCards, setVisibleCards] = useState(3);
-  const [containerWidth, setContainerWidth] = useState(0);
-  const [favorites, setFavorites] = useState<{ [key: string]: boolean }>({});
+  const [_cardWidth, setCardWidth] = useState(350);
+  const [_visibleCards, setVisibleCards] = useState(3);
+  const [_containerWidth, setContainerWidth] = useState(0);
+
+  // Calculate open status based on user's local time
+  const openStatusMap = useRestaurantsOpenStatus(restaurants);
 
   // Calculate how many cards can fit and their optimal width
   useEffect(() => {
@@ -57,36 +59,6 @@ export default function RestaurantSection({
     return () => window.removeEventListener('resize', updateCardLayout);
   }, []);
 
-  const scroll = (direction: 'left' | 'right') => {
-    if (!scrollContainerRef.current) return;
-
-    const container = scrollContainerRef.current;
-    // Scroll by exactly one card width (plus gap)
-    const scrollAmount = cardWidth + 16; // 16px is the gap
-
-    if (direction === 'left') {
-      container.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
-    } else {
-      container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
-    }
-  };
-
-  const handleScroll = () => {
-    if (!scrollContainerRef.current) return;
-
-    const container = scrollContainerRef.current;
-    setShowLeftArrow(container.scrollLeft > 0);
-    setShowRightArrow(container.scrollLeft < container.scrollWidth - container.clientWidth - 10);
-  };
-
-  const toggleFavorite = (restaurantId: string) => (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setFavorites(prev => ({
-      ...prev,
-      [restaurantId]: !prev[restaurantId],
-    }));
-  };
-
   return (
     <section className="py-6">
       {title && <h2 className="text-2xl font-bold mb-4">{title}</h2>}
@@ -97,17 +69,21 @@ export default function RestaurantSection({
             href={`/store/${restaurant.id}`}
             key={restaurant.id}
             className="block border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
-            prefetch={false}
+            prefetch={true}
+            onMouseEnter={() => {
+              // Prefetch on hover for even faster navigation
+              router.prefetch(`/store/${restaurant.id}`);
+            }}
           >
             <div className="flex gap-4">
               <div className="relative w-16 h-16 rounded-full overflow-hidden bg-gray-100">
-                <Image
+                <img
                   src={restaurant.logo || '/placeholder-logo.svg'}
                   alt={restaurant.name}
                   width={64}
                   height={64}
                   className="object-cover"
-                  style={{ width: 'auto', height: 'auto' }}
+                  loading="lazy"
                   onError={e => {
                     // Fallback to placeholder if image fails to load
                     const target = e.target as HTMLImageElement;
@@ -135,7 +111,19 @@ export default function RestaurantSection({
                   </div>
                 ) : null}
 
-                <div className="text-sm text-gray-500">{restaurant.time}</div>
+                <div className="text-sm text-gray-500">
+                  {restaurant.distance && (
+                    <>
+                      <span>{restaurant.distance}</span>
+                      <span className="mx-1">•</span>
+                    </>
+                  )}
+                  <span>
+                    {openStatusMap.get(restaurant.id) ?? restaurant.isOpen
+                      ? restaurant.time
+                      : 'Closed'}
+                  </span>
+                </div>
 
                 <div className="text-sm text-gray-500">{restaurant.deliveryFee}</div>
               </div>

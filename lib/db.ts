@@ -1,10 +1,9 @@
 import { createClient, Client } from '@libsql/client';
 import { getRequiredEnv } from '@/lib/env';
-import path from 'path';
 
 /**
  * Database Connection Layer
- * 
+ *
  * Provides access to the libsql database server.
  * This class manages the connection to the remote database.
  */
@@ -20,31 +19,18 @@ class DatabaseConnection {
     if (this.client) return this.client;
 
     try {
-      let url = getRequiredEnv('LIBSQL_URL');
-      
-      // If it's a file URL with a relative path, resolve it to an absolute path
-      if (url.startsWith('file:./') || url.startsWith('file:../')) {
-        // Remove 'file:' prefix and resolve the path
-        const relativePath = url.replace(/^file:/, '');
-        const absolutePath = path.resolve(process.cwd(), relativePath);
-        url = `file:${absolutePath}`;
-      } else if (url.startsWith('file:') && !path.isAbsolute(url.replace(/^file:/, ''))) {
-        // Handle file: paths that aren't absolute
-        const relativePath = url.replace(/^file:/, '');
-        const absolutePath = path.resolve(process.cwd(), relativePath);
-        url = `file:${absolutePath}`;
-      }
-      
+      const url = getRequiredEnv('LIBSQL_URL');
+
       console.log(`📂 Connecting to libsql server: ${url}`);
-      
+
       // Create libsql client
       this.client = createClient({
         url: url,
       });
-      
+
       this.initialized = true;
       console.log('✅ Database connection established (libsql)');
-      
+
       return this.client;
     } catch (error) {
       console.error('❌ Failed to initialize database:', error);
@@ -60,13 +46,13 @@ class DatabaseConnection {
    */
   async query<T = any>(sql: string, params: any[] = []): Promise<T[]> {
     const client = this.init();
-    
+
     try {
       const result = await client.execute({
         sql: sql,
         args: params,
       });
-      
+
       return result.rows as T[];
     } catch (error) {
       console.error('❌ Query error:', error);
@@ -84,13 +70,13 @@ class DatabaseConnection {
    */
   async queryOne<T = any>(sql: string, params: any[] = []): Promise<T | undefined> {
     const client = this.init();
-    
+
     try {
       const result = await client.execute({
         sql: sql,
         args: params,
       });
-      
+
       return result.rows[0] as T | undefined;
     } catch (error) {
       console.error('❌ Query error:', error);
@@ -123,4 +109,3 @@ class DatabaseConnection {
 
 // Export singleton instance
 export const db = new DatabaseConnection();
-

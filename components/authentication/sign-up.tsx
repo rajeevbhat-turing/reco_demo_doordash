@@ -1,13 +1,21 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useUserStore } from '@/store/user-store';
-import { isValidEmail } from '@/lib/utils/helperFunctions';
+import { isValidEmail, isValidName } from '@/lib/utils/helperFunctions';
 import { User } from '@/lib/types/user-types';
+import { validatePassword } from '@/lib/utils/password-validation';
+import {
+  formatPhoneNumber,
+  extractDigits,
+  validatePhoneNumber,
+  getMaxDigits,
+  getPhonePlaceholder,
+} from '@/lib/utils/phone-validation';
 interface SignUpProps {
   onShowOTP: (user: User) => void;
   selectedCountry: any;
@@ -29,15 +37,48 @@ export default function SignUp({
     mobileNumber: '',
     password: '',
   });
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [errors, setErrors] = useState<Record<string, string | string[]>>({});
   const [showPassword, setShowPassword] = useState(false);
+  const prevCountryRef = useRef(selectedCountry.code);
+
+  // Handle country change - reformat phone number for new country
+  useEffect(() => {
+    if (prevCountryRef.current !== selectedCountry.code && formData.mobileNumber) {
+      const digits = extractDigits(formData.mobileNumber);
+      const maxDigits = getMaxDigits(selectedCountry.code);
+      const limitedDigits = digits.slice(0, maxDigits);
+      const formattedNumber = formatPhoneNumber(limitedDigits, selectedCountry.code);
+      setFormData(prev => ({ ...prev, mobileNumber: formattedNumber }));
+      // Clear phone error since format changed
+      setErrors(prev => {
+        const newErrors = { ...prev };
+        delete newErrors.mobileNumber;
+        return newErrors;
+      });
+    }
+    prevCountryRef.current = selectedCountry.code;
+  }, [selectedCountry.code, formData.mobileNumber]);
 
   // Updates form data and clears field-specific errors when user types
   const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-    // If there are errors for the field, do validation again
-    if (errors[field]) {
-      validateField(field, value);
+    if (field === 'mobileNumber') {
+      // Extract digits and limit to max allowed for the country
+      const digits = extractDigits(value);
+      const maxDigits = getMaxDigits(selectedCountry.code);
+      const limitedDigits = digits.slice(0, maxDigits);
+      // Format the phone number based on country
+      const formattedNumber = formatPhoneNumber(limitedDigits, selectedCountry.code);
+      setFormData(prev => ({ ...prev, [field]: formattedNumber }));
+      // If there are errors for the field, do validation again
+      if (errors[field]) {
+        validateField(field, formattedNumber);
+      }
+    } else {
+      setFormData(prev => ({ ...prev, [field]: value }));
+      // If there are errors for the field, do validation again
+      if (errors[field]) {
+        validateField(field, value);
+      }
     }
   };
 
@@ -48,7 +89,7 @@ export default function SignUp({
     if (field === 'firstName') {
       if (!value.trim()) {
         newErrors.firstName = 'First name is required';
-      } else if (!/^[a-zA-Z0-9\s\-'.,]+$/.test(value)) {
+      } else if (!isValidName(value)) {
         newErrors.firstName =
           'First name must only contain letters, numbers, spaces, hyphens, apostrophes, periods, and commas';
       } else {
@@ -57,7 +98,7 @@ export default function SignUp({
     } else if (field === 'lastName') {
       if (!value.trim()) {
         newErrors.lastName = 'Last name is required';
-      } else if (!/^[a-zA-Z0-9\s\-'.,]+$/.test(value)) {
+      } else if (!isValidName(value)) {
         newErrors.lastName =
           'Last name must only contain letters, numbers, spaces, hyphens, apostrophes, periods, and commas';
       } else {
@@ -72,22 +113,22 @@ export default function SignUp({
         delete newErrors.email;
       }
     } else if (field === 'mobileNumber') {
-      if (!value.trim() || value.length <= 1) {
-        newErrors.mobileNumber = 'Phone number is required';
-      } else if (!/^\d+$/.test(value)) {
-        newErrors.mobileNumber = 'Phone number is required';
-      } else if (![8, 9, 10, 11].includes(value.length)) {
-        newErrors.mobileNumber = 'Phone number is invalid';
+      const phoneValidation = validatePhoneNumber(value, selectedCountry.code);
+      if (!phoneValidation.isValid) {
+        newErrors.mobileNumber = phoneValidation.error || 'Phone number is invalid';
       } else {
         delete newErrors.mobileNumber;
       }
     } else if (field === 'password') {
       if (!value.trim()) {
         newErrors.password = 'Password is required';
-      } else if (value.length < 10) {
-        newErrors.password = 'Password must contain at least 10 characters';
       } else {
-        delete newErrors.password;
+        const passwordValidation = validatePassword(value);
+        if (!passwordValidation.isValid) {
+          newErrors.password = passwordValidation.errors;
+        } else {
+          delete newErrors.password;
+        }
       }
     }
 
@@ -96,17 +137,17 @@ export default function SignUp({
 
   // Validates all form fields and returns true if valid, false otherwise
   const validateForm = () => {
-    const newErrors: Record<string, string> = {};
+    const newErrors: Record<string, string | string[]> = {};
 
     if (!formData.firstName.trim()) {
       newErrors.firstName = 'First name is required';
-    } else if (!/^[a-zA-Z0-9\s\-'.,]+$/.test(formData.firstName)) {
+    } else if (!isValidName(formData.firstName)) {
       newErrors.firstName =
         'First name must only contain letters, numbers, spaces, hyphens, apostrophes, periods, and commas';
     }
     if (!formData.lastName.trim()) {
       newErrors.lastName = 'Last name is required';
-    } else if (!/^[a-zA-Z0-9\s\-'.,]+$/.test(formData.lastName)) {
+    } else if (!isValidName(formData.lastName)) {
       newErrors.lastName =
         'Last name must only contain letters, numbers, spaces, hyphens, apostrophes, periods, and commas';
     }
@@ -114,21 +155,21 @@ export default function SignUp({
     if (!formData.email.trim()) {
       newErrors.email = 'Email is required';
     } else if (!isValidEmail(formData.email)) {
-      newErrors.email = 'Please enter a valid email';
+      newErrors.email = 'Email format is invalid';
     }
 
-    if (!formData.mobileNumber.trim() || formData.mobileNumber.length <= 1) {
-      newErrors.mobileNumber = 'Phone number is required';
-    } else if (!/^\d+$/.test(formData.mobileNumber)) {
-      newErrors.mobileNumber = 'Phone number is required';
-    } else if (![8, 9, 10, 11].includes(formData.mobileNumber.length)) {
-      newErrors.mobileNumber = 'Phone number is invalid';
+    const phoneValidation = validatePhoneNumber(formData.mobileNumber, selectedCountry.code);
+    if (!phoneValidation.isValid) {
+      newErrors.mobileNumber = phoneValidation.error || 'Phone number is invalid';
     }
 
     if (!formData.password.trim()) {
       newErrors.password = 'Password is required';
-    } else if (formData.password.length < 10) {
-      newErrors.password = 'Password must contain at least 10 characters';
+    } else {
+      const passwordValidation = validatePassword(formData.password);
+      if (!passwordValidation.isValid) {
+        newErrors.password = passwordValidation.errors;
+      }
     }
 
     setErrors(newErrors);
@@ -152,8 +193,9 @@ export default function SignUp({
       }
 
       // If email doesn't already exist, check phone number
+      const phoneDigits = extractDigits(formData.mobileNumber);
       const existingUserByPhone = users.find(
-        user => user.phoneNumber === `${selectedCountry.dial_code}${formData.mobileNumber}`
+        user => user.phoneNumber === `${selectedCountry.dial_code}${phoneDigits}`
       );
 
       if (existingUserByPhone) {
@@ -173,9 +215,10 @@ export default function SignUp({
         return;
       }
 
-      if (formData.password.length < 10) {
+      const passwordValidation = validatePassword(formData.password);
+      if (!passwordValidation.isValid) {
         setErrors({
-          password: 'Password must contain at least 10 characters',
+          password: passwordValidation.errors,
         });
         return;
       }
@@ -186,7 +229,7 @@ export default function SignUp({
         name: `${formData.firstName} ${formData.lastName}`,
         // Convert email address to lowercase
         email: formData.email?.toLowerCase(),
-        phoneNumber: formData.mobileNumber,
+        phoneNumber: extractDigits(formData.mobileNumber),
         password: formData.password,
         country: {
           dialCode: selectedCountry.dial_code,
@@ -305,12 +348,10 @@ export default function SignUp({
           <Input
             id="mobileNumber"
             type="tel"
-            placeholder=""
+            placeholder={getPhonePlaceholder(selectedCountry.code)}
             value={formData.mobileNumber}
-            onChange={e => {
-              handleInputChange('mobileNumber', e.target.value);
-              validateField('mobileNumber', e.target.value);
-            }}
+            onChange={e => handleInputChange('mobileNumber', e.target.value)}
+            onBlur={e => validateField('mobileNumber', e.target.value)}
             className={`flex-1 rounded-l-none border-2 focus-visible:ring-0 focus-visible:ring-offset-0 border-transparent 
             rounded-r-lg focus-visible:border-[#191919ff] ${
               errors.mobileNumber ? 'border-[#b71000ff] bg-[#fef0ed]' : 'bg-[#f7f7f7]'
@@ -329,12 +370,9 @@ export default function SignUp({
 
       {/* Password Field */}
       <div className="mb-6">
-        <div className="flex items-center justify-between mb-2">
-          <Label htmlFor="password" className="text-[15px] font-bold text-gray-900">
-            Password
-          </Label>
-          <span className="text-[14px] font-medium text-[#191919ff]">At least 10 characters</span>
-        </div>
+        <Label htmlFor="password" className="text-[15px] font-bold text-gray-900 mb-2 block">
+          Password
+        </Label>
         <div className="relative">
           <Input
             id="password"
@@ -358,11 +396,24 @@ export default function SignUp({
           </div>
         </div>
         {errors.password && (
-          <div className="flex mt-1 text-[#b71000ff]">
-            <div className="h-4 w-4 mr-2 flex-shrink-0 rounded-full flex items-center justify-center bg-[#b71000ff]">
-              <span className="text-white text-xs font-bold">!</span>
-            </div>
-            <span className="text-sm font-semibold">{errors.password}</span>
+          <div className="mt-2 space-y-1">
+            {Array.isArray(errors.password) ? (
+              errors.password.map((error, index) => (
+                <div key={index} className="flex items-start text-[#b71000ff]">
+                  <div className="h-4 w-4 mr-2 flex-shrink-0 rounded-full flex items-center justify-center bg-[#b71000ff] mt-0.5">
+                    <span className="text-white text-xs font-bold">!</span>
+                  </div>
+                  <span className="text-sm font-semibold">{error}</span>
+                </div>
+              ))
+            ) : (
+              <div className="flex items-start text-[#b71000ff]">
+                <div className="h-4 w-4 mr-2 flex-shrink-0 rounded-full flex items-center justify-center bg-[#b71000ff] mt-0.5">
+                  <span className="text-white text-xs font-bold">!</span>
+                </div>
+                <span className="text-sm font-semibold">{errors.password}</span>
+              </div>
+            )}
           </div>
         )}
       </div>
@@ -387,9 +438,9 @@ export default function SignUp({
 
       {/* Legal Text */}
       <p className="text-sm font-medium text-[#606060ff] mt-8 mb-4">
-        By tapping "Sign Up" or "Continue with...," you agree to DashDoor's Terms, including a
-        waiver of your jury trial right, and Privacy Policy. We may text you a verification code.
-        Msg & data rates apply.
+        By tapping &quot;Sign Up&quot; or &quot;Continue with...,&quot; you agree to DashDoor&apos;s
+        Terms, including a waiver of your jury trial right, and Privacy Policy. We may text you a
+        verification code. Msg & data rates apply.
       </p>
 
       {/* Sign Up Button */}

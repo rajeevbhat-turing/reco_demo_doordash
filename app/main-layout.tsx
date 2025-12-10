@@ -1,16 +1,18 @@
 'use client';
 
-import { useEffect, useSyncExternalStore, useState } from 'react';
+import React, { useEffect, useSyncExternalStore, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import Header from '@/components/header';
-import LandingPageFooter from '@/components/landing-page-footer';
+// import LandingPageFooter from '@/components/landing-page-footer';
 import LayoutWrapper from '@/components/layout-wrapper';
 import MerchantLayout from './merchant-layout';
 import Snackbar from '@/components/snackbar';
 import { useUserStore } from '@/store/user-store';
 import { useCarts } from '@/lib/hooks/use-carts';
 import { useOrders } from '@/lib/hooks/use-orders';
+import { useOrderStatus } from '@/lib/hooks/use-order-status';
 import { StateWindowInitializer } from '@/components/state-window-initializer';
+import NavigationLoader from '@/components/navigation-loader';
 
 // Cached server snapshots to avoid infinite loops
 const SERVER_SNAPSHOT_FALSE = false;
@@ -24,6 +26,8 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
   const pathname = usePathname();
   const router = useRouter();
   const [isMounted, setIsMounted] = useState(false);
+
+  const isPasswordResetPage = pathname?.startsWith('/password_reset');
 
   // Get authentication status
   const isAuthenticated = useSyncExternalStore(
@@ -44,6 +48,9 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
 
   // Load user's orders from database
   useOrders();
+
+  // Update order statuses
+  useOrderStatus();
 
   // Track when component has mounted (client-side hydration complete)
   useEffect(() => {
@@ -66,15 +73,27 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
       if (!isAuthenticated && !tempAddress) {
         router.replace('/');
       }
+    } else if (
+      !isAuthenticated &&
+      !tempAddress &&
+      pathname !== '/' &&
+      !pathname.startsWith('/auth') &&
+      !pathname.startsWith('/merchant') &&
+      !isPasswordResetPage
+    ) {
+      // If user is not logged in, has no temp address, and is not on "/" or "/auth" paths, redirect to "/"
+      router.replace('/');
     }
-  }, [pathname, isAuthenticated, tempAddress, isMounted]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname, isAuthenticated, tempAddress, isMounted, router]);
 
   if (pathname === '/') {
     return (
       <div className="flex flex-col min-h-screen">
         <StateWindowInitializer />
+        <NavigationLoader />
         <main className="flex-1">{children}</main>
-        <LandingPageFooter />
+        {/* <LandingPageFooter /> */}
         <Snackbar />
       </div>
     );
@@ -87,7 +106,8 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
   return (
     <div className="flex flex-col min-h-screen">
       <StateWindowInitializer />
-      <Header />
+      <NavigationLoader />
+      {!isPasswordResetPage && <Header />}
       <LayoutWrapper>{children}</LayoutWrapper>
       <Snackbar />
     </div>

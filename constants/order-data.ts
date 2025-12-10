@@ -1,5 +1,5 @@
-import { PaymentMethod, Address } from "@/lib/types/user-types"
-import { OrderModification } from "@/types"
+import { PaymentMethod, Address } from '@/lib/types/user-types';
+import { OrderModification } from '@/types';
 
 export interface OrderItem {
   id: string;
@@ -7,11 +7,13 @@ export interface OrderItem {
   quantity: number;
   price: number;
   image?: string;
+  menuCategoryId?: string;
+  menuCategoryName?: string;
   modifications?: OrderModification[];
 }
 
 // Reuse PaymentMethod from user-types with all fields optional for orders
-export type PaymentCard = Partial<PaymentMethod>
+export type PaymentCard = Partial<PaymentMethod>;
 
 export interface DeliveryOption {
   type: string;
@@ -27,28 +29,30 @@ export interface PhoneNumber {
 }
 
 // Reuse Address from user-types as DeliveryAddress
-export type DeliveryAddress = Address
+export type DeliveryAddress = Address;
 
 export interface Order {
   id: string;
   // Store/Restaurant info (support both old and new field names)
   storeId?: string;
   storeName?: string;
-  restaurantId?: string;  // Old field name
+  restaurantId?: string; // Old field name
   restaurantName?: string; // Old field name
   storeCategory?: string;
-  
+
+  userId?: string;
+
   // Order items
   items?: OrderItem[];
-  
+
   // Payment info
   paymentCard?: PaymentCard;
-  
+
   // Delivery info
   deliveryAddress?: DeliveryAddress | null;
   deliveryOption?: DeliveryOption;
   phoneNumber?: PhoneNumber;
-  
+
   // Pricing (support both old and new field names)
   tipAmount?: number;
   subtotal?: number;
@@ -57,7 +61,7 @@ export interface Order {
   discount?: number;
   total?: number;
   totalAmount?: number; // Old field name
-  
+
   // Deal/Promotion info
   appliedDeal?: {
     id: string;
@@ -66,12 +70,14 @@ export interface Order {
     discountType?: string;
     discountValue?: number;
   } | null;
-  
+
   // Order metadata
   orderDate: string;
   status: string;
+  orderStatusUpdatedAt?: string;
+  remainingTime?: string; // Remaining time until delivery (e.g., "20-30 min")
   orderType?: 'Personal' | 'Business';
-  
+
   // Optional features
   rating?: number;
   reviewDate?: string;
@@ -383,4 +389,4 @@ export interface Order {
     isDashPass: true,
     tags: ['Fragile Items']
   },
-]; */ 
+]; */

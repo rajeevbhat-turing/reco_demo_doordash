@@ -1,19 +1,23 @@
 'use client';
 
 import { useEffect, type ReactNode } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { useUserStore } from '@/store/user-store';
+import { useAppStore } from '@/store/app-store';
 
 export default function StoreReviewsLayout({ children }: { children: ReactNode }) {
   const router = useRouter();
+  const pathname = usePathname();
   const currentUser = useUserStore(state => state.currentUser);
+  const setRouteBeforeAuth = useAppStore(state => state.setRouteBeforeAuth);
 
   useEffect(() => {
-    // Redirect to home if not authenticated
+    // If not authenticated, save current path and redirect to auth page
     if (currentUser === null) {
-      router.push('/');
+      setRouteBeforeAuth(pathname);
+      router.replace('/auth');
     }
-  }, [currentUser, router]);
+  }, [currentUser, router, pathname, setRouteBeforeAuth]);
 
   // Don't render children if not authenticated
   if (currentUser === null) {

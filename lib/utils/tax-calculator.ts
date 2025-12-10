@@ -9,26 +9,26 @@
 
 const TAX_RATES: Record<string, number> = {
   // High tax states
-  'CA': 0.0725,  // California: 7.25% (state) + varies by city
-  'NY': 0.08,    // New York: 8% (state) + varies by city
-  'IL': 0.0625,  // Illinois: 6.25%
-  'WA': 0.065,   // Washington: 6.5%
-  
+  CA: 0.0725, // California: 7.25% (state) + varies by city
+  NY: 0.08, // New York: 8% (state) + varies by city
+  IL: 0.0625, // Illinois: 6.25%
+  WA: 0.065, // Washington: 6.5%
+
   // Medium tax states
-  'TX': 0.0625,  // Texas: 6.25%
-  'FL': 0.06,    // Florida: 6%
-  'PA': 0.06,    // Pennsylvania: 6%
-  'OH': 0.0575,  // Ohio: 5.75%
-  
+  TX: 0.0625, // Texas: 6.25%
+  FL: 0.06, // Florida: 6%
+  PA: 0.06, // Pennsylvania: 6%
+  OH: 0.0575, // Ohio: 5.75%
+
   // Lower tax states
-  'CO': 0.029,   // Colorado: 2.9%
-  'OR': 0.0,     // Oregon: 0% (no sales tax)
-  'NH': 0.0,     // New Hampshire: 0% (no sales tax)
-  'MT': 0.0,     // Montana: 0% (no sales tax)
-  'DE': 0.0,     // Delaware: 0% (no sales tax)
-  
+  CO: 0.029, // Colorado: 2.9%
+  OR: 0.0, // Oregon: 0% (no sales tax)
+  NH: 0.0, // New Hampshire: 0% (no sales tax)
+  MT: 0.0, // Montana: 0% (no sales tax)
+  DE: 0.0, // Delaware: 0% (no sales tax)
+
   // Default for other states
-  'DEFAULT': 0.06, // 6% default
+  DEFAULT: 0.06, // 6% default
 };
 
 /**
@@ -37,23 +37,23 @@ const TAX_RATES: Record<string, number> = {
  * @param zipCode - Optional zip code for more specific rates
  * @returns Tax rate as a decimal (e.g., 0.0725 for 7.25%)
  */
-export function getTaxRate(state: string, zipCode?: string): number {
+export function getTaxRate(state: string, _zipCode?: string): number {
   if (!state) {
     return TAX_RATES['DEFAULT'];
   }
-  
+
   const stateUpper = state.toUpperCase();
-  
+
   // Check if state has a specific rate
   if (TAX_RATES[stateUpper] !== undefined) {
     return TAX_RATES[stateUpper];
   }
-  
+
   // Future: Could add zip code specific rates here
-  // if (zipCode && ZIP_TAX_RATES[zipCode]) {
-  //   return ZIP_TAX_RATES[zipCode];
+  // if (_zipCode && ZIP_TAX_RATES[_zipCode]) {
+  //   return ZIP_TAX_RATES[_zipCode];
   // }
-  
+
   // Return default rate if state not found
   return TAX_RATES['DEFAULT'];
 }
@@ -65,12 +65,7 @@ export function getTaxRate(state: string, zipCode?: string): number {
  * @param zipCode - Optional zip code
  * @returns Tax amount
  */
-export function calculateTax(
-  taxableAmount: number,
-  state: string,
-  zipCode?: string
-): number {
+export function calculateTax(taxableAmount: number, state: string, zipCode?: string): number {
   const taxRate = getTaxRate(state, zipCode);
   return taxableAmount * taxRate;
 }
-

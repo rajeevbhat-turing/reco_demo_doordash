@@ -1,8 +1,7 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { X } from 'lucide-react';
-import Image from 'next/image';
 import { format } from 'date-fns';
 import { generateAvatarColor } from '@/lib/utils/helperFunctions';
 
@@ -58,6 +57,7 @@ export default function PhotoViewerModal({
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
       onClick={handleBackdropClick}
+      data-testid="photo-viewer-modal-backdrop"
     >
       <div
         ref={modalRef}
@@ -65,11 +65,7 @@ export default function PhotoViewerModal({
         onClick={e => e.stopPropagation()}
       >
         {/* Close Button */}
-        <button
-          onClick={onClose}
-          className="w-8 h-8 cursor-pointer mx-4"
-          aria-label="Close modal"
-        >
+        <button onClick={onClose} className="w-8 h-8 cursor-pointer mx-4" aria-label="Close modal">
           <X className="w-6 h-6 text-[#191919ff]" strokeWidth={2} />
         </button>
 
@@ -89,7 +85,7 @@ export default function PhotoViewerModal({
 
         {/* Image Container */}
         <div className="bg-black relative h-[400px] w-[420px] mx-4 rounded-xl overflow-hidden">
-          <Image src={photo} alt={`Photo by ${userName}`} layout="fill" objectFit="contain" />
+          <img src={photo} alt={`Photo by ${userName}`} className="w-full h-full object-contain" />
         </div>
 
         {/* Done Button */}

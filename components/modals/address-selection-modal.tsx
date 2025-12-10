@@ -3,7 +3,6 @@
 import { useState, useMemo, useRef, useEffect } from 'react';
 import { X, ChevronRight, Plus, MapPin } from 'lucide-react';
 import addressesData from '@/data/addresses.json';
-import Image from 'next/image';
 import { useUserStore } from '@/store/user-store';
 
 interface AddressSelectionModalProps {
@@ -18,6 +17,7 @@ export default function AddressSelectionModal({
   onClose,
 }: AddressSelectionModalProps) {
   const [searchQuery, setSearchQuery] = useState('');
+  const [dropdownMaxHeight, setDropdownMaxHeight] = useState<number>(230);
   const inputRef = useRef<HTMLInputElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const inputContainerRef = useRef<HTMLDivElement>(null);
@@ -25,16 +25,49 @@ export default function AddressSelectionModal({
 
   const { addAddress, setDefaultAddress } = useUserStore();
 
+  // Calculate dropdown max height based on available space
+  useEffect(() => {
+    if (searchQuery.trim() && inputContainerRef.current) {
+      const calculateMaxHeight = () => {
+        const inputContainer = inputContainerRef.current;
+        if (!inputContainer) return;
+
+        const inputRect = inputContainer.getBoundingClientRect();
+        const viewportHeight = window.innerHeight;
+        const dropdownTop = inputRect.bottom + 8; // mt-2 = 8px
+        const availableSpace = viewportHeight - dropdownTop - 16; // 16px padding from bottom
+        const maxHeight = Math.max(50, Math.min(availableSpace, 230)); // Min 50px, max 230px
+
+        setDropdownMaxHeight(maxHeight);
+      };
+
+      // Calculate immediately
+      calculateMaxHeight();
+
+      // Recalculate on window resize
+      window.addEventListener('resize', calculateMaxHeight);
+      window.addEventListener('scroll', calculateMaxHeight);
+
+      return () => {
+        window.removeEventListener('resize', calculateMaxHeight);
+        window.removeEventListener('scroll', calculateMaxHeight);
+      };
+    }
+  }, [searchQuery]);
+
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
       if (
         searchQuery.trim() &&
         dropdownRef.current &&
         inputContainerRef.current &&
-        !dropdownRef.current.contains(event.target as Node) &&
-        !inputContainerRef.current.contains(event.target as Node)
+        !dropdownRef.current.contains(target) &&
+        !inputContainerRef.current.contains(target)
       ) {
+        // Close dropdown if clicking outside the dropdown and input,
+        // including when clicking inside other modals
         setSearchQuery('');
       }
     };
@@ -56,11 +89,16 @@ export default function AddressSelectionModal({
     };
 
     const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      // Don't close if clicking inside the modal, input container, dropdown, or Select dropdown (Radix UI Portal)
       if (
         dialogRef.current &&
-        !dialogRef.current.contains(event.target as Node) &&
-        !inputContainerRef.current?.contains(event.target as Node) &&
-        !dropdownRef.current?.contains(event.target as Node) &&
+        !dialogRef.current.contains(target) &&
+        !inputContainerRef.current?.contains(target) &&
+        !dropdownRef.current?.contains(target) &&
+        !target.closest('[data-radix-select-content]') &&
+        !target.closest('[data-radix-select-viewport]') &&
+        !target.closest('[data-radix-select-item]') &&
         onClose
       ) {
         onClose();
@@ -133,13 +171,16 @@ export default function AddressSelectionModal({
   return (
     <div className="fixed inset-0 z-50 bg-black bg-opacity-50 backdrop-blur-sm">
       <div className="absolute inset-0 flex items-center justify-center p-4">
-        <div ref={dialogRef} className="relative bg-white rounded-xl shadow-xl w-full max-w-lg mx-auto max-h-[90vh] flex flex-col">
+        <div
+          ref={dialogRef}
+          className="relative bg-white rounded-xl shadow-xl w-full max-w-lg mx-auto max-h-[90vh] flex flex-col"
+        >
           {/* Non-scrollable content */}
           <div className="px-6 py-6">
             {/* Top Section - Food Icons */}
             <div className="flex items-center justify-center gap-3 mb-4">
               <div className="w-24 h-24 rounded-xl flex items-center justify-center overflow-hidden">
-                <Image
+                <img
                   src="/address-selection-image-1.png"
                   alt="Food item 1"
                   width={96}
@@ -148,7 +189,7 @@ export default function AddressSelectionModal({
                 />
               </div>
               <div className="w-24 h-24 rounded-xl flex items-center justify-center overflow-hidden">
-                <Image
+                <img
                   src="/address-selection-image-2.png"
                   alt="Food item 2"
                   width={96}
@@ -157,7 +198,7 @@ export default function AddressSelectionModal({
                 />
               </div>
               <div className="w-24 h-24 rounded-xl flex items-center justify-center overflow-hidden">
-                <Image
+                <img
                   src="/address-selection-image-3.png"
                   alt="Food item 3"
                   width={96}
@@ -174,11 +215,8 @@ export default function AddressSelectionModal({
 
             {/* Disclaimer */}
             <p className="text-base text-[#191919ff] text-left font-medium mb-4 leading-relaxed">
-              Other fees, taxes and gratuity still apply. See further terms and conditions{' '}
-              <a href="#" className="font-bold text-[#191919ff] underline">
-                here
-              </a>
-              . Enter your exact address to find all available stores and delivery times.
+              Other fees, taxes and gratuity still apply. Enter your exact address to find all
+              available stores and delivery times.
             </p>
 
             {/* Address Input Label */}
@@ -217,8 +255,13 @@ export default function AddressSelectionModal({
               {searchQuery.trim() && (
                 <div
                   ref={dropdownRef}
-                  className="absolute top-full left-0 right-0 mt-2 bg-white rounded-md shadow-lg border border-gray-200 max-h-[230px] 
+                  className="absolute top-full left-0 right-0 mt-2 bg-white rounded-md shadow-lg border border-gray-200 
                   overflow-y-auto z-[60]"
+                  style={{
+                    maxHeight: `${dropdownMaxHeight}px`,
+                    scrollbarWidth: 'thin',
+                    scrollbarColor: '#cbd5e1 #f1f5f9',
+                  }}
                 >
                   {filteredAddresses?.slice(0, 3)?.map(address => (
                     <div

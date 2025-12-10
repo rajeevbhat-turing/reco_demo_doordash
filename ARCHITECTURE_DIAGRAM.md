@@ -357,7 +357,7 @@
 ## 🗂️ Directory Structure
 
 ```
-doordash-1/
+dashdoor/
 ├── app/                          # Next.js App Router
 │   ├── api/                     # API Routes (Server-side)
 │   │   ├── products/            # Product endpoints
@@ -437,16 +437,11 @@ doordash-1/
 │   └── [app-specific constants] # UI configs, feature flags, etc.
 │
 ├── data/                        # Configuration Files (not static data)
-│   ├── cart-config.ts          # Cart configuration
-│   ├── modal-data.ts          # Modal configuration
-│   └── ui-config.ts           # UI configuration
-│
-├── docs/                        # Documentation
-│   ├── README.md              # Main docs
-│   └── [other docs]           # Additional documentation
+│   ├── db/
+│       ├── dashdoor.db          # The default DB
 │
 ├── public/                      # Static Assets
-│   ├── doordash-logo.svg      # Logo
+│   ├── dashdoor-logo.svg      # Logo
 │   └── [images, icons, etc.]   # Other assets
 │
 ├── app.db                       # SQLite database file (read-only)

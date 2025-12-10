@@ -4,10 +4,11 @@ import { useAppStore, SearchResult } from '@/store/app-store';
 import { useOrdersStore } from '@/store/orders-store';
 import { useDealsStore } from '@/store/deals-store';
 import { useReviewStore } from '@/store/review-store';
-import { User, Address, PaymentMethod } from '@/lib/types/user-types';
+import { User, Address } from '@/lib/types/user-types';
 import { Order } from '@/constants/order-data';
 import { UserReview } from '@/types/review-types';
 import * as expectedStateFunctions from '../expected-state-functions';
+import { JSONPath } from 'jsonpath-plus';
 
 interface AppState {
   carts: Cart[];
@@ -50,7 +51,99 @@ interface States {
   expected_states: any[];
 }
 
-export async function getStates(expected_state_functions: ExpectedStateFunction[] = []): Promise<States> {
+/**
+ * Checks if a string is a valid JSONPath expression
+ * @param value - The string to check
+ * @returns True if the string is a JSONPath expression
+ */
+function isJSONPath(value: string): boolean {
+  if (!value || typeof value !== 'string') {
+    return false;
+  }
+
+  // Valid JSONPath patterns:
+  // - Starts with $[ (array access): $[0], $[0].prop, $[*]
+  // - Starts with $. (property access): $.prop, $.prop.nested
+  // - Starts with $.. (recursive descent): $..prop
+  // - Exactly $ (root)
+  return value.startsWith('$[') || value.startsWith('$.') || value.startsWith('$..');
+}
+
+/**
+ * Resolves JSONPath expressions in function arguments
+ * @param args - The arguments object that may contain JSONPath strings
+ * @param expectedStates - The array of expected states to resolve paths from
+ * @returns Resolved arguments with JSONPath expressions replaced with actual values
+ */
+function getResolvedArgs(args: Record<string, any>, expectedStates: any[]): Record<string, any> {
+  if (!args || typeof args !== 'object') {
+    return args;
+  }
+
+  const resolvedArgs: Record<string, any> = {};
+
+  for (const [key, value] of Object.entries(args)) {
+    // Check if the value is a JSONPath expression
+    // Valid JSONPath patterns: $[...], $., $.., or exactly $
+    if (typeof value === 'string' && isJSONPath(value)) {
+      try {
+        const result = JSONPath({ path: value, json: expectedStates });
+
+        if (result.length === 0) {
+          console.error(`JSONPath not found: ${value}`);
+          resolvedArgs[key] = undefined;
+        } else {
+          // If path contains wildcard [*] or .., return all results as array
+          // Otherwise return just the first result
+          if (value.includes('[*]') || value.includes('..')) {
+            resolvedArgs[key] = result; // Return entire array
+          } else {
+            resolvedArgs[key] = result[0]; // Return single value
+          }
+        }
+      } catch (error) {
+        console.error(`Error resolving JSONPath "${value}":`, error);
+        resolvedArgs[key] = undefined;
+      }
+    } else if (Array.isArray(value)) {
+      // Recursively resolve arrays (keep as array)
+      resolvedArgs[key] = value.map(item => {
+        if (typeof item === 'string' && isJSONPath(item)) {
+          try {
+            const result = JSONPath({ path: item, json: expectedStates });
+            if (result.length === 0) return undefined;
+            
+            // If path contains wildcard [*] or .., return all results as array
+            // Otherwise return just the first result
+            if (item.includes('[*]') || item.includes('..')) {
+              return result; // Return entire array
+            } else {
+              return result[0]; // Return single value
+            }
+          } catch (error) {
+            console.error(`Error resolving JSONPath "${item}":`, error);
+            return undefined;
+          }
+        } else if (typeof item === 'object' && item !== null) {
+          return getResolvedArgs(item, expectedStates);
+        }
+        return item;
+      });
+    } else if (typeof value === 'object' && value !== null) {
+      // Recursively resolve nested objects
+      resolvedArgs[key] = getResolvedArgs(value, expectedStates);
+    } else {
+      // Keep non-JSONPath values as is
+      resolvedArgs[key] = value;
+    }
+  }
+
+  return resolvedArgs;
+}
+
+export async function getStates(
+  expected_state_functions: ExpectedStateFunction[] = []
+): Promise<States> {
   const cartStore = useCartStore.getState();
   const userStore = useUserStore.getState();
   const appStore = useAppStore.getState();
@@ -87,11 +180,11 @@ export async function getStates(expected_state_functions: ExpectedStateFunction[
 
   // Execute expected state functions
   const expected_states: any[] = [];
-  
+
   for (const funcSpec of expected_state_functions) {
     try {
       const func = (expectedStateFunctions as any)[funcSpec.function];
-      
+
       if (typeof func !== 'function') {
         console.error(`Expected state function not found: ${funcSpec.function}`);
         expected_states.push({
@@ -100,12 +193,18 @@ export async function getStates(expected_state_functions: ExpectedStateFunction[
         });
         continue;
       }
-      
-      // Call the function with args (if any)
-      // Check if function expects arguments based on funcSpec.args
-      const result = funcSpec.args && Object.keys(funcSpec.args).length > 0
-        ? await func(funcSpec.args)
-        : await func();
+
+      // Resolve any JSONPath expressions in the arguments
+      const resolvedArgs =
+        funcSpec.args && Object.keys(funcSpec.args).length > 0
+          ? getResolvedArgs(funcSpec.args, expected_states)
+          : funcSpec.args;
+
+      // Call the function with resolved args (if any)
+      const result =
+        resolvedArgs && Object.keys(resolvedArgs).length > 0
+          ? await func(resolvedArgs)
+          : await func();
       expected_states.push(result);
     } catch (error) {
       console.error(`Error executing expected state function '${funcSpec.function}':`, error);
@@ -122,4 +221,3 @@ export async function getStates(expected_state_functions: ExpectedStateFunction[
     expected_states,
   };
 }
-

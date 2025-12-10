@@ -6,12 +6,7 @@
  * @param lng2 - Longitude of second point
  * @returns Distance in miles
  */
-export function calculateDistance(
-  lat1: number,
-  lng1: number,
-  lat2: number,
-  lng2: number
-): number {
+export function calculateDistance(lat1: number, lng1: number, lat2: number, lng2: number): number {
   // Radius of the Earth in miles
   const R = 3958.8;
 
@@ -22,10 +17,7 @@ export function calculateDistance(
   // Haversine formula
   const a =
     Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-    Math.cos(toRadians(lat1)) *
-      Math.cos(toRadians(lat2)) *
-      Math.sin(dLng / 2) *
-      Math.sin(dLng / 2);
+    Math.cos(toRadians(lat1)) * Math.cos(toRadians(lat2)) * Math.sin(dLng / 2) * Math.sin(dLng / 2);
 
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
@@ -41,4 +33,3 @@ export function calculateDistance(
 function toRadians(degrees: number): number {
   return degrees * (Math.PI / 180);
 }
-

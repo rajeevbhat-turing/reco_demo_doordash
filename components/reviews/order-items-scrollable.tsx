@@ -1,8 +1,7 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { ThumbsUp, ChevronLeft, ChevronRight } from 'lucide-react';
-import Image from 'next/image';
 import { OrderItem } from '@/types/review-types';
 import MenuItemDialog from '@/components/menu-item-dialog';
 import type { MenuItem } from '@/constants/menu-items';
@@ -34,7 +33,8 @@ export default function OrderItemsScrollable({
     if (!orderItem.menuItemId) {
       return null;
     }
-    
+    console.log('menuItems', menuItems, 'orderItem.menuItemId', orderItem.menuItemId);
+
     return menuItems.find(item => item.id === orderItem.menuItemId) || null;
   };
 
@@ -95,18 +95,26 @@ export default function OrderItemsScrollable({
     }
   };
 
+  // Handle closing menu item dialog
+  const handleCloseMenuItemDialog = useCallback(() => {
+    setMenuItemDialogOpen(false);
+    setSelectedItem(null);
+  }, []);
+
   return (
     <div className="mb-4 relative group">
       <div
         ref={scrollContainerRef}
         className="flex gap-2 overflow-x-auto scrollbar-hide"
         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+        data-testid="order-items-scroll-container"
       >
         {items.map(item => (
           <div
             key={`order-item-${item.id}`}
-            className="rounded-lg flex items-center justify-between gap-3 min-w-[150px] flex-shrink-0 border border-[#e4e4e4] 
+            className="rounded-lg flex items-center justify-between gap-3 min-w-[150px] flex-shrink-0 border border-[#e4e4e4]
             cursor-pointer hover:border-gray-300 transition-colors"
+            data-testid={`order-item-${item.id}`}
             onClick={() => openItemDialog(item)}
           >
             {/* Left Section - Text Content */}
@@ -126,7 +134,7 @@ export default function OrderItemsScrollable({
             {/* Right Section - Image */}
             {item.image && (
               <div className="w-20 h-20 relative rounded-r-lg overflow-hidden flex-shrink-0">
-                <Image src={item.image} alt={item.name} fill className="object-cover" />
+                <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
               </div>
             )}
           </div>
@@ -158,10 +166,7 @@ export default function OrderItemsScrollable({
       {/* Menu Item Dialog */}
       <MenuItemDialog
         isOpen={menuItemDialogOpen}
-        onClose={() => {
-          setMenuItemDialogOpen(false);
-          setSelectedItem(null);
-        }}
+        onClose={handleCloseMenuItemDialog}
         item={selectedItem as any}
       />
     </div>

@@ -4,7 +4,10 @@ import type { Deal } from '@/types/deal-types';
  * Fetch a deal by ID from the API
  * This is a utility function that can be used outside of React components
  */
-export async function fetchDealById(dealId: string, restaurantId?: string | number): Promise<Deal | null> {
+export async function fetchDealById(
+  dealId: string,
+  restaurantId?: string | number
+): Promise<Deal | null> {
   try {
     // Fetch deals (with restaurantId if provided to get both restaurant-specific + common deals)
     const searchParams = new URLSearchParams();
@@ -63,7 +66,6 @@ export function checkDealCriteria(
     const hasFreeItem = freeItemIds.some(freeId => {
       return cartItems.some(item => {
         let itemId = typeof item.id === 'string' ? item.id : item.id.toString();
-        const itemName = (item.itemName || '').toLowerCase().trim();
 
         // If item ID starts with store ID, remove it before checking
         if (deal.restaurantId && itemId.startsWith(deal.restaurantId + '-')) {
@@ -74,14 +76,7 @@ export function checkDealCriteria(
         // We need to check if the cart item ID starts with the free item ID followed by a dash or is exactly equal
         const matchesById = itemId === freeId || itemId.startsWith(freeId + '-');
 
-        // Also check by name - both ID and name must match
-        const freeItemName = deal.freeItems
-          ?.find(fi => fi.id === freeId)
-          ?.name.toLowerCase()
-          .trim();
-        const matchesByName = freeItemName && itemName === freeItemName;
-
-        return matchesById && matchesByName;
+        return matchesById;
       });
     });
 
@@ -99,7 +94,6 @@ export function checkDealCriteria(
 
     cartItems.forEach(item => {
       let itemId = typeof item.id === 'string' ? item.id : item.id.toString();
-      const itemName = (item.itemName || '').toLowerCase().trim();
 
       // If item ID starts with store ID, remove it before checking
       if (deal.restaurantId && itemId.startsWith(deal.restaurantId + '-')) {
@@ -109,14 +103,10 @@ export function checkDealCriteria(
       // Check if this item matches any free item
       let matchedFreeItemId: string | null = null;
       for (const freeId of freeItemIds) {
+        // Check by ID
         const matchesById = itemId === freeId || itemId.startsWith(freeId + '-');
-        const freeItemName = deal.freeItems
-          ?.find(fi => fi.id === freeId)
-          ?.name.toLowerCase()
-          .trim();
-        const matchesByName = freeItemName && itemName === freeItemName;
 
-        if (matchesById && matchesByName) {
+        if (matchesById) {
           matchedFreeItemId = freeId;
           break;
         }
@@ -192,4 +182,3 @@ export function checkDealCriteriaBoolean(
   const result = checkDealCriteria(deal, cartItems, cartSubtotal);
   return result.meets;
 }
-
