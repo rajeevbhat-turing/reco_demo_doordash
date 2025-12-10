@@ -390,7 +390,7 @@ export async function GET(request: NextRequest) {
     });
 
     if (storeId) {
-      console.log(`✅ Fetched ${orders.length} orders for store ${storeId}`)(`✅ Fetched ${orders.length} orders for store ${storeId}`);
+      console.log(`✅ Fetched ${orders.length} orders for store ${storeId}`);
     } else {
       console.log(`✅ Fetched ${orders.length} orders for user ${userId}`);
     }

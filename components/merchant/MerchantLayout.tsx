@@ -1,14 +1,13 @@
-"use client"
-import type React from "react"
-import MerchantSidebar from "./MerchantSidebar"
-import { CurrentStoreProvider } from "@/lib/hooks/useCurrentStore"
+'use client';
+import type React from 'react';
+import MerchantSidebar from './MerchantSidebar';
 
 export default function MerchantLayout({ children }: { children: React.ReactNode }) {
   return (
-    <CurrentStoreProvider>
+    <>
       {/* suppressHydrationWarning: Content may differ between server/client due to localStorage hydration */}
-      <div 
-        className="min-h-screen bg-white overflow-hidden flex flex-col" 
+      <div
+        className="min-h-screen bg-white overflow-hidden flex flex-col"
         suppressHydrationWarning
         style={{
           fontFamily: 'DD-TTNorms, ProximaNova, "Avenir Next", Avenir, sans-serif',
@@ -18,7 +17,7 @@ export default function MerchantLayout({ children }: { children: React.ReactNode
         <MerchantSidebar />
 
         {/* Main content wrapper */}
-        <div 
+        <div
           className="flex-1 overflow-auto"
           style={{
             marginLeft: '256px',
@@ -83,7 +82,7 @@ export default function MerchantLayout({ children }: { children: React.ReactNode
                     viewBox="0 0 24 24"
                     xmlns="http://www.w3.org/2000/svg"
                     style={{
-                      boxShadow: "0px 4px 16px rgba(0,0,0,0.2)",
+                      boxShadow: '0px 4px 16px rgba(0,0,0,0.2)',
                     }}
                   >
                     <path
@@ -94,16 +93,12 @@ export default function MerchantLayout({ children }: { children: React.ReactNode
                     />
                   </svg>
                 </div>
-                <span className="text-sm text-gray-600 text-center mt-1 block">
-                  Need help?
-                </span>
+                <span className="text-sm text-gray-600 text-center mt-1 block">Need help?</span>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </CurrentStoreProvider>
-  )
+    </>
+  );
 }
-
-

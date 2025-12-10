@@ -1,10 +1,10 @@
 'use client'
 
 import { create } from "zustand"
-import { persist } from "zustand/middleware"
+import { persist, StateStorage } from "zustand/middleware"
 import { MerchantStorageKeys } from "@/lib/utils/merchant-storage"
 import { setStoreScopedStorage } from "@/lib/utils/store-scoped-storage"
-import { merchantStoreData, StoreMerchantData } from "@/constants/merchant-store-data"
+import { StoreMerchantData } from "@/constants/merchant-store-data"
 
 export type ItemStatus = 
   | "In stock"
@@ -46,185 +46,41 @@ interface MerchantMenuStore {
   addDeletedItem: (itemId: string) => void
 }
 
-const initialCategories: MenuCategory[] = [
-  {
-    id: "paninis",
-    name: "Paninis",
-    items: [
-      {
-        id: "1",
-        name: "Build Your Own Panini",
-        image: "/placeholder.jpg",
-        pickupPrice: "$15.00",
-        deliveryPrice: "$15.00",
-        status: "In stock"
-      },
-      {
-        id: "2",
-        name: "Peppe Sandwich",
-        image: "/placeholder.jpg",
-        pickupPrice: "$18.00",
-        deliveryPrice: "$18.00",
-        status: "In stock"
-      },
-      {
-        id: "3",
-        name: "Meatball Sandwich",
-        image: "/placeholder.jpg",
-        pickupPrice: "$17.00",
-        deliveryPrice: "$17.00",
-        status: "In stock"
-      },
-      {
-        id: "4",
-        name: "Olga Sandwich",
-        image: "/placeholder.jpg",
-        pickupPrice: "$19.00",
-        deliveryPrice: "$19.00",
-        status: "In stock"
-      },
-      {
-        id: "5",
-        name: "Spicy Salame Sandwich",
-        image: "/placeholder.jpg",
-        pickupPrice: "$18.00",
-        deliveryPrice: "$18.00",
-        status: "In stock"
-      },
-      {
-        id: "6",
-        name: "Burrata Sandwich",
-        image: "/placeholder.jpg",
-        pickupPrice: "$17.00",
-        deliveryPrice: "$17.00",
-        status: "In stock"
-      }
-    ]
-  },
-  {
-    id: "entrees",
-    name: "Entrées",
-    items: [
-      {
-        id: "7",
-        name: "Chicken Parmesan",
-        image: "/placeholder.jpg",
-        pickupPrice: "$22.00",
-        deliveryPrice: "$22.00",
-        status: "In stock"
-      },
-      {
-        id: "8",
-        name: "Lasagna",
-        image: "/placeholder.jpg",
-        pickupPrice: "$20.00",
-        deliveryPrice: "$20.00",
-        status: "In stock"
-      }
-    ]
-  },
-  {
-    id: "croissant",
-    name: "Limited Edition Filled Croissant",
-    items: [
-      {
-        id: "9",
-        name: "Chocolate Croissant",
-        image: "/placeholder.jpg",
-        pickupPrice: "$6.00",
-        deliveryPrice: "$6.00",
-        status: "In stock"
-      },
-      {
-        id: "10",
-        name: "Almond Croissant",
-        image: "/placeholder.jpg",
-        pickupPrice: "$6.50",
-        deliveryPrice: "$6.50",
-        status: "In stock"
-      },
-      {
-        id: "11",
-        name: "Ham & Cheese Croissant",
-        image: "/placeholder.jpg",
-        pickupPrice: "$7.00",
-        deliveryPrice: "$7.00",
-        status: "In stock"
-      }
-    ]
-  },
-  {
-    id: "sides",
-    name: "Sides",
-    items: [
-      {
-        id: "12",
-        name: "French Fries",
-        image: "/placeholder.jpg",
-        pickupPrice: "$5.00",
-        deliveryPrice: "$5.00",
-        status: "In stock"
-      },
-      {
-        id: "13",
-        name: "Side Salad",
-        image: "/placeholder.jpg",
-        pickupPrice: "$6.00",
-        deliveryPrice: "$6.00",
-        status: "In stock"
-      },
-      {
-        id: "14",
-        name: "Soup of the Day",
-        image: "/placeholder.jpg",
-        pickupPrice: "$7.00",
-        deliveryPrice: "$7.00",
-        status: "In stock"
-      },
-      {
-        id: "15",
-        name: "Garlic Bread",
-        image: "/placeholder.jpg",
-        pickupPrice: "$4.00",
-        deliveryPrice: "$4.00",
-        status: "In stock"
-      },
-      {
-        id: "16",
-        name: "Mozzarella Sticks",
-        image: "/placeholder.jpg",
-        pickupPrice: "$8.00",
-        deliveryPrice: "$8.00",
-        status: "In stock"
-      }
-    ]
-  },
-  {
-    id: "beverages",
-    name: "Beverages",
-    items: Array.from({ length: 28 }, (_, i) => ({
-      id: `bev-${i + 1}`,
-      name: `Beverage ${i + 1}`,
-      image: "/placeholder.jpg",
-      pickupPrice: "$3.00",
-      deliveryPrice: "$3.00",
-      status: "In stock" as ItemStatus
-    }))
-  }
-]
-
 // Store instance - will be updated when store changes
-let currentStoreId = 'philz-coffee'
+let currentStoreId = ''
+
+const scopedStorage: () => StateStorage = () => {
+  const noop: StateStorage = {
+    getItem: () => null,
+    setItem: () => {},
+    removeItem: () => {},
+  }
+  if (typeof window === 'undefined') return noop
+  const storeKey = currentStoreId ? `merchant.${currentStoreId}.menu` : null
+  if (!storeKey) return noop
+  return {
+    getItem: (name: string) => localStorage.getItem(storeKey) ?? localStorage.getItem(name),
+    setItem: (name: string, value: string) => {
+      localStorage.setItem(storeKey, value)
+      localStorage.setItem(name, value)
+    },
+    removeItem: (name: string) => {
+      localStorage.removeItem(storeKey)
+      localStorage.removeItem(name)
+    },
+  }
+}
 
 export const useMerchantMenuStore = create<MerchantMenuStore>()(
   persist(
     (set, get) => ({
-      categories: initialCategories,
-      expandedCategories: new Set(["paninis"]),
+      categories: [],
+      expandedCategories: new Set(),
       showBanner: true,
       deletedItemIds: new Set(),
 
       setCategories: (categories) => {
+        if (!currentStoreId) return
         set({ categories })
         if (typeof window !== 'undefined') {
           setStoreScopedStorage(currentStoreId, 'menu', {
@@ -238,6 +94,7 @@ export const useMerchantMenuStore = create<MerchantMenuStore>()(
 
       updateItemStatus: (itemId, status) =>
         set((state) => {
+          if (!currentStoreId) return state
           const updated = {
             categories: state.categories.map((category) => ({
               ...category,
@@ -259,6 +116,7 @@ export const useMerchantMenuStore = create<MerchantMenuStore>()(
 
       toggleCategory: (categoryId) =>
         set((state) => {
+          if (!currentStoreId) return state
           const currentSet =
             state.expandedCategories instanceof Set
               ? (state.expandedCategories as Set<string>)
@@ -280,6 +138,7 @@ export const useMerchantMenuStore = create<MerchantMenuStore>()(
         }),
 
       setShowBanner: (show) => {
+        if (!currentStoreId) return
         set({ showBanner: show })
         if (typeof window !== 'undefined') {
           setStoreScopedStorage(currentStoreId, 'menu', {
@@ -292,6 +151,7 @@ export const useMerchantMenuStore = create<MerchantMenuStore>()(
 
       addItem: (categoryId, item) =>
         set((state) => {
+          if (!currentStoreId) return state
           const updated = {
             categories: state.categories.map((category) =>
               category.id === categoryId
@@ -312,6 +172,7 @@ export const useMerchantMenuStore = create<MerchantMenuStore>()(
 
       updateItem: (itemId, updates) =>
         set((state) => {
+          if (!currentStoreId) return state
           const updated = {
             categories: state.categories.map((category) => ({
               ...category,
@@ -333,6 +194,7 @@ export const useMerchantMenuStore = create<MerchantMenuStore>()(
 
       deleteItem: (itemId) =>
         set((state) => {
+          if (!currentStoreId) return state
           const updatedDeleted = new Set(state.deletedItemIds)
           updatedDeleted.add(itemId)
           const updated = {
@@ -354,6 +216,7 @@ export const useMerchantMenuStore = create<MerchantMenuStore>()(
 
       addDeletedItem: (itemId) =>
         set((state) => {
+          if (!currentStoreId) return state
           const updatedDeleted = new Set(state.deletedItemIds)
           updatedDeleted.add(itemId)
           if (typeof window !== 'undefined') {
@@ -369,12 +232,13 @@ export const useMerchantMenuStore = create<MerchantMenuStore>()(
     }),
     {
       name: MerchantStorageKeys.MENU,
+      getStorage: scopedStorage,
       // Custom serialization for Set
-      partialize: (state) => ({
+      partialize: (state): Partial<MerchantMenuStore> => ({
         categories: state.categories,
-        expandedCategories: Array.from(state.expandedCategories),
+        expandedCategories: Array.from(state.expandedCategories) as unknown as Set<string>,
         showBanner: state.showBanner,
-        deletedItemIds: Array.from(state.deletedItemIds)
+        deletedItemIds: Array.from(state.deletedItemIds) as unknown as Set<string>
       }),
       // Custom deserialization for Set
       onRehydrateStorage: () => (state) => {
@@ -423,14 +287,6 @@ if (typeof window !== 'undefined') {
       const ids = new Set<string>(storedDeleted as string[])
       useMerchantMenuStore.setState({ deletedItemIds: ids })
     }
-    
-    // Set expanded categories
-    const expandedSet = new Set(storedData.expandedCategories || [])
-    storedData.expandedCategories?.forEach((catId: string) => {
-      if (!useMerchantMenuStore.getState().expandedCategories.has(catId)) {
-        useMerchantMenuStore.getState().toggleCategory(catId)
-      }
-    })
   }) as EventListener)
 }
 

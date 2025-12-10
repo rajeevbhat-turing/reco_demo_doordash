@@ -28,12 +28,6 @@ export default function OverviewTab({ isLoadingMenu, isMounted }: OverviewTabPro
     'isMenuSettingsOpen',
     false
   );
-  const [selectedRestaurantId, setSelectedRestaurantId] = useMerchantPersistedState(
-    'menu',
-    'selector',
-    'selectedRestaurantId',
-    'philz-coffee'
-  );
   const [selectedItem, setSelectedItem] = useMerchantPersistedState<MenuItem | null>(
     'menu',
     'editor',
@@ -130,10 +124,11 @@ export default function OverviewTab({ isLoadingMenu, isMounted }: OverviewTabPro
       <div className="mb-6">
         {/* Top Row - Restaurant Selector and Action Buttons */}
         <div className="flex items-center justify-between mb-4">
-          <RestaurantSelector
+          {/* <RestaurantSelector
             selectedRestaurantId={selectedRestaurantId}
             onSelectRestaurant={setSelectedRestaurantId}
-          />
+          /> */}
+          <div />
           <div className="flex items-center gap-3">
             <div className="relative">
               <button

@@ -1,7 +1,7 @@
 'use client'
 
 import { create } from 'zustand'
-import { persist } from 'zustand/middleware'
+import { persist, StateStorage } from 'zustand/middleware'
 import { MerchantStorageKeys } from '@/lib/utils/merchant-storage'
 import { setStoreScopedStorage } from '@/lib/utils/store-scoped-storage'
 import { Modifier, StoreMerchantData } from '@/constants/merchant-store-data'
@@ -17,6 +17,28 @@ interface MerchantModifiersStore {
 }
 
 let currentStoreId = ''
+
+const scopedStorage: () => StateStorage = () => {
+  const noop: StateStorage = {
+    getItem: () => null,
+    setItem: () => {},
+    removeItem: () => {},
+  }
+  if (typeof window === 'undefined') return noop
+  const storeKey = currentStoreId ? `merchant.${currentStoreId}.modifiers` : null
+  if (!storeKey) return noop
+  return {
+    getItem: (name: string) => localStorage.getItem(storeKey) ?? localStorage.getItem(name),
+    setItem: (name: string, value: string) => {
+      localStorage.setItem(storeKey, value)
+      localStorage.setItem(name, value)
+    },
+    removeItem: (name: string) => {
+      localStorage.removeItem(storeKey)
+      localStorage.removeItem(name)
+    },
+  }
+}
 
 const normalizeUsedIn = (modifiers: Modifier[]): Modifier[] =>
   modifiers.map((modifier) => ({
@@ -42,12 +64,14 @@ export const useMerchantModifiersStore = create<MerchantModifiersStore>()(
       modifiers: [],
 
       setModifiers: (modifiers) => {
+        if (!currentStoreId) return
         const normalized = normalizeUsedIn(modifiers)
         set({ modifiers: normalized })
         persistScopedModifiers(normalized)
       },
 
       addModifier: (modifier) => {
+        if (!currentStoreId) return
         const normalized = normalizeUsedIn([modifier])[0]
         const updated = [...get().modifiers, normalized]
         set({ modifiers: updated })
@@ -87,6 +111,7 @@ export const useMerchantModifiersStore = create<MerchantModifiersStore>()(
     }),
     {
       name: MerchantStorageKeys.MODIFIERS,
+      getStorage: scopedStorage,
     }
   )
 )

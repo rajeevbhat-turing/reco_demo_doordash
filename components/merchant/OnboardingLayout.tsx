@@ -1,29 +1,27 @@
-"use client"
-import type React from "react"
-import OnboardingSidebar from "./OnboardingSidebar"
-import { CurrentStoreProvider } from "@/lib/hooks/useCurrentStore"
+'use client';
+import type React from 'react';
+import OnboardingSidebar from './OnboardingSidebar';
 
 interface OnboardingLayoutProps {
-  children: React.ReactNode
-  currentStep: string
-  completedSteps?: string[]
+  children: React.ReactNode;
+  currentStep: string;
+  completedSteps?: string[];
 }
 
-export default function OnboardingLayout({ children, currentStep, completedSteps = [] }: OnboardingLayoutProps) {
+export default function OnboardingLayout({
+  children,
+  currentStep,
+  completedSteps = [],
+}: OnboardingLayoutProps) {
   return (
-    <CurrentStoreProvider>
-      <div className="min-h-screen bg-gray-50">
-        {/* Left navigation */}
-        <OnboardingSidebar currentStep={currentStep} completedSteps={completedSteps} />
+    <div className="min-h-screen bg-gray-50">
+      {/* Left navigation */}
+      <OnboardingSidebar currentStep={currentStep} completedSteps={completedSteps} />
 
-        {/* Main area */}
-        <div className="ml-[240px] px-8 py-8">
-          <div className="max-w-3xl">
-            {children}
-          </div>
-        </div>
+      {/* Main area */}
+      <div className="ml-[240px] px-8 py-8">
+        <div className="max-w-3xl">{children}</div>
       </div>
-    </CurrentStoreProvider>
-  )
+    </div>
+  );
 }
-
