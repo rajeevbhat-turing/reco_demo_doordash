@@ -323,6 +323,8 @@ Gets restaurants with optional filtering, sorting, and radius filtering.
   limit?: number;                  // Optional: Number of restaurants to return
   filters?: {
     item_keyword?: string;         // Optional: Filter by menu item keyword (finds restaurants with matching items)
+    has_any_item_keywords?: string[];  // Optional: Filter by menu item keywords (finds restaurants with items matching ANY keyword)
+    has_all_item_keywords?: string[];  // Optional: Filter by menu item keywords (finds restaurants with items matching ALL keywords)
     cuisines?: string[];           // Optional: Array of cuisines (matches any)
     categories?: string[];         // Optional: Array of categories (matches any)
     prices?: string[];             // Optional: Array of price ranges: "$", "$$", "$$$", "$$$$"
@@ -424,6 +426,53 @@ This will find all restaurants with "Pizza" in their name (e.g., "Pizza Palace",
 }
 ```
 Finds restaurants that have menu items with "tacos" in the name, sorted by nearest first.
+
+**Filter by ANY item keyword (OR logic):**
+```json
+{
+  "function": "get_restaurants",
+  "args": {
+    "filters": {
+      "has_any_item_keywords": ["burger", "fries", "shake"]
+    },
+    "limit": 10
+  }
+}
+```
+Finds restaurants that have menu items matching ANY of the keywords ("burger" OR "fries" OR "shake"). **Note:** Using `has_any_item_keywords` with a single keyword functions the same as `item_keyword`.
+
+**Filter by ALL item keywords (AND logic):**
+```json
+{
+  "function": "get_restaurants",
+  "args": {
+    "filters": {
+      "has_all_item_keywords": ["burger", "fries"]
+    },
+    "limit": 10
+  }
+}
+```
+Finds restaurants that have menu items matching ALL of the keywords - the restaurant must have at least one item containing "burger" AND at least one item containing "fries".
+
+**Combine ALL keywords with other filters:**
+```json
+{
+  "function": "get_restaurants",
+  "args": {
+    "filters": {
+      "has_all_item_keywords": ["salad", "soup"],
+      "dashpass": true,
+      "ratingXAndAbove": 4
+    },
+    "sort_type": [
+      { "key": "distance", "order": "asc" }
+    ],
+    "limit": 5
+  }
+}
+```
+Finds the 5 nearest DashPass restaurants with a rating of 4+ that serve both salads and soups.
 
 **Filter by DashPass:**
 ```json
