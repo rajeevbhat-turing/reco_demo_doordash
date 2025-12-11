@@ -36,12 +36,7 @@ export default function MerchantStoreMenuPage() {
     if (expandedCategories.size === 0 && storeCategories.length > 0) {
       toggleCategory(storeCategories[0].id);
     }
-  }, [
-    isMounted,
-    expandedCategories,
-    toggleCategory,
-    storeCategories,
-  ]);
+  }, [isMounted, expandedCategories, toggleCategory, storeCategories]);
 
   return (
     <MerchantLayout>
@@ -80,13 +75,13 @@ export default function MerchantStoreMenuPage() {
           <Star className="h-5 w-5 text-blue-600 mt-0.5 flex-shrink-0" />
           <div className="flex-1">
             <p className="text-sm text-gray-700 mb-3">
-              Help us get your pickup times right by reviewing suggested prep times. We've
-              automatically set prep times for your items. Confirm that they're correct and make any
-              edits to help ensure Dashers arrive at the right time.
+              Help us get your pickup times right by reviewing suggested prep times. We&apos;ve
+              automatically set prep times for your items. Confirm that they&apos;re correct and
+              make any edits to help ensure Dashers arrive at the right time.
             </p>
-            <button className="text-sm font-medium text-blue-600 hover:text-blue-700">
+            {/* <button className="text-sm font-medium text-blue-600 hover:text-blue-700">
               Review prep times
-            </button>
+            </button> */}
           </div>
           <button
             onClick={() => setShowBanner(false)}

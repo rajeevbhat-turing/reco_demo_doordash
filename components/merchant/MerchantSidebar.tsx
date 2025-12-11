@@ -730,67 +730,27 @@ export default function MerchantSidebar() {
   }, [restaurants, urlStoreId, contextStoreId]);
 
   // Build menu URLs with store ID
-  const homeUrl = effectiveStoreId ? `/merchant/store/${effectiveStoreId}` : '/merchant';
-  const insightsOptimizationUrl = effectiveStoreId
-    ? `/merchant/store/${effectiveStoreId}/insights/optimization-score`
-    : '/merchant/insights/optimization-score';
-  const insightsSalesUrl = effectiveStoreId
-    ? `/merchant/store/${effectiveStoreId}/insights/sales`
-    : '/merchant/insights/sales';
-  const insightsProductMixUrl = effectiveStoreId
-    ? `/merchant/store/${effectiveStoreId}/insights/product-mix`
-    : '/merchant/insights/product-mix';
-  const insightsOperationsUrl = effectiveStoreId
-    ? `/merchant/store/${effectiveStoreId}/insights/operations-quality`
-    : '/merchant/insights/operations-quality';
-  const reportsUrl = effectiveStoreId
-    ? `/merchant/store/${effectiveStoreId}/reports`
-    : '/merchant/reports';
-  const customersInsightsUrl = effectiveStoreId
-    ? `/merchant/store/${effectiveStoreId}/customers/insights`
-    : '/merchant/customers/insights';
-  const customersRatingsUrl = effectiveStoreId
-    ? `/merchant/store/${effectiveStoreId}/customers/ratings-reviews`
-    : '/merchant/customers/ratings-reviews';
-  const ordersUrl = effectiveStoreId
-    ? `/merchant/store/${effectiveStoreId}/orders`
-    : '/merchant/orders';
-  const menuManagerUrl = effectiveStoreId
-    ? `/merchant/store/${effectiveStoreId}/menu`
-    : '/merchant/menu';
-  const menuPricingUrl = effectiveStoreId
-    ? `/merchant/store/${effectiveStoreId}/menu/pricing`
-    : '/merchant/menu/pricing';
-  const storeAvailabilityUrl = effectiveStoreId
-    ? `/merchant/store/${effectiveStoreId}/store-availability`
-    : '/merchant/store-availability';
-  const financialsTransactionsUrl = effectiveStoreId
-    ? `/merchant/store/${effectiveStoreId}/financials/transactions`
-    : '/merchant/financials/transactions';
-  const financialsPayoutsUrl = effectiveStoreId
-    ? `/merchant/store/${effectiveStoreId}/financials/payouts`
-    : '/merchant/financials/payouts';
-  const financialsStatementsUrl = effectiveStoreId
-    ? `/merchant/store/${effectiveStoreId}/financials/statements`
-    : '/merchant/financials/statements';
-  const settingsAccountUrl = effectiveStoreId
-    ? `/merchant/store/${effectiveStoreId}/settings/account`
-    : '/merchant/settings/account';
-  const settingsPricingUrl = effectiveStoreId
-    ? `/merchant/store/${effectiveStoreId}/settings/pricing`
-    : '/merchant/settings/pricing';
-  const settingsStoreUrl = effectiveStoreId
-    ? `/merchant/store/${effectiveStoreId}/settings/store`
-    : '/merchant/settings/store';
-  const usersUrl = effectiveStoreId
-    ? `/merchant/store/${effectiveStoreId}/users`
-    : '/merchant/users';
-  const settingsStoreCommUrl = effectiveStoreId
-    ? `/merchant/store/${effectiveStoreId}/settings/store-communications`
-    : '/merchant/settings/store-communications';
-  const settingsBankUrl = effectiveStoreId
-    ? `/merchant/store/${effectiveStoreId}/settings/bank-account`
-    : '/merchant/settings/bank-account';
+  const homeUrl = `/merchant/store/${effectiveStoreId}`;
+  const insightsOptimizationUrl = `/merchant/store/${effectiveStoreId}/insights/optimization-score`;
+  const insightsSalesUrl = `/merchant/store/${effectiveStoreId}/insights/sales`;
+  const insightsProductMixUrl = `/merchant/store/${effectiveStoreId}/insights/product-mix`;
+  const insightsOperationsUrl = `/merchant/store/${effectiveStoreId}/insights/operations-quality`;
+  const reportsUrl = `/merchant/store/${effectiveStoreId}/reports`;
+  const customersInsightsUrl = `/merchant/store/${effectiveStoreId}/customers/insights`;
+  const customersRatingsUrl = `/merchant/store/${effectiveStoreId}/customers/ratings-reviews`;
+  const ordersUrl = `/merchant/store/${effectiveStoreId}/orders`;
+  const menuManagerUrl = `/merchant/store/${effectiveStoreId}/menu`;
+  const menuPricingUrl = `/merchant/store/${effectiveStoreId}/menu/pricing`;
+  const storeAvailabilityUrl = `/merchant/store/${effectiveStoreId}/store-availability`;
+  const financialsTransactionsUrl = `/merchant/store/${effectiveStoreId}/financials/transactions`;
+  const financialsPayoutsUrl = `/merchant/store/${effectiveStoreId}/financials/payouts`;
+  const financialsStatementsUrl = `/merchant/store/${effectiveStoreId}/financials/statements`;
+  const settingsAccountUrl = `/merchant/store/${effectiveStoreId}/settings/account`;
+  const settingsPricingUrl = `/merchant/store/${effectiveStoreId}/settings/pricing`;
+  const settingsStoreUrl = `/merchant/store/${effectiveStoreId}/settings/store`;
+  const usersUrl = `/merchant/store/${effectiveStoreId}/users`;
+  const settingsStoreCommUrl = `/merchant/store/${effectiveStoreId}/settings/store-communications`;
+  const settingsBankUrl = `/merchant/store/${effectiveStoreId}/settings/bank-account`;
 
   const isHomeActive = pathname === homeUrl || pathname === '/merchant';
   const isInsightsActive =
