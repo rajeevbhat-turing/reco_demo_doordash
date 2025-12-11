@@ -1,6 +1,5 @@
 import { useMemo } from 'react';
-import { useOrdersStore } from '@/store/orders-store';
-import { Order } from '@/constants/order-data';
+import { useMerchantOrdersStore } from '@/store/merchant-orders-store';
 
 interface MerchantMetrics {
   totalSales: number;
@@ -11,22 +10,22 @@ interface MerchantMetrics {
 
 /**
  * Hook to calculate sales metrics from orders for a merchant store
- * Uses localStorage orders instead of API
+ * Uses merchant-orders-store (not user-side store)
  */
 export function useMerchantMetrics(storeId: string | null) {
-  // Get orders from localStorage instead of API
-  const { orders: allOrders = [] } = useOrdersStore();
-  
+  // Get orders from merchant orders store
+  const { orders: allOrders = [] } = useMerchantOrdersStore();
+
   // Filter orders for this store
   const orders = useMemo(() => {
     if (!storeId) return [];
-    return allOrders.filter((order: Order) => {
+    return allOrders.filter((order: any) => {
       const orderStoreId = order.storeId || order.restaurantId;
       return String(orderStoreId) === String(storeId);
     });
   }, [allOrders, storeId]);
-  
-  const isLoading = false; // No loading since we're using localStorage
+
+  const isLoading = false; // No loading since we're using store
 
   const metrics = useMemo<MerchantMetrics>(() => {
     if (!orders || orders.length === 0) {
@@ -39,7 +38,7 @@ export function useMerchantMetrics(storeId: string | null) {
     }
 
     // Calculate metrics from orders
-    const totalSales = orders.reduce((sum: number, order: Order) => {
+    const totalSales = orders.reduce((sum: number, order: any) => {
       return sum + (order.total || 0);
     }, 0);
 
@@ -50,9 +49,9 @@ export function useMerchantMetrics(storeId: string | null) {
     // Count unique customers (by user_id if available, or by order)
     const uniqueCustomers = new Set(
       orders
-        .map((order: Order) => {
+        .map((order: any) => {
           // Try to get user ID from order, fallback to order ID for guest orders
-          return (order as any).userId || order.id;
+          return order.userId || order.id;
         })
         .filter(Boolean)
     );
@@ -70,4 +69,3 @@ export function useMerchantMetrics(storeId: string | null) {
     isLoading,
   };
 }
-

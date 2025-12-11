@@ -186,6 +186,13 @@ Merchant portal uses a **separate database** and **dedicated API layer**:
 | `review_photos` | Photos attached to reviews |
 
 **Database Connection:** `lib/merchant-db.ts`
+
+Requires environment variable:
+```env
+MERCHANT_LIBSQL_URL=file:data/db/merchant.db
+```
+
+Usage:
 ```typescript
 import { merchantDb } from '@/lib/merchant-db';
 

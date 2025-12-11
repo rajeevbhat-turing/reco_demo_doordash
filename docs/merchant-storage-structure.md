@@ -61,6 +61,12 @@ All merchant APIs query `merchant.db` exclusively. User-side APIs (`/api/orders`
 
 ### Database Connection
 
+Requires environment variable:
+```env
+MERCHANT_LIBSQL_URL=file:data/db/merchant.db
+```
+
+Usage:
 ```typescript
 // lib/merchant-db.ts
 import { merchantDb } from '@/lib/merchant-db';

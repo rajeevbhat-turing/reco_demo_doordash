@@ -21,6 +21,8 @@ type ApiMenuItem = {
   name: string;
   image?: string;
   price?: string;
+  pickupPrice?: string;
+  deliveryPrice?: string;
   isAvailable?: boolean;
   category?: string;
 };
@@ -148,18 +150,16 @@ const buildMenuSection = (menuItems: ApiMenuItem[], categories: ApiCategory[]) =
         return fallback;
       })();
 
-    const priceString = item.price
-      ? item.price.startsWith('$')
-        ? item.price
-        : `$${item.price}`
-      : '$0.00';
+    // Use pickupPrice or deliveryPrice from API, fall back to price for backwards compatibility
+    const rawPrice = item.pickupPrice || item.deliveryPrice || item.price;
+    const priceString = rawPrice ? (rawPrice.startsWith('$') ? rawPrice : `$${rawPrice}`) : '$0.00';
 
     categoryEntry.items.push({
       id: String(item.id),
       name: item.name,
       image: item.image || '/placeholder.jpg',
-      pickupPrice: priceString,
-      deliveryPrice: priceString,
+      pickupPrice: item.pickupPrice || priceString,
+      deliveryPrice: item.deliveryPrice || priceString,
       status: item.isAvailable
         ? ('In stock' as MerchantMenuItemStatus)
         : ('Out of stock - Indefinitely' as MerchantMenuItemStatus),

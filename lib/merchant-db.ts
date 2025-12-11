@@ -1,11 +1,12 @@
 import { createClient, Client } from '@libsql/client';
-import path from 'path';
+import { getRequiredEnv } from '@/lib/env';
 
 /**
  * Merchant Database Connection Layer
  *
  * Provides access to the merchant SQLite database.
  * Uses @libsql/client for consistency with main db.
+ * Requires MERCHANT_LIBSQL_URL environment variable.
  */
 class MerchantDatabaseConnection {
   private client: Client | null = null;
@@ -13,13 +14,13 @@ class MerchantDatabaseConnection {
 
   /**
    * Initialize the database connection
+   * Uses the MERCHANT_LIBSQL_URL from environment variables
    */
   private init(): Client {
     if (this.client) return this.client;
 
     try {
-      const dbPath = path.join(process.cwd(), 'data', 'db', 'merchant.db');
-      const url = `file:${dbPath}`;
+      const url = getRequiredEnv('MERCHANT_LIBSQL_URL');
 
       console.log(`📂 Connecting to merchant database: ${url}`);
 

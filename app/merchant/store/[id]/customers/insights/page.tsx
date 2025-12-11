@@ -175,10 +175,18 @@ export default function CustomerInsightsPage() {
         {/* Date Selector */}
         <div className="mb-6 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <button className="flex items-center gap-2 px-3 py-2 border border-gray-300 rounded-md text-sm text-gray-700 hover:bg-gray-50">
-              {selectedPeriod}
-              <ChevronDown className="h-4 w-4" />
-            </button>
+            <div className="relative">
+              <select
+                value={selectedPeriod}
+                onChange={e => setSelectedPeriod(e.target.value)}
+                className="appearance-none flex items-center gap-2 px-3 py-2 border border-gray-300 rounded-md text-sm text-gray-700 hover:bg-gray-50 bg-white pr-8 cursor-pointer"
+              >
+                <option value="This month">This month</option>
+                <option value="Last month">Last month</option>
+                <option value="This year">This year</option>
+              </select>
+              <ChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 h-4 w-4 pointer-events-none text-gray-400" />
+            </div>
           </div>
         </div>
 
@@ -187,9 +195,22 @@ export default function CustomerInsightsPage() {
           <div className="flex items-center justify-between mb-4">
             <div>
               <h2 className="text-xl font-semibold text-gray-900 mb-1">Overview</h2>
-              <p className="text-sm text-gray-600">Apr 1-15, 2025 compared to Mar 4-18, 2025</p>
+              <p className="text-sm text-gray-600">
+                {selectedPeriod === 'This month'
+                  ? `${new Date().toLocaleString('en-US', { month: 'short' })} 1 - ${new Date().getDate()}, ${new Date().getFullYear()}`
+                  : selectedPeriod === 'Last month'
+                    ? `${new Date(new Date().getFullYear(), new Date().getMonth() - 1, 1).toLocaleString('en-US', { month: 'short' })} 1 - ${new Date(new Date().getFullYear(), new Date().getMonth(), 0).getDate()}, ${new Date().getFullYear()}`
+                    : `Jan 1 - ${new Date().toLocaleString('en-US', { month: 'short' })} ${new Date().getDate()}, ${new Date().getFullYear()}`}
+              </p>
             </div>
-            <p className="text-sm text-gray-500">Last updated on Apr 15, 2025</p>
+            <p className="text-sm text-gray-500">
+              Last updated on{' '}
+              {new Date().toLocaleString('en-US', {
+                month: 'short',
+                day: 'numeric',
+                year: 'numeric',
+              })}
+            </p>
           </div>
 
           {/* Customer Metrics */}
