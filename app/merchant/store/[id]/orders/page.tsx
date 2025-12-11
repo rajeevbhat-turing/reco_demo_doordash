@@ -3,7 +3,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import MerchantLayout from '@/components/merchant/MerchantLayout';
-import { Search, RefreshCw, ChevronLeft, ChevronRight, ChevronDown } from 'lucide-react';
+import { Search, RefreshCw, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { useCurrentStore } from '@/lib/hooks/useCurrentStore';
 import { useMerchantOrdersStore } from '@/store/merchant-orders-store';
@@ -185,6 +185,9 @@ export default function MerchantStoreOrdersPage() {
   const [channelFilter, setChannelFilter] = useState('');
   const [dateRangeFilter, setDateRangeFilter] = useState('7');
   const [statusFilter, setStatusFilter] = useState('');
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [rowsPerPage, setRowsPerPage] = useState(20);
   // Modal state
   const [selectedOrder, setSelectedOrder] = useState<ProcessedOrder | null>(null);
 
@@ -344,12 +347,18 @@ export default function MerchantStoreOrdersPage() {
     window.location.reload();
   };
 
-  // Reset status filter when tab changes (since status options are different per tab)
+  // Reset status filter and pagination when tab changes (since status options are different per tab)
   const handleTabChange = (tab: 'Active' | 'Scheduled' | 'History') => {
     setActiveTab(tab);
     setStatusFilter(''); // Reset status filter when switching tabs
+    setCurrentPage(1); // Reset to first page when switching tabs
     sessionStorage.setItem('lastTabChange', Date.now().toString());
   };
+
+  // Reset to first page when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchValue, channelFilter, dateRangeFilter, statusFilter]);
 
   // Common filter function for all tabs
   const applyFilters = (order: ProcessedOrder) => {
@@ -403,12 +412,40 @@ export default function MerchantStoreOrdersPage() {
     });
   }, [orders, searchValue, channelFilter, dateRangeFilter, statusFilter]);
 
-  const displayedOrders =
+  // Get the filtered orders for the current tab
+  const filteredOrders =
     activeTab === 'Active'
       ? activeOrders
       : activeTab === 'Scheduled'
         ? scheduledOrders
         : historyOrders;
+
+  // Calculate pagination
+  const totalOrders = filteredOrders.length;
+  const totalPages = Math.max(1, Math.ceil(totalOrders / rowsPerPage));
+  const startIndex = (currentPage - 1) * rowsPerPage;
+  const endIndex = Math.min(startIndex + rowsPerPage, totalOrders);
+
+  // Get paginated orders
+  const displayedOrders = filteredOrders.slice(startIndex, endIndex);
+
+  // Pagination handlers
+  const handlePrevPage = () => {
+    setCurrentPage(prev => Math.max(1, prev - 1));
+  };
+
+  const handleNextPage = () => {
+    setCurrentPage(prev => Math.min(totalPages, prev + 1));
+  };
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(Math.max(1, Math.min(totalPages, page)));
+  };
+
+  const handleRowsPerPageChange = (rows: number) => {
+    setRowsPerPage(rows);
+    setCurrentPage(1); // Reset to first page when changing rows per page
+  };
 
   return (
     <MerchantLayout>
@@ -503,21 +540,21 @@ export default function MerchantStoreOrdersPage() {
       {/* Table */}
       {activeTab === 'Active' && (
         <ActiveOrdersTable
-          orders={activeOrders}
+          orders={displayedOrders}
           isLoading={isLoadingOrders}
           onRowClick={setSelectedOrder}
         />
       )}
       {activeTab === 'Scheduled' && (
         <ScheduledOrdersTable
-          orders={scheduledOrders}
+          orders={displayedOrders}
           isLoading={isLoadingOrders}
           onRowClick={setSelectedOrder}
         />
       )}
       {activeTab === 'History' && (
         <HistoryOrdersTable
-          orders={historyOrders}
+          orders={displayedOrders}
           isLoading={isLoadingOrders}
           onRowClick={setSelectedOrder}
         />
@@ -532,48 +569,55 @@ export default function MerchantStoreOrdersPage() {
       />
 
       {/* Pagination */}
-      <div className="flex items-center justify-between text-sm text-gray-600">
+      <div className="flex items-center justify-between text-sm text-gray-600 mt-4">
         <div className="flex items-center gap-2">
           <span>Rows per page:</span>
-          <select className="border border-gray-300 rounded px-2 py-1 bg-white">
-            <option>20</option>
-            <option>50</option>
-            <option>100</option>
+          <select
+            value={rowsPerPage}
+            onChange={e => handleRowsPerPageChange(Number(e.target.value))}
+            className="border border-gray-300 rounded px-2 py-1 bg-white"
+          >
+            <option value={20}>20</option>
+            <option value={50}>50</option>
+            <option value={100}>100</option>
           </select>
         </div>
         <div className="flex items-center gap-4">
           <span>
-            Showing 1-{displayedOrders.length} of {displayedOrders.length}
+            Showing {totalOrders === 0 ? 0 : startIndex + 1}-{endIndex} of {totalOrders}
           </span>
           <div className="flex items-center gap-1">
             <button
+              onClick={handlePrevPage}
+              disabled={currentPage === 1}
               className="p-1 rounded hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
-              disabled
             >
               <ChevronLeft className="h-4 w-4" />
             </button>
-            <span className="px-2">Page 1 of 1</span>
+            <span className="px-2">Page {currentPage} of {totalPages}</span>
             <button
+              onClick={handleNextPage}
+              disabled={currentPage === totalPages}
               className="p-1 rounded hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
-              disabled
             >
               <ChevronRight className="h-4 w-4" />
             </button>
-            <select className="ml-2 border border-gray-300 rounded px-2 py-1 bg-white">
-              <option>1</option>
+            <select
+              value={currentPage}
+              onChange={e => handlePageChange(Number(e.target.value))}
+              className="ml-2 border border-gray-300 rounded px-2 py-1 bg-white"
+            >
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+                <option key={page} value={page}>
+                  {page}
+                </option>
+              ))}
             </select>
           </div>
         </div>
       </div>
 
-      {/* Footer */}
-      <div className="mt-8 pt-6 border-t border-gray-200 text-sm text-gray-600">
-        Keep all your orders in one place.{' '}
-        <a href="#" className="text-blue-600 hover:underline">
-          Contact Us
-        </a>{' '}
-        to consolidate your Drive and Marketplace orders.
-      </div>
+
     </MerchantLayout>
   );
 }
