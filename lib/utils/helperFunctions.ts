@@ -67,6 +67,19 @@ export const generateAvatarColor = (name: string) => {
   return colors[colorIndex];
 };
 
+// Price validation: accepts numbers with optional $ and two decimals
+export const isValidPrice = (value: string) => {
+  if (!value) return false;
+  const normalized = value.trim().replace(/^\$/, '');
+  return /^(\d+)(\.\d{1,2})?$/.test(normalized);
+};
+
+// Tax validation: accepts percentages like 10 or 10.5 or 10.35 or with %
+export const isValidTaxRate = (value: string) => {
+  if (!value) return false;
+  const normalized = value.trim().replace(/%$/, '');
+  return /^(\d+)(\.\d{1,2})?$/.test(normalized);
+};
 // Function to check if an image URL is valid (not placeholder/empty)
 export const hasValidLogo = (logoUrl: string | undefined): boolean => {
   if (!logoUrl || logoUrl.trim() === '') return false;
