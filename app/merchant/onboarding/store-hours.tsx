@@ -1,7 +1,7 @@
 'use client';
 import { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import { ChevronLeft, ChevronDown, Plus } from 'lucide-react';
+import { ChevronLeft, ChevronDown } from 'lucide-react';
 import { useMerchantAuthStore } from '@/store/merchant-auth-store';
 import { useMerchantStoresStore } from '@/store/merchant-stores-store';
 
@@ -102,7 +102,7 @@ export default function StoreHoursStep() {
       </p>
 
       {/* Apply same hours toggle */}
-      <div className="flex items-center justify-between mb-6 p-4 bg-gray-50 rounded-lg">
+      {/* <div className="flex items-center justify-between mb-6 p-4 bg-gray-50 rounded-lg">
         <label className="text-sm font-medium text-gray-900">
           Apply same store hours to all days
         </label>
@@ -115,7 +115,7 @@ export default function StoreHoursStep() {
           />
           <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-red-500 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gray-900"></div>
         </label>
-      </div>
+      </div> */}
 
       {/* Time inputs */}
       {applyToAllDays && (
@@ -173,12 +173,12 @@ export default function StoreHoursStep() {
               </select>
               <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
             </div>
-            <button
+            {/* <button
               type="button"
               className="p-2 text-gray-400 hover:text-gray-600 border border-gray-300 rounded-md hover:border-gray-400"
             >
               <Plus className="h-4 w-4" />
-            </button>
+            </button> */}
           </div>
         </div>
       )}

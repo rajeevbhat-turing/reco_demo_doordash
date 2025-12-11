@@ -1,12 +1,12 @@
-'use client'
-import { useState } from "react"
-import MerchantLayout from "@/components/merchant/MerchantLayout"
-import { Info, ChevronLeft, ChevronRight, User, Users, UserPlus } from "lucide-react"
-import { Input } from "@/components/ui/input"
+'use client';
+import { useState } from 'react';
+import MerchantLayout from '@/components/merchant/MerchantLayout';
+import { Info, ChevronLeft, ChevronRight, User, Users, UserPlus } from 'lucide-react';
+import { Input } from '@/components/ui/input';
 
 export default function PricingPage() {
-  const [markupRate, setMarkupRate] = useState(0)
-  const [activeTab, setActiveTab] = useState<"Sales" | "Orders" | "Customers">("Sales")
+  const [markupRate, setMarkupRate] = useState(0);
+  const [activeTab, setActiveTab] = useState<'Sales' | 'Orders' | 'Customers'>('Sales');
 
   return (
     <MerchantLayout>
@@ -15,7 +15,8 @@ export default function PricingPage() {
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Pricing</h1>
           <p className="text-sm text-gray-600">
-            Review how your menu pricing may affect your business performance and view opportunities to grow your sales.
+            Review how your menu pricing may affect your business performance and view opportunities
+            to grow your sales.
           </p>
         </div>
 
@@ -23,25 +24,26 @@ export default function PricingPage() {
         <div className="bg-white border border-gray-200 rounded-lg p-6 mb-6">
           <div className="flex items-center gap-2 mb-4">
             <h2 className="text-lg font-semibold text-gray-900">Your current menu markup</h2>
-            <Info className="h-4 w-4 text-gray-500" />
+            {/* <Info className="h-4 w-4 text-gray-500" /> */}
           </div>
           <div className="text-5xl font-bold text-gray-900 mb-3">30%</div>
           <p className="text-sm text-gray-600 mb-4">
-            You can boost visibility and conversions by making your DashDoor prices similar to what you offer in-store.
+            You can boost visibility and conversions by making your DashDoor prices similar to what
+            you offer in-store.
           </p>
-          <button className="inline-flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-md transition-colors">
+          {/* <button className="inline-flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-md transition-colors">
             Edit markup rate
             <ChevronRight className="h-4 w-4" />
-          </button>
+          </button> */}
         </div>
 
         {/* Preview markup changes */}
         <div className="bg-white border border-gray-200 rounded-lg p-6 mb-6">
           <div className="flex items-center gap-2 mb-4">
             <h2 className="text-lg font-semibold text-gray-900">Preview markup changes</h2>
-            <Info className="h-4 w-4 text-gray-500" />
+            {/* <Info className="h-4 w-4 text-gray-500" /> */}
           </div>
-          
+
           <div className="mb-6">
             <p className="text-sm text-gray-600 mb-3">If your markup was</p>
             <div className="flex items-center gap-3">
@@ -54,7 +56,7 @@ export default function PricingPage() {
               <Input
                 type="number"
                 value={markupRate}
-                onChange={(e) => setMarkupRate(parseInt(e.target.value) || 0)}
+                onChange={e => setMarkupRate(parseInt(e.target.value) || 0)}
                 className="w-24 text-center text-lg font-semibold"
                 min="0"
                 max="100"
@@ -72,31 +74,31 @@ export default function PricingPage() {
           {/* Tabs */}
           <div className="flex items-center gap-1 mb-6 border-b border-gray-200">
             <button
-              onClick={() => setActiveTab("Sales")}
+              onClick={() => setActiveTab('Sales')}
               className={`px-4 py-2 text-sm font-medium ${
-                activeTab === "Sales"
-                  ? "text-gray-900 border-b-2 border-gray-900"
-                  : "text-gray-600 hover:text-gray-900"
+                activeTab === 'Sales'
+                  ? 'text-gray-900 border-b-2 border-gray-900'
+                  : 'text-gray-600 hover:text-gray-900'
               }`}
             >
               Sales
             </button>
             <button
-              onClick={() => setActiveTab("Orders")}
+              onClick={() => setActiveTab('Orders')}
               className={`px-4 py-2 text-sm font-medium ${
-                activeTab === "Orders"
-                  ? "text-gray-900 border-b-2 border-gray-900"
-                  : "text-gray-600 hover:text-gray-900"
+                activeTab === 'Orders'
+                  ? 'text-gray-900 border-b-2 border-gray-900'
+                  : 'text-gray-600 hover:text-gray-900'
               }`}
             >
               Orders
             </button>
             <button
-              onClick={() => setActiveTab("Customers")}
+              onClick={() => setActiveTab('Customers')}
               className={`px-4 py-2 text-sm font-medium ${
-                activeTab === "Customers"
-                  ? "text-gray-900 border-b-2 border-gray-900"
-                  : "text-gray-600 hover:text-gray-900"
+                activeTab === 'Customers'
+                  ? 'text-gray-900 border-b-2 border-gray-900'
+                  : 'text-gray-600 hover:text-gray-900'
               }`}
             >
               Customers
@@ -107,20 +109,23 @@ export default function PricingPage() {
           <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 flex items-start gap-3">
             <Info className="h-5 w-5 text-gray-500 mt-0.5 flex-shrink-0" />
             <p className="text-sm text-gray-700">
-              We don't have enough information to give an estimate of your performance with this menu markup at this time.
+              We don't have enough information to give an estimate of your performance with this
+              menu markup at this time.
             </p>
           </div>
         </div>
 
         {/* Benefits section */}
         <div className="bg-white border border-gray-200 rounded-lg p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-2">Benefits of matching your in-store prices</h2>
-          <p className="text-sm text-gray-600 mb-6">
-            Reach out to our team for questions at{" "}
+          <h2 className="text-lg font-semibold text-gray-900 mb-2">
+            Benefits of matching your in-store prices
+          </h2>
+          {/* <p className="text-sm text-gray-600 mb-6">
+            Reach out to our team for questions at{' '}
             <a href="mailto:menu-pricing@dashdoor.com" className="text-blue-600 hover:underline">
               menu-pricing@dashdoor.com
             </a>
-          </p>
+          </p> */}
 
           <div className="space-y-6">
             {/* Higher visibility */}
@@ -131,7 +136,8 @@ export default function PricingPage() {
               <div>
                 <h3 className="text-base font-semibold text-gray-900 mb-2">Higher visibility</h3>
                 <p className="text-sm text-gray-600">
-                  Restaurants that price the same as in-store may be surfaced higher on the homepage and are more easily discovered by customers.
+                  Restaurants that price the same as in-store may be surfaced higher on the homepage
+                  and are more easily discovered by customers.
                 </p>
               </div>
             </div>
@@ -144,7 +150,8 @@ export default function PricingPage() {
               <div>
                 <h3 className="text-base font-semibold text-gray-900 mb-2">More repeat orders</h3>
                 <p className="text-sm text-gray-600">
-                  Regulars often switch to competitors when they see higher prices on DashDoor than in-store.
+                  Regulars often switch to competitors when they see higher prices on DashDoor than
+                  in-store.
                 </p>
               </div>
             </div>
@@ -155,24 +162,26 @@ export default function PricingPage() {
                 <UserPlus className="h-6 w-6 text-gray-600" />
               </div>
               <div>
-                <h3 className="text-base font-semibold text-gray-900 mb-2">Attract new customers</h3>
+                <h3 className="text-base font-semibold text-gray-900 mb-2">
+                  Attract new customers
+                </h3>
                 <p className="text-sm text-gray-600">
-                  We found that customers are more likely to try a new restaurant if the prices are similar to what they see in-store.
+                  We found that customers are more likely to try a new restaurant if the prices are
+                  similar to what they see in-store.
                 </p>
               </div>
             </div>
           </div>
 
           {/* Edit markup rate button */}
-          <div className="mt-8 pt-6 border-t border-gray-200">
+          {/* <div className="mt-8 pt-6 border-t border-gray-200">
             <button className="inline-flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-md transition-colors">
               Edit markup rate
               <ChevronRight className="h-4 w-4" />
             </button>
-          </div>
+          </div> */}
         </div>
       </div>
     </MerchantLayout>
-  )
+  );
 }
-

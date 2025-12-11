@@ -211,12 +211,12 @@ export default function MerchantAuthPage() {
 
           {/* Reset Password Link */}
           <div className="mb-5">
-            <button
+            {/* <button
               type="button"
               className="text-sm font-semibold text-[#191919] underline hover:opacity-70 transition-opacity"
             >
               Reset Password
-            </button>
+            </button> */}
           </div>
 
           {/* General Error */}

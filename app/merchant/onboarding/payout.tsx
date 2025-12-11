@@ -982,15 +982,14 @@ export default function PayoutStep() {
       <div className="mb-6 space-y-6">
         <p className="text-xs text-gray-900">
           By clicking &quot;Finish setup&quot;, I agree to{' '}
-          <a
+          {/* <a
             href="https://api.pactsafe.com/v1.1/download/contracts/288103/rendered/6924e6b09210ce18af192509"
             target="_blank"
             rel="noopener noreferrer"
             className="text-blue-600 underline"
-          >
-            Marketplace Sign-Up Sheet
-          </a>{' '}
-          including the Terms of Service incorporated therein.
+          > */}
+          Marketplace Sign-Up Sheet
+          {/* </a> */} including the Terms of Service incorporated therein.
         </p>
 
         <div className="flex items-start gap-2">
@@ -1008,15 +1007,14 @@ export default function PayoutStep() {
           />
           <label htmlFor="agreement-checkbox" className="text-xs text-gray-900 cursor-pointer">
             I understand and agree to{' '}
-            <a
+            {/* <a
               href="https://api.pactsafe.com/v1.1/download/contracts/288103/rendered/6924e6b09210ce18af192509"
               target="_blank"
               rel="noopener noreferrer"
               className="text-blue-600 underline"
-            >
-              Self Serve Merchant Sign-Up Sheet (US/CAD)
-            </a>{' '}
-            including the Terms of Service incorporated therein.
+            > */}
+            Self Serve Merchant Sign-Up Sheet (US/CAD)
+            {/* </a> */} including the Terms of Service incorporated therein.
           </label>
         </div>
         {termsError && (

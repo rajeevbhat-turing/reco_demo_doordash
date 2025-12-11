@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useEffect, useRef } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import StoreSelector from './StoreSelector';
@@ -288,162 +288,162 @@ const HelpIcon = () => (
   </svg>
 );
 
-const TrendingUpIcon = () => (
-  <svg
-    height="24"
-    width="24"
-    aria-hidden="true"
-    fill="none"
-    viewBox="0 0 24 24"
-    xmlns="http://www.w3.org/2000/svg"
-    className="flex-shrink-0"
-  >
-    <path
-      d="M16 6L18.29 8.29C18.68 8.68 19.32 8.68 19.71 8.29L21.71 6.29C22.1 5.9 22.1 5.27 21.71 4.88C21.32 4.49 20.68 4.49 20.29 4.88L19 6.17V4C19 3.45 18.55 3 18 3C17.45 3 17 3.45 17 4V8C17 8.55 17.45 9 18 9H22C22.55 9 23 8.55 23 8C23 7.45 22.55 7 22 7H19.41L21.71 4.71C22.1 4.32 22.1 3.68 21.71 3.29C21.32 2.9 20.68 2.9 20.29 3.29L16 7.59V6ZM3 13C3 12.45 3.45 12 4 12C4.55 12 5 12.45 5 13V19C5 19.55 5.45 20 6 20H12C12.55 20 13 19.55 13 19C13 18.45 12.55 18 12 18H7V13C7 12.45 7.45 12 8 12C8.55 12 9 12.45 9 13V19C9 20.1 8.1 21 7 21H3C1.9 21 1 20.1 1 19V13Z"
-      fill="currentColor"
-    />
-  </svg>
-);
+// const TrendingUpIcon = () => (
+//   <svg
+//     height="24"
+//     width="24"
+//     aria-hidden="true"
+//     fill="none"
+//     viewBox="0 0 24 24"
+//     xmlns="http://www.w3.org/2000/svg"
+//     className="flex-shrink-0"
+//   >
+//     <path
+//       d="M16 6L18.29 8.29C18.68 8.68 19.32 8.68 19.71 8.29L21.71 6.29C22.1 5.9 22.1 5.27 21.71 4.88C21.32 4.49 20.68 4.49 20.29 4.88L19 6.17V4C19 3.45 18.55 3 18 3C17.45 3 17 3.45 17 4V8C17 8.55 17.45 9 18 9H22C22.55 9 23 8.55 23 8C23 7.45 22.55 7 22 7H19.41L21.71 4.71C22.1 4.32 22.1 3.68 21.71 3.29C21.32 2.9 20.68 2.9 20.29 3.29L16 7.59V6ZM3 13C3 12.45 3.45 12 4 12C4.55 12 5 12.45 5 13V19C5 19.55 5.45 20 6 20H12C12.55 20 13 19.55 13 19C13 18.45 12.55 18 12 18H7V13C7 12.45 7.45 12 8 12C8.55 12 9 12.45 9 13V19C9 20.1 8.1 21 7 21H3C1.9 21 1 20.1 1 19V13Z"
+//       fill="currentColor"
+//     />
+//   </svg>
+// );
 
-const FileTextIcon = () => (
-  <svg
-    height="24"
-    width="24"
-    aria-hidden="true"
-    fill="none"
-    viewBox="0 0 24 24"
-    xmlns="http://www.w3.org/2000/svg"
-    className="flex-shrink-0"
-  >
-    <path
-      d="M14 2H6C4.9 2 4 2.9 4 4V20C4 21.1 4.9 22 6 22H18C19.1 22 20 21.1 20 20V8L14 2ZM16 18H8V16H16V18ZM16 14H8V12H16V14ZM13 9V3.5L18.5 9H13Z"
-      fill="currentColor"
-    />
-  </svg>
-);
+// const FileTextIcon = () => (
+//   <svg
+//     height="24"
+//     width="24"
+//     aria-hidden="true"
+//     fill="none"
+//     viewBox="0 0 24 24"
+//     xmlns="http://www.w3.org/2000/svg"
+//     className="flex-shrink-0"
+//   >
+//     <path
+//       d="M14 2H6C4.9 2 4 2.9 4 4V20C4 21.1 4.9 22 6 22H18C19.1 22 20 21.1 20 20V8L14 2ZM16 18H8V16H16V18ZM16 14H8V12H16V14ZM13 9V3.5L18.5 9H13Z"
+//       fill="currentColor"
+//     />
+//   </svg>
+// );
 
-const DollarSignIcon = () => (
-  <svg
-    height="24"
-    width="24"
-    aria-hidden="true"
-    fill="none"
-    viewBox="0 0 24 24"
-    xmlns="http://www.w3.org/2000/svg"
-    className="flex-shrink-0"
-  >
-    <path
-      d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM13.41 16.09V17.5H10.59V16.07C9.86 15.79 9.24 15.26 8.77 14.53L10.23 13.32C10.5 13.75 10.89 14.09 11.35 14.27C11.81 14.45 12.33 14.53 12.94 14.53C13.75 14.53 14.4 14.35 14.89 14C15.38 13.65 15.62 13.18 15.62 12.59C15.62 12.04 15.42 11.59 15.03 11.25C14.64 10.91 14.05 10.66 13.26 10.5L12.5 10.36C11.9 10.25 11.45 10.1 11.15 9.91C10.85 9.72 10.7 9.45 10.7 9.1C10.7 8.7 10.89 8.38 11.27 8.14C11.65 7.9 12.15 7.78 12.78 7.78C13.5 7.78 14.08 7.95 14.52 8.29C14.96 8.63 15.18 9.08 15.18 9.64H16.82C16.82 8.9 16.5 8.28 15.86 7.78C15.22 7.28 14.35 7.03 13.26 7.03V5.5H10.59V7.03C9.78 7.25 9.1 7.66 8.56 8.26C8.02 8.86 7.75 9.58 7.75 10.42H9.39C9.39 9.88 9.58 9.44 9.96 9.1C10.34 8.76 10.85 8.59 11.5 8.59C12.25 8.59 12.82 8.78 13.21 9.16C13.6 9.54 13.79 10.01 13.79 10.57C13.79 11.05 13.64 11.46 13.34 11.8C13.04 12.14 12.58 12.41 11.96 12.61L11.2 12.75C10.4 12.92 9.88 13.13 9.64 13.38C9.4 13.63 9.28 13.96 9.28 14.37C9.28 14.85 9.47 15.25 9.85 15.57C10.23 15.89 10.75 16.05 11.41 16.05V17.5H13.41V16.09Z"
-      fill="currentColor"
-    />
-  </svg>
-);
+// const DollarSignIcon = () => (
+//   <svg
+//     height="24"
+//     width="24"
+//     aria-hidden="true"
+//     fill="none"
+//     viewBox="0 0 24 24"
+//     xmlns="http://www.w3.org/2000/svg"
+//     className="flex-shrink-0"
+//   >
+//     <path
+//       d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM13.41 16.09V17.5H10.59V16.07C9.86 15.79 9.24 15.26 8.77 14.53L10.23 13.32C10.5 13.75 10.89 14.09 11.35 14.27C11.81 14.45 12.33 14.53 12.94 14.53C13.75 14.53 14.4 14.35 14.89 14C15.38 13.65 15.62 13.18 15.62 12.59C15.62 12.04 15.42 11.59 15.03 11.25C14.64 10.91 14.05 10.66 13.26 10.5L12.5 10.36C11.9 10.25 11.45 10.1 11.15 9.91C10.85 9.72 10.7 9.45 10.7 9.1C10.7 8.7 10.89 8.38 11.27 8.14C11.65 7.9 12.15 7.78 12.78 7.78C13.5 7.78 14.08 7.95 14.52 8.29C14.96 8.63 15.18 9.08 15.18 9.64H16.82C16.82 8.9 16.5 8.28 15.86 7.78C15.22 7.28 14.35 7.03 13.26 7.03V5.5H10.59V7.03C9.78 7.25 9.1 7.66 8.56 8.26C8.02 8.86 7.75 9.58 7.75 10.42H9.39C9.39 9.88 9.58 9.44 9.96 9.1C10.34 8.76 10.85 8.59 11.5 8.59C12.25 8.59 12.82 8.78 13.21 9.16C13.6 9.54 13.79 10.01 13.79 10.57C13.79 11.05 13.64 11.46 13.34 11.8C13.04 12.14 12.58 12.41 11.96 12.61L11.2 12.75C10.4 12.92 9.88 13.13 9.64 13.38C9.4 13.63 9.28 13.96 9.28 14.37C9.28 14.85 9.47 15.25 9.85 15.57C10.23 15.89 10.75 16.05 11.41 16.05V17.5H13.41V16.09Z"
+//       fill="currentColor"
+//     />
+//   </svg>
+// );
 
-const UserCogIcon = () => (
-  <svg
-    height="24"
-    width="24"
-    aria-hidden="true"
-    fill="none"
-    viewBox="0 0 24 24"
-    xmlns="http://www.w3.org/2000/svg"
-    className="flex-shrink-0"
-  >
-    <path
-      d="M12 12C14.21 12 16 10.21 16 8C16 5.79 14.21 4 12 4C9.79 4 8 5.79 8 8C8 10.21 9.79 12 12 12ZM12 14C9.33 14 4 15.34 4 18V20H20V18C20 15.34 14.67 14 12 14Z"
-      fill="currentColor"
-    />
-    <path
-      d="M19.43 12.97C19.47 12.65 19.5 12.33 19.5 12C19.5 11.67 19.47 11.34 19.43 11.03L21.54 9.37C21.73 9.22 21.78 8.95 21.66 8.73L19.66 5.27C19.54 5.05 19.27 4.96 19.05 5.05L16.56 6.05C16.04 5.65 15.48 5.32 14.87 5.07L14.5 2.42C14.46 2.18 14.25 2 14 2H10C9.75 2 9.54 2.18 9.5 2.42L9.13 5.07C8.52 5.32 7.96 5.66 7.44 6.05L4.95 5.05C4.73 4.96 4.46 5.05 4.34 5.27L2.34 8.73C2.21 8.95 2.27 9.22 2.46 9.37L4.57 11.03C4.53 11.34 4.5 11.67 4.5 12C4.5 12.33 4.53 12.65 4.57 12.97L2.46 14.63C2.27 14.78 2.21 15.05 2.34 15.27L4.34 18.73C4.46 18.95 4.73 19.03 4.95 18.95L7.44 17.95C7.96 18.35 8.52 18.68 9.13 18.93L9.5 21.58C9.54 21.82 9.75 22 10 22H14C14.25 22 14.46 21.82 14.5 21.58L14.87 18.93C15.48 18.68 16.04 18.34 16.56 17.95L19.05 18.95C19.27 19.03 19.54 18.95 19.66 18.73L21.66 15.27C21.78 15.05 21.73 14.78 21.54 14.63L19.43 12.97ZM12 15.5C10.07 15.5 8.5 13.93 8.5 12C8.5 10.07 10.07 8.5 12 8.5C13.93 8.5 15.5 10.07 15.5 12C15.5 13.93 13.93 15.5 12 15.5Z"
-      fill="currentColor"
-    />
-  </svg>
-);
+// const UserCogIcon = () => (
+//   <svg
+//     height="24"
+//     width="24"
+//     aria-hidden="true"
+//     fill="none"
+//     viewBox="0 0 24 24"
+//     xmlns="http://www.w3.org/2000/svg"
+//     className="flex-shrink-0"
+//   >
+//     <path
+//       d="M12 12C14.21 12 16 10.21 16 8C16 5.79 14.21 4 12 4C9.79 4 8 5.79 8 8C8 10.21 9.79 12 12 12ZM12 14C9.33 14 4 15.34 4 18V20H20V18C20 15.34 14.67 14 12 14Z"
+//       fill="currentColor"
+//     />
+//     <path
+//       d="M19.43 12.97C19.47 12.65 19.5 12.33 19.5 12C19.5 11.67 19.47 11.34 19.43 11.03L21.54 9.37C21.73 9.22 21.78 8.95 21.66 8.73L19.66 5.27C19.54 5.05 19.27 4.96 19.05 5.05L16.56 6.05C16.04 5.65 15.48 5.32 14.87 5.07L14.5 2.42C14.46 2.18 14.25 2 14 2H10C9.75 2 9.54 2.18 9.5 2.42L9.13 5.07C8.52 5.32 7.96 5.66 7.44 6.05L4.95 5.05C4.73 4.96 4.46 5.05 4.34 5.27L2.34 8.73C2.21 8.95 2.27 9.22 2.46 9.37L4.57 11.03C4.53 11.34 4.5 11.67 4.5 12C4.5 12.33 4.53 12.65 4.57 12.97L2.46 14.63C2.27 14.78 2.21 15.05 2.34 15.27L4.34 18.73C4.46 18.95 4.73 19.03 4.95 18.95L7.44 17.95C7.96 18.35 8.52 18.68 9.13 18.93L9.5 21.58C9.54 21.82 9.75 22 10 22H14C14.25 22 14.46 21.82 14.5 21.58L14.87 18.93C15.48 18.68 16.04 18.34 16.56 17.95L19.05 18.95C19.27 19.03 19.54 18.95 19.66 18.73L21.66 15.27C21.78 15.05 21.73 14.78 21.54 14.63L19.43 12.97ZM12 15.5C10.07 15.5 8.5 13.93 8.5 12C8.5 10.07 10.07 8.5 12 8.5C13.93 8.5 15.5 10.07 15.5 12C15.5 13.93 13.93 15.5 12 15.5Z"
+//       fill="currentColor"
+//     />
+//   </svg>
+// );
 
-const BuildingIcon = () => (
-  <svg
-    height="24"
-    width="24"
-    aria-hidden="true"
-    fill="none"
-    viewBox="0 0 24 24"
-    xmlns="http://www.w3.org/2000/svg"
-    className="flex-shrink-0"
-  >
-    <path
-      d="M12 7V3H2V21H22V7H12ZM6 19H4V17H6V19ZM6 15H4V13H6V15ZM6 11H4V9H6V11ZM6 7H4V5H6V7ZM10 19H8V17H10V19ZM10 15H8V13H10V15ZM10 11H8V9H10V11ZM10 7H8V5H10V7ZM20 19H12V17H14V15H12V13H14V11H12V9H14V7H12V5H20V19Z"
-      fill="currentColor"
-    />
-  </svg>
-);
+// const BuildingIcon = () => (
+//   <svg
+//     height="24"
+//     width="24"
+//     aria-hidden="true"
+//     fill="none"
+//     viewBox="0 0 24 24"
+//     xmlns="http://www.w3.org/2000/svg"
+//     className="flex-shrink-0"
+//   >
+//     <path
+//       d="M12 7V3H2V21H22V7H12ZM6 19H4V17H6V19ZM6 15H4V13H6V15ZM6 11H4V9H6V11ZM6 7H4V5H6V7ZM10 19H8V17H10V19ZM10 15H8V13H10V15ZM10 11H8V9H10V11ZM10 7H8V5H10V7ZM20 19H12V17H14V15H12V13H14V11H12V9H14V7H12V5H20V19Z"
+//       fill="currentColor"
+//     />
+//   </svg>
+// );
 
-const UsersIcon = () => (
-  <svg
-    height="24"
-    width="24"
-    aria-hidden="true"
-    fill="none"
-    viewBox="0 0 24 24"
-    xmlns="http://www.w3.org/2000/svg"
-    className="flex-shrink-0"
-  >
-    <path
-      d="M16 11C17.66 11 18.99 9.66 18.99 8C18.99 6.34 17.66 5 16 5C14.34 5 13 6.34 13 8C13 9.66 14.34 11 16 11ZM8 11C9.66 11 10.99 9.66 10.99 8C10.99 6.34 9.66 5 8 5C6.34 5 5 6.34 5 8C5 9.66 6.34 11 8 11ZM8 13C5.67 13 1 14.17 1 16.5V19H15V16.5C15 14.17 10.33 13 8 13ZM16 13C15.71 13 15.38 13.02 15.03 13.05C16.19 13.89 17 15 17 16.5V19H23V16.5C23 14.17 18.33 13 16 13Z"
-      fill="currentColor"
-    />
-  </svg>
-);
+// const UsersIcon = () => (
+//   <svg
+//     height="24"
+//     width="24"
+//     aria-hidden="true"
+//     fill="none"
+//     viewBox="0 0 24 24"
+//     xmlns="http://www.w3.org/2000/svg"
+//     className="flex-shrink-0"
+//   >
+//     <path
+//       d="M16 11C17.66 11 18.99 9.66 18.99 8C18.99 6.34 17.66 5 16 5C14.34 5 13 6.34 13 8C13 9.66 14.34 11 16 11ZM8 11C9.66 11 10.99 9.66 10.99 8C10.99 6.34 9.66 5 8 5C6.34 5 5 6.34 5 8C5 9.66 6.34 11 8 11ZM8 13C5.67 13 1 14.17 1 16.5V19H15V16.5C15 14.17 10.33 13 8 13ZM16 13C15.71 13 15.38 13.02 15.03 13.05C16.19 13.89 17 15 17 16.5V19H23V16.5C23 14.17 18.33 13 16 13Z"
+//       fill="currentColor"
+//     />
+//   </svg>
+// );
 
-const MailIcon = () => (
-  <svg
-    height="24"
-    width="24"
-    aria-hidden="true"
-    fill="none"
-    viewBox="0 0 24 24"
-    xmlns="http://www.w3.org/2000/svg"
-    className="flex-shrink-0"
-  >
-    <path
-      d="M20 4H4C2.9 4 2.01 4.9 2.01 6L2 18C2 19.1 2.9 20 4 20H20C21.1 20 22 19.1 22 18V6C22 4.9 21.1 4 20 4ZM20 8L12 13L4 8V6L12 11L20 6V8Z"
-      fill="currentColor"
-    />
-  </svg>
-);
+// const MailIcon = () => (
+//   <svg
+//     height="24"
+//     width="24"
+//     aria-hidden="true"
+//     fill="none"
+//     viewBox="0 0 24 24"
+//     xmlns="http://www.w3.org/2000/svg"
+//     className="flex-shrink-0"
+//   >
+//     <path
+//       d="M20 4H4C2.9 4 2.01 4.9 2.01 6L2 18C2 19.1 2.9 20 4 20H20C21.1 20 22 19.1 22 18V6C22 4.9 21.1 4 20 4ZM20 8L12 13L4 8V6L12 11L20 6V8Z"
+//       fill="currentColor"
+//     />
+//   </svg>
+// );
 
-const CreditCardIcon = () => (
-  <svg
-    height="24"
-    width="24"
-    aria-hidden="true"
-    fill="none"
-    viewBox="0 0 24 24"
-    xmlns="http://www.w3.org/2000/svg"
-    className="flex-shrink-0"
-  >
-    <path
-      d="M20 4H4C2.89 4 2.01 4.89 2.01 6L2 18C2 19.11 2.89 20 4 20H20C21.11 20 22 19.11 22 18V6C22 4.89 21.11 4 20 4ZM20 18H4V12H20V18ZM20 8H4V6H20V8Z"
-      fill="currentColor"
-    />
-  </svg>
-);
+// const CreditCardIcon = () => (
+//   <svg
+//     height="24"
+//     width="24"
+//     aria-hidden="true"
+//     fill="none"
+//     viewBox="0 0 24 24"
+//     xmlns="http://www.w3.org/2000/svg"
+//     className="flex-shrink-0"
+//   >
+//     <path
+//       d="M20 4H4C2.89 4 2.01 4.89 2.01 6L2 18C2 19.11 2.89 20 4 20H20C21.11 20 22 19.11 22 18V6C22 4.89 21.11 4 20 4ZM20 18H4V12H20V18ZM20 8H4V6H20V8Z"
+//       fill="currentColor"
+//     />
+//   </svg>
+// );
 
-const PlugIcon = () => (
-  <svg
-    height="24"
-    width="24"
-    aria-hidden="true"
-    fill="none"
-    viewBox="0 0 24 24"
-    xmlns="http://www.w3.org/2000/svg"
-    className="flex-shrink-0"
-  >
-    <path
-      d="M16 8V2C16 1.45 15.55 1 15 1H9C8.45 1 8 1.45 8 2V8C5.79 8 4 9.79 4 12C4 14.21 5.79 16 8 16V22C8 22.55 8.45 23 9 23H15C15.55 23 16 22.55 16 22V16C18.21 16 20 14.21 20 12C20 9.79 18.21 8 16 8ZM10 3H14V8H10V3ZM14 21H10V16H14V21Z"
-      fill="currentColor"
-    />
-  </svg>
-);
+// const PlugIcon = () => (
+//   <svg
+//     height="24"
+//     width="24"
+//     aria-hidden="true"
+//     fill="none"
+//     viewBox="0 0 24 24"
+//     xmlns="http://www.w3.org/2000/svg"
+//     className="flex-shrink-0"
+//   >
+//     <path
+//       d="M16 8V2C16 1.45 15.55 1 15 1H9C8.45 1 8 1.45 8 2V8C5.79 8 4 9.79 4 12C4 14.21 5.79 16 8 16V22C8 22.55 8.45 23 9 23H15C15.55 23 16 22.55 16 22V16C18.21 16 20 14.21 20 12C20 9.79 18.21 8 16 8ZM10 3H14V8H10V3ZM14 21H10V16H14V21Z"
+//       fill="currentColor"
+//     />
+//   </svg>
+// );
 
 const UserIcon = () => (
   <svg
@@ -703,7 +703,7 @@ export default function MerchantSidebar() {
   // Extract store ID from URL if we're on /merchant/store/[id] route
   const urlStoreId = useMemo(() => {
     if (pathname?.startsWith('/merchant/store/')) {
-      const match = pathname.match(/\/merchant\/store\/([^\/]+)/);
+      const match = pathname.match(/\/merchant\/store\/([^/]+)/);
       return match ? match[1] : null;
     }
     return null;
@@ -1211,14 +1211,14 @@ export default function MerchantSidebar() {
                       }
                       isSubItem
                     />
-                    <NavItem href="#" label="Integrations" active={false} isSubItem />
+                    {/* <NavItem href="#" label="Integrations" active={false} isSubItem /> */}
                   </>
                 )}
               </div>
             </div>
 
             {/* Channels Section */}
-            <div className="w-[256px]">
+            {/* <div className="w-[256px]">
               <div
                 className="px-6 py-2 text-sm text-[#606060] font-normal"
                 style={{ fontSize: '14px', lineHeight: '20px', letterSpacing: '0px' }}
@@ -1243,7 +1243,7 @@ export default function MerchantSidebar() {
                 label="Request a delivery"
                 icon={RequestDeliveryIcon}
               />
-            </div>
+            </div> */}
 
             {/* Divider */}
             <div className="w-full px-6 my-6">
@@ -1251,7 +1251,7 @@ export default function MerchantSidebar() {
             </div>
 
             {/* Add Solutions */}
-            <div className="w-[256px]">
+            {/* <div className="w-[256px]">
               <NavItem
                 href={
                   effectiveStoreId
@@ -1261,12 +1261,12 @@ export default function MerchantSidebar() {
                 label="Add solutions"
                 icon={AddSolutionsIcon}
               />
-            </div>
+            </div> */}
 
             {/* Help */}
-            <div className="w-[256px]">
+            {/* <div className="w-[256px]">
               <NavItem href="#" label="Help" icon={HelpIcon} />
-            </div>
+            </div> */}
 
             <div className="mb-3" />
           </div>

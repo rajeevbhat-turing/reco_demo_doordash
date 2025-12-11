@@ -1,6 +1,7 @@
 'use client';
 import React, { useState, useEffect, useMemo } from 'react';
 import { useParams } from 'next/navigation';
+import Link from 'next/link';
 import MerchantLayout from '@/components/merchant/MerchantLayout';
 import { Search, RefreshCw, ChevronLeft, ChevronRight, ChevronDown } from 'lucide-react';
 import { Input } from '@/components/ui/input';
@@ -419,9 +420,12 @@ export default function MerchantStoreOrdersPage() {
             <p className="text-sm text-gray-600">
               Track all your orders from every channel in real-time. For even more transaction
               details, go to{' '}
-              <a href="#" className="text-blue-600 hover:underline">
+              <Link
+                href={`/merchant/store/${storeIdParam}/financials/transactions`}
+                className="text-blue-600 hover:underline"
+              >
                 Transactions
-              </a>
+              </Link>
               .
             </p>
           </div>

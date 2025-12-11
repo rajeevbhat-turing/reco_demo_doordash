@@ -1,52 +1,84 @@
-'use client'
-import { useState } from "react"
-import MerchantLayout from "@/components/merchant/MerchantLayout"
-import { Edit } from "lucide-react"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { useMerchantPersistedState } from "@/lib/hooks/useMerchantPersistedState"
+'use client';
+import { useState, useEffect } from 'react';
+import MerchantLayout from '@/components/merchant/MerchantLayout';
+// import { Edit } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { useMerchantPersistedState } from '@/lib/hooks/useMerchantPersistedState';
+import { useMerchantAuthStore } from '@/store/merchant-auth-store';
 
 export default function StoreCommunicationsPage() {
+  const { currentMerchant } = useMerchantAuthStore();
+  // Default email to merchant's email if available
+  const defaultEmail = currentMerchant?.email || 'merchant@dashdoor.com';
+
   const [storeDeactivationEnabled, setStoreDeactivationEnabled] = useMerchantPersistedState(
     'settings',
     'store-communications',
     'storeDeactivationEnabled',
     false
-  )
+  );
   const [storeDeactivationEmail, setStoreDeactivationEmail] = useMerchantPersistedState(
     'settings',
     'store-communications',
     'storeDeactivationEmail',
-    'vkuchekulla@dashdoor.com'
-  )
-  const [storePerformanceSummaryEnabled, setStorePerformanceSummaryEnabled] = useMerchantPersistedState(
-    'settings',
-    'store-communications',
-    'storePerformanceSummaryEnabled',
-    true
-  )
+    defaultEmail
+  );
+  const [storePerformanceSummaryEnabled, setStorePerformanceSummaryEnabled] =
+    useMerchantPersistedState(
+      'settings',
+      'store-communications',
+      'storePerformanceSummaryEnabled',
+      true
+    );
   const [dailyWeeklyAlertsEmail, setDailyWeeklyAlertsEmail] = useMerchantPersistedState(
     'settings',
     'store-communications',
     'dailyWeeklyAlertsEmail',
-    'vkuchekulla@dashdoor.com'
-  )
+    defaultEmail
+  );
 
-  const [isStoreDeactivationModalOpen, setIsStoreDeactivationModalOpen] = useState(false)
-  const [isDailyWeeklyModalOpen, setIsDailyWeeklyModalOpen] = useState(false)
-  const [tempStoreDeactivationEmail, setTempStoreDeactivationEmail] = useState(storeDeactivationEmail)
-  const [tempDailyWeeklyEmail, setTempDailyWeeklyEmail] = useState(dailyWeeklyAlertsEmail)
+  // Update emails if merchant logs in and email fields haven't been customized
+  useEffect(() => {
+    if (currentMerchant?.email) {
+      // Only update if still using default placeholder email
+      if (
+        storeDeactivationEmail === 'vkuchekulla@dashdoor.com' ||
+        storeDeactivationEmail === 'merchant@dashdoor.com'
+      ) {
+        setStoreDeactivationEmail(currentMerchant.email);
+      }
+      if (
+        dailyWeeklyAlertsEmail === 'vkuchekulla@dashdoor.com' ||
+        dailyWeeklyAlertsEmail === 'merchant@dashdoor.com'
+      ) {
+        setDailyWeeklyAlertsEmail(currentMerchant.email);
+      }
+    }
+  }, [
+    currentMerchant?.email,
+    storeDeactivationEmail,
+    dailyWeeklyAlertsEmail,
+    setStoreDeactivationEmail,
+    setDailyWeeklyAlertsEmail,
+  ]);
+
+  const [isStoreDeactivationModalOpen, setIsStoreDeactivationModalOpen] = useState(false);
+  const [isDailyWeeklyModalOpen, setIsDailyWeeklyModalOpen] = useState(false);
+  const [tempStoreDeactivationEmail, setTempStoreDeactivationEmail] =
+    useState(storeDeactivationEmail);
+  const [tempDailyWeeklyEmail, setTempDailyWeeklyEmail] = useState(dailyWeeklyAlertsEmail);
 
   const handleSaveStoreDeactivationEmail = () => {
-    setStoreDeactivationEmail(tempStoreDeactivationEmail)
-    setIsStoreDeactivationModalOpen(false)
-  }
+    setStoreDeactivationEmail(tempStoreDeactivationEmail);
+    setIsStoreDeactivationModalOpen(false);
+  };
 
   const handleSaveDailyWeeklyEmail = () => {
-    setDailyWeeklyAlertsEmail(tempDailyWeeklyEmail)
-    setIsDailyWeeklyModalOpen(false)
-  }
+    setDailyWeeklyAlertsEmail(tempDailyWeeklyEmail);
+    setIsDailyWeeklyModalOpen(false);
+  };
 
   return (
     <MerchantLayout>
@@ -62,7 +94,7 @@ export default function StoreCommunicationsPage() {
         {/* Important alerts section */}
         <div className="bg-white border border-gray-200 rounded-lg p-6 mb-6">
           <h2 className="text-lg font-semibold text-gray-900 mb-4">Important alerts</h2>
-          
+
           {/* Store deactivations */}
           <div className="flex items-start justify-between py-4 border-b border-gray-200">
             <div className="flex-1">
@@ -72,28 +104,30 @@ export default function StoreCommunicationsPage() {
               </p>
               <div className="flex items-center gap-2">
                 <span className="text-sm text-gray-900">{storeDeactivationEmail}</span>
-                <button
+                {/* <button
                   onClick={() => {
-                    setTempStoreDeactivationEmail(storeDeactivationEmail)
-                    setIsStoreDeactivationModalOpen(true)
+                    setTempStoreDeactivationEmail(storeDeactivationEmail);
+                    setIsStoreDeactivationModalOpen(true);
                   }}
                   className="text-sm text-blue-600 hover:text-blue-700 flex items-center gap-1"
                 >
                   <Edit className="h-3 w-3" />
                   Edit
-                </button>
+                </button> */}
               </div>
             </div>
             <label className="relative inline-flex items-center cursor-pointer ml-4">
               <input
                 type="checkbox"
                 checked={storeDeactivationEnabled}
-                onChange={(e) => setStoreDeactivationEnabled(e.target.checked)}
+                onChange={e => setStoreDeactivationEnabled(e.target.checked)}
                 className="sr-only peer"
               />
-              <div className={`w-11 h-6 rounded-full peer peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-red-500 transition-colors ${
-                storeDeactivationEnabled ? 'bg-gray-900' : 'bg-gray-200'
-              } peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all`}></div>
+              <div
+                className={`w-11 h-6 rounded-full peer peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-red-500 transition-colors ${
+                  storeDeactivationEnabled ? 'bg-gray-900' : 'bg-gray-200'
+                } peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all`}
+              ></div>
             </label>
           </div>
         </div>
@@ -101,25 +135,29 @@ export default function StoreCommunicationsPage() {
         {/* Performance reporting section */}
         <div className="bg-white border border-gray-200 rounded-lg p-6">
           <h2 className="text-lg font-semibold text-gray-900 mb-4">Performance reporting</h2>
-          
+
           {/* Store performance summary */}
           <div className="flex items-start justify-between py-4 border-b border-gray-200">
             <div className="flex-1">
-              <h3 className="text-base font-medium text-gray-900 mb-1">Store performance summary</h3>
+              <h3 className="text-base font-medium text-gray-900 mb-1">
+                Store performance summary
+              </h3>
               <p className="text-sm text-gray-600">
-                Learn about your store's performance and operational efficiency
+                Learn about your store&apos;s performance and operational efficiency
               </p>
             </div>
             <label className="relative inline-flex items-center cursor-pointer ml-4">
               <input
                 type="checkbox"
                 checked={storePerformanceSummaryEnabled}
-                onChange={(e) => setStorePerformanceSummaryEnabled(e.target.checked)}
+                onChange={e => setStorePerformanceSummaryEnabled(e.target.checked)}
                 className="sr-only peer"
               />
-              <div className={`w-11 h-6 rounded-full peer peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-red-500 transition-colors ${
-                storePerformanceSummaryEnabled ? 'bg-gray-900' : 'bg-gray-200'
-              } peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all`}></div>
+              <div
+                className={`w-11 h-6 rounded-full peer peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-red-500 transition-colors ${
+                  storePerformanceSummaryEnabled ? 'bg-gray-900' : 'bg-gray-200'
+                } peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all`}
+              ></div>
             </label>
           </div>
 
@@ -129,20 +167,20 @@ export default function StoreCommunicationsPage() {
               <h3 className="text-base font-medium text-gray-900 mb-1">Daily & weekly alerts</h3>
               <div className="flex items-center gap-2 mt-2">
                 <span className="text-sm text-gray-900">
-                  {dailyWeeklyAlertsEmail.length > 20 
-                    ? `${dailyWeeklyAlertsEmail.substring(0, 20)}...` 
+                  {dailyWeeklyAlertsEmail.length > 20
+                    ? `${dailyWeeklyAlertsEmail.substring(0, 20)}...`
                     : dailyWeeklyAlertsEmail}
                 </span>
-                <button
+                {/* <button
                   onClick={() => {
-                    setTempDailyWeeklyEmail(dailyWeeklyAlertsEmail)
-                    setIsDailyWeeklyModalOpen(true)
+                    setTempDailyWeeklyEmail(dailyWeeklyAlertsEmail);
+                    setIsDailyWeeklyModalOpen(true);
                   }}
                   className="text-sm text-blue-600 hover:text-blue-700 flex items-center gap-1"
                 >
                   <Edit className="h-3 w-3" />
                   Edit
-                </button>
+                </button> */}
               </div>
             </div>
           </div>
@@ -157,14 +195,17 @@ export default function StoreCommunicationsPage() {
 
             <div className="space-y-4">
               <div>
-                <Label htmlFor="store-deactivation-email" className="text-sm font-medium text-gray-900 mb-2 block">
+                <Label
+                  htmlFor="store-deactivation-email"
+                  className="text-sm font-medium text-gray-900 mb-2 block"
+                >
                   Email address
                 </Label>
                 <Input
                   id="store-deactivation-email"
                   type="email"
                   value={tempStoreDeactivationEmail}
-                  onChange={(e) => setTempStoreDeactivationEmail(e.target.value)}
+                  onChange={e => setTempStoreDeactivationEmail(e.target.value)}
                   className="w-full"
                   placeholder="email@example.com"
                 />
@@ -197,14 +238,17 @@ export default function StoreCommunicationsPage() {
 
             <div className="space-y-4">
               <div>
-                <Label htmlFor="daily-weekly-email" className="text-sm font-medium text-gray-900 mb-2 block">
+                <Label
+                  htmlFor="daily-weekly-email"
+                  className="text-sm font-medium text-gray-900 mb-2 block"
+                >
                   Email address
                 </Label>
                 <Input
                   id="daily-weekly-email"
                   type="email"
                   value={tempDailyWeeklyEmail}
-                  onChange={(e) => setTempDailyWeeklyEmail(e.target.value)}
+                  onChange={e => setTempDailyWeeklyEmail(e.target.value)}
                   className="w-full"
                   placeholder="email@example.com"
                 />
@@ -229,6 +273,5 @@ export default function StoreCommunicationsPage() {
         </Dialog>
       </div>
     </MerchantLayout>
-  )
+  );
 }
-

@@ -1,8 +1,9 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
+import Link from 'next/link';
 import MerchantLayout from '@/components/merchant/MerchantLayout';
-import { ChevronDown, Info } from 'lucide-react';
+import { Info } from 'lucide-react';
 import { useCurrentStore } from '@/lib/hooks/useCurrentStore';
 import { useAllRestaurants } from '@/lib/hooks/merchant/use-restaurants';
 
@@ -181,12 +182,12 @@ export default function TransactionsPage() {
           <p className="text-sm text-gray-600 mb-4">
             All charges from all orders, campaigns, fees, and adjustments associated with your
             DashDoor account. To track real-time orders, go to{' '}
-            <a
+            <Link
               href={`/merchant/store/${storeIdParam}/orders`}
               className="text-blue-600 hover:underline"
             >
               Orders
-            </a>
+            </Link>
             .
           </p>
 
@@ -220,10 +221,10 @@ export default function TransactionsPage() {
             <div>
               <p className="text-sm text-gray-700 mb-1">
                 <span className="font-semibold">Introducing a new metric - marketing spend.</span>{' '}
-                To help you better track and understand your marketing efforts, we're unveiling a
-                new metric--marketing spend. This number represents the total you paid to DashDoor
+                To help you better track and understand your marketing efforts, we&apos;re unveiling
+                a new metric--marketing spend. This number represents the total you paid to DashDoor
                 to run marketing after marketing credits and third-party contributions have been
-                deducted. You'll also be downloaded reports.
+                deducted. You&apos;ll also be downloaded reports.
               </p>
             </div>
           </div>

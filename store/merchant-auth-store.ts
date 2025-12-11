@@ -118,6 +118,8 @@ interface MerchantAuthStore {
   saveOnboardingMenuCompleted: () => void;
   saveOnboardingPricing: (data: OnboardingPricing) => void;
   saveOnboardingPayout: (data: OnboardingPayout) => void;
+  // Settings update actions
+  updateBankAccount: (bankAccount: Partial<OnboardingPayout['bankAccount']>) => void;
 }
 
 // Initial merchants array - empty since data comes from API (merchant.db)
@@ -246,6 +248,58 @@ export const useMerchantAuthStore = create<MerchantAuthStore>()(
           onboardingCompleted: true,
           onboardingData: { ...current.onboardingData, payout: data },
         };
+        const updatedMerchants = get().merchants.map(m =>
+          m.id === current.id ? updatedMerchant : m
+        );
+
+        set({ currentMerchant: updatedMerchant, merchants: updatedMerchants });
+      },
+
+      updateBankAccount: bankAccountUpdates => {
+        const current = get().currentMerchant;
+        if (!current) return;
+
+        // Get existing payout data or create default structure
+        const existingPayout = current.onboardingData?.payout || {
+          bankAccount: {
+            accountNumber: '',
+            financialInstitutionNumber: '',
+            transitNumber: '',
+          },
+          company: {
+            legalBusinessName: '',
+            registeredBusinessAddress: '',
+            sameAsStoreAddress: false,
+            entityType: '',
+            businessType: '',
+            numberOfLocations: '',
+            hasFranchiseeLocations: '',
+            gstNumber: '',
+          },
+          representative: {
+            firstName: '',
+            lastName: '',
+            personalAddress: '',
+            dateOfBirth: '',
+            email: '',
+            phone: '',
+          },
+        };
+
+        // Merge bank account updates
+        const updatedPayout = {
+          ...existingPayout,
+          bankAccount: {
+            ...existingPayout.bankAccount,
+            ...bankAccountUpdates,
+          },
+        };
+
+        const updatedMerchant = {
+          ...current,
+          onboardingData: { ...current.onboardingData, payout: updatedPayout },
+        };
+
         const updatedMerchants = get().merchants.map(m =>
           m.id === current.id ? updatedMerchant : m
         );

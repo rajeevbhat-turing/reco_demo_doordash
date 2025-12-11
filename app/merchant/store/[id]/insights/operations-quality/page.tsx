@@ -1,23 +1,23 @@
-'use client'
-import MerchantLayout from "@/components/merchant/MerchantLayout"
-import Link from "next/link"
-import { useParams } from "next/navigation"
+'use client';
+import MerchantLayout from '@/components/merchant/MerchantLayout';
+import Link from 'next/link';
+import { useParams } from 'next/navigation';
 
 interface MetricCardProps {
-  title: string
-  description: string
-  status: "on-track" | "needs-attention"
+  title: string;
+  description: string;
+  status: 'on-track' | 'needs-attention';
   metrics: Array<{
-    label: string
-    value: string
-    change?: string
-    hasInfo?: boolean
-  }>
-  goal: string
-  emptyStateImage: string
-  emptyStateTitle: string
-  emptyStateMessage: string
-  viewDetailsHref: string
+    label: string;
+    value: string;
+    change?: string;
+    hasInfo?: boolean;
+  }>;
+  goal: string;
+  emptyStateImage: string;
+  emptyStateTitle: string;
+  emptyStateMessage: string;
+  viewDetailsHref: string;
 }
 
 function MetricCard({
@@ -64,10 +64,7 @@ function MetricCard({
                     fill="currentColor"
                     fillRule="evenodd"
                   />
-                  <path
-                    d="M7 7.5H9V12H7V7.5Z"
-                    fill="currentColor"
-                  />
+                  <path d="M7 7.5H9V12H7V7.5Z" fill="currentColor" />
                   <path
                     d="M9.25 5.25C9.25 5.94036 8.69036 6.5 8 6.5C7.30964 6.5 6.75 5.94036 6.75 5.25C6.75 4.55964 7.30964 4 8 4C8.69036 4 9.25 4.55964 9.25 5.25Z"
                     fill="currentColor"
@@ -77,9 +74,7 @@ function MetricCard({
             </div>
             <div className="flex items-center gap-1">
               <span className="text-xl font-bold text-gray-900">{metric.value}</span>
-              {metric.change && (
-                <span className="text-sm text-gray-900">{metric.change}</span>
-              )}
+              {metric.change && <span className="text-sm text-gray-900">{metric.change}</span>}
             </div>
           </div>
         ))}
@@ -100,9 +95,7 @@ function MetricCard({
             fill="currentColor"
           />
         </svg>
-        <button className="text-sm font-bold text-gray-900 hover:underline">
-          {goal}
-        </button>
+        <button className="text-sm font-bold text-gray-900 hover:underline">{goal}</button>
       </div>
 
       <div className="flex flex-col items-center justify-center py-6 mb-6">
@@ -116,19 +109,19 @@ function MetricCard({
         <p className="text-sm text-gray-900">{emptyStateMessage}</p>
       </div>
 
-      <Link
+      {/* <Link
         href={viewDetailsHref}
         className="inline-flex items-center justify-center px-3 py-2 rounded-full text-sm font-bold text-gray-900 border border-gray-300 bg-white hover:bg-gray-50 transition-colors"
       >
         View details
-      </Link>
+      </Link> */}
     </div>
-  )
+  );
 }
 
 export default function OperationsQualityPage() {
-  const params = useParams()
-  const storeId = params?.id as string
+  const params = useParams();
+  const storeId = params?.id as string;
 
   return (
     <MerchantLayout>
@@ -168,9 +161,7 @@ export default function OperationsQualityPage() {
         {/* Areas on track */}
         <div>
           <div className="mb-6">
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">
-              Areas on track
-            </h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">Areas on track</h2>
             <p className="text-sm text-gray-600 mb-6">
               Continue doing a good job in these areas of your operations.
             </p>
@@ -193,15 +184,15 @@ export default function OperationsQualityPage() {
               status="on-track"
               metrics={[
                 {
-                  label: "Avoidable wait",
-                  value: "0 mins",
-                  change: "—%",
+                  label: 'Avoidable wait',
+                  value: '0 mins',
+                  change: '—%',
                   hasInfo: true,
                 },
                 {
-                  label: "Total Dasher wait",
-                  value: "0 mins",
-                  change: "—%",
+                  label: 'Total Dasher wait',
+                  value: '0 mins',
+                  change: '—%',
                   hasInfo: true,
                 },
               ]}
@@ -219,15 +210,15 @@ export default function OperationsQualityPage() {
               status="on-track"
               metrics={[
                 {
-                  label: "Avoidable cancellation rate",
-                  value: "0.0%",
-                  change: "—%",
+                  label: 'Avoidable cancellation rate',
+                  value: '0.0%',
+                  change: '—%',
                   hasInfo: true,
                 },
                 {
-                  label: "Sales lost",
-                  value: "$0.00",
-                  change: "—%",
+                  label: 'Sales lost',
+                  value: '$0.00',
+                  change: '—%',
                   hasInfo: true,
                 },
               ]}
@@ -245,15 +236,15 @@ export default function OperationsQualityPage() {
               status="on-track"
               metrics={[
                 {
-                  label: "Missing or incorrect rate",
-                  value: "0.0%",
-                  change: "—%",
+                  label: 'Missing or incorrect rate',
+                  value: '0.0%',
+                  change: '—%',
                   hasInfo: true,
                 },
                 {
-                  label: "Missing or incorrect error charges",
-                  value: "$0.00",
-                  change: "—%",
+                  label: 'Missing or incorrect error charges',
+                  value: '$0.00',
+                  change: '—%',
                 },
               ]}
               goal="Meets goal of 1% or lower"
@@ -270,9 +261,9 @@ export default function OperationsQualityPage() {
               status="on-track"
               metrics={[
                 {
-                  label: "Downtime",
-                  value: "0.0% (0 min)",
-                  change: "—%",
+                  label: 'Downtime',
+                  value: '0.0% (0 min)',
+                  change: '—%',
                 },
               ]}
               goal="Meets goal of 1% or lower"
@@ -285,5 +276,5 @@ export default function OperationsQualityPage() {
         </div>
       </div>
     </MerchantLayout>
-  )
+  );
 }

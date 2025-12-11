@@ -142,9 +142,9 @@ export default function PricingStep() {
                   Increase your sales by accessing DashPass customers. On average, they spend more
                   per order and order more often.
                 </p>
-                <button className="text-sm font-medium text-gray-900 border-b border-dashed border-gray-900">
+                {/* <button className="text-sm font-medium text-gray-900 border-b border-dashed border-gray-900">
                   Learn more
-                </button>
+                </button> */}
               </div>
             </div>
           </div>
@@ -195,9 +195,9 @@ export default function PricingStep() {
                   Increase your sales by accessing DashPass customers. On average, they spend more
                   per order and order more often.
                 </p>
-                <button className="text-sm font-medium text-gray-900 border-b border-dashed border-gray-900">
+                {/* <button className="text-sm font-medium text-gray-900 border-b border-dashed border-gray-900">
                   Learn more
-                </button>
+                </button> */}
               </div>
             </div>
 
@@ -225,7 +225,7 @@ export default function PricingStep() {
                   <p className="text-sm text-gray-900">
                     Sponsored listings run on your behalf, to help more customers discover your
                     restaurant – no extra work or cost required.{' '}
-                    <button className="text-sm font-bold underline">Terms apply</button>
+                    {/* <button className="text-sm font-bold underline">Terms apply</button> */}
                   </p>
                 </div>
               </div>
@@ -240,9 +240,9 @@ export default function PricingStep() {
                     Get a free professional photoshoot plus a CA$200 credit to cover additional
                     costs like food, styling, or setup.
                   </p>
-                  <button className="text-sm font-medium text-gray-900 border-b border-dashed border-gray-900">
+                  {/* <button className="text-sm font-medium text-gray-900 border-b border-dashed border-gray-900">
                     Learn more
-                  </button>
+                  </button> */}
                 </div>
               </div>
 
@@ -255,7 +255,7 @@ export default function PricingStep() {
                   <p className="text-sm text-gray-900 mb-2">
                     Grow beyond Marketplace and get commission-free orders with your own mobile app,
                     loyalty, and CRM - all built by us.{' '}
-                    <button className="text-sm font-bold underline">Terms apply</button>
+                    {/* <button className="text-sm font-bold underline">Terms apply</button> */}
                   </p>
                 </div>
               </div>
@@ -274,9 +274,9 @@ export default function PricingStep() {
       <div className="mb-6">
         <p className="text-base text-gray-600">
           If you have any questions about your current DashDoor pricing plan,{' '}
-          <a href="#" className="text-gray-900 underline font-medium">
-            contact support
-          </a>
+          {/* <a href="#" className="text-gray-900 underline font-medium"> */}
+          contact support
+          {/* </a> */}
         </p>
       </div>
 
@@ -309,13 +309,13 @@ export default function PricingStep() {
               Offer a pickup option for your customers and only pay 8% commission per pickup order
               in the Plus and Premier plan, and 10% in the Basic plan.
             </p>
-            <a
+            {/* <a
               href="#"
               className="text-base font-bold text-gray-900 inline-flex items-center gap-2"
             >
               Learn more
               <ArrowRight className="h-6 w-6" />
-            </a>
+            </a> */}
           </div>
 
           <div>
@@ -354,13 +354,13 @@ export default function PricingStep() {
               Grow beyond Marketplace with orders from your own website, commission-free. You only
               pay card processing fees.
             </p>
-            <a
+            {/* <a
               href="#"
               className="text-base font-bold text-gray-900 inline-flex items-center gap-2"
             >
               Learn more
               <ArrowRight className="h-6 w-6" />
-            </a>
+            </a> */}
           </div>
 
           <div>
@@ -376,13 +376,13 @@ export default function PricingStep() {
             <p className="text-sm text-gray-600 mb-4">
               Boost your sales by adding marketing tools to your business at any time
             </p>
-            <a
+            {/* <a
               href="#"
               className="text-base font-bold text-gray-900 inline-flex items-center gap-2"
             >
               Learn more
               <ArrowRight className="h-6 w-6" />
-            </a>
+            </a> */}
           </div>
 
           <div>
@@ -398,13 +398,13 @@ export default function PricingStep() {
             <p className="text-sm text-gray-600 mb-4">
               DashDoor offers 24/7 email and live chat support
             </p>
-            <a
+            {/* <a
               href="#"
               className="text-base font-bold text-gray-900 inline-flex items-center gap-2"
             >
               Learn more
               <ArrowRight className="h-6 w-6" />
-            </a>
+            </a> */}
           </div>
         </div>
       </div>

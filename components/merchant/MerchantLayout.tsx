@@ -53,7 +53,7 @@ export default function MerchantLayout({ children }: { children: React.ReactNode
         </div>
 
         {/* Need help widget - fixed bottom right */}
-        <div className="fixed bottom-0 right-0 z-30 p-4">
+        {/* <div className="fixed bottom-0 right-0 z-30 p-4">
           <div className="flex justify-end">
             <div className="bg-white rounded-xl p-3 w-[104px] shadow-lg cursor-pointer hover:shadow-xl transition-shadow">
               <div className="flex flex-col items-center">
@@ -97,7 +97,7 @@ export default function MerchantLayout({ children }: { children: React.ReactNode
               </div>
             </div>
           </div>
-        </div>
+        </div> */}
       </div>
     </>
   );

@@ -229,7 +229,7 @@ export default function StatementsPage() {
                     </th>
                     <th className="text-right font-medium px-4 py-3 text-gray-700">Amendments</th>
                     <th className="text-right font-medium px-4 py-3 text-gray-700">Net total</th>
-                    <th className="text-right font-medium px-4 py-3 text-gray-700">Actions</th>
+                    {/* <th className="text-right font-medium px-4 py-3 text-gray-700">Actions</th> */}
                   </tr>
                 </thead>
                 <tbody>
@@ -256,7 +256,7 @@ export default function StatementsPage() {
                       >
                         {statement.netTotal}
                       </td>
-                      <td className="px-4 py-3 text-right">
+                      {/* <td className="px-4 py-3 text-right">
                         <div className="flex items-center justify-end gap-2">
                           <button className="p-1.5 text-gray-400 hover:text-gray-600 rounded">
                             <ExternalLink className="h-4 w-4" />
@@ -265,7 +265,7 @@ export default function StatementsPage() {
                             <ExternalLink className="h-4 w-4" />
                           </button>
                         </div>
-                      </td>
+                      </td> */}
                     </tr>
                   ))}
                 </tbody>

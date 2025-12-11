@@ -589,16 +589,13 @@ export default function MerchantSignUpPage() {
 
           {/* Terms Text */}
           <p className="text-xs text-gray-500 mb-4">
-            By tapping &quot;Create account&quot; or &quot;Continue with Google, Facebook or
-            Apple,&quot; you agree to DashDoor&apos;s{' '}
-            <button type="button" className="underline hover:text-gray-700">
-              Terms and Conditions
-            </button>{' '}
-            and{' '}
-            <button type="button" className="underline hover:text-gray-700">
-              Privacy Policy
-            </button>
-            .
+            By tapping &quot;Create account&quot; you agree to DashDoor&apos;s{' '}
+            {/* <button type="button" className="underline hover:text-gray-700"> */}
+            Terms and Conditions
+            {/* </button> */} and{' '}
+            {/* <button type="button" className="underline hover:text-gray-700"> */}
+            Privacy Policy
+            {/* </button> */}.
           </p>
 
           {/* Create Account Button */}

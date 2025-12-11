@@ -1,11 +1,13 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
-import Link from 'next/link';
 import MerchantLayout from '@/components/merchant/MerchantLayout';
-import { Play, AlertCircle, CheckCircle, ChevronLeft, ChevronRight } from 'lucide-react';
-import { useCurrentStore } from '@/lib/hooks/useCurrentStore';
-import { useAllRestaurants } from '@/lib/hooks/merchant/use-restaurants';
+import { AlertCircle, CheckCircle, ChevronLeft, ChevronRight } from 'lucide-react';
+
+interface MenuCategory {
+  id: string;
+  name: string;
+}
 
 /**
  * Route: /merchant/store/[id]/store-availability
@@ -14,46 +16,43 @@ import { useAllRestaurants } from '@/lib/hooks/merchant/use-restaurants';
  */
 export default function StoreAvailabilityPage() {
   const params = useParams();
-  const { setCurrentStoreId, currentStoreId: contextStoreId } = useCurrentStore();
-  const { data: restaurants, isLoading } = useAllRestaurants();
-  const [storeSet, setStoreSet] = useState(false);
-  const [selectedMenu, setSelectedMenu] = useState('Grid Iron Waffle | TEST TEST TEST SSME');
+  const storeId = params.id as string;
 
-  const storeIdParam = params.id as string;
+  const [menuCategories, setMenuCategories] = useState<MenuCategory[]>([]);
+  const [selectedMenu, setSelectedMenu] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Set the store ID when component mounts or storeIdParam changes
+  // Fetch menu categories for the current store
   useEffect(() => {
-    if (isLoading || !restaurants || storeSet) return;
+    async function fetchMenuCategories() {
+      if (!storeId) return;
 
-    // Try to find restaurant by numeric ID first
-    let restaurant = restaurants.find(r => r.id === storeIdParam);
+      try {
+        const response = await fetch(`/api/merchant/restaurants/${storeId}/menu`);
+        const result = await response.json();
 
-    // If not found, try to find by name (slug)
-    if (!restaurant) {
-      restaurant = restaurants.find(
-        r =>
-          r.name.toLowerCase().replace(/\s+/g, '-') === storeIdParam.toLowerCase() ||
-          r.name === storeIdParam
-      );
+        if (result.success && result.data?.categories) {
+          const categories = result.data.categories.map((cat: any) => ({
+            id: cat.id,
+            name: cat.name,
+          }));
+          setMenuCategories(categories);
+          // Select first category by default
+          if (categories.length > 0 && !selectedMenu) {
+            setSelectedMenu(categories[0].id);
+          }
+        }
+      } catch (error) {
+        console.error('Failed to fetch menu categories:', error);
+      } finally {
+        setIsLoading(false);
+      }
     }
 
-    if (restaurant) {
-      if (contextStoreId !== restaurant.id) {
-        setCurrentStoreId(restaurant.id);
-      }
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('merchant-mode', 'true');
-      }
-      setStoreSet(true);
-    } else {
-      if (contextStoreId !== '1') {
-        setCurrentStoreId('1');
-      }
-      setStoreSet(true);
-    }
-  }, [storeIdParam, restaurants, isLoading, setCurrentStoreId, contextStoreId, storeSet]);
+    fetchMenuCategories();
+  }, [storeId, selectedMenu]);
 
-  // Show loading state while finding store
+  // Show loading state
   if (isLoading) {
     return (
       <MerchantLayout>
@@ -91,16 +90,16 @@ export default function StoreAvailabilityPage() {
           </p>
 
           <div className="flex items-center gap-4 mb-6">
-            <button className="inline-flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-md transition-colors">
+            {/* <button className="inline-flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-md transition-colors">
               <Play className="h-4 w-4" />
               Open all ordering channels
-            </button>
-            <Link
+            </button> */}
+            {/* <Link
               href={`/merchant/store/${storeIdParam}/store-availability/status-history`}
               className="text-sm text-blue-600 hover:underline"
             >
               View status history
-            </Link>
+            </Link> */}
           </div>
 
           {/* Ordering channels table */}
@@ -130,9 +129,9 @@ export default function StoreAvailabilityPage() {
                     <div className="text-gray-600">
                       Paused for 1 day. Automatically reopens 12:16 AM PDT on 4/29/2025.
                     </div>
-                    <a href="#" className="text-sm text-blue-600 hover:underline mt-1 inline-block">
+                    {/* <a href="#" className="text-sm text-blue-600 hover:underline mt-1 inline-block">
                       View store page
-                    </a>
+                    </a> */}
                   </td>
                 </tr>
                 <tr>
@@ -168,14 +167,16 @@ export default function StoreAvailabilityPage() {
               onChange={e => setSelectedMenu(e.target.value)}
               className="border border-gray-300 rounded-md text-sm px-3 py-2 bg-white text-gray-700"
             >
-              <option>Grid Iron Waffle | TEST TEST TEST SSME</option>
+              {menuCategories.length > 0 ? (
+                menuCategories.map(category => (
+                  <option key={category.id} value={category.id}>
+                    {category.name}
+                  </option>
+                ))
+              ) : (
+                <option value="">No menus available</option>
+              )}
             </select>
-            <Link
-              href={`/merchant/store/${storeIdParam}/store-availability/edit-hours`}
-              className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 inline-block"
-            >
-              Edit menu hours
-            </Link>
           </div>
 
           {/* Menu hours list */}
@@ -210,9 +211,9 @@ export default function StoreAvailabilityPage() {
             This will temporarily replace your regular menu hours.
           </p>
 
-          <button className="mb-4 inline-flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">
+          {/* <button className="mb-4 inline-flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">
             + Add new
-          </button>
+          </button> */}
 
           {/* Empty table */}
           <div className="overflow-hidden border border-gray-200 rounded-lg">

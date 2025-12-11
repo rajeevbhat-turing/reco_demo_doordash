@@ -188,13 +188,13 @@ export default function ReportsPage() {
               data for your store on DashDoor.
             </p>
           </div>
-          <button
+          {/* <button
             onClick={() => router.push(`/merchant/store/${storeIdParam}/reports/create`)}
             className="inline-flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-md transition-colors"
           >
             <BarChart2 className="h-4 w-4" />
             Create report
-          </button>
+          </button> */}
         </div>
 
         {/* Tabs */}
@@ -237,7 +237,7 @@ export default function ReportsPage() {
                 <th className="text-left font-medium px-4 py-3 text-gray-700">View by</th>
                 <th className="text-left font-medium px-4 py-3 text-gray-700">Time frame</th>
                 <th className="text-left font-medium px-4 py-3 text-gray-700">Locations</th>
-                <th className="text-left font-medium px-4 py-3 text-gray-700">Action</th>
+                {/* <th className="text-left font-medium px-4 py-3 text-gray-700">Action</th> */}
               </tr>
             </thead>
             <tbody>
@@ -249,7 +249,7 @@ export default function ReportsPage() {
                   <td className="px-4 py-3 text-gray-600">{report.viewBy}</td>
                   <td className="px-4 py-3 text-gray-600">{report.timeFrame}</td>
                   <td className="px-4 py-3 text-gray-600">{report.locations}</td>
-                  <td className="px-4 py-3">
+                  {/* <td className="px-4 py-3">
                     {report.action === 'available' ? (
                       <button className="text-blue-600 hover:text-blue-700">
                         <Download className="h-4 w-4" />
@@ -257,7 +257,7 @@ export default function ReportsPage() {
                     ) : (
                       <span className="text-gray-400">Expired</span>
                     )}
-                  </td>
+                  </td> */}
                 </tr>
               ))}
             </tbody>

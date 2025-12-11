@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState, useMemo } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import MerchantLayout from '@/components/merchant/MerchantLayout';
 import { Lightbulb, Megaphone, TrendingUp, ChevronRight, Star } from 'lucide-react';
 import SalesChart from '@/components/merchant/SalesChart';
@@ -41,9 +41,9 @@ function InsightCard({
         <div className="text-sm text-gray-500 mb-1">{category}</div>
         <div className="font-semibold mb-1">{title}</div>
         <div className="text-sm text-gray-600 mb-3">{body}</div>
-        <button className="inline-flex items-center rounded-full bg-gray-900 text-white text-xs px-3 py-1.5">
+        {/* <button className="inline-flex items-center rounded-full bg-gray-900 text-white text-xs px-3 py-1.5">
           {cta}
-        </button>
+        </button> */}
       </div>
       <div className="text-gray-300">
         <Lightbulb className="h-12 w-12" />
@@ -212,6 +212,7 @@ function OperationsReviewCard() {
  */
 export default function MerchantStorePage() {
   const params = useParams();
+  const router = useRouter();
   const { setCurrentStoreId, currentStoreId: contextStoreId } = useCurrentStore();
   const { data: restaurants, isLoading } = useAllRestaurants();
   const { metrics: storedMetrics, setMetrics } = useMerchantHomeStore();
@@ -607,9 +608,9 @@ export default function MerchantStorePage() {
                   <div className="font-semibold mb-1">
                     New! See how DashDoor can help grow your business
                   </div>
-                  <button className="inline-flex items-center rounded-full border border-gray-300 text-xs px-3 py-1.5">
+                  {/* <button className="inline-flex items-center rounded-full border border-gray-300 text-xs px-3 py-1.5">
                     View solutions center
-                  </button>
+                  </button> */}
                 </div>
                 <div className="text-gray-300">
                   <Megaphone className="h-12 w-12" />
@@ -622,9 +623,9 @@ export default function MerchantStorePage() {
                 <div>
                   <div className="text-sm text-gray-500 mb-1">Growth</div>
                   <div className="font-semibold mb-1">You missed Most Loved for April</div>
-                  <button className="inline-flex items-center rounded-full border border-gray-300 text-xs px-3 py-1.5">
+                  {/* <button className="inline-flex items-center rounded-full border border-gray-300 text-xs px-3 py-1.5">
                     View performance
-                  </button>
+                  </button> */}
                 </div>
                 <div className="text-gray-300">
                   <TrendingUp className="h-12 w-12" />
@@ -680,7 +681,10 @@ export default function MerchantStorePage() {
               </div>
               <div></div>
             </div>
-            <button className="mt-3 w-full rounded-md border border-gray-300 text-sm py-2">
+            <button
+              className="mt-3 w-full rounded-md border border-gray-300 text-sm py-2"
+              onClick={() => router.push(`/merchant/store/${numericStoreId}/insights/sales`)}
+            >
               View sales insights
             </button>
           </div>
@@ -713,7 +717,12 @@ export default function MerchantStorePage() {
                 </span>
               </div>
             </div>
-            <button className="mt-3 w-full rounded-md border border-gray-300 text-sm py-2">
+            <button
+              className="mt-3 w-full rounded-md border border-gray-300 text-sm py-2"
+              onClick={() =>
+                router.push(`/merchant/store/${numericStoreId}/insights/operations-quality`)
+              }
+            >
               View operations insights
             </button>
           </div>
@@ -734,7 +743,10 @@ export default function MerchantStorePage() {
                 <span>{customerSegments.returning}</span>
               </div>
             </div>
-            <button className="mt-3 w-full rounded-md border border-gray-300 text-sm py-2">
+            <button
+              className="mt-3 w-full rounded-md border border-gray-300 text-sm py-2"
+              onClick={() => router.push(`/merchant/store/${numericStoreId}/customers/insights`)}
+            >
               View customers insights
             </button>
           </div>

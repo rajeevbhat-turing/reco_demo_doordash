@@ -74,9 +74,9 @@ export default function PayoutsPage() {
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Payouts</h1>
           <p className="text-sm text-gray-600">
             Here is where you will find a summary of your Transactions and Payouts.{' '}
-            <a href="#" className="text-blue-600 hover:underline">
+            {/* <a href="#" className="text-blue-600 hover:underline">
               Learn more
-            </a>
+            </a> */}
           </p>
         </div>
 
