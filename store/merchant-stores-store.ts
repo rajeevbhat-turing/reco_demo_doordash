@@ -25,6 +25,7 @@ export interface MerchantStore {
 interface MerchantStoresStore {
   stores: MerchantStore[];
   addStore: (store: Omit<MerchantStore, 'id' | 'createdAt'>) => string;
+  updateStore: (storeId: string, updates: Partial<Omit<MerchantStore, 'id' | 'createdAt'>>) => void;
   updateStoreHours: (storeId: string, openingHours: { open: string; close: string }) => void;
   getStoresByOwnerId: (ownerId: string) => MerchantStore[];
   getStoreById: (id: string) => MerchantStore | undefined;
@@ -48,6 +49,14 @@ export const useMerchantStoresStore = create<MerchantStoresStore>()(
         };
         set(state => ({ stores: [...state.stores, newStore] }));
         return newStore.id;
+      },
+
+      updateStore: (storeId, updates) => {
+        set(state => ({
+          stores: state.stores.map(store =>
+            store.id === storeId ? { ...store, ...updates } : store
+          ),
+        }));
       },
 
       updateStoreHours: (storeId, openingHours) => {

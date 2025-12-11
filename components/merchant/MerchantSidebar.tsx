@@ -45,31 +45,6 @@ const InsightsIcon = () => (
   </svg>
 );
 
-const ReportsIcon = () => (
-  <svg
-    height="24"
-    width="24"
-    aria-hidden="true"
-    fill="none"
-    viewBox="0 0 24 24"
-    xmlns="http://www.w3.org/2000/svg"
-    className="flex-shrink-0"
-  >
-    <path
-      clipRule="evenodd"
-      d="M13 10C13.3788 10 13.7251 10.214 13.8945 10.5528L15.6181 14H16C16.5523 14 17 14.4477 17 15C17 15.5523 16.5523 16 16 16H15C14.6213 16 14.275 15.786 14.1056 15.4472L13 13.2361L11.8945 15.4472C11.7507 15.7347 11.4775 15.9356 11.1602 15.9871C10.8429 16.0386 10.5202 15.9344 10.2929 15.7071L9.50002 14.9142L8.70713 15.7071C8.31661 16.0976 7.68344 16.0976 7.29292 15.7071C6.90239 15.3166 6.90239 14.6834 7.29292 14.2929L8.79292 12.7929C9.18344 12.4024 9.81661 12.4024 10.2071 12.7929L10.7261 13.3118L12.1056 10.5528C12.275 10.214 12.6213 10 13 10Z"
-      fill="currentColor"
-      fillRule="evenodd"
-    />
-    <path
-      clipRule="evenodd"
-      d="M18.362 4.07698C17.9261 3.85488 17.5101 3.794 17.2197 3.77027C17.1439 3.76408 17.0651 3.75977 16.9854 3.75677C16.8654 2.76692 16.0223 2 15 2H9.00002C7.97779 2 7.13467 2.76692 7.01466 3.75677C6.93495 3.75977 6.85611 3.76408 6.78036 3.77027C6.48993 3.794 6.07394 3.85488 5.63805 4.07698C5.07357 4.3646 4.61462 4.82354 4.327 5.38803C4.10491 5.82392 4.04402 6.2399 4.02029 6.53034C3.99981 6.78098 3.99992 7.06549 4.00001 7.30372L4.00002 7.35V18.4L4.00001 18.4463C3.99992 18.6845 3.99981 18.969 4.02029 19.2197C4.04402 19.5101 4.10491 19.9261 4.327 20.362C4.61462 20.9265 5.07357 21.3854 5.63805 21.673C6.07394 21.8951 6.48993 21.956 6.78036 21.9797C7.03101 22.0002 7.31553 22.0001 7.55377 22L7.60002 22H16.4L16.4463 22C16.6845 22.0001 16.969 22.0002 17.2197 21.9797C17.5101 21.956 17.9261 21.8951 18.362 21.673C18.9265 21.3854 19.3854 20.9265 19.673 20.362C19.8951 19.9261 19.956 19.5101 19.9798 19.2197C20.0002 18.969 20.0001 18.6845 20 18.4463L20 18.4V7.35L20 7.30372C20.0001 7.06549 20.0002 6.78098 19.9798 6.53034C19.956 6.2399 19.8951 5.82392 19.673 5.38803C19.3854 4.82354 18.9265 4.3646 18.362 4.07698ZM6.10902 6.29601C6.00002 6.50992 6.00002 6.78995 6.00002 7.35V18.4C6.00002 18.9601 6.00002 19.2401 6.10902 19.454C6.20489 19.6422 6.35787 19.7951 6.54603 19.891C6.75995 20 7.03997 20 7.60002 20H16.4C16.9601 20 17.2401 20 17.454 19.891C17.6422 19.7951 17.7952 19.6422 17.891 19.454C18 19.2401 18 18.9601 18 18.4V7.35C18 6.78995 18 6.50992 17.891 6.29601C17.7952 6.10785 17.6422 5.95487 17.454 5.85899C17.3319 5.79679 17.1883 5.77009 16.9835 5.75863C16.8566 6.74102 16.017 7.5 15 7.5H9.00002C7.98309 7.5 7.14343 6.74102 7.01659 5.75863C6.81171 5.77009 6.66811 5.7968 6.54603 5.85899C6.35787 5.95487 6.20489 6.10785 6.10902 6.29601ZM15 4H9.00002V5.5H15V4Z"
-      fill="currentColor"
-      fillRule="evenodd"
-    />
-  </svg>
-);
-
 const CustomersIcon = () => (
   <svg
     height="24"
@@ -735,7 +710,6 @@ export default function MerchantSidebar() {
   const insightsSalesUrl = `/merchant/store/${effectiveStoreId}/insights/sales`;
   const insightsProductMixUrl = `/merchant/store/${effectiveStoreId}/insights/product-mix`;
   const insightsOperationsUrl = `/merchant/store/${effectiveStoreId}/insights/operations-quality`;
-  const reportsUrl = `/merchant/store/${effectiveStoreId}/reports`;
   const customersInsightsUrl = `/merchant/store/${effectiveStoreId}/customers/insights`;
   const customersRatingsUrl = `/merchant/store/${effectiveStoreId}/customers/ratings-reviews`;
   const ordersUrl = `/merchant/store/${effectiveStoreId}/orders`;
@@ -762,10 +736,6 @@ export default function MerchantSidebar() {
   const isCustomersInsightsActive =
     pathname === customersInsightsUrl ||
     (pathname?.startsWith('/merchant/store/') && pathname?.endsWith('/customers/insights'));
-  const isReportsActive =
-    pathname === reportsUrl ||
-    pathname?.startsWith('/merchant/reports') ||
-    (pathname?.startsWith('/merchant/store/') && pathname?.includes('/reports'));
   const isOrdersActive =
     pathname === ordersUrl ||
     pathname?.startsWith('/merchant/orders') ||
@@ -919,16 +889,6 @@ export default function MerchantSidebar() {
                 {insightsExpanded && (
                   <>
                     <NavItem
-                      href={insightsOptimizationUrl}
-                      label="Optimization score"
-                      active={
-                        pathname === insightsOptimizationUrl ||
-                        (pathname?.startsWith('/merchant/store/') &&
-                          pathname?.includes('/insights/optimization-score'))
-                      }
-                      isSubItem
-                    />
-                    <NavItem
                       href={insightsSalesUrl}
                       label="Sales"
                       active={
@@ -938,7 +898,7 @@ export default function MerchantSidebar() {
                       }
                       isSubItem
                     />
-                    <NavItem
+                    {/* <NavItem
                       href={insightsProductMixUrl}
                       label="Product mix"
                       active={
@@ -947,7 +907,7 @@ export default function MerchantSidebar() {
                           pathname?.includes('/insights/product-mix'))
                       }
                       isSubItem
-                    />
+                    /> */}
                     <NavItem
                       href={insightsOperationsUrl}
                       label="Operations quality"
@@ -962,16 +922,8 @@ export default function MerchantSidebar() {
                 )}
               </div>
 
-              {/* Reports */}
-              <NavItem
-                href={reportsUrl}
-                label="Reports"
-                active={isReportsActive}
-                icon={ReportsIcon}
-              />
-
               {/* Customers */}
-              <div className="w-[256px]">
+              {/* <div className="w-[256px]">
                 <NavItem
                   label="Customers"
                   active={isCustomersActive}
@@ -1001,7 +953,7 @@ export default function MerchantSidebar() {
                     />
                   </>
                 )}
-              </div>
+              </div> */}
 
               {/* Orders */}
               <NavItem href={ordersUrl} label="Orders" active={isOrdersActive} icon={OrdersIcon} />
@@ -1052,7 +1004,7 @@ export default function MerchantSidebar() {
               />
 
               {/* Financials */}
-              <div className="w-[256px]">
+              {/* <div className="w-[256px]">
                 <NavItem
                   label="Financials"
                   active={isFinancialsActive}
@@ -1095,7 +1047,7 @@ export default function MerchantSidebar() {
                     />
                   </>
                 )}
-              </div>
+              </div> */}
 
               {/* Settings */}
               <div className="w-[256px]">
@@ -1109,7 +1061,7 @@ export default function MerchantSidebar() {
                 />
                 {settingsExpanded && (
                   <>
-                    <NavItem
+                    {/* <NavItem
                       href={settingsAccountUrl}
                       label="Account settings"
                       active={
@@ -1118,7 +1070,7 @@ export default function MerchantSidebar() {
                           pathname?.includes('/settings/account'))
                       }
                       isSubItem
-                    />
+                    /> */}
                     <NavItem
                       href={settingsPricingUrl}
                       label="Pricing plans"
@@ -1139,7 +1091,7 @@ export default function MerchantSidebar() {
                       }
                       isSubItem
                     />
-                    <NavItem
+                    {/* <NavItem
                       href={usersUrl}
                       label="Manage Users"
                       active={
@@ -1150,7 +1102,7 @@ export default function MerchantSidebar() {
                         false
                       }
                       isSubItem
-                    />
+                    /> */}
                     <NavItem
                       href={settingsStoreCommUrl}
                       label="Store communications"
@@ -1234,7 +1186,7 @@ export default function MerchantSidebar() {
           {/* User Profile Section */}
           <div
             ref={profileDropdownRef}
-            className="flex flex-col justify-end pt-4 relative"
+            className="flex flex-col justify-end relative"
             style={{ boxShadow: 'rgba(0, 0, 0, 0.2) 0px 4px 16px' }}
           >
             {/* Profile Dropdown */}

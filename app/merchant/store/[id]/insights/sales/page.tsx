@@ -382,7 +382,6 @@ export default function SalesPage() {
         <div className="mb-6 flex items-start justify-between">
           <div className="flex items-center gap-2">
             <h1 className="text-3xl font-bold text-gray-900">Overview</h1>
-            <Info className="h-5 w-5 text-gray-400" />
           </div>
           <p className="text-sm text-gray-600">
             Last updated on{' '}

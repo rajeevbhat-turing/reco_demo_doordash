@@ -95,6 +95,9 @@ export interface MerchantUser {
 }
 
 interface MerchantAuthStore {
+  // Hydration state - true once localStorage data is loaded
+  _hasHydrated: boolean;
+  setHasHydrated: (state: boolean) => void;
   // Current authenticated merchant
   currentMerchant: MerchantUser | null;
   // All registered merchants
@@ -129,6 +132,8 @@ const initialMerchants: MerchantUser[] = [];
 export const useMerchantAuthStore = create<MerchantAuthStore>()(
   persist(
     (set, get) => ({
+      _hasHydrated: false,
+      setHasHydrated: (state: boolean) => set({ _hasHydrated: state }),
       currentMerchant: null,
       merchants: initialMerchants,
       tempStore: null,
@@ -309,6 +314,9 @@ export const useMerchantAuthStore = create<MerchantAuthStore>()(
     }),
     {
       name: 'merchant-auth',
+      onRehydrateStorage: () => (state) => {
+        state?.setHasHydrated(true);
+      },
     }
   )
 );

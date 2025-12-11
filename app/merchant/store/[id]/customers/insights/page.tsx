@@ -283,14 +283,6 @@ export default function CustomerInsightsPage() {
               </div>
             </div>
           </div>
-
-          {/* DashPass Description */}
-          <div className="pt-4 border-t border-gray-200">
-            <p className="text-sm text-gray-600">
-              DashPass is a loyalty subscription service for customers. DashPass customers
-              frequently place high-value orders.
-            </p>
-          </div>
         </div>
 
         {/* Customer Locations Section */}
@@ -300,7 +292,7 @@ export default function CustomerInsightsPage() {
             <p className="text-sm text-gray-600 mb-4">Top delivery destinations</p>
 
             {/* Customer Type Filters */}
-            <div className="flex items-center gap-2 mb-4">
+            {/* <div className="flex items-center gap-2 mb-4">
               {['All', 'New', 'Occasional', 'Frequent'].map(type => (
                 <button
                   key={type}
@@ -314,12 +306,7 @@ export default function CustomerInsightsPage() {
                   {type}
                 </button>
               ))}
-            </div>
-
-            <p className="text-sm text-gray-600 mb-4">
-              This map shows customer locations when at least 2 customers place orders from the same
-              zip code.
-            </p>
+            </div> */}
           </div>
 
           {/* Customer Locations List */}
@@ -349,18 +336,6 @@ export default function CustomerInsightsPage() {
               </p>
             </div>
           )}
-
-          {/* Map Placeholder */}
-          <div className="w-full h-[600px] bg-gray-100 border border-gray-200 rounded-lg flex items-center justify-center">
-            <div className="text-center text-gray-500">
-              <p className="text-lg font-medium mb-2">Map View</p>
-              <p className="text-sm">
-                {insightsData?.customerLocations && insightsData.customerLocations.length > 0
-                  ? `${insightsData.customerLocations.length} customer location${insightsData.customerLocations.length === 1 ? '' : 's'} found`
-                  : 'Customer locations map will be displayed here'}
-              </p>
-            </div>
-          </div>
         </div>
       </div>
     </MerchantLayout>

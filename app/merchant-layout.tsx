@@ -73,9 +73,15 @@ export default function MerchantLayout({ children }: { children: React.ReactNode
   const router = useRouter();
   const pathname = usePathname();
   const currentMerchant = useMerchantAuthStore(state => state.currentMerchant);
+  const hasHydrated = useMerchantAuthStore(state => state._hasHydrated);
 
   // Handle authentication and onboarding redirects
   useLayoutEffect(() => {
+    // Wait for store to hydrate from localStorage before making auth decisions
+    if (!hasHydrated) {
+      return;
+    }
+
     // Auth pages handling (sign-in and sign-up)
     const isAuthPage =
       pathname === '/merchant/auth' ||
@@ -131,13 +137,19 @@ export default function MerchantLayout({ children }: { children: React.ReactNode
     if (!pathname?.startsWith('/merchant')) {
       router.replace(`/merchant/store/${currentMerchant.primaryStoreId}`);
     }
-  }, [pathname, currentMerchant, router]);
+  }, [pathname, currentMerchant, router, hasHydrated]);
 
   // Show auth pages without wrapper components (only if not logged in)
   const isAuthPage =
     pathname === '/merchant/auth' ||
     pathname?.startsWith('/merchant/auth/') ||
     pathname === '/merchant';
+  
+  // Show nothing while hydrating (prevents flash of wrong content)
+  if (!hasHydrated) {
+    return null;
+  }
+
   if (isAuthPage) {
     // If logged in, show nothing while redirecting
     if (currentMerchant) {

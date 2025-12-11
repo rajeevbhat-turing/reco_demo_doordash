@@ -83,3 +83,61 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<{
     return NextResponse.json({ success: false, message: 'Internal server error' }, { status: 500 });
   }
 }
+
+export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  try {
+    const { id: storeId } = await params;
+
+    if (!storeId) {
+      return NextResponse.json(
+        { success: false, message: 'Store ID is required' },
+        { status: 400 }
+      );
+    }
+
+    const body = await request.json();
+    const { name, phone, email } = body;
+
+    // Build dynamic update query
+    const updates: string[] = [];
+    const values: any[] = [];
+
+    if (name !== undefined) {
+      updates.push('name = ?');
+      values.push(name);
+    }
+    if (phone !== undefined) {
+      updates.push('phone = ?');
+      values.push(phone);
+    }
+    if (email !== undefined) {
+      updates.push('email = ?');
+      values.push(email);
+    }
+
+    if (updates.length === 0) {
+      return NextResponse.json(
+        { success: false, message: 'No fields to update' },
+        { status: 400 }
+      );
+    }
+
+    // Add storeId to values for WHERE clause
+    values.push(storeId);
+
+    await merchantDb.run(
+      `UPDATE stores SET ${updates.join(', ')} WHERE id = ?`,
+      values
+    );
+
+    console.log(`✅ Updated store ${storeId}: ${updates.join(', ')}`);
+
+    return NextResponse.json({
+      success: true,
+      message: 'Store updated successfully',
+    });
+  } catch (error: any) {
+    console.error('❌ Error updating store:', error);
+    return NextResponse.json({ success: false, message: 'Internal server error' }, { status: 500 });
+  }
+}

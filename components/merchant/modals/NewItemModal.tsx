@@ -1,13 +1,15 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
-import { X } from 'lucide-react';
+import { useEffect, useMemo, useState, useRef } from 'react';
+import { X, Upload, ImageIcon } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { MenuCategory, useMerchantMenuStore } from '@/store/merchant-menu-store';
 import { useMerchantModifiersStore } from '@/store/merchant-modifiers-store';
 import { isValidPrice, isValidTaxRate } from '@/lib/utils/helperFunctions';
 import { useGlobalContext } from '@/app/global-context';
 import type { Modifier } from '@/constants/merchant-store-data';
+
+const MAX_IMAGE_SIZE = 1 * 1024 * 1024; // 1MB in bytes
 
 interface NewItemModalProps {
   isOpen: boolean;
@@ -36,34 +38,22 @@ export default function NewItemModal({
   const [nameError, setNameError] = useState('');
   const [priceError, setPriceError] = useState('');
   const [taxError, setTaxError] = useState('');
+  
+  // Image upload state
+  const [showImageModal, setShowImageModal] = useState(false);
+  const [imageBase64, setImageBase64] = useState('');
+  const [imageError, setImageError] = useState('');
+  const [isDragging, setIsDragging] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const categoryNames = useMemo(
     () => categories.map(c => c.name),
     [categories]
   );
 
-  const menuItems = useMemo(
-    () =>
-      categories.flatMap(cat =>
-        cat.items.map(item => ({
-          id: item.id,
-          name: item.name,
-          category: cat.name,
-        }))
-      ),
-    [categories]
-  );
-
   const addItem = useMerchantMenuStore(state => state.addItem);
   const updateModifier = useMerchantModifiersStore(state => state.updateModifier);
   const { modifiers } = useMerchantModifiersStore();
-  const itemsWithModifiers = useMemo(() => {
-    const ids = new Set<string>();
-    modifiers.forEach(mod => {
-      mod.usedIn?.forEach(ref => ids.add(ref.id));
-    });
-    return menuItems.filter(item => ids.has(item.id));
-  }, [menuItems, modifiers]);
   const { setSnackbar } = useGlobalContext();
 
   useEffect(() => {
@@ -88,6 +78,10 @@ export default function NewItemModal({
       setNameError('');
       setPriceError('');
       setTaxError('');
+      setShowImageModal(false);
+      setImageBase64('');
+      setImageError('');
+      setIsDragging(false);
       if (categoryNames.length > 0) {
         setCategory(categoryNames[0]);
       } else {
@@ -105,8 +99,8 @@ export default function NewItemModal({
     }
   }, [isOpen, categoryNames, prefillCategory]);
 
-  // Create and persist new menu item with attached modifiers
-  const handleCreate = () => {
+  // Validate form fields and open image modal
+  const handleCreateClick = () => {
     let hasError = false;
     if (!name.trim()) {
       setNameError('Name is required.');
@@ -128,6 +122,74 @@ export default function NewItemModal({
     }
     if (hasError) return;
 
+    // Open image upload modal
+    setShowImageModal(true);
+  };
+
+  // Process image file
+  const processImageFile = (file: File) => {
+    setImageError('');
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      setImageError('Please select a valid image file.');
+      return;
+    }
+
+    // Validate file size (must be under 1MB)
+    if (file.size > MAX_IMAGE_SIZE) {
+      setImageError('Image must be less than 1MB.');
+      return;
+    }
+
+    // Convert to base64
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const result = e.target?.result as string;
+      setImageBase64(result);
+      setImageError('');
+    };
+    reader.onerror = () => {
+      setImageError('Failed to read image file.');
+    };
+    reader.readAsDataURL(file);
+  };
+
+  // Handle file input change
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      processImageFile(file);
+    }
+  };
+
+  // Handle drag and drop
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+    const file = e.dataTransfer.files?.[0];
+    if (file) {
+      processImageFile(file);
+    }
+  };
+
+  // Create and persist new menu item with image
+  const handleFinalCreate = () => {
+    if (!imageBase64) {
+      setImageError('Please select an image for this item.');
+      return;
+    }
+
     const selectedCategory = categories.find(cat => cat.name === category) ?? categories[0];
     const newId = `item-${Date.now()}`;
     const normalizedPrice = price.trim().startsWith('$') ? price.trim() : `$${price.trim()}`;
@@ -136,10 +198,12 @@ export default function NewItemModal({
     addItem(selectedCategory?.id ?? '', {
       id: newId,
       name: trimmedName,
-      image: '',
+      image: imageBase64,
       pickupPrice: normalizedPrice,
       deliveryPrice: normalizedPrice,
       status: 'In stock',
+      taxRate: taxRate.trim().replace('%', ''),
+      description: description.trim(),
     });
 
     attachedModifiers.forEach(mod => {
@@ -303,27 +367,27 @@ export default function NewItemModal({
               />
               {modifierSearch && (
                 <div className="absolute left-0 right-0 bottom-full mb-1 rounded-md border border-gray-200 bg-white shadow-lg max-h-48 overflow-y-auto z-30">
-                  {itemsWithModifiers
-                    .filter(item => item.name.toLowerCase().includes(modifierSearch.toLowerCase()))
-                    .map(item => (
+                  {modifiers
+                    .filter(mod => mod.name.toLowerCase().includes(modifierSearch.toLowerCase()))
+                    .filter(mod => !attachedModifiers.some(attached => attached.id === mod.id))
+                    .map(mod => (
                       <button
-                        key={`${item.id}-${item.category}`}
+                        key={mod.id}
                         onClick={() => {
                           setModifierSearch('');
-                          const related = modifiers.filter(mod =>
-                            mod.usedIn?.some(ref => ref.id === item.id)
-                          );
-                          setAttachedModifiers(prev => {
-                            const byId = new Map<string, Modifier>();
-                            [...prev, ...related].forEach(m => byId.set(m.id, m));
-                            return Array.from(byId.values());
-                          });
+                          setAttachedModifiers(prev => [...prev, mod]);
                         }}
                         className="w-full text-left px-3 py-2 text-sm hover:bg-gray-50"
                       >
-                        {item.name}
+                        <div className="font-medium">{mod.name}</div>
+                        {mod.options && mod.options.length > 0 && (
+                          <div className="text-xs text-gray-500">{mod.options.slice(0, 3).join(', ')}{mod.options.length > 3 ? '...' : ''}</div>
+                        )}
                       </button>
                     ))}
+                  {modifiers.filter(mod => mod.name.toLowerCase().includes(modifierSearch.toLowerCase())).filter(mod => !attachedModifiers.some(attached => attached.id === mod.id)).length === 0 && (
+                    <div className="px-3 py-2 text-sm text-gray-500">No modifiers found</div>
+                  )}
                 </div>
               )}
             </div>
@@ -359,13 +423,132 @@ export default function NewItemModal({
             Cancel
           </button>
           <button
-            onClick={handleCreate}
+            onClick={handleCreateClick}
             className="px-4 py-2 rounded-[28px] bg-red-600 text-white text-sm font-semibold hover:bg-red-700"
           >
             Create and add photo
           </button>
         </div>
       </div>
+
+      {/* Image Upload Modal */}
+      {showImageModal && (
+        <>
+          <div className="fixed inset-0 bg-black/50 z-[60]" onClick={() => setShowImageModal(false)} />
+          <div className="fixed inset-0 z-[70] flex items-center justify-center p-4">
+            <div className="bg-white rounded-xl shadow-2xl w-full max-w-md">
+              {/* Modal Header */}
+              <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
+                <h3 className="text-lg font-semibold text-gray-900">Add item photo</h3>
+                <button
+                  onClick={() => setShowImageModal(false)}
+                  className="p-2 rounded-full hover:bg-gray-100"
+                  aria-label="Close"
+                >
+                  <X className="h-5 w-5 text-gray-600" />
+                </button>
+              </div>
+
+              {/* Modal Body */}
+              <div className="p-6">
+                <p className="text-sm text-gray-600 mb-4">
+                  Upload an image for <span className="font-semibold">{name}</span>. Image is required and must be less than 1MB.
+                </p>
+
+                {/* Drop Zone */}
+                <div
+                  onClick={() => fileInputRef.current?.click()}
+                  onDragOver={handleDragOver}
+                  onDragLeave={handleDragLeave}
+                  onDrop={handleDrop}
+                  className={`relative border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${
+                    isDragging
+                      ? 'border-red-500 bg-red-50'
+                      : imageBase64
+                      ? 'border-green-500 bg-green-50'
+                      : imageError
+                      ? 'border-red-500 bg-red-50'
+                      : 'border-gray-300 hover:border-gray-400 hover:bg-gray-50'
+                  }`}
+                >
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFileChange}
+                    className="hidden"
+                  />
+
+                  {imageBase64 ? (
+                    <div className="space-y-3">
+                      <img
+                        src={imageBase64}
+                        alt="Preview"
+                        className="w-32 h-32 object-cover rounded-lg mx-auto"
+                      />
+                      <p className="text-sm text-green-600 font-medium">Image selected</p>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setImageBase64('');
+                          setImageError('');
+                          if (fileInputRef.current) {
+                            fileInputRef.current.value = '';
+                          }
+                        }}
+                        className="text-sm text-gray-600 hover:text-gray-800 underline"
+                      >
+                        Remove and select another
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      <div className="w-16 h-16 mx-auto rounded-full bg-gray-100 flex items-center justify-center">
+                        {isDragging ? (
+                          <Upload className="h-8 w-8 text-red-500" />
+                        ) : (
+                          <ImageIcon className="h-8 w-8 text-gray-400" />
+                        )}
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-gray-900">
+                          {isDragging ? 'Drop image here' : 'Click to upload or drag and drop'}
+                        </p>
+                        <p className="text-xs text-gray-500 mt-1">PNG, JPG, GIF up to 1MB</p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {imageError && (
+                  <p className="text-sm text-red-600 mt-2">{imageError}</p>
+                )}
+              </div>
+
+              {/* Modal Footer */}
+              <div className="flex items-center justify-end gap-2 px-6 py-4 border-t border-gray-200">
+                <button
+                  onClick={() => setShowImageModal(false)}
+                  className="px-4 py-2 rounded-[28px] border border-gray-300 text-sm font-semibold text-gray-800 hover:bg-gray-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleFinalCreate}
+                  disabled={!imageBase64}
+                  className={`px-4 py-2 rounded-[28px] text-sm font-semibold ${
+                    imageBase64
+                      ? 'bg-red-600 text-white hover:bg-red-700'
+                      : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                  }`}
+                >
+                  Create item
+                </button>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
     </>
   );
 }

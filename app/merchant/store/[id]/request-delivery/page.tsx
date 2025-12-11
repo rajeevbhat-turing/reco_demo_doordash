@@ -210,19 +210,6 @@ export default function RequestDeliveryPage() {
               </div>
             </div>
 
-            {/* Map */}
-            <div className="bg-white border border-gray-200 rounded-lg p-6 mb-6">
-              <div className="w-full h-96 bg-gray-100 rounded-lg flex items-center justify-center relative overflow-hidden">
-                {/* Map placeholder */}
-                <div className="text-center text-gray-500">
-                  <p className="text-sm mb-2">Map View</p>
-                  <p className="text-xs">Map will be displayed here</p>
-                </div>
-                {/* Mapbox logo placeholder */}
-                <div className="absolute bottom-2 left-2 text-xs text-gray-400">mapbox</div>
-              </div>
-            </div>
-
             {/* Dropoff Instructions */}
             <div className="bg-white border border-gray-200 rounded-lg p-6">
               <Label

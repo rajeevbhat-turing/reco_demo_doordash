@@ -21,6 +21,8 @@ export interface MenuItem {
   pickupPrice: string
   deliveryPrice: string
   status: ItemStatus
+  taxRate?: string
+  description?: string
 }
 
 export interface MenuCategory {

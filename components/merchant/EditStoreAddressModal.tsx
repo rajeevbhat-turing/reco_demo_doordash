@@ -1,32 +1,37 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from "react"
-import { Search } from "lucide-react"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+import { useState, useEffect } from 'react';
+import { Search } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 interface EditStoreAddressModalProps {
-  isOpen: boolean
-  onClose: () => void
-  currentAddress: string
-  onSave: (address: string) => void
+  isOpen: boolean;
+  onClose: () => void;
+  currentAddress: string;
+  onSave: (address: string) => void;
 }
 
-export default function EditStoreAddressModal({ isOpen, onClose, currentAddress, onSave }: EditStoreAddressModalProps) {
-  const [address, setAddress] = useState(currentAddress)
-  const [latitude, setLatitude] = useState("47.615523976273835")
-  const [longitude, setLongitude] = useState("-122.20412006601691")
+export default function EditStoreAddressModal({
+  isOpen,
+  onClose,
+  currentAddress,
+  onSave,
+}: EditStoreAddressModalProps) {
+  const [address, setAddress] = useState(currentAddress);
+  const [latitude, setLatitude] = useState('47.615523976273835');
+  const [longitude, setLongitude] = useState('-122.20412006601691');
 
   useEffect(() => {
     if (isOpen) {
-      setAddress(currentAddress)
+      setAddress(currentAddress);
     }
-  }, [isOpen, currentAddress])
+  }, [isOpen, currentAddress]);
 
   const handleSave = () => {
-    onSave(address)
-  }
+    onSave(address);
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -47,33 +52,10 @@ export default function EditStoreAddressModal({ isOpen, onClose, currentAddress,
                 id="address"
                 type="text"
                 value={address}
-                onChange={(e) => setAddress(e.target.value)}
+                onChange={e => setAddress(e.target.value)}
                 className="w-full pl-9"
                 placeholder="Enter address"
               />
-            </div>
-          </div>
-
-          {/* Map */}
-          <div>
-            <div className="w-full h-96 bg-gray-100 border border-gray-200 rounded-lg overflow-hidden relative">
-              {/* Map placeholder */}
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="text-center text-gray-500">
-                  <p className="text-sm mb-2">Map View</p>
-                  <p className="text-xs">Google Maps will be displayed here</p>
-                </div>
-              </div>
-              {/* Google logo placeholder */}
-              <div className="absolute bottom-2 left-2 text-xs text-gray-400">
-                Google
-              </div>
-              {/* Map pin */}
-              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                <div className="w-8 h-8 bg-gray-900 rounded-full flex items-center justify-center">
-                  <span className="text-white text-xs font-bold">G</span>
-                </div>
-              </div>
             </div>
           </div>
 
@@ -91,7 +73,8 @@ export default function EditStoreAddressModal({ isOpen, onClose, currentAddress,
 
           {/* Instructions */}
           <p className="text-sm text-gray-600">
-            Drag the map to fine-tune your store's location. We'll use this information to assist Dashers and customers when they pick up orders.
+            Drag the map to fine-tune your store's location. We'll use this information to assist
+            Dashers and customers when they pick up orders.
           </p>
         </div>
 
@@ -111,6 +94,5 @@ export default function EditStoreAddressModal({ isOpen, onClose, currentAddress,
         </div>
       </DialogContent>
     </Dialog>
-  )
+  );
 }
-

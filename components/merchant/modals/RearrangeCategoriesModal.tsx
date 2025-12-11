@@ -67,19 +67,25 @@ export default function RearrangeCategoriesModal({
           </div>
 
           <div className="px-5 py-4 space-y-2 max-h-[60vh] overflow-y-auto">
-            {localCategories.map(cat => (
-              <div
-                key={cat.id}
-                draggable
-                onDragStart={() => setDraggingId(cat.id)}
-                onDragEnd={() => setDraggingId(null)}
-                onDragOver={e => handleDragOver(e, cat.id)}
-                className="flex items-center gap-3 px-3 py-3 rounded-md border border-gray-200 bg-white shadow-sm cursor-move hover:bg-gray-50"
-              >
-                <GripVertical className="h-4 w-4 text-gray-400" />
-                <span className="text-sm font-medium text-gray-800">{cat.name}</span>
+            {localCategories.length === 0 ? (
+              <div className="flex items-center justify-center py-12 text-gray-500 text-sm">
+                No categories to rearrange
               </div>
-            ))}
+            ) : (
+              localCategories.map(cat => (
+                <div
+                  key={cat.id}
+                  draggable
+                  onDragStart={() => setDraggingId(cat.id)}
+                  onDragEnd={() => setDraggingId(null)}
+                  onDragOver={e => handleDragOver(e, cat.id)}
+                  className="flex items-center gap-3 px-3 py-3 rounded-md border border-gray-200 bg-white shadow-sm cursor-move hover:bg-gray-50"
+                >
+                  <GripVertical className="h-4 w-4 text-gray-400" />
+                  <span className="text-sm font-medium text-gray-800">{cat.name}</span>
+                </div>
+              ))
+            )}
           </div>
 
           <div className="flex items-center justify-end gap-2 px-5 py-4 border-t border-gray-200">

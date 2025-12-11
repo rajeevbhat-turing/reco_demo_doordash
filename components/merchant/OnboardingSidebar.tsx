@@ -23,7 +23,7 @@ interface OnboardingSidebarProps {
 export default function OnboardingSidebar({ currentStep, completedSteps }: OnboardingSidebarProps) {
   const router = useRouter();
   const { currentStoreId, setCurrentStoreId } = useCurrentStore();
-  const { data: restaurants = [], isLoading } = useAllRestaurants();
+  const { data: allRestaurants = [], isLoading } = useAllRestaurants();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const [searchValue, setSearchValue] = useState('');
@@ -33,6 +33,27 @@ export default function OnboardingSidebar({ currentStep, completedSteps }: Onboa
   // Get current merchant info
   const currentMerchant = useMerchantAuthStore(state => state.currentMerchant);
   const signOut = useMerchantAuthStore(state => state.signOut);
+
+  // Filter restaurants to only show the merchant's own stores (during onboarding, only the store being created)
+  const restaurants = useMemo(() => {
+    if (!currentMerchant) return [];
+    
+    // Get all store IDs that belong to this merchant
+    const merchantStoreIds = new Set<string>();
+    
+    // Add primary store (the one being created during onboarding)
+    if (currentMerchant.primaryStoreId) {
+      merchantStoreIds.add(currentMerchant.primaryStoreId);
+    }
+    
+    // Add any additional stores the merchant has access to
+    if (currentMerchant.storeIds) {
+      currentMerchant.storeIds.forEach(id => merchantStoreIds.add(id));
+    }
+    
+    // Filter to only show merchant's own stores
+    return allRestaurants.filter(r => merchantStoreIds.has(r.id));
+  }, [allRestaurants, currentMerchant]);
 
   const currentStore = restaurants?.find(r => r.id === currentStoreId) || restaurants?.[0];
 

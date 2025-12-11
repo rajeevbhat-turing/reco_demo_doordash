@@ -3,27 +3,10 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { ChevronDown, MapPin, ChevronRight } from 'lucide-react';
+import { MapPin, ChevronRight } from 'lucide-react';
 import { DashDoorLogoMark } from '@/components/common/Icons';
 import { useMerchantAuthStore } from '@/store/merchant-auth-store';
 import addressesData from '@/data/addresses.json';
-
-const businessTypes = [
-  { value: 'restaurant', label: 'Restaurant' },
-  {
-    value: 'grocery',
-    label:
-      'Grocery (fresh produce, perishables, shelf stable products, dairy goods, pre-packaged meals)',
-  },
-  { value: 'alcohol', label: 'Alcohol' },
-  {
-    value: 'convenience',
-    label: 'Convenience (everyday products, shelf-stable products, hot food / ready to eat)',
-  },
-  { value: 'flower_shop', label: 'Flower Shop' },
-  { value: 'pet_store', label: 'Pet Store' },
-  { value: 'retail', label: 'Retail' },
-];
 
 export default function MerchantLandingPage() {
   const router = useRouter();
@@ -35,8 +18,6 @@ export default function MerchantLandingPage() {
   const [showAddressDropdown, setShowAddressDropdown] = useState(false);
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
-  const [businessType, setBusinessType] = useState('');
-  const [showBusinessTypeDropdown, setShowBusinessTypeDropdown] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [selectedAddressCoords, setSelectedAddressCoords] = useState<{
     lat: number;
@@ -98,6 +79,30 @@ export default function MerchantLandingPage() {
     }
   }, [showAddressDropdown]);
 
+  // Validate email format
+  const isValidEmail = (emailValue: string): boolean => {
+    // RFC 5322 compliant email regex
+    const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+$/;
+    return emailRegex.test(emailValue);
+  };
+
+  // Validate phone number format (US format)
+  const isValidPhone = (phoneValue: string): boolean => {
+    // Remove all non-digit characters
+    const digitsOnly = phoneValue.replace(/\D/g, '');
+    // Must have exactly 10 digits (US phone number)
+    return digitsOnly.length === 10;
+  };
+
+  // Format phone number as user types
+  const formatPhoneNumber = (value: string): string => {
+    const digitsOnly = value.replace(/\D/g, '');
+    if (digitsOnly.length === 0) return '';
+    if (digitsOnly.length <= 3) return `(${digitsOnly}`;
+    if (digitsOnly.length <= 6) return `(${digitsOnly.slice(0, 3)}) ${digitsOnly.slice(3)}`;
+    return `(${digitsOnly.slice(0, 3)}) ${digitsOnly.slice(3, 6)}-${digitsOnly.slice(6, 10)}`;
+  };
+
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
 
@@ -109,8 +114,8 @@ export default function MerchantLandingPage() {
     }
     if (!email.trim()) {
       newErrors.email = 'Email is required';
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      newErrors.email = 'Please enter a valid email';
+    } else if (!isValidEmail(email)) {
+      newErrors.email = 'Please enter a valid email address';
     } else {
       // Check if email already exists in merchant auth store
       const existingMerchant = getMerchantByEmail(email);
@@ -120,9 +125,8 @@ export default function MerchantLandingPage() {
     }
     if (!phone.trim()) {
       newErrors.phone = 'Phone number is required';
-    }
-    if (!businessType) {
-      newErrors.businessType = 'Please select a business type';
+    } else if (!isValidPhone(phone)) {
+      newErrors.phone = 'Please enter a valid 10-digit phone number';
     }
 
     setErrors(newErrors);
@@ -138,7 +142,7 @@ export default function MerchantLandingPage() {
         storeAddress,
         email,
         phone,
-        businessType,
+        businessType: 'restaurant',
         lat: selectedAddressCoords?.lat,
         lng: selectedAddressCoords?.lng,
       });
@@ -158,8 +162,8 @@ export default function MerchantLandingPage() {
         <div className="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
           {/* Logo and Wordmark */}
           <div className="flex items-center gap-2">
-            <DashDoorLogoMark color="#EB1700" width={32} height={18} />
-            <span className="text-[#EB1700] font-semibold text-lg">for Merchants</span>
+            <DashDoorLogoMark color="##0066cc" width={32} height={18} />
+            <span className="font-semibold text-lg">Merchants</span>
           </div>
 
           {/* Login Button */}
@@ -272,7 +276,7 @@ export default function MerchantLandingPage() {
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <input
-                      type="email"
+                      type="text"
                       placeholder="Email Address"
                       value={email}
                       onChange={e => {
@@ -290,62 +294,22 @@ export default function MerchantLandingPage() {
                   <div>
                     <input
                       type="tel"
-                      placeholder="Store phone"
+                      placeholder="(555) 555-5555"
                       value={phone}
                       onChange={e => {
-                        setPhone(e.target.value);
+                        const formatted = formatPhoneNumber(e.target.value);
+                        setPhone(formatted);
                         if (errors.phone) {
                           setErrors(prev => ({ ...prev, phone: '' }));
                         }
                       }}
+                      maxLength={14}
                       className={`w-full px-3 py-1.5 bg-gray-50 border-2 rounded-lg text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:border-[#191919] ${
                         errors.phone ? 'border-[#EB1700]' : 'border-transparent'
                       }`}
                     />
                     {errors.phone && <p className="text-[#EB1700] text-xs mt-1">{errors.phone}</p>}
                   </div>
-                </div>
-
-                {/* Business Type Dropdown */}
-                <div className="relative">
-                  <button
-                    type="button"
-                    onClick={() => setShowBusinessTypeDropdown(!showBusinessTypeDropdown)}
-                    className={`w-full px-3 py-1.5 bg-gray-50 border-2 rounded-lg text-left text-sm flex items-center justify-between focus:outline-none focus:border-[#191919] ${
-                      errors.businessType ? 'border-[#EB1700]' : 'border-transparent'
-                    }`}
-                  >
-                    <span className={businessType ? 'text-gray-900' : 'text-gray-500'}>
-                      {businessTypes.find(t => t.value === businessType)?.label ||
-                        'Select your business type'}
-                    </span>
-                    <ChevronDown
-                      className={`h-4 w-4 text-[#EB1700] transition-transform flex-shrink-0 ${showBusinessTypeDropdown ? 'rotate-180' : ''}`}
-                    />
-                  </button>
-                  {showBusinessTypeDropdown && (
-                    <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-48 overflow-auto">
-                      {businessTypes.map(type => (
-                        <button
-                          key={type.value}
-                          type="button"
-                          onClick={() => {
-                            setBusinessType(type.value);
-                            setShowBusinessTypeDropdown(false);
-                            if (errors.businessType) {
-                              setErrors(prev => ({ ...prev, businessType: '' }));
-                            }
-                          }}
-                          className="w-full px-3 py-2 text-left text-sm text-gray-900 hover:bg-gray-50"
-                        >
-                          {type.label}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                  {errors.businessType && (
-                    <p className="text-[#EB1700] text-xs mt-1">{errors.businessType}</p>
-                  )}
                 </div>
 
                 {/* Terms Text */}

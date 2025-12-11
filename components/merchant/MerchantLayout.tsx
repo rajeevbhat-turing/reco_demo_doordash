@@ -10,7 +10,7 @@ export default function MerchantLayout({ children }: { children: React.ReactNode
         className="min-h-screen bg-white overflow-hidden flex flex-col"
         suppressHydrationWarning
         style={{
-          fontFamily: 'DD-TTNorms, ProximaNova, "Avenir Next", Avenir, sans-serif',
+          fontFamily: 'Inter, DD-TTNorms, ProximaNova, "Avenir Next", Avenir, sans-serif',
         }}
       >
         {/* Left navigation */}

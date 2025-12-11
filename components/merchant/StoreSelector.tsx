@@ -125,7 +125,7 @@ export default function StoreSelector({ isOpen, onClose, restaurants, isLoading 
             <span 
               className="text-sm font-medium text-gray-900"
               style={{
-                fontFamily: 'TT Norms, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
+                fontFamily: 'Inter, TT Norms, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
                 fontSize: '14px',
                 fontWeight: 400,
                 lineHeight: '20px',
@@ -139,7 +139,7 @@ export default function StoreSelector({ isOpen, onClose, restaurants, isLoading 
           <div className="mb-2" />
           
           {/* Add Store Button */}
-          <a
+          {/* <a
             href="/merchant/onboarding/choose-additional-store-or-business"
             className="block"
             style={{
@@ -154,7 +154,7 @@ export default function StoreSelector({ isOpen, onClose, restaurants, isLoading 
                 minHeight: '40px',
                 boxShadow: 'inset 0 0 0 1px #d6d6d6',
                 border: 'none',
-                fontFamily: 'TT Norms, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
+                fontFamily: 'Inter, TT Norms, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
                 fontSize: '14px',
                 fontWeight: 700,
                 lineHeight: '20px',
@@ -163,7 +163,7 @@ export default function StoreSelector({ isOpen, onClose, restaurants, isLoading 
             >
               Add store or business
             </button>
-          </a>
+          </a> */}
           
           <div className="my-4" />
           
@@ -185,7 +185,7 @@ export default function StoreSelector({ isOpen, onClose, restaurants, isLoading 
               <span 
                 className="text-sm font-medium text-gray-600"
                 style={{
-                  fontFamily: 'TT Norms, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
+                  fontFamily: 'Inter, TT Norms, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
                   fontSize: '14px',
                   fontWeight: 400,
                   lineHeight: '20px',
@@ -244,7 +244,7 @@ export default function StoreSelector({ isOpen, onClose, restaurants, isLoading 
                           <div 
                             className="text-sm font-medium text-gray-900 mb-0.5"
                             style={{
-                              fontFamily: 'TT Norms, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
+                              fontFamily: 'Inter, TT Norms, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
                               fontSize: '14px',
                               fontWeight: 400,
                               lineHeight: '20px',
@@ -256,7 +256,7 @@ export default function StoreSelector({ isOpen, onClose, restaurants, isLoading 
                           <div 
                             className="text-sm text-gray-600"
                             style={{
-                              fontFamily: 'TT Norms, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
+                              fontFamily: 'Inter, TT Norms, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
                               fontSize: '14px',
                               fontWeight: 400,
                               lineHeight: '20px',

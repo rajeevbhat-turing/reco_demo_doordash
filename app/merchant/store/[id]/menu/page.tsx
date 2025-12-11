@@ -70,7 +70,7 @@ export default function MerchantStoreMenuPage() {
       </div>
 
       {/* Information Banner */}
-      {showBanner && (
+      {/* {showBanner && (
         <div className="mb-6 bg-blue-50 border border-blue-200 rounded-lg p-4 flex items-start gap-3 relative">
           <Star className="h-5 w-5 text-blue-600 mt-0.5 flex-shrink-0" />
           <div className="flex-1">
@@ -79,9 +79,6 @@ export default function MerchantStoreMenuPage() {
               automatically set prep times for your items. Confirm that they&apos;re correct and
               make any edits to help ensure Dashers arrive at the right time.
             </p>
-            {/* <button className="text-sm font-medium text-blue-600 hover:text-blue-700">
-              Review prep times
-            </button> */}
           </div>
           <button
             onClick={() => setShowBanner(false)}
@@ -91,7 +88,7 @@ export default function MerchantStoreMenuPage() {
             <X className="h-4 w-4" />
           </button>
         </div>
-      )}
+      )} */}
 
       {/* Tabs content */}
       {activeTab === 'overview' ? (

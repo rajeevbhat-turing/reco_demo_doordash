@@ -521,9 +521,9 @@ export default function MerchantStorePage() {
 
   return (
     <MerchantLayout>
-      <div className="grid grid-cols-12 gap-6">
+      <div className="flex flex-col gap-6 max-w-5xl mx-auto">
         {/* Main content */}
-        <div className="col-span-12 lg:col-span-8">
+        <div className="w-full">
           <div className="mb-2 text-sm text-gray-600">Welcome back, {userDisplayName}</div>
           <h1 className="text-2xl font-extrabold mb-4">Today's overview</h1>
 
@@ -541,7 +541,7 @@ export default function MerchantStorePage() {
           </div>
 
           {/* Insights filter tabs */}
-          <div className="flex items-center justify-between mb-3">
+          {/* <div className="flex items-center justify-between mb-3">
             <h2 className="font-semibold">Insights and actions</h2>
             <div className="flex items-center gap-2 text-xs">
               <button
@@ -589,9 +589,9 @@ export default function MerchantStorePage() {
                 Announcements
               </button>
             </div>
-          </div>
+          </div> */}
 
-          <div className="space-y-4">
+          {/* <div className="space-y-4">
             {showTips && (
               <InsightCard
                 title="Manage your business, right from your phone"
@@ -608,9 +608,6 @@ export default function MerchantStorePage() {
                   <div className="font-semibold mb-1">
                     New! See how DashDoor can help grow your business
                   </div>
-                  {/* <button className="inline-flex items-center rounded-full border border-gray-300 text-xs px-3 py-1.5">
-                    View solutions center
-                  </button> */}
                 </div>
                 <div className="text-gray-300">
                   <Megaphone className="h-12 w-12" />
@@ -623,9 +620,6 @@ export default function MerchantStorePage() {
                 <div>
                   <div className="text-sm text-gray-500 mb-1">Growth</div>
                   <div className="font-semibold mb-1">You missed Most Loved for April</div>
-                  {/* <button className="inline-flex items-center rounded-full border border-gray-300 text-xs px-3 py-1.5">
-                    View performance
-                  </button> */}
                 </div>
                 <div className="text-gray-300">
                   <TrendingUp className="h-12 w-12" />
@@ -634,12 +628,12 @@ export default function MerchantStorePage() {
             )}
 
             {showOperations && <OperationsReviewCard />}
-          </div>
+          </div> */}
         </div>
 
         {/* Right rail */}
-        <div className="col-span-12 lg:col-span-4">
-          <div className="rounded-lg border border-gray-200 bg-white p-4 mb-4">
+        <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="rounded-lg border border-gray-200 bg-white p-4">
             <div className="flex items-center justify-between mb-2">
               <div className="font-semibold">Gross sales</div>
               <select
@@ -689,7 +683,7 @@ export default function MerchantStorePage() {
             </button>
           </div>
 
-          <div className="rounded-lg border border-gray-200 bg-white p-4 mb-4">
+          <div className="rounded-lg border border-gray-200 bg-white p-4">
             <div className="font-semibold mb-2">Operations</div>
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
@@ -727,7 +721,7 @@ export default function MerchantStorePage() {
             </button>
           </div>
 
-          <div className="rounded-lg border border-gray-200 bg-white p-4">
+          {/* <div className="rounded-lg border border-gray-200 bg-white p-4">
             <div className="font-semibold mb-2">Customers</div>
             <div className="space-y-1 text-sm">
               <div className="flex justify-between">
@@ -749,7 +743,7 @@ export default function MerchantStorePage() {
             >
               View customers insights
             </button>
-          </div>
+          </div> */}
         </div>
       </div>
     </MerchantLayout>

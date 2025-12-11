@@ -164,10 +164,8 @@ export default function MerchantSignUpPage() {
     } else if (field === 'mobileNumber') {
       if (!value.trim()) {
         newErrors.mobileNumber = 'Phone number is required';
-      } else if (!/^\d+$/.test(value)) {
-        newErrors.mobileNumber = 'Phone number must contain only digits';
-      } else if (value.length < 10) {
-        newErrors.mobileNumber = 'Phone number is invalid';
+      } else if (!isValidPhone(value)) {
+        newErrors.mobileNumber = 'Please enter a valid 10-digit phone number';
       } else {
         delete newErrors.mobileNumber;
       }
@@ -201,8 +199,8 @@ export default function MerchantSignUpPage() {
     }
     if (!formData.mobileNumber.trim()) {
       newErrors.mobileNumber = 'Phone number is required';
-    } else if (formData.mobileNumber.length < 10) {
-      newErrors.mobileNumber = 'Phone number is invalid';
+    } else if (!isValidPhone(formData.mobileNumber)) {
+      newErrors.mobileNumber = 'Please enter a valid 10-digit phone number';
     }
     if (!formData.password.trim()) {
       newErrors.password = 'Password is required';
@@ -303,12 +301,19 @@ export default function MerchantSignUpPage() {
     }
   };
 
-  // Format phone number for display
-  const formatPhoneNumber = (phone: string) => {
-    if (phone.length >= 10) {
-      return `${phone.slice(0, 3)}-${phone.slice(3, 6)}-${phone.slice(6, 10)}`;
-    }
-    return phone;
+  // Validate phone number format (10 digits)
+  const isValidPhone = (phoneValue: string): boolean => {
+    const digitsOnly = phoneValue.replace(/\D/g, '');
+    return digitsOnly.length === 10;
+  };
+
+  // Format phone number as user types
+  const formatPhoneNumber = (value: string): string => {
+    const digitsOnly = value.replace(/\D/g, '');
+    if (digitsOnly.length === 0) return '';
+    if (digitsOnly.length <= 3) return `(${digitsOnly}`;
+    if (digitsOnly.length <= 6) return `(${digitsOnly.slice(0, 3)}) ${digitsOnly.slice(3)}`;
+    return `(${digitsOnly.slice(0, 3)}) ${digitsOnly.slice(3, 6)}-${digitsOnly.slice(6, 10)}`;
   };
 
   // Renders password validation indicator
@@ -481,9 +486,10 @@ export default function MerchantSignUpPage() {
                 id="mobileNumber"
                 type="tel"
                 value={formData.mobileNumber}
-                onChange={e => handleInputChange('mobileNumber', e.target.value.replace(/\D/g, ''))}
+                onChange={e => handleInputChange('mobileNumber', formatPhoneNumber(e.target.value))}
                 onBlur={e => validateField('mobileNumber', e.target.value)}
-                placeholder="(202) 499-5377"
+                placeholder="(555) 555-5555"
+                maxLength={14}
                 className={`flex-1 px-3 py-2.5 border-2 rounded-r-lg text-gray-900 text-sm
                   focus:outline-none transition-colors
                   ${errors.mobileNumber ? 'border-[#b71000] bg-[#fef0ed]' : 'border-transparent bg-[#f7f7f7] focus:border-[#191919]'}`}
@@ -614,7 +620,7 @@ export default function MerchantSignUpPage() {
         isOpen={showOTPModal}
         onClose={() => setShowOTPModal(false)}
         onVerify={handleOTPVerify}
-        phoneNumber={formatPhoneNumber(formData.mobileNumber)}
+        phoneNumber={formData.mobileNumber}
         countryCode={selectedCountry.dial_code}
         generatedOTP={generatedOTP}
         containerClassName="fixed"

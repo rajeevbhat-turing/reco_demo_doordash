@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
+import { useQueryClient } from '@tanstack/react-query';
 import MerchantLayout from '@/components/merchant/MerchantLayout';
 import { Edit, Plus, Loader2 } from 'lucide-react';
 import { Label } from '@/components/ui/label';
@@ -9,15 +10,28 @@ import EditWebsiteModal from '@/components/merchant/EditWebsiteModal';
 import EditDescriptionModal from '@/components/merchant/EditDescriptionModal';
 import { useMerchantPersistedState } from '@/lib/hooks/useMerchantPersistedState';
 import { useMerchantSettingsStore } from '@/store/merchant-settings-store';
+import { useMerchantStoresStore } from '@/store/merchant-stores-store';
 
 export default function StoreSettingsPage() {
   const params = useParams();
   const storeId = params.id as string;
+  const queryClient = useQueryClient();
   const { store, updateStoreSettings } = useMerchantSettingsStore();
+  const getStoreById = useMerchantStoresStore(state => state.getStoreById);
+  const updateLocalStore = useMerchantStoresStore(state => state.updateStore);
   const [isLoading, setIsLoading] = useState(true);
   const [storeDataLoaded, setStoreDataLoaded] = useState(false);
+  const [lastLoadedStoreId, setLastLoadedStoreId] = useState<string | null>(null);
 
-  // Fetch store data from API on mount
+  // Reset loaded state when store ID changes
+  useEffect(() => {
+    if (storeId !== lastLoadedStoreId) {
+      setStoreDataLoaded(false);
+      setIsLoading(true);
+    }
+  }, [storeId, lastLoadedStoreId]);
+
+  // Fetch store data from API or local storage on mount
   useEffect(() => {
     async function fetchStoreData() {
       if (!storeId || storeDataLoaded) {
@@ -25,6 +39,28 @@ export default function StoreSettingsPage() {
         return;
       }
 
+      // Check if this is a locally created store (ID starts with "store-")
+      const isLocalStore = storeId.startsWith('store-');
+
+      if (isLocalStore) {
+        // Get store from local merchant-stores-store
+        const localStore = getStoreById(storeId);
+        if (localStore) {
+          updateStoreSettings({
+            storeName: localStore.storeName || '',
+            address: localStore.storeAddress || '',
+            phoneNumber: localStore.phone || '',
+            website: store.website, // Keep existing
+            description: store.description, // Keep existing
+          });
+          setStoreDataLoaded(true);
+          setLastLoadedStoreId(storeId);
+        }
+        setIsLoading(false);
+        return;
+      }
+
+      // Otherwise, fetch from API (database stores)
       try {
         const response = await fetch(`/api/merchant/restaurants/${storeId}`);
         const result = await response.json();
@@ -38,23 +74,51 @@ export default function StoreSettingsPage() {
 
           // Update store settings with API data
           updateStoreSettings({
-            storeName: storeData.name || store.storeName,
-            address: fullAddress || store.address,
-            phoneNumber: storeData.phone || store.phoneNumber,
+            storeName: storeData.name || '',
+            address: fullAddress || '',
+            phoneNumber: storeData.phone || '',
             website: store.website, // Not in API, keep existing
             description: store.description, // Not in API, keep existing
           });
           setStoreDataLoaded(true);
+          setLastLoadedStoreId(storeId);
+        } else {
+          // API returned no data, try local storage as fallback
+          const localStore = getStoreById(storeId);
+          if (localStore) {
+            updateStoreSettings({
+              storeName: localStore.storeName || '',
+              address: localStore.storeAddress || '',
+              phoneNumber: localStore.phone || '',
+              website: store.website,
+              description: store.description,
+            });
+            setStoreDataLoaded(true);
+            setLastLoadedStoreId(storeId);
+          }
         }
       } catch (error) {
         console.error('Failed to fetch store data:', error);
+        // On error, try local storage as fallback
+        const localStore = getStoreById(storeId);
+        if (localStore) {
+          updateStoreSettings({
+            storeName: localStore.storeName || '',
+            address: localStore.storeAddress || '',
+            phoneNumber: localStore.phone || '',
+            website: store.website,
+            description: store.description,
+          });
+          setStoreDataLoaded(true);
+          setLastLoadedStoreId(storeId);
+        }
       } finally {
         setIsLoading(false);
       }
     }
 
     fetchStoreData();
-  }, [storeId, storeDataLoaded, store, updateStoreSettings]);
+  }, [storeId, storeDataLoaded, store.website, store.description, updateStoreSettings, getStoreById]);
 
   const [storeName, setStoreName] = useMerchantPersistedState(
     'settings',
@@ -139,7 +203,9 @@ export default function StoreSettingsPage() {
           <div className="flex items-center justify-between">
             <div>
               <Label className="text-sm font-medium text-gray-900 mb-2 block">Store name</Label>
-              <div className="text-base text-gray-900">{storeName}</div>
+              <div className="text-base text-gray-900">
+                {storeName || <span className="text-gray-400">No store name set</span>}
+              </div>
             </div>
             <button
               onClick={() => setIsStoreNameModalOpen(true)}
@@ -176,7 +242,7 @@ export default function StoreSettingsPage() {
         </div>
 
         {/* Website */}
-        <div className="bg-white border border-gray-200 rounded-lg p-6 mb-4">
+        {/* <div className="bg-white border border-gray-200 rounded-lg p-6 mb-4">
           <div className="flex items-center justify-between">
             <div className="flex-1">
               <Label className="text-sm font-medium text-gray-900 mb-2 block">Website</Label>
@@ -208,10 +274,10 @@ export default function StoreSettingsPage() {
               )}
             </button>
           </div>
-        </div>
+        </div> */}
 
         {/* Description */}
-        <div className="bg-white border border-gray-200 rounded-lg p-6">
+        {/* <div className="bg-white border border-gray-200 rounded-lg p-6">
           <div className="flex items-start justify-between">
             <div className="flex-1">
               <Label className="text-sm font-medium text-gray-900 mb-2 block">Description</Label>
@@ -242,21 +308,45 @@ export default function StoreSettingsPage() {
               )}
             </button>
           </div>
-        </div>
+        </div> */}
 
         {/* Modals */}
         <EditStoreNameModal
           isOpen={isStoreNameModalOpen}
           onClose={() => setIsStoreNameModalOpen(false)}
           currentName={storeName}
-          onSave={name => {
+          onSave={async name => {
+            // Update local UI state
             setStoreName(name);
             updateStoreSettings({ storeName: name });
+
+            // Update the actual data source
+            const isLocalStore = storeId.startsWith('store-');
+            if (isLocalStore) {
+              // Update local merchant-stores-store
+              updateLocalStore(storeId, { storeName: name });
+            } else {
+              // Update database via API
+              try {
+                const response = await fetch(`/api/merchant/restaurants/${storeId}`, {
+                  method: 'PATCH',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ name }),
+                });
+                if (response.ok) {
+                  // Invalidate the restaurants query to refresh the sidebar
+                  queryClient.invalidateQueries({ queryKey: ['allRestaurants'] });
+                }
+              } catch (error) {
+                console.error('Failed to update store name in database:', error);
+              }
+            }
+
             setIsStoreNameModalOpen(false);
           }}
         />
 
-        <EditWebsiteModal
+        {/* <EditWebsiteModal
           isOpen={isWebsiteModalOpen}
           onClose={() => setIsWebsiteModalOpen(false)}
           currentWebsite={website}
@@ -276,7 +366,7 @@ export default function StoreSettingsPage() {
             updateStoreSettings({ description: desc });
             setIsDescriptionModalOpen(false);
           }}
-        />
+        /> */}
       </div>
     </MerchantLayout>
   );

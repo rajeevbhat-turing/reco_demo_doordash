@@ -99,7 +99,7 @@ export default function ProductMixPage() {
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="flex-1 bg-transparent border-none outline-none text-sm text-gray-900 w-full"
                     style={{
-                      fontFamily: 'TT Norms, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
+                      fontFamily: 'Inter, TT Norms, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
                       fontSize: '14px',
                       lineHeight: '20px',
                       letterSpacing: '-0.01px',
@@ -150,7 +150,7 @@ export default function ProductMixPage() {
                             <span
                               className="block text-gray-900"
                               style={{
-                                fontFamily: 'TT Norms, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
+                                fontFamily: 'Inter, TT Norms, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
                                 fontSize: '12px',
                                 fontWeight: 500,
                                 lineHeight: '18px',
@@ -172,7 +172,7 @@ export default function ProductMixPage() {
                             <span
                               className="block text-gray-900"
                               style={{
-                                fontFamily: 'TT Norms, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
+                                fontFamily: 'Inter, TT Norms, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
                                 fontSize: '12px',
                                 fontWeight: 500,
                                 lineHeight: '18px',
@@ -194,7 +194,7 @@ export default function ProductMixPage() {
                             <span
                               className="block text-gray-900"
                               style={{
-                                fontFamily: 'TT Norms, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
+                                fontFamily: 'Inter, TT Norms, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
                                 fontSize: '12px',
                                 fontWeight: 500,
                                 lineHeight: '18px',
@@ -216,7 +216,7 @@ export default function ProductMixPage() {
                             <span
                               className="block text-gray-900"
                               style={{
-                                fontFamily: 'TT Norms, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
+                                fontFamily: 'Inter, TT Norms, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
                                 fontSize: '12px',
                                 fontWeight: 500,
                                 lineHeight: '18px',
@@ -238,7 +238,7 @@ export default function ProductMixPage() {
                             <span
                               className="block text-gray-900"
                               style={{
-                                fontFamily: 'TT Norms, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
+                                fontFamily: 'Inter, TT Norms, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
                                 fontSize: '12px',
                                 fontWeight: 500,
                                 lineHeight: '18px',
@@ -262,7 +262,7 @@ export default function ProductMixPage() {
                                 <span
                                   className="block text-gray-900 underline cursor-pointer"
                                   style={{
-                                    fontFamily: 'TT Norms, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
+                                    fontFamily: 'Inter, TT Norms, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
                                     fontSize: '12px',
                                     fontWeight: 500,
                                     lineHeight: '18px',
@@ -292,7 +292,7 @@ export default function ProductMixPage() {
                                 <span
                                   className="block text-gray-900 underline cursor-pointer"
                                   style={{
-                                    fontFamily: 'TT Norms, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
+                                    fontFamily: 'Inter, TT Norms, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
                                     fontSize: '12px',
                                     fontWeight: 500,
                                     lineHeight: '18px',
@@ -322,7 +322,7 @@ export default function ProductMixPage() {
                                 <span
                                   className="block text-gray-900 underline cursor-pointer"
                                   style={{
-                                    fontFamily: 'TT Norms, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
+                                    fontFamily: 'Inter, TT Norms, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
                                     fontSize: '12px',
                                     fontWeight: 500,
                                     lineHeight: '18px',
@@ -368,7 +368,7 @@ export default function ProductMixPage() {
                     <span
                       className="block text-gray-900 text-center"
                       style={{
-                        fontFamily: 'TT Norms, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
+                        fontFamily: 'Inter, TT Norms, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
                         fontSize: '20px',
                         fontWeight: 700,
                         lineHeight: '24px',
@@ -380,7 +380,7 @@ export default function ProductMixPage() {
                     <span
                       className="block text-gray-900 text-center mt-1"
                       style={{
-                        fontFamily: 'TT Norms, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
+                        fontFamily: 'Inter, TT Norms, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
                         fontSize: '14px',
                         fontWeight: 400,
                         lineHeight: '20px',

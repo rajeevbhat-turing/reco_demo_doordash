@@ -735,14 +735,20 @@ export default function CreateModifierModal({
                           : 'Optional • Select up to 1'}
                       </div>
                     ) : null}
-                    {options.find(opt => opt.name.trim()) ? (
-                      <div className="flex items-center gap-2 text-sm text-gray-800">
-                        <span
-                          className={`inline-flex items-center justify-center h-4 w-4 border ${
-                            allowMultipleOptions || !required ? 'rounded-sm' : 'rounded-full'
-                          } ${required ? 'border-amber-600' : 'border-gray-400'}`}
-                        />
-                        <span>{options.find(opt => opt.name.trim())?.name}</span>
+                    {options.filter(opt => opt.name.trim()).length > 0 ? (
+                      <div className="space-y-2">
+                        {options
+                          .filter(opt => opt.name.trim())
+                          .map(opt => (
+                            <div key={opt.id} className="flex items-center gap-2 text-sm text-gray-800">
+                              <span
+                                className={`inline-flex items-center justify-center h-4 w-4 border ${
+                                  allowMultipleOptions || !required ? 'rounded-sm' : 'rounded-full'
+                                } ${required ? 'border-amber-600' : 'border-gray-400'}`}
+                              />
+                              <span>{opt.name}</span>
+                            </div>
+                          ))}
                       </div>
                     ) : null}
                   </div>
