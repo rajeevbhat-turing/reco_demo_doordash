@@ -36,6 +36,10 @@ COPY --from=builder --chown=nextjs:nodejs \
 
 COPY ./data/db/dashdoor.db /app/dashdoor.db
 ENV LIBSQL_URL=file:/app/dashdoor.db
+COPY ./data/db/delivery.db /app/delivery.db
+ENV DELIVERY_LIBSQL_URL=file:/app/delivery.db
+COPY ./data/db/merchant.db /app/merchant.db
+ENV MERCHANT_LIBSQL_URL=file:/app/merchant.db
 
 USER nextjs
 
