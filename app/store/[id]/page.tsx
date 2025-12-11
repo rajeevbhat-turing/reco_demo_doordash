@@ -1169,7 +1169,7 @@ export default function RestaurantPage() {
             {!isSearching && (
               <>
                 {/* Deals & Benefits Section */}
-                <Deals restaurantId={id} />
+                <Deals restaurantId={id} isRestaurantOpen={isRestaurantOpen} />
 
                 {/* Featured Items */}
                 {featuredItems.length > 0 && (

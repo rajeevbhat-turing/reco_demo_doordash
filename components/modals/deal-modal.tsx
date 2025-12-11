@@ -17,9 +17,10 @@ interface DealModalProps {
   isOpen: boolean;
   onClose: () => void;
   deal: Deal | null;
+  isRestaurantOpen: boolean;
 }
 
-export default function DealModal({ isOpen, onClose, deal }: DealModalProps) {
+export default function DealModal({ isOpen, onClose, deal, isRestaurantOpen }: DealModalProps) {
   const modalRef = useRef<HTMLDivElement>(null);
   const { addItem, setCategory } = useCartStore();
   const { setSnackbar } = useGlobalContext();
@@ -259,8 +260,10 @@ export default function DealModal({ isOpen, onClose, deal }: DealModalProps) {
                   <div className="flex-shrink-0 absolute right-1 bottom-1">
                     <button
                       onClick={() => handleAddToCart(item)}
-                      className="w-8 h-8 rounded-full bg-white flex items-center justify-center hover:bg-gray-50 transition-colors shadow-xl"
+                      className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors shadow-xl 
+                        ${isRestaurantOpen ? 'bg-white hover:bg-gray-50' : 'bg-gray-200 cursor-not-allowed'}`}
                       aria-label={`Add ${item.name}`}
+                      disabled={!isRestaurantOpen}
                     >
                       <Plus className="w-4 h-4 text-[#191919ff]" strokeWidth={2.5} />
                     </button>

@@ -9,9 +9,10 @@ import { useDealsByRestaurantId } from '@/lib/hooks/use-deals';
 
 interface DealsProps {
   restaurantId: string;
+  isRestaurantOpen: boolean;
 }
 
-export default function Deals({ restaurantId }: DealsProps) {
+export default function Deals({ restaurantId, isRestaurantOpen }: DealsProps) {
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
   const [isDealsModalOpen, setIsDealsModalOpen] = useState(false);
@@ -245,10 +246,16 @@ export default function Deals({ restaurantId }: DealsProps) {
         isOpen={isDealsModalOpen}
         onClose={handleCloseDealsModal}
         restaurantId={restaurantId}
+        isRestaurantOpen={isRestaurantOpen}
       />
 
       {/* Deal Modal */}
-      <DealModal isOpen={isDealModalOpen} onClose={handleCloseDealModal} deal={selectedDeal} />
+      <DealModal
+        isOpen={isDealModalOpen}
+        onClose={handleCloseDealModal}
+        deal={selectedDeal}
+        isRestaurantOpen={isRestaurantOpen}
+      />
     </div>
   );
 }
