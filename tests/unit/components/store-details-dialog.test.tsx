@@ -71,14 +71,18 @@ describe('StoreDetailsDialog', () => {
   });
 
   describe('Open/Closed Status', () => {
-    it('should show Open now when store is open', () => {
-      render(<StoreDetailsDialog {...defaultProps} />);
+    it('should show Open now when isRestaurantOpen is true', () => {
+      render(<StoreDetailsDialog {...defaultProps} isRestaurantOpen={true} />);
       expect(screen.getByText('Open now')).toBeInTheDocument();
     });
 
-    it('should show Closed now when store is closed', () => {
-      const closedStore = { ...mockStore, isOpen: false };
-      render(<StoreDetailsDialog {...defaultProps} store={closedStore} />);
+    it('should show Closed now when isRestaurantOpen is false', () => {
+      render(<StoreDetailsDialog {...defaultProps} isRestaurantOpen={false} />);
+      expect(screen.getByText('Closed now')).toBeInTheDocument();
+    });
+
+    it('should show Closed now when isRestaurantOpen is undefined', () => {
+      render(<StoreDetailsDialog {...defaultProps} />);
       expect(screen.getByText('Closed now')).toBeInTheDocument();
     });
   });
