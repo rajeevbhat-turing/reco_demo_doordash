@@ -147,98 +147,148 @@ interface ReviewStore {
 
 ---
 
-## 3. Merchant Store Data Storage
+## 3. Merchant Data Storage
 
-### Current Architecture
+### Architecture Overview
 
-Merchant data is stored in **two layers**:
+Merchant portal uses a **separate database** and **dedicated API layer**:
 
-#### Layer 1: Initial Data (Constants)
-**Location:** `constants/merchant-store-data.ts`
+| Layer | Location | Purpose |
+|-------|----------|---------|
+| Database | `data/db/merchant.db` | Initial/seed data (read-only) |
+| API | `/api/merchant/*` | Bridges database and frontend |
+| Zustand + localStorage | Client-side | Runtime changes and state |
 
+**Key Principle**: Database is read-only initial data. All application changes happen in client-side stores (localStorage).
+
+### Layer 1: Database (`merchant.db`)
+
+**Location:** `data/db/merchant.db`
+**Schema:** `data/db/schema/merchant_schema.sql`
+**Seed Data:** `data/db/schema/merchant_seed.sql`
+
+**Tables:**
+| Table | Description |
+|-------|-------------|
+| `merchants` | Merchant user accounts, credentials, onboarding status |
+| `stores` | Store information (name, email, phone, hours) |
+| `addresses` | Store addresses with lat/lng |
+| `merchant_stores` | Junction table for merchant-store relationships |
+| `menu_categories` | Menu categories per store |
+| `menu_items` | Menu items with pricing and status |
+| `modifiers` | Modifier groups |
+| `modifier_options` | Options within modifiers |
+| `menu_item_modifiers` | Links menu items to modifiers |
+| `orders` | Order records with customer info and pricing |
+| `order_items` | Items within orders |
+| `reviews` | Customer reviews with ratings |
+| `review_liked_items` | Menu items liked in reviews |
+| `review_photos` | Photos attached to reviews |
+
+**Database Connection:** `lib/merchant-db.ts`
 ```typescript
-export interface StoreMerchantData {
-  storeId: string
-  storeName: string
-  home: { metrics: {...}, lastUpdated: number, selectedDateRange: string }
-  orders: { orders: [...], searchQuery: string, ... }
-  menu: { categories: [...], ... }
-  users: { users: [...] }
-  settings: { store: {...}, account: {...} }
-  storeAvailability: { storeStatus: string, menuHours: [...], ... }
-}
+import { merchantDb } from '@/lib/merchant-db';
 
-export const merchantStoreData: Record<string, StoreMerchantData> = {
-  "philz-coffee": { ... },
-  "bombay-cafe": { ... },
-  ...
-}
+const results = await merchantDb.query('SELECT * FROM stores WHERE id = ?', [storeId]);
 ```
 
-**Purpose:** Initial/default data for each store. Used to seed localStorage.
+### Layer 2: API Layer (`/api/merchant/*`)
 
-#### Layer 2: Runtime Storage (localStorage + Zustand)
+**Important**: Merchant APIs query `merchant.db` exclusively. User-side APIs are **never** used.
 
-**localStorage Keys:** `lib/utils/merchant-storage.ts`
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/merchant/auth/login` | POST | Merchant login |
+| `/api/merchant/restaurants` | GET | List stores |
+| `/api/merchant/restaurants/[id]` | GET | Single store |
+| `/api/merchant/restaurants/[id]/menu` | GET | Menu items |
+| `/api/merchant/restaurants/[id]/modifiers` | GET | Modifiers |
+| `/api/merchant/orders` | GET/POST | Orders |
+| `/api/merchant/reviews/[storeId]` | GET | Reviews |
 
-```typescript
-export const MerchantStorageKeys = {
-  HOME: 'merchant.home',
-  ORDERS: 'merchant.orders',
-  MENU: 'merchant.menu',
-  USERS: 'merchant.users',
-  SETTINGS: 'merchant.settings',
-  FINANCIALS: 'merchant.financials',
-  CUSTOMERS: 'merchant.customers',
-  MARKETING: 'merchant.marketing',
-  STORE_AVAILABILITY: 'merchant.store-availability',
-}
-```
+### Layer 3: Client-Side Storage (Zustand + localStorage)
 
-**Zustand Stores:** Each section has its own Zustand store with persistence:
+#### Global Store Keys
 
-- `store/merchant-home-store.ts` - Home metrics
-- `store/merchant-orders-store.ts` - Orders list
-- `store/merchant-menu-store.ts` - Menu items
-- `store/merchant-settings-store.ts` - Settings
-- etc.
+| Key | Description | Store File |
+|-----|-------------|------------|
+| `merchant-auth` | Current merchant, registered merchants | `merchant-auth-store.ts` |
+| `merchant-stores` | Locally created stores | `merchant-stores-store.ts` |
 
-**Example Store:**
-```typescript
-export const useMerchantHomeStore = create<HomeStore>()(
-  persist(
-    (set) => ({
-      metrics: { totalSales: 0, totalOrders: 0, ... },
-      lastUpdated: Date.now(),
-      selectedDateRange: "Last 7 days",
-      setMetrics: (metrics) => set({ metrics }),
-      ...
-    }),
-    {
-      name: MerchantStorageKeys.HOME // Persists to localStorage
-    }
-  )
-)
-```
+#### Store-Specific Keys (Pattern: `merchant.{storeId}.{section}`)
+
+When a store is loaded, data is seeded to localStorage:
+
+| Pattern | Example | Description |
+|---------|---------|-------------|
+| `merchant.{storeId}.home` | `merchant.store-1.home` | Home metrics |
+| `merchant.{storeId}.orders` | `merchant.store-1.orders` | Orders |
+| `merchant.{storeId}.menu` | `merchant.store-1.menu` | Menu items |
+| `merchant.{storeId}.modifiers` | `merchant.store-1.modifiers` | Modifiers |
+| `merchant.{storeId}.users` | `merchant.store-1.users` | Users |
+| `merchant.{storeId}.settings` | `merchant.store-1.settings` | Settings |
+| `merchant.{storeId}.store-availability` | `merchant.store-1.store-availability` | Hours |
+
+#### Zustand Store Keys
+
+| Key | Description | Store File |
+|-----|-------------|------------|
+| `merchant.home` | Home store state | `merchant-home-store.ts` |
+| `merchant.orders` | Orders store state | `merchant-orders-store.ts` |
+| `merchant.menu` | Menu store state | `merchant-menu-store.ts` |
+| `merchant.modifiers` | Modifiers store state | `merchant-modifiers-store.ts` |
+| `merchant.users` | Users store state | `merchant-users-store.ts` |
+| `merchant.settings` | Settings store state | `merchant-settings-store.ts` |
+| `merchant.store-availability` | Availability store state | `merchant-store-availability-store.ts` |
 
 ### Data Flow
 
-1. **Initialization:** `lib/utils/store-data-loader.ts`
-   - `initializeStoreData(storeId)` - Seeds localStorage with default data
-   - Called when store is selected in `CurrentStoreProvider`
+#### Authentication Flow
+```
+1. User visits /merchant/auth (login page)
+2. loginMerchant() checks:
+   a. merchant-auth-store (localStorage) first
+   b. Falls back to POST /api/merchant/auth/login
+3. On success: setCurrentMerchant() saves to store
+4. Redirect to /merchant/store/{primaryStoreId}
+```
 
-2. **Store Selection:** `lib/hooks/useCurrentStore.tsx`
-   - `CurrentStoreProvider` manages current store ID
-   - When store changes, loads data into Zustand stores
-   - Dispatches `storeDataLoaded` event
+#### Store Data Loading (Store-First, API-Fallback)
+```
+1. User navigates to /merchant/store/[id]
+2. Layout guard checks authentication
+3. initializeStoreData() runs:
+   a. Check merchant-stores-store (local stores) first
+   b. If not found, fetch from /api/merchant/* APIs
+4. Data seeded to localStorage (merchant.{storeId}.{section})
+5. Zustand stores hydrate from localStorage
+6. Page renders from Zustand stores
+```
 
-3. **Usage:**
-   ```typescript
-   import { useMerchantHomeStore } from '@/store/merchant-home-store'
-   
-   const metrics = useMerchantHomeStore(state => state.metrics)
-   const setMetrics = useMerchantHomeStore(state => state.setMetrics)
-   ```
+#### Seeding Logic (`lib/utils/store-data-loader.ts`)
+```typescript
+const sections = ['home', 'orders', 'menu', 'modifiers', 'users', 'settings', 'store-availability'];
+
+sections.forEach(([key, data]) => {
+  const storageKey = `merchant.${storeId}.${key}`;
+  if (!localStorage.getItem(storageKey)) {
+    localStorage.setItem(storageKey, JSON.stringify(data));
+  }
+});
+```
+
+### Usage Example
+```typescript
+import { useMerchantOrdersStore } from '@/store/merchant-orders-store'
+import { useMerchantAuthStore } from '@/store/merchant-auth-store'
+
+function MerchantPage() {
+  const { orders, addOrder } = useMerchantOrdersStore();
+  const { currentMerchant } = useMerchantAuthStore();
+  
+  // Store automatically persists to localStorage
+}
+```
 
 ---
 
@@ -246,51 +296,69 @@ export const useMerchantHomeStore = create<HomeStore>()(
 
 To add a new type of merchant data (e.g., "Analytics", "Reports", "Inventory"):
 
-### Step 1: Define the Data Structure
+### Step 1: Add Database Table (if needed for initial data)
 
-**Add to `constants/merchant-store-data.ts`:**
+**Update `data/db/schema/merchant_schema.sql`:**
+
+```sql
+CREATE TABLE analytics_reports (
+  id TEXT PRIMARY KEY,
+  store_id TEXT NOT NULL,
+  name TEXT NOT NULL,
+  date_range TEXT NOT NULL,
+  created_at TEXT NOT NULL DEFAULT (datetime('now')),
+  FOREIGN KEY (store_id) REFERENCES stores(id) ON DELETE CASCADE
+);
+
+CREATE INDEX idx_analytics_reports_store_id ON analytics_reports(store_id);
+```
+
+### Step 2: Add Seed Data (optional)
+
+**Update `data/db/schema/merchant_seed.sql`:**
+
+```sql
+INSERT INTO analytics_reports (id, store_id, name, date_range, created_at) VALUES
+('report-1', 'store-1', 'Weekly Sales', 'last_7_days', '2024-12-01T10:00:00.000Z');
+```
+
+### Step 3: Create API Endpoint
+
+**Create `app/api/merchant/analytics/route.ts`:**
 
 ```typescript
-export interface StoreMerchantData {
-  // ... existing fields
-  
-  // NEW: Analytics data
-  analytics: {
-    reports: Array<{
-      id: string
-      name: string
-      dateRange: string
-      createdAt: string
-    }>
-    selectedReportId: string | null
-  }
-}
+import { NextRequest, NextResponse } from 'next/server'
+import { merchantDb } from '@/lib/merchant-db'  // Use merchant-db, NOT db
 
-// Add default data for each store
-export const merchantStoreData: Record<string, StoreMerchantData> = {
-  "philz-coffee": {
-    // ... existing data
-    analytics: {
-      reports: [],
-      selectedReportId: null
-    }
-  },
-  ...
+export async function GET(request: NextRequest) {
+  const { searchParams } = new URL(request.url)
+  const storeId = searchParams.get('storeId')
+  
+  if (!storeId) {
+    return NextResponse.json({ error: 'Store ID required' }, { status: 400 })
+  }
+  
+  const reports = await merchantDb.query(
+    'SELECT * FROM analytics_reports WHERE store_id = ?',
+    [storeId]
+  )
+  
+  return NextResponse.json({ success: true, data: reports })
 }
 ```
 
-### Step 2: Add Storage Key
+### Step 4: Add Storage Key
 
 **Update `lib/utils/merchant-storage.ts`:**
 
 ```typescript
 export const MerchantStorageKeys = {
   // ... existing keys
-  ANALYTICS: 'merchant.analytics', // NEW
+  ANALYTICS: 'merchant.analytics',
 } as const
 ```
 
-### Step 3: Create Zustand Store
+### Step 5: Create Zustand Store
 
 **Create `store/merchant-analytics-store.ts`:**
 
@@ -317,12 +385,10 @@ interface AnalyticsStore {
   setSelectedReportId: (id: string | null) => void
 }
 
-const initialReports: AnalyticsReport[] = []
-
 export const useMerchantAnalyticsStore = create<AnalyticsStore>()(
   persist(
     (set) => ({
-      reports: initialReports,
+      reports: [],
       selectedReportId: null,
       
       addReport: (report) => set((state) => ({ 
@@ -342,36 +408,26 @@ export const useMerchantAnalyticsStore = create<AnalyticsStore>()(
 )
 ```
 
-### Step 4: Update Store Data Loader
+### Step 6: Update Store Data Loader (if loading from API)
 
 **Update `lib/utils/store-data-loader.ts`:**
 
 ```typescript
-export function initializeStoreData(storeId: string) {
-  const storeData = merchantStoreData[storeId]
-  if (!storeData) return
+// Add to sections array in seedLocalStorage function
+const sections: Array<[string, any]> = [
+  ['home', storeData.home],
+  ['orders', storeData.orders],
+  // ... existing
+  ['analytics', storeData.analytics], // NEW
+];
 
-  const storageKeys = [
-    `merchant.${storeId}.home`,
-    `merchant.${storeId}.orders`,
-    // ... existing keys
-    `merchant.${storeId}.analytics`, // NEW
-  ]
-
-  storageKeys.forEach((key, index) => {
-    // ... existing initialization logic
-    const dataSection = [
-      storeData.home,
-      storeData.orders,
-      // ... existing sections
-      storeData.analytics, // NEW
-    ][index]
-    // ...
-  })
-}
+// Add API fetch if needed
+const [analyticsResp] = await Promise.all([
+  fetchJson<{ success: boolean; data: any[] }>(`/api/merchant/analytics?storeId=${storeId}`),
+]);
 ```
 
-### Step 5: Use in Components
+### Step 7: Use in Components
 
 ```typescript
 'use client'
@@ -392,117 +448,75 @@ export default function AnalyticsPage() {
 }
 ```
 
----
+### Important Notes
 
-## 5. Database Integration (Optional)
-
-If you want to persist merchant data to the database instead of localStorage:
-
-### Create Database Table
-
-```sql
-CREATE TABLE merchant_analytics_reports (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  store_id INTEGER NOT NULL,
-  name TEXT NOT NULL,
-  date_range TEXT NOT NULL,
-  created_at TEXT NOT NULL,
-  FOREIGN KEY (store_id) REFERENCES restaurants(id) ON DELETE CASCADE
-);
-```
-
-### Create API Endpoint
-
-**Create `app/api/merchant/analytics/route.ts`:**
-
-```typescript
-import { NextRequest, NextResponse } from 'next/server'
-import { db } from '@/lib/db'
-
-export async function GET(request: NextRequest) {
-  const { searchParams } = new URL(request.url)
-  const storeId = searchParams.get('storeId')
-  
-  if (!storeId) {
-    return NextResponse.json({ error: 'Store ID required' }, { status: 400 })
-  }
-  
-  const reports = await db.query(
-    'SELECT * FROM merchant_analytics_reports WHERE store_id = ?',
-    [storeId]
-  )
-  
-  return NextResponse.json({ success: true, data: reports })
-}
-
-export async function POST(request: NextRequest) {
-  const body = await request.json()
-  const { storeId, name, dateRange } = body
-  
-  const result = await db.query(
-    `INSERT INTO merchant_analytics_reports (store_id, name, date_range, created_at)
-     VALUES (?, ?, ?, ?)`,
-    [storeId, name, dateRange, new Date().toISOString()]
-  )
-  
-  return NextResponse.json({ success: true, id: result.lastInsertRowid })
-}
-```
-
-### Sync with Zustand Store
-
-```typescript
-// In your component or hook
-useEffect(() => {
-  const fetchReports = async () => {
-    const response = await fetch(`/api/merchant/analytics?storeId=${storeId}`)
-    const { data } = await response.json()
-    useMerchantAnalyticsStore.getState().setReports(data)
-  }
-  
-  fetchReports()
-}, [storeId])
-```
+1. **Always use `merchantDb`** from `lib/merchant-db.ts` for merchant APIs
+2. **Never use user-side APIs** (`/api/orders`, `/api/reviews`) in merchant pages
+3. **Store-first pattern**: Check Zustand store before calling API
+4. **Database is read-only**: All runtime changes go to localStorage
 
 ---
 
 ## Summary
 
-### Customer Orders
-- **Database:** `orders` and `order_items` tables
-- **Client:** Zustand store (`orders-store`) persisted to localStorage
-- **API:** `/api/orders` (supports userId and storeId queries)
+### Customer Portal (User-Side)
 
-### Reviews
-- **Database:** `user_reviews` table with related tables
-- **Client:** Zustand store (`review-store`) for session changes only
-- **API:** `/api/reviews/[storeId]` and `/api/reviews`
+| Aspect | Details |
+|--------|---------|
+| **Database** | `dashdoor.db` |
+| **Orders API** | `/api/orders` |
+| **Reviews API** | `/api/reviews/[storeId]` |
+| **Orders Store** | `orders-store` (localStorage) |
+| **Reviews Store** | `review-store` (session only) |
 
-### Merchant Data
-- **Initial Data:** `constants/merchant-store-data.ts` (default values)
-- **Runtime:** Zustand stores + localStorage (per store)
-- **Keys:** `lib/utils/merchant-storage.ts`
-- **Loader:** `lib/utils/store-data-loader.ts` (initializes localStorage)
+### Merchant Portal
+
+| Aspect | Details |
+|--------|---------|
+| **Database** | `merchant.db` (read-only initial data) |
+| **API Prefix** | `/api/merchant/*` |
+| **Auth Store** | `merchant-auth-store` |
+| **Stores Store** | `merchant-stores-store` |
+| **Orders Store** | `merchant-orders-store` |
+| **Menu Store** | `merchant-menu-store` |
+| **Storage Pattern** | `merchant.{storeId}.{section}` |
+| **Data Flow** | Store-first, API-fallback |
 
 ### Adding New Merchant Data
-1. Add to `StoreMerchantData` interface
-2. Add storage key to `MerchantStorageKeys`
-3. Create Zustand store with persistence
-4. Update store data loader
-5. (Optional) Create database table and API endpoint
+1. Add database table to `merchant_schema.sql` (if needed)
+2. Add seed data to `merchant_seed.sql` (optional)
+3. Create API endpoint in `/api/merchant/`
+4. Add storage key to `MerchantStorageKeys`
+5. Create Zustand store with persistence
+6. Update store data loader (if needed)
+7. **Remember**: Use `merchantDb`, never `db`
 
 ---
 
 ## Key Files Reference
 
+### Customer Portal (dashdoor.db)
 - **Database Schema:** `dashdoor_schema.sql`
+- **Database Connection:** `lib/db.ts`
 - **Orders API:** `app/api/orders/route.ts`
 - **Reviews API:** `app/api/reviews/[storeId]/route.ts`
-- **Merchant Data:** `constants/merchant-store-data.ts`
+- **Orders Store:** `store/orders-store.ts`
+- **Review Store:** `store/review-store.ts`
+
+### Merchant Portal (merchant.db)
+- **Database Schema:** `data/db/schema/merchant_schema.sql`
+- **Database Seed:** `data/db/schema/merchant_seed.sql`
+- **Database Connection:** `lib/merchant-db.ts`
+- **Auth API:** `app/api/merchant/auth/login/route.ts`
+- **Restaurants API:** `app/api/merchant/restaurants/route.ts`
+- **Orders API:** `app/api/merchant/orders/route.ts`
+- **Reviews API:** `app/api/merchant/reviews/[storeId]/route.ts`
+- **Auth Store:** `store/merchant-auth-store.ts`
+- **Stores Store:** `store/merchant-stores-store.ts`
+- **Orders Store:** `store/merchant-orders-store.ts`
+- **Menu Store:** `store/merchant-menu-store.ts`
 - **Storage Keys:** `lib/utils/merchant-storage.ts`
 - **Store Loader:** `lib/utils/store-data-loader.ts`
 - **Current Store Hook:** `lib/hooks/useCurrentStore.tsx`
-- **Orders Store:** `store/orders-store.ts`
-- **Review Store:** `store/review-store.ts`
-- **Merchant Stores:** `store/merchant-*-store.ts`
+- **Route Guard:** `app/merchant/store/[id]/layout.tsx`
 
