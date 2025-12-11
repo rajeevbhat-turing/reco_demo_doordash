@@ -3176,7 +3176,7 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
 "{
   ""task_id"": ""039"",
   ""url"": ""https://dashdoor.rlgym.turing.com/"",
-  ""task"": ""Log in using email 'lena.bennett71@example.com' and password 'c69fieW7G93U'. Does the cheescake factory have an options in chocolate cheesecakes? Could you please share them?"",
+  ""task"": ""Log in using email 'lena.bennett71@example.com' and password 'c69fieW7G93U'. Does the cheesecake factory have an options in chocolate cheesecakes? Could you please share them?"",
   ""simulator_config"": {
     ""start_date"": ""today"",
     ""user_persona"": ""lena.bennett71@example.com""
