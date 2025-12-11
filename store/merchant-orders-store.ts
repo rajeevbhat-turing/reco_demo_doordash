@@ -58,7 +58,7 @@ interface OrdersStore {
   searchQuery: string;
   selectedFilter: string;
   activeTab: 'Active' | 'Scheduled' | 'History';
-  
+
   // Actions
   setOrders: (orders: MerchantOrder[]) => void;
   addOrder: (order: MerchantOrder) => void;
@@ -207,20 +207,20 @@ if (typeof window !== 'undefined') {
   ) => {
     const { storeId, storeData } = event.detail;
     currentStoreId = storeId;
-    
+
     // Load store-specific data from localStorage or use default from storeData
     const storageKey = `merchant.${storeId}.orders`;
     let storedData = storeData.orders;
-    
+
     try {
       const stored = localStorage.getItem(storageKey);
       if (stored) {
         storedData = JSON.parse(stored);
       }
-    } catch (e) {
+    } catch (_e) {
       // Use default from storeData
     }
-    
+
     const orders = (storedData.orders || []).map((o: any) => ({
       // ID (required)
       id: o.id || o.orderId || `order-${Date.now()}-${Math.random().toString(36).slice(2)}`,
@@ -233,10 +233,13 @@ if (typeof window !== 'undefined') {
       status: o.status || 'pending',
       // Date/time
       date: o.date || new Date().toLocaleDateString('en-US'),
-      time: o.time || new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }),
+      time:
+        o.time || new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }),
       orderDate: o.orderDate,
       // Fulfillment
-      fulfillmentType: o.fulfillmentType || (o.deliveryOption?.type === 'pickup' ? 'Customer pickup' : 'DashDoor delivery'),
+      fulfillmentType:
+        o.fulfillmentType ||
+        (o.deliveryOption?.type === 'pickup' ? 'Customer pickup' : 'DashDoor delivery'),
       channel: o.channel || 'DashDoor',
       deliveryAddress: o.deliveryAddress,
       // Store info

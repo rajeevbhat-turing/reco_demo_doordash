@@ -4,14 +4,88 @@ import { useEffect, useRef } from 'react';
 import { useCurrentStore } from '@/lib/hooks/useCurrentStore';
 import { useMerchantOrdersStore } from '@/store/merchant-orders-store';
 import { useMerchantMenuStore } from '@/store/merchant-menu-store';
-import { fetchSampleUsers, UserWithAddress } from '@/lib/api/users';
+
+// Sample users for order simulation (from dashdoor.db)
+interface SampleUserAddress {
+  street: string;
+  city: string;
+  state: string;
+  zipCode: string;
+  businessName?: string;
+}
+
+interface SampleUser {
+  id: string;
+  name: string;
+  email: string;
+  phoneNumber: string;
+  addresses: SampleUserAddress[];
+}
+
+const sampleUsers: SampleUser[] = [
+  {
+    id: 'user-1',
+    name: 'Kai Hayes',
+    email: 'kai.hayes1@example.com',
+    phoneNumber: '9337119195',
+    addresses: [
+      { street: '700 N Brookhurst St', city: 'Anaheim', state: 'CA', zipCode: '92801' },
+      {
+        street: '2023 East Cesar E Chavez Avenue',
+        city: 'Los Angeles',
+        state: 'CA',
+        zipCode: '90033',
+        businessName: "Shakey's Pizza Parlor",
+      },
+    ],
+  },
+  {
+    id: 'user-2',
+    name: 'Nora Chambers',
+    email: 'nora.chambers2@mail.test',
+    phoneNumber: '2657562797',
+    addresses: [
+      {
+        street: '276 5th Ave',
+        city: 'Brooklyn',
+        state: 'NY',
+        zipCode: '11215',
+        businessName: 'Naruto Ramen',
+      },
+    ],
+  },
+  {
+    id: 'user-3',
+    name: 'Hannah Young',
+    email: 'hannah.young3@example.com',
+    phoneNumber: '7237679355',
+    addresses: [
+      { street: '16 Oak Grove Ave', city: 'Malden', state: 'MA', zipCode: '02148' },
+      { street: '8214 S Van Ness Ave', city: 'Los Angeles', state: 'CA', zipCode: '90047' },
+    ],
+  },
+  {
+    id: 'user-4',
+    name: 'Elias Fischer',
+    email: 'elias.fischer4@example.com',
+    phoneNumber: '3092304920',
+    addresses: [
+      {
+        street: '1411 Nostrand Ave.',
+        city: 'Brooklyn',
+        state: 'NY',
+        zipCode: '11226',
+        businessName: 'Immaculee Bakery',
+      },
+    ],
+  },
+];
 
 // Hook to simulate new order arrivals at regular intervals (default is 1 minute)
 export function useSimulatedOrders(intervalMs: number = 60000) {
   const { currentStoreId, currentStoreData } = useCurrentStore();
   const addOrder = useMerchantOrdersStore(state => state.addOrder);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const usersRef = useRef<UserWithAddress[]>([]);
   const itemsRef = useRef<Array<{ id: string; name: string; price: number; image?: string }>>([]);
   const isGeneratingRef = useRef(false);
 
@@ -21,16 +95,6 @@ export function useSimulatedOrders(intervalMs: number = 60000) {
     if (timerRef.current) {
       clearInterval(timerRef.current);
     }
-
-    // Load users from API
-    const loadUsers = async () => {
-      try {
-        const users = await fetchSampleUsers();
-        usersRef.current = users;
-      } catch (_e) {
-        usersRef.current = [];
-      }
-    };
 
     // Load menu items from merchant-menu-store
     const loadMenuItems = () => {
@@ -58,7 +122,6 @@ export function useSimulatedOrders(intervalMs: number = 60000) {
       itemsRef.current = allItems;
     };
 
-    loadUsers();
     loadMenuItems();
 
     timerRef.current = setInterval(() => {
@@ -67,9 +130,6 @@ export function useSimulatedOrders(intervalMs: number = 60000) {
       isGeneratingRef.current = true;
 
       try {
-        // Skip if no users available
-        if (usersRef.current.length === 0) return;
-
         // If no menu items, try to load them again from merchant-menu-store
         if (itemsRef.current.length === 0) {
           loadMenuItems();
@@ -79,8 +139,8 @@ export function useSimulatedOrders(intervalMs: number = 60000) {
 
         const menuItems = itemsRef.current;
 
-        // Pick random user
-        const user = usersRef.current[Math.floor(Math.random() * usersRef.current.length)];
+        // Pick random user from sample users
+        const user = sampleUsers[Math.floor(Math.random() * sampleUsers.length)];
 
         // Pick 1-3 random items for the order
         const numItems = Math.floor(Math.random() * 3) + 1;

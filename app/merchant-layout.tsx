@@ -4,7 +4,7 @@ import React, { useEffect, useLayoutEffect } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { StateWindowInitializer } from '@/components/state-window-initializer';
 import Snackbar from '@/components/snackbar';
-import { useSimulatedOrders } from '@/lib/hooks/useSimulatedOrders';
+import { useSimulatedOrders } from '@/lib/hooks/merchant/useSimulatedOrders';
 import { CurrentStoreProvider } from '@/lib/hooks/useCurrentStore';
 import { useCurrentStore } from '@/lib/hooks/useCurrentStore';
 import { useMerchantOrderStatus } from '@/lib/hooks/use-merchant-order-status';

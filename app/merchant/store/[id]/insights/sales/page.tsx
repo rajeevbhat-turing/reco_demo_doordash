@@ -9,7 +9,7 @@ import ByDayOfWeekChart from '@/components/merchant/ByDayOfWeekChart';
 import ByHourOfDayChart from '@/components/merchant/ByHourOfDayChart';
 import { useCurrentStore } from '@/lib/hooks/useCurrentStore';
 import { useAllRestaurants } from '@/lib/hooks/merchant/use-restaurants';
-import { useOrdersStore } from '@/store/orders-store';
+import { useMerchantOrdersStore } from '@/store/merchant-orders-store';
 
 /**
  * Route: /merchant/store/[id]/insights/sales
@@ -74,8 +74,8 @@ export default function SalesPage() {
     }
   }, [storeIdParam, restaurants, isLoading, setCurrentStoreId, contextStoreId, storeSet, mounted]);
 
-  // Get orders from localStorage
-  const { orders: allOrders = [] } = useOrdersStore();
+  // Get orders from merchant orders store
+  const { orders: allOrders = [] } = useMerchantOrdersStore();
 
   // Calculate sales data from localStorage orders
   useEffect(() => {

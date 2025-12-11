@@ -88,21 +88,10 @@ export default function MenuStep() {
   const [uploadError, setUploadError] = useState('');
 
   const handleSave = () => {
-    // Validate based on method
-    if (menuMethod === 'link') {
-      if (!menuLink.trim()) {
-        setMenuLinkError('Menu link is required');
-        return;
-      }
-      if (!isValidUrl) {
-        setMenuLinkError('Please enter a valid URL (e.g., yourwebsite.com/menus)');
-        return;
-      }
-    } else {
-      if (!uploadedFile || uploadStatus !== 'uploaded') {
-        setUploadError('Please upload a menu file');
-        return;
-      }
+    // Validate URL format only if link is provided
+    if (menuMethod === 'link' && menuLink.trim() && !isValidUrl) {
+      setMenuLinkError('Please enter a valid URL (e.g., yourwebsite.com/menus)');
+      return;
     }
 
     // Clear errors
@@ -164,17 +153,14 @@ export default function MenuStep() {
       {menuMethod === 'link' && (
         <div className="mb-8">
           <label className="block text-sm font-medium text-gray-900 mb-2">Enter menu link</label>
-          <div className="flex items-center gap-2">
-            <Input
-              type="text"
-              placeholder="yourwebsite.com/menus"
-              value={menuLink}
-              onChange={e => handleMenuLinkChange(e.target.value)}
-              onBlur={handleMenuLinkBlur}
-              className={`flex-1 ${menuLinkError ? 'border-[#b71000] focus:border-[#b71000]' : ''}`}
-            />
-            <span className="text-sm text-gray-500">Required</span>
-          </div>
+          <Input
+            type="text"
+            placeholder="yourwebsite.com/menus"
+            value={menuLink}
+            onChange={e => handleMenuLinkChange(e.target.value)}
+            onBlur={handleMenuLinkBlur}
+            className={`${menuLinkError ? 'border-[#b71000] focus:border-[#b71000]' : ''}`}
+          />
           {menuLinkError && (
             <div className="flex items-center gap-2 mt-2 text-[#b71000]">
               <div className="h-4 w-4 flex-shrink-0 rounded-full flex items-center justify-center bg-[#b71000]">

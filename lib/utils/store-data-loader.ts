@@ -65,12 +65,6 @@ const buildOrdersSection = (storeId: string, orders: any[], storeName?: string) 
   const mappedOrders = (orders || []).map((order: any) => {
     const orderDate = order.orderDate ? new Date(order.orderDate) : new Date();
 
-    const isPickup = order.deliveryOption?.type === 'pickup';
-    const fulfillmentType: 'Customer pickup' | 'DashDoor delivery' = isPickup
-      ? 'Customer pickup'
-      : 'DashDoor delivery';
-    const channel = isPickup ? 'Pickup' : 'DashDoor';
-
     const id = order.id ? String(order.id) : `order-${Date.now()}`;
 
     // Build delivery address if available
@@ -95,20 +89,21 @@ const buildOrdersSection = (storeId: string, orders: any[], storeName?: string) 
 
     return {
       id,
-      // Customer info
-      customer: order.userName || (order.userId ? `Customer ${order.userId}` : 'Customer'),
-      userId: order.userId ? String(order.userId) : undefined,
-      userName: order.userName,
-      userEmail: order.userEmail,
+      // Customer info - API returns customer, customerId, customerEmail
+      customer: order.customer || (order.customerId ? `Customer ${order.customerId}` : 'Customer'),
+      userId: order.customerId ? String(order.customerId) : undefined,
+      userName: order.customer,
+      userEmail: order.customerEmail,
       // Order status
       status: order.status ? String(order.status) : 'pending',
-      // Date/time
-      date: orderDate.toLocaleDateString('en-US'),
-      time: orderDate.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }),
-      orderDate: orderDate.toISOString(),
-      // Fulfillment
-      fulfillmentType,
-      channel,
+      // Date/time - API returns date/time already formatted
+      date: order.date || orderDate.toLocaleDateString('en-US'),
+      time:
+        order.time || orderDate.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }),
+      orderDate: order.orderDate || orderDate.toISOString(),
+      // Fulfillment - API returns fulfillmentType already as 'Customer pickup' or 'DashDoor delivery'
+      fulfillmentType: order.fulfillmentType || 'DashDoor delivery',
+      channel: order.channel || 'DashDoor',
       deliveryAddress,
       // Store info
       storeId,
@@ -116,8 +111,9 @@ const buildOrdersSection = (storeId: string, orders: any[], storeName?: string) 
       storeCategory: order.storeCategory,
       // Order items
       items,
-      // Pricing
-      subtotal: formatCurrency(typeof order.subtotal === 'number' ? order.subtotal : 0),
+      // Pricing - API returns subtotal as formatted string, others as numbers
+      subtotal:
+        typeof order.subtotal === 'string' ? order.subtotal : formatCurrency(order.subtotal || 0),
       serviceFee: typeof order.serviceFee === 'number' ? order.serviceFee : undefined,
       deliveryFee: typeof order.deliveryFee === 'number' ? order.deliveryFee : undefined,
       tipAmount: typeof order.tipAmount === 'number' ? order.tipAmount : undefined,

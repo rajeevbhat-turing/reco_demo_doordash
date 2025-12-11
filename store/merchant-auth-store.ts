@@ -120,94 +120,15 @@ interface MerchantAuthStore {
   saveOnboardingPayout: (data: OnboardingPayout) => void;
 }
 
-// Sample merchant users with real store data from database
-const sampleMerchants: MerchantUser[] = [
-  {
-    id: 'merchant-1',
-    email: 'portland.grill@dashdoor.merchant',
-    password: 'merchant@123',
-    firstName: 'John',
-    lastName: 'Smith',
-    userPhone: '1 (764) 997-5265',
-    primaryStoreName: 'Portland Grill',
-    primaryStoreAddress: {
-      street: 'Forcella, 33 N Square',
-      city: 'Boston',
-      state: 'MA',
-      zipCode: '02113',
-    },
-    primaryStorePhone: '7649975265',
-    primaryBusinessType: 'Restaurant',
-    primaryStoreId: '1',
-    // This merchant manages Portland Grill and a few other restaurants
-    storeIds: ['1', '2', '5', '6'],
-    onboardingCompleted: true, // Already onboarded
-    onboardingStep: 5, // All steps completed
-    onboardingData: {
-      orderProtocol: { orderMethod: 'pos', posPartner: 'Toast' },
-      storeHours: { applyToAllDays: true, allDaysOpen: '08:00 AM', allDaysClose: '10:00 PM' },
-      menuCompleted: true,
-      pricing: { selectedPlan: 'premier' },
-      payout: {
-        bankAccount: {
-          accountNumber: '123456789',
-          financialInstitutionNumber: '001',
-          transitNumber: '12345',
-        },
-        company: {
-          legalBusinessName: 'Portland Grill Inc.',
-          registeredBusinessAddress: '33 N Square, Boston, MA 02113',
-          sameAsStoreAddress: true,
-          entityType: 'COMPANY',
-          businessType: 'LOCAL',
-          numberOfLocations: 'TWO_FIVE',
-          hasFranchiseeLocations: 'no',
-          gstNumber: '123456789',
-        },
-        representative: {
-          firstName: 'John',
-          lastName: 'Smith',
-          personalAddress: '123 Main St, Boston, MA 02113',
-          dateOfBirth: '15/06/1980',
-          email: 'john.smith@portlandgrill.com',
-          phone: '1 (764) 997-5265',
-        },
-      },
-    },
-  },
-  {
-    id: 'merchant-2',
-    email: 'talias.kitchen@dashdoor.merchant',
-    password: 'merchant@456',
-    firstName: 'Talia',
-    lastName: 'Rodriguez',
-    userPhone: '1 (692) 349-1437',
-    primaryStoreName: "Talia's Kitchen",
-    primaryStoreAddress: {
-      street: '267 S Euclid St',
-      city: 'Anaheim',
-      state: 'CA',
-      zipCode: '92801',
-    },
-    primaryStorePhone: '6923491437',
-    primaryBusinessType: 'Restaurant',
-    primaryStoreId: '3',
-    // This merchant manages Talia's Kitchen and a few other restaurants
-    storeIds: ['3', '4', '7', '8'],
-    onboardingCompleted: false, // Needs to complete onboarding
-    onboardingStep: 2, // Completed order-protocol and hours steps
-    onboardingData: {
-      orderProtocol: { orderMethod: 'tablet' },
-      storeHours: { applyToAllDays: true, allDaysOpen: '09:00 AM', allDaysClose: '09:00 PM' },
-    },
-  },
-];
+// Initial merchants array - empty since data comes from API (merchant.db)
+// New merchants registered through signup are stored here
+const initialMerchants: MerchantUser[] = [];
 
 export const useMerchantAuthStore = create<MerchantAuthStore>()(
   persist(
     (set, get) => ({
       currentMerchant: null,
-      merchants: sampleMerchants,
+      merchants: initialMerchants,
       tempStore: null,
 
       setCurrentMerchant: merchant => set({ currentMerchant: merchant }),

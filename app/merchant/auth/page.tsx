@@ -5,11 +5,12 @@ import { useRouter } from 'next/navigation';
 import { X } from 'lucide-react';
 import { useMerchantAuthStore } from '@/store/merchant-auth-store';
 import { isValidEmail } from '@/lib/utils/helperFunctions';
+import { loginMerchant } from '@/lib/api/merchant/merchant-auth';
 
 export default function MerchantAuthPage() {
   const router = useRouter();
-  const getMerchantByEmail = useMerchantAuthStore(state => state.getMerchantByEmail);
   const setCurrentMerchant = useMerchantAuthStore(state => state.setCurrentMerchant);
+  const [isLoading, setIsLoading] = useState(false);
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -35,7 +36,7 @@ export default function MerchantAuthPage() {
   };
 
   // Handles form submission - validates email, password and signs in
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrors({});
 
@@ -56,31 +57,34 @@ export default function MerchantAuthPage() {
       return;
     }
 
-    // Check if merchant exists
-    const merchant = getMerchantByEmail(email);
-    if (!merchant) {
-      setErrors({
-        general:
-          "We couldn't find an account with the email you entered. Please check and try again.",
-      });
-      return;
-    }
+    setIsLoading(true);
 
-    // Check password
-    if (password !== merchant.password) {
-      setErrors({ password: 'Incorrect password. Please try again.' });
-      return;
-    }
+    try {
+      // Login merchant (checks store first, then API)
+      const merchant = await loginMerchant({ email, password });
 
-    // Success - sign in and redirect
-    setCurrentMerchant(merchant);
+      // Success - sign in and redirect
+      setCurrentMerchant(merchant);
 
-    // Check onboarding status and redirect accordingly
-    if (!merchant.onboardingCompleted) {
-      const onboardingUrl = getOnboardingStepUrl(merchant.onboardingStep || 0);
-      router.push(onboardingUrl);
-    } else {
-      router.push(`/merchant/store/${merchant.primaryStoreId}`);
+      // Check onboarding status and redirect accordingly
+      if (!merchant.onboardingCompleted) {
+        const onboardingUrl = getOnboardingStepUrl(merchant.onboardingStep || 0);
+        router.push(onboardingUrl);
+      } else {
+        router.push(`/merchant/store/${merchant.primaryStoreId}`);
+      }
+    } catch (error: any) {
+      const message = error.message || 'Login failed';
+      if (message.toLowerCase().includes('password')) {
+        setErrors({ password: 'Incorrect password. Please try again.' });
+      } else {
+        setErrors({
+          general:
+            "We couldn't find an account with the email you entered. Please check and try again.",
+        });
+      }
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -236,10 +240,11 @@ export default function MerchantAuthPage() {
           {/* Sign In Button */}
           <button
             type="submit"
-            className="w-full bg-[#eb1700] hover:bg-[#c41400] text-white font-bold py-3 px-4 rounded-full
-              transition-colors duration-200 text-sm"
+            disabled={isLoading}
+            className="w-full bg-[#eb1700] hover:bg-[#c41400] disabled:bg-[#eb1700]/70 text-white font-bold py-3 px-4 rounded-full
+              transition-colors duration-200 text-sm disabled:cursor-not-allowed"
           >
-            Sign In
+            {isLoading ? 'Signing In...' : 'Sign In'}
           </button>
         </form>
       </div>

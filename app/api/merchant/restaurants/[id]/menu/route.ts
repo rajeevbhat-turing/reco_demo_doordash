@@ -1,181 +1,165 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/lib/db';
-import { getImageWithFallback } from '@/constants/image-placeholders';
+import { merchantDb } from '@/lib/merchant-db';
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const { id: restaurantId } = await params;
+    const { id: storeId } = await params;
     const { searchParams } = new URL(request.url);
     const includeUnavailable = searchParams.get('includeUnavailable') === 'true';
 
-    if (!restaurantId) {
+    if (!storeId) {
       return NextResponse.json(
-        { success: false, message: 'Restaurant ID is required' },
+        { success: false, message: 'Store ID is required' },
         { status: 400 }
       );
     }
 
     // Build WHERE clause - include unavailable items for merchant view
-    const availabilityFilter = includeUnavailable ? '' : 'AND mi.is_available = 1';
+    const availabilityFilter = includeUnavailable ? '' : "AND mi.status = 'In stock'";
 
     // Fetch menu items with their categories
-    const menuItemsRaw = await db.query<any>(
+    const menuItemsRaw = await merchantDb.query<any>(
       `SELECT 
         mi.id,
-        mi.restaurant_id,
+        mi.store_id,
+        mi.category_id,
         mi.name,
         mi.description,
-        mi.price,
         mi.image,
+        mi.pickup_price,
+        mi.delivery_price,
+        mi.status,
         mi.calories,
-        mi.rating,
-        mi.rating_count,
-        mi.popular,
-        mi.featured,
+        mi.display_order,
         mi.is_available,
-        mi.discount_percentage,
-        mi.discount_cap,
         mc.name AS category_name
       FROM menu_items mi
       JOIN menu_categories mc ON mi.category_id = mc.id
-      WHERE mi.restaurant_id = ? ${availabilityFilter}
+      WHERE mi.store_id = ? ${availabilityFilter}
       ORDER BY mc.display_order, mi.display_order`,
-      [restaurantId]
-    );
-
-    // Fetch modifications for all menu items
-    const modificationsRaw = await db.query<any>(
-      `SELECT 
-        mod.id,
-        mod.menu_item_id,
-        mod.description,
-        mod.is_required,
-        mod.select_up_to,
-        mod.select_at_least,
-        mod.parent_option_id
-      FROM modifications mod
-      WHERE mod.menu_item_id IN (
-        SELECT id FROM menu_items WHERE restaurant_id = ?
-      )
-      ORDER BY mod.id`,
-      [restaurantId]
-    );
-
-    // Fetch modification options
-    const modificationOptionsRaw = await db.query<any>(
-      `SELECT 
-        mo.id,
-        mo.modification_id,
-        mo.name,
-        mo.description,
-        mo.price,
-        mo.is_counter,
-        mo.max_quantity,
-        mo.is_default,
-        mo.sort_order,
-        mo.image
-      FROM modification_options mo
-      WHERE mo.modification_id IN (
-        SELECT mod.id FROM modifications mod
-        JOIN menu_items mi ON mod.menu_item_id = mi.id
-        WHERE mi.restaurant_id = ?
-      )
-      ORDER BY mo.modification_id, mo.sort_order, mo.id`,
-      [restaurantId]
+      [storeId]
     );
 
     // Fetch menu categories
-    const categoriesRaw = await db.query<any>(
+    const categoriesRaw = await merchantDb.query<any>(
       `SELECT 
         id,
         name,
         description,
         display_order
       FROM menu_categories
-      WHERE restaurant_id = ? AND is_active = 1
+      WHERE store_id = ? AND is_active = 1
       ORDER BY display_order`,
-      [restaurantId]
+      [storeId]
     );
 
-    // Group modification options by modification
-    const modificationOptionsMap = new Map<number, any[]>();
-    modificationOptionsRaw.forEach((option: any) => {
-      if (!modificationOptionsMap.has(option.modification_id)) {
-        modificationOptionsMap.set(option.modification_id, []);
+    // Fetch modifiers for this store's menu items
+    const menuItemIds = menuItemsRaw.map(mi => mi.id);
+
+    const modifiersMap = new Map<string, any[]>();
+
+    if (menuItemIds.length > 0) {
+      // Get modifiers linked to menu items via menu_item_modifiers junction
+      const modifiersRaw = await merchantDb.query<any>(
+        `SELECT 
+          m.id,
+          m.store_id,
+          m.name,
+          m.status,
+          m.timing,
+          m.is_required,
+          m.allow_multiple_options,
+          m.allow_multiple_same,
+          m.allow_free_options,
+          mim.menu_item_id
+        FROM modifiers m
+        INNER JOIN menu_item_modifiers mim ON m.id = mim.modifier_id
+        WHERE mim.menu_item_id IN (${menuItemIds.map(() => '?').join(',')})
+        ORDER BY m.name`,
+        menuItemIds
+      );
+
+      // Get modifier options
+      const modifierIds = [...new Set(modifiersRaw.map(m => m.id))];
+
+      const optionsMap = new Map<string, any[]>();
+
+      if (modifierIds.length > 0) {
+        const optionsRaw = await merchantDb.query<any>(
+          `SELECT 
+            id,
+            modifier_id,
+            name,
+            price,
+            is_default,
+            sort_order
+          FROM modifier_options
+          WHERE modifier_id IN (${modifierIds.map(() => '?').join(',')})
+          ORDER BY sort_order`,
+          modifierIds
+        );
+
+        // Group options by modifier
+        optionsRaw.forEach((opt: any) => {
+          if (!optionsMap.has(opt.modifier_id)) {
+            optionsMap.set(opt.modifier_id, []);
+          }
+          optionsMap.get(opt.modifier_id)!.push({
+            id: opt.id,
+            name: opt.name,
+            price: opt.price / 100, // Convert cents to dollars
+            isDefault: opt.is_default === 1,
+            sortOrder: opt.sort_order,
+          });
+        });
       }
-      modificationOptionsMap.get(option.modification_id)!.push({
-        id: String(option.id),
-        name: option.name,
-        description: option.description,
-        price: option.price / 100, // Convert cents to dollars
-        is_counter: option.is_counter === 1,
-        max_quantity: option.max_quantity,
-        is_default: option.is_default === 1,
-        sort_order: option.sort_order,
-        image: option.image || undefined,
+
+      // Group modifiers by menu item
+      modifiersRaw.forEach((mod: any) => {
+        if (!modifiersMap.has(mod.menu_item_id)) {
+          modifiersMap.set(mod.menu_item_id, []);
+        }
+        modifiersMap.get(mod.menu_item_id)!.push({
+          id: mod.id,
+          name: mod.name,
+          status: mod.status,
+          timing: mod.timing,
+          isRequired: mod.is_required === 1,
+          allowMultipleOptions: mod.allow_multiple_options === 1,
+          allowMultipleSame: mod.allow_multiple_same === 1,
+          allowFreeOptions: mod.allow_free_options === 1,
+          options: optionsMap.get(mod.id) || [],
+        });
       });
-    });
+    }
 
-    // Group modifications by menu item
-    const modificationsMap = new Map<number, any[]>();
-    modificationsRaw.forEach((mod: any) => {
-      if (!modificationsMap.has(mod.menu_item_id)) {
-        modificationsMap.set(mod.menu_item_id, []);
-      }
-      modificationsMap.get(mod.menu_item_id)!.push({
-        id: String(mod.id),
-        description: mod.description,
-        is_required: mod.is_required === 1,
-        select_up_to: mod.select_up_to,
-        select_at_least: mod.select_at_least,
-        parent_option: mod.parent_option_id ? String(mod.parent_option_id) : undefined,
-        options: modificationOptionsMap.get(mod.id) || [],
-      });
-    });
-
-    // Transform menu items and attach modifications
-    const menuItems = menuItemsRaw.map((item: any) => {
-      // Format price
-      const priceInDollars = (item.price / 100).toFixed(2);
-      const priceDisplay = item.discount_percentage ? `$${priceInDollars}+` : `$${priceInDollars}`;
-
-      return {
-        id: String(item.id),
-        restaurantId: String(item.restaurant_id),
-        name: item.name,
-        description: item.description || null,
-        price: priceDisplay,
-        image: getImageWithFallback(item.image, 'image'),
-        category: item.category_name,
-        calories: item.calories ? String(item.calories) : undefined,
-        rating: item.rating || null,
-        ratingCount: item.rating_count || null,
-        popular: item.popular === 1,
-        featured: item.featured === 1,
-        isAvailable: item.is_available === 1,
-        discount: item.discount_percentage
-          ? `${item.discount_percentage}% off up to $${(item.discount_cap / 100).toFixed(2)}`
-          : undefined,
-        modifications: modificationsMap.get(item.id) || [],
-      };
-    });
+    // Transform menu items
+    const menuItems = menuItemsRaw.map((item: any) => ({
+      id: item.id,
+      storeId: item.store_id,
+      categoryId: item.category_id,
+      name: item.name,
+      description: item.description || null,
+      image: item.image || null,
+      pickupPrice: `$${(item.pickup_price / 100).toFixed(2)}`,
+      deliveryPrice: `$${(item.delivery_price / 100).toFixed(2)}`,
+      status: item.status,
+      calories: item.calories ? String(item.calories) : undefined,
+      displayOrder: item.display_order,
+      isAvailable: item.is_available === 1,
+      category: item.category_name,
+      modifications: modifiersMap.get(item.id) || [],
+    }));
 
     // Transform categories
     const categories = categoriesRaw.map((cat: any) => ({
-      id: String(cat.id),
+      id: cat.id,
       name: cat.name,
       description: cat.description,
       displayOrder: cat.display_order,
     }));
 
-    // Count total modifications across all items
-    const totalModifications = menuItems.reduce(
-      (sum, item) => sum + (item.modifications?.length || 0),
-      0
-    );
-    console.log(
-      `✅ Fetched ${menuItems.length} menu items with ${totalModifications} total modifications for restaurant ${restaurantId}`
-    );
+    console.log(`✅ Fetched ${menuItems.length} menu items for store ${storeId}`);
 
     return NextResponse.json({
       success: true,

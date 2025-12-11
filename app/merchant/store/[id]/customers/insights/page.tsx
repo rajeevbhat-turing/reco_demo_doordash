@@ -5,8 +5,7 @@ import MerchantLayout from '@/components/merchant/MerchantLayout';
 import { ChevronDown } from 'lucide-react';
 import { useCurrentStore } from '@/lib/hooks/useCurrentStore';
 import { useAllRestaurants } from '@/lib/hooks/merchant/use-restaurants';
-import { useQuery } from '@tanstack/react-query';
-import { useOrdersStore } from '@/store/orders-store';
+import { useMerchantOrdersStore } from '@/store/merchant-orders-store';
 
 /**
  * Route: /merchant/store/[id]/customers/insights
@@ -29,8 +28,8 @@ export default function CustomerInsightsPage() {
     setMounted(true);
   }, []);
 
-  // Get orders from localStorage
-  const { orders: allOrders } = useOrdersStore();
+  // Get orders from merchant orders store
+  const { orders: allOrders } = useMerchantOrdersStore();
 
   // Filter orders for this store
   const storeOrders = useMemo(() => {
@@ -41,7 +40,7 @@ export default function CustomerInsightsPage() {
     });
   }, [allOrders, storeIdParam]);
 
-  // Calculate customer insights from localStorage orders
+  // Calculate customer insights from merchant orders
   const calculatedInsights = useMemo(() => {
     const now = new Date();
     let startDate: Date;
@@ -121,32 +120,9 @@ export default function CustomerInsightsPage() {
     };
   }, [storeOrders, selectedPeriod]);
 
-  // Fetch customer insights data from API (for comparison/fallback)
-  const { data: apiInsightsData, isLoading: isLoadingApiInsights } = useQuery({
-    queryKey: ['customer-insights', storeIdParam, selectedPeriod],
-    queryFn: async () => {
-      const periodMap: Record<string, string> = {
-        'This month': 'this_month',
-        'Last month': 'last_month',
-        'This year': 'this_year',
-      };
-      const period = periodMap[selectedPeriod] || 'this_month';
-      const response = await fetch(
-        `/api/stores/${storeIdParam}/customers/insights?period=${period}`
-      );
-      if (!response.ok) throw new Error('Failed to fetch customer insights');
-      const result = await response.json();
-      return result.data;
-    },
-    enabled: !!storeIdParam && storeSet && mounted,
-  });
-
-  // Use calculated insights from localStorage, fallback to API if available
-  const insightsData =
-    calculatedInsights.totalCustomers > 0
-      ? calculatedInsights
-      : apiInsightsData || calculatedInsights;
-  const isLoadingInsights = false; // No loading since we're using localStorage
+  // Use calculated insights from merchant orders store
+  const insightsData = calculatedInsights;
+  const isLoadingInsights = false; // No loading since we're using store data
 
   // Set the store ID when component mounts or storeIdParam changes
   useEffect(() => {
@@ -243,7 +219,7 @@ export default function CustomerInsightsPage() {
               </div>
               <div className="text-sm font-medium text-gray-900 mb-1">Total customers</div>
               <div
-                className={`text-sm ${insightsData?.totalCustomersChange && parseFloat(insightsData.totalCustomersChange) > 0 ? 'text-green-600' : insightsData?.totalCustomersChange && parseFloat(insightsData.totalCustomersChange) < 0 ? 'text-red-600' : 'text-gray-500'}`}
+                className={`text-sm ${insightsData?.totalCustomersChange && parseFloat(String(insightsData.totalCustomersChange)) > 0 ? 'text-green-600' : insightsData?.totalCustomersChange && parseFloat(String(insightsData.totalCustomersChange)) < 0 ? 'text-red-600' : 'text-gray-500'}`}
               >
                 {isLoadingInsights
                   ? '--%'
@@ -328,7 +304,7 @@ export default function CustomerInsightsPage() {
           {/* Customer Locations List */}
           {insightsData?.customerLocations && insightsData.customerLocations.length > 0 ? (
             <div className="space-y-2 mb-4">
-              {insightsData.customerLocations.map((location: any, index: number) => (
+              {insightsData.customerLocations.map((location: any) => (
                 <div
                   key={location.zipCode}
                   className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"

@@ -1,85 +1,115 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/lib/db';
+import { merchantDb } from '@/lib/merchant-db';
 
 export async function GET(_request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const { id: restaurantId } = await params;
+    const { id: storeId } = await params;
 
-    if (!restaurantId) {
+    if (!storeId) {
       return NextResponse.json(
-        { success: false, message: 'Restaurant ID is required' },
+        { success: false, message: 'Store ID is required' },
         { status: 400 }
       );
     }
 
-    const modifiersRaw = await db.query<any>(
+    // Fetch modifiers for this store
+    const modifiersRaw = await merchantDb.query<any>(
       `SELECT 
-        mod.id,
-        mod.menu_item_id,
-        mod.description,
-        mod.is_required,
-        mod.select_up_to,
-        mod.select_at_least,
-        mod.parent_option_id,
-        mi.name AS menu_item_name
-      FROM modifications mod
-      JOIN menu_items mi ON mod.menu_item_id = mi.id
-      WHERE mi.restaurant_id = ?
-      ORDER BY mod.id`,
-      [restaurantId]
+        m.id,
+        m.store_id,
+        m.name,
+        m.status,
+        m.timing,
+        m.is_required,
+        m.allow_multiple_options,
+        m.allow_multiple_same,
+        m.allow_free_options,
+        m.created_at,
+        m.updated_at
+      FROM modifiers m
+      WHERE m.store_id = ?
+      ORDER BY m.name`,
+      [storeId]
     );
 
     const modifierIds = modifiersRaw.map((m: any) => m.id);
-    const optionsRaw =
-      modifierIds.length > 0
-        ? await db.query<any>(
-            `SELECT 
-              mo.id,
-              mo.modification_id,
-              mo.name,
-              mo.description,
-              mo.price,
-              mo.is_counter,
-              mo.max_quantity,
-              mo.is_default,
-              mo.sort_order,
-              mo.image
-            FROM modification_options mo
-            WHERE mo.modification_id IN (${modifierIds.map(() => '?').join(',')})
-            ORDER BY mo.modification_id, mo.sort_order, mo.id`,
-            modifierIds
-          )
-        : [];
 
-    const optionsMap = new Map<number, any[]>();
-    optionsRaw.forEach((opt: any) => {
-      if (!optionsMap.has(opt.modification_id)) {
-        optionsMap.set(opt.modification_id, []);
-      }
-      optionsMap.get(opt.modification_id)!.push({
-        id: String(opt.id),
-        name: opt.name,
-        description: opt.description,
-        price: opt.price ? opt.price / 100 : 0,
-        isCounter: opt.is_counter === 1,
-        maxQuantity: opt.max_quantity,
-        isDefault: opt.is_default === 1,
-        sortOrder: opt.sort_order,
-        image: opt.image || null,
+    // Fetch options for all modifiers
+    const optionsMap = new Map<string, any[]>();
+
+    if (modifierIds.length > 0) {
+      const optionsRaw = await merchantDb.query<any>(
+        `SELECT 
+          mo.id,
+          mo.modifier_id,
+          mo.name,
+          mo.price,
+          mo.is_default,
+          mo.sort_order
+        FROM modifier_options mo
+        WHERE mo.modifier_id IN (${modifierIds.map(() => '?').join(',')})
+        ORDER BY mo.modifier_id, mo.sort_order`,
+        modifierIds
+      );
+
+      // Group options by modifier
+      optionsRaw.forEach((opt: any) => {
+        if (!optionsMap.has(opt.modifier_id)) {
+          optionsMap.set(opt.modifier_id, []);
+        }
+        optionsMap.get(opt.modifier_id)!.push({
+          id: opt.id,
+          name: opt.name,
+          price: opt.price / 100, // Convert cents to dollars
+          isDefault: opt.is_default === 1,
+          sortOrder: opt.sort_order,
+        });
       });
-    });
+    }
 
+    // Fetch menu items that use each modifier (via junction table)
+    const usedInMap = new Map<string, any[]>();
+
+    if (modifierIds.length > 0) {
+      const usedInRaw = await merchantDb.query<any>(
+        `SELECT 
+          mim.modifier_id,
+          mi.id AS menu_item_id,
+          mi.name AS menu_item_name
+        FROM menu_item_modifiers mim
+        JOIN menu_items mi ON mim.menu_item_id = mi.id
+        WHERE mim.modifier_id IN (${modifierIds.map(() => '?').join(',')})`,
+        modifierIds
+      );
+
+      // Group by modifier
+      usedInRaw.forEach((item: any) => {
+        if (!usedInMap.has(item.modifier_id)) {
+          usedInMap.set(item.modifier_id, []);
+        }
+        usedInMap.get(item.modifier_id)!.push({
+          id: item.menu_item_id,
+          name: item.menu_item_name,
+        });
+      });
+    }
+
+    // Transform modifiers
     const modifiers = modifiersRaw.map((mod: any) => ({
-      id: String(mod.id),
-      menuItemId: String(mod.menu_item_id),
-      menuItemName: mod.menu_item_name,
-      description: mod.description,
+      id: mod.id,
+      storeId: mod.store_id,
+      name: mod.name,
+      status: mod.status,
+      timing: mod.timing,
       isRequired: mod.is_required === 1,
-      selectUpTo: mod.select_up_to,
-      selectAtLeast: mod.select_at_least,
-      parentOptionId: mod.parent_option_id ? String(mod.parent_option_id) : null,
+      allowMultipleOptions: mod.allow_multiple_options === 1,
+      allowMultipleSame: mod.allow_multiple_same === 1,
+      allowFreeOptions: mod.allow_free_options === 1,
       options: optionsMap.get(mod.id) || [],
+      usedIn: usedInMap.get(mod.id) || [],
     }));
+
+    console.log(`✅ Fetched ${modifiers.length} modifiers for store ${storeId}`);
 
     return NextResponse.json({
       success: true,

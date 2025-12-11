@@ -1,245 +1,124 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/lib/db';
-import { calculateDeliveryTime, checkIfOpen, formatHours } from '@/lib/utils/restaurant-utils';
-import { getImageWithFallback } from '@/constants/image-placeholders';
+import { merchantDb } from '@/lib/merchant-db';
 
 /**
- * GET /api/restaurants
+ * GET /api/merchant/restaurants
  *
- * Fetches restaurants within a radius of user's location
- * Calculates distance using Haversine formula
- *
- * Query params:
- * - lat: User's latitude (required)
- * - lng: User's longitude (required)
- * - radius: Search radius in miles (default: 10)
+ * Fetches all stores from merchant database
+ * Can filter by merchantId (owner_id)
  */
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = request.nextUrl;
+    const merchantId = searchParams.get('merchantId');
     const all = searchParams.get('all') === 'true';
-    const lat = parseFloat(searchParams.get('lat') || '0');
-    const lng = parseFloat(searchParams.get('lng') || '0');
-    const radius = parseFloat(searchParams.get('radius') || '10');
 
-    // If fetching all restaurants (for merchant portal), skip location validation
-    if (!all) {
-      // Validate coordinates
-      if (!lat || !lng) {
-        return NextResponse.json(
-          {
-            success: false,
-            error: 'Latitude and longitude are required',
-          },
-          { status: 400 }
-        );
-      }
+    let stores: any[];
 
-      if (lat < -90 || lat > 90 || lng < -180 || lng > 180) {
-        return NextResponse.json(
-          {
-            success: false,
-            error: 'Invalid coordinates',
-          },
-          { status: 400 }
-        );
-      }
-    }
-
-    // Query restaurants - different query for "all" vs location-based
-    let restaurants: any[];
-    if (all) {
-      // Fetch all restaurants without distance calculation
-      restaurants = await db.query<any>(
+    if (merchantId) {
+      // Fetch stores for specific merchant (via merchant_stores junction table)
+      stores = await merchantDb.query<any>(
         `SELECT 
-          r.id,
-          r.name,
-          r.logo,
-          r.banner,
-          r.details_banner,
-          r.is_free_delivery,
-          r.min_delivery_fee,
-          r.price_range,
-          r.cuisine,
-          r.dash_pass,
-          r.opening_hour,
-          r.closing_hour,
-          r.street,
-          r.city,
-          r.state,
-          r.zip_code,
-          r.latitude,
-          r.longitude,
-          r.phone,
-          r.discount_percentage,
-          r.discount_cap,
-          r.featured,
-          r.new_flag,
-          r.section,
-          NULL AS distance,
-          -- Get categories as comma-separated string
-          (
-            SELECT GROUP_CONCAT(rc.category_name, ',')
-            FROM restaurant_categories rc
-            WHERE rc.restaurant_id = r.id
-          ) AS categories_str,
-          -- Get average rating from user reviews (approved only)
-          (
-            SELECT AVG(ur.rating)
-            FROM user_reviews ur
-            WHERE ur.store_id = r.id 
-              AND ur.approval_status = 'approved'
-          ) AS avg_rating,
-          -- Get total rating count from user reviews (approved only)
-          (
-            SELECT COUNT(*)
-            FROM user_reviews ur
-            WHERE ur.store_id = r.id 
-              AND ur.approval_status = 'approved'
-          ) AS total_rating_count
-        FROM restaurants r
-        ORDER BY r.name ASC`
+          s.id,
+          s.name,
+          s.email,
+          s.phone,
+          s.business_type,
+          s.owner_id,
+          s.created_at,
+          s.opening_hour,
+          s.closing_hour,
+          a.street,
+          a.city,
+          a.state,
+          a.zip_code,
+          a.latitude,
+          a.longitude,
+          ms.role
+        FROM stores s
+        LEFT JOIN addresses a ON s.id = a.store_id AND a.is_primary = 1
+        INNER JOIN merchant_stores ms ON s.id = ms.store_id
+        WHERE ms.merchant_id = ?
+        ORDER BY s.name ASC`,
+        [merchantId]
+      );
+    } else if (all) {
+      // Fetch all stores
+      stores = await merchantDb.query<any>(
+        `SELECT 
+          s.id,
+          s.name,
+          s.email,
+          s.phone,
+          s.business_type,
+          s.owner_id,
+          s.created_at,
+          s.opening_hour,
+          s.closing_hour,
+          a.street,
+          a.city,
+          a.state,
+          a.zip_code,
+          a.latitude,
+          a.longitude
+        FROM stores s
+        LEFT JOIN addresses a ON s.id = a.store_id AND a.is_primary = 1
+        ORDER BY s.name ASC`
       );
     } else {
-      // Query restaurants with distance calculation using Haversine formula
-      restaurants = await db.query<any>(
-        `SELECT * FROM (
-          SELECT 
-            r.id,
-            r.name,
-            r.logo,
-            r.banner,
-            r.details_banner,
-            r.is_free_delivery,
-            r.min_delivery_fee,
-            r.price_range,
-            r.cuisine,
-            r.dash_pass,
-            r.opening_hour,
-            r.closing_hour,
-            r.street,
-            r.city,
-            r.state,
-            r.zip_code,
-            r.latitude,
-            r.longitude,
-            r.phone,
-            r.discount_percentage,
-            r.discount_cap,
-            r.featured,
-            r.new_flag,
-            r.section,
-            (
-              3959 * acos(
-                cos(radians(?)) * cos(radians(r.latitude)) * 
-                cos(radians(r.longitude) - radians(?)) + 
-                sin(radians(?)) * sin(radians(r.latitude))
-              )
-            ) AS distance,
-            -- Get categories as comma-separated string
-            (
-              SELECT GROUP_CONCAT(rc.category_name, ',')
-              FROM restaurant_categories rc
-              WHERE rc.restaurant_id = r.id
-            ) AS categories_str,
-            -- Get average rating from user reviews (approved only)
-            (
-              SELECT AVG(ur.rating)
-              FROM user_reviews ur
-              WHERE ur.store_id = r.id 
-                AND ur.approval_status = 'approved'
-            ) AS avg_rating,
-            -- Get total rating count from user reviews (approved only)
-            (
-              SELECT COUNT(*)
-              FROM user_reviews ur
-              WHERE ur.store_id = r.id 
-                AND ur.approval_status = 'approved'
-            ) AS total_rating_count
-          FROM restaurants r
-        ) AS restaurants_with_distance
-        WHERE distance <= ?
-        ORDER BY distance ASC`,
-        [lat, lng, lat, radius]
+      return NextResponse.json(
+        { success: false, error: 'merchantId or all=true parameter is required' },
+        { status: 400 }
       );
     }
 
-    // Transform data to match Restaurant interface
-    const transformedRestaurants = restaurants.map(r => {
-      const distance = r.distance ? parseFloat(r.distance) : null;
-      const deliveryTime = distance !== null ? calculateDeliveryTime(distance) : null;
+    // Transform data
+    const transformedStores = stores.map(s => {
+      // Format opening hours
+      const openingHours =
+        s.opening_hour && s.closing_hour ? `${s.opening_hour} - ${s.closing_hour}` : 'Not set';
+
+      // Check if currently open
       const currentHour = new Date().getHours();
-      const isOpen = checkIfOpen(r.opening_hour, r.closing_hour, currentHour);
+      const openHour = s.opening_hour ? parseInt(s.opening_hour.split(':')[0]) : 0;
+      const closeHour = s.closing_hour ? parseInt(s.closing_hour.split(':')[0]) : 24;
+      const isOpen = currentHour >= openHour && currentHour < closeHour;
 
       return {
-        id: String(r.id),
-        name: r.name,
-        logo: getImageWithFallback(r.logo, 'logo'),
-        banner: getImageWithFallback(r.banner, 'image'),
-        detailsBanner: r.details_banner
-          ? getImageWithFallback(r.details_banner, 'image')
-          : undefined,
-        rating: r.avg_rating ? parseFloat(r.avg_rating.toFixed(1)) : null,
-        reviews: r.total_rating_count ? `${r.total_rating_count}+ ratings` : null,
-        distance: distance !== null ? `${distance.toFixed(1)} mi` : undefined,
-        time: deliveryTime,
-        deliveryFee:
-          r.is_free_delivery === 1
-            ? '$0 delivery fee'
-            : `$${(r.min_delivery_fee / 100).toFixed(2)} delivery fee`,
-        isFreeDelivery: r.is_free_delivery === 1,
-        minDeliveryFee: r.min_delivery_fee,
-        priceRange: '$'.repeat(r.price_range),
-        cuisine: r.cuisine,
-        dashPass: r.dash_pass === 1,
-        isOpen: isOpen,
-        openingHours: formatHours(r.opening_hour, r.closing_hour),
-        street: r.street,
-        city: r.city,
-        state: r.state,
-        zipCode: r.zip_code,
-        lat: r.latitude,
-        lng: r.longitude,
-        phone: r.phone,
-        discount: r.discount_percentage
-          ? `${r.discount_percentage}% off${r.discount_cap ? `, up to $${(r.discount_cap / 100).toFixed(2)}` : ''}`
-          : undefined,
-        featured: r.featured === 1,
-        new: r.new_flag === 1,
-        categories: r.categories_str ? r.categories_str.split(',') : [],
-        section: r.section || undefined,
+        id: s.id,
+        name: s.name,
+        email: s.email,
+        phone: s.phone,
+        businessType: s.business_type,
+        ownerId: s.owner_id,
+        role: s.role || 'owner',
+        createdAt: s.created_at,
+        // Address
+        street: s.street || '',
+        city: s.city || '',
+        state: s.state || '',
+        zipCode: s.zip_code || '',
+        lat: s.latitude,
+        lng: s.longitude,
+        // Hours
+        openingHours,
+        isOpen,
       };
     });
 
-    if (all) {
-      console.log(`✅ Found ${transformedRestaurants.length} restaurants (all)`);
-    } else {
-      console.log(
-        `✅ Found ${transformedRestaurants.length} restaurants within ${radius} miles of (${lat}, ${lng})`
-      );
-    }
+    console.log(`✅ Found ${transformedStores.length} stores`);
 
     return NextResponse.json({
       success: true,
-      data: transformedRestaurants,
-      meta: all
-        ? {
-            count: transformedRestaurants.length,
-          }
-        : {
-            count: transformedRestaurants.length,
-            lat,
-            lng,
-            radius,
-          },
+      data: transformedStores,
+      meta: {
+        count: transformedStores.length,
+      },
     });
   } catch (error) {
-    console.error('❌ Error fetching restaurants:', error);
+    console.error('❌ Error fetching stores:', error);
     return NextResponse.json(
-      {
-        success: false,
-        error: 'An error occurred while fetching restaurants',
-      },
+      { success: false, error: 'An error occurred while fetching stores' },
       { status: 500 }
     );
   }

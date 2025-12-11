@@ -37,6 +37,7 @@ next-env.d.ts
 *.db-wal
 poc-database.sqlite
 !dashdoor.db
+!merchant.db
 
 # macOS .DS_Store
 .DS_Store

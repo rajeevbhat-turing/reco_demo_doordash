@@ -5,15 +5,15 @@ import { useParams } from 'next/navigation';
 import MerchantLayout from '@/components/merchant/MerchantLayout';
 import { Lightbulb, Megaphone, TrendingUp, ChevronRight, Star } from 'lucide-react';
 import SalesChart from '@/components/merchant/SalesChart';
-import { useStoreApprovedReviews } from '@/lib/hooks/use-reviews';
 import { useCurrentStore } from '@/lib/hooks/useCurrentStore';
 import { useMerchantHomeStore } from '@/store/merchant-home-store';
 // import { useMerchantMetrics } from '@/lib/hooks/use-merchant-metrics';
 import { useMerchantOperations } from '@/lib/hooks/use-merchant-operations';
 import { useMerchantCustomers } from '@/lib/hooks/use-merchant-customers';
-import { useOrdersStore } from '@/store/orders-store';
+import { useMerchantOrdersStore } from '@/store/merchant-orders-store';
 import { useAllRestaurants } from '@/lib/hooks/merchant/use-restaurants';
-import { useUserStore } from '@/store/user-store';
+import { useMerchantAuthStore } from '@/store/merchant-auth-store';
+import { useQuery } from '@tanstack/react-query';
 
 function Stat({ label, value }: { label: string; value: string }) {
   return (
@@ -81,13 +81,25 @@ function OperationsReviewCard() {
   // This matches what the reviews API expects (store_id INTEGER in database)
   const numericStoreId = currentRestaurant?.id || currentStoreId || '';
 
-  // Fetch approved reviews for the current store using numeric ID
-  const storeReviews = useStoreApprovedReviews(numericStoreId);
+  // Fetch approved reviews for the current store from merchant API
+  const { data: storeReviewsData } = useQuery({
+    queryKey: ['merchant-reviews', numericStoreId],
+    queryFn: async () => {
+      if (!numericStoreId) return [];
+      const response = await fetch(
+        `/api/merchant/reviews/${numericStoreId}?approvalStatus=approved`
+      );
+      if (!response.ok) return [];
+      const result = await response.json();
+      return result.data || [];
+    },
+    enabled: !!numericStoreId && mounted,
+  });
 
   // Get all reviews from the current store
   const allReviews = useMemo(() => {
-    return storeReviews.data || [];
-  }, [storeReviews.data]);
+    return storeReviewsData || [];
+  }, [storeReviewsData]);
 
   // Get recent reviews that need responses (within 7 days, or show recent ones if none are that recent)
   const recentReviews = useMemo(() => {
@@ -209,18 +221,16 @@ export default function MerchantStorePage() {
     'This month'
   );
 
-  // Get current user for displaying name
-  const currentUser = useUserStore(state => state.currentUser);
+  // Get current merchant for displaying name
+  const currentMerchant = useMerchantAuthStore(state => state.currentMerchant);
 
   // Format user name: FirstName L. (first name + first letter of last name)
   const userDisplayName = useMemo(() => {
-    if (!currentUser?.name) return 'User';
-    const nameParts = currentUser.name.trim().split(/\s+/);
-    if (nameParts.length === 1) return nameParts[0];
-    const firstName = nameParts[0];
-    const lastInitial = nameParts[nameParts.length - 1].charAt(0).toUpperCase();
-    return `${firstName} ${lastInitial}.`;
-  }, [currentUser?.name]);
+    if (!currentMerchant?.firstName) return 'User';
+    const firstName = currentMerchant.firstName;
+    const lastInitial = currentMerchant.lastName?.charAt(0).toUpperCase() || '';
+    return lastInitial ? `${firstName} ${lastInitial}.` : firstName;
+  }, [currentMerchant?.firstName, currentMerchant?.lastName]);
 
   const storeIdParam = params.id as string;
 
@@ -286,8 +296,8 @@ export default function MerchantStorePage() {
   // Fallback to storeIdParam if restaurant not found yet
   const numericStoreId = currentRestaurant?.id || storeIdParam || null;
 
-  // Get orders from localStorage instead of API
-  const { orders: allOrders = [] } = useOrdersStore();
+  // Get orders from merchant orders store
+  const { orders: allOrders = [] } = useMerchantOrdersStore();
 
   // Filter orders for this store
   const orders = useMemo(() => {

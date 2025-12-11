@@ -6,7 +6,7 @@ import { ChevronDown, MessageSquare, Star } from 'lucide-react';
 import { useCurrentStore } from '@/lib/hooks/useCurrentStore';
 import { useAllRestaurants } from '@/lib/hooks/merchant/use-restaurants';
 import { useQuery } from '@tanstack/react-query';
-import { useOrdersStore } from '@/store/orders-store';
+import { useMerchantOrdersStore } from '@/store/merchant-orders-store';
 
 /**
  * Route: /merchant/store/[id]/customers/ratings-reviews
@@ -28,8 +28,8 @@ export default function RatingsReviewsPage() {
     setMounted(true);
   }, []);
 
-  // Get orders from localStorage
-  const { orders: allOrders } = useOrdersStore();
+  // Get orders from merchant orders store
+  const { orders: allOrders } = useMerchantOrdersStore();
 
   // Filter orders for this store
   const storeOrders = useMemo(() => {
@@ -40,11 +40,11 @@ export default function RatingsReviewsPage() {
     });
   }, [allOrders, storeIdParam]);
 
-  // Fetch reviews for this store from API
+  // Fetch reviews for this store from merchant API
   const { data: apiReviewsData, isLoading: isLoadingApiReviews } = useQuery({
-    queryKey: ['store-reviews', storeIdParam],
+    queryKey: ['merchant-store-reviews', storeIdParam],
     queryFn: async () => {
-      const response = await fetch(`/api/reviews/${storeIdParam}?approvalStatus=approved`);
+      const response = await fetch(`/api/merchant/reviews/${storeIdParam}?approvalStatus=approved`);
       if (!response.ok) throw new Error('Failed to fetch reviews');
       const result = await response.json();
       return result.data || [];
@@ -69,7 +69,7 @@ export default function RatingsReviewsPage() {
     return { startDate, endDate: now };
   };
 
-  // Combine API reviews with recent orders from localStorage
+  // Combine API reviews with recent orders from merchant store
   // Show recent orders that could have reviews
   const reviewsData = useMemo(() => {
     const apiReviews = apiReviewsData || [];
@@ -99,7 +99,7 @@ export default function RatingsReviewsPage() {
         // Get user name - prioritize userName, then businessName, fallback to Customer
         const userName = order.userName || order.deliveryAddress?.businessName || 'Customer';
 
-        // Check if order has a review stored in localStorage (rating and reviewText)
+        // Check if order has a review stored (rating and reviewText)
         const hasOrderReview =
           order.rating !== null && order.rating !== undefined && order.reviewText;
 
@@ -332,7 +332,7 @@ export default function RatingsReviewsPage() {
               <div className="bg-white border border-gray-200 rounded-lg p-12 text-center">
                 <MessageSquare className="h-24 w-24 text-gray-300 mx-auto mb-4" />
                 <p className="text-lg text-gray-600">
-                  You didn't receive any ratings for the selected store(s) and timeframe.
+                  You didn&apos;t receive any ratings for the selected store(s) and timeframe.
                 </p>
               </div>
             )}
