@@ -25,7 +25,7 @@ This document explains:
 
 | Portal | API Prefix | Database |
 |--------|-----------|----------|
-| Customer | `/api/orders`, `/api/reviews`, `/api/stores` | `dashdoor.db` |
+| Customer | `/api/orders`, `/api/reviews`, `/api/restaurants` | `dashdoor.db` |
 | Merchant | `/api/merchant/orders`, `/api/merchant/reviews`, `/api/merchant/restaurants` | `merchant.db` |
 
 ---
