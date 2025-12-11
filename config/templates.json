@@ -1,0 +1,89 @@
+[
+  {
+    "task_id": "001",
+    "start_url": "https://dashdoor.rlgym.turing.com/home",
+    "task_statement": "Log in using email '{{USER_EMAIL}}' and password '{{USER_PASSWORD}}'. Order {{RESTAURANT_ITEM}} from {{RESTAURANT}}, select the {{ITEM_ADD_ON}} add on",
+    "grader_config": {
+      "state_grader_configs": [
+        {
+          "assertions": [
+            {
+              "operator": "ARRAY_STRING_EQUALS",
+              "path_to_actual": "$.restaurantId",
+              "paths_to_expected": [
+                "$[1].restaurants[0].id"
+              ]
+            },
+            {
+              "operator": "ARRAY_STRING_EQUALS",
+              "path_to_actual": "$.items[0].name",
+              "paths_to_expected": [
+                "$[2].items[0].name"
+              ]
+            },
+            {
+              "expected": [
+                "==1"
+              ],
+              "operator": "ARRAY_LENGTH_MATCH",
+              "path_to_actual": "$.items[*]"
+            },
+            {
+              "operator": "NUMERIC_MATCH",
+              "path_to_actual": "$.items[0].quantity",
+              "expected": [
+                "==1"
+              ]
+            },
+            {
+              "operator": "STRING_EQUALS",
+              "path_to_actual": "$.items[0].modifications[0].options[0].id",
+              "paths_to_expected": [
+                "$[3].modifications[0].options[0].id"
+              ]
+            }
+          ],
+          "path_to_actual": "$.orders[0]"
+        }
+      ],
+      "extract_states_config": {
+        "expected_state_functions": [
+          {
+            "args": {
+              "user": "{{USER_EMAIL}}"
+            },
+            "function": "get_user_address"
+          },
+          {
+            "args": {
+              "lat": "$[0].address.lat",
+              "lng": "$[0].address.lng",
+              "limit": 1,
+              "name": "{{RESTAURANT}}"
+            },
+            "function": "get_restaurants"
+          },
+          {
+            "args": {
+              "limit": 1,
+              "keywords": [
+                "{{RESTAURANT_ITEM}}"
+              ],
+              "restaurant_id": "$[1].restaurants[0].id"
+            },
+            "function": "get_items"
+          },
+          {
+            "args": {
+              "item_id": "$[2].items[0].id",
+              "modification_name": "{{MODIFICATION_NAME}}",
+              "option_name": "{{ITEM_ADD_ON}}"
+            },
+            "function": "get_modifications"
+          }
+        ]
+      }
+    }
+  }
+]
+
