@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import MerchantLayout from '@/components/merchant/MerchantLayout';
-import { AlertCircle, CheckCircle, ChevronLeft, ChevronRight } from 'lucide-react';
+import { AlertCircle, CheckCircle } from 'lucide-react';
 
 interface MenuCategory {
   id: string;
@@ -234,21 +234,6 @@ export default function StoreAvailabilityPage() {
             </table>
           </div>
 
-          {/* Pagination */}
-          <div className="flex items-center justify-center gap-2 mt-4">
-            <button
-              className="p-1 text-gray-400 hover:text-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
-              disabled
-            >
-              <ChevronLeft className="h-4 w-4" />
-            </button>
-            <button
-              className="p-1 text-gray-400 hover:text-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
-              disabled
-            >
-              <ChevronRight className="h-4 w-4" />
-            </button>
-          </div>
         </div>
       </div>
     </MerchantLayout>

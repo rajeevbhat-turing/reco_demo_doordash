@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { Search, Plus, Pencil, Trash2, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Search, Plus, Pencil, Trash2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { useMerchantModifiersStore } from '@/store/merchant-modifiers-store';
 import { useMerchantPersistedState } from '@/lib/hooks/useMerchantPersistedState';
@@ -261,20 +261,11 @@ export default function ModifiersTab() {
           </tbody>
         </table>
 
-        <div className="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 text-sm text-gray-600">
-          <span>
-            Showing 1-{filteredModifiers.length} of {modifiers.length} modifiers
-          </span>
-          <div className="flex items-center gap-1">
-            <button className="rounded-full p-2 text-gray-400" aria-label="Previous page" disabled>
-              <ChevronLeft className="h-4 w-4" />
-            </button>
-            <span className="rounded border border-gray-200 px-3 py-1 text-gray-700">1</span>
-            <button className="rounded-full p-2 text-gray-400" aria-label="Next page" disabled>
-              <ChevronRight className="h-4 w-4" />
-            </button>
+        {filteredModifiers.length > 0 && (
+          <div className="border-t border-gray-200 bg-white px-4 py-3 text-sm text-gray-600">
+            Showing {filteredModifiers.length} of {modifiers.length} modifiers
           </div>
-        </div>
+        )}
       </div>
     </div>
   );

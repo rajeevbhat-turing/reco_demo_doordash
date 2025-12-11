@@ -2,7 +2,7 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import MerchantLayout from "@/components/merchant/MerchantLayout"
-import { Check, ChevronLeft, ChevronRight, Users } from "lucide-react"
+import { Check, ChevronRight, Users } from "lucide-react"
 
 export default function RunCampaignPage() {
   const router = useRouter()
@@ -93,15 +93,6 @@ export default function RunCampaignPage() {
                     <div className="w-12 h-12 bg-gray-200 rounded"></div>
                   </div>
                 </div>
-              </div>
-              <div className="flex items-center justify-center gap-2 mt-2">
-                <button className="p-1 text-gray-400 hover:text-gray-600">
-                  <ChevronLeft className="h-4 w-4" />
-                </button>
-                <span className="text-xs text-gray-500">1 of 2</span>
-                <button className="p-1 text-gray-400 hover:text-gray-600">
-                  <ChevronRight className="h-4 w-4" />
-                </button>
               </div>
             </div>
           </div>
