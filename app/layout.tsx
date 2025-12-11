@@ -5,6 +5,7 @@ import './globals.css';
 import MainLayout from './main-layout';
 import { GlobalContextProvider } from './global-context';
 import { QueryProvider } from '@/lib/providers/query-provider';
+import { ConditionalMainLayout } from './conditional-main-layout';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -23,7 +24,7 @@ export default function RootLayout({
       <body className={inter.className}>
         <QueryProvider>
           <GlobalContextProvider>
-            <MainLayout>{children}</MainLayout>
+            <ConditionalMainLayout>{children}</ConditionalMainLayout>
           </GlobalContextProvider>
         </QueryProvider>
       </body>
