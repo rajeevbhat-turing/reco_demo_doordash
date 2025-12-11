@@ -81,6 +81,7 @@ export function getMergedVendorReviews(
 
 /**
  * Get approved reviews for a vendor, merging API data with store changes
+ * Returns reviews sorted by timestamp in descending order (newest first)
  */
 export function getMergedApprovedReviews(
   apiReviews: UserReview[],
@@ -93,9 +94,9 @@ export function getMergedApprovedReviews(
   }
 ): UserReview[] {
   const merged = mergeReviewsWithChanges(apiReviews, storeReviewChanges);
-  return merged.filter(
-    review => review.vendorId === vendorId && review.approvalStatus === 'approved'
-  );
+  return merged
+    .filter(review => review.vendorId === vendorId && review.approvalStatus === 'approved')
+    .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
 }
 
 /**
