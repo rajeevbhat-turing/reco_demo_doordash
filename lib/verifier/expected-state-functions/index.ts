@@ -20,4 +20,6 @@ export { get_menu_categories } from './get-menu-categories';
 export type { MenuCategoryResult, GetMenuCategoriesArgs, GetMenuCategoriesResult } from './get-menu-categories';
 export { get_reviews } from './get-reviews';
 export type { ReviewResult, GetReviewsArgs, GetReviewsResult, SortSpec as ReviewSortSpec } from './get-reviews';
+export { get_modifications } from './get-modifications';
+export type { ModificationResult, ModificationOptionResult, GetModificationsArgs, GetModificationsResult } from './get-modifications';
 

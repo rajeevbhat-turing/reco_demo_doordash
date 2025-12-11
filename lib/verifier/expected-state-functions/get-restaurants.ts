@@ -46,6 +46,8 @@ export interface GetRestaurantsArgs {
   lng?: number; // Optional explicit longitude
   filters?: {
     item_keyword?: string; // Filter by menu item keyword (restaurants that have items matching this keyword)
+    has_any_item_keywords?: string[]; // Filter by menu item keywords (restaurants that have items matching ANY keyword)
+    has_all_item_keywords?: string[]; // Filter by menu item keywords (restaurants that have items matching ALL keywords)
     cuisines?: string[]; // Filter by cuisine types (matches any in array)
     categories?: string[]; // Filter by categories (matches any in array)
     prices?: string[]; // Filter by price ranges: "$", "$$", "$$$", "$$$$"
@@ -130,6 +132,14 @@ export async function get_restaurants(
     
     if (filters.item_keyword) {
       params.append('item_keyword', filters.item_keyword);
+    }
+    
+    if (filters.has_any_item_keywords && filters.has_any_item_keywords.length > 0) {
+      params.append('has_any_item_keywords', JSON.stringify(filters.has_any_item_keywords));
+    }
+    
+    if (filters.has_all_item_keywords && filters.has_all_item_keywords.length > 0) {
+      params.append('has_all_item_keywords', JSON.stringify(filters.has_all_item_keywords));
     }
     
     if (filters.cuisines && filters.cuisines.length > 0) {
