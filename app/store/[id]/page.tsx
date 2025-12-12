@@ -994,19 +994,25 @@ export default function RestaurantPage() {
                       </li>
                     )}
 
-                    {/* Regular menu categories */}
-                    {menuCategories.map(category => (
-                      <li key={category.id}>
-                        <button
-                          className={`w-full text-left px-2 py-2 rounded-md ${
-                            activeCategory === category.name ? 'bg-gray-100 font-medium' : ''
-                          }`}
-                          onClick={() => scrollToSection(category.name)}
-                        >
-                          {category.name}
-                        </button>
-                      </li>
-                    ))}
+                    {/* Regular menu categories - only show categories with items */}
+                    {menuCategories
+                      .filter(category => {
+                        const categoryItems =
+                          menuData?.menuItems.filter(item => item.category === category.name) || [];
+                        return categoryItems.length > 0;
+                      })
+                      .map(category => (
+                        <li key={category.id}>
+                          <button
+                            className={`w-full text-left px-2 py-2 rounded-md ${
+                              activeCategory === category.name ? 'bg-gray-100 font-medium' : ''
+                            }`}
+                            onClick={() => scrollToSection(category.name)}
+                          >
+                            {category.name}
+                          </button>
+                        </li>
+                      ))}
                   </ul>
                 </div>
               </div>
