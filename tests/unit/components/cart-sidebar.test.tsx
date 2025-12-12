@@ -164,7 +164,6 @@ describe('CartSidebar', () => {
     mockGetCurrentRestaurantId.mockReturnValue(null);
     mockFindCart.mockReturnValue(mockCart);
     mockGetConfig.mockReturnValue({
-      freeDeliveryThreshold: 35,
       serviceFeePercentage: 0.15,
       minServiceFee: 2.5,
     });

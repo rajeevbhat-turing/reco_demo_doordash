@@ -36,42 +36,30 @@ export interface Cart {
 
 // Category-specific configurations
 interface CategoryConfig {
-  freeDeliveryThreshold: number;
-  defaultDeliveryFee: number;
   serviceFeePercentage: number;
   minServiceFee: number;
 }
 
-// Default configuration by category
+// Default configuration by category (only restaurant is actively used)
 const categoryConfigs: Record<CartCategory, CategoryConfig> = {
   restaurant: {
-    freeDeliveryThreshold: 30,
-    defaultDeliveryFee: 5.99,
     serviceFeePercentage: 0.15,
     minServiceFee: 4.99,
   },
-  // For now, keep the same config for all categories
+  // Placeholder configs for other categories (not currently used)
   grocery: {
-    freeDeliveryThreshold: 30,
-    defaultDeliveryFee: 5.99,
     serviceFeePercentage: 0.15,
     minServiceFee: 4.99,
   },
   retail: {
-    freeDeliveryThreshold: 30,
-    defaultDeliveryFee: 5.99,
     serviceFeePercentage: 0.15,
     minServiceFee: 4.99,
   },
   convenience: {
-    freeDeliveryThreshold: 30,
-    defaultDeliveryFee: 5.99,
     serviceFeePercentage: 0.15,
     minServiceFee: 4.99,
   },
   pets: {
-    freeDeliveryThreshold: 30,
-    defaultDeliveryFee: 5.99,
     serviceFeePercentage: 0.15,
     minServiceFee: 4.99,
   },
@@ -841,11 +829,12 @@ export const useCartStore = create<CartStore>()(
         },
 
         // Calculate delivery fee for specific cart or all carts
-        getDeliveryFee: (storeId?, category?) => {
-          const { getSubtotal, getConfig } = get();
-          const config = getConfig();
-          const subtotal = getSubtotal(storeId, category);
-          return subtotal >= config.freeDeliveryThreshold ? 0 : config.defaultDeliveryFee;
+        // Note: This is a fallback - actual delivery fee is calculated dynamically in checkout
+        // based on distance and restaurant's minDeliveryFee
+        getDeliveryFee: (_storeId?, _category?) => {
+          // Return 0 as a placeholder - actual fee is calculated via getDynamicDeliveryFee
+          // which takes into account distance and restaurant's min delivery fee
+          return 0;
         },
 
         // Calculate total (includes all fees - for checkout) for specific cart or all carts

@@ -62,74 +62,63 @@ describe('fee-calculator', () => {
       expect(result.breakdown.expressSurcharge).toBe(2.99);
     });
 
-    it('should return free delivery when subtotal meets threshold (standard)', () => {
+    it('should calculate distance-based delivery fee', () => {
       const params: FeeCalculationParams = {
         ...baseParams,
-        subtotal: 30.0, // Meets threshold
-      };
-      const result = calculateDeliveryFee(params);
-      expect(result.fee).toBe(0);
-    });
-
-    it('should charge express surcharge even when subtotal meets threshold', () => {
-      const params: FeeCalculationParams = {
-        ...baseParams,
-        subtotal: 30.0,
-        deliveryOption: 'express',
-      };
-      const result = calculateDeliveryFee(params);
-      expect(result.fee).toBe(2.99);
-    });
-
-    it('should calculate base delivery fee', () => {
-      const params: FeeCalculationParams = {
-        ...baseParams,
-        subtotal: 20.0, // Below threshold
+        distance: 3.0,
       };
       const result = calculateDeliveryFee(params);
       expect(result.fee).toBeGreaterThan(0);
       expect(result.breakdown.baseDeliveryFee).toBeGreaterThan(0);
     });
 
-    it('should use restaurant min delivery fee if higher than default', () => {
+    it('should calculate higher fee for longer distances', () => {
+      const shortDistance = calculateDeliveryFee({
+        ...baseParams,
+        distance: 2.0,
+      });
+      const longDistance = calculateDeliveryFee({
+        ...baseParams,
+        distance: 8.0,
+      });
+      expect(longDistance.fee).toBeGreaterThan(shortDistance.fee);
+    });
+
+    it('should use restaurant minDeliveryFee as base fee', () => {
       const params: FeeCalculationParams = {
         ...baseParams,
-        subtotal: 20.0,
+        distance: 1.0,
         restaurant: {
           id: '1',
           isFreeDelivery: false,
-          minDeliveryFee: 799, // $7.99 in cents
+          minDeliveryFee: 199, // $1.99 in cents
           dashPass: false,
         },
       };
       const result = calculateDeliveryFee(params);
-      expect(result.breakdown.baseDeliveryFee).toBeGreaterThanOrEqual(7.99);
+      expect(result.breakdown.baseDeliveryFee).toBe(1.99);
     });
 
-    it('should calculate distance surcharge for distances over free threshold', () => {
+    it('should add distance surcharge on top of base fee', () => {
       const params: FeeCalculationParams = {
         ...baseParams,
-        subtotal: 20.0,
-        distance: 5.0, // Over 2 mile free threshold
+        distance: 5.0, // Should trigger distance surcharge
+        restaurant: {
+          id: '1',
+          isFreeDelivery: false,
+          minDeliveryFee: 199, // $1.99 in cents
+          dashPass: false,
+        },
       };
       const result = calculateDeliveryFee(params);
+      expect(result.breakdown.baseDeliveryFee).toBe(1.99);
       expect(result.breakdown.distanceSurcharge).toBeGreaterThan(0);
-    });
-
-    it('should not charge distance surcharge within free threshold', () => {
-      const params: FeeCalculationParams = {
-        ...baseParams,
-        subtotal: 20.0,
-        distance: 1.5, // Within 2 mile free threshold
-      };
-      const result = calculateDeliveryFee(params);
-      expect(result.breakdown.distanceSurcharge).toBe(0);
+      expect(result.fee).toBeGreaterThan(1.99);
     });
 
     it('should calculate express surcharge', () => {
       const params: FeeCalculationParams = {
         ...baseParams,
-        subtotal: 20.0,
         deliveryOption: 'express',
       };
       const result = calculateDeliveryFee(params);
@@ -137,11 +126,10 @@ describe('fee-calculator', () => {
       expect(result.fee).toBeGreaterThan(2.99);
     });
 
-    it('should handle different categories', () => {
+    it('should handle zero distance', () => {
       const params: FeeCalculationParams = {
         ...baseParams,
-        category: 'grocery',
-        subtotal: 20.0,
+        distance: 0,
       };
       const result = calculateDeliveryFee(params);
       expect(result.fee).toBeGreaterThanOrEqual(0);
@@ -150,7 +138,6 @@ describe('fee-calculator', () => {
     it('should ensure fee is never negative', () => {
       const params: FeeCalculationParams = {
         ...baseParams,
-        subtotal: 20.0,
         appliedDeal: {
           id: 'test-deal',
           title: 'Test Deal',
@@ -234,13 +221,8 @@ describe('fee-calculator', () => {
   describe('getCategoryConfig', () => {
     it('should return config for restaurant category', () => {
       const config = getCategoryConfig('restaurant');
-      expect(config.freeDeliveryThreshold).toBe(30);
-      expect(config.defaultDeliveryFee).toBe(5.99);
-    });
-
-    it('should return config for grocery category', () => {
-      const config = getCategoryConfig('grocery');
-      expect(config.freeDeliveryThreshold).toBe(30);
+      expect(config.serviceFeePercentage).toBe(0.15);
+      expect(config.minServiceFee).toBe(4.99);
     });
 
     it('should return config for all categories', () => {
@@ -254,8 +236,8 @@ describe('fee-calculator', () => {
       categories.forEach(category => {
         const config = getCategoryConfig(category);
         expect(config).toBeDefined();
-        expect(config.freeDeliveryThreshold).toBeDefined();
-        expect(config.defaultDeliveryFee).toBeDefined();
+        expect(config.serviceFeePercentage).toBeDefined();
+        expect(config.minServiceFee).toBeDefined();
       });
     });
   });
