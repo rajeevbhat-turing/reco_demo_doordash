@@ -1,0 +1,477 @@
+[
+  {
+    "task_id": "001",
+    "start_url": "https://dashdoor.rlgym.turing.com/home",
+    "task_statement": "Log in using email 'rosa.walsh2650@mail.test' and password 'iP6iIWtqnxRA'. Order Soju from Grand House, select the Medium add on",
+    "grader_config": {
+      "state_grader_configs": [
+        {
+          "assertions": [
+            {
+              "operator": "ARRAY_STRING_EQUALS",
+              "path_to_actual": "$.restaurantId",
+              "paths_to_expected": [
+                "$[1].restaurants[0].id"
+              ]
+            },
+            {
+              "operator": "ARRAY_STRING_EQUALS",
+              "path_to_actual": "$.items[0].name",
+              "paths_to_expected": [
+                "$[2].items[0].name"
+              ]
+            },
+            {
+              "expected": [
+                "==1"
+              ],
+              "operator": "ARRAY_LENGTH_MATCH",
+              "path_to_actual": "$.items[*]"
+            },
+            {
+              "operator": "NUMERIC_MATCH",
+              "path_to_actual": "$.items[0].quantity",
+              "expected": [
+                "==1"
+              ]
+            },
+            {
+              "operator": "STRING_EQUALS",
+              "path_to_actual": "$.items[0].modifications[0].options[0].id",
+              "paths_to_expected": [
+                "$[3].modifications[0].options[0].id"
+              ]
+            }
+          ],
+          "path_to_actual": "$.orders[0]"
+        }
+      ],
+      "extract_states_config": {
+        "expected_state_functions": [
+          {
+            "args": {
+              "user": "rosa.walsh2650@mail.test"
+            },
+            "function": "get_user_address"
+          },
+          {
+            "args": {
+              "lat": "$[0].address.lat",
+              "lng": "$[0].address.lng",
+              "limit": 1,
+              "name": "Grand House"
+            },
+            "function": "get_restaurants"
+          },
+          {
+            "args": {
+              "limit": 1,
+              "keywords": [
+                "Soju"
+              ],
+              "restaurant_id": "$[1].restaurants[0].id"
+            },
+            "function": "get_items"
+          },
+          {
+            "args": {
+              "item_id": "$[2].items[0].id",
+              "modification_name": "spice level",
+              "option_name": "Medium"
+            },
+            "function": "get_modifications"
+          }
+        ]
+      }
+    },
+    "_metadata": {
+      "user_id": 2650,
+      "restaurant_id": 236,
+      "restaurant_distance_miles": 2.27,
+      "menu_item_id": 5777,
+      "modification_id": 6621,
+      "option_id": 28595,
+      "option_price_cents": 0
+    }
+  },
+  {
+    "task_id": "002",
+    "start_url": "https://dashdoor.rlgym.turing.com/home",
+    "task_statement": "Log in using email 'victor.xu1153@inbox.local' and password 'cMHZCt9Yf0WT'. Order Sweet & Sour Pork from The South Palace, select the Mild add on",
+    "grader_config": {
+      "state_grader_configs": [
+        {
+          "assertions": [
+            {
+              "operator": "ARRAY_STRING_EQUALS",
+              "path_to_actual": "$.restaurantId",
+              "paths_to_expected": [
+                "$[1].restaurants[0].id"
+              ]
+            },
+            {
+              "operator": "ARRAY_STRING_EQUALS",
+              "path_to_actual": "$.items[0].name",
+              "paths_to_expected": [
+                "$[2].items[0].name"
+              ]
+            },
+            {
+              "expected": [
+                "==1"
+              ],
+              "operator": "ARRAY_LENGTH_MATCH",
+              "path_to_actual": "$.items[*]"
+            },
+            {
+              "operator": "NUMERIC_MATCH",
+              "path_to_actual": "$.items[0].quantity",
+              "expected": [
+                "==1"
+              ]
+            },
+            {
+              "operator": "STRING_EQUALS",
+              "path_to_actual": "$.items[0].modifications[0].options[0].id",
+              "paths_to_expected": [
+                "$[3].modifications[0].options[0].id"
+              ]
+            }
+          ],
+          "path_to_actual": "$.orders[0]"
+        }
+      ],
+      "extract_states_config": {
+        "expected_state_functions": [
+          {
+            "args": {
+              "user": "victor.xu1153@inbox.local"
+            },
+            "function": "get_user_address"
+          },
+          {
+            "args": {
+              "lat": "$[0].address.lat",
+              "lng": "$[0].address.lng",
+              "limit": 1,
+              "name": "The South Palace"
+            },
+            "function": "get_restaurants"
+          },
+          {
+            "args": {
+              "limit": 1,
+              "keywords": [
+                "Sweet & Sour Pork"
+              ],
+              "restaurant_id": "$[1].restaurants[0].id"
+            },
+            "function": "get_items"
+          },
+          {
+            "args": {
+              "item_id": "$[2].items[0].id",
+              "modification_name": "spice level",
+              "option_name": "Mild"
+            },
+            "function": "get_modifications"
+          }
+        ]
+      }
+    },
+    "_metadata": {
+      "user_id": 1153,
+      "restaurant_id": 169,
+      "restaurant_distance_miles": 2.79,
+      "menu_item_id": 4452,
+      "modification_id": 5980,
+      "option_id": 26671,
+      "option_price_cents": 0
+    }
+  },
+  {
+    "task_id": "003",
+    "start_url": "https://dashdoor.rlgym.turing.com/home",
+    "task_statement": "Log in using email 'bella.chambers2827@dashdoor.test' and password '4h5VDM4Ksy1H'. Order House Salad from Olive Garden, select the Avocado add on",
+    "grader_config": {
+      "state_grader_configs": [
+        {
+          "assertions": [
+            {
+              "operator": "ARRAY_STRING_EQUALS",
+              "path_to_actual": "$.restaurantId",
+              "paths_to_expected": [
+                "$[1].restaurants[0].id"
+              ]
+            },
+            {
+              "operator": "ARRAY_STRING_EQUALS",
+              "path_to_actual": "$.items[0].name",
+              "paths_to_expected": [
+                "$[2].items[0].name"
+              ]
+            },
+            {
+              "expected": [
+                "==1"
+              ],
+              "operator": "ARRAY_LENGTH_MATCH",
+              "path_to_actual": "$.items[*]"
+            },
+            {
+              "operator": "NUMERIC_MATCH",
+              "path_to_actual": "$.items[0].quantity",
+              "expected": [
+                "==1"
+              ]
+            },
+            {
+              "operator": "STRING_EQUALS",
+              "path_to_actual": "$.items[0].modifications[0].options[0].id",
+              "paths_to_expected": [
+                "$[3].modifications[0].options[0].id"
+              ]
+            }
+          ],
+          "path_to_actual": "$.orders[0]"
+        }
+      ],
+      "extract_states_config": {
+        "expected_state_functions": [
+          {
+            "args": {
+              "user": "bella.chambers2827@dashdoor.test"
+            },
+            "function": "get_user_address"
+          },
+          {
+            "args": {
+              "lat": "$[0].address.lat",
+              "lng": "$[0].address.lng",
+              "limit": 1,
+              "name": "Olive Garden"
+            },
+            "function": "get_restaurants"
+          },
+          {
+            "args": {
+              "limit": 1,
+              "keywords": [
+                "House Salad"
+              ],
+              "restaurant_id": "$[1].restaurants[0].id"
+            },
+            "function": "get_items"
+          },
+          {
+            "args": {
+              "item_id": "$[2].items[0].id",
+              "modification_name": "extras",
+              "option_name": "Avocado"
+            },
+            "function": "get_modifications"
+          }
+        ]
+      }
+    },
+    "_metadata": {
+      "user_id": 2827,
+      "restaurant_id": 143,
+      "restaurant_distance_miles": 7.51,
+      "menu_item_id": 4056,
+      "modification_id": 5592,
+      "option_id": 25463,
+      "option_price_cents": 150
+    }
+  },
+  {
+    "task_id": "004",
+    "start_url": "https://dashdoor.rlgym.turing.com/home",
+    "task_statement": "Log in using email 'bella.quintero105@mail.test' and password '7yLkBgmrAkRU'. Order Salmon Teriyaki from Lou's Izakaya, select the Medium add on",
+    "grader_config": {
+      "state_grader_configs": [
+        {
+          "assertions": [
+            {
+              "operator": "ARRAY_STRING_EQUALS",
+              "path_to_actual": "$.restaurantId",
+              "paths_to_expected": [
+                "$[1].restaurants[0].id"
+              ]
+            },
+            {
+              "operator": "ARRAY_STRING_EQUALS",
+              "path_to_actual": "$.items[0].name",
+              "paths_to_expected": [
+                "$[2].items[0].name"
+              ]
+            },
+            {
+              "expected": [
+                "==1"
+              ],
+              "operator": "ARRAY_LENGTH_MATCH",
+              "path_to_actual": "$.items[*]"
+            },
+            {
+              "operator": "NUMERIC_MATCH",
+              "path_to_actual": "$.items[0].quantity",
+              "expected": [
+                "==1"
+              ]
+            },
+            {
+              "operator": "STRING_EQUALS",
+              "path_to_actual": "$.items[0].modifications[0].options[0].id",
+              "paths_to_expected": [
+                "$[3].modifications[0].options[0].id"
+              ]
+            }
+          ],
+          "path_to_actual": "$.orders[0]"
+        }
+      ],
+      "extract_states_config": {
+        "expected_state_functions": [
+          {
+            "args": {
+              "user": "bella.quintero105@mail.test"
+            },
+            "function": "get_user_address"
+          },
+          {
+            "args": {
+              "lat": "$[0].address.lat",
+              "lng": "$[0].address.lng",
+              "limit": 1,
+              "name": "Lou's Izakaya"
+            },
+            "function": "get_restaurants"
+          },
+          {
+            "args": {
+              "limit": 1,
+              "keywords": [
+                "Salmon Teriyaki"
+              ],
+              "restaurant_id": "$[1].restaurants[0].id"
+            },
+            "function": "get_items"
+          },
+          {
+            "args": {
+              "item_id": "$[2].items[0].id",
+              "modification_name": "spice level",
+              "option_name": "Medium"
+            },
+            "function": "get_modifications"
+          }
+        ]
+      }
+    },
+    "_metadata": {
+      "user_id": 105,
+      "restaurant_id": 181,
+      "restaurant_distance_miles": 8.81,
+      "menu_item_id": 4698,
+      "modification_id": 6100,
+      "option_id": 27032,
+      "option_price_cents": 0
+    }
+  },
+  {
+    "task_id": "005",
+    "start_url": "https://dashdoor.rlgym.turing.com/home",
+    "task_statement": "Log in using email 'hannah.lopez366@dashdoor.test' and password 'oLDzbLtCGDMw'. Order Boneless Wings (15) from Buffalo Wild Wings, select the Ranch add on",
+    "grader_config": {
+      "state_grader_configs": [
+        {
+          "assertions": [
+            {
+              "operator": "ARRAY_STRING_EQUALS",
+              "path_to_actual": "$.restaurantId",
+              "paths_to_expected": [
+                "$[1].restaurants[0].id"
+              ]
+            },
+            {
+              "operator": "ARRAY_STRING_EQUALS",
+              "path_to_actual": "$.items[0].name",
+              "paths_to_expected": [
+                "$[2].items[0].name"
+              ]
+            },
+            {
+              "expected": [
+                "==1"
+              ],
+              "operator": "ARRAY_LENGTH_MATCH",
+              "path_to_actual": "$.items[*]"
+            },
+            {
+              "operator": "NUMERIC_MATCH",
+              "path_to_actual": "$.items[0].quantity",
+              "expected": [
+                "==1"
+              ]
+            },
+            {
+              "operator": "STRING_EQUALS",
+              "path_to_actual": "$.items[0].modifications[0].options[0].id",
+              "paths_to_expected": [
+                "$[3].modifications[0].options[0].id"
+              ]
+            }
+          ],
+          "path_to_actual": "$.orders[0]"
+        }
+      ],
+      "extract_states_config": {
+        "expected_state_functions": [
+          {
+            "args": {
+              "user": "hannah.lopez366@dashdoor.test"
+            },
+            "function": "get_user_address"
+          },
+          {
+            "args": {
+              "lat": "$[0].address.lat",
+              "lng": "$[0].address.lng",
+              "limit": 1,
+              "name": "Buffalo Wild Wings"
+            },
+            "function": "get_restaurants"
+          },
+          {
+            "args": {
+              "limit": 1,
+              "keywords": [
+                "Boneless Wings (15)"
+              ],
+              "restaurant_id": "$[1].restaurants[0].id"
+            },
+            "function": "get_items"
+          },
+          {
+            "args": {
+              "item_id": "$[2].items[0].id",
+              "modification_name": "add side of sauce",
+              "option_name": "Ranch"
+            },
+            "function": "get_modifications"
+          }
+        ]
+      }
+    },
+    "_metadata": {
+      "user_id": 366,
+      "restaurant_id": 133,
+      "restaurant_distance_miles": 3.84,
+      "menu_item_id": 3905,
+      "modification_id": 5395,
+      "option_id": 24771,
+      "option_price_cents": 79
+    }
+  }
+]

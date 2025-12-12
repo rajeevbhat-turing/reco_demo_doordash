@@ -10,9 +10,15 @@ interface DealsModalProps {
   isOpen: boolean;
   onClose: () => void;
   restaurantId: string;
+  isRestaurantOpen: boolean;
 }
 
-export default function DealsModal({ isOpen, onClose, restaurantId }: DealsModalProps) {
+export default function DealsModal({
+  isOpen,
+  onClose,
+  restaurantId,
+  isRestaurantOpen,
+}: DealsModalProps) {
   const modalRef = useRef<HTMLDivElement>(null);
   const [isDealModalOpen, setIsDealModalOpen] = useState(false);
   const [selectedDeal, setSelectedDeal] = useState<Deal | null>(null);
@@ -152,7 +158,12 @@ export default function DealsModal({ isOpen, onClose, restaurantId }: DealsModal
       </div>
 
       {/* Deal Modal */}
-      <DealModal isOpen={isDealModalOpen} onClose={handleCloseDealModal} deal={selectedDeal} />
+      <DealModal
+        isOpen={isDealModalOpen}
+        onClose={handleCloseDealModal}
+        deal={selectedDeal}
+        isRestaurantOpen={isRestaurantOpen}
+      />
     </div>
   );
 }
