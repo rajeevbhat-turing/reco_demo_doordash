@@ -9,6 +9,7 @@ import { useRestaurants } from '@/lib/hooks/use-restaurants';
 import { useRestaurantMenu } from '@/lib/hooks/use-restaurant-menu';
 import { useUserStore } from '@/store/user-store';
 import { getRestaurantById } from '@/lib/utils/restaurant-utils';
+import { useRestaurantOpenStatus } from '@/lib/hooks/use-restaurant-open-status';
 import OtherCarts from './other-carts';
 import MenuItemDialog from '@/components/menu-item-dialog';
 import type { MenuItem } from '@/constants/menu-items';
@@ -81,6 +82,9 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [store, setStore] = useState<any>(null);
   const [complementItems, setComplementItems] = useState<any[]>([]);
+
+  // Calculate open status based on user's local time (not server time)
+  const isRestaurantOpen = useRestaurantOpenStatus(restaurant);
   const complementScrollRef = useRef<HTMLDivElement>(null);
   const sidebarRef = useRef<HTMLDivElement>(null);
   const [menuItemDialogOpen, setMenuItemDialogOpen] = useState(false);
@@ -276,11 +280,11 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
   };
 
   const handleAddComplementItem = (item: any) => {
-    // Check if restaurant is closed
+    // Check if restaurant is closed (using client-side calculated status)
     if (
       currentCart?.storeCategory === 'restaurant' &&
       restaurant &&
-      restaurant.isOpen === false
+      !isRestaurantOpen
     ) {
       return; // Prevent adding items when restaurant is closed
     }
@@ -316,11 +320,11 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
 
   // Handle navigation to checkout
   const handleContinueToCheckout = () => {
-    // Check if restaurant is closed
+    // Check if restaurant is closed (using client-side calculated status)
     if (
       currentCart?.storeCategory === 'restaurant' &&
       restaurant &&
-      restaurant.isOpen === false
+      !isRestaurantOpen
     ) {
       return; // Prevent navigation to checkout when restaurant is closed
     }
@@ -335,14 +339,14 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
     onClose(); // Close the cart sidebar
   };
 
-  // Check if restaurant is closed (for restaurant carts only)
+  // Check if restaurant is closed (for restaurant carts only, using client-side calculated status)
   const isRestaurantClosed = useMemo(() => {
     return (
       currentCart?.storeCategory === 'restaurant' &&
       restaurant &&
-      restaurant.isOpen === false
+      !isRestaurantOpen
     );
-  }, [currentCart?.storeCategory, restaurant]);
+  }, [currentCart?.storeCategory, restaurant, isRestaurantOpen]);
 
   // Handle removing a cart from other carts section
   const handleRemoveCart = (storeId: string, storeCategory: string) => {
