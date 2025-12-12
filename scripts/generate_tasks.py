@@ -345,6 +345,125 @@ class TaskGenerator:
         cursor.execute("SELECT DISTINCT city FROM addresses WHERE city IS NOT NULL")
         return [row['city'] for row in cursor.fetchall()]
     
+    def get_user_orders(self, user_id: int) -> List[Dict[str, Any]]:
+        """Get orders for a user with restaurant and item details."""
+        cursor = self.conn.cursor()
+        cursor.execute("""
+            SELECT o.id as order_id, o.store_id, r.name as restaurant_name,
+                   mi.name as item_name, mi.id as item_id
+            FROM orders o
+            INNER JOIN restaurants r ON o.store_id = r.id
+            INNER JOIN order_items oi ON o.id = oi.order_id
+            INNER JOIN menu_items mi ON oi.menu_item_id = mi.id
+            WHERE o.user_id = ?
+            ORDER BY o.order_date DESC
+        """, (user_id,))
+        orders = []
+        for row in cursor.fetchall():
+            orders.append({
+                'order_id': row['order_id'],
+                'store_id': row['store_id'],
+                'restaurant_name': row['restaurant_name'],
+                'item_name': row['item_name'],
+                'item_id': row['item_id']
+            })
+        return orders
+    
+    def get_user_carts(self, user_id: int) -> List[Dict[str, Any]]:
+        """Get carts for a user with restaurant details."""
+        cursor = self.conn.cursor()
+        cursor.execute("""
+            SELECT c.id as cart_id, c.store_id, r.name as restaurant_name,
+                   r.latitude, r.longitude
+            FROM carts c
+            INNER JOIN restaurants r ON c.store_id = r.id
+            INNER JOIN cart_items ci ON c.id = ci.cart_id
+            WHERE c.user_id = ?
+        """, (user_id,))
+        carts = []
+        seen = set()
+        for row in cursor.fetchall():
+            if row['cart_id'] not in seen:
+                carts.append({
+                    'cart_id': row['cart_id'],
+                    'store_id': row['store_id'],
+                    'restaurant_name': row['restaurant_name'],
+                    'latitude': row['latitude'],
+                    'longitude': row['longitude']
+                })
+                seen.add(row['cart_id'])
+        return carts
+    
+    def get_cart_items(self, cart_id: int) -> List[Dict[str, Any]]:
+        """Get items in a cart."""
+        cursor = self.conn.cursor()
+        cursor.execute("""
+            SELECT ci.id, mi.name as item_name, mi.id as item_id, ci.quantity
+            FROM cart_items ci
+            INNER JOIN menu_items mi ON ci.menu_item_id = mi.id
+            WHERE ci.cart_id = ?
+        """, (cart_id,))
+        return [{'id': r['id'], 'item_name': r['item_name'], 
+                 'item_id': r['item_id'], 'quantity': r['quantity']} 
+                for r in cursor.fetchall()]
+    
+    def get_users_with_orders(self) -> List[User]:
+        """Get users who have at least one order."""
+        cursor = self.conn.cursor()
+        cursor.execute("""
+            SELECT DISTINCT u.id, u.name, u.email, u.password
+            FROM users u
+            INNER JOIN orders o ON u.id = o.user_id
+            INNER JOIN addresses a ON u.id = a.user_id
+            WHERE a.latitude IS NOT NULL AND a.longitude IS NOT NULL
+        """)
+        users = []
+        for row in cursor.fetchall():
+            cursor.execute("""
+                SELECT id, user_id, street, city, state, zip_code, 
+                       latitude, longitude, address_type, is_default
+                FROM addresses WHERE user_id = ? AND latitude IS NOT NULL
+            """, (row['id'],))
+            addresses = [Address(
+                id=r['id'], user_id=r['user_id'], street=r['street'],
+                city=r['city'], state=r['state'], zip_code=r['zip_code'],
+                latitude=r['latitude'], longitude=r['longitude'],
+                address_type=r['address_type'], is_default=bool(r['is_default'])
+            ) for r in cursor.fetchall()]
+            if addresses:
+                users.append(User(id=row['id'], name=row['name'], 
+                                  email=row['email'], password=row['password'], addresses=addresses))
+        return users
+    
+    def get_users_with_carts(self) -> List[User]:
+        """Get users who have items in cart."""
+        cursor = self.conn.cursor()
+        cursor.execute("""
+            SELECT DISTINCT u.id, u.name, u.email, u.password
+            FROM users u
+            INNER JOIN carts c ON u.id = c.user_id
+            INNER JOIN cart_items ci ON c.id = ci.cart_id
+            INNER JOIN addresses a ON u.id = a.user_id
+            WHERE a.latitude IS NOT NULL AND a.longitude IS NOT NULL
+        """)
+        users = []
+        for row in cursor.fetchall():
+            cursor.execute("""
+                SELECT id, user_id, street, city, state, zip_code, 
+                       latitude, longitude, address_type, is_default
+                FROM addresses WHERE user_id = ? AND latitude IS NOT NULL
+            """, (row['id'],))
+            addresses = [Address(
+                id=r['id'], user_id=r['user_id'], street=r['street'],
+                city=r['city'], state=r['state'], zip_code=r['zip_code'],
+                latitude=r['latitude'], longitude=r['longitude'],
+                address_type=r['address_type'], is_default=bool(r['is_default'])
+            ) for r in cursor.fetchall()]
+            if addresses:
+                users.append(User(id=row['id'], name=row['name'], 
+                                  email=row['email'], password=row['password'], addresses=addresses))
+        return users
+    
     def generate_variables_for_template(
         self,
         template_type: str,
@@ -444,41 +563,108 @@ class TaskGenerator:
             return variables
             
         elif template_type == "rate_order":
-            restaurant = random.choice(restaurants)
-            items = self.get_menu_items(restaurant.id, limit=10)
-            if not items:
-                return None
-            item = random.choice(items)
-            complaint_keywords = self.get_complaint_keywords()
-            if len(complaint_keywords) < 2:
-                complaint_keywords = ['cold', 'late', 'wrong', 'missing', 'undercooked']
-            complaints = random.sample(complaint_keywords, 2)
-            # Rating from 1-5 as per menu_items.rating constraint
+            # Must use actual orders from the user
+            user_orders = self.get_user_orders(user.id)
+            if not user_orders:
+                return None  # User has no orders to rate
+            
+            # Pick a random order
+            order = random.choice(user_orders)
+            
+            # Verify restaurant is in delivery range
+            restaurant_in_range = any(r.id == order['store_id'] for r in restaurants)
+            if not restaurant_in_range:
+                # Try to find an order from a restaurant in range
+                valid_orders = [o for o in user_orders if any(r.id == o['store_id'] for r in restaurants)]
+                if not valid_orders:
+                    return None
+                order = random.choice(valid_orders)
+            
             rating = random.randint(1, 5)
+            
+            # Match feedback to rating
+            if rating <= 2:
+                # Very negative - use strong complaints
+                complaint_keywords = self.get_complaint_keywords()
+                if len(complaint_keywords) < 2:
+                    complaint_keywords = ['cold', 'late', 'wrong', 'missing', 'undercooked']
+                feedback = random.sample(complaint_keywords, 2)
+                feedback_1, feedback_2 = feedback[0], feedback[1]
+            elif rating == 3:
+                # Mixed/neutral feedback
+                mixed_feedback = ['just okay', 'average', 'nothing special', 'mediocre', 'underwhelming']
+                feedback_1 = random.choice(mixed_feedback)
+                feedback_2 = random.choice(['arrived lukewarm', 'a bit pricey', 'smaller than expected'])
+            elif rating == 4:
+                # Mostly positive with minor issue
+                positive = ['tasty', 'good', 'fresh', 'well-made', 'flavorful']
+                minor_issues = ['a bit slow', 'slightly cold', 'packaging could be better']
+                feedback_1 = random.choice(positive)
+                feedback_2 = random.choice(minor_issues)
+            else:  # rating == 5
+                # Fully positive
+                excellent = ['delicious', 'amazing', 'perfect', 'excellent', 'outstanding', 'fantastic']
+                positive_details = ['fresh', 'hot', 'well-packaged', 'fast delivery', 'great portion']
+                feedback_1 = random.choice(excellent)
+                feedback_2 = random.choice(positive_details)
+            
             variables.update({
-                "RESTAURANT": restaurant.name,
+                "RESTAURANT": order['restaurant_name'],
                 "RATING": str(rating),
-                "ITEM_NAME": item.name,
-                "COMPLAINT_1": complaints[0],
-                "COMPLAINT_2": complaints[1],
+                "ITEM_NAME": order['item_name'],
+                "COMPLAINT_1": feedback_1,
+                "COMPLAINT_2": feedback_2,
             })
             return variables
             
         elif template_type == "remove_carts":
-            # Only needs user login
+            # User must have carts from restaurants outside delivery range
+            user_carts = self.get_user_carts(user.id)
+            if not user_carts:
+                return None
+            
+            # Check if user has carts from out-of-range restaurants
+            in_range_ids = {r.id for r in restaurants}
+            out_of_range_carts = [c for c in user_carts if c['store_id'] not in in_range_ids]
+            
+            if not out_of_range_carts:
+                return None  # User has no carts to remove
+            
             return variables
             
         elif template_type == "modify_cart_order":
-            restaurant = random.choice(restaurants)
-            items = self.get_menu_items(restaurant.id, limit=20)
-            if len(items) < 2:
+            # Must use actual cart from the user
+            user_carts = self.get_user_carts(user.id)
+            if not user_carts:
+                return None  # User has no carts
+            
+            # Find a cart from a restaurant in range
+            valid_carts = [c for c in user_carts 
+                          if any(r.id == c['store_id'] for r in restaurants)]
+            if not valid_carts:
                 return None
-            item1, item2 = random.sample(items, 2)
+            
+            cart = random.choice(valid_carts)
+            cart_items = self.get_cart_items(cart['cart_id'])
+            if not cart_items:
+                return None
+            
+            # Get other items from same restaurant to add
+            other_items = self.get_menu_items(cart['store_id'], limit=20)
+            cart_item_ids = {ci['item_id'] for ci in cart_items}
+            available_to_add = [i for i in other_items if i.id not in cart_item_ids]
+            
+            if not available_to_add:
+                return None
+            
+            item_to_replace = random.choice(cart_items)
+            item_to_add = random.choice(available_to_add)
             delivery_slots = self.get_delivery_time_slots()
+            
             variables.update({
-                "RESTAURANT": restaurant.name,
-                "ITEM_TO_REPLACE": item1.name,
-                "ITEM_TO_ADD": item2.name,
+                "RESTAURANT": cart['restaurant_name'],
+                "ITEM_TO_REPLACE": item_to_replace['item_name'],
+                "ITEM_TO_ADD": item_to_add.name,
                 "DELIVERY_TIME": random.choice(delivery_slots),
             })
             return variables
@@ -522,6 +708,18 @@ class TaskGenerator:
         task["task_id"] = task_id
         return task
     
+    def get_users_for_template(self, template_type: str) -> List[User]:
+        """Get appropriate user pool based on template requirements."""
+        if template_type == "rate_order":
+            users = self.get_users_with_orders()
+            print(f"   [INFO] Found {len(users)} users with orders")
+        elif template_type in ("modify_cart_order", "remove_carts"):
+            users = self.get_users_with_carts()
+            print(f"   [INFO] Found {len(users)} users with carts")
+        else:
+            users = self.get_users_with_addresses()
+        return users
+    
     def generate_all_tasks(
         self,
         templates: List[Dict[str, Any]],
@@ -533,16 +731,18 @@ class TaskGenerator:
         task_counter = 1
         
         used_users: Set[int] = set()
-        users = self.get_users_with_addresses()
-        
-        if shuffle:
-            random.shuffle(users)
         
         for template in templates:
             template_type = template.get("template_type", "order_with_addon")
             template_task_count = 0
             
             print(f"\n[TEMPLATE] Processing: {template_type}")
+            
+            # Get appropriate user pool for this template type
+            users = self.get_users_for_template(template_type)
+            
+            if shuffle:
+                random.shuffle(users)
             
             for user in users:
                 if max_total_tasks and len(tasks) >= max_total_tasks:
@@ -572,6 +772,9 @@ class TaskGenerator:
                 used_users.add(user.id)
                 
                 print(f"   [+] Task {task_id}: {user.email} | {template_type}")
+            
+            if template_task_count == 0:
+                print(f"   [WARN] No tasks generated - insufficient data for this template")
         
         return tasks
     
