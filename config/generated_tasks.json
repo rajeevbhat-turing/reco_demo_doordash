@@ -1,477 +1,512 @@
 [
   {
+    "template_type": "rate_order",
     "task_id": "001",
     "start_url": "https://dashdoor.rlgym.turing.com/home",
-    "task_statement": "Log in using email 'rosa.walsh2650@mail.test' and password 'iP6iIWtqnxRA'. Order Soju from Grand House, select the Medium add on",
+    "task_statement": "Log in using email 'rosa.bennett915@dashdoor.test' and password '2whOL1LIvqHr'. Rate my last order from Sunset Izakaya a 3 star because the Green Tea was nothing special and a bit pricey.",
+    "task_type": "GUI Comprehension, Action Execution",
+    "simulator_config": {
+      "start_date": "today",
+      "user_persona": "rosa.bennett915@dashdoor.test"
+    },
     "grader_config": {
       "state_grader_configs": [
         {
           "assertions": [
             {
-              "operator": "ARRAY_STRING_EQUALS",
-              "path_to_actual": "$.restaurantId",
-              "paths_to_expected": [
-                "$[1].restaurants[0].id"
-              ]
-            },
-            {
-              "operator": "ARRAY_STRING_EQUALS",
-              "path_to_actual": "$.items[0].name",
-              "paths_to_expected": [
-                "$[2].items[0].name"
-              ]
-            },
-            {
+              "operator": "STRING_EQUALS",
+              "path_to_actual": "$.vendorName",
               "expected": [
-                "==1"
-              ],
-              "operator": "ARRAY_LENGTH_MATCH",
-              "path_to_actual": "$.items[*]"
+                "Sunset Izakaya"
+              ]
             },
             {
               "operator": "NUMERIC_MATCH",
-              "path_to_actual": "$.items[0].quantity",
+              "path_to_actual": "$.rating",
               "expected": [
-                "==1"
+                "==3"
               ]
             },
             {
-              "operator": "STRING_EQUALS",
-              "path_to_actual": "$.items[0].modifications[0].options[0].id",
-              "paths_to_expected": [
-                "$[3].modifications[0].options[0].id"
+              "operator": "STRING_CONTAINS",
+              "path_to_actual": "$.content",
+              "expected": [
+                "Green Tea",
+                "nothing special",
+                "a bit pricey"
               ]
             }
           ],
-          "path_to_actual": "$.orders[0]"
+          "path_to_actual": "$.reviews.newReviews[0]"
         }
       ],
       "extract_states_config": {
         "expected_state_functions": [
           {
-            "args": {
-              "user": "rosa.walsh2650@mail.test"
-            },
+            "args": {},
             "function": "get_user_address"
-          },
-          {
-            "args": {
-              "lat": "$[0].address.lat",
-              "lng": "$[0].address.lng",
-              "limit": 1,
-              "name": "Grand House"
-            },
-            "function": "get_restaurants"
-          },
-          {
-            "args": {
-              "limit": 1,
-              "keywords": [
-                "Soju"
-              ],
-              "restaurant_id": "$[1].restaurants[0].id"
-            },
-            "function": "get_items"
-          },
-          {
-            "args": {
-              "item_id": "$[2].items[0].id",
-              "modification_name": "spice level",
-              "option_name": "Medium"
-            },
-            "function": "get_modifications"
           }
         ]
       }
-    },
-    "_metadata": {
-      "user_id": 2650,
-      "restaurant_id": 236,
-      "restaurant_distance_miles": 2.27,
-      "menu_item_id": 5777,
-      "modification_id": 6621,
-      "option_id": 28595,
-      "option_price_cents": 0
     }
   },
   {
+    "template_type": "rate_order",
     "task_id": "002",
     "start_url": "https://dashdoor.rlgym.turing.com/home",
-    "task_statement": "Log in using email 'victor.xu1153@inbox.local' and password 'cMHZCt9Yf0WT'. Order Sweet & Sour Pork from The South Palace, select the Mild add on",
+    "task_statement": "Log in using email 'rosa.bennett2850@example.com' and password 'u5rtGra2rOV3'. Rate my last order from Restaurant by Original a 1 star because the Chow Fun was stale and dry.",
+    "task_type": "GUI Comprehension, Action Execution",
+    "simulator_config": {
+      "start_date": "today",
+      "user_persona": "rosa.bennett2850@example.com"
+    },
     "grader_config": {
       "state_grader_configs": [
         {
           "assertions": [
             {
-              "operator": "ARRAY_STRING_EQUALS",
-              "path_to_actual": "$.restaurantId",
-              "paths_to_expected": [
-                "$[1].restaurants[0].id"
-              ]
-            },
-            {
-              "operator": "ARRAY_STRING_EQUALS",
-              "path_to_actual": "$.items[0].name",
-              "paths_to_expected": [
-                "$[2].items[0].name"
-              ]
-            },
-            {
+              "operator": "STRING_EQUALS",
+              "path_to_actual": "$.vendorName",
               "expected": [
-                "==1"
-              ],
-              "operator": "ARRAY_LENGTH_MATCH",
-              "path_to_actual": "$.items[*]"
+                "Restaurant by Original"
+              ]
             },
             {
               "operator": "NUMERIC_MATCH",
-              "path_to_actual": "$.items[0].quantity",
+              "path_to_actual": "$.rating",
               "expected": [
                 "==1"
               ]
             },
             {
-              "operator": "STRING_EQUALS",
-              "path_to_actual": "$.items[0].modifications[0].options[0].id",
-              "paths_to_expected": [
-                "$[3].modifications[0].options[0].id"
+              "operator": "STRING_CONTAINS",
+              "path_to_actual": "$.content",
+              "expected": [
+                "Chow Fun",
+                "stale",
+                "dry"
               ]
             }
           ],
-          "path_to_actual": "$.orders[0]"
+          "path_to_actual": "$.reviews.newReviews[0]"
         }
       ],
       "extract_states_config": {
         "expected_state_functions": [
           {
-            "args": {
-              "user": "victor.xu1153@inbox.local"
-            },
+            "args": {},
             "function": "get_user_address"
-          },
-          {
-            "args": {
-              "lat": "$[0].address.lat",
-              "lng": "$[0].address.lng",
-              "limit": 1,
-              "name": "The South Palace"
-            },
-            "function": "get_restaurants"
-          },
-          {
-            "args": {
-              "limit": 1,
-              "keywords": [
-                "Sweet & Sour Pork"
-              ],
-              "restaurant_id": "$[1].restaurants[0].id"
-            },
-            "function": "get_items"
-          },
-          {
-            "args": {
-              "item_id": "$[2].items[0].id",
-              "modification_name": "spice level",
-              "option_name": "Mild"
-            },
-            "function": "get_modifications"
           }
         ]
       }
-    },
-    "_metadata": {
-      "user_id": 1153,
-      "restaurant_id": 169,
-      "restaurant_distance_miles": 2.79,
-      "menu_item_id": 4452,
-      "modification_id": 5980,
-      "option_id": 26671,
-      "option_price_cents": 0
     }
   },
   {
+    "template_type": "rate_order",
     "task_id": "003",
     "start_url": "https://dashdoor.rlgym.turing.com/home",
-    "task_statement": "Log in using email 'bella.chambers2827@dashdoor.test' and password '4h5VDM4Ksy1H'. Order House Salad from Olive Garden, select the Avocado add on",
+    "task_statement": "Log in using email 'bella.ellison824@inbox.local' and password '0yFY9JSCO7O9'. Rate my last order from The Empire Fish Market a 1 star because the Shrimp Cocktail was cold and stale.",
+    "task_type": "GUI Comprehension, Action Execution",
+    "simulator_config": {
+      "start_date": "today",
+      "user_persona": "bella.ellison824@inbox.local"
+    },
     "grader_config": {
       "state_grader_configs": [
         {
           "assertions": [
             {
-              "operator": "ARRAY_STRING_EQUALS",
-              "path_to_actual": "$.restaurantId",
-              "paths_to_expected": [
-                "$[1].restaurants[0].id"
-              ]
-            },
-            {
-              "operator": "ARRAY_STRING_EQUALS",
-              "path_to_actual": "$.items[0].name",
-              "paths_to_expected": [
-                "$[2].items[0].name"
-              ]
-            },
-            {
+              "operator": "STRING_EQUALS",
+              "path_to_actual": "$.vendorName",
               "expected": [
-                "==1"
-              ],
-              "operator": "ARRAY_LENGTH_MATCH",
-              "path_to_actual": "$.items[*]"
+                "The Empire Fish Market"
+              ]
             },
             {
               "operator": "NUMERIC_MATCH",
-              "path_to_actual": "$.items[0].quantity",
+              "path_to_actual": "$.rating",
               "expected": [
                 "==1"
               ]
             },
             {
-              "operator": "STRING_EQUALS",
-              "path_to_actual": "$.items[0].modifications[0].options[0].id",
-              "paths_to_expected": [
-                "$[3].modifications[0].options[0].id"
+              "operator": "STRING_CONTAINS",
+              "path_to_actual": "$.content",
+              "expected": [
+                "Shrimp Cocktail",
+                "cold",
+                "stale"
               ]
             }
           ],
-          "path_to_actual": "$.orders[0]"
+          "path_to_actual": "$.reviews.newReviews[0]"
         }
       ],
       "extract_states_config": {
         "expected_state_functions": [
           {
-            "args": {
-              "user": "bella.chambers2827@dashdoor.test"
-            },
+            "args": {},
             "function": "get_user_address"
-          },
-          {
-            "args": {
-              "lat": "$[0].address.lat",
-              "lng": "$[0].address.lng",
-              "limit": 1,
-              "name": "Olive Garden"
-            },
-            "function": "get_restaurants"
-          },
-          {
-            "args": {
-              "limit": 1,
-              "keywords": [
-                "House Salad"
-              ],
-              "restaurant_id": "$[1].restaurants[0].id"
-            },
-            "function": "get_items"
-          },
-          {
-            "args": {
-              "item_id": "$[2].items[0].id",
-              "modification_name": "extras",
-              "option_name": "Avocado"
-            },
-            "function": "get_modifications"
           }
         ]
       }
-    },
-    "_metadata": {
-      "user_id": 2827,
-      "restaurant_id": 143,
-      "restaurant_distance_miles": 7.51,
-      "menu_item_id": 4056,
-      "modification_id": 5592,
-      "option_id": 25463,
-      "option_price_cents": 150
     }
   },
   {
+    "template_type": "rate_order",
     "task_id": "004",
     "start_url": "https://dashdoor.rlgym.turing.com/home",
-    "task_statement": "Log in using email 'bella.quintero105@mail.test' and password '7yLkBgmrAkRU'. Order Salmon Teriyaki from Lou's Izakaya, select the Medium add on",
+    "task_statement": "Log in using email 'kai.kaufman26@inbox.local' and password 'oDJYlviXJxwM'. Rate my last order from The Cheesecake Factory a 1 star because the Glamburger was cold and soggy.",
+    "task_type": "GUI Comprehension, Action Execution",
+    "simulator_config": {
+      "start_date": "today",
+      "user_persona": "kai.kaufman26@inbox.local"
+    },
     "grader_config": {
       "state_grader_configs": [
         {
           "assertions": [
             {
-              "operator": "ARRAY_STRING_EQUALS",
-              "path_to_actual": "$.restaurantId",
-              "paths_to_expected": [
-                "$[1].restaurants[0].id"
-              ]
-            },
-            {
-              "operator": "ARRAY_STRING_EQUALS",
-              "path_to_actual": "$.items[0].name",
-              "paths_to_expected": [
-                "$[2].items[0].name"
-              ]
-            },
-            {
+              "operator": "STRING_EQUALS",
+              "path_to_actual": "$.vendorName",
               "expected": [
-                "==1"
-              ],
-              "operator": "ARRAY_LENGTH_MATCH",
-              "path_to_actual": "$.items[*]"
+                "The Cheesecake Factory"
+              ]
             },
             {
               "operator": "NUMERIC_MATCH",
-              "path_to_actual": "$.items[0].quantity",
+              "path_to_actual": "$.rating",
               "expected": [
                 "==1"
               ]
             },
             {
-              "operator": "STRING_EQUALS",
-              "path_to_actual": "$.items[0].modifications[0].options[0].id",
-              "paths_to_expected": [
-                "$[3].modifications[0].options[0].id"
+              "operator": "STRING_CONTAINS",
+              "path_to_actual": "$.content",
+              "expected": [
+                "Glamburger",
+                "cold",
+                "soggy"
               ]
             }
           ],
-          "path_to_actual": "$.orders[0]"
+          "path_to_actual": "$.reviews.newReviews[0]"
         }
       ],
       "extract_states_config": {
         "expected_state_functions": [
           {
-            "args": {
-              "user": "bella.quintero105@mail.test"
-            },
+            "args": {},
             "function": "get_user_address"
-          },
-          {
-            "args": {
-              "lat": "$[0].address.lat",
-              "lng": "$[0].address.lng",
-              "limit": 1,
-              "name": "Lou's Izakaya"
-            },
-            "function": "get_restaurants"
-          },
-          {
-            "args": {
-              "limit": 1,
-              "keywords": [
-                "Salmon Teriyaki"
-              ],
-              "restaurant_id": "$[1].restaurants[0].id"
-            },
-            "function": "get_items"
-          },
-          {
-            "args": {
-              "item_id": "$[2].items[0].id",
-              "modification_name": "spice level",
-              "option_name": "Medium"
-            },
-            "function": "get_modifications"
           }
         ]
       }
-    },
-    "_metadata": {
-      "user_id": 105,
-      "restaurant_id": 181,
-      "restaurant_distance_miles": 8.81,
-      "menu_item_id": 4698,
-      "modification_id": 6100,
-      "option_id": 27032,
-      "option_price_cents": 0
     }
   },
   {
+    "template_type": "rate_order",
     "task_id": "005",
     "start_url": "https://dashdoor.rlgym.turing.com/home",
-    "task_statement": "Log in using email 'hannah.lopez366@dashdoor.test' and password 'oLDzbLtCGDMw'. Order Boneless Wings (15) from Buffalo Wild Wings, select the Ranch add on",
+    "task_statement": "Log in using email 'willow.jenkins1795@mail.test' and password '5kSdt6lmaYWe'. Rate my last order from Central Vietnamese a 4 star because the Sugarcane Juice was good and a bit slow.",
+    "task_type": "GUI Comprehension, Action Execution",
+    "simulator_config": {
+      "start_date": "today",
+      "user_persona": "willow.jenkins1795@mail.test"
+    },
     "grader_config": {
       "state_grader_configs": [
         {
           "assertions": [
             {
-              "operator": "ARRAY_STRING_EQUALS",
-              "path_to_actual": "$.restaurantId",
-              "paths_to_expected": [
-                "$[1].restaurants[0].id"
-              ]
-            },
-            {
-              "operator": "ARRAY_STRING_EQUALS",
-              "path_to_actual": "$.items[0].name",
-              "paths_to_expected": [
-                "$[2].items[0].name"
-              ]
-            },
-            {
+              "operator": "STRING_EQUALS",
+              "path_to_actual": "$.vendorName",
               "expected": [
-                "==1"
-              ],
-              "operator": "ARRAY_LENGTH_MATCH",
-              "path_to_actual": "$.items[*]"
+                "Central Vietnamese"
+              ]
             },
             {
               "operator": "NUMERIC_MATCH",
-              "path_to_actual": "$.items[0].quantity",
+              "path_to_actual": "$.rating",
               "expected": [
-                "==1"
+                "==4"
               ]
             },
             {
-              "operator": "STRING_EQUALS",
-              "path_to_actual": "$.items[0].modifications[0].options[0].id",
-              "paths_to_expected": [
-                "$[3].modifications[0].options[0].id"
+              "operator": "STRING_CONTAINS",
+              "path_to_actual": "$.content",
+              "expected": [
+                "Sugarcane Juice",
+                "good",
+                "a bit slow"
               ]
             }
           ],
-          "path_to_actual": "$.orders[0]"
+          "path_to_actual": "$.reviews.newReviews[0]"
         }
       ],
       "extract_states_config": {
         "expected_state_functions": [
           {
-            "args": {
-              "user": "hannah.lopez366@dashdoor.test"
-            },
+            "args": {},
             "function": "get_user_address"
-          },
-          {
-            "args": {
-              "lat": "$[0].address.lat",
-              "lng": "$[0].address.lng",
-              "limit": 1,
-              "name": "Buffalo Wild Wings"
-            },
-            "function": "get_restaurants"
-          },
-          {
-            "args": {
-              "limit": 1,
-              "keywords": [
-                "Boneless Wings (15)"
-              ],
-              "restaurant_id": "$[1].restaurants[0].id"
-            },
-            "function": "get_items"
-          },
-          {
-            "args": {
-              "item_id": "$[2].items[0].id",
-              "modification_name": "add side of sauce",
-              "option_name": "Ranch"
-            },
-            "function": "get_modifications"
           }
         ]
       }
+    }
+  },
+  {
+    "template_type": "rate_order",
+    "task_id": "006",
+    "start_url": "https://dashdoor.rlgym.turing.com/home",
+    "task_statement": "Log in using email 'nora.turner1552@dashdoor.test' and password 'rr1MyIMRJiTz'. Rate my last order from Skyline Kitchen a 1 star because the Lemongrass Chicken Vermicelli was overcooked and soggy.",
+    "task_type": "GUI Comprehension, Action Execution",
+    "simulator_config": {
+      "start_date": "today",
+      "user_persona": "nora.turner1552@dashdoor.test"
     },
-    "_metadata": {
-      "user_id": 366,
-      "restaurant_id": 133,
-      "restaurant_distance_miles": 3.84,
-      "menu_item_id": 3905,
-      "modification_id": 5395,
-      "option_id": 24771,
-      "option_price_cents": 79
+    "grader_config": {
+      "state_grader_configs": [
+        {
+          "assertions": [
+            {
+              "operator": "STRING_EQUALS",
+              "path_to_actual": "$.vendorName",
+              "expected": [
+                "Skyline Kitchen"
+              ]
+            },
+            {
+              "operator": "NUMERIC_MATCH",
+              "path_to_actual": "$.rating",
+              "expected": [
+                "==1"
+              ]
+            },
+            {
+              "operator": "STRING_CONTAINS",
+              "path_to_actual": "$.content",
+              "expected": [
+                "Lemongrass Chicken Vermicelli",
+                "overcooked",
+                "soggy"
+              ]
+            }
+          ],
+          "path_to_actual": "$.reviews.newReviews[0]"
+        }
+      ],
+      "extract_states_config": {
+        "expected_state_functions": [
+          {
+            "args": {},
+            "function": "get_user_address"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "template_type": "rate_order",
+    "task_id": "007",
+    "start_url": "https://dashdoor.rlgym.turing.com/home",
+    "task_statement": "Log in using email 'hannah.young2402@example.com' and password 'HutA9VylXc7d'. Rate my last order from Famous Pizza Co. a 1 star because the Bottled Water was overcooked and late.",
+    "task_type": "GUI Comprehension, Action Execution",
+    "simulator_config": {
+      "start_date": "today",
+      "user_persona": "hannah.young2402@example.com"
+    },
+    "grader_config": {
+      "state_grader_configs": [
+        {
+          "assertions": [
+            {
+              "operator": "STRING_EQUALS",
+              "path_to_actual": "$.vendorName",
+              "expected": [
+                "Famous Pizza Co."
+              ]
+            },
+            {
+              "operator": "NUMERIC_MATCH",
+              "path_to_actual": "$.rating",
+              "expected": [
+                "==1"
+              ]
+            },
+            {
+              "operator": "STRING_CONTAINS",
+              "path_to_actual": "$.content",
+              "expected": [
+                "Bottled Water",
+                "overcooked",
+                "late"
+              ]
+            }
+          ],
+          "path_to_actual": "$.reviews.newReviews[0]"
+        }
+      ],
+      "extract_states_config": {
+        "expected_state_functions": [
+          {
+            "args": {},
+            "function": "get_user_address"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "template_type": "rate_order",
+    "task_id": "008",
+    "start_url": "https://dashdoor.rlgym.turing.com/home",
+    "task_statement": "Log in using email 'omar.manning1843@mail.test' and password 'awjKaekpd9ZL'. Rate my last order from Urban Grill a 3 star because the Charred Broccoli Grain Bowl was underwhelming and smaller than expected.",
+    "task_type": "GUI Comprehension, Action Execution",
+    "simulator_config": {
+      "start_date": "today",
+      "user_persona": "omar.manning1843@mail.test"
+    },
+    "grader_config": {
+      "state_grader_configs": [
+        {
+          "assertions": [
+            {
+              "operator": "STRING_EQUALS",
+              "path_to_actual": "$.vendorName",
+              "expected": [
+                "Urban Grill"
+              ]
+            },
+            {
+              "operator": "NUMERIC_MATCH",
+              "path_to_actual": "$.rating",
+              "expected": [
+                "==3"
+              ]
+            },
+            {
+              "operator": "STRING_CONTAINS",
+              "path_to_actual": "$.content",
+              "expected": [
+                "Charred Broccoli Grain Bowl",
+                "underwhelming",
+                "smaller than expected"
+              ]
+            }
+          ],
+          "path_to_actual": "$.reviews.newReviews[0]"
+        }
+      ],
+      "extract_states_config": {
+        "expected_state_functions": [
+          {
+            "args": {},
+            "function": "get_user_address"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "template_type": "rate_order",
+    "task_id": "009",
+    "start_url": "https://dashdoor.rlgym.turing.com/home",
+    "task_statement": "Log in using email 'lena.hayes116@example.com' and password 'yETgTvSW6cQG'. Rate my last order from Five Guys a 2 star because the Bacon Cheeseburger was late and dry.",
+    "task_type": "GUI Comprehension, Action Execution",
+    "simulator_config": {
+      "start_date": "today",
+      "user_persona": "lena.hayes116@example.com"
+    },
+    "grader_config": {
+      "state_grader_configs": [
+        {
+          "assertions": [
+            {
+              "operator": "STRING_EQUALS",
+              "path_to_actual": "$.vendorName",
+              "expected": [
+                "Five Guys"
+              ]
+            },
+            {
+              "operator": "NUMERIC_MATCH",
+              "path_to_actual": "$.rating",
+              "expected": [
+                "==2"
+              ]
+            },
+            {
+              "operator": "STRING_CONTAINS",
+              "path_to_actual": "$.content",
+              "expected": [
+                "Bacon Cheeseburger",
+                "late",
+                "dry"
+              ]
+            }
+          ],
+          "path_to_actual": "$.reviews.newReviews[0]"
+        }
+      ],
+      "extract_states_config": {
+        "expected_state_functions": [
+          {
+            "args": {},
+            "function": "get_user_address"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "template_type": "rate_order",
+    "task_id": "010",
+    "start_url": "https://dashdoor.rlgym.turing.com/home",
+    "task_statement": "Log in using email 'xavier.vega2801@example.com' and password 'O0WhIE5FGFDa'. Rate my last order from North Cafe a 4 star because the Belgian Waffle was good and packaging could be better.",
+    "task_type": "GUI Comprehension, Action Execution",
+    "simulator_config": {
+      "start_date": "today",
+      "user_persona": "xavier.vega2801@example.com"
+    },
+    "grader_config": {
+      "state_grader_configs": [
+        {
+          "assertions": [
+            {
+              "operator": "STRING_EQUALS",
+              "path_to_actual": "$.vendorName",
+              "expected": [
+                "North Cafe"
+              ]
+            },
+            {
+              "operator": "NUMERIC_MATCH",
+              "path_to_actual": "$.rating",
+              "expected": [
+                "==4"
+              ]
+            },
+            {
+              "operator": "STRING_CONTAINS",
+              "path_to_actual": "$.content",
+              "expected": [
+                "Belgian Waffle",
+                "good",
+                "packaging could be better"
+              ]
+            }
+          ],
+          "path_to_actual": "$.reviews.newReviews[0]"
+        }
+      ],
+      "extract_states_config": {
+        "expected_state_functions": [
+          {
+            "args": {},
+            "function": "get_user_address"
+          }
+        ]
+      }
     }
   }
 ]

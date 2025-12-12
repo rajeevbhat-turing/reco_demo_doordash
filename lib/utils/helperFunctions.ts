@@ -8,7 +8,47 @@ export const isValidEmail = (email: string) => {
   return localPart.length <= 64;
 };
 
-// Name validation
+// Name validation result interface
+export interface NameValidationResult {
+  isValid: boolean;
+  errors: string[];
+}
+
+// Name validation - returns detailed error messages
+export const validateName = (name: string, fieldName: string = 'Name'): NameValidationResult => {
+  const errors: string[] = [];
+  const MAX_LENGTH = 119;
+  // Valid characters: letters, numbers, spaces, hyphens, apostrophes, periods, and commas
+  const validPattern = /^[a-zA-Z0-9\s\-'.,]+$/;
+
+  // Check if name exceeds max length
+  if (name.length > MAX_LENGTH) {
+    errors.push(`${fieldName} cannot exceed ${MAX_LENGTH} characters`);
+  }
+
+  // Check for invalid characters
+  if (!validPattern.test(name)) {
+    // Find and report specific invalid characters
+    const invalidChars = name
+      .split('')
+      .filter(char => !/[a-zA-Z0-9\s\-'.,]/.test(char))
+      .filter((char, index, self) => self.indexOf(char) === index); // unique chars
+
+    if (invalidChars.length > 0) {
+      const charDisplay = invalidChars.map(c => `"${c}"`).join(', ');
+      errors.push(
+        `${fieldName} contains invalid character${invalidChars.length > 1 ? 's' : ''}: ${charDisplay}`
+      );
+    }
+  }
+
+  return {
+    isValid: errors.length === 0,
+    errors,
+  };
+};
+
+// Simple name validation (boolean only) - kept for backward compatibility
 export const isValidName = (name: string) => {
   // Check if name exceeds 119 characters or contains invalid characters
   // Valid characters: letters, numbers, spaces, hyphens, apostrophes, periods, and commas
