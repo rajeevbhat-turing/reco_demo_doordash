@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useDeliveryPartnerStore } from '@/store/delivery-partner-store';
-import { isValidEmail, isValidName } from '@/lib/utils/helperFunctions';
+import { isValidEmail, validateName } from '@/lib/utils/helperFunctions';
 import { DeliveryPartner } from '@/lib/types/delivery-types';
 import { validatePassword } from '@/lib/utils/password-validation';
 import {
@@ -90,20 +90,24 @@ export default function DeliverySignUp({
     if (field === 'firstName') {
       if (!value.trim()) {
         newErrors.firstName = 'First name is required';
-      } else if (!isValidName(value)) {
-        newErrors.firstName =
-          'First name must only contain letters, numbers, spaces, hyphens, apostrophes, periods, and commas';
       } else {
-        delete newErrors.firstName;
+        const nameValidation = validateName(value, 'First name');
+        if (!nameValidation.isValid) {
+          newErrors.firstName = nameValidation.errors;
+        } else {
+          delete newErrors.firstName;
+        }
       }
     } else if (field === 'lastName') {
       if (!value.trim()) {
         newErrors.lastName = 'Last name is required';
-      } else if (!isValidName(value)) {
-        newErrors.lastName =
-          'Last name must only contain letters, numbers, spaces, hyphens, apostrophes, periods, and commas';
       } else {
-        delete newErrors.lastName;
+        const nameValidation = validateName(value, 'Last name');
+        if (!nameValidation.isValid) {
+          newErrors.lastName = nameValidation.errors;
+        } else {
+          delete newErrors.lastName;
+        }
       }
     } else if (field === 'email') {
       if (!value.trim()) {
@@ -142,15 +146,19 @@ export default function DeliverySignUp({
 
     if (!formData.firstName.trim()) {
       newErrors.firstName = 'First name is required';
-    } else if (!isValidName(formData.firstName)) {
-      newErrors.firstName =
-        'First name must only contain letters, numbers, spaces, hyphens, apostrophes, periods, and commas';
+    } else {
+      const firstNameValidation = validateName(formData.firstName, 'First name');
+      if (!firstNameValidation.isValid) {
+        newErrors.firstName = firstNameValidation.errors;
+      }
     }
     if (!formData.lastName.trim()) {
       newErrors.lastName = 'Last name is required';
-    } else if (!isValidName(formData.lastName)) {
-      newErrors.lastName =
-        'Last name must only contain letters, numbers, spaces, hyphens, apostrophes, periods, and commas';
+    } else {
+      const lastNameValidation = validateName(formData.lastName, 'Last name');
+      if (!lastNameValidation.isValid) {
+        newErrors.lastName = lastNameValidation.errors;
+      }
     }
 
     if (!formData.email.trim()) {
@@ -256,11 +264,24 @@ export default function DeliverySignUp({
             }`}
           />
           {errors.firstName && (
-            <div className="flex mt-1 text-[#b71000ff]">
-              <div className="h-4 w-4 mr-2 flex-shrink-0 rounded-full flex items-center justify-center bg-[#b71000ff]">
-                <span className="text-white text-xs font-bold">!</span>
-              </div>
-              <span className="text-sm font-semibold">{errors.firstName}</span>
+            <div className="mt-1 space-y-1">
+              {Array.isArray(errors.firstName) ? (
+                errors.firstName.map((error, index) => (
+                  <div key={index} className="flex items-start text-[#b71000ff]">
+                    <div className="h-4 w-4 mr-2 flex-shrink-0 rounded-full flex items-center justify-center bg-[#b71000ff] mt-0.5">
+                      <span className="text-white text-xs font-bold">!</span>
+                    </div>
+                    <span className="text-sm font-semibold">{error}</span>
+                  </div>
+                ))
+              ) : (
+                <div className="flex items-start text-[#b71000ff]">
+                  <div className="h-4 w-4 mr-2 flex-shrink-0 rounded-full flex items-center justify-center bg-[#b71000ff] mt-0.5">
+                    <span className="text-white text-xs font-bold">!</span>
+                  </div>
+                  <span className="text-sm font-semibold">{errors.firstName}</span>
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -280,11 +301,24 @@ export default function DeliverySignUp({
             }`}
           />
           {errors.lastName && (
-            <div className="flex mt-1 text-[#b71000ff]">
-              <div className="h-4 w-4 mr-2 flex-shrink-0 rounded-full flex items-center justify-center bg-[#b71000ff]">
-                <span className="text-white text-xs font-bold">!</span>
-              </div>
-              <span className="text-sm font-semibold">{errors.lastName}</span>
+            <div className="mt-1 space-y-1">
+              {Array.isArray(errors.lastName) ? (
+                errors.lastName.map((error, index) => (
+                  <div key={index} className="flex items-start text-[#b71000ff]">
+                    <div className="h-4 w-4 mr-2 flex-shrink-0 rounded-full flex items-center justify-center bg-[#b71000ff] mt-0.5">
+                      <span className="text-white text-xs font-bold">!</span>
+                    </div>
+                    <span className="text-sm font-semibold">{error}</span>
+                  </div>
+                ))
+              ) : (
+                <div className="flex items-start text-[#b71000ff]">
+                  <div className="h-4 w-4 mr-2 flex-shrink-0 rounded-full flex items-center justify-center bg-[#b71000ff] mt-0.5">
+                    <span className="text-white text-xs font-bold">!</span>
+                  </div>
+                  <span className="text-sm font-semibold">{errors.lastName}</span>
+                </div>
+              )}
             </div>
           )}
         </div>

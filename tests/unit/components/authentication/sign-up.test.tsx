@@ -1,7 +1,7 @@
 import { vi } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import SignUp from '@/components/authentication/sign-up';
-import { isValidEmail, isValidName } from '@/lib/utils/helperFunctions';
+import { isValidEmail, validateName } from '@/lib/utils/helperFunctions';
 import { useUserStore } from '@/store/user-store';
 
 // Mock dependencies
@@ -47,9 +47,36 @@ describe('SignUp Component', () => {
     (isValidEmail as ReturnType<typeof vi.fn>).mockImplementation((email: string) => {
       return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
     });
-    (isValidName as ReturnType<typeof vi.fn>).mockImplementation((name: string) => {
-      return /^[a-zA-Z0-9\s\-'.,]+$/.test(name) && name.length <= 119;
-    });
+    (validateName as ReturnType<typeof vi.fn>).mockImplementation(
+      (name: string, fieldName: string = 'Name') => {
+        const errors: string[] = [];
+        const MAX_LENGTH = 119;
+        const validPattern = /^[a-zA-Z0-9\s\-'.,]+$/;
+
+        if (name.length > MAX_LENGTH) {
+          errors.push(`${fieldName} cannot exceed ${MAX_LENGTH} characters`);
+        }
+
+        if (!validPattern.test(name)) {
+          const invalidChars = name
+            .split('')
+            .filter(char => !/[a-zA-Z0-9\s\-'.,]/.test(char))
+            .filter((char, index, self) => self.indexOf(char) === index);
+
+          if (invalidChars.length > 0) {
+            const charDisplay = invalidChars.map(c => `"${c}"`).join(', ');
+            errors.push(
+              `${fieldName} contains invalid character${invalidChars.length > 1 ? 's' : ''}: ${charDisplay}`
+            );
+          }
+        }
+
+        return {
+          isValid: errors.length === 0,
+          errors,
+        };
+      }
+    );
   });
 
   it('should render sign up form', () => {
@@ -102,9 +129,7 @@ describe('SignUp Component', () => {
 
         await waitFor(() => {
           expect(
-            screen.getByText(
-              'First name must only contain letters, numbers, spaces, hyphens, apostrophes, periods, and commas'
-            )
+            screen.getByText('First name contains invalid character: "@"')
           ).toBeInTheDocument();
         });
       });
@@ -166,9 +191,7 @@ describe('SignUp Component', () => {
 
         await waitFor(() => {
           expect(
-            screen.getByText(
-              'Last name must only contain letters, numbers, spaces, hyphens, apostrophes, periods, and commas'
-            )
+            screen.getByText('Last name contains invalid character: "#"')
           ).toBeInTheDocument();
         });
       });
