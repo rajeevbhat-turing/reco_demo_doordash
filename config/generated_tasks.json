@@ -1,8 +1,9 @@
 [
   {
+    "template_type": "order_with_addon",
     "task_id": "001",
     "start_url": "https://dashdoor.rlgym.turing.com/home",
-    "task_statement": "Log in using email 'rosa.walsh2650@mail.test' and password 'iP6iIWtqnxRA'. Order Soju from Grand House, select the Medium add on",
+    "task_statement": "Log in using email 'rosa.walsh2650@mail.test' and password 'iP6iIWtqnxRA'. Order Bacon from Morning Diner, select the Mild add on",
     "grader_config": {
       "state_grader_configs": [
         {
@@ -59,7 +60,7 @@
               "lat": "$[0].address.lat",
               "lng": "$[0].address.lng",
               "limit": 1,
-              "name": "Grand House"
+              "name": "Morning Diner"
             },
             "function": "get_restaurants"
           },
@@ -67,7 +68,7 @@
             "args": {
               "limit": 1,
               "keywords": [
-                "Soju"
+                "Bacon"
               ],
               "restaurant_id": "$[1].restaurants[0].id"
             },
@@ -77,27 +78,19 @@
             "args": {
               "item_id": "$[2].items[0].id",
               "modification_name": "spice level",
-              "option_name": "Medium"
+              "option_name": "Mild"
             },
             "function": "get_modifications"
           }
         ]
       }
-    },
-    "_metadata": {
-      "user_id": 2650,
-      "restaurant_id": 236,
-      "restaurant_distance_miles": 2.27,
-      "menu_item_id": 5777,
-      "modification_id": 6621,
-      "option_id": 28595,
-      "option_price_cents": 0
     }
   },
   {
+    "template_type": "order_with_addon",
     "task_id": "002",
     "start_url": "https://dashdoor.rlgym.turing.com/home",
-    "task_statement": "Log in using email 'victor.xu1153@inbox.local' and password 'cMHZCt9Yf0WT'. Order Sweet & Sour Pork from The South Palace, select the Mild add on",
+    "task_statement": "Log in using email 'victor.xu1153@inbox.local' and password 'cMHZCt9Yf0WT'. Order Spicy Pork from North Seoul House, select the Extra Sauce add on",
     "grader_config": {
       "state_grader_configs": [
         {
@@ -154,7 +147,7 @@
               "lat": "$[0].address.lat",
               "lng": "$[0].address.lng",
               "limit": 1,
-              "name": "The South Palace"
+              "name": "North Seoul House"
             },
             "function": "get_restaurants"
           },
@@ -162,7 +155,7 @@
             "args": {
               "limit": 1,
               "keywords": [
-                "Sweet & Sour Pork"
+                "Spicy Pork"
               ],
               "restaurant_id": "$[1].restaurants[0].id"
             },
@@ -171,44 +164,40 @@
           {
             "args": {
               "item_id": "$[2].items[0].id",
-              "modification_name": "spice level",
-              "option_name": "Mild"
+              "modification_name": "add-ons",
+              "option_name": "Extra Sauce"
             },
             "function": "get_modifications"
           }
         ]
       }
-    },
-    "_metadata": {
-      "user_id": 1153,
-      "restaurant_id": 169,
-      "restaurant_distance_miles": 2.79,
-      "menu_item_id": 4452,
-      "modification_id": 5980,
-      "option_id": 26671,
-      "option_price_cents": 0
     }
   },
   {
+    "template_type": "order_from_cuisine",
     "task_id": "003",
     "start_url": "https://dashdoor.rlgym.turing.com/home",
-    "task_statement": "Log in using email 'bella.chambers2827@dashdoor.test' and password '4h5VDM4Ksy1H'. Order House Salad from Olive Garden, select the Avocado add on",
+    "task_statement": "Log in using email 'bella.chambers2827@dashdoor.test' and password '4h5VDM4Ksy1H'. Order from the nearest Steakhouse restaurant. Get either a Steak for Four or a Apple Strudel, choosing the cheaper option, and if they cost the same, pick the one with the higher rating. Have it delivered to my hotel address.",
     "grader_config": {
       "state_grader_configs": [
         {
           "assertions": [
             {
-              "operator": "ARRAY_STRING_EQUALS",
-              "path_to_actual": "$.restaurantId",
+              "operator": "STRING_EQUALS",
               "paths_to_expected": [
-                "$[1].restaurants[0].id"
+                "$.address.id"
               ]
-            },
+            }
+          ],
+          "path_to_actual": "$.orders[0].deliveryAddress.id"
+        },
+        {
+          "assertions": [
             {
-              "operator": "ARRAY_STRING_EQUALS",
-              "path_to_actual": "$.items[0].name",
+              "operator": "STRING_EQUALS",
+              "path_to_actual": "$.items[0].id",
               "paths_to_expected": [
-                "$[2].items[0].name"
+                "$.items[0].id"
               ]
             },
             {
@@ -217,20 +206,6 @@
               ],
               "operator": "ARRAY_LENGTH_MATCH",
               "path_to_actual": "$.items[*]"
-            },
-            {
-              "operator": "NUMERIC_MATCH",
-              "path_to_actual": "$.items[0].quantity",
-              "expected": [
-                "==1"
-              ]
-            },
-            {
-              "operator": "STRING_EQUALS",
-              "path_to_actual": "$.items[0].modifications[0].options[0].id",
-              "paths_to_expected": [
-                "$[3].modifications[0].options[0].id"
-              ]
             }
           ],
           "path_to_actual": "$.orders[0]"
@@ -240,6 +215,7 @@
         "expected_state_functions": [
           {
             "args": {
+              "type": "hotel",
               "user": "bella.chambers2827@dashdoor.test"
             },
             "function": "get_user_address"
@@ -249,7 +225,17 @@
               "lat": "$[0].address.lat",
               "lng": "$[0].address.lng",
               "limit": 1,
-              "name": "Olive Garden"
+              "filters": {
+                "cuisines": [
+                  "Steakhouse"
+                ]
+              },
+              "sort_type": [
+                {
+                  "key": "distance",
+                  "order": "asc"
+                }
+              ]
             },
             "function": "get_restaurants"
           },
@@ -257,53 +243,52 @@
             "args": {
               "limit": 1,
               "keywords": [
-                "House Salad"
+                "Steak for Four",
+                "Apple Strudel"
+              ],
+              "sort_type": [
+                {
+                  "key": "price",
+                  "order": "asc"
+                },
+                {
+                  "key": "rating",
+                  "order": "desc"
+                }
               ],
               "restaurant_id": "$[1].restaurants[0].id"
             },
             "function": "get_items"
-          },
-          {
-            "args": {
-              "item_id": "$[2].items[0].id",
-              "modification_name": "extras",
-              "option_name": "Avocado"
-            },
-            "function": "get_modifications"
           }
         ]
       }
-    },
-    "_metadata": {
-      "user_id": 2827,
-      "restaurant_id": 143,
-      "restaurant_distance_miles": 7.51,
-      "menu_item_id": 4056,
-      "modification_id": 5592,
-      "option_id": 25463,
-      "option_price_cents": 150
     }
   },
   {
+    "template_type": "order_from_cuisine",
     "task_id": "004",
     "start_url": "https://dashdoor.rlgym.turing.com/home",
-    "task_statement": "Log in using email 'bella.quintero105@mail.test' and password '7yLkBgmrAkRU'. Order Salmon Teriyaki from Lou's Izakaya, select the Medium add on",
+    "task_statement": "Log in using email 'bella.quintero105@mail.test' and password '7yLkBgmrAkRU'. Order from the nearest Breakfast & Brunch restaurant. Get either a Belgian Waffle or a Avocado Toast, choosing the cheaper option, and if they cost the same, pick the one with the higher rating. Have it delivered to my apartment address.",
     "grader_config": {
       "state_grader_configs": [
         {
           "assertions": [
             {
-              "operator": "ARRAY_STRING_EQUALS",
-              "path_to_actual": "$.restaurantId",
+              "operator": "STRING_EQUALS",
               "paths_to_expected": [
-                "$[1].restaurants[0].id"
+                "$.address.id"
               ]
-            },
+            }
+          ],
+          "path_to_actual": "$.orders[0].deliveryAddress.id"
+        },
+        {
+          "assertions": [
             {
-              "operator": "ARRAY_STRING_EQUALS",
-              "path_to_actual": "$.items[0].name",
+              "operator": "STRING_EQUALS",
+              "path_to_actual": "$.items[0].id",
               "paths_to_expected": [
-                "$[2].items[0].name"
+                "$.items[0].id"
               ]
             },
             {
@@ -312,20 +297,6 @@
               ],
               "operator": "ARRAY_LENGTH_MATCH",
               "path_to_actual": "$.items[*]"
-            },
-            {
-              "operator": "NUMERIC_MATCH",
-              "path_to_actual": "$.items[0].quantity",
-              "expected": [
-                "==1"
-              ]
-            },
-            {
-              "operator": "STRING_EQUALS",
-              "path_to_actual": "$.items[0].modifications[0].options[0].id",
-              "paths_to_expected": [
-                "$[3].modifications[0].options[0].id"
-              ]
             }
           ],
           "path_to_actual": "$.orders[0]"
@@ -335,6 +306,7 @@
         "expected_state_functions": [
           {
             "args": {
+              "type": "apartment",
               "user": "bella.quintero105@mail.test"
             },
             "function": "get_user_address"
@@ -344,7 +316,17 @@
               "lat": "$[0].address.lat",
               "lng": "$[0].address.lng",
               "limit": 1,
-              "name": "Lou's Izakaya"
+              "filters": {
+                "cuisines": [
+                  "Breakfast & Brunch"
+                ]
+              },
+              "sort_type": [
+                {
+                  "key": "distance",
+                  "order": "asc"
+                }
+              ]
             },
             "function": "get_restaurants"
           },
@@ -352,53 +334,194 @@
             "args": {
               "limit": 1,
               "keywords": [
-                "Salmon Teriyaki"
+                "Belgian Waffle",
+                "Avocado Toast"
+              ],
+              "sort_type": [
+                {
+                  "key": "price",
+                  "order": "asc"
+                },
+                {
+                  "key": "rating",
+                  "order": "desc"
+                }
               ],
               "restaurant_id": "$[1].restaurants[0].id"
             },
             "function": "get_items"
-          },
-          {
-            "args": {
-              "item_id": "$[2].items[0].id",
-              "modification_name": "spice level",
-              "option_name": "Medium"
-            },
-            "function": "get_modifications"
           }
         ]
       }
-    },
-    "_metadata": {
-      "user_id": 105,
-      "restaurant_id": 181,
-      "restaurant_distance_miles": 8.81,
-      "menu_item_id": 4698,
-      "modification_id": 6100,
-      "option_id": 27032,
-      "option_price_cents": 0
     }
   },
   {
+    "template_type": "find_restaurant",
     "task_id": "005",
     "start_url": "https://dashdoor.rlgym.turing.com/home",
-    "task_statement": "Log in using email 'hannah.lopez366@dashdoor.test' and password 'oLDzbLtCGDMw'. Order Boneless Wings (15) from Buffalo Wild Wings, select the Ranch add on",
+    "task_statement": "Log in using email 'hannah.lopez366@dashdoor.test' and password 'oLDzbLtCGDMw'. Help me find the best cheapest Korean or Pizza restaurant option that I have not ordered from in the past.",
+    "task_type": "Multi-Step Task Planning, GUI Comprehension, Decision Making",
+    "simulator_config": {
+      "start_date": "today",
+      "user_persona": "hannah.lopez366@dashdoor.test"
+    },
+    "grader_config": {
+      "answer_grader_config": {
+        "assertions": [
+          {
+            "operator": "STRING_CONTAINS",
+            "paths_to_expected": [
+              "$.restaurants[0].name"
+            ]
+          }
+        ]
+      },
+      "extract_states_config": {
+        "expected_state_functions": [
+          {
+            "function": "get_orders",
+            "args": {}
+          },
+          {
+            "function": "get_restaurants",
+            "args": {
+              "filters": {
+                "cuisines": [
+                  "Pizza",
+                  "Korean"
+                ],
+                "restaurant_ids_not_in": "$[0].orders[*].storeId"
+              },
+              "sort_type": [
+                {
+                  "key": "priceRange",
+                  "order": "asc"
+                },
+                {
+                  "key": "rating",
+                  "order": "desc"
+                }
+              ],
+              "limit": 1
+            }
+          }
+        ]
+      }
+    }
+  },
+  {
+    "template_type": "find_restaurant",
+    "task_id": "006",
+    "start_url": "https://dashdoor.rlgym.turing.com/home",
+    "task_statement": "Log in using email 'aiden.young579@mail.test' and password 'lcihTUOsXvcY'. Help me find the best cheapest Italian or Seafood restaurant option that I have not ordered from in the past.",
+    "task_type": "Multi-Step Task Planning, GUI Comprehension, Decision Making",
+    "simulator_config": {
+      "start_date": "today",
+      "user_persona": "aiden.young579@mail.test"
+    },
+    "grader_config": {
+      "answer_grader_config": {
+        "assertions": [
+          {
+            "operator": "STRING_CONTAINS",
+            "paths_to_expected": [
+              "$.restaurants[0].name"
+            ]
+          }
+        ]
+      },
+      "extract_states_config": {
+        "expected_state_functions": [
+          {
+            "function": "get_orders",
+            "args": {}
+          },
+          {
+            "function": "get_restaurants",
+            "args": {
+              "filters": {
+                "cuisines": [
+                  "Seafood",
+                  "Italian"
+                ],
+                "restaurant_ids_not_in": "$[0].orders[*].storeId"
+              },
+              "sort_type": [
+                {
+                  "key": "priceRange",
+                  "order": "asc"
+                },
+                {
+                  "key": "rating",
+                  "order": "desc"
+                }
+              ],
+              "limit": 1
+            }
+          }
+        ]
+      }
+    }
+  },
+  {
+    "template_type": "hotel_delivery",
+    "task_id": "007",
+    "start_url": "https://dashdoor.rlgym.turing.com/home",
+    "task_statement": "Log in using email 'fiona.kaufman1783@dashdoor.test' and password 'PZs6gTDcP55i'. Add the hotel address 8325 N Narragansett Ave, Stanton. Have the cheapest Loaded delivered nearby to my hotel. I want the delivery person to meet me at the hotel lobby.",
+    "task_type": "GUI Comprehension, Decision Making, Element Identification",
+    "simulator_config": {
+      "start_date": "today",
+      "user_persona": "fiona.kaufman1783@dashdoor.test"
+    },
     "grader_config": {
       "state_grader_configs": [
         {
           "assertions": [
             {
-              "operator": "ARRAY_STRING_EQUALS",
-              "path_to_actual": "$.restaurantId",
-              "paths_to_expected": [
-                "$[1].restaurants[0].id"
-              ]
+              "operator": "STRING_EQUALS",
+              "expected": [
+                "hotel"
+              ],
+              "path_to_actual": "$.addressType"
             },
             {
-              "operator": "ARRAY_STRING_EQUALS",
-              "path_to_actual": "$.items[0].name",
+              "operator": "STRING_EQUALS",
+              "expected": [
+                "8325 N Narragansett Ave"
+              ],
+              "path_to_actual": "$.street"
+            },
+            {
+              "operator": "STRING_EQUALS",
+              "expected": [
+                "Stanton"
+              ],
+              "path_to_actual": "$.city"
+            },
+            {
+              "operator": "STRING_EQUALS",
+              "expected": [
+                "meet"
+              ],
+              "path_to_actual": "$.deliveryPreference"
+            },
+            {
+              "operator": "STRING_EQUALS",
+              "expected": [
+                "lobby"
+              ],
+              "path_to_actual": "$.deliveryLocation"
+            }
+          ],
+          "path_to_actual": "$.orders[0].deliveryAddress"
+        },
+        {
+          "assertions": [
+            {
+              "operator": "STRING_EQUALS",
+              "path_to_actual": "$.items[0].id",
               "paths_to_expected": [
-                "$[2].items[0].name"
+                "$.items[0].id"
               ]
             },
             {
@@ -407,19 +530,502 @@
               ],
               "operator": "ARRAY_LENGTH_MATCH",
               "path_to_actual": "$.items[*]"
+            }
+          ],
+          "path_to_actual": "$.orders[0]"
+        }
+      ],
+      "extract_states_config": {
+        "expected_state_functions": [
+          {
+            "function": "get_items",
+            "args": {
+              "limit": 1,
+              "keywords": [
+                "Loaded"
+              ],
+              "sort_type": [
+                {
+                  "key": "price",
+                  "order": "asc"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  },
+  {
+    "template_type": "hotel_delivery",
+    "task_id": "008",
+    "start_url": "https://dashdoor.rlgym.turing.com/home",
+    "task_statement": "Log in using email 'nora.diaz967@mail.test' and password 'btoX41CT9HGD'. Add the hotel address 4074 Mas, 2635 W Olive Ave, Union City. Have the cheapest Barbacoa delivered nearby to my hotel. I want the delivery person to meet me at the hotel lobby.",
+    "task_type": "GUI Comprehension, Decision Making, Element Identification",
+    "simulator_config": {
+      "start_date": "today",
+      "user_persona": "nora.diaz967@mail.test"
+    },
+    "grader_config": {
+      "state_grader_configs": [
+        {
+          "assertions": [
+            {
+              "operator": "STRING_EQUALS",
+              "expected": [
+                "hotel"
+              ],
+              "path_to_actual": "$.addressType"
+            },
+            {
+              "operator": "STRING_EQUALS",
+              "expected": [
+                "4074 Mas, 2635 W Olive Ave"
+              ],
+              "path_to_actual": "$.street"
+            },
+            {
+              "operator": "STRING_EQUALS",
+              "expected": [
+                "Union City"
+              ],
+              "path_to_actual": "$.city"
+            },
+            {
+              "operator": "STRING_EQUALS",
+              "expected": [
+                "meet"
+              ],
+              "path_to_actual": "$.deliveryPreference"
+            },
+            {
+              "operator": "STRING_EQUALS",
+              "expected": [
+                "lobby"
+              ],
+              "path_to_actual": "$.deliveryLocation"
+            }
+          ],
+          "path_to_actual": "$.orders[0].deliveryAddress"
+        },
+        {
+          "assertions": [
+            {
+              "operator": "STRING_EQUALS",
+              "path_to_actual": "$.items[0].id",
+              "paths_to_expected": [
+                "$.items[0].id"
+              ]
+            },
+            {
+              "expected": [
+                "==1"
+              ],
+              "operator": "ARRAY_LENGTH_MATCH",
+              "path_to_actual": "$.items[*]"
+            }
+          ],
+          "path_to_actual": "$.orders[0]"
+        }
+      ],
+      "extract_states_config": {
+        "expected_state_functions": [
+          {
+            "function": "get_items",
+            "args": {
+              "limit": 1,
+              "keywords": [
+                "Barbacoa"
+              ],
+              "sort_type": [
+                {
+                  "key": "price",
+                  "order": "asc"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  },
+  {
+    "template_type": "update_payment",
+    "task_id": "009",
+    "start_url": "https://dashdoor.rlgym.turing.com/home",
+    "task_statement": "Log in using email 'elias.patel2678@dashdoor.test' and password 'PVyYadgHJ70S'. Delete my current card details and add a new card 9738320603850506 with CVV 413 and expiry date September 2026. Use the zipcode of my current house address.",
+    "task_type": "GUI Comprehension, Action Execution, Information Retrieval",
+    "simulator_config": {
+      "start_date": "today",
+      "user_persona": "elias.patel2678@dashdoor.test"
+    },
+    "grader_config": {
+      "state_grader_configs": [
+        {
+          "assertions": [
+            {
+              "expected": [
+                "==1"
+              ],
+              "operator": "ARRAY_LENGTH_MATCH"
+            },
+            {
+              "operator": "STRING_EQUALS",
+              "expected": [
+                "9738320603850506"
+              ],
+              "path_to_actual": "$[0].cardNumber"
+            },
+            {
+              "operator": "STRING_EQUALS",
+              "expected": [
+                "413"
+              ],
+              "path_to_actual": "$[0].cvc"
+            },
+            {
+              "operator": "STRING_EQUALS",
+              "expected": [
+                "09/26"
+              ],
+              "path_to_actual": "$[0].expiry"
+            },
+            {
+              "operator": "STRING_EQUALS",
+              "paths_to_expected": [
+                "$.address.zipCode"
+              ],
+              "path_to_actual": "$[0].zipCode"
+            }
+          ],
+          "path_to_actual": "$.user.currentUser.paymentMethods"
+        }
+      ],
+      "extract_states_config": {
+        "expected_state_functions": [
+          {
+            "args": {
+              "type": "house",
+              "user": "elias.patel2678@dashdoor.test"
+            },
+            "function": "get_user_address"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "template_type": "update_payment",
+    "task_id": "010",
+    "start_url": "https://dashdoor.rlgym.turing.com/home",
+    "task_statement": "Log in using email 'milo.ingram1902@example.com' and password 'B318mUibvFxW'. Delete my current card details and add a new card 6702410386571918 with CVV 261 and expiry date October 2029. Use the zipcode of my current house address.",
+    "task_type": "GUI Comprehension, Action Execution, Information Retrieval",
+    "simulator_config": {
+      "start_date": "today",
+      "user_persona": "milo.ingram1902@example.com"
+    },
+    "grader_config": {
+      "state_grader_configs": [
+        {
+          "assertions": [
+            {
+              "expected": [
+                "==1"
+              ],
+              "operator": "ARRAY_LENGTH_MATCH"
+            },
+            {
+              "operator": "STRING_EQUALS",
+              "expected": [
+                "6702410386571918"
+              ],
+              "path_to_actual": "$[0].cardNumber"
+            },
+            {
+              "operator": "STRING_EQUALS",
+              "expected": [
+                "261"
+              ],
+              "path_to_actual": "$[0].cvc"
+            },
+            {
+              "operator": "STRING_EQUALS",
+              "expected": [
+                "10/29"
+              ],
+              "path_to_actual": "$[0].expiry"
+            },
+            {
+              "operator": "STRING_EQUALS",
+              "paths_to_expected": [
+                "$.address.zipCode"
+              ],
+              "path_to_actual": "$[0].zipCode"
+            }
+          ],
+          "path_to_actual": "$.user.currentUser.paymentMethods"
+        }
+      ],
+      "extract_states_config": {
+        "expected_state_functions": [
+          {
+            "args": {
+              "type": "house",
+              "user": "milo.ingram1902@example.com"
+            },
+            "function": "get_user_address"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "template_type": "rate_order",
+    "task_id": "011",
+    "start_url": "https://dashdoor.rlgym.turing.com/home",
+    "task_statement": "Log in using email 'priya.owens1501@inbox.local' and password 'j8NQRnQ6rdxs'. Rate my last order from Sunny Coffee Co. a 3 star because the Cold Brew was overcooked and soggy.",
+    "task_type": "GUI Comprehension, Action Execution",
+    "simulator_config": {
+      "start_date": "today",
+      "user_persona": "priya.owens1501@inbox.local"
+    },
+    "grader_config": {
+      "state_grader_configs": [
+        {
+          "assertions": [
+            {
+              "operator": "STRING_EQUALS",
+              "path_to_actual": "$.vendorName",
+              "expected": [
+                "Sunny Coffee Co."
+              ]
             },
             {
               "operator": "NUMERIC_MATCH",
-              "path_to_actual": "$.items[0].quantity",
+              "path_to_actual": "$.rating",
+              "expected": [
+                "==3"
+              ]
+            },
+            {
+              "operator": "STRING_CONTAINS",
+              "path_to_actual": "$.content",
+              "expected": [
+                "Cold Brew",
+                "overcooked",
+                "soggy"
+              ]
+            }
+          ],
+          "path_to_actual": "$.reviews.newReviews[0]"
+        }
+      ],
+      "extract_states_config": {
+        "expected_state_functions": [
+          {
+            "args": {},
+            "function": "get_user_address"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "template_type": "rate_order",
+    "task_id": "012",
+    "start_url": "https://dashdoor.rlgym.turing.com/home",
+    "task_statement": "Log in using email 'xavier.diaz2170@example.com' and password 'BR5rAYQRKOdI'. Rate my last order from The Tony's Fish & Chips a 3 star because the Crab Cakes was dry and late.",
+    "task_type": "GUI Comprehension, Action Execution",
+    "simulator_config": {
+      "start_date": "today",
+      "user_persona": "xavier.diaz2170@example.com"
+    },
+    "grader_config": {
+      "state_grader_configs": [
+        {
+          "assertions": [
+            {
+              "operator": "STRING_EQUALS",
+              "path_to_actual": "$.vendorName",
+              "expected": [
+                "The Tony's Fish & Chips"
+              ]
+            },
+            {
+              "operator": "NUMERIC_MATCH",
+              "path_to_actual": "$.rating",
+              "expected": [
+                "==3"
+              ]
+            },
+            {
+              "operator": "STRING_CONTAINS",
+              "path_to_actual": "$.content",
+              "expected": [
+                "Crab Cakes",
+                "dry",
+                "late"
+              ]
+            }
+          ],
+          "path_to_actual": "$.reviews.newReviews[0]"
+        }
+      ],
+      "extract_states_config": {
+        "expected_state_functions": [
+          {
+            "args": {},
+            "function": "get_user_address"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "template_type": "remove_carts",
+    "task_id": "013",
+    "start_url": "https://dashdoor.rlgym.turing.com/home",
+    "task_statement": "Log in using email 'fiona.greene2732@mail.test' and password 'Zti1Ms8zoj5v'. I recently changed my address so remove all the carts from restaurants no longer in my area.",
+    "task_type": "GUI Comprehension, Action Execution, Decision Making, Element Identification",
+    "simulator_config": {
+      "start_date": "today",
+      "user_persona": "fiona.greene2732@mail.test"
+    },
+    "grader_config": {
+      "state_grader_configs": [
+        {
+          "assertions": [
+            {
+              "operator": "ARRAY_STRING_EQUALS",
+              "path_to_actual": "$.carts[*].storeId",
+              "paths_to_expected": [
+                "$.carts[*].storeId"
+              ]
+            }
+          ]
+        }
+      ],
+      "extract_states_config": {
+        "expected_state_functions": [
+          {
+            "args": {
+              "user": "fiona.greene2732@mail.test"
+            },
+            "function": "get_user_address"
+          },
+          {
+            "args": {
+              "lat": "$[0].address.lat",
+              "lng": "$[0].address.lng"
+            },
+            "function": "get_restaurants"
+          },
+          {
+            "args": {
+              "limit": 1,
+              "filters": {
+                "restaurant_names": "$[1].restaurants[*].name"
+              }
+            },
+            "function": "get_carts"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "template_type": "remove_carts",
+    "task_id": "014",
+    "start_url": "https://dashdoor.rlgym.turing.com/home",
+    "task_statement": "Log in using email 'bella.owens1022@inbox.local' and password 'OOn2afwFepGM'. I recently changed my address so remove all the carts from restaurants no longer in my area.",
+    "task_type": "GUI Comprehension, Action Execution, Decision Making, Element Identification",
+    "simulator_config": {
+      "start_date": "today",
+      "user_persona": "bella.owens1022@inbox.local"
+    },
+    "grader_config": {
+      "state_grader_configs": [
+        {
+          "assertions": [
+            {
+              "operator": "ARRAY_STRING_EQUALS",
+              "path_to_actual": "$.carts[*].storeId",
+              "paths_to_expected": [
+                "$.carts[*].storeId"
+              ]
+            }
+          ]
+        }
+      ],
+      "extract_states_config": {
+        "expected_state_functions": [
+          {
+            "args": {
+              "user": "bella.owens1022@inbox.local"
+            },
+            "function": "get_user_address"
+          },
+          {
+            "args": {
+              "lat": "$[0].address.lat",
+              "lng": "$[0].address.lng"
+            },
+            "function": "get_restaurants"
+          },
+          {
+            "args": {
+              "limit": 1,
+              "filters": {
+                "restaurant_names": "$[1].restaurants[*].name"
+              }
+            },
+            "function": "get_carts"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "template_type": "modify_cart_order",
+    "task_id": "015",
+    "start_url": "https://dashdoor.rlgym.turing.com/home",
+    "task_statement": "Log in using email 'gavin.xu161@example.com' and password 'MNtX3uowd6lb'. I created a cart from Hannah's Cantina not too long ago, replace one of the Spicy Bulgogi Rice Bowl with a Toasted Farro Power Bowl and place an order for 11:00-11:30 tomorrow.",
+    "task_type": "GUI Comprehension, Action Execution",
+    "simulator_config": {
+      "start_date": "today",
+      "user_persona": "gavin.xu161@example.com"
+    },
+    "grader_config": {
+      "state_grader_configs": [
+        {
+          "assertions": [
+            {
+              "operator": "ARRAY_STRING_EQUALS",
+              "path_to_actual": "$.items[*].id",
+              "paths_to_expected": [
+                "$.carts[0].items[*].id",
+                "$.items[0].id"
+              ]
+            },
+            {
+              "operator": "NUMERIC_MATCH",
+              "path_to_actual": "$.items[?(@.name == 'Spicy Bulgogi Rice Bowl')].quantity",
               "expected": [
                 "==1"
               ]
             },
             {
-              "operator": "STRING_EQUALS",
-              "path_to_actual": "$.items[0].modifications[0].options[0].id",
+              "operator": "STRING_CONTAINS",
+              "path_to_actual": "$.deliveryOption.deliveryTime",
               "paths_to_expected": [
-                "$[3].modifications[0].options[0].id"
+                "$.date"
+              ]
+            },
+            {
+              "operator": "STRING_CONTAINS",
+              "path_to_actual": "$.deliveryOption.deliveryTime",
+              "paths_to_expected": [
+                "$.slot"
               ]
             }
           ],
@@ -429,49 +1035,388 @@
       "extract_states_config": {
         "expected_state_functions": [
           {
+            "function": "get_carts",
             "args": {
-              "user": "hannah.lopez366@dashdoor.test"
+              "limit": 1,
+              "filters": {
+                "restaurant_names": [
+                  "Hannah's Cantina"
+                ]
+              }
+            }
+          },
+          {
+            "function": "get_items",
+            "args": {
+              "limit": 1,
+              "keywords": [
+                "Toasted Farro Power Bowl"
+              ],
+              "restaurant_id": "$[0].carts[0].storeId"
+            }
+          },
+          {
+            "function": "get_date_N_days_from_today",
+            "args": {
+              "days": 1
+            }
+          },
+          {
+            "function": "get_time_slot",
+            "args": {
+              "time": "11:00-11:30"
+            }
+          }
+        ]
+      }
+    }
+  },
+  {
+    "template_type": "modify_cart_order",
+    "task_id": "016",
+    "start_url": "https://dashdoor.rlgym.turing.com/home",
+    "task_statement": "Log in using email 'uma.patel2048@example.com' and password '4cZU48xLCZef'. I created a cart from Crimson Tavern not too long ago, replace one of the Cold Brew Horchata with a Yuzu Lime Soda and place an order for 11:00-11:30 tomorrow.",
+    "task_type": "GUI Comprehension, Action Execution",
+    "simulator_config": {
+      "start_date": "today",
+      "user_persona": "uma.patel2048@example.com"
+    },
+    "grader_config": {
+      "state_grader_configs": [
+        {
+          "assertions": [
+            {
+              "operator": "ARRAY_STRING_EQUALS",
+              "path_to_actual": "$.items[*].id",
+              "paths_to_expected": [
+                "$.carts[0].items[*].id",
+                "$.items[0].id"
+              ]
+            },
+            {
+              "operator": "NUMERIC_MATCH",
+              "path_to_actual": "$.items[?(@.name == 'Cold Brew Horchata')].quantity",
+              "expected": [
+                "==1"
+              ]
+            },
+            {
+              "operator": "STRING_CONTAINS",
+              "path_to_actual": "$.deliveryOption.deliveryTime",
+              "paths_to_expected": [
+                "$.date"
+              ]
+            },
+            {
+              "operator": "STRING_CONTAINS",
+              "path_to_actual": "$.deliveryOption.deliveryTime",
+              "paths_to_expected": [
+                "$.slot"
+              ]
+            }
+          ],
+          "path_to_actual": "$.orders[0]"
+        }
+      ],
+      "extract_states_config": {
+        "expected_state_functions": [
+          {
+            "function": "get_carts",
+            "args": {
+              "limit": 1,
+              "filters": {
+                "restaurant_names": [
+                  "Crimson Tavern"
+                ]
+              }
+            }
+          },
+          {
+            "function": "get_items",
+            "args": {
+              "limit": 1,
+              "keywords": [
+                "Yuzu Lime Soda"
+              ],
+              "restaurant_id": "$[0].carts[0].storeId"
+            }
+          },
+          {
+            "function": "get_date_N_days_from_today",
+            "args": {
+              "days": 1
+            }
+          },
+          {
+            "function": "get_time_slot",
+            "args": {
+              "time": "11:00-11:30"
+            }
+          }
+        ]
+      }
+    }
+  },
+  {
+    "template_type": "complex_order",
+    "task_id": "017",
+    "start_url": "https://dashdoor.rlgym.turing.com/home",
+    "task_statement": "Log in using email 'priya.kaufman562@inbox.local' and password 'PBUcTV4Wy2mK'. Lets order desserts from Victor's Cantina. But since I am on a diet make sure you pick the two different lowest calorie options. And also add Crispy Chicken Bites for my nephew, keep the spice level Sriracha. Apply the VT7OFF coupon. Use the card ending with 9587 for payment.",
+    "task_type": "GUI Comprehension, Action Execution, Decision Making, Element Identification, Multi-Step Task Planning",
+    "simulator_config": {
+      "start_date": "today",
+      "user_persona": "priya.kaufman562@inbox.local"
+    },
+    "grader_config": {
+      "state_grader_configs": [
+        {
+          "assertions": [
+            {
+              "operator": "STRING_EQUALS",
+              "paths_to_expected": [
+                "$.deal.id"
+              ]
+            }
+          ],
+          "path_to_actual": "$.orders[0].appliedDeal.id"
+        },
+        {
+          "assertions": [
+            {
+              "operator": "STRING_EQUALS",
+              "paths_to_expected": [
+                "$.paymentMethod.lastFour"
+              ]
+            }
+          ],
+          "path_to_actual": "$.orders[0].paymentCard.lastFour"
+        },
+        {
+          "assertions": [
+            {
+              "operator": "ARRAY_STRING_EQUALS",
+              "path_to_actual": "$.restaurantId",
+              "paths_to_expected": [
+                "$.restaurants[0].id"
+              ]
+            },
+            {
+              "operator": "ARRAY_STRING_EQUALS",
+              "path_to_actual": "$.items[*].name",
+              "paths_to_expected": [
+                "$.items[*].name"
+              ]
+            },
+            {
+              "operator": "STRING_EQUALS",
+              "path_to_actual": "$.items[?(@.name == 'Crispy Chicken Bites')].modifications[0].options[0].optionName",
+              "expected": [
+                "Sriracha"
+              ]
+            },
+            {
+              "expected": [
+                "==3"
+              ],
+              "operator": "ARRAY_LENGTH_MATCH",
+              "path_to_actual": "$.items[*]"
+            }
+          ],
+          "path_to_actual": "$.orders[0]"
+        }
+      ],
+      "extract_states_config": {
+        "expected_state_functions": [
+          {
+            "args": {
+              "user": "priya.kaufman562@inbox.local"
             },
             "function": "get_user_address"
+          },
+          {
+            "args": {
+              "promocode": "VT7OFF"
+            },
+            "function": "get_deal"
           },
           {
             "args": {
               "lat": "$[0].address.lat",
               "lng": "$[0].address.lng",
               "limit": 1,
-              "name": "Buffalo Wild Wings"
+              "name": "Victor's Cantina"
             },
             "function": "get_restaurants"
           },
           {
             "args": {
-              "limit": 1,
-              "keywords": [
-                "Boneless Wings (15)"
+              "limit": 2,
+              "filters": {
+                "menu_categories": [
+                  "desserts"
+                ]
+              },
+              "sort_type": [
+                {
+                  "key": "calories",
+                  "order": "asc"
+                }
               ],
-              "restaurant_id": "$[1].restaurants[0].id"
+              "restaurant_id": "$[2].restaurants[0].id"
             },
             "function": "get_items"
           },
           {
             "args": {
-              "item_id": "$[2].items[0].id",
-              "modification_name": "add side of sauce",
-              "option_name": "Ranch"
+              "limit": 1,
+              "keywords": [
+                "Crispy"
+              ],
+              "restaurant_id": "$[2].restaurants[0].id"
             },
-            "function": "get_modifications"
+            "function": "get_items"
+          },
+          {
+            "args": {
+              "filters": {
+                "last_four_digits": "9587"
+              }
+            },
+            "function": "get_user_payment_method"
           }
         ]
       }
+    }
+  },
+  {
+    "template_type": "complex_order",
+    "task_id": "018",
+    "start_url": "https://dashdoor.rlgym.turing.com/home",
+    "task_statement": "Log in using email 'diana.turner2238@mail.test' and password 'ZqFZLa2COgp3'. Lets order desserts from Chinese Pantry. But since I am on a diet make sure you pick the two different lowest calorie options. And also add Crispy Chicken Bites for my nephew, keep the spice level Spicy. Apply the CHINESESIDE coupon. Use the card ending with 1112 for payment.",
+    "task_type": "GUI Comprehension, Action Execution, Decision Making, Element Identification, Multi-Step Task Planning",
+    "simulator_config": {
+      "start_date": "today",
+      "user_persona": "diana.turner2238@mail.test"
     },
-    "_metadata": {
-      "user_id": 366,
-      "restaurant_id": 133,
-      "restaurant_distance_miles": 3.84,
-      "menu_item_id": 3905,
-      "modification_id": 5395,
-      "option_id": 24771,
-      "option_price_cents": 79
+    "grader_config": {
+      "state_grader_configs": [
+        {
+          "assertions": [
+            {
+              "operator": "STRING_EQUALS",
+              "paths_to_expected": [
+                "$.deal.id"
+              ]
+            }
+          ],
+          "path_to_actual": "$.orders[0].appliedDeal.id"
+        },
+        {
+          "assertions": [
+            {
+              "operator": "STRING_EQUALS",
+              "paths_to_expected": [
+                "$.paymentMethod.lastFour"
+              ]
+            }
+          ],
+          "path_to_actual": "$.orders[0].paymentCard.lastFour"
+        },
+        {
+          "assertions": [
+            {
+              "operator": "ARRAY_STRING_EQUALS",
+              "path_to_actual": "$.restaurantId",
+              "paths_to_expected": [
+                "$.restaurants[0].id"
+              ]
+            },
+            {
+              "operator": "ARRAY_STRING_EQUALS",
+              "path_to_actual": "$.items[*].name",
+              "paths_to_expected": [
+                "$.items[*].name"
+              ]
+            },
+            {
+              "operator": "STRING_EQUALS",
+              "path_to_actual": "$.items[?(@.name == 'Crispy Chicken Bites')].modifications[0].options[0].optionName",
+              "expected": [
+                "Spicy"
+              ]
+            },
+            {
+              "expected": [
+                "==3"
+              ],
+              "operator": "ARRAY_LENGTH_MATCH",
+              "path_to_actual": "$.items[*]"
+            }
+          ],
+          "path_to_actual": "$.orders[0]"
+        }
+      ],
+      "extract_states_config": {
+        "expected_state_functions": [
+          {
+            "args": {
+              "user": "diana.turner2238@mail.test"
+            },
+            "function": "get_user_address"
+          },
+          {
+            "args": {
+              "promocode": "CHINESESIDE"
+            },
+            "function": "get_deal"
+          },
+          {
+            "args": {
+              "lat": "$[0].address.lat",
+              "lng": "$[0].address.lng",
+              "limit": 1,
+              "name": "Chinese Pantry"
+            },
+            "function": "get_restaurants"
+          },
+          {
+            "args": {
+              "limit": 2,
+              "filters": {
+                "menu_categories": [
+                  "desserts"
+                ]
+              },
+              "sort_type": [
+                {
+                  "key": "calories",
+                  "order": "asc"
+                }
+              ],
+              "restaurant_id": "$[2].restaurants[0].id"
+            },
+            "function": "get_items"
+          },
+          {
+            "args": {
+              "limit": 1,
+              "keywords": [
+                "Crispy"
+              ],
+              "restaurant_id": "$[2].restaurants[0].id"
+            },
+            "function": "get_items"
+          },
+          {
+            "args": {
+              "filters": {
+                "last_four_digits": "1112"
+              }
+            },
+            "function": "get_user_payment_method"
+          }
+        ]
+      }
     }
   }
 ]
