@@ -35,7 +35,6 @@ export interface StoreConfig {
   showPricing?: boolean;
   showDeliveryInfo?: boolean;
   cartConfig?: {
-    freeDeliveryThreshold: number;
     serviceFeePercentage: number;
     minServiceFee: number;
   };

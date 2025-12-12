@@ -13,6 +13,7 @@ import {
 } from '@/types';
 import { cn } from '@/lib/utils';
 import { haveSameModifications, generateCartItemId } from '@/lib/utils/cart-merge';
+import { useRestaurantOpenStatus } from '@/lib/hooks/use-restaurant-open-status';
 
 // Types for the menu item options
 interface MenuItemOption {
@@ -42,6 +43,8 @@ interface MenuItemDialogProps {
   restaurant?: {
     isOpen?: boolean;
     name?: string;
+    openingHour?: number | string | null;
+    closingHour?: number | string | null;
   } | null;
 }
 
@@ -58,6 +61,9 @@ export default function MenuItemDialog({ isOpen, onClose, item, restaurant }: Me
   const dialogRef = useRef<HTMLDivElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const { addItem, findCart, updateQuantity } = useCartStore();
+
+  // Calculate open status based on user's local time (not server time)
+  const isRestaurantOpen = useRestaurantOpenStatus(restaurant as any);
 
   useEffect(() => {
     if (isOpen) {
@@ -368,8 +374,8 @@ export default function MenuItemDialog({ isOpen, onClose, item, restaurant }: Me
   const canAddToCart = useMemo((): boolean => {
     if (!item) return false;
     
-    // Check if restaurant is closed
-    if (restaurant && restaurant.isOpen === false) {
+    // Check if restaurant is closed (using client-side calculated status)
+    if (restaurant && !isRestaurantOpen) {
       return false;
     }
     
@@ -388,7 +394,7 @@ export default function MenuItemDialog({ isOpen, onClose, item, restaurant }: Me
     }
 
     return true;
-  }, [visibleModifications, appliedModifications, item, restaurant]);
+  }, [visibleModifications, appliedModifications, item, restaurant, isRestaurantOpen]);
 
   if (!isOpen || !item) return null;
 
@@ -776,7 +782,7 @@ export default function MenuItemDialog({ isOpen, onClose, item, restaurant }: Me
 
             {/* Add to Cart Button */}
             <div className="flex-1 flex flex-col gap-2">
-              {restaurant && restaurant.isOpen === false && (
+              {restaurant && !isRestaurantOpen && (
                 <p className="text-sm text-red-600 font-medium text-center">
                   This restaurant is currently closed.
                 </p>

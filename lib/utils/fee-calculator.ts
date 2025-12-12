@@ -5,94 +5,48 @@ import { getTaxRate } from './tax-calculator';
 
 // Category-specific configurations
 interface CategoryConfig {
-  freeDeliveryThreshold: number;
-  defaultDeliveryFee: number;
   serviceFeePercentage: number;
   minServiceFee: number;
 }
 
-// Default configuration by category
+// Default configuration by category (only restaurant for now)
 const categoryConfigs: Record<CartCategory, CategoryConfig> = {
   restaurant: {
-    freeDeliveryThreshold: 30,
-    defaultDeliveryFee: 5.99,
     serviceFeePercentage: 0.15,
     minServiceFee: 4.99,
   },
+  // Placeholder configs for other categories (not currently used)
   grocery: {
-    freeDeliveryThreshold: 30,
-    defaultDeliveryFee: 5.99,
     serviceFeePercentage: 0.15,
     minServiceFee: 4.99,
   },
   retail: {
-    freeDeliveryThreshold: 30,
-    defaultDeliveryFee: 5.99,
     serviceFeePercentage: 0.15,
     minServiceFee: 4.99,
   },
   convenience: {
-    freeDeliveryThreshold: 30,
-    defaultDeliveryFee: 5.99,
     serviceFeePercentage: 0.15,
     minServiceFee: 4.99,
   },
   pets: {
-    freeDeliveryThreshold: 30,
-    defaultDeliveryFee: 5.99,
     serviceFeePercentage: 0.15,
     minServiceFee: 4.99,
   },
 };
 
-// Distance-based surcharge tiers
+// Distance-based delivery fee tiers
 interface DistanceTier {
   max: number | null; // null means no max
   rate: number; // rate per mile
 }
 
-const distanceTiers: Record<CartCategory, { free: number; tiers: DistanceTier[] }> = {
-  restaurant: {
-    free: 2, // Free delivery within 2 miles
-    tiers: [
-      { max: 5, rate: 0.5 }, // $0.50/mile for 2-5 miles
-      { max: 10, rate: 0.75 }, // $0.75/mile for 5-10 miles
-      { max: null, rate: 1.0 }, // $1.00/mile for 10+ miles
-    ],
-  },
-  grocery: {
-    free: 2,
-    tiers: [
-      { max: 5, rate: 0.5 },
-      { max: 10, rate: 0.75 },
-      { max: null, rate: 1.0 },
-    ],
-  },
-  retail: {
-    free: 2,
-    tiers: [
-      { max: 5, rate: 0.5 },
-      { max: 10, rate: 0.75 },
-      { max: null, rate: 1.0 },
-    ],
-  },
-  convenience: {
-    free: 2,
-    tiers: [
-      { max: 5, rate: 0.5 },
-      { max: 10, rate: 0.75 },
-      { max: null, rate: 1.0 },
-    ],
-  },
-  pets: {
-    free: 2,
-    tiers: [
-      { max: 5, rate: 0.5 },
-      { max: 10, rate: 0.75 },
-      { max: null, rate: 1.0 },
-    ],
-  },
-};
+// Distance tiers for calculating distance surcharge
+const distanceTiers: DistanceTier[] = [
+  { max: 2, rate: 0 }, // No extra charge within 2 miles
+  { max: 5, rate: 0.5 }, // $0.50/mile for 2-5 miles
+  { max: 10, rate: 0.75 }, // $0.75/mile for 5-10 miles
+  { max: null, rate: 1.0 }, // $1.00/mile for 10+ miles
+];
 
 export interface FeeCalculationParams {
   subtotal: number;
@@ -123,31 +77,35 @@ export interface FeeCalculationResult {
 }
 
 /**
- * Calculate distance-based surcharge for delivery
+ * Calculate distance surcharge based on distance tiers
+ * Returns the surcharge to add on top of base fee
  */
-function calculateDistanceSurcharge(distance: number, category: CartCategory): number {
-  const config = distanceTiers[category];
-
-  // No surcharge for free distance
-  if (distance <= config.free) return 0;
-
+function calculateDistanceSurcharge(distance: number): number {
   let surcharge = 0;
-  let remainingDistance = distance - config.free;
-  let currentThreshold = config.free;
+  let currentThreshold = 0;
 
-  for (const tier of config.tiers) {
-    if (remainingDistance <= 0) break;
+  for (const tier of distanceTiers) {
+    if (distance <= currentThreshold) break;
 
     if (tier.max === null) {
-      // No max - apply rate to all remaining distance
-      surcharge += remainingDistance * tier.rate;
+      // No max - apply rate to all remaining distance beyond current threshold
+      const distanceInTier = distance - currentThreshold;
+      if (distanceInTier > 0) {
+        surcharge += distanceInTier * tier.rate;
+      }
       break;
     } else {
-      const tierMaxDistance = tier.max - currentThreshold;
-      const tierDistance = Math.min(remainingDistance, tierMaxDistance);
-      surcharge += tierDistance * tier.rate;
-      remainingDistance -= tierDistance;
-      currentThreshold = tier.max;
+      if (distance <= tier.max) {
+        // We're in this tier - calculate surcharge for distance in this tier
+        const distanceInTier = Math.max(0, distance - currentThreshold);
+        surcharge += distanceInTier * tier.rate;
+        break;
+      } else {
+        // Distance exceeds this tier, calculate for the full tier and continue
+        const tierDistance = tier.max - currentThreshold;
+        surcharge += tierDistance * tier.rate;
+        currentThreshold = tier.max;
+      }
     }
   }
 
@@ -156,6 +114,7 @@ function calculateDistanceSurcharge(distance: number, category: CartCategory): n
 
 /**
  * Calculate delivery fee with all dynamic factors
+ * Fee = restaurant.minDeliveryFee + distanceSurcharge + expressSurcharge
  */
 export function calculateDeliveryFee(params: FeeCalculationParams): {
   fee: number;
@@ -166,7 +125,6 @@ export function calculateDeliveryFee(params: FeeCalculationParams): {
     dealDiscount: number;
   };
 } {
-  const config = categoryConfigs[params.category];
   let baseDeliveryFee = 0;
   let distanceSurcharge = 0;
   let expressSurcharge = 0;
@@ -200,59 +158,19 @@ export function calculateDeliveryFee(params: FeeCalculationParams): {
     };
   }
 
-  // Priority 2: Subtotal threshold (category-specific)
-  // Free delivery only applies to standard delivery, not express
-  if (params.subtotal >= config.freeDeliveryThreshold) {
-    // Free delivery, but express surcharge still applies
-    if (params.deliveryOption === 'express') {
-      expressSurcharge = 2.99;
-      return {
-        fee: expressSurcharge,
-        breakdown: {
-          baseDeliveryFee: 0,
-          distanceSurcharge: 0,
-          expressSurcharge,
-          dealDiscount: 0,
-        },
-      };
-    }
-    // Standard delivery is free
-    return {
-      fee: 0,
-      breakdown: {
-        baseDeliveryFee: 0,
-        distanceSurcharge: 0,
-        expressSurcharge: 0,
-        dealDiscount: 0,
-      },
-    };
+  // Priority 2: Base fee is the restaurant's minDeliveryFee
+  if (params.restaurant?.minDeliveryFee) {
+    baseDeliveryFee = params.restaurant.minDeliveryFee / 100; // Convert cents to dollars
   }
 
-  // Priority 3: Base fee (restaurant min OR category default)
-  if (params.restaurant) {
-    baseDeliveryFee = Math.max(
-      params.restaurant.minDeliveryFee / 100, // Convert cents to dollars
-      config.defaultDeliveryFee
-    );
-  } else {
-    baseDeliveryFee = config.defaultDeliveryFee;
-  }
-
-  // Priority 4: Distance-based surcharge
+  // Priority 3: Calculate distance surcharge
   if (params.distance > 0) {
-    distanceSurcharge = calculateDistanceSurcharge(params.distance, params.category);
+    distanceSurcharge = calculateDistanceSurcharge(params.distance);
   }
 
-  // Priority 5: Express delivery surcharge
+  // Priority 4: Express delivery surcharge
   if (params.deliveryOption === 'express') {
     expressSurcharge = 2.99;
-  }
-
-  // Priority 6: Deal-based discounts (if deal waives delivery fee)
-  // Note: Currently deals don't have freeDelivery flag, but we can check for specific deal IDs
-  if (params.appliedDeal?.id === 'dashpass-delivery-fee') {
-    // This deal would waive delivery fee, but we're skipping DashPass for now
-    // Placeholder for future implementation
   }
 
   const totalFee = baseDeliveryFee + distanceSurcharge + expressSurcharge - dealDiscount;
@@ -272,7 +190,7 @@ export function calculateDeliveryFee(params: FeeCalculationParams): {
  * Calculate service fee with dynamic factors
  */
 function calculateServiceFee(params: FeeCalculationParams): number {
-  const config = categoryConfigs[params.category];
+  const config = categoryConfigs[params.category] || categoryConfigs.restaurant;
 
   // Base service fee
   let serviceFee = Math.max(params.subtotal * config.serviceFeePercentage, config.minServiceFee);

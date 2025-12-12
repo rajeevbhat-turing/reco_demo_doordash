@@ -44,6 +44,7 @@ import {
   calculateDeliveryTime,
   parseDistance,
 } from '@/lib/utils/restaurant-utils';
+import { useRestaurantOpenStatus } from '@/lib/hooks/use-restaurant-open-status';
 import { calculateDistance } from '@/lib/utils/distance-utils';
 import { calculateFees, calculateEstimatedTax } from '@/lib/utils/fee-calculator';
 import { useDeals } from '@/lib/hooks/use-deals';
@@ -209,6 +210,9 @@ export default function CheckoutPage() {
     }
     return null;
   }, [currentCategory, currentStoreId, restaurants]);
+
+  // Calculate open status based on user's local time (not server time)
+  const isRestaurantOpen = useRestaurantOpenStatus(currentRestaurant);
 
   const restaurantDistance = useMemo(() => {
     if (currentRestaurant?.distance) {
@@ -443,11 +447,11 @@ export default function CheckoutPage() {
   };
 
   const handlePlaceOrder = () => {
-    // Check if restaurant is closed (for restaurant orders only)
+    // Check if restaurant is closed (for restaurant orders only, using client-side calculated status)
     if (
       currentCategory === 'restaurant' &&
       currentRestaurant &&
-      currentRestaurant.isOpen === false
+      !isRestaurantOpen
     ) {
       // Prevent order placement when restaurant is closed
       return;
@@ -1579,7 +1583,7 @@ export default function CheckoutPage() {
             {/* Place Order Button */}
             {currentCategory === 'restaurant' &&
               currentRestaurant &&
-              currentRestaurant.isOpen === false && (
+              !isRestaurantOpen && (
                 <div className="mb-3 p-3 bg-red-50 border border-red-200 rounded-lg">
                   <p className="text-sm text-red-600 font-medium text-center">
                     This restaurant is currently closed. Please schedule your order for later.
@@ -1593,7 +1597,7 @@ export default function CheckoutPage() {
                 isOutsideDeliveryArea ||
                 (currentCategory === 'restaurant' &&
                   currentRestaurant &&
-                  currentRestaurant.isOpen === false)
+                  !isRestaurantOpen)
               }
               className={`w-full font-medium py-4 rounded-lg text-lg ${
                 selectedPaymentMethodObj &&
@@ -1601,7 +1605,7 @@ export default function CheckoutPage() {
                 !(
                   currentCategory === 'restaurant' &&
                   currentRestaurant &&
-                  currentRestaurant.isOpen === false
+                  !isRestaurantOpen
                 )
                   ? 'bg-red-600 hover:bg-red-700 text-white cursor-pointer'
                   : 'bg-gray-300 text-gray-500 cursor-not-allowed'
@@ -1688,7 +1692,7 @@ export default function CheckoutPage() {
                 {/* Show warning if restaurant is closed */}
                 {currentCategory === 'restaurant' &&
                   currentRestaurant &&
-                  currentRestaurant.isOpen === false && (
+                  !isRestaurantOpen && (
                     <div className="mb-3 p-3 bg-red-50 border border-red-200 rounded-lg">
                       <p className="text-sm text-red-600 font-medium text-center">
                         This restaurant is currently closed. Please schedule your order for later.
@@ -1702,7 +1706,7 @@ export default function CheckoutPage() {
                     isOutsideDeliveryArea ||
                     (currentCategory === 'restaurant' &&
                       currentRestaurant &&
-                      currentRestaurant.isOpen === false)
+                      !isRestaurantOpen)
                   }
                   className={`w-full font-semibold py-3 rounded-full transition-colors ${
                     selectedPaymentMethodObj &&
@@ -1710,7 +1714,7 @@ export default function CheckoutPage() {
                     !(
                       currentCategory === 'restaurant' &&
                       currentRestaurant &&
-                      currentRestaurant.isOpen === false
+                      !isRestaurantOpen
                     )
                       ? 'bg-red-600 hover:bg-red-700 text-white cursor-pointer'
                       : 'bg-gray-300 text-gray-500 cursor-not-allowed'
