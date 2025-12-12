@@ -37,7 +37,7 @@ The Merchant Portal is a standalone feature within the DashDoor application that
 ### Design Principles
 
 - **Data Isolation**: Completely separate from consumer app data (uses `merchant.db`)
-- **Consistent Branding**: Uses DoorDash-inspired red (`#EB1700`) as primary color
+- **Consistent Branding**: Uses `#EB1700` as primary color
 - **Store-Scoped Data**: Each store has isolated localStorage data with `merchant.{storeId}.{section}` pattern
 - **Multi-Store Support**: Merchants can manage multiple stores from a single account
 
