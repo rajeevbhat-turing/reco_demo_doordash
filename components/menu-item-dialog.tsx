@@ -514,7 +514,7 @@ export default function MenuItemDialog({ isOpen, onClose, item, restaurant }: Me
                 </span>
               </div>
             )}
-            {item.calories && <div className="text-gray-500">({item.calories})</div>}
+            {item.calories && <div className="text-gray-500">{item.calories} Cal</div>}
 
             <div className="mt-4 relative">
               <div className="w-full h-64 relative rounded-lg overflow-hidden">
