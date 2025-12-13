@@ -16,6 +16,7 @@ import sys
 import random
 import copy
 import re
+import csv
 from typing import Optional, List, Dict, Any, Set, Tuple
 from dataclasses import dataclass, field
 
@@ -464,13 +465,44 @@ class TaskGenerator:
                                   email=row['email'], password=row['password'], addresses=addresses))
         return users
     
+    def get_chicken_items(self, restaurant_id: int) -> List[MenuItem]:
+        """Get chicken items from the menu."""
+        cursor = self.conn.cursor()
+        cursor.execute("""
+            SELECT id, restaurant_id, name, price, description, calories
+            FROM menu_items 
+            WHERE restaurant_id = ? AND is_available = 1 
+            AND (LOWER(name) LIKE '%chicken%' OR LOWER(description) LIKE '%chicken%')
+            LIMIT 10
+        """, (restaurant_id,))
+        return [MenuItem(id=r['id'], restaurant_id=r['restaurant_id'], name=r['name'],
+                        price=r['price'], description=r['description'], calories=r['calories'])
+                for r in cursor.fetchall()]
+    
+    def get_dessert_items(self, restaurant_id: int) -> List[MenuItem]:
+        """Get dessert items from the menu."""
+        cursor = self.conn.cursor()
+        cursor.execute("""
+            SELECT mi.id, mi.restaurant_id, mi.name, mi.price, mi.description, mi.calories
+            FROM menu_items mi
+            INNER JOIN menu_categories mc ON mi.category_id = mc.id
+            WHERE mi.restaurant_id = ? AND mi.is_available = 1 
+            AND (LOWER(mc.name) LIKE '%dessert%' OR LOWER(mi.name) LIKE '%cake%' 
+                 OR LOWER(mi.name) LIKE '%ice cream%' OR LOWER(mi.name) LIKE '%brownie%')
+            ORDER BY mi.calories ASC NULLS LAST
+            LIMIT 10
+        """, (restaurant_id,))
+        return [MenuItem(id=r['id'], restaurant_id=r['restaurant_id'], name=r['name'],
+                        price=r['price'], description=r['description'], calories=r['calories'])
+                for r in cursor.fetchall()]
+
     def generate_variables_for_template(
         self,
-        template_type: str,
+        template_id: str,
         user: User,
         address: Address
     ) -> Optional[Dict[str, str]]:
-        """Generate variables based on template type."""
+        """Generate variables based on template_id."""
         
         variables = {
             "USER_EMAIL": user.email,
@@ -481,7 +513,7 @@ class TaskGenerator:
         if not restaurants:
             return None
             
-        if template_type == "order_with_addon":
+        if template_id == "item-addon-order":
             random.shuffle(restaurants)
             for restaurant in restaurants:
                 items_with_addons = self.get_menu_items_with_addons(restaurant.id)
@@ -491,12 +523,11 @@ class TaskGenerator:
                         "RESTAURANT": restaurant.name,
                         "RESTAURANT_ITEM": item.name,
                         "ITEM_ADD_ON": option.name,
-                        "MODIFICATION_NAME": mod.description.lower(),
                     })
                     return variables
             return None
             
-        elif template_type == "order_from_cuisine":
+        elif template_id == "nearest-cheapest-choice":
             available_cuisines = self.get_available_cuisines(address.latitude, address.longitude)
             if not available_cuisines:
                 return None
@@ -518,18 +549,18 @@ class TaskGenerator:
             })
             return variables
             
-        elif template_type == "find_restaurant":
+        elif template_id == "new-cheapest-restaurant":
             available_cuisines = self.get_available_cuisines(address.latitude, address.longitude)
             if len(available_cuisines) < 2:
                 return None
             cuisine1, cuisine2 = random.sample(available_cuisines, 2)
             variables.update({
-                "CUISINE_1": cuisine1,
-                "CUISINE_2": cuisine2,
+                "DIETARY_PREFERENCE_1": cuisine1,
+                "DIETARY_PREFERENCE_2": cuisine2,
             })
             return variables
             
-        elif template_type == "hotel_delivery":
+        elif template_id == "hotel-cheapest-delivery":
             # Generate a hotel address using data from DB
             items = []
             random.shuffle(restaurants)
@@ -547,7 +578,7 @@ class TaskGenerator:
             })
             return variables
             
-        elif template_type == "update_payment":
+        elif template_id == "replace-payment-card":
             # Generate card info
             card_num = ''.join([str(random.randint(0, 9)) for _ in range(16)])
             cvv = ''.join([str(random.randint(0, 9)) for _ in range(3)])
@@ -562,7 +593,7 @@ class TaskGenerator:
             })
             return variables
             
-        elif template_type == "rate_order":
+        elif template_id == "rate-last-order":
             # Must use actual orders from the user
             user_orders = self.get_user_orders(user.id)
             if not user_orders:
@@ -609,15 +640,15 @@ class TaskGenerator:
                 feedback_2 = random.choice(positive_details)
             
             variables.update({
-                "RESTAURANT": order['restaurant_name'],
-                "RATING": str(rating),
+                "RESTAURANT_NAME": order['restaurant_name'],
+                "RATING_NUM": str(rating),
                 "ITEM_NAME": order['item_name'],
                 "COMPLAINT_1": feedback_1,
                 "COMPLAINT_2": feedback_2,
             })
             return variables
             
-        elif template_type == "remove_carts":
+        elif template_id == "clear-invalid-carts":
             # User must have carts from restaurants outside delivery range
             user_carts = self.get_user_carts(user.id)
             if not user_carts:
@@ -632,7 +663,7 @@ class TaskGenerator:
             
             return variables
             
-        elif template_type == "modify_cart_order":
+        elif template_id == "replace-cart-item":
             # Must use actual cart from the user
             user_carts = self.get_user_carts(user.id)
             if not user_carts:
@@ -662,32 +693,35 @@ class TaskGenerator:
             delivery_slots = self.get_delivery_time_slots()
             
             variables.update({
-                "RESTAURANT": cart['restaurant_name'],
+                "RESTAURANT_NAME": cart['restaurant_name'],
                 "ITEM_TO_REPLACE": item_to_replace['item_name'],
                 "ITEM_TO_ADD": item_to_add.name,
                 "DELIVERY_TIME": random.choice(delivery_slots),
             })
             return variables
             
-        elif template_type == "complex_order":
+        elif template_id == "low-calorie-order":
             random.shuffle(restaurants)
             spice_levels = self.get_spice_levels()
             for restaurant in restaurants:
-                items = self.get_menu_items(restaurant.id, limit=30)
-                items_with_addons = self.get_menu_items_with_addons(restaurant.id)
+                desserts = self.get_dessert_items(restaurant.id)
+                chicken_items = self.get_chicken_items(restaurant.id)
                 deals = self.get_deals(restaurant.id)
                 payment_methods = self.get_user_payment_methods(user.id)
                 
-                if items and items_with_addons and deals and payment_methods:
-                    item, mod, option = random.choice(items_with_addons)
+                if len(desserts) >= 2 and chicken_items and deals and payment_methods:
+                    chicken_item = random.choice(chicken_items)
                     deal = random.choice(deals)
                     payment = random.choice(payment_methods)
                     spice = random.choice(spice_levels)
+                    # Normalize spice level for grader (lowercase, no spaces)
+                    spice_normalized = spice.lower().replace(' ', '_')
                     variables.update({
-                        "RESTAURANT": restaurant.name,
-                        "ITEM_NAME": item.name,
-                        "ITEM_KEYWORDS": item.name.split()[0] if item.name else "chicken",
+                        "RESTAURANT_NAME": restaurant.name,
+                        "CHICKEN_ITEM_NAME": chicken_item.name,
+                        "CHICKEN_ITEM_KEYWORDS": chicken_item.name.split()[0] if chicken_item.name else "chicken",
                         "SPICE_LEVEL": spice,
+                        "SPICE_LEVEL_NORMALIZED": spice_normalized,
                         "PROMO_CODE": deal.promocode,
                         "CARD_LAST_FOUR": payment.last_four,
                     })
@@ -708,12 +742,12 @@ class TaskGenerator:
         task["task_id"] = task_id
         return task
     
-    def get_users_for_template(self, template_type: str) -> List[User]:
+    def get_users_for_template(self, template_id: str) -> List[User]:
         """Get appropriate user pool based on template requirements."""
-        if template_type == "rate_order":
+        if template_id == "rate-last-order":
             users = self.get_users_with_orders()
             print(f"   [INFO] Found {len(users)} users with orders")
-        elif template_type in ("modify_cart_order", "remove_carts"):
+        elif template_id in ("replace-cart-item", "clear-invalid-carts"):
             users = self.get_users_with_carts()
             print(f"   [INFO] Found {len(users)} users with carts")
         else:
@@ -724,25 +758,22 @@ class TaskGenerator:
         self,
         templates: List[Dict[str, Any]],
         max_tasks_per_template: int = 10,
-        max_total_tasks: Optional[int] = None,
-        shuffle: bool = True
+        max_total_tasks: Optional[int] = None
     ) -> List[Dict[str, Any]]:
         tasks = []
-        task_counter = 1
         
         used_users: Set[int] = set()
         
         for template in templates:
-            template_type = template.get("template_type", "order_with_addon")
+            # Extract template_id from template_settings
+            template_settings = template.get("template_settings", {})
+            template_id = template_settings.get("template_id", "unknown")
             template_task_count = 0
             
-            print(f"\n[TEMPLATE] Processing: {template_type}")
+            print(f"\n[TEMPLATE] Processing: {template_id}")
             
-            # Get appropriate user pool for this template type
-            users = self.get_users_for_template(template_type)
-            
-            if shuffle:
-                random.shuffle(users)
+            # Get appropriate user pool for this template
+            users = self.get_users_for_template(template_id)
             
             for user in users:
                 if max_total_tasks and len(tasks) >= max_total_tasks:
@@ -759,34 +790,76 @@ class TaskGenerator:
                 if not address:
                     continue
                 
-                variables = self.generate_variables_for_template(template_type, user, address)
+                variables = self.generate_variables_for_template(template_id, user, address)
                 if not variables:
                     continue
                 
-                task_id = f"{task_counter:03d}"
+                # Task ID: template_id-001, template_id-002, etc.
+                template_task_count += 1
+                task_id = f"{template_id}-{template_task_count:03d}"
                 task = self.generate_task_from_template(template, task_id, variables)
                 
                 tasks.append(task)
-                task_counter += 1
-                template_task_count += 1
                 used_users.add(user.id)
                 
-                print(f"   [+] Task {task_id}: {user.email} | {template_type}")
+                print(f"   [+] Task {task_id}: {user.email}")
             
             if template_task_count == 0:
                 print(f"   [WARN] No tasks generated - insufficient data for this template")
         
         return tasks
     
-    def save_tasks(self, tasks: List[Dict[str, Any]], output_path: str, format: str = 'json') -> None:
+    def save_tasks(self, tasks: List[Dict[str, Any]], output_path: str) -> None:
+        """Save tasks to a CSV file with the specified columns."""
         os.makedirs(os.path.dirname(output_path) if os.path.dirname(output_path) else '.', exist_ok=True)
-        if format == 'jsonl':
-            with open(output_path, 'w', encoding='utf-8') as f:
-                for task in tasks:
-                    f.write(json.dumps(task, ensure_ascii=False) + '\n')
-        else:
-            with open(output_path, 'w', encoding='utf-8') as f:
-                json.dump(tasks, f, indent=2, ensure_ascii=False)
+        
+        # CSV columns
+        columns = [
+            'full_task_json',
+            'task_category_L1',
+            'task_category_L2', 
+            'task_capability',
+            'task',
+            'policy_model',
+            'sumpass@10',
+            'difficulty',
+            'grader_summary'
+        ]
+        
+        with open(output_path, 'w', encoding='utf-8', newline='') as f:
+            writer = csv.writer(f)
+            writer.writerow(columns)
+            
+            for task in tasks:
+                # Extract template_settings for category info
+                template_settings = task.get('template_settings', {})
+                template_id = template_settings.get("template_id", "unknown")
+                
+                # Get categories from template_settings
+                task_category_L1 = template_settings.get("task_category_L1", [])
+                task_category_L2 = template_settings.get("task_category_L2", [])
+                task_capability = template_settings.get("capability", [])
+                
+                # Create a clean task object without template_settings and with template_id
+                clean_task = {k: v for k, v in task.items() if k != 'template_settings'}
+                clean_task['template_id'] = template_id
+                
+                # Get task statement
+                task_statement = task.get("task_statement", "")
+                
+                row = [
+                    json.dumps(clean_task, ensure_ascii=False),  # full_task_json
+                    json.dumps(task_category_L1),                # task_category_L1
+                    json.dumps(task_category_L2),                # task_category_L2
+                    json.dumps(task_capability),                 # task_capability
+                    task_statement,                              # task
+                    "",  # policy_model (empty)
+                    "",  # sumpass@10 (empty)
+                    "",  # difficulty (empty)
+                    "",  # grader_summary (empty)
+                ]
+                writer.writerow(row)
+        
         print(f"\n[SAVED] {len(tasks)} tasks to: {output_path}")
 
 
@@ -797,12 +870,10 @@ def main():
     parser.add_argument('--template', default='config/templates.json', help='Path to templates JSON file')
     parser.add_argument('--template-index', type=int, default=None, help='Use specific template index only')
     parser.add_argument('--db', default='data/db/dashdoor.db', help='Path to SQLite database file')
-    parser.add_argument('--output', default='config/generated_tasks.json', help='Output file path')
+    parser.add_argument('--output', default='config/generated_tasks.csv', help='Output CSV file path')
     parser.add_argument('--radius', type=float, default=10.0, help='Search radius in miles')
     parser.add_argument('--max-per-template', type=int, default=5, help='Max tasks per template type')
     parser.add_argument('--max-total', type=int, default=None, help='Max total tasks to generate')
-    parser.add_argument('--format', choices=['json', 'jsonl'], default='json', help='Output format')
-    parser.add_argument('--no-shuffle', action='store_true', help='Disable shuffling')
     parser.add_argument('--seed', type=int, default=None, help='Random seed')
     
     args = parser.parse_args()
@@ -827,7 +898,7 @@ def main():
                 print(f"[ERROR] Template index {args.template_index} out of range")
                 sys.exit(1)
             templates = [all_templates[args.template_index]]
-            print(f"[INFO] Using template index {args.template_index}: {templates[0].get('template_type', 'unknown')}")
+            print(f"[INFO] Using template index {args.template_index}: {templates[0].get('template_settings', {}).get('template_id', 'unknown')}")
         else:
             templates = all_templates
             print(f"[INFO] Using all {len(templates)} templates")
@@ -844,12 +915,11 @@ def main():
         tasks = generator.generate_all_tasks(
             templates=templates,
             max_tasks_per_template=args.max_per_template,
-            max_total_tasks=args.max_total,
-            shuffle=not args.no_shuffle
+            max_total_tasks=args.max_total
         )
         
         if tasks:
-            generator.save_tasks(tasks, args.output, format=args.format)
+            generator.save_tasks(tasks, args.output)
             print(f"\n[SUCCESS] Generated {len(tasks)} tasks!")
         else:
             print("\n[WARN] No tasks were generated.")
