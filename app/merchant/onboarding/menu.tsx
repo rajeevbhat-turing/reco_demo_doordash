@@ -87,6 +87,17 @@ export default function MenuStep() {
 
   const [uploadError, setUploadError] = useState('');
 
+  // Get file type label from MIME type
+  const getFileTypeLabel = (file: File): string => {
+    const mimeToLabel: Record<string, string> = {
+      'application/pdf': 'PDF',
+      'image/png': 'PNG',
+      'image/jpeg': 'JPG',
+      'image/jpg': 'JPG',
+    };
+    return mimeToLabel[file.type] || file.name.split('.').pop()?.toUpperCase() || 'FILE';
+  };
+
   const handleSave = () => {
     // Validate URL format only if link is provided
     if (menuMethod === 'link' && menuLink.trim() && !isValidUrl) {
@@ -217,7 +228,7 @@ export default function MenuStep() {
           {uploadedFile && (
             <div className="mt-4 flex items-center gap-3 p-4 bg-gray-50 rounded-lg">
               <div className="w-10 h-10 bg-gray-200 rounded flex items-center justify-center">
-                <span className="text-xs font-medium text-gray-600">PDF</span>
+                <span className="text-xs font-medium text-gray-600">{getFileTypeLabel(uploadedFile)}</span>
               </div>
               <div className="flex-1">
                 <p className="text-sm font-medium text-gray-900">{uploadedFile.name}</p>
