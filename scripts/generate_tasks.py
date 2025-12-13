@@ -495,6 +495,69 @@ class TaskGenerator:
         return [MenuItem(id=r['id'], restaurant_id=r['restaurant_id'], name=r['name'],
                         price=r['price'], description=r['description'], calories=r['calories'])
                 for r in cursor.fetchall()]
+    
+    def get_menu_categories(self, restaurant_id: int) -> List[str]:
+        """Get menu categories for a restaurant."""
+        cursor = self.conn.cursor()
+        cursor.execute("""
+            SELECT DISTINCT mc.name FROM menu_categories mc
+            WHERE mc.restaurant_id = ? AND mc.is_active = 1
+        """, (restaurant_id,))
+        return [row['name'] for row in cursor.fetchall()]
+    
+    def get_restaurant_categories(self) -> List[str]:
+        """Get restaurant categories from the database."""
+        cursor = self.conn.cursor()
+        cursor.execute("SELECT DISTINCT name FROM categories LIMIT 20")
+        cats = [row['name'] for row in cursor.fetchall()]
+        return cats if cats else ["Pizza", "Coffee", "Burgers", "Sushi", "Mexican"]
+    
+    def get_items_by_category(self, restaurant_id: int, category: str, limit: int = 5) -> List[MenuItem]:
+        """Get menu items from a specific category."""
+        cursor = self.conn.cursor()
+        cursor.execute("""
+            SELECT mi.id, mi.restaurant_id, mi.name, mi.price, mi.description, mi.calories
+            FROM menu_items mi
+            INNER JOIN menu_categories mc ON mi.category_id = mc.id
+            WHERE mi.restaurant_id = ? AND mi.is_available = 1 
+            AND LOWER(mc.name) LIKE ?
+            ORDER BY mi.price ASC
+            LIMIT ?
+        """, (restaurant_id, f"%{category.lower()}%", limit))
+        return [MenuItem(id=r['id'], restaurant_id=r['restaurant_id'], name=r['name'],
+                        price=r['price'], description=r['description'], calories=r['calories'])
+                for r in cursor.fetchall()]
+    
+    def get_items_with_sauce_options(self, restaurant_id: int) -> List[Tuple[MenuItem, str]]:
+        """Get items that have sauce modification options."""
+        cursor = self.conn.cursor()
+        cursor.execute("""
+            SELECT DISTINCT mi.id, mi.restaurant_id, mi.name as item_name, mi.price, 
+                   mi.description, mi.calories, mo.name as sauce_name
+            FROM menu_items mi
+            INNER JOIN modifications m ON mi.id = m.menu_item_id
+            INNER JOIN modification_options mo ON m.id = mo.modification_id
+            WHERE mi.restaurant_id = ? AND mi.is_available = 1
+            AND (LOWER(m.description) LIKE '%sauce%' OR LOWER(mo.name) LIKE '%sauce%')
+            LIMIT 10
+        """, (restaurant_id,))
+        results = []
+        for r in cursor.fetchall():
+            item = MenuItem(id=r['id'], restaurant_id=r['restaurant_id'], name=r['item_name'],
+                           price=r['price'], description=r['description'], calories=r['calories'])
+            results.append((item, r['sauce_name']))
+        return results
+    
+    def generate_phone_number(self) -> str:
+        """Generate a random US phone number."""
+        return f"{random.randint(200, 999)}-{random.randint(200, 999)}-{random.randint(1000, 9999)}"
+    
+    def get_restaurant_sections(self) -> List[str]:
+        """Get available restaurant sections."""
+        cursor = self.conn.cursor()
+        cursor.execute("SELECT DISTINCT section FROM restaurants WHERE section IS NOT NULL")
+        sections = [row['section'] for row in cursor.fetchall()]
+        return sections if sections else ["Featured", "New", "Popular", "Nearby"]
 
     def generate_variables_for_template(
         self,
@@ -512,7 +575,13 @@ class TaskGenerator:
         restaurants = self.get_restaurants_in_radius(address.latitude, address.longitude)
         if not restaurants:
             return None
-            
+        
+        addr_types = [a.address_type for a in user.addresses]
+        addr_type = random.choice(addr_types) if addr_types else "house"
+        
+        # ================================================================
+        # 1. item-addon-order
+        # ================================================================
         if template_id == "item-addon-order":
             random.shuffle(restaurants)
             for restaurant in restaurants:
@@ -526,7 +595,10 @@ class TaskGenerator:
                     })
                     return variables
             return None
-            
+        
+        # ================================================================
+        # 2. nearest-cheapest-choice
+        # ================================================================
         elif template_id == "nearest-cheapest-choice":
             available_cuisines = self.get_available_cuisines(address.latitude, address.longitude)
             if not available_cuisines:
@@ -540,15 +612,17 @@ class TaskGenerator:
             if len(items) < 2:
                 return None
             item1, item2 = random.sample(items, 2)
-            addr_types = [a.address_type for a in user.addresses]
             variables.update({
                 "CUISINE": cuisine,
                 "RESTAURANT_ITEM_1": item1.name,
                 "RESTAURANT_ITEM_2": item2.name,
-                "ADDRESS_TYPE": random.choice(addr_types) if addr_types else "house",
+                "ADDRESS_TYPE": addr_type,
             })
             return variables
-            
+        
+        # ================================================================
+        # 3. new-cheapest-restaurant
+        # ================================================================
         elif template_id == "new-cheapest-restaurant":
             available_cuisines = self.get_available_cuisines(address.latitude, address.longitude)
             if len(available_cuisines) < 2:
@@ -559,27 +633,11 @@ class TaskGenerator:
                 "DIETARY_PREFERENCE_2": cuisine2,
             })
             return variables
-            
-        elif template_id == "hotel-cheapest-delivery":
-            # Generate a hotel address using data from DB
-            items = []
-            random.shuffle(restaurants)
-            for r in restaurants[:5]:
-                items.extend(self.get_menu_items(r.id, limit=5))
-            if not items:
-                return None
-            item = random.choice(items)
-            street_names = self.get_street_names()
-            cities = self.get_cities()
-            variables.update({
-                "STREET": f"{random.randint(100, 9999)} {random.choice(street_names)}",
-                "CITY": random.choice(cities) if cities else address.city,
-                "ITEM_KEYWORDS": item.name.split()[0] if item.name else "burger",
-            })
-            return variables
-            
+        
+        # ================================================================
+        # 4. replace-payment-card
+        # ================================================================
         elif template_id == "replace-payment-card":
-            # Generate card info
             card_num = ''.join([str(random.randint(0, 9)) for _ in range(16)])
             cvv = ''.join([str(random.randint(0, 9)) for _ in range(3)])
             exp_month = random.randint(1, 12)
@@ -592,52 +650,35 @@ class TaskGenerator:
                 "EXPIRY_MM_YY": f"{exp_month:02d}/{str(exp_year)[-2:]}",
             })
             return variables
-            
+        
+        # ================================================================
+        # 5. rate-last-order
+        # ================================================================
         elif template_id == "rate-last-order":
-            # Must use actual orders from the user
             user_orders = self.get_user_orders(user.id)
             if not user_orders:
-                return None  # User has no orders to rate
+                return None
             
-            # Pick a random order
-            order = random.choice(user_orders)
+            in_range_ids = {r.id for r in restaurants}
+            valid_orders = [o for o in user_orders if o['store_id'] in in_range_ids]
+            if not valid_orders:
+                return None
             
-            # Verify restaurant is in delivery range
-            restaurant_in_range = any(r.id == order['store_id'] for r in restaurants)
-            if not restaurant_in_range:
-                # Try to find an order from a restaurant in range
-                valid_orders = [o for o in user_orders if any(r.id == o['store_id'] for r in restaurants)]
-                if not valid_orders:
-                    return None
-                order = random.choice(valid_orders)
-            
+            order = random.choice(valid_orders)
             rating = random.randint(1, 5)
             
-            # Match feedback to rating
             if rating <= 2:
-                # Very negative - use strong complaints
-                complaint_keywords = self.get_complaint_keywords()
-                if len(complaint_keywords) < 2:
-                    complaint_keywords = ['cold', 'late', 'wrong', 'missing', 'undercooked']
-                feedback = random.sample(complaint_keywords, 2)
-                feedback_1, feedback_2 = feedback[0], feedback[1]
+                feedback_1 = random.choice(['cold', 'late', 'wrong', 'stale', 'undercooked'])
+                feedback_2 = random.choice(['soggy', 'bland', 'dry', 'overcooked', 'missing'])
             elif rating == 3:
-                # Mixed/neutral feedback
-                mixed_feedback = ['just okay', 'average', 'nothing special', 'mediocre', 'underwhelming']
-                feedback_1 = random.choice(mixed_feedback)
+                feedback_1 = random.choice(['just okay', 'average', 'nothing special', 'mediocre'])
                 feedback_2 = random.choice(['arrived lukewarm', 'a bit pricey', 'smaller than expected'])
             elif rating == 4:
-                # Mostly positive with minor issue
-                positive = ['tasty', 'good', 'fresh', 'well-made', 'flavorful']
-                minor_issues = ['a bit slow', 'slightly cold', 'packaging could be better']
-                feedback_1 = random.choice(positive)
-                feedback_2 = random.choice(minor_issues)
-            else:  # rating == 5
-                # Fully positive
-                excellent = ['delicious', 'amazing', 'perfect', 'excellent', 'outstanding', 'fantastic']
-                positive_details = ['fresh', 'hot', 'well-packaged', 'fast delivery', 'great portion']
-                feedback_1 = random.choice(excellent)
-                feedback_2 = random.choice(positive_details)
+                feedback_1 = random.choice(['tasty', 'good', 'fresh', 'well-made', 'flavorful'])
+                feedback_2 = random.choice(['a bit slow', 'slightly cold', 'packaging could be better'])
+            else:
+                feedback_1 = random.choice(['delicious', 'amazing', 'perfect', 'excellent', 'fantastic'])
+                feedback_2 = random.choice(['fresh', 'hot', 'well-packaged', 'fast delivery', 'great portion'])
             
             variables.update({
                 "RESTAURANT_NAME": order['restaurant_name'],
@@ -647,31 +688,30 @@ class TaskGenerator:
                 "COMPLAINT_2": feedback_2,
             })
             return variables
-            
+        
+        # ================================================================
+        # 6. clear-invalid-carts
+        # ================================================================
         elif template_id == "clear-invalid-carts":
-            # User must have carts from restaurants outside delivery range
+            user_carts = self.get_user_carts(user.id)
+            if not user_carts:
+                return None
+            in_range_ids = {r.id for r in restaurants}
+            out_of_range_carts = [c for c in user_carts if c['store_id'] not in in_range_ids]
+            if not out_of_range_carts:
+                return None
+            return variables
+        
+        # ================================================================
+        # 7. replace-cart-item
+        # ================================================================
+        elif template_id == "replace-cart-item":
             user_carts = self.get_user_carts(user.id)
             if not user_carts:
                 return None
             
-            # Check if user has carts from out-of-range restaurants
             in_range_ids = {r.id for r in restaurants}
-            out_of_range_carts = [c for c in user_carts if c['store_id'] not in in_range_ids]
-            
-            if not out_of_range_carts:
-                return None  # User has no carts to remove
-            
-            return variables
-            
-        elif template_id == "replace-cart-item":
-            # Must use actual cart from the user
-            user_carts = self.get_user_carts(user.id)
-            if not user_carts:
-                return None  # User has no carts
-            
-            # Find a cart from a restaurant in range
-            valid_carts = [c for c in user_carts 
-                          if any(r.id == c['store_id'] for r in restaurants)]
+            valid_carts = [c for c in user_carts if c['store_id'] in in_range_ids]
             if not valid_carts:
                 return None
             
@@ -680,11 +720,9 @@ class TaskGenerator:
             if not cart_items:
                 return None
             
-            # Get other items from same restaurant to add
             other_items = self.get_menu_items(cart['store_id'], limit=20)
             cart_item_ids = {ci['item_id'] for ci in cart_items}
             available_to_add = [i for i in other_items if i.id not in cart_item_ids]
-            
             if not available_to_add:
                 return None
             
@@ -700,35 +738,568 @@ class TaskGenerator:
             })
             return variables
             
-        elif template_id == "low-calorie-order":
+        # ================================================================
+        # 8. reorder-with-addons
+        # ================================================================
+        elif template_id == "reorder-with-addons":
+            # Needs: user orders, restaurant, item, apartment address, promo code
+            user_orders = self.get_user_orders(user.id)
+            if not user_orders:
+                return None
+            
+            in_range_ids = {r.id for r in restaurants}
+            valid_orders = [o for o in user_orders if o['store_id'] in in_range_ids]
+            if not valid_orders:
+                return None
+            
+            order = random.choice(valid_orders)
+            restaurant = next((r for r in restaurants if r.id == order['store_id']), None)
+            if not restaurant:
+                return None
+            
+            items = self.get_menu_items(restaurant.id, limit=20)
+            if not items:
+                return None
+            
+            deals = self.get_deals(restaurant.id)
+            if not deals:
+                return None
+            
+            # Find apartment address
+            apt_addr = next((a for a in user.addresses if a.address_type == 'apartment'), None)
+            if not apt_addr:
+                return None
+            
+            item = random.choice(items)
+            deal = random.choice(deals)
+            
+            variables.update({
+                "RESTAURANT_NAME": restaurant.name,
+                "RESTAURANT_ITEM": item.name,
+                "RESTAURANT_ITEM_KEYWORDS": item.name.split()[0] if item.name else "food",
+                "ITEM_QTY": str(random.randint(2, 4)),
+                "STREET": apt_addr.street,
+                "APARTMENT_NUMBER": str(random.randint(100, 999)),
+                "ENTRY_CODE": str(random.randint(1000, 9999)),
+                "PROMO_CODE": deal.promocode,
+            })
+            return variables
+        
+        # ================================================================
+        # 9. express-nearest-order
+        # ================================================================
+        elif template_id == "express-nearest-order":
+            deals = self.get_deals()
+            if not deals:
+                return None
+            
+            restaurant = random.choice(restaurants[:5])
+            items = self.get_menu_items(restaurant.id, limit=10)
+            if not items:
+                return None
+            
+            variables.update({
+                "RESTAURANT_ITEM": random.choice(items).name,
+                "ADDRESS_TYPE": addr_type,
+                "DELIVERY_OPTION": random.choice(["express", "priority"]),
+                "MEMBERSHIP_TYPE": "DashPass",
+                "PROMO_CODE": random.choice(deals).promocode,
+            })
+            return variables
+        
+        # ================================================================
+        # 10. cheapest-item-filter
+        # ================================================================
+        elif template_id == "cheapest-item-filter":
+            if len(restaurants) < 2:
+                return None
+            restaurant = random.choice(restaurants[:5])
+            excluded = random.choice([r for r in restaurants if r.id != restaurant.id])
+            items = self.get_menu_items(restaurant.id, limit=10)
+            if not items:
+                return None
+            
+            variables.update({
+                "RESTAURANT_ITEM": random.choice(items).name,
+                "EXCLUDED_RESTAURANT": excluded.name,
+            })
+            return variables
+        
+        # ================================================================
+        # 11. top-rated-category
+        # ================================================================
+        elif template_id == "top-rated-category":
+            restaurant = random.choice(restaurants[:5])
+            menu_cats = self.get_menu_categories(restaurant.id)
+            if not menu_cats:
+                menu_cats = ["entrees", "appetizers", "desserts"]
+            
+            variables.update({
+                "RESTAURANT": restaurant.name,
+                "MENU_CATEGORY": random.choice(menu_cats),
+            })
+            return variables
+        
+        # ================================================================
+        # 12. best-deal-order
+        # ================================================================
+        elif template_id == "best-deal-order":
             random.shuffle(restaurants)
-            spice_levels = self.get_spice_levels()
             for restaurant in restaurants:
-                desserts = self.get_dessert_items(restaurant.id)
-                chicken_items = self.get_chicken_items(restaurant.id)
-                deals = self.get_deals(restaurant.id)
-                payment_methods = self.get_user_payment_methods(user.id)
+                menu_cats = self.get_menu_categories(restaurant.id)
+                if not menu_cats:
+                    continue
                 
-                if len(desserts) >= 2 and chicken_items and deals and payment_methods:
-                    chicken_item = random.choice(chicken_items)
-                    deal = random.choice(deals)
-                    payment = random.choice(payment_methods)
-                    spice = random.choice(spice_levels)
-                    # Normalize spice level for grader (lowercase, no spaces)
-                    spice_normalized = spice.lower().replace(' ', '_')
+                variables.update({
+                    "ADDRESS_TYPE": addr_type,
+                    "MENU_CATEGORY": random.choice(menu_cats),
+                })
+                return variables
+            return None
+        
+        # ================================================================
+        # 13. bulk-simple-order
+        # ================================================================
+        elif template_id == "bulk-simple-order":
+            restaurant = random.choice(restaurants[:5])
+            items = self.get_menu_items(restaurant.id, limit=20)
+            menu_cats = self.get_menu_categories(restaurant.id)
+            if len(items) < 2 or not menu_cats:
+                return None
+            
+            main_item = random.choice(items)
+            drink_cats = [c for c in menu_cats if 'drink' in c.lower() or 'beverage' in c.lower()]
+            drink_cat = random.choice(drink_cats) if drink_cats else random.choice(menu_cats)
+            
+            variables.update({
+                "RESTAURANT": restaurant.name,
+                "MAIN_ITEM": main_item.name,
+                "MAIN_ITEM_NAME": main_item.name,  # Alias for grader
+                "MAIN_ITEM_QTY": str(random.randint(2, 4)),
+                "DRINK_CATEGORY": drink_cat,
+                "DRINK_QTY": str(random.randint(1, 3)),
+                "CONTACT_NUMBER": self.generate_phone_number(),
+            })
+            return variables
+        
+        # ================================================================
+        # 14. update-delivery-instructions
+        # ================================================================
+        elif template_id == "update-delivery-instructions":
+            locations = ["lobby", "front door", "mailroom", "gate", "reception"]
+            variables.update({
+                "ADDRESS_TYPE": addr_type,
+                "ENTRY_CODE": str(random.randint(1000, 9999)),
+                "DELIVERY_LOCATION": random.choice(locations),
+            })
+            return variables
+        
+        # ================================================================
+        # 15. lowest-calorie-dessert
+        # ================================================================
+        elif template_id == "lowest-calorie-dessert":
+            random.shuffle(restaurants)
+            rest_cats = self.get_restaurant_categories()
+            for restaurant in restaurants:
+                menu_cats = self.get_menu_categories(restaurant.id)
+                sauce_items = self.get_items_with_sauce_options(restaurant.id)
+                
+                if menu_cats and sauce_items:
+                    item, sauce_name = random.choice(sauce_items)
                     variables.update({
-                        "RESTAURANT_NAME": restaurant.name,
-                        "CHICKEN_ITEM_NAME": chicken_item.name,
-                        "CHICKEN_ITEM_KEYWORDS": chicken_item.name.split()[0] if chicken_item.name else "chicken",
-                        "SPICE_LEVEL": spice,
-                        "SPICE_LEVEL_NORMALIZED": spice_normalized,
-                        "PROMO_CODE": deal.promocode,
-                        "CARD_LAST_FOUR": payment.last_four,
+                        "RESTAURANT_CATEGORY": random.choice(rest_cats),
+                        "ADDRESS_TYPE": addr_type,
+                        "TOTAL_SERVINGS": str(random.randint(2, 4)),
+                        "MENU_CATEGORY": random.choice(menu_cats),
+                        "SAUCE_OPTION": sauce_name,
                     })
                     return variables
             return None
         
-        # Default: return basic variables
+        # ================================================================
+        # 16. top-rated-history
+        # ================================================================
+        elif template_id == "top-rated-history":
+            user_orders = self.get_user_orders(user.id)
+            if not user_orders:
+                return None
+            
+            item_filters = ["chicken", "pasta", "salad", "burger", "pizza", "sandwich"]
+            variables.update({
+                "ITEM_FILTER": random.choice(item_filters),
+            })
+            return variables
+        
+        # ================================================================
+        # 17. helpful-review-items
+        # ================================================================
+        elif template_id == "helpful-review-items":
+            restaurant = random.choice(restaurants[:10])
+            variables.update({
+                "RESTAURANT": restaurant.name,
+            })
+            return variables
+        
+        # ================================================================
+        # 18. cheapest-rated-slices
+        # ================================================================
+        elif template_id == "cheapest-rated-slices":
+            cuisines = self.get_available_cuisines(address.latitude, address.longitude)
+            if not cuisines:
+                return None
+            
+            restaurant = random.choice(restaurants[:5])
+            menu_cats = self.get_menu_categories(restaurant.id)
+            
+            variables.update({
+                "CUISINE": random.choice(cuisines),
+                "ADDRESS_TYPE": addr_type,
+                "MENU_CATEGORY": random.choice(menu_cats) if menu_cats else "entrees",
+                "MIN_RATING": str(random.choice([3, 3.5, 4, 4.5])),
+            })
+            return variables
+        
+        # ================================================================
+        # 19. cheapest-liked-combo
+        # ================================================================
+        elif template_id == "cheapest-liked-combo":
+            restaurant = random.choice(restaurants[:5])
+            items = self.get_menu_items(restaurant.id, limit=20)
+            menu_cats = self.get_menu_categories(restaurant.id)
+            if len(items) < 2 or not menu_cats:
+                return None
+            
+            additional_item = random.choice(items)
+            variables.update({
+                "RESTAURANT": restaurant.name,
+                "MENU_CATEGORY": random.choice(menu_cats),
+                "ADDITIONAL_ITEM": additional_item.name,
+                "ADDITIONAL_ITEM_KEYWORDS": additional_item.name.split()[0] if additional_item.name else "item",
+            })
+            return variables
+        
+        # ================================================================
+        # 20. cheapest-nearby-item
+        # ================================================================
+        elif template_id == "cheapest-nearby-item":
+            cuisines = self.get_available_cuisines(address.latitude, address.longitude)
+            if not cuisines:
+                return None
+            
+            restaurant = random.choice(restaurants[:5])
+            items = self.get_menu_items(restaurant.id, limit=10)
+            menu_cats = self.get_menu_categories(restaurant.id)
+            if not items:
+                return None
+            
+            variables.update({
+                "RESTAURANT_ITEM": random.choice(items).name,
+                "CUISINE": random.choice(cuisines),
+                "ADDRESS_TYPE": addr_type,
+                "MENU_CATEGORY": random.choice(menu_cats) if menu_cats else "entrees",
+            })
+            return variables
+        
+        # ================================================================
+        # 21. multi-express-orders
+        # ================================================================
+        elif template_id == "multi-express-orders":
+            if len(restaurants) < 2:
+                return None
+            
+            cuisines = self.get_available_cuisines(address.latitude, address.longitude)
+            r1, r2 = random.sample(restaurants[:10], 2)
+            items1 = self.get_menu_items(r1.id, limit=10)
+            items2 = self.get_menu_items(r2.id, limit=10)
+            
+            if len(items1) < 2 or not items2 or not cuisines:
+                return None
+            
+            i1, i2 = random.sample(items1, 2)
+            variables.update({
+                "RESTAURANT_1": r1.name,
+                "RESTAURANT_1_ITEM_1": i1.name,
+                "RESTAURANT_1_ITEM_2": i2.name,
+                "RESTAURANT_2_ITEM": random.choice(items2).name,
+                "CUISINE": random.choice(cuisines),
+                "DELIVERY_OPTION": random.choice(["express", "priority"]),
+            })
+            return variables
+        
+        # ================================================================
+        # 22. gift-coffee-order
+        # ================================================================
+        elif template_id == "gift-coffee-order":
+            cuisines = self.get_available_cuisines(address.latitude, address.longitude)
+            coffee_cuisines = [c for c in cuisines if 'coffee' in c.lower() or 'cafe' in c.lower()]
+            cuisine = random.choice(coffee_cuisines) if coffee_cuisines else random.choice(cuisines) if cuisines else "Coffee"
+            
+            restaurant = random.choice(restaurants[:5])
+            items = self.get_menu_items(restaurant.id, limit=10)
+            if not items:
+                return None
+            
+            variables.update({
+                "RESTAURANT_ITEM": random.choice(items).name,
+                "ADDRESS_TYPE": addr_type,
+                "CUISINE": cuisine,
+                "ITEM_QUANTITY": str(random.randint(1, 3)),
+            })
+            return variables
+        
+        # ================================================================
+        # 23. list-affordable-cuisine
+        # ================================================================
+        elif template_id == "list-affordable-cuisine":
+            cuisines = self.get_available_cuisines(address.latitude, address.longitude)
+            if not cuisines:
+                return None
+            
+            variables.update({
+                "CUISINE": random.choice(cuisines),
+                "RESULT_COUNT": str(random.randint(3, 5)),
+            })
+            return variables
+        
+        # ================================================================
+        # 24. positive-order-review
+        # ================================================================
+        elif template_id == "positive-order-review":
+            user_orders = self.get_user_orders(user.id)
+            if not user_orders:
+                return None
+            
+            order = random.choice(user_orders)
+            review_keywords = ["delicious", "amazing", "fresh", "excellent", "fantastic", "perfect"]
+            review_texts = [
+                "The food was absolutely delicious and fresh!",
+                "Great service and amazing taste!",
+                "Best order I've had in a long time!",
+                "Highly recommend, exceeded expectations!",
+                "Perfect portion size and fantastic flavor!",
+            ]
+            
+            variables.update({
+                "RESTAURANT": order['restaurant_name'],
+                "RATING": str(random.choice([4, 5])),
+                "REVIEW_TEXT": random.choice(review_texts),
+                "REVIEW_KEYWORDS": random.choice(review_keywords),
+            })
+            return variables
+        
+        # ================================================================
+        # 25. nearest-coffee-cart
+        # ================================================================
+        elif template_id == "nearest-coffee-cart":
+            rest_types = ["coffee shop", "cafe", "bakery", "breakfast spot"]
+            restaurant = random.choice(restaurants[:5])
+            items = self.get_menu_items(restaurant.id, limit=10)
+            if not items:
+                return None
+            
+            variables.update({
+                "RESTAURANT_TYPE": random.choice(rest_types),
+                "RESTAURANT_ITEM": random.choice(items).name,
+            })
+            return variables
+        
+        # ================================================================
+        # 26. search-express-order
+        # ================================================================
+        elif template_id == "search-express-order":
+            restaurant = random.choice(restaurants[:5])
+            items = self.get_menu_items(restaurant.id, limit=10)
+            if not items:
+                return None
+            
+            variables.update({
+                "RESTAURANT_ITEM": random.choice(items).name,
+                "DELIVERY_OPTION": random.choice(["express", "priority"]),
+            })
+            return variables
+        
+        # ================================================================
+        # 27. list-cheapest-items
+        # ================================================================
+        elif template_id == "list-cheapest-items":
+            restaurant = random.choice(restaurants[:5])
+            items = self.get_menu_items(restaurant.id, limit=10)
+            if not items:
+                return None
+            
+            variables.update({
+                "RESTAURANT_ITEM": random.choice(items).name,
+                "RESULT_COUNT": str(random.randint(3, 5)),
+            })
+            return variables
+        
+        # ================================================================
+        # 28. find-matching-restaurant
+        # ================================================================
+        elif template_id == "find-matching-restaurant":
+            restaurant = random.choice(restaurants[:5])
+            items = self.get_menu_items(restaurant.id, limit=20)
+            if len(items) < 2:
+                return None
+            
+            item1, item2 = random.sample(items, 2)
+            variables.update({
+                "RESTAURANT_ITEM_1": item1.name,
+                "RESTAURANT_ITEM_2": item2.name,
+            })
+            return variables
+        
+        # ================================================================
+        # 29. top-liked-entrees
+        # ================================================================
+        elif template_id == "top-liked-entrees":
+            restaurant = random.choice(restaurants[:5])
+            menu_cats = self.get_menu_categories(restaurant.id)
+            
+            variables.update({
+                "RESTAURANT": restaurant.name,
+                "MENU_CATEGORY": random.choice(menu_cats) if menu_cats else "entrees",
+                "ITEM_COUNT": str(random.randint(2, 5)),
+                "ADDRESS_TYPE": addr_type,
+            })
+            return variables
+        
+        # ================================================================
+        # 30. scheduled-best-item
+        # ================================================================
+        elif template_id == "scheduled-best-item":
+            restaurant = random.choice(restaurants[:5])
+            items = self.get_menu_items(restaurant.id, limit=10)
+            delivery_slots = self.get_delivery_time_slots()
+            if not items:
+                return None
+            
+            base_times = ["12:00 PM", "1:00 PM", "5:00 PM", "6:00 PM", "7:00 PM"]
+            time_offsets = ["30 minutes", "1 hour", "1.5 hours", "2 hours"]
+            
+            variables.update({
+                "RESTAURANT_ITEM": random.choice(items).name,
+                "ADDRESS_TYPE": addr_type,
+                "BASE_TIME": random.choice(base_times),
+                "TIME_OFFSET": random.choice(time_offsets),
+                "SCHEDULED_TIME": random.choice(delivery_slots) if delivery_slots else "6:00 PM",
+            })
+            return variables
+        
+        # ================================================================
+        # 31. healthy-fixed-order
+        # ================================================================
+        elif template_id == "healthy-fixed-order":
+            sections = self.get_restaurant_sections()
+            restaurant = random.choice(restaurants[:5])
+            items = self.get_menu_items(restaurant.id, limit=20)
+            if len(items) < 3:
+                return None
+            
+            i1, i2, i3 = random.sample(items, 3)
+            variables.update({
+                "SECTION": random.choice(sections),
+                "RESTAURANT": restaurant.name,
+                "ITEM_1": i1.name,
+                "ITEM_1_NAME": i1.name,  # Alias for grader
+                "ITEM_1_QTY": str(random.randint(1, 2)),
+                "ITEM_2": i2.name,
+                "ITEM_2_NAME": i2.name,  # Alias for grader
+                "ITEM_2_QTY": str(random.randint(1, 2)),
+                "ITEM_3": i3.name,
+                "ITEM_3_NAME": i3.name,  # Alias for grader
+                "ITEM_3_QTY": str(random.randint(1, 2)),
+            })
+            return variables
+        
+        # ================================================================
+        # 32. scheduled-group-order
+        # ================================================================
+        elif template_id == "scheduled-group-order":
+            restaurant = random.choice(restaurants[:5])
+            items = self.get_menu_items(restaurant.id, limit=10)
+            delivery_slots = self.get_delivery_time_slots()
+            if not items or not delivery_slots:
+                return None
+            
+            variables.update({
+                "RESTAURANT": restaurant.name,
+                "RESTAURANT_ITEM": random.choice(items).name,
+                "ITEM_QUANTITY": str(random.randint(2, 6)),
+                "SCHEDULED_TIME": random.choice(delivery_slots),
+            })
+            return variables
+        
+        # ================================================================
+        # 33. update-cart-quantity
+        # ================================================================
+        elif template_id == "update-cart-quantity":
+            user_carts = self.get_user_carts(user.id)
+            if not user_carts:
+                return None
+            in_range_ids = {r.id for r in restaurants}
+            valid_carts = [c for c in user_carts if c['store_id'] in in_range_ids]
+            if not valid_carts:
+                return None
+            cart = random.choice(valid_carts)
+            variables.update({
+                "RESTAURANT": cart['restaurant_name'],
+                "TARGET_QUANTITY": str(random.randint(2, 5)),
+            })
+            return variables
+        
+        elif template_id == "build-specific-cart":
+            restaurant = random.choice(restaurants[:5])
+            items = self.get_menu_items(restaurant.id, limit=20)
+            if len(items) < 3:
+                return None
+            i1, i2, i3 = random.sample(items, 3)
+            variables.update({
+                "RESTAURANT": restaurant.name,
+                "ITEM_1": i1.name, "ITEM_1_QTY": str(random.randint(1, 2)),
+                "ITEM_2": i2.name, "ITEM_2_QTY": str(random.randint(1, 2)),
+                "ITEM_3": i3.name, "ITEM_3_QTY": str(random.randint(1, 2)),
+            })
+            return variables
+        
+        elif template_id == "list-menu-options":
+            restaurant = random.choice(restaurants[:5])
+            menu_cats = self.get_menu_categories(restaurant.id)
+            variables.update({
+                "RESTAURANT": restaurant.name,
+                "ITEM_CATEGORY": random.choice(menu_cats) if menu_cats else "entrees",
+            })
+            return variables
+        
+        elif template_id == "list-rated-restaurants":
+            cuisines = self.get_available_cuisines(address.latitude, address.longitude)
+            if not cuisines:
+                return None
+            restaurant = random.choice(restaurants[:5])
+            items = self.get_menu_items(restaurant.id, limit=10)
+            if not items:
+                return None
+            variables.update({
+                "CUISINE": random.choice(cuisines),
+                "RESTAURANT_ITEM": random.choice(items).name,
+                "MIN_RATING": str(random.choice([3, 3.5, 4, 4.5])),
+                "MAX_DISTANCE": str(random.choice([5, 10, 15])),
+            })
+            return variables
+        
+        # Default fallback
+        restaurant = random.choice(restaurants[:5]) if restaurants else None
+        if restaurant:
+            items = self.get_menu_items(restaurant.id, limit=10)
+            menu_cats = self.get_menu_categories(restaurant.id)
+            if items:
+                variables.update({
+                    "RESTAURANT_NAME": restaurant.name,
+                    "RESTAURANT": restaurant.name,
+                    "RESTAURANT_ITEM": random.choice(items).name,
+                    "ADDRESS_TYPE": addr_type,
+                    "MENU_CATEGORY": random.choice(menu_cats) if menu_cats else "entrees",
+                })
         return variables
     
     def generate_task_from_template(
@@ -744,23 +1315,50 @@ class TaskGenerator:
     
     def get_users_for_template(self, template_id: str) -> List[User]:
         """Get appropriate user pool based on template requirements."""
-        if template_id == "rate-last-order":
+        # Templates requiring order history
+        order_templates = {
+            "rate-last-order", "reorder-with-addons", "top-rated-history",
+            "helpful-review-items", "positive-order-review"
+        }
+        # Templates requiring cart data
+        cart_templates = {
+            "replace-cart-item", "clear-invalid-carts", "update-cart-quantity"
+        }
+        
+        if template_id in order_templates:
             users = self.get_users_with_orders()
             print(f"   [INFO] Found {len(users)} users with orders")
-        elif template_id in ("replace-cart-item", "clear-invalid-carts"):
+        elif template_id in cart_templates:
             users = self.get_users_with_carts()
             print(f"   [INFO] Found {len(users)} users with carts")
         else:
             users = self.get_users_with_addresses()
         return users
     
+    def load_predefined_tasks(self, path: str = "config/predefined_tasks.json") -> Dict[str, Dict]:
+        """Load predefined tasks indexed by template_id."""
+        predefined = {}
+        if os.path.exists(path):
+            with open(path, 'r', encoding='utf-8') as f:
+                tasks = json.load(f)
+            for task in tasks:
+                tid = task.get('template_id', task.get('task_id', '').split('-')[0])
+                if tid:
+                    predefined[tid] = task
+            print(f"[OK] Loaded {len(predefined)} predefined tasks from: {path}")
+        return predefined
+    
     def generate_all_tasks(
         self,
         templates: List[Dict[str, Any]],
         max_tasks_per_template: int = 10,
-        max_total_tasks: Optional[int] = None
+        max_total_tasks: Optional[int] = None,
+        include_predefined: bool = True
     ) -> List[Dict[str, Any]]:
         tasks = []
+        
+        # Load predefined tasks (these become the -001 tasks)
+        predefined_tasks = self.load_predefined_tasks() if include_predefined else {}
         
         used_users: Set[int] = set()
         
@@ -771,6 +1369,14 @@ class TaskGenerator:
             template_task_count = 0
             
             print(f"\n[TEMPLATE] Processing: {template_id}")
+            
+            # Add predefined task as -001 if it exists
+            if template_id in predefined_tasks:
+                predefined = predefined_tasks[template_id]
+                predefined['task_id'] = f"{template_id}-001"
+                tasks.append(predefined)
+                template_task_count = 1
+                print(f"   [+] Task {template_id}-001: (predefined)")
             
             # Get appropriate user pool for this template
             users = self.get_users_for_template(template_id)
