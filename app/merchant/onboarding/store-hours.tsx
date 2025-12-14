@@ -64,7 +64,7 @@ export default function StoreHoursStep() {
       });
     }
 
-    router.push('/merchant/onboarding?step=menu');
+    router.push('/merchant/onboarding?step=pricing');
   };
 
   const generateTimeOptions = () => {

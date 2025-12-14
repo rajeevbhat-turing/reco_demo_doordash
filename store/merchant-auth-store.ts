@@ -211,13 +211,13 @@ export const useMerchantAuthStore = create<MerchantAuthStore>()(
         set({ currentMerchant: updatedMerchant, merchants: updatedMerchants });
       },
 
+      // Note: Menu step is skipped (out of scope), keeping function for future use
       saveOnboardingMenuCompleted: () => {
         const current = get().currentMerchant;
         if (!current) return;
 
         const updatedMerchant = {
           ...current,
-          onboardingStep: Math.max(current.onboardingStep, 3),
           onboardingData: { ...current.onboardingData, menuCompleted: true },
         };
         const updatedMerchants = get().merchants.map(m =>
@@ -227,13 +227,15 @@ export const useMerchantAuthStore = create<MerchantAuthStore>()(
         set({ currentMerchant: updatedMerchant, merchants: updatedMerchants });
       },
 
+      // onboardingStep: 0=not started, 1=order-protocol done, 2=hours done, 3=pricing done, 4=payout done
+      // Note: Menu step is skipped (out of scope)
       saveOnboardingPricing: data => {
         const current = get().currentMerchant;
         if (!current) return;
 
         const updatedMerchant = {
           ...current,
-          onboardingStep: Math.max(current.onboardingStep, 4),
+          onboardingStep: Math.max(current.onboardingStep, 3),
           onboardingData: { ...current.onboardingData, pricing: data },
         };
         const updatedMerchants = get().merchants.map(m =>
@@ -249,7 +251,7 @@ export const useMerchantAuthStore = create<MerchantAuthStore>()(
 
         const updatedMerchant = {
           ...current,
-          onboardingStep: 5,
+          onboardingStep: 4,
           onboardingCompleted: true,
           onboardingData: { ...current.onboardingData, payout: data },
         };
