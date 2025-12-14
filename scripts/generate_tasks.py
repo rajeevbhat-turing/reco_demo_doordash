@@ -211,18 +211,88 @@ class TaskGenerator:
         restaurants = self.get_restaurants_in_radius(lat, lng)
         return [r for r in restaurants if cuisine.lower() in r.cuisine.lower()]
     
-    def get_menu_items(self, restaurant_id: int, limit: int = 10) -> List[MenuItem]:
+    def get_menu_items(self, restaurant_id: int, limit: int = 10, exclude_with_required_mods: bool = True) -> List[MenuItem]:
+        """Get menu items for a restaurant.
+        
+        Args:
+            restaurant_id: The restaurant to fetch items from.
+            limit: Maximum number of items to return.
+            exclude_with_required_mods: If True, exclude items that have required modifications.
+                This is useful when a template doesn't have a modification variable - we want to
+                avoid items that require a modification selection to complete the order.
+        """
         cursor = self.conn.cursor()
-        cursor.execute("""
-            SELECT id, restaurant_id, name, price, description, calories
-            FROM menu_items WHERE restaurant_id = ? AND is_available = 1 ORDER BY id LIMIT ?
-        """, (restaurant_id, limit))
+        
+        if exclude_with_required_mods:
+            # Exclude items that have required modifications
+            cursor.execute("""
+                SELECT mi.id, mi.restaurant_id, mi.name, mi.price, mi.description, mi.calories
+                FROM menu_items mi
+                WHERE mi.restaurant_id = ? AND mi.is_available = 1
+                AND NOT EXISTS (
+                    SELECT 1 FROM modifications m 
+                    WHERE m.menu_item_id = mi.id AND m.is_required = 1
+                )
+                ORDER BY mi.id LIMIT ?
+            """, (restaurant_id, limit))
+        else:
+            cursor.execute("""
+                SELECT id, restaurant_id, name, price, description, calories
+                FROM menu_items WHERE restaurant_id = ? AND is_available = 1 ORDER BY id LIMIT ?
+            """, (restaurant_id, limit))
+        
         return [MenuItem(id=r['id'], restaurant_id=r['restaurant_id'], name=r['name'],
                         price=r['price'], description=r['description'], calories=r['calories'])
                 for r in cursor.fetchall()]
     
-    def get_menu_items_with_addons(self, restaurant_id: int) -> List[Tuple[MenuItem, Modification, ModificationOption]]:
+    def has_required_modifications(self, menu_item_id: int) -> bool:
+        """Check if a menu item has any required modifications."""
         cursor = self.conn.cursor()
+        cursor.execute("""
+            SELECT COUNT(*) as cnt FROM modifications 
+            WHERE menu_item_id = ? AND is_required = 1
+        """, (menu_item_id,))
+        result = cursor.fetchone()
+        return result['cnt'] > 0 if result else False
+    
+    
+    def get_menu_items_with_addons(self, restaurant_id: int, prioritize_required: bool = True) -> List[Tuple[MenuItem, Modification, ModificationOption]]:
+        """Get menu items with their modifications and options.
+        
+        Args:
+            restaurant_id: The restaurant to fetch items from.
+            prioritize_required: If True, prioritize items with required modifications first.
+                                If False, only get items with optional (non-required) modifications.
+        """
+        cursor = self.conn.cursor()
+        
+        if prioritize_required:
+            # First try to get items with required modifications
+            cursor.execute("""
+                SELECT mi.id as item_id, mi.restaurant_id, mi.name as item_name, mi.price as item_price,
+                       m.id as mod_id, m.description as mod_description, m.is_required,
+                       mo.id as option_id, mo.name as option_name, mo.price as option_price
+                FROM menu_items mi
+                INNER JOIN modifications m ON mi.id = m.menu_item_id
+                INNER JOIN modification_options mo ON m.id = mo.modification_id
+                WHERE mi.restaurant_id = ? AND mi.is_available = 1 AND m.is_required = 1
+                ORDER BY mi.id, m.id, mo.id
+            """, (restaurant_id,))
+            results = []
+            for row in cursor.fetchall():
+                item = MenuItem(id=row['item_id'], restaurant_id=row['restaurant_id'], 
+                               name=row['item_name'], price=row['item_price'])
+                mod = Modification(id=row['mod_id'], menu_item_id=row['item_id'],
+                                  description=row['mod_description'], is_required=bool(row['is_required']))
+                opt = ModificationOption(id=row['option_id'], modification_id=row['mod_id'],
+                                        name=row['option_name'], price=row['option_price'])
+                results.append((item, mod, opt))
+            
+            # If we found items with required modifications, return them
+            if results:
+                return results
+        
+        # Fall back to items with optional modifications
         cursor.execute("""
             SELECT mi.id as item_id, mi.restaurant_id, mi.name as item_name, mi.price as item_price,
                    m.id as mod_id, m.description as mod_description, m.is_required,
@@ -470,34 +540,78 @@ class TaskGenerator:
                                   email=row['email'], password=row['password'], addresses=addresses))
         return users
     
-    def get_chicken_items(self, restaurant_id: int) -> List[MenuItem]:
-        """Get chicken items from the menu."""
+    def get_chicken_items(self, restaurant_id: int, exclude_with_required_mods: bool = True) -> List[MenuItem]:
+        """Get chicken items from the menu.
+        
+        Args:
+            restaurant_id: The restaurant to fetch items from.
+            exclude_with_required_mods: If True, exclude items that have required modifications.
+        """
         cursor = self.conn.cursor()
-        cursor.execute("""
-            SELECT id, restaurant_id, name, price, description, calories
-            FROM menu_items 
-            WHERE restaurant_id = ? AND is_available = 1 
-            AND (LOWER(name) LIKE '%chicken%' OR LOWER(description) LIKE '%chicken%')
-            ORDER BY id
-            LIMIT 10
-        """, (restaurant_id,))
+        
+        if exclude_with_required_mods:
+            cursor.execute("""
+                SELECT mi.id, mi.restaurant_id, mi.name, mi.price, mi.description, mi.calories
+                FROM menu_items mi
+                WHERE mi.restaurant_id = ? AND mi.is_available = 1 
+                AND (LOWER(mi.name) LIKE '%chicken%' OR LOWER(mi.description) LIKE '%chicken%')
+                AND NOT EXISTS (
+                    SELECT 1 FROM modifications m 
+                    WHERE m.menu_item_id = mi.id AND m.is_required = 1
+                )
+                ORDER BY mi.id
+                LIMIT 10
+            """, (restaurant_id,))
+        else:
+            cursor.execute("""
+                SELECT id, restaurant_id, name, price, description, calories
+                FROM menu_items 
+                WHERE restaurant_id = ? AND is_available = 1 
+                AND (LOWER(name) LIKE '%chicken%' OR LOWER(description) LIKE '%chicken%')
+                ORDER BY id
+                LIMIT 10
+            """, (restaurant_id,))
+        
         return [MenuItem(id=r['id'], restaurant_id=r['restaurant_id'], name=r['name'],
                         price=r['price'], description=r['description'], calories=r['calories'])
                 for r in cursor.fetchall()]
     
-    def get_dessert_items(self, restaurant_id: int) -> List[MenuItem]:
-        """Get dessert items from the menu."""
+    def get_dessert_items(self, restaurant_id: int, exclude_with_required_mods: bool = True) -> List[MenuItem]:
+        """Get dessert items from the menu.
+        
+        Args:
+            restaurant_id: The restaurant to fetch items from.
+            exclude_with_required_mods: If True, exclude items that have required modifications.
+        """
         cursor = self.conn.cursor()
-        cursor.execute("""
-            SELECT mi.id, mi.restaurant_id, mi.name, mi.price, mi.description, mi.calories
-            FROM menu_items mi
-            INNER JOIN menu_categories mc ON mi.category_id = mc.id
-            WHERE mi.restaurant_id = ? AND mi.is_available = 1 
-            AND (LOWER(mc.name) LIKE '%dessert%' OR LOWER(mi.name) LIKE '%cake%' 
-                 OR LOWER(mi.name) LIKE '%ice cream%' OR LOWER(mi.name) LIKE '%brownie%')
-            ORDER BY mi.calories ASC NULLS LAST, mi.id
-            LIMIT 10
-        """, (restaurant_id,))
+        
+        if exclude_with_required_mods:
+            cursor.execute("""
+                SELECT mi.id, mi.restaurant_id, mi.name, mi.price, mi.description, mi.calories
+                FROM menu_items mi
+                INNER JOIN menu_categories mc ON mi.category_id = mc.id
+                WHERE mi.restaurant_id = ? AND mi.is_available = 1 
+                AND (LOWER(mc.name) LIKE '%dessert%' OR LOWER(mi.name) LIKE '%cake%' 
+                     OR LOWER(mi.name) LIKE '%ice cream%' OR LOWER(mi.name) LIKE '%brownie%')
+                AND NOT EXISTS (
+                    SELECT 1 FROM modifications m 
+                    WHERE m.menu_item_id = mi.id AND m.is_required = 1
+                )
+                ORDER BY mi.calories ASC NULLS LAST, mi.id
+                LIMIT 10
+            """, (restaurant_id,))
+        else:
+            cursor.execute("""
+                SELECT mi.id, mi.restaurant_id, mi.name, mi.price, mi.description, mi.calories
+                FROM menu_items mi
+                INNER JOIN menu_categories mc ON mi.category_id = mc.id
+                WHERE mi.restaurant_id = ? AND mi.is_available = 1 
+                AND (LOWER(mc.name) LIKE '%dessert%' OR LOWER(mi.name) LIKE '%cake%' 
+                     OR LOWER(mi.name) LIKE '%ice cream%' OR LOWER(mi.name) LIKE '%brownie%')
+                ORDER BY mi.calories ASC NULLS LAST, mi.id
+                LIMIT 10
+            """, (restaurant_id,))
+        
         return [MenuItem(id=r['id'], restaurant_id=r['restaurant_id'], name=r['name'],
                         price=r['price'], description=r['description'], calories=r['calories'])
                 for r in cursor.fetchall()]
@@ -519,25 +633,80 @@ class TaskGenerator:
         cats = [row['name'] for row in cursor.fetchall()]
         return cats if cats else ["Burgers", "Coffee", "Mexican", "Pizza", "Sushi"]  # Sorted default
     
-    def get_items_by_category(self, restaurant_id: int, category: str, limit: int = 5) -> List[MenuItem]:
-        """Get menu items from a specific category."""
+    def get_items_by_category(self, restaurant_id: int, category: str, limit: int = 5, exclude_with_required_mods: bool = True) -> List[MenuItem]:
+        """Get menu items from a specific category.
+        
+        Args:
+            restaurant_id: The restaurant to fetch items from.
+            category: The category name to filter by.
+            limit: Maximum number of items to return.
+            exclude_with_required_mods: If True, exclude items that have required modifications.
+        """
         cursor = self.conn.cursor()
-        cursor.execute("""
-            SELECT mi.id, mi.restaurant_id, mi.name, mi.price, mi.description, mi.calories
-            FROM menu_items mi
-            INNER JOIN menu_categories mc ON mi.category_id = mc.id
-            WHERE mi.restaurant_id = ? AND mi.is_available = 1 
-            AND LOWER(mc.name) LIKE ?
-            ORDER BY mi.price ASC, mi.id ASC
-            LIMIT ?
-        """, (restaurant_id, f"%{category.lower()}%", limit))
+        
+        if exclude_with_required_mods:
+            cursor.execute("""
+                SELECT mi.id, mi.restaurant_id, mi.name, mi.price, mi.description, mi.calories
+                FROM menu_items mi
+                INNER JOIN menu_categories mc ON mi.category_id = mc.id
+                WHERE mi.restaurant_id = ? AND mi.is_available = 1 
+                AND LOWER(mc.name) LIKE ?
+                AND NOT EXISTS (
+                    SELECT 1 FROM modifications m 
+                    WHERE m.menu_item_id = mi.id AND m.is_required = 1
+                )
+                ORDER BY mi.price ASC, mi.id ASC
+                LIMIT ?
+            """, (restaurant_id, f"%{category.lower()}%", limit))
+        else:
+            cursor.execute("""
+                SELECT mi.id, mi.restaurant_id, mi.name, mi.price, mi.description, mi.calories
+                FROM menu_items mi
+                INNER JOIN menu_categories mc ON mi.category_id = mc.id
+                WHERE mi.restaurant_id = ? AND mi.is_available = 1 
+                AND LOWER(mc.name) LIKE ?
+                ORDER BY mi.price ASC, mi.id ASC
+                LIMIT ?
+            """, (restaurant_id, f"%{category.lower()}%", limit))
+        
         return [MenuItem(id=r['id'], restaurant_id=r['restaurant_id'], name=r['name'],
                         price=r['price'], description=r['description'], calories=r['calories'])
                 for r in cursor.fetchall()]
     
-    def get_items_with_sauce_options(self, restaurant_id: int) -> List[Tuple[MenuItem, str]]:
-        """Get items that have sauce modification options."""
+    def get_items_with_sauce_options(self, restaurant_id: int, prioritize_required: bool = True) -> List[Tuple[MenuItem, str]]:
+        """Get items that have sauce modification options.
+        
+        Args:
+            restaurant_id: The restaurant to fetch items from.
+            prioritize_required: If True, prioritize items with required sauce modifications first.
+        """
         cursor = self.conn.cursor()
+        
+        if prioritize_required:
+            # First try to get items with required sauce modifications
+            cursor.execute("""
+                SELECT DISTINCT mi.id, mi.restaurant_id, mi.name as item_name, mi.price, 
+                       mi.description, mi.calories, mo.name as sauce_name
+                FROM menu_items mi
+                INNER JOIN modifications m ON mi.id = m.menu_item_id
+                INNER JOIN modification_options mo ON m.id = mo.modification_id
+                WHERE mi.restaurant_id = ? AND mi.is_available = 1
+                AND (LOWER(m.description) LIKE '%sauce%' OR LOWER(mo.name) LIKE '%sauce%')
+                AND m.is_required = 1
+                ORDER BY mi.id, mo.id
+                LIMIT 10
+            """, (restaurant_id,))
+            results = []
+            for r in cursor.fetchall():
+                item = MenuItem(id=r['id'], restaurant_id=r['restaurant_id'], name=r['item_name'],
+                               price=r['price'], description=r['description'], calories=r['calories'])
+                results.append((item, r['sauce_name']))
+            
+            # If we found items with required sauce modifications, return them
+            if results:
+                return results
+        
+        # Fall back to items with optional sauce modifications
         cursor.execute("""
             SELECT DISTINCT mi.id, mi.restaurant_id, mi.name as item_name, mi.price, 
                    mi.description, mi.calories, mo.name as sauce_name

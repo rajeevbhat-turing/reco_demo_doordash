@@ -122,6 +122,7 @@ export default function OnboardingSidebar({ currentStep, completedSteps }: Onboa
     }
   }, [isProfileDropdownOpen]);
 
+  // Note: Menu step is skipped (out of scope)
   const steps: OnboardingStep[] = [
     {
       number: 1,
@@ -139,24 +140,17 @@ export default function OnboardingSidebar({ currentStep, completedSteps }: Onboa
     },
     {
       number: 3,
-      label: 'Menu',
-      step: 'menu',
-      completed: completedSteps.includes('menu'),
+      label: 'Pricing plan',
+      step: 'pricing',
+      completed: completedSteps.includes('pricing'),
       locked: completedSteps.length < 2,
     },
     {
       number: 4,
-      label: 'Pricing plan',
-      step: 'pricing',
-      completed: completedSteps.includes('pricing'),
-      locked: completedSteps.length < 3,
-    },
-    {
-      number: 5,
       label: 'Payout info',
       step: 'payout',
       completed: completedSteps.includes('payout'),
-      locked: completedSteps.length < 4,
+      locked: completedSteps.length < 3,
     },
   ];
 
