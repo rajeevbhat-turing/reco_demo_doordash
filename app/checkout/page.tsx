@@ -57,6 +57,8 @@ export default function CheckoutPage() {
   // Get cart identifier from query params
   const categoryParam = searchParams.get('category') as CartCategory | null;
   const storeIdParam = searchParams.get('storeId');
+  const scheduledDateParam = searchParams.get('scheduledDate');
+  const scheduledTimeSlotParam = searchParams.get('scheduledTimeSlot');
 
   const {
     findCart,
@@ -226,13 +228,34 @@ export default function CheckoutPage() {
   const [orderId, setOrderId] = useState('');
   const [showScheduleModal, setShowScheduleModal] = useState(false);
   const [selectedScheduleTime, _setSelectedScheduleTime] = useState('');
-  const [scheduledDate, setScheduledDate] = useState<Date | null>(null);
-  const [scheduledTimeSlot, setScheduledTimeSlot] = useState('');
+  
+  // Initialize scheduled date/time from URL params if coming from cart with schedule
+  const [scheduledDate, setScheduledDate] = useState<Date | null>(() => {
+    if (scheduledDateParam) {
+      const date = new Date(decodeURIComponent(scheduledDateParam));
+      return isNaN(date.getTime()) ? null : date;
+    }
+    return null;
+  });
+  const [scheduledTimeSlot, setScheduledTimeSlot] = useState(() => {
+    return scheduledTimeSlotParam ? decodeURIComponent(scheduledTimeSlotParam) : '';
+  });
   const [isClient, setIsClient] = useState(false);
 
-  // Delivery options
-  const [selectedDeliveryOption, setSelectedDeliveryOption] = useState('standard');
-  const [deliveryTime, setDeliveryTime] = useState('45-60 min');
+  // Delivery options - initialize to 'schedule' if coming from cart with scheduled time
+  const [selectedDeliveryOption, setSelectedDeliveryOption] = useState(() => {
+    return scheduledDateParam && scheduledTimeSlotParam ? 'schedule' : 'standard';
+  });
+  const [deliveryTime, setDeliveryTime] = useState(() => {
+    if (scheduledDateParam && scheduledTimeSlotParam) {
+      const date = new Date(decodeURIComponent(scheduledDateParam));
+      if (!isNaN(date.getTime())) {
+        const formattedDate = `${date.getDate().toString().padStart(2, '0')}/${(date.getMonth() + 1).toString().padStart(2, '0')}`;
+        return `${formattedDate} at ${decodeURIComponent(scheduledTimeSlotParam)}`;
+      }
+    }
+    return '45-60 min';
+  });
   // Note: extraDeliveryFee is now handled in dynamic fee calculation
 
   // Update delivery time when restaurant distance or delivery option changes
@@ -448,12 +471,14 @@ export default function CheckoutPage() {
 
   const handlePlaceOrder = () => {
     // Check if restaurant is closed (for restaurant orders only, using client-side calculated status)
+    // BUT allow if user has scheduled the order for later
     if (
       currentCategory === 'restaurant' &&
       currentRestaurant &&
-      !isRestaurantOpen
+      !isRestaurantOpen &&
+      !(selectedDeliveryOption === 'schedule' && scheduledDate)
     ) {
-      // Prevent order placement when restaurant is closed
+      // Prevent order placement when restaurant is closed and no schedule set
       return;
     }
 
@@ -1583,10 +1608,11 @@ export default function CheckoutPage() {
             {/* Place Order Button */}
             {currentCategory === 'restaurant' &&
               currentRestaurant &&
-              !isRestaurantOpen && (
-                <div className="mb-3 p-3 bg-red-50 border border-red-200 rounded-lg">
-                  <p className="text-sm text-red-600 font-medium text-center">
-                    This restaurant is currently closed. Please schedule your order for later.
+              !isRestaurantOpen &&
+              !(selectedDeliveryOption === 'schedule' && scheduledDate) && (
+                <div className="mb-3 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+                  <p className="text-sm text-amber-800 font-medium text-center">
+                    This restaurant is currently closed. Please select &quot;Schedule for later&quot; above to place your order.
                   </p>
                 </div>
               )}
@@ -1597,7 +1623,8 @@ export default function CheckoutPage() {
                 isOutsideDeliveryArea ||
                 (currentCategory === 'restaurant' &&
                   currentRestaurant &&
-                  !isRestaurantOpen)
+                  !isRestaurantOpen &&
+                  !(selectedDeliveryOption === 'schedule' && scheduledDate))
               }
               className={`w-full font-medium py-4 rounded-lg text-lg ${
                 selectedPaymentMethodObj &&
@@ -1605,7 +1632,8 @@ export default function CheckoutPage() {
                 !(
                   currentCategory === 'restaurant' &&
                   currentRestaurant &&
-                  !isRestaurantOpen
+                  !isRestaurantOpen &&
+                  !(selectedDeliveryOption === 'schedule' && scheduledDate)
                 )
                   ? 'bg-red-600 hover:bg-red-700 text-white cursor-pointer'
                   : 'bg-gray-300 text-gray-500 cursor-not-allowed'
@@ -1689,13 +1717,14 @@ export default function CheckoutPage() {
 
               {/* Place Order Button */}
               <div className="px-4 pt-4">
-                {/* Show warning if restaurant is closed */}
+                {/* Show warning if restaurant is closed and no schedule set */}
                 {currentCategory === 'restaurant' &&
                   currentRestaurant &&
-                  !isRestaurantOpen && (
-                    <div className="mb-3 p-3 bg-red-50 border border-red-200 rounded-lg">
-                      <p className="text-sm text-red-600 font-medium text-center">
-                        This restaurant is currently closed. Please schedule your order for later.
+                  !isRestaurantOpen &&
+                  !(selectedDeliveryOption === 'schedule' && scheduledDate) && (
+                    <div className="mb-3 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+                      <p className="text-sm text-amber-800 font-medium text-center">
+                        This restaurant is currently closed. Schedule your order to proceed.
                       </p>
                     </div>
                   )}
@@ -1706,7 +1735,8 @@ export default function CheckoutPage() {
                     isOutsideDeliveryArea ||
                     (currentCategory === 'restaurant' &&
                       currentRestaurant &&
-                      !isRestaurantOpen)
+                      !isRestaurantOpen &&
+                      !(selectedDeliveryOption === 'schedule' && scheduledDate))
                   }
                   className={`w-full font-semibold py-3 rounded-full transition-colors ${
                     selectedPaymentMethodObj &&
@@ -1714,7 +1744,8 @@ export default function CheckoutPage() {
                     !(
                       currentCategory === 'restaurant' &&
                       currentRestaurant &&
-                      !isRestaurantOpen
+                      !isRestaurantOpen &&
+                      !(selectedDeliveryOption === 'schedule' && scheduledDate)
                     )
                       ? 'bg-red-600 hover:bg-red-700 text-white cursor-pointer'
                       : 'bg-gray-300 text-gray-500 cursor-not-allowed'
@@ -2014,8 +2045,8 @@ export default function CheckoutPage() {
         isOpen={showScheduleModal}
         onClose={() => {
           setShowScheduleModal(false);
-          // Revert to standard if modal is closed without selection
-          if (selectedDeliveryOption === 'schedule' && !scheduledTimeSlot) {
+          // Revert to standard if modal is closed without selection (only if restaurant is open)
+          if (selectedDeliveryOption === 'schedule' && !scheduledTimeSlot && isRestaurantOpen) {
             setSelectedDeliveryOption('standard');
             setDeliveryTime(
               restaurantDistance > 0
@@ -2025,6 +2056,10 @@ export default function CheckoutPage() {
           }
         }}
         onSelectTime={handleScheduleTimeSelect}
+        restaurantOpeningHour={currentRestaurant?.openingHour}
+        restaurantClosingHour={currentRestaurant?.closingHour}
+        isRestaurantClosed={currentCategory === 'restaurant' && currentRestaurant ? !isRestaurantOpen : false}
+        restaurantName={currentRestaurant?.name}
       />
 
       {/* Order Confirmation Modal */}
