@@ -172,13 +172,14 @@ class TaskGenerator:
             FROM users u
             INNER JOIN addresses a ON u.id = a.user_id
             WHERE a.latitude IS NOT NULL AND a.longitude IS NOT NULL
+            ORDER BY u.id
         """)
         users = []
         for row in cursor.fetchall():
             cursor.execute("""
                 SELECT id, user_id, street, city, state, zip_code, 
                        latitude, longitude, address_type, is_default
-                FROM addresses WHERE user_id = ? AND latitude IS NOT NULL
+                FROM addresses WHERE user_id = ? AND latitude IS NOT NULL ORDER BY id
             """, (row['id'],))
             addresses = [Address(
                 id=r['id'], user_id=r['user_id'], street=r['street'],
@@ -194,7 +195,7 @@ class TaskGenerator:
     
     def get_restaurants_in_radius(self, lat: float, lng: float) -> List[Restaurant]:
         cursor = self.conn.cursor()
-        cursor.execute("SELECT id, name, cuisine, latitude, longitude FROM restaurants WHERE latitude IS NOT NULL")
+        cursor.execute("SELECT id, name, cuisine, latitude, longitude FROM restaurants WHERE latitude IS NOT NULL ORDER BY id")
         restaurants = []
         for row in cursor.fetchall():
             distance = calculate_distance(lat, lng, row['latitude'], row['longitude'])
@@ -214,7 +215,7 @@ class TaskGenerator:
         cursor = self.conn.cursor()
         cursor.execute("""
             SELECT id, restaurant_id, name, price, description, calories
-            FROM menu_items WHERE restaurant_id = ? AND is_available = 1 LIMIT ?
+            FROM menu_items WHERE restaurant_id = ? AND is_available = 1 ORDER BY id LIMIT ?
         """, (restaurant_id, limit))
         return [MenuItem(id=r['id'], restaurant_id=r['restaurant_id'], name=r['name'],
                         price=r['price'], description=r['description'], calories=r['calories'])
@@ -230,7 +231,7 @@ class TaskGenerator:
             INNER JOIN modifications m ON mi.id = m.menu_item_id
             INNER JOIN modification_options mo ON m.id = mo.modification_id
             WHERE mi.restaurant_id = ? AND mi.is_available = 1 AND m.is_required = 0
-            ORDER BY mi.id, m.id, mo.sort_order
+            ORDER BY mi.id, m.id, mo.id
         """, (restaurant_id,))
         results = []
         for row in cursor.fetchall():
@@ -247,7 +248,7 @@ class TaskGenerator:
         cursor = self.conn.cursor()
         cursor.execute("""
             SELECT id, user_id, card_number, last_four, cvc, expiry
-            FROM payment_methods WHERE user_id = ?
+            FROM payment_methods WHERE user_id = ? ORDER BY id
         """, (user_id,))
         return [PaymentMethod(id=r['id'], user_id=r['user_id'], card_number=r['card_number'],
                              last_four=r['last_four'], cvc=r['cvc'], expiry=r['expiry'])
@@ -256,29 +257,29 @@ class TaskGenerator:
     def get_deals(self, restaurant_id: Optional[int] = None) -> List[Deal]:
         cursor = self.conn.cursor()
         if restaurant_id:
-            cursor.execute("SELECT id, promocode, title, restaurant_id FROM deals WHERE restaurant_id = ? AND promocode IS NOT NULL", (restaurant_id,))
+            cursor.execute("SELECT id, promocode, title, restaurant_id FROM deals WHERE restaurant_id = ? AND promocode IS NOT NULL ORDER BY id", (restaurant_id,))
         else:
-            cursor.execute("SELECT id, promocode, title, restaurant_id FROM deals WHERE promocode IS NOT NULL LIMIT 50")
+            cursor.execute("SELECT id, promocode, title, restaurant_id FROM deals WHERE promocode IS NOT NULL ORDER BY id LIMIT 50")
         return [Deal(id=r['id'], promocode=r['promocode'], title=r['title'], restaurant_id=r['restaurant_id'])
                 for r in cursor.fetchall()]
     
     def get_available_cuisines(self, lat: float, lng: float) -> List[str]:
         restaurants = self.get_restaurants_in_radius(lat, lng)
         cuisines = set(r.cuisine for r in restaurants if r.cuisine)
-        return list(cuisines)
+        return sorted(list(cuisines))  # Sort for reproducibility
     
     def get_all_cuisines(self) -> List[str]:
         """Get all unique cuisines from the database."""
         cursor = self.conn.cursor()
-        cursor.execute("SELECT DISTINCT cuisine FROM restaurants WHERE cuisine IS NOT NULL")
+        cursor.execute("SELECT DISTINCT cuisine FROM restaurants WHERE cuisine IS NOT NULL ORDER BY cuisine")
         return [row['cuisine'] for row in cursor.fetchall()]
     
     def get_all_address_types(self) -> List[str]:
         """Get all unique address types from the database."""
         cursor = self.conn.cursor()
-        cursor.execute("SELECT DISTINCT address_type FROM addresses WHERE address_type IS NOT NULL")
+        cursor.execute("SELECT DISTINCT address_type FROM addresses WHERE address_type IS NOT NULL ORDER BY address_type")
         types = [row['address_type'] for row in cursor.fetchall()]
-        return types if types else ['house', 'apartment', 'hotel', 'office', 'other']
+        return types if types else ['apartment', 'hotel', 'house', 'office', 'other']  # Sorted default
     
     def get_spice_levels(self) -> List[str]:
         """Get spice level options from modification_options table."""
@@ -287,7 +288,7 @@ class TaskGenerator:
             SELECT DISTINCT mo.name FROM modification_options mo
             INNER JOIN modifications m ON mo.modification_id = m.id
             WHERE LOWER(m.description) LIKE '%spice%' OR LOWER(m.description) LIKE '%heat%'
-            ORDER BY mo.sort_order
+            ORDER BY mo.sort_order, mo.id
         """)
         levels = [row['name'] for row in cursor.fetchall()]
         return levels if levels else ['Mild', 'Medium', 'Hot', 'Extra Hot']
@@ -295,7 +296,7 @@ class TaskGenerator:
     def get_delivery_time_slots(self) -> List[str]:
         """Get available delivery time slots from orders."""
         cursor = self.conn.cursor()
-        cursor.execute("SELECT DISTINCT scheduled_time_slot FROM orders WHERE scheduled_time_slot IS NOT NULL")
+        cursor.execute("SELECT DISTINCT scheduled_time_slot FROM orders WHERE scheduled_time_slot IS NOT NULL ORDER BY scheduled_time_slot")
         slots = [row['scheduled_time_slot'] for row in cursor.fetchall()]
         if not slots:
             # Generate default time slots if none exist
@@ -326,12 +327,12 @@ class TaskGenerator:
                     complaints.add(term)
         if not complaints:
             complaints = set(complaint_terms[:5])
-        return list(complaints)
+        return sorted(list(complaints))  # Sort for reproducibility
     
     def get_street_names(self) -> List[str]:
         """Get street names from existing addresses."""
         cursor = self.conn.cursor()
-        cursor.execute("SELECT DISTINCT street FROM addresses WHERE street IS NOT NULL LIMIT 50")
+        cursor.execute("SELECT DISTINCT street FROM addresses WHERE street IS NOT NULL ORDER BY street LIMIT 50")
         streets = []
         for row in cursor.fetchall():
             # Extract just the street name part (e.g., "Main St" from "123 Main St")
@@ -343,7 +344,7 @@ class TaskGenerator:
     def get_cities(self) -> List[str]:
         """Get unique cities from addresses."""
         cursor = self.conn.cursor()
-        cursor.execute("SELECT DISTINCT city FROM addresses WHERE city IS NOT NULL")
+        cursor.execute("SELECT DISTINCT city FROM addresses WHERE city IS NOT NULL ORDER BY city")
         return [row['city'] for row in cursor.fetchall()]
     
     def get_user_orders(self, user_id: int) -> List[Dict[str, Any]]:
@@ -357,7 +358,7 @@ class TaskGenerator:
             INNER JOIN order_items oi ON o.id = oi.order_id
             INNER JOIN menu_items mi ON oi.menu_item_id = mi.id
             WHERE o.user_id = ?
-            ORDER BY o.order_date DESC
+            ORDER BY o.order_date DESC, o.id, mi.id
         """, (user_id,))
         orders = []
         for row in cursor.fetchall():
@@ -380,6 +381,7 @@ class TaskGenerator:
             INNER JOIN restaurants r ON c.store_id = r.id
             INNER JOIN cart_items ci ON c.id = ci.cart_id
             WHERE c.user_id = ?
+            ORDER BY c.id
         """, (user_id,))
         carts = []
         seen = set()
@@ -403,6 +405,7 @@ class TaskGenerator:
             FROM cart_items ci
             INNER JOIN menu_items mi ON ci.menu_item_id = mi.id
             WHERE ci.cart_id = ?
+            ORDER BY ci.id
         """, (cart_id,))
         return [{'id': r['id'], 'item_name': r['item_name'], 
                  'item_id': r['item_id'], 'quantity': r['quantity']} 
@@ -417,13 +420,14 @@ class TaskGenerator:
             INNER JOIN orders o ON u.id = o.user_id
             INNER JOIN addresses a ON u.id = a.user_id
             WHERE a.latitude IS NOT NULL AND a.longitude IS NOT NULL
+            ORDER BY u.id
         """)
         users = []
         for row in cursor.fetchall():
             cursor.execute("""
                 SELECT id, user_id, street, city, state, zip_code, 
                        latitude, longitude, address_type, is_default
-                FROM addresses WHERE user_id = ? AND latitude IS NOT NULL
+                FROM addresses WHERE user_id = ? AND latitude IS NOT NULL ORDER BY id
             """, (row['id'],))
             addresses = [Address(
                 id=r['id'], user_id=r['user_id'], street=r['street'],
@@ -446,13 +450,14 @@ class TaskGenerator:
             INNER JOIN cart_items ci ON c.id = ci.cart_id
             INNER JOIN addresses a ON u.id = a.user_id
             WHERE a.latitude IS NOT NULL AND a.longitude IS NOT NULL
+            ORDER BY u.id
         """)
         users = []
         for row in cursor.fetchall():
             cursor.execute("""
                 SELECT id, user_id, street, city, state, zip_code, 
                        latitude, longitude, address_type, is_default
-                FROM addresses WHERE user_id = ? AND latitude IS NOT NULL
+                FROM addresses WHERE user_id = ? AND latitude IS NOT NULL ORDER BY id
             """, (row['id'],))
             addresses = [Address(
                 id=r['id'], user_id=r['user_id'], street=r['street'],
@@ -473,6 +478,7 @@ class TaskGenerator:
             FROM menu_items 
             WHERE restaurant_id = ? AND is_available = 1 
             AND (LOWER(name) LIKE '%chicken%' OR LOWER(description) LIKE '%chicken%')
+            ORDER BY id
             LIMIT 10
         """, (restaurant_id,))
         return [MenuItem(id=r['id'], restaurant_id=r['restaurant_id'], name=r['name'],
@@ -489,7 +495,7 @@ class TaskGenerator:
             WHERE mi.restaurant_id = ? AND mi.is_available = 1 
             AND (LOWER(mc.name) LIKE '%dessert%' OR LOWER(mi.name) LIKE '%cake%' 
                  OR LOWER(mi.name) LIKE '%ice cream%' OR LOWER(mi.name) LIKE '%brownie%')
-            ORDER BY mi.calories ASC NULLS LAST
+            ORDER BY mi.calories ASC NULLS LAST, mi.id
             LIMIT 10
         """, (restaurant_id,))
         return [MenuItem(id=r['id'], restaurant_id=r['restaurant_id'], name=r['name'],
@@ -502,15 +508,16 @@ class TaskGenerator:
         cursor.execute("""
             SELECT DISTINCT mc.name FROM menu_categories mc
             WHERE mc.restaurant_id = ? AND mc.is_active = 1
+            ORDER BY mc.name
         """, (restaurant_id,))
         return [row['name'] for row in cursor.fetchall()]
     
     def get_restaurant_categories(self) -> List[str]:
         """Get restaurant categories from the database."""
         cursor = self.conn.cursor()
-        cursor.execute("SELECT DISTINCT name FROM categories LIMIT 20")
+        cursor.execute("SELECT DISTINCT name FROM categories ORDER BY name LIMIT 20")
         cats = [row['name'] for row in cursor.fetchall()]
-        return cats if cats else ["Pizza", "Coffee", "Burgers", "Sushi", "Mexican"]
+        return cats if cats else ["Burgers", "Coffee", "Mexican", "Pizza", "Sushi"]  # Sorted default
     
     def get_items_by_category(self, restaurant_id: int, category: str, limit: int = 5) -> List[MenuItem]:
         """Get menu items from a specific category."""
@@ -521,7 +528,7 @@ class TaskGenerator:
             INNER JOIN menu_categories mc ON mi.category_id = mc.id
             WHERE mi.restaurant_id = ? AND mi.is_available = 1 
             AND LOWER(mc.name) LIKE ?
-            ORDER BY mi.price ASC
+            ORDER BY mi.price ASC, mi.id ASC
             LIMIT ?
         """, (restaurant_id, f"%{category.lower()}%", limit))
         return [MenuItem(id=r['id'], restaurant_id=r['restaurant_id'], name=r['name'],
@@ -539,6 +546,7 @@ class TaskGenerator:
             INNER JOIN modification_options mo ON m.id = mo.modification_id
             WHERE mi.restaurant_id = ? AND mi.is_available = 1
             AND (LOWER(m.description) LIKE '%sauce%' OR LOWER(mo.name) LIKE '%sauce%')
+            ORDER BY mi.id, mo.id
             LIMIT 10
         """, (restaurant_id,))
         results = []
@@ -555,9 +563,9 @@ class TaskGenerator:
     def get_restaurant_sections(self) -> List[str]:
         """Get available restaurant sections."""
         cursor = self.conn.cursor()
-        cursor.execute("SELECT DISTINCT section FROM restaurants WHERE section IS NOT NULL")
+        cursor.execute("SELECT DISTINCT section FROM restaurants WHERE section IS NOT NULL ORDER BY section")
         sections = [row['section'] for row in cursor.fetchall()]
-        return sections if sections else ["Featured", "New", "Popular", "Nearby"]
+        return sections if sections else ["Featured", "Nearby", "New", "Popular"]  # Sorted default
 
     def generate_variables_for_template(
         self,
@@ -576,7 +584,7 @@ class TaskGenerator:
         if not restaurants:
             return None
         
-        addr_types = [a.address_type for a in user.addresses]
+        addr_types = sorted([a.address_type for a in user.addresses])  # Sort for reproducibility
         addr_type = random.choice(addr_types) if addr_types else "house"
         
         # ================================================================
