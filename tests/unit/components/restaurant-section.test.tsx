@@ -36,6 +36,11 @@ vi.mock('@/lib/utils/rating-utils', () => ({
   getDefaultRating: vi.fn((rating: number) => rating.toFixed(1)),
 }));
 
+// Mock use-deals hook to avoid React Query dependency
+vi.mock('@/lib/hooks/use-deals', () => ({
+  useAllDeals: () => ({ data: [], isLoading: false }),
+}));
+
 const mockRestaurant: Restaurant = {
   id: 'rest-1',
   name: 'Test Restaurant',

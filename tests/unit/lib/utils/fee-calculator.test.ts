@@ -69,7 +69,8 @@ describe('fee-calculator', () => {
       };
       const result = calculateDeliveryFee(params);
       expect(result.fee).toBeGreaterThan(0);
-      expect(result.breakdown.baseDeliveryFee).toBeGreaterThan(0);
+      // Distance surcharge should be > 0 for distance > 2 miles
+      expect(result.breakdown.distanceSurcharge).toBeGreaterThan(0);
     });
 
     it('should calculate higher fee for longer distances', () => {

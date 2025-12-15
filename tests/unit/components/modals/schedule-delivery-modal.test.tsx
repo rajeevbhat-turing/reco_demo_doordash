@@ -6,6 +6,8 @@ import ScheduleDeliveryModal from '@/components/modals/schedule-delivery-modal';
 // Mock dependencies
 vi.mock('lucide-react', () => ({
   X: () => <div data-testid="x-icon">X</div>,
+  Clock: () => <div data-testid="clock-icon">Clock</div>,
+  Calendar: () => <div data-testid="calendar-icon">Calendar</div>,
 }));
 
 describe('ScheduleDeliveryModal', () => {
