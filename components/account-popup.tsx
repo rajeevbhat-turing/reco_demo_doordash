@@ -3,7 +3,7 @@
 import { useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Globe, Lock } from 'lucide-react';
+import { Globe, Lock, Heart } from 'lucide-react';
 import { useUserStore } from '@/store/user-store';
 // import { GiftIcon, GlitterIcon, MedalIcon, MessageIcon } from '@/utils/icons';
 interface AccountPopupProps {
@@ -149,8 +149,8 @@ export default function AccountPopup({ isOpen, onClose, anchorElement }: Account
           <ArrowRight className="h-6 w-6 text-[#00838a] flex-shrink-0" />
         </div> */}
 
-        {/* <div>
-          <div className="pl-[14px] hover:bg-gray-100 cursor-pointer">
+        <div>
+          {/* <div className="pl-[14px] hover:bg-gray-100 cursor-pointer">
             <div className="flex items-center gap-3 border-b border-gray-200 py-[10px] pr-[14px]">
               <svg
                 width="24"
@@ -166,16 +166,22 @@ export default function AccountPopup({ isOpen, onClose, anchorElement }: Account
               </svg>
               <span className="text-[15px] font-medium text-[#00666d]">Get $0 delivery fees</span>
             </div>
-          </div>
+          </div> */}
 
-          <div className="pl-[14px] hover:bg-gray-100 cursor-pointer">
+          <div
+            onClick={() => {
+              router.push('/saved-stores');
+              onClose();
+            }}
+            className="pl-[14px] hover:bg-gray-100 cursor-pointer"
+          >
             <div className="flex items-center gap-3 border-b border-gray-200 py-[10px] pr-[14px]">
               <Heart className="h-[22px] w-[22px] text-[#191919ff]" />
               <span className="text-[15px] font-medium text-[#191919ff]">Saved Stores</span>
             </div>
           </div>
 
-          <div className="pl-[14px] hover:bg-gray-100 cursor-pointer">
+          {/* <div className="pl-[14px] hover:bg-gray-100 cursor-pointer">
             <div className="flex items-center gap-3 border-b border-gray-200 py-[10px] pr-[14px]">
               <div className="h-[22px] w-[22px] text-[#191919ff]">
                 <MedalIcon height={22} width={22} />
@@ -218,8 +224,8 @@ export default function AccountPopup({ isOpen, onClose, anchorElement }: Account
               <UsersRound className="h-[22px] w-[22px] text-[#191919ff]" />
               <span className="text-[15px] font-medium text-[#191919ff]">Get $1 in Credits</span>
             </div>
-          </div>
-        </div> */}
+          </div> */}
+        </div>
 
         <div className="w-full h-2 bg-gray-100 border-y border-gray-200" />
 

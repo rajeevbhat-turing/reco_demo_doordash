@@ -20,6 +20,7 @@ vi.mock('lucide-react', () => ({
   Plus: () => <div data-testid="plus-icon">Plus</div>,
   Minus: () => <div data-testid="minus-icon">Minus</div>,
   Users: () => <div data-testid="users-icon">Users</div>,
+  Clock: () => <div data-testid="clock-icon">Clock</div>,
 }));
 
 // Mock cart store with hoisted functions
@@ -117,6 +118,12 @@ const { mockGetRestaurantById } = vi.hoisted(() => {
 
 vi.mock('@/lib/utils/restaurant-utils', () => ({
   getRestaurantById: mockGetRestaurantById,
+  formatHours: () => '10:00 AM - 10:00 PM',
+}));
+
+// Mock restaurant open status hook - always return open to show Continue button
+vi.mock('@/lib/hooks/use-restaurant-open-status', () => ({
+  useRestaurantOpenStatus: () => true,
 }));
 
 // Mock components
@@ -395,7 +402,8 @@ describe('CartSidebar', () => {
     expect(screen.getByText('Others can add items to this order')).toBeInTheDocument();
   });
 
-  it('should display delivery fee notice for non-restaurant categories', () => {
+  // Note: Delivery fee notice feature was removed from the component
+  it.skip('should display delivery fee notice for non-restaurant categories', () => {
     const groceryCart: Cart = {
       storeId: 'store1',
       storeName: 'Grocery Store',
@@ -416,7 +424,8 @@ describe('CartSidebar', () => {
     expect(screen.getByText(/Add \$15\.00 for \$0 delivery fee/)).toBeInTheDocument();
   });
 
-  it('should display free delivery message when threshold is met', () => {
+  // Note: Delivery fee notice feature was removed from the component
+  it.skip('should display free delivery message when threshold is met', () => {
     const groceryCart: Cart = {
       storeId: 'store1',
       storeName: 'Grocery Store',

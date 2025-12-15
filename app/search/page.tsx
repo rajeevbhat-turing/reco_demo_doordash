@@ -181,47 +181,37 @@ export default function SearchPage() {
     }
   }, [searchQuery]);
 
-  // Fetch menu items for all restaurants
+  // Fetch popular/searched menu items using the efficient bulk API
   useEffect(() => {
-    const fetchAllMenuItems = async () => {
-      if (!restaurants || restaurants.length === 0) {
-        setIsLoadingMenuItems(false);
-        return;
-      }
-
+    const fetchPopularMenuItems = async () => {
       setIsLoadingMenuItems(true);
       try {
-        const menuPromises = restaurants.map(restaurant =>
-          fetch(`/api/restaurants/${restaurant.id}/menu`)
-            .then(res => res.json())
-            .then(data => {
-              if (data.success && data.data.menuItems) {
-                return data.data.menuItems.map((item: any) => ({
-                  ...item,
-                  restaurant_id: restaurant.id, // Ensure restaurant_id is set correctly
-                  restaurantId: restaurant.id, // Also set restaurantId for consistency
-                  restaurantName: restaurant.name,
-                  restaurantLogo: restaurant.logo,
-                }));
-              }
-              return [];
-            })
-            .catch(() => [])
-        );
+        // Build the API URL with query params
+        const params = new URLSearchParams();
+        if (activeAddress?.lat) params.set('lat', String(activeAddress.lat));
+        if (activeAddress?.lng) params.set('lng', String(activeAddress.lng));
+        params.set('limit', '20');
+        if (searchQuery) params.set('search', searchQuery);
 
-        const allMenus = await Promise.all(menuPromises);
-        const flattenedMenuItems = allMenus.flat();
-        console.log('Fetched menu items:', flattenedMenuItems.length);
-        setAllMenuItems(flattenedMenuItems);
+        const response = await fetch(`/api/restaurants/popular-items?${params.toString()}`);
+        const data = await response.json();
+        
+        if (data.success && data.data) {
+          console.log('Fetched menu items:', data.data.length);
+          setAllMenuItems(data.data);
+        } else {
+          setAllMenuItems([]);
+        }
       } catch (error) {
         console.error('Error fetching menu items:', error);
+        setAllMenuItems([]);
       } finally {
         setIsLoadingMenuItems(false);
       }
     };
 
-    fetchAllMenuItems();
-  }, [restaurants]);
+    fetchPopularMenuItems();
+  }, [activeAddress?.lat, activeAddress?.lng, searchQuery]);
 
   // Function to check if an image URL is valid
   const hasValidLogo = (logoUrl: string | undefined): boolean => {
@@ -368,18 +358,10 @@ export default function SearchPage() {
       .slice(0, 3); // Max 3 popular restaurants
   }, [filteredRestaurants]);
 
-  // Filter menu items based on search query or show popular items
+  // Menu items are already filtered by the API (by search query or popular/featured)
   const matchedMenuItems = useMemo(() => {
-    if (!allMenuItems.length) return [];
-
-    if (searchQuery) {
-      const lowerQuery = searchQuery.toLowerCase();
-      return allMenuItems.filter(item => item.name.toLowerCase().includes(lowerQuery)).slice(0, 20);
-    }
-
-    // If no search query, show popular menu items
-    return allMenuItems.filter(item => item.popular || item.featured).slice(0, 20);
-  }, [allMenuItems, searchQuery]);
+    return allMenuItems.slice(0, 20);
+  }, [allMenuItems]);
 
   // Remaining restaurants (after popular, shown below dishes)
   const remainingRestaurants = useMemo(() => {
@@ -527,10 +509,10 @@ export default function SearchPage() {
         )}
 
         {/* Popular Dishes Carousel */}
-        {!hasActiveFilters() && matchedMenuItems.length > 0 && (
+        {!hasActiveFilters() && (isLoadingMenuItems || matchedMenuItems.length > 0) && (
           <div className="mb-8">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-bold">Popular Dishes</h2>
+              <h2 className="text-xl font-bold">{searchQuery ? 'Matching Dishes' : 'Popular Dishes'}</h2>
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => scrollDishes('left')}
@@ -564,7 +546,20 @@ export default function SearchPage() {
                 className="flex gap-4 overflow-x-auto scrollbar-hide scroll-smooth"
                 style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
               >
-                {matchedMenuItems.map(item => {
+                {isLoadingMenuItems ? (
+                  // Skeleton loading state
+                  Array.from({ length: 5 }).map((_, idx) => (
+                    <div
+                      key={`skeleton-${idx}`}
+                      className="flex-shrink-0 w-[220px] flex flex-col animate-pulse"
+                    >
+                      <div className="w-full h-[140px] bg-gray-200 rounded-lg mb-2" />
+                      <div className="h-4 bg-gray-200 rounded w-3/4 mb-2" />
+                      <div className="h-3 bg-gray-200 rounded w-1/2 mb-2" />
+                      <div className="h-4 bg-gray-200 rounded w-1/4" />
+                    </div>
+                  ))
+                ) : matchedMenuItems.map(item => {
                   const handleAddToCart = (e: React.MouseEvent) => {
                     e.preventDefault();
                     e.stopPropagation();

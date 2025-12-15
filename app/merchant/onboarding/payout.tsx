@@ -5,6 +5,7 @@ import { ChevronLeft, ChevronDown } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useMerchantAuthStore } from '@/store/merchant-auth-store';
+import { formatPhoneNumber, validatePhoneNumber } from '@/lib/utils/phone-validation';
 
 export default function PayoutStep() {
   const router = useRouter();
@@ -45,14 +46,32 @@ export default function PayoutStep() {
     validateField(field);
   };
 
-  // Clear error for a field if value becomes valid
+  // Clear error for a field if value becomes valid, or set error for live validation fields
   const clearErrorIfValid = (field: string, value: string) => {
+    // Live validation for representative name fields - show errors immediately
+    if (field === 'representativeFirstName' || field === 'representativeLastName') {
+      const fieldLabel = field === 'representativeFirstName' ? 'First name' : 'Last name';
+      if (value.trim() && !/^[a-zA-Z\s\-']+$/.test(value)) {
+        setErrors(prev => ({
+          ...prev,
+          [field]: `${fieldLabel} contains invalid characters`,
+        }));
+      } else {
+        setErrors(prev => {
+          const newErrors = { ...prev };
+          delete newErrors[field];
+          return newErrors;
+        });
+      }
+      return;
+    }
+
     if (!errors[field]) return;
 
     let isValid = false;
     switch (field) {
       case 'accountNumber':
-        isValid = value.length >= 5 && /^\d+$/.test(value);
+        isValid = value.length >= 5 && value.length <= 17 && /^\d+$/.test(value);
         break;
       case 'financialInstitutionNumber':
         isValid = value.length === 3 && /^\d+$/.test(value);
@@ -72,10 +91,6 @@ export default function PayoutStep() {
         break;
       case 'gstNumber':
         isValid = value.length === 9 && /^\d+$/.test(value);
-        break;
-      case 'representativeFirstName':
-      case 'representativeLastName':
-        isValid = value.trim().length > 0 && /^[a-zA-Z\s\-']+$/.test(value);
         break;
       case 'personalAddress':
         isValid = value.trim().length > 0;
@@ -102,7 +117,7 @@ export default function PayoutStep() {
         isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
         break;
       case 'phone':
-        isValid = value.replace(/\D/g, '').length >= 11;
+        isValid = validatePhoneNumber(value, 'US').isValid;
         break;
     }
 
@@ -125,6 +140,8 @@ export default function PayoutStep() {
           newErrors.accountNumber = 'Account number is required';
         } else if (accountNumber.length < 5) {
           newErrors.accountNumber = 'Account number must be at least 5 digits';
+        } else if (accountNumber.length > 17) {
+          newErrors.accountNumber = 'Account number must be at most 17 digits';
         } else if (!/^\d+$/.test(accountNumber)) {
           newErrors.accountNumber = 'Account number must contain only digits';
         } else {
@@ -265,10 +282,9 @@ export default function PayoutStep() {
         if (!phone.trim()) {
           newErrors.phone = 'Phone number is required';
         } else {
-          // Remove formatting to check digit count
-          const digits = phone.replace(/\D/g, '');
-          if (digits.length < 11) {
-            newErrors.phone = 'Please enter a complete phone number';
+          const phoneValidation = validatePhoneNumber(phone, 'US');
+          if (!phoneValidation.isValid) {
+            newErrors.phone = phoneValidation.error || 'Please enter a valid phone number';
           } else {
             delete newErrors.phone;
           }
@@ -318,6 +334,8 @@ export default function PayoutStep() {
       newErrors.accountNumber = 'Account number is required';
     } else if (accountNumber.length < 5) {
       newErrors.accountNumber = 'Account number must be at least 5 digits';
+    } else if (accountNumber.length > 17) {
+      newErrors.accountNumber = 'Account number must be at most 17 digits';
     } else if (!/^\d+$/.test(accountNumber)) {
       newErrors.accountNumber = 'Account number must contain only digits';
     }
@@ -411,9 +429,9 @@ export default function PayoutStep() {
     if (!phone.trim()) {
       newErrors.phone = 'Phone number is required';
     } else {
-      const digits = phone.replace(/\D/g, '');
-      if (digits.length < 11) {
-        newErrors.phone = 'Please enter a complete phone number';
+      const phoneValidation = validatePhoneNumber(phone, 'US');
+      if (!phoneValidation.isValid) {
+        newErrors.phone = phoneValidation.error || 'Please enter a valid phone number';
       }
     }
 
@@ -497,16 +515,9 @@ export default function PayoutStep() {
     }
   };
 
+  // Format phone number using the standard US format (XXX) XXX-XXXX
   const formatPhone = (value: string) => {
-    // Remove all non-digits
-    const digits = value.replace(/\D/g, '');
-
-    // Format as 1 (XXX) XXX-XXXX
-    if (digits.length === 0) return '';
-    if (digits.length <= 1) return `1 (${digits.slice(1)}`;
-    if (digits.length <= 4) return `1 (${digits.slice(1, 4)}`;
-    if (digits.length <= 7) return `1 (${digits.slice(1, 4)}) ${digits.slice(4)}`;
-    return `1 (${digits.slice(1, 4)}) ${digits.slice(4, 7)}-${digits.slice(7, 11)}`;
+    return formatPhoneNumber(value, 'US');
   };
 
   return (
@@ -543,14 +554,15 @@ export default function PayoutStep() {
               type="text"
               pattern="[0-9]*"
               inputMode="numeric"
-              placeholder="Enter at least 5 digits"
+              placeholder="Enter 5-17 digits"
               value={accountNumber}
               onChange={e => {
-                const value = e.target.value.replace(/\D/g, '');
+                const value = e.target.value.replace(/\D/g, '').slice(0, 17);
                 setAccountNumber(value);
                 clearErrorIfValid('accountNumber', value);
               }}
               onBlur={() => handleBlur('accountNumber')}
+              maxLength={17}
               className={`bg-gray-50 ${touched.accountNumber && errors.accountNumber ? 'border-[#b71000]' : 'border-gray-200'}`}
             />
             {touched.accountNumber && <ErrorMessage error={errors.accountNumber} />}
@@ -962,7 +974,7 @@ export default function PayoutStep() {
             <Input
               id="phone"
               type="text"
-              placeholder="1 (XXX) XXX-XXXX"
+              placeholder="(XXX) XXX-XXXX"
               value={phone}
               onChange={e => {
                 const formatted = formatPhone(e.target.value);
@@ -970,7 +982,7 @@ export default function PayoutStep() {
                 clearErrorIfValid('phone', formatted);
               }}
               onBlur={() => handleBlur('phone')}
-              maxLength={16}
+              maxLength={14}
               className={`bg-gray-50 ${touched.phone && errors.phone ? 'border-[#b71000]' : 'border-gray-200'}`}
             />
             {touched.phone && <ErrorMessage error={errors.phone} />}

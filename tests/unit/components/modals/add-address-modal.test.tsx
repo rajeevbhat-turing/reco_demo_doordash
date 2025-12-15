@@ -138,7 +138,7 @@ describe('AddAddressModal', () => {
     expect(screen.getByText('Apartment/Suite')).toBeInTheDocument();
     expect(screen.getByText('City')).toBeInTheDocument();
     expect(screen.getByText('State')).toBeInTheDocument();
-    expect(screen.getByText('Zip code')).toBeInTheDocument();
+    expect(screen.getByText('ZIP Code')).toBeInTheDocument();
   });
 
   it('should render action buttons', () => {
@@ -185,7 +185,7 @@ describe('AddAddressModal', () => {
   it('should update zip code when user types', () => {
     render(<AddAddressModal isOpen={true} onClose={mockOnClose} onContinue={mockOnContinue} />);
 
-    const zipInput = screen.getByLabelText('Zip code') as HTMLInputElement;
+    const zipInput = screen.getByLabelText('ZIP Code') as HTMLInputElement;
     fireEvent.change(zipInput, { target: { value: '94104' } });
 
     expect(zipInput.value).toBe('94104');
@@ -194,19 +194,21 @@ describe('AddAddressModal', () => {
   it('should only allow numeric characters in zip code', () => {
     render(<AddAddressModal isOpen={true} onClose={mockOnClose} onContinue={mockOnContinue} />);
 
-    const zipInput = screen.getByLabelText('Zip code') as HTMLInputElement;
+    const zipInput = screen.getByLabelText('ZIP Code') as HTMLInputElement;
     fireEvent.change(zipInput, { target: { value: 'abc123def456' } });
 
-    expect(zipInput.value).toBe('123456');
+    // US ZIP codes are limited to 5 digits
+    expect(zipInput.value).toBe('12345');
   });
 
-  it('should limit zip code to 10 characters', () => {
+  it('should limit zip code to 5 characters for US', () => {
     render(<AddAddressModal isOpen={true} onClose={mockOnClose} onContinue={mockOnContinue} />);
 
-    const zipInput = screen.getByLabelText('Zip code') as HTMLInputElement;
+    const zipInput = screen.getByLabelText('ZIP Code') as HTMLInputElement;
     fireEvent.change(zipInput, { target: { value: '123456789012345' } });
 
-    expect(zipInput.value).toBe('1234567890');
+    // US ZIP codes are limited to 5 digits
+    expect(zipInput.value).toBe('12345');
   });
 
   it('should show error when street address is empty on continue', () => {
@@ -245,7 +247,7 @@ describe('AddAddressModal', () => {
     const continueButton = screen.getByRole('button', { name: 'Continue' });
     fireEvent.click(continueButton);
 
-    expect(screen.getByText('Required field')).toBeInTheDocument();
+    expect(screen.getByText('ZIP code is required')).toBeInTheDocument();
     expect(mockOnContinue).not.toHaveBeenCalled();
   });
 
@@ -275,7 +277,7 @@ describe('AddAddressModal', () => {
     fireEvent.change(streetInput, { target: { value: '123 Main St' } });
     const cityInput = screen.getByLabelText('City') as HTMLInputElement;
     fireEvent.change(cityInput, { target: { value: 'San Francisco' } });
-    const zipInput = screen.getByLabelText('Zip code') as HTMLInputElement;
+    const zipInput = screen.getByLabelText('ZIP Code') as HTMLInputElement;
     fireEvent.change(zipInput, { target: { value: '94104' } });
 
     const continueButton = screen.getByRole('button', { name: 'Continue' });
@@ -301,7 +303,7 @@ describe('AddAddressModal', () => {
     fireEvent.change(apartmentInput, { target: { value: 'Apt 4B' } });
     const cityInput = screen.getByLabelText('City') as HTMLInputElement;
     fireEvent.change(cityInput, { target: { value: 'San Francisco' } });
-    const zipInput = screen.getByLabelText('Zip code') as HTMLInputElement;
+    const zipInput = screen.getByLabelText('ZIP Code') as HTMLInputElement;
     fireEvent.change(zipInput, { target: { value: '94104' } });
 
     const continueButton = screen.getByRole('button', { name: 'Continue' });
@@ -339,7 +341,7 @@ describe('AddAddressModal', () => {
     const streetInput = screen.getByLabelText('Street Address') as HTMLInputElement;
     const apartmentInput = screen.getByLabelText('Apartment/Suite') as HTMLInputElement;
     const cityInput = screen.getByLabelText('City') as HTMLInputElement;
-    const zipInput = screen.getByLabelText('Zip code') as HTMLInputElement;
+    const zipInput = screen.getByLabelText('ZIP Code') as HTMLInputElement;
 
     expect(streetInput.value).toBe('123 Main St');
     expect(apartmentInput.value).toBe('Apt 4B');

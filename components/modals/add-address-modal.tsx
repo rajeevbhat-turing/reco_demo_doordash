@@ -13,6 +13,12 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import countriesData from '@/lib/utils/countries.json';
+import {
+  validateZipCode,
+  formatZipCodeInput,
+  getZipCodeMaxLength,
+  getZipCodeLabel,
+} from '@/lib/utils/zip-code-validation';
 
 interface AddAddressModalProps {
   isOpen: boolean;
@@ -161,8 +167,11 @@ export default function AddAddressModal({
     if (!city.trim()) {
       newErrors.city = 'Required field';
     }
-    if (!zipCode.trim()) {
-      newErrors.zipCode = 'Required field';
+    
+    // Validate ZIP/postal code with country-specific rules
+    const zipValidation = validateZipCode(zipCode, country);
+    if (!zipValidation.isValid) {
+      newErrors.zipCode = zipValidation.error;
     }
 
     if (Object.keys(newErrors).length > 0) {
@@ -206,7 +215,8 @@ export default function AddAddressModal({
   };
 
   const handleZipCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setZipCode(e.target.value.replace(/\D/g, '').slice(0, 10));
+    const formatted = formatZipCodeInput(e.target.value, country);
+    setZipCode(formatted);
     if (errors.zipCode) {
       setErrors(prev => ({ ...prev, zipCode: undefined }));
     }
@@ -354,14 +364,14 @@ export default function AddAddressModal({
               </div>
               <div>
                 <Label htmlFor="zipCode" className="text-[15px] font-bold text-gray-900 mb-2 block">
-                  Zip code
+                  {getZipCodeLabel(country)}
                 </Label>
                 <Input
                   id="zipCode"
                   type="text"
                   value={zipCode}
                   onChange={handleZipCodeChange}
-                  maxLength={10}
+                  maxLength={getZipCodeMaxLength(country)}
                   className={`w-full border-2 focus-visible:ring-0 focus-visible:ring-offset-0 border-transparent rounded-lg focus-visible:border-[#191919ff] ${
                     errors.zipCode ? 'border-[#b71000ff] bg-[#fef0ed]' : 'bg-[#f7f7f7]'
                   }`}

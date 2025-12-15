@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, useEffect, useMemo, useRef, useSyncExternalStore } from 'react';
+import { useState, useEffect, useMemo, useRef, useSyncExternalStore, useCallback, Suspense } from 'react';
 import Link from 'next/link';
 import { Heart } from 'lucide-react';
+import { useSearchParams, usePathname, useRouter } from 'next/navigation';
 import FoodCategories from '@/components/food-categories';
 import FilterOptions, {
   type FilterOptionsRef,
@@ -20,21 +21,31 @@ import { useAppStore } from '@/store/app-store';
 import { getDefaultRating } from '@/utils/rating-utils';
 import { RestaurantsSkeleton } from '@/components/skeletons/restaurant-skeleton';
 import { parseDistance, calculateDeliveryTime } from '@/lib/utils/restaurant-utils';
+import {
+  parseFiltersFromUrl,
+  parseCategoryFromUrl,
+  buildUrlWithFilters,
+  getDefaultFilterState,
+} from '@/lib/utils/filter-url-params';
 
-export default function Home() {
-  const [filters, setFilters] = useState<FilterState>({
-    underThirtyMins: false,
-    deals: false,
-    overRating: null,
-    price: null,
-    dashPass: false,
-    cuisine: null,
-    dietaryPreferences: null,
-  });
+// Inner component that uses useSearchParams (needs Suspense boundary)
+function HomeContent() {
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const router = useRouter();
+
+  // Initialize filters and category from URL params
+  const initialFilters = useMemo(() => parseFiltersFromUrl(searchParams), [searchParams]);
+  const initialCategory = useMemo(() => parseCategoryFromUrl(searchParams), [searchParams]);
+
+  const [filters, setFilters] = useState<FilterState>(initialFilters);
   const [allFilteredRestaurants, setAllFilteredRestaurants] = useState<Restaurant[]>([]);
   const filterOptionsRef = useRef<FilterOptionsRef>(null);
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(initialCategory);
   const { updateSearchResults, clearSearchResults } = useAppStore();
+
+  // Track if URL update is needed (to avoid infinite loops)
+  const isUpdatingUrl = useRef(false);
 
   // Get cart store to set category
   const cartStore = useCartStore();
@@ -117,6 +128,47 @@ export default function Home() {
       rating: getDefaultRating(restaurant.rating),
     }));
   };
+
+  // Update URL when filters or category change
+  const updateUrlWithFilters = useCallback((newFilters: FilterState, newCategory: string | null) => {
+    if (isUpdatingUrl.current) return;
+    isUpdatingUrl.current = true;
+    
+    const newUrl = buildUrlWithFilters(pathname, newFilters, newCategory);
+    router.replace(newUrl, { scroll: false });
+    
+    // Reset flag after a short delay
+    setTimeout(() => {
+      isUpdatingUrl.current = false;
+    }, 100);
+  }, [pathname, router]);
+
+  // Sync URL when filters or category change
+  useEffect(() => {
+    // Don't update URL during initial render
+    if (isUpdatingUrl.current) return;
+    
+    updateUrlWithFilters(filters, selectedCategory);
+  }, [filters, selectedCategory, updateUrlWithFilters]);
+
+  // Sync state from URL when URL changes (back/forward navigation)
+  useEffect(() => {
+    const urlFilters = parseFiltersFromUrl(searchParams);
+    const urlCategory = parseCategoryFromUrl(searchParams);
+    
+    // Only update if different from current state
+    const filtersChanged = JSON.stringify(urlFilters) !== JSON.stringify(filters);
+    const categoryChanged = urlCategory !== selectedCategory;
+    
+    if (filtersChanged || categoryChanged) {
+      isUpdatingUrl.current = true;
+      if (filtersChanged) setFilters(urlFilters);
+      if (categoryChanged) setSelectedCategory(urlCategory);
+      setTimeout(() => {
+        isUpdatingUrl.current = false;
+      }, 100);
+    }
+  }, [searchParams]);
 
   const handleCategorySelect = (category: string | null) => {
     setSelectedCategory(category);
@@ -400,23 +452,18 @@ export default function Home() {
   };
 
   // Modify the handleReset function to avoid calling the child's resetFilters method
-  const handleReset = () => {
+  const handleReset = useCallback(() => {
     // Create a fresh filter state object
-    const resetFilters = {
-      underThirtyMins: false,
-      deals: false,
-      overRating: null,
-      price: null,
-      dashPass: false,
-      cuisine: null,
-      dietaryPreferences: null,
-    };
+    const resetFilters = getDefaultFilterState();
 
     // Update the state with the reset filters
     setFilters(resetFilters);
     setSelectedCategory(null);
     clearSearchResults();
-  };
+    
+    // Clear URL params
+    router.replace(pathname, { scroll: false });
+  }, [pathname, router, clearSearchResults]);
 
   const hasActiveFilters = () => {
     return (
@@ -590,5 +637,35 @@ export default function Home() {
         )}
       </div>
     </div>
+  );
+}
+
+// Loading fallback for Suspense
+function HomeLoading() {
+  return (
+    <div className="w-full max-w-[1200px] mx-auto px-4">
+      <div className="pt-16">
+        <div className="flex overflow-x-auto py-4 scrollbar-hide -mx-4 px-4 space-x-8">
+          {Array.from({ length: 8 }).map((_, i) => (
+            <div key={i} className="flex-shrink-0 animate-pulse">
+              <div className="w-16 h-16 rounded-full bg-gray-200" />
+              <div className="h-3 w-14 bg-gray-200 rounded mt-2 mx-auto" />
+            </div>
+          ))}
+        </div>
+      </div>
+      <div className="mt-8">
+        <RestaurantsSkeleton count={12} />
+      </div>
+    </div>
+  );
+}
+
+// Main export with Suspense boundary for useSearchParams
+export default function Home() {
+  return (
+    <Suspense fallback={<HomeLoading />}>
+      <HomeContent />
+    </Suspense>
   );
 }

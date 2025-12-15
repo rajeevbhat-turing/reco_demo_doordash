@@ -36,12 +36,7 @@ const SearchBar = () => {
   const { recordSearch } = useVerifierStore();
 
   // Placeholder texts for rotation
-  const placeholderTexts = [
-    'Search DashDoor',
-    'Search Presses Acai Bowls',
-    'Search Papa Pasta',
-    'Search Boichik Bagels',
-  ];
+  const placeholderTexts = ['Search DashDoor'];
   const [currentPlaceholderIndex, setCurrentPlaceholderIndex] = useState(0);
 
   // Get authentication status
