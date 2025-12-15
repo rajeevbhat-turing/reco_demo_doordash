@@ -1,6 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
+import { ArrowLeft } from 'lucide-react';
 
 export default function ManageAccountPage() {
   const router = useRouter();
@@ -21,6 +22,15 @@ export default function ManageAccountPage() {
       <div className="max-w-md w-full">
         {/* Main Card */}
         <div className="bg-white rounded-md shadow-sm border border-gray-200 pt-8 pb-6 px-4">
+          {/* Back Button */}
+          <button
+            onClick={() => router.push('/consumer/edit_profile')}
+            className="flex items-center gap-2 text-[#191919ff] hover:text-gray-600 transition-colors mb-6"
+          >
+            <ArrowLeft className="w-5 h-5" />
+            <span className="text-[15px] font-medium">Account Settings</span>
+          </button>
+
           {/* Header */}
           <div className="mb-8">
             <h1 className="text-3xl font-bold text-[#191919ff]">Manage Account</h1>

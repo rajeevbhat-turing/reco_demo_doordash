@@ -2,6 +2,7 @@
 
 import React, { useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
+import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -169,6 +170,15 @@ export default function PasswordResetPage() {
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-sm w-full space-y-8 bg-white px-6 pb-8 pt-10">
+        {/* Back Button */}
+        <button
+          onClick={() => router.push('/consumer/edit_profile')}
+          className="flex items-center gap-2 text-[#191919ff] hover:text-gray-600 transition-colors -mb-4"
+        >
+          <ArrowLeft className="w-5 h-5" />
+          <span className="text-[15px] font-medium">Account Settings</span>
+        </button>
+
         {/* Header */}
         <div className="text-center">
           <h1 className="text-3xl font-bold text-[#191919ff]">Set new password</h1>
