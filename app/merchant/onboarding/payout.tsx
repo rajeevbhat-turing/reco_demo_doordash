@@ -46,8 +46,26 @@ export default function PayoutStep() {
     validateField(field);
   };
 
-  // Clear error for a field if value becomes valid
+  // Clear error for a field if value becomes valid, or set error for live validation fields
   const clearErrorIfValid = (field: string, value: string) => {
+    // Live validation for representative name fields - show errors immediately
+    if (field === 'representativeFirstName' || field === 'representativeLastName') {
+      const fieldLabel = field === 'representativeFirstName' ? 'First name' : 'Last name';
+      if (value.trim() && !/^[a-zA-Z\s\-']+$/.test(value)) {
+        setErrors(prev => ({
+          ...prev,
+          [field]: `${fieldLabel} contains invalid characters`,
+        }));
+      } else {
+        setErrors(prev => {
+          const newErrors = { ...prev };
+          delete newErrors[field];
+          return newErrors;
+        });
+      }
+      return;
+    }
+
     if (!errors[field]) return;
 
     let isValid = false;
@@ -73,10 +91,6 @@ export default function PayoutStep() {
         break;
       case 'gstNumber':
         isValid = value.length === 9 && /^\d+$/.test(value);
-        break;
-      case 'representativeFirstName':
-      case 'representativeLastName':
-        isValid = value.trim().length > 0 && /^[a-zA-Z\s\-']+$/.test(value);
         break;
       case 'personalAddress':
         isValid = value.trim().length > 0;

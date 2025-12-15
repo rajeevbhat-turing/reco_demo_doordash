@@ -114,9 +114,23 @@ export default function MerchantSignUpPage() {
     };
   }, [formData.password, formData.email]);
 
-  // Updates form data and clears field-specific errors
+  // Updates form data and validates in real-time for name fields
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+    
+    // Live validation for firstName and lastName
+    if (field === 'firstName' || field === 'lastName') {
+      const newErrors = { ...errors };
+      if (value.trim() && !/^[a-zA-Z\s\-'.,]+$/.test(value)) {
+        newErrors[field] = `${field === 'firstName' ? 'First' : 'Last'} name contains invalid characters`;
+      } else {
+        delete newErrors[field];
+      }
+      delete newErrors.general;
+      setErrors(newErrors);
+      return;
+    }
+    
     if (errors[field]) {
       setErrors(prev => {
         const newErrors = { ...prev };
