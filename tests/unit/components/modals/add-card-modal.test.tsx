@@ -181,7 +181,7 @@ describe('AddCardModal', () => {
     const addButton = screen.getByText('Add Card');
     fireEvent.click(addButton);
 
-    expect(screen.getByText('Zip code must be 5 digits')).toBeInTheDocument();
+    expect(screen.getByText('ZIP code must be 5 digits')).toBeInTheDocument();
   });
 
   it('should call onAddCard with correct data when form is valid', () => {
