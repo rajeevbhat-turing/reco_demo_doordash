@@ -2760,7 +2760,7 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
 "{
   ""task_id"": ""scheduled-best-item-001"",
   ""start_url"": ""https://dashdoor.rlgym.turing.com/"",
-  ""task_statement"": ""Log in using email 'lena.bennett71@example.com' and password 'c69fieW7G93U'. I am craving some sweet potato wedges, please order them for me. Just make sure you order from the restaurant that has the best rating for it. Also, I'll be at my home address by 5 PM so place this order for about half an hour after that."",
+  ""task_statement"": ""Log in using email 'lena.bennett71@example.com' and password 'c69fieW7G93U'. I am craving some sweet potato wedges, please order them for me. Just make sure you order from the restaurant that has the best rating for it. Also, I'll be at my house address by 5 PM so place this order for about half an hour after that."",
   ""task_type"": ""GUI Comprehension, Action Execution, Decision Making, Element Identification, Information Retrieval"",
   ""simulator_config"": {
     ""start_date"": ""today"",
@@ -2859,7 +2859,7 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
     }
   }
 }
-","[""Ratings & Reviews""]","[""Review-based recommendations"", ""Delivery scheduling""]","[""Search and filtering"", ""Decision making"", ""Scheduling"", ""Order Placement""]","Log in using email 'lena.bennett71@example.com' and password 'c69fieW7G93U'. I am craving some sweet potato wedges, please order them for me. Just make sure you order from the restaurant that has the best rating for it. Also, I'll be at my home address by 5 PM so place this order for about half an hour after that.",,0,Hard,
+","[""Ratings & Reviews""]","[""Review-based recommendations"", ""Delivery scheduling""]","[""Search and filtering"", ""Decision making"", ""Scheduling"", ""Order Placement""]","Log in using email 'lena.bennett71@example.com' and password 'c69fieW7G93U'. I am craving some sweet potato wedges, please order them for me. Just make sure you order from the restaurant that has the best rating for it. Also, I'll be at my house address by 5 PM so place this order for about half an hour after that.",,0,Hard,
 "{
   ""task_id"": ""healthy-fixed-order-001"",
   ""start_url"": ""https://dashdoor.rlgym.turing.com/"",
