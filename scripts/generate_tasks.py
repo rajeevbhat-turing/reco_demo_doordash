@@ -815,10 +815,15 @@ class TaskGenerator:
         # 4. replace-payment-card
         # ================================================================
         elif template_id == "replace-payment-card":
+            # User must have a house address for this template
+            house_address = next((a for a in user.addresses if a.address_type == 'house'), None)
+            if not house_address:
+                return None
+            
             card_num = ''.join([str(random.randint(0, 9)) for _ in range(16)])
             cvv = ''.join([str(random.randint(0, 9)) for _ in range(3)])
             exp_month = random.randint(1, 12)
-            exp_year = random.randint(2025, 2030)
+            exp_year = random.randint(2028, 2035)
             variables.update({
                 "CARD_NUMBER": card_num,
                 "CARD_CVV": cvv,
