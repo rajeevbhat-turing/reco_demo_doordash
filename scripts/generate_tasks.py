@@ -1542,6 +1542,9 @@ class TaskGenerator:
         # Load predefined tasks (these become the -001 tasks)
         predefined_tasks = self.load_predefined_tasks() if include_predefined else {}
         
+        # Track which predefined tasks have been added
+        added_predefined_template_ids: Set[str] = set()
+        
         used_users: Set[int] = set()
         
         for template in templates:
@@ -1554,10 +1557,11 @@ class TaskGenerator:
             
             # Add predefined task as -001 if it exists
             if template_id in predefined_tasks:
-                predefined = predefined_tasks[template_id]
+                predefined = copy.deepcopy(predefined_tasks[template_id])
                 predefined['task_id'] = f"{template_id}-001"
                 tasks.append(predefined)
                 template_task_count = 1
+                added_predefined_template_ids.add(template_id)
                 print(f"   [+] Task {template_id}-001: (predefined)")
             
             # Get appropriate user pool for this template
@@ -1565,6 +1569,10 @@ class TaskGenerator:
             
             for user in users:
                 if max_total_tasks and len(tasks) >= max_total_tasks:
+                    # Before returning, add any remaining predefined tasks
+                    tasks = self._add_remaining_predefined_tasks(
+                        tasks, predefined_tasks, added_predefined_template_ids
+                    )
                     return tasks
                     
                 if template_task_count >= max_tasks_per_template:
@@ -1594,6 +1602,32 @@ class TaskGenerator:
             
             if template_task_count == 0:
                 print(f"   [WARN] No tasks generated - insufficient data for this template")
+        
+        # After processing all templates, add any remaining predefined tasks
+        # that weren't matched to a template
+        tasks = self._add_remaining_predefined_tasks(
+            tasks, predefined_tasks, added_predefined_template_ids
+        )
+        
+        return tasks
+    
+    def _add_remaining_predefined_tasks(
+        self,
+        tasks: List[Dict[str, Any]],
+        predefined_tasks: Dict[str, Dict],
+        added_predefined_template_ids: Set[str]
+    ) -> List[Dict[str, Any]]:
+        """Add any predefined tasks that haven't been added yet."""
+        remaining_predefined = set(predefined_tasks.keys()) - added_predefined_template_ids
+        
+        if remaining_predefined:
+            print(f"\n[PREDEFINED] Adding {len(remaining_predefined)} predefined task(s) without matching templates:")
+            
+            for template_id in sorted(remaining_predefined):
+                predefined = copy.deepcopy(predefined_tasks[template_id])
+                predefined['task_id'] = f"{template_id}-001"
+                tasks.append(predefined)
+                print(f"   [+] Task {template_id}-001: (predefined, no template)")
         
         return tasks
     
