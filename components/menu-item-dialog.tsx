@@ -627,9 +627,7 @@ export default function MenuItemDialog({ isOpen, onClose, item, restaurant }: Me
                               • Select{' '}
                               {modification.select_up_to === 1
                                 ? '1'
-                                : restaurant?.name === "Fiona's Tavern"
-                                ? `up to ${Math.min(modification.select_up_to, modification.options.length)}`
-                                : `up to ${modification.select_up_to}`}
+                                : `up to ${Math.min(modification.select_up_to, modification.options.length)}`}
                             </span>
                           </div>
                         </div>
@@ -701,9 +699,7 @@ export default function MenuItemDialog({ isOpen, onClose, item, restaurant }: Me
                                     • Select{' '}
                                     {childMod.select_up_to === 1
                                       ? '1'
-                                      : restaurant?.name === "Fiona's Tavern"
-                                      ? `up to ${Math.min(childMod.select_up_to, childMod.options.length)}`
-                                      : `up to ${childMod.select_up_to}`}
+                                      : `up to ${Math.min(childMod.select_up_to, childMod.options.length)}`}
                                   </span>
                                 </div>
                               </div>

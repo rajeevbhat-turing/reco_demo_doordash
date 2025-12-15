@@ -54,9 +54,23 @@ export function mergeReviewsWithChanges(
   // Add new reviews created in this session
   // Filter out any that might already exist in API or are deleted (shouldn't happen, but safety check)
   const newReviewIds = new Set(apiReviews.map(r => r.id));
-  const uniqueNewReviews = newReviews.filter(
-    review => !newReviewIds.has(review.id) && !deletedIdsSet.has(review.id)
-  );
+  const uniqueNewReviews = newReviews
+    .filter(review => !newReviewIds.has(review.id) && !deletedIdsSet.has(review.id))
+    .map(review => {
+      const updatedReview = { ...review };
+
+      // Apply helpful rating changes (if any)
+      if (helpfulChanges[review.id]) {
+        updatedReview.ratedHelpfulBy = helpfulChanges[review.id];
+      }
+
+      // Apply approval status changes (if any)
+      if (approvalChanges[review.id]) {
+        updatedReview.approvalStatus = approvalChanges[review.id];
+      }
+
+      return updatedReview;
+    });
 
   // Combine merged API reviews with new session reviews
   return [...mergedReviews, ...uniqueNewReviews];
