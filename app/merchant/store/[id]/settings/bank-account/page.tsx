@@ -410,8 +410,9 @@ export default function BankAccountPage() {
                     id="new-account"
                     type="text"
                     value={newAccountNumber}
-                    onChange={e => setNewAccountNumber(e.target.value.replace(/\D/g, ''))}
-                    placeholder="Enter at least 5 digits"
+                    onChange={e => setNewAccountNumber(e.target.value.replace(/\D/g, '').slice(0, 17))}
+                    placeholder="Enter 5-17 digits"
+                    maxLength={17}
                   />
                 </div>
                 <div>

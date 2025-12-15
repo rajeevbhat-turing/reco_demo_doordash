@@ -53,7 +53,7 @@ export default function PayoutStep() {
     let isValid = false;
     switch (field) {
       case 'accountNumber':
-        isValid = value.length >= 5 && /^\d+$/.test(value);
+        isValid = value.length >= 5 && value.length <= 17 && /^\d+$/.test(value);
         break;
       case 'financialInstitutionNumber':
         isValid = value.length === 3 && /^\d+$/.test(value);
@@ -126,6 +126,8 @@ export default function PayoutStep() {
           newErrors.accountNumber = 'Account number is required';
         } else if (accountNumber.length < 5) {
           newErrors.accountNumber = 'Account number must be at least 5 digits';
+        } else if (accountNumber.length > 17) {
+          newErrors.accountNumber = 'Account number must be at most 17 digits';
         } else if (!/^\d+$/.test(accountNumber)) {
           newErrors.accountNumber = 'Account number must contain only digits';
         } else {
@@ -318,6 +320,8 @@ export default function PayoutStep() {
       newErrors.accountNumber = 'Account number is required';
     } else if (accountNumber.length < 5) {
       newErrors.accountNumber = 'Account number must be at least 5 digits';
+    } else if (accountNumber.length > 17) {
+      newErrors.accountNumber = 'Account number must be at most 17 digits';
     } else if (!/^\d+$/.test(accountNumber)) {
       newErrors.accountNumber = 'Account number must contain only digits';
     }
@@ -536,14 +540,15 @@ export default function PayoutStep() {
               type="text"
               pattern="[0-9]*"
               inputMode="numeric"
-              placeholder="Enter at least 5 digits"
+              placeholder="Enter 5-17 digits"
               value={accountNumber}
               onChange={e => {
-                const value = e.target.value.replace(/\D/g, '');
+                const value = e.target.value.replace(/\D/g, '').slice(0, 17);
                 setAccountNumber(value);
                 clearErrorIfValid('accountNumber', value);
               }}
               onBlur={() => handleBlur('accountNumber')}
+              maxLength={17}
               className={`bg-gray-50 ${touched.accountNumber && errors.accountNumber ? 'border-[#b71000]' : 'border-gray-200'}`}
             />
             {touched.accountNumber && <ErrorMessage error={errors.accountNumber} />}
