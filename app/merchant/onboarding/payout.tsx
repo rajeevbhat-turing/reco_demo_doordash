@@ -5,6 +5,7 @@ import { ChevronLeft, ChevronDown } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useMerchantAuthStore } from '@/store/merchant-auth-store';
+import { formatPhoneNumber, validatePhoneNumber } from '@/lib/utils/phone-validation';
 
 export default function PayoutStep() {
   const router = useRouter();
@@ -102,7 +103,7 @@ export default function PayoutStep() {
         isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
         break;
       case 'phone':
-        isValid = value.replace(/\D/g, '').length >= 11;
+        isValid = validatePhoneNumber(value, 'US').isValid;
         break;
     }
 
@@ -265,10 +266,9 @@ export default function PayoutStep() {
         if (!phone.trim()) {
           newErrors.phone = 'Phone number is required';
         } else {
-          // Remove formatting to check digit count
-          const digits = phone.replace(/\D/g, '');
-          if (digits.length < 11) {
-            newErrors.phone = 'Please enter a complete phone number';
+          const phoneValidation = validatePhoneNumber(phone, 'US');
+          if (!phoneValidation.isValid) {
+            newErrors.phone = phoneValidation.error || 'Please enter a valid phone number';
           } else {
             delete newErrors.phone;
           }
@@ -411,9 +411,9 @@ export default function PayoutStep() {
     if (!phone.trim()) {
       newErrors.phone = 'Phone number is required';
     } else {
-      const digits = phone.replace(/\D/g, '');
-      if (digits.length < 11) {
-        newErrors.phone = 'Please enter a complete phone number';
+      const phoneValidation = validatePhoneNumber(phone, 'US');
+      if (!phoneValidation.isValid) {
+        newErrors.phone = phoneValidation.error || 'Please enter a valid phone number';
       }
     }
 
@@ -497,16 +497,9 @@ export default function PayoutStep() {
     }
   };
 
+  // Format phone number using the standard US format (XXX) XXX-XXXX
   const formatPhone = (value: string) => {
-    // Remove all non-digits
-    const digits = value.replace(/\D/g, '');
-
-    // Format as 1 (XXX) XXX-XXXX
-    if (digits.length === 0) return '';
-    if (digits.length <= 1) return `1 (${digits.slice(1)}`;
-    if (digits.length <= 4) return `1 (${digits.slice(1, 4)}`;
-    if (digits.length <= 7) return `1 (${digits.slice(1, 4)}) ${digits.slice(4)}`;
-    return `1 (${digits.slice(1, 4)}) ${digits.slice(4, 7)}-${digits.slice(7, 11)}`;
+    return formatPhoneNumber(value, 'US');
   };
 
   return (
@@ -962,7 +955,7 @@ export default function PayoutStep() {
             <Input
               id="phone"
               type="text"
-              placeholder="1 (XXX) XXX-XXXX"
+              placeholder="(XXX) XXX-XXXX"
               value={phone}
               onChange={e => {
                 const formatted = formatPhone(e.target.value);
@@ -970,7 +963,7 @@ export default function PayoutStep() {
                 clearErrorIfValid('phone', formatted);
               }}
               onBlur={() => handleBlur('phone')}
-              maxLength={16}
+              maxLength={14}
               className={`bg-gray-50 ${touched.phone && errors.phone ? 'border-[#b71000]' : 'border-gray-200'}`}
             />
             {touched.phone && <ErrorMessage error={errors.phone} />}
