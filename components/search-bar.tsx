@@ -36,12 +36,7 @@ const SearchBar = () => {
   const { recordSearch } = useVerifierStore();
 
   // Placeholder texts for rotation
-  const placeholderTexts = [
-    'Search DashDoor',
-    'Search Presses Acai Bowls',
-    'Search Papa Pasta',
-    'Search Boichik Bagels',
-  ];
+  const placeholderTexts = ['Search DashDoor'];
   const [currentPlaceholderIndex, setCurrentPlaceholderIndex] = useState(0);
 
   // Get authentication status
@@ -192,15 +187,16 @@ const SearchBar = () => {
     setSearchTerm(value);
 
     if (value.trim() && restaurants) {
+      const trimmedValue = value.trim();
       // Search restaurants by name and cuisine
       const restaurantResults = restaurants
         .filter(restaurant => {
           return (
-            restaurant.name.toLowerCase().includes(value.toLowerCase()) ||
-            restaurant.cuisine.toLowerCase().includes(value.toLowerCase()) ||
+            restaurant.name.toLowerCase().includes(trimmedValue.toLowerCase()) ||
+            restaurant.cuisine.toLowerCase().includes(trimmedValue.toLowerCase()) ||
             (restaurant.categories &&
               restaurant.categories.some(category =>
-                category.toLowerCase().includes(value.toLowerCase())
+                category.toLowerCase().includes(trimmedValue.toLowerCase())
               ))
           );
         })
@@ -289,10 +285,12 @@ const SearchBar = () => {
   // Handle search submission
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (searchTerm.trim()) {
-      saveRecentSearch(searchTerm);
-      recordSearch(searchTerm);
-      router.push(`/search?q=${encodeURIComponent(searchTerm)}`);
+    // Trimming the search term to prevent whitespace issues
+    const trimmedSearchTerm = searchTerm.trim();
+    if (trimmedSearchTerm) {
+      saveRecentSearch(trimmedSearchTerm);
+      recordSearch(trimmedSearchTerm);
+      router.push(`/search?q=${encodeURIComponent(trimmedSearchTerm)}`);
       setIsSearchActive(false);
     }
   };
@@ -315,9 +313,11 @@ const SearchBar = () => {
   // Handle clicking on a search suggestion
   const handleSuggestionClick = (suggestion: string) => {
     setSearchTerm(suggestion);
-    saveRecentSearch(suggestion);
-    recordSearch(suggestion);
-    router.push(`/search?q=${encodeURIComponent(suggestion)}`);
+    // Trimming the suggestion to prevent whitespace issues
+    const trimmedSuggestion = suggestion.trim();
+    saveRecentSearch(trimmedSuggestion);
+    recordSearch(trimmedSuggestion);
+    router.push(`/search?q=${encodeURIComponent(trimmedSuggestion)}`);
     setIsSearchActive(false);
   };
 

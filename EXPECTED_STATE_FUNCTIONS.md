@@ -15,6 +15,7 @@ This document describes all available expected state functions, their arguments,
 10. [get_reviews](#get_reviews)
 11. [get_date_N_days_from_today](#get_date_n_days_from_today)
 12. [get_time_slot](#get_time_slot)
+13. [get_modifications](#get_modifications)
 
 ---
 
@@ -323,6 +324,8 @@ Gets restaurants with optional filtering, sorting, and radius filtering.
   limit?: number;                  // Optional: Number of restaurants to return
   filters?: {
     item_keyword?: string;         // Optional: Filter by menu item keyword (finds restaurants with matching items)
+    has_any_item_keywords?: string[];  // Optional: Filter by menu item keywords (finds restaurants with items matching ANY keyword)
+    has_all_item_keywords?: string[];  // Optional: Filter by menu item keywords (finds restaurants with items matching ALL keywords)
     cuisines?: string[];           // Optional: Array of cuisines (matches any)
     categories?: string[];         // Optional: Array of categories (matches any)
     prices?: string[];             // Optional: Array of price ranges: "$", "$$", "$$$", "$$$$"
@@ -424,6 +427,53 @@ This will find all restaurants with "Pizza" in their name (e.g., "Pizza Palace",
 }
 ```
 Finds restaurants that have menu items with "tacos" in the name, sorted by nearest first.
+
+**Filter by ANY item keyword (OR logic):**
+```json
+{
+  "function": "get_restaurants",
+  "args": {
+    "filters": {
+      "has_any_item_keywords": ["burger", "fries", "shake"]
+    },
+    "limit": 10
+  }
+}
+```
+Finds restaurants that have menu items matching ANY of the keywords ("burger" OR "fries" OR "shake"). **Note:** Using `has_any_item_keywords` with a single keyword functions the same as `item_keyword`.
+
+**Filter by ALL item keywords (AND logic):**
+```json
+{
+  "function": "get_restaurants",
+  "args": {
+    "filters": {
+      "has_all_item_keywords": ["burger", "fries"]
+    },
+    "limit": 10
+  }
+}
+```
+Finds restaurants that have menu items matching ALL of the keywords - the restaurant must have at least one item containing "burger" AND at least one item containing "fries".
+
+**Combine ALL keywords with other filters:**
+```json
+{
+  "function": "get_restaurants",
+  "args": {
+    "filters": {
+      "has_all_item_keywords": ["salad", "soup"],
+      "dashpass": true,
+      "ratingXAndAbove": 4
+    },
+    "sort_type": [
+      { "key": "distance", "order": "asc" }
+    ],
+    "limit": 5
+  }
+}
+```
+Finds the 5 nearest DashPass restaurants with a rating of 4+ that serve both salads and soups.
 
 **Filter by DashPass:**
 ```json
@@ -1667,4 +1717,120 @@ Gets user reviews with optional filtering and sorting.
 - `helpfulCount` can be used in sorting to find the most helpful reviews
 - Multi-level sorting applies specs in order (first spec as primary sort, subsequent specs as tiebreakers)
 - Returns `null` if no logged-in user and neither `email` nor `restaurant_id` is provided
+
+---
+
+## get_modifications
+
+Gets modification details and options for a specific menu item.
+
+### Arguments
+```typescript
+{
+  item_id: string;           // Required: Menu item ID
+  modification_name: string; // Required: Modification description/name to search for (partial match, case-insensitive)
+  option_name?: string;      // Optional: Specific option name to filter by (partial match, case-insensitive)
+}
+```
+
+### Defaults
+- `option_name`: If not provided, returns all options for the modification
+
+### Returns
+```typescript
+{
+  modification: {
+    id: string;
+    menuItemId: string;
+    description: string;           // The modification name/title (e.g., "Choose your size")
+    isRequired: boolean;
+    selectUpTo: number;            // Maximum number of options that can be selected
+    selectAtLeast: number | null;  // Minimum number of options that must be selected
+    parentOptionId: string | null; // Parent option ID for nested modifications
+    options: Array<{
+      id: string;
+      name: string;
+      description: string | null;
+      price: number;               // In cents
+      isCounter: boolean;          // If true, allows quantity selection
+      maxQuantity: number | null;  // Maximum quantity if isCounter is true
+      isDefault: boolean;          // If true, option is pre-selected
+      sortOrder: number;
+      image: string | null;
+    }>;
+  } | null
+}
+```
+
+Returns `null` for the modification if no matching modification is found.
+
+### Examples
+
+**Get all options for a modification:**
+```json
+{
+  "function": "get_modifications",
+  "args": {
+    "item_id": "menu-item-123",
+    "modification_name": "Choose your size"
+  }
+}
+```
+Returns the modification details and all available size options.
+
+**Get a specific option:**
+```json
+{
+  "function": "get_modifications",
+  "args": {
+    "item_id": "menu-item-123",
+    "modification_name": "Choose your size",
+    "option_name": "Large"
+  }
+}
+```
+Returns the modification details with only the "Large" option in the options array.
+
+**Search for toppings modification:**
+```json
+{
+  "function": "get_modifications",
+  "args": {
+    "item_id": "pizza-margherita",
+    "modification_name": "toppings"
+  }
+}
+```
+Finds modifications with "toppings" in the description (case-insensitive, partial match).
+
+**Using JSONPath for item_id:**
+```json
+[
+  {
+    "function": "get_items",
+    "args": {
+      "restaurant_id": "pizza-palace",
+      "keywords": ["Margherita"],
+      "limit": 1
+    }
+  },
+  {
+    "function": "get_modifications",
+    "args": {
+      "item_id": "$[0].items[0].id",
+      "modification_name": "size"
+    }
+  }
+]
+```
+
+### Notes
+- `modification_name` uses partial matching (e.g., "size" matches "Choose your size")
+- `option_name` also uses partial matching when provided
+- Options are always ordered by `sortOrder` ascending
+- Use `isRequired` to determine if the user must make a selection
+- `selectUpTo = 1` indicates a single-choice modification (radio buttons)
+- `selectUpTo > 1` indicates a multi-choice modification (checkboxes)
+- `isCounter = true` options allow quantity selection up to `maxQuantity`
+- `parentOptionId` indicates this is a nested modification triggered by selecting a specific option
 

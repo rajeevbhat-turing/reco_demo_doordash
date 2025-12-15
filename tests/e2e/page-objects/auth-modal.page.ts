@@ -91,7 +91,7 @@ export class AuthModalPage {
       firstName: 'E2E',
       lastName: 'User',
       email: uniqueEmail,
-      mobileNumber: '5551234567',
+      mobileNumber: '5556234567',
       password: 'StrongPass1234@',
     });
     await this.submitSignup();

@@ -469,6 +469,8 @@ describe('cart-store', () => {
   });
 
   describe('getDeliveryFee', () => {
+    // Note: getDeliveryFee now returns 0 as a placeholder since actual delivery fees
+    // are calculated dynamically via getDynamicDeliveryFee which takes restaurant and distance into account
     it('should return default delivery fee when subtotal is below threshold', () => {
       const cart = {
         storeId: 'store1',
@@ -480,7 +482,8 @@ describe('cart-store', () => {
       useCartStore.setState({ carts: [cart] });
 
       const deliveryFee = useCartStore.getState().getDeliveryFee('store1', 'restaurant');
-      expect(deliveryFee).toBe(5.99);
+      // getDeliveryFee returns 0 as placeholder - actual fee calculated via getDynamicDeliveryFee
+      expect(deliveryFee).toBe(0);
     });
 
     it('should return 0 when subtotal meets free delivery threshold', () => {
@@ -510,8 +513,9 @@ describe('cart-store', () => {
       useCartStore.setState({ carts: [cart] });
 
       const total = useCartStore.getState().getTotal('store1', 'restaurant');
-      // 20 (subtotal) + 4.99 (service fee) + 5.99 (delivery fee) = 30.98
-      expect(total).toBeCloseTo(30.98, 2);
+      // 20 (subtotal) + 4.99 (service fee) + 0 (delivery fee placeholder) = 24.99
+      // Note: Actual delivery fee is calculated via getDynamicDeliveryFee in checkout
+      expect(total).toBeCloseTo(24.99, 2);
     });
   });
 

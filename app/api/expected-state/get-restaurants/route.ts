@@ -16,6 +16,8 @@ interface SortSpec {
  * - lng: Longitude (required)
  * - name: Restaurant name to filter by (optional, partial match, case-insensitive)
  * - item_keyword: Menu item keyword to filter by (optional, finds restaurants with matching items)
+ * - has_any_item_keywords: JSON array of keywords (optional, finds restaurants with items matching ANY keyword)
+ * - has_all_item_keywords: JSON array of keywords (optional, finds restaurants with items matching ALL keywords)
  * - sort_type: JSON array of sort specifications (optional, defaults to distance asc)
  *   - Each spec: { key: string, order?: "asc" | "desc" }
  *   - Example: [{ "key": "distance", "order": "asc" }, { "key": "minDeliveryFee", "order": "asc" }]
@@ -45,6 +47,8 @@ export async function GET(request: NextRequest) {
     const userId = searchParams.get('userId');
     const name = searchParams.get('name');
     const itemKeyword = searchParams.get('item_keyword');
+    const hasAnyItemKeywordsParam = searchParams.get('has_any_item_keywords');
+    const hasAllItemKeywordsParam = searchParams.get('has_all_item_keywords');
     const sortTypeParam = searchParams.get('sort_type');
     const limitParam = searchParams.get('limit');
     const limit = limitParam ? parseInt(limitParam, 10) : null;
@@ -236,6 +240,54 @@ export async function GET(request: NextRequest) {
       }
     }
 
+    let hasAnyItemKeywords: string[] = [];
+    if (hasAnyItemKeywordsParam) {
+      try {
+        hasAnyItemKeywords = JSON.parse(hasAnyItemKeywordsParam);
+        if (!Array.isArray(hasAnyItemKeywords)) {
+          return NextResponse.json(
+            { 
+              success: false, 
+              error: 'has_any_item_keywords must be an array' 
+            },
+            { status: 400 }
+          );
+        }
+      } catch (error) {
+        return NextResponse.json(
+          { 
+            success: false, 
+            error: 'Invalid has_any_item_keywords format' 
+          },
+          { status: 400 }
+        );
+      }
+    }
+
+    let hasAllItemKeywords: string[] = [];
+    if (hasAllItemKeywordsParam) {
+      try {
+        hasAllItemKeywords = JSON.parse(hasAllItemKeywordsParam);
+        if (!Array.isArray(hasAllItemKeywords)) {
+          return NextResponse.json(
+            { 
+              success: false, 
+              error: 'has_all_item_keywords must be an array' 
+            },
+            { status: 400 }
+          );
+        }
+      } catch (error) {
+        return NextResponse.json(
+          { 
+            success: false, 
+            error: 'Invalid has_all_item_keywords format' 
+          },
+          { status: 400 }
+        );
+      }
+    }
+
     // Build SQL query with optional filters
     let query = `
       SELECT DISTINCT
@@ -281,6 +333,28 @@ export async function GET(request: NextRequest) {
       query += ' INNER JOIN menu_items mi ON r.id = mi.restaurant_id';
       whereClauses.push('LOWER(mi.name) LIKE ?');
       queryParams.push(`%${itemKeyword.toLowerCase()}%`);
+    }
+    
+    // Apply has_any_item_keywords filter if provided (OR logic - match ANY keyword)
+    if (hasAnyItemKeywords.length > 0 && !itemKeyword) {
+      query += ' INNER JOIN menu_items mi ON r.id = mi.restaurant_id';
+      const keywordConditions = hasAnyItemKeywords.map(() => 'LOWER(mi.name) LIKE ?').join(' OR ');
+      whereClauses.push(`(${keywordConditions})`);
+      hasAnyItemKeywords.forEach(keyword => {
+        queryParams.push(`%${keyword.toLowerCase()}%`);
+      });
+    }
+    
+    // Apply has_all_item_keywords filter if provided (AND logic - match ALL keywords)
+    if (hasAllItemKeywords.length > 0) {
+      // For each keyword, check if restaurant has at least one matching item
+      const allKeywordConditions = hasAllItemKeywords.map(() => 
+        `EXISTS (SELECT 1 FROM menu_items mi_all WHERE mi_all.restaurant_id = r.id AND LOWER(mi_all.name) LIKE ?)`
+      ).join(' AND ');
+      whereClauses.push(`(${allKeywordConditions})`);
+      hasAllItemKeywords.forEach(keyword => {
+        queryParams.push(`%${keyword.toLowerCase()}%`);
+      });
     }
     
     // Apply cuisines filter if provided

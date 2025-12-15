@@ -2,15 +2,17 @@
 
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { X, ChevronRight, ChevronLeft, Plus, Minus } from 'lucide-react';
+import { X, ChevronRight, ChevronLeft, Plus, Minus, Clock } from 'lucide-react';
 import { useCartStore } from '@/store/cart-store';
 import { Users } from 'lucide-react';
 import { useRestaurants } from '@/lib/hooks/use-restaurants';
 import { useRestaurantMenu } from '@/lib/hooks/use-restaurant-menu';
 import { useUserStore } from '@/store/user-store';
-import { getRestaurantById } from '@/lib/utils/restaurant-utils';
+import { getRestaurantById, formatHours } from '@/lib/utils/restaurant-utils';
+import { useRestaurantOpenStatus } from '@/lib/hooks/use-restaurant-open-status';
 import OtherCarts from './other-carts';
 import MenuItemDialog from '@/components/menu-item-dialog';
+import ScheduleDeliveryModal from '@/components/modals/schedule-delivery-modal';
 import type { MenuItem } from '@/constants/menu-items';
 
 interface CartSidebarProps {
@@ -81,10 +83,19 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [store, setStore] = useState<any>(null);
   const [complementItems, setComplementItems] = useState<any[]>([]);
+
+  // Calculate open status based on user's local time (not server time)
+  const isRestaurantOpen = useRestaurantOpenStatus(restaurant);
   const complementScrollRef = useRef<HTMLDivElement>(null);
   const sidebarRef = useRef<HTMLDivElement>(null);
   const [menuItemDialogOpen, setMenuItemDialogOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null);
+  const [showScheduleModal, setShowScheduleModal] = useState(false);
+  const [scheduledDelivery, setScheduledDelivery] = useState<{
+    date: Date;
+    timeSlot: string;
+    timeSlotDisplay: string;
+  } | null>(null);
 
   // Get category-specific configuration
   const categoryConfig = getConfig();
@@ -266,21 +277,13 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
     return subtotal.toFixed(2);
   };
 
-  // Check if delivery fee applies (only for non-restaurant categories)
-  const shouldShowDeliveryFeeNotice = () => {
-    if (!currentCart || items.length === 0) return false;
-    return (
-      currentCart.storeCategory !== 'restaurant' &&
-      ['grocery', 'retail', 'pets', 'convenience'].includes(currentCart.storeCategory)
-    );
-  };
 
   const handleAddComplementItem = (item: any) => {
-    // Check if restaurant is closed
+    // Check if restaurant is closed (using client-side calculated status)
     if (
       currentCart?.storeCategory === 'restaurant' &&
       restaurant &&
-      restaurant.isOpen === false
+      !isRestaurantOpen
     ) {
       return; // Prevent adding items when restaurant is closed
     }
@@ -314,20 +317,49 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
     }
   };
 
+  // Handle schedule time selection from modal
+  const handleScheduleTimeSelect = (
+    _date: string,
+    timeType: 'asap' | 'later',
+    timeSlot?: string,
+    fullDate?: Date,
+    timeSlotDisplay?: string
+  ) => {
+    if (timeType === 'asap' || !timeSlot || !fullDate) {
+      setScheduledDelivery(null);
+    } else {
+      setScheduledDelivery({
+        date: fullDate,
+        timeSlot: timeSlot,
+        timeSlotDisplay: timeSlotDisplay || timeSlot,
+      });
+    }
+    setShowScheduleModal(false);
+  };
+
   // Handle navigation to checkout
   const handleContinueToCheckout = () => {
-    // Check if restaurant is closed
+    // If restaurant is closed but user has scheduled, allow checkout
     if (
       currentCart?.storeCategory === 'restaurant' &&
       restaurant &&
-      restaurant.isOpen === false
+      !isRestaurantOpen &&
+      !scheduledDelivery
     ) {
-      return; // Prevent navigation to checkout when restaurant is closed
+      // Open schedule modal instead of blocking
+      setShowScheduleModal(true);
+      return;
     }
 
     if (currentCart) {
       // Pass cart identifier via query params for multi-tab support
-      router.push(`/checkout?category=${currentCart.storeCategory}&storeId=${currentCart.storeId}`);
+      // If scheduled, pass schedule info
+      let url = `/checkout?category=${currentCart.storeCategory}&storeId=${currentCart.storeId}`;
+      if (scheduledDelivery) {
+        const scheduledDateStr = scheduledDelivery.date.toISOString();
+        url += `&scheduledDate=${encodeURIComponent(scheduledDateStr)}&scheduledTimeSlot=${encodeURIComponent(scheduledDelivery.timeSlotDisplay)}`;
+      }
+      router.push(url);
     } else {
       // Fallback to basic checkout if no cart found
       router.push('/checkout');
@@ -335,14 +367,14 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
     onClose(); // Close the cart sidebar
   };
 
-  // Check if restaurant is closed (for restaurant carts only)
+  // Check if restaurant is closed (for restaurant carts only, using client-side calculated status)
   const isRestaurantClosed = useMemo(() => {
     return (
       currentCart?.storeCategory === 'restaurant' &&
       restaurant &&
-      restaurant.isOpen === false
+      !isRestaurantOpen
     );
-  }, [currentCart?.storeCategory, restaurant]);
+  }, [currentCart?.storeCategory, restaurant, isRestaurantOpen]);
 
   // Handle removing a cart from other carts section
   const handleRemoveCart = (storeId: string, storeCategory: string) => {
@@ -413,7 +445,6 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
   }
 
   const subtotal = getSubtotal();
-  const displayThreshold = categoryConfig.freeDeliveryThreshold;
 
   return (
     <div ref={sidebarRef} className={cartClasses} data-testid="cart-sidebar">
@@ -435,10 +466,8 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
           </div>
         )}
 
-        {/* Delivery Fee Notice and Progress Bar - Only for non-restaurant categories */}
-        {shouldShowDeliveryFeeNotice() && (
-          <div className="p-4 border-b">
-            {/* Progress bar */}
+        {/* Cart header and continue button */}
+        <div className="p-4 border-b">
             <div className="mb-4">
               <h2 className="text-sm text-gray-600">Your cart from</h2>
               <div
@@ -449,148 +478,66 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
                 <ChevronRight className="h-5 w-5 ml-1" />
               </div>
             </div>
-            <div className="h-1 bg-gray-200 rounded-full mb-4">
-              <div
-                className="h-1 bg-blue-600 rounded-full transition-all duration-300"
-                style={{ width: `${Math.min((subtotal / displayThreshold) * 100, 100)}%` }}
-                suppressHydrationWarning
-              ></div>
-            </div>
-
-            {/* Delivery fee notice */}
-            {subtotal < displayThreshold ? (
-              <div className="flex items-start text-sm mb-4">
-                <div className="text-blue-600 mr-2 mt-1 flex-shrink-0">
-                  <svg
-                    width="16"
-                    height="16"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                    <path
-                      d="M12 8V12"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                    <path
-                      d="M12 16H12.01"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </div>
-                <div>
-                  <p className="font-medium text-blue-600" suppressHydrationWarning>
-                    Add ${(displayThreshold - subtotal).toFixed(2)} for $0 delivery fee
-                  </p>
-                  <span className="text-gray-500" suppressHydrationWarning>
-                    + service fees ({Math.round(categoryConfig.serviceFeePercentage * 100)}%, min $
-                    {categoryConfig.minServiceFee.toFixed(2)})
-                  </span>
+            {isRestaurantClosed && !scheduledDelivery && (
+              <div className="mb-3 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+                <div className="flex items-start gap-2">
+                  <Clock className="h-4 w-4 text-amber-600 flex-shrink-0 mt-0.5" />
+                  <div className="flex-1">
+                    <p className="text-sm text-amber-800 font-medium">
+                      This restaurant is currently closed
+                    </p>
+                    {restaurant && (
+                      <p className="text-xs text-amber-700 mt-0.5">
+                        Hours: {formatHours(restaurant.openingHour, restaurant.closingHour)}
+                      </p>
+                    )}
+                  </div>
                 </div>
               </div>
+            )}
+            {/* Show scheduled delivery info if set */}
+            {scheduledDelivery && (
+              <div className="mb-3 p-3 bg-green-50 border border-green-200 rounded-lg">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Clock className="h-4 w-4 text-green-600" />
+                    <div>
+                      <p className="text-sm text-green-800 font-medium">Scheduled Delivery</p>
+                      <p className="text-xs text-green-700">
+                        {scheduledDelivery.date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })} at {scheduledDelivery.timeSlotDisplay}
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => setShowScheduleModal(true)}
+                    className="text-xs text-green-700 underline hover:text-green-800"
+                  >
+                    Change
+                  </button>
+                </div>
+              </div>
+            )}
+            {/* Show Schedule button when restaurant is closed and no schedule set */}
+            {isRestaurantClosed && !scheduledDelivery ? (
+              <button
+                className="w-full py-3 rounded-full font-medium transition-colors bg-[#e03a19] hover:bg-[#c83216] text-white flex items-center justify-center gap-2"
+                onClick={() => setShowScheduleModal(true)}
+              >
+                <Clock className="h-4 w-4" />
+                Schedule for Later
+              </button>
             ) : (
-              <div className="flex items-start text-sm mb-4">
-                <div className="text-green-600 mr-2 mt-1 flex-shrink-0">
-                  <svg
-                    width="16"
-                    height="16"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M9 12L11 14L15 10M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </div>
-                <div>
-                  <p className="font-medium text-green-600">$0 delivery fee on orders over $35</p>
-                  <span className="text-gray-500" suppressHydrationWarning>
-                    + service fees ({Math.round(categoryConfig.serviceFeePercentage * 100)}%, min $
-                    {categoryConfig.minServiceFee.toFixed(2)})
-                  </span>
-                </div>
-              </div>
-            )}
-
-            {/* Continue button */}
-            {isRestaurantClosed && (
-              <div className="mb-3 p-3 bg-red-50 border border-red-200 rounded-lg">
-                <p className="text-sm text-red-600 font-medium text-center">
-                  This restaurant is currently closed. Please schedule your order for later.
-                </p>
-              </div>
-            )}
-            <button
-              className={`w-full font-medium py-3 rounded-full mb-3 text-lg transition-colors ${
-                isRestaurantClosed
-                  ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                  : 'bg-blue-600 hover:bg-blue-700 text-white'
-              }`}
-              onClick={handleContinueToCheckout}
-              disabled={isRestaurantClosed}
-            >
-              Continue
-            </button>
-            <p className="text-center text-sm text-gray-600" suppressHydrationWarning>
-              ${getTotal()} without tax
-            </p>
-          </div>
-        )}
-
-        {/* For restaurants, show the continue button in the original position */}
-        {!shouldShowDeliveryFeeNotice() && (
-          <div className="p-4 border-b">
-            <div className="mb-4">
-              <h2 className="text-sm text-gray-600">Your cart from</h2>
-              <div
-                className="flex items-center cursor-pointer hover:opacity-70 transition-opacity"
-                onClick={handleNavigateToStore}
+              <button
+                className="w-full py-3 rounded-full font-medium transition-colors bg-[#e03a19] hover:bg-[#c83216] text-white"
+                onClick={handleContinueToCheckout}
               >
-                <h3 className="font-bold text-lg">{getDisplayName()}</h3>
-                <ChevronRight className="h-5 w-5 ml-1" />
-              </div>
-            </div>
-            {isRestaurantClosed && (
-              <div className="mb-3 p-3 bg-red-50 border border-red-200 rounded-lg">
-                <p className="text-sm text-red-600 font-medium text-center">
-                  This restaurant is currently closed. Please schedule your order for later.
-                </p>
-              </div>
+                Continue
+              </button>
             )}
-            <button
-              className={`w-full py-3 rounded-full font-medium transition-colors ${
-                isRestaurantClosed
-                  ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                  : 'bg-[#e03a19] hover:bg-[#c83216] text-white'
-              }`}
-              onClick={handleContinueToCheckout}
-              disabled={isRestaurantClosed}
-            >
-              Continue
-            </button>
             <p className="text-center text-sm text-gray-600 mt-2" suppressHydrationWarning>
               ${getTotal()} without tax
             </p>
           </div>
-        )}
 
         {/* Cart Items */}
         <div className="flex-1">
@@ -766,6 +713,17 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
           }}
         />
       )}
+
+      {/* Schedule Delivery Modal */}
+      <ScheduleDeliveryModal
+        isOpen={showScheduleModal}
+        onClose={() => setShowScheduleModal(false)}
+        onSelectTime={handleScheduleTimeSelect}
+        restaurantOpeningHour={restaurant?.openingHour}
+        restaurantClosingHour={restaurant?.closingHour}
+        isRestaurantClosed={isRestaurantClosed}
+        restaurantName={restaurant?.name}
+      />
     </div>
   );
 }

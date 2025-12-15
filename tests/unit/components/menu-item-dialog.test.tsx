@@ -50,7 +50,7 @@ const mockItem = {
   description: 'A delicious burger',
   rating: 4.5,
   ratingCount: 120,
-  calories: '650 cal',
+  calories: '650',
 };
 
 const mockItemWithModifications = {
@@ -153,7 +153,8 @@ describe('MenuItemDialog', () => {
     it('should render item details when open', () => {
       render(<MenuItemDialog isOpen={true} onClose={mockOnClose} item={mockItem} />);
       expect(screen.getByText('Test Burger')).toBeInTheDocument();
-      expect(screen.getByText('(650 cal)')).toBeInTheDocument();
+      // Component displays calories as "{calories} Cal"
+      expect(screen.getByText('650 Cal')).toBeInTheDocument();
     });
 
     it('should render item image', () => {

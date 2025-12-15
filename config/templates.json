@@ -1,0 +1,2666 @@
+[
+  {
+    "template_settings": {
+      "template_id": "item-addon-order",
+      "task_category_L1": ["Order placement"],
+      "task_category_L2": ["Customizations"],
+      "capability": ["Search and filtering", "Instruction following"]
+    },
+    "start_url": "https://dashdoor.rlgym.turing.com/home",
+    "task_statement": "Log in using email '{{USER_EMAIL}}' and password '{{USER_PASSWORD}}'. Order {{RESTAURANT_ITEM}} from {{RESTAURANT}}, select the {{ITEM_ADD_ON}} add on",
+    "task_type": "GUI Comprehension, Action Execution",
+    "grader_config": {
+      "state_grader_configs": [
+        {
+          "assertions": [
+            {
+              "operator": "ARRAY_STRING_EQUALS",
+              "path_to_actual": "$.restaurantId",
+              "paths_to_expected": ["$[1].restaurants[0].id"]
+            },
+            {
+              "operator": "ARRAY_STRING_EQUALS",
+              "path_to_actual": "$.items[0].name",
+              "paths_to_expected": ["$[2].items[0].name"]
+            },
+            {
+              "expected": ["==1"],
+              "operator": "ARRAY_LENGTH_MATCH",
+              "path_to_actual": "$.items[*]"
+            },
+            {
+              "operator": "NUMERIC_MATCH",
+              "path_to_actual": "$.items[0].quantity",
+              "expected": ["==1"]
+            },
+            {
+              "operator": "STRING_EQUALS",
+              "path_to_actual": "$.items[0].modifications[0].options[0].id",
+              "paths_to_expected": ["$[3].modifications[0].options[0].id"]
+            }
+          ],
+          "path_to_actual": "$.orders[0]"
+        }
+      ],
+      "extract_states_config": {
+        "expected_state_functions": [
+          {
+            "args": {
+              "user": "{{USER_EMAIL}}"
+            },
+            "function": "get_user_address"
+          },
+          {
+            "args": {
+              "lat": "$[0].address.lat",
+              "lng": "$[0].address.lng",
+              "limit": 1,
+              "name": "{{RESTAURANT}}"
+            },
+            "function": "get_restaurants"
+          },
+          {
+            "args": {
+              "limit": 1,
+              "keywords": ["{{RESTAURANT_ITEM}}"],
+              "restaurant_id": "$[1].restaurants[0].id"
+            },
+            "function": "get_items"
+          },
+          {
+            "args": {
+              "item_id": "$[2].items[0].id",
+              "modification_name": "add-ons",
+              "option_name": "{{ITEM_ADD_ON}}"
+            },
+            "function": "get_modifications"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "template_settings": {
+      "template_id": "nearest-cheapest-choice",
+      "task_category_L1": ["Menu Viewing"],
+      "task_category_L2": ["Restaurant discovery & filtering", "Price & rating tradeoffs"],
+      "capability": ["Search and filtering", "Decision making", "Instruction following"]
+    },
+    "start_url": "https://dashdoor.rlgym.turing.com/home",
+    "task_statement": "Log in using email '{{USER_EMAIL}}' and password '{{USER_PASSWORD}}'. Order from the nearest {{CUISINE}} restaurant. Get either a {{RESTAURANT_ITEM_1}} or a {{RESTAURANT_ITEM_2}}, choosing the cheaper option, and if they cost the same, pick the one with the higher rating. Have it delivered to my {{ADDRESS_TYPE}} address.",
+    "grader_config": {
+      "state_grader_configs": [
+        {
+          "assertions": [
+            {
+              "operator": "STRING_EQUALS",
+              "paths_to_expected": ["$.address.id"]
+            }
+          ],
+          "path_to_actual": "$.orders[0].deliveryAddress.id"
+        },
+        {
+          "assertions": [
+            {
+              "operator": "STRING_EQUALS",
+              "path_to_actual": "$.items[0].id",
+              "paths_to_expected": ["$.items[0].id"]
+            },
+            {
+              "expected": ["==1"],
+              "operator": "ARRAY_LENGTH_MATCH",
+              "path_to_actual": "$.items[*]"
+            }
+          ],
+          "path_to_actual": "$.orders[0]"
+        }
+      ],
+      "extract_states_config": {
+        "expected_state_functions": [
+          {
+            "args": {
+              "type": "{{ADDRESS_TYPE}}",
+              "user": "{{USER_EMAIL}}"
+            },
+            "function": "get_user_address"
+          },
+          {
+            "args": {
+              "lat": "$[0].address.lat",
+              "lng": "$[0].address.lng",
+              "limit": 1,
+              "filters": {
+                "cuisines": ["{{CUISINE}}"]
+              },
+              "sort_type": [
+                {
+                  "key": "distance",
+                  "order": "asc"
+                }
+              ]
+            },
+            "function": "get_restaurants"
+          },
+          {
+            "args": {
+              "limit": 1,
+              "keywords": ["{{RESTAURANT_ITEM_1}}", "{{RESTAURANT_ITEM_2}}"],
+              "sort_type": [
+                {
+                  "key": "price",
+                  "order": "asc"
+                },
+                {
+                  "key": "rating",
+                  "order": "desc"
+                }
+              ],
+              "restaurant_id": "$[1].restaurants[0].id"
+            },
+            "function": "get_items"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "template_settings": {
+      "template_id": "new-cheapest-restaurant",
+      "task_category_L1": ["Order History"],
+      "task_category_L2": ["Restaurant discovery & filtering", "Reorder & past orders"],
+      "capability": ["Order history analysis", "Search and filtering", "Decision making"]
+    },
+    "start_url": "https://dashdoor.rlgym.turing.com/home",
+    "task_statement": "Log in using email '{{USER_EMAIL}}' and password '{{USER_PASSWORD}}'. Help me find the best cheapest {{DIETARY_PREFERENCE_1}} or {{DIETARY_PREFERENCE_2}} restaurant option that I have not ordered from in the past.",
+    "task_type": "Multi-Step Task Planning, GUI Comprehension, Decision Making",
+    "simulator_config": {
+      "start_date": "today",
+      "user_persona": "{{USER_EMAIL}}"
+    },
+    "grader_config": {
+      "answer_grader_config": {
+        "assertions": [
+          {
+            "operator": "STRING_CONTAINS",
+            "paths_to_expected": ["$.restaurants[0].name"]
+          }
+        ]
+      },
+      "extract_states_config": {
+        "expected_state_functions": [
+          {
+            "function": "get_orders",
+            "args": {}
+          },
+          {
+            "function": "get_restaurants",
+            "args": {
+              "filters": {
+                "cuisines": ["{{DIETARY_PREFERENCE_2}}", "{{DIETARY_PREFERENCE_1}}"],
+                "restaurant_ids_not_in": "$[0].orders[*].storeId"
+              },
+              "sort_type": [
+                {
+                  "key": "priceRange",
+                  "order": "asc"
+                },
+                {
+                  "key": "rating",
+                  "order": "desc"
+                }
+              ],
+              "limit": 1
+            }
+          }
+        ]
+      }
+    }
+  },
+  {
+    "template_settings": {
+      "template_id": "replace-payment-card",
+      "task_category_L1": ["Payment & Checkout"],
+      "task_category_L2": ["Payment method management"],
+      "capability": ["Instruction following", "Form filling", "UI Elements: Text Fields"]
+    },
+    "start_url": "https://dashdoor.rlgym.turing.com/home",
+    "task_statement": "Log in using email '{{USER_EMAIL}}' and password '{{USER_PASSWORD}}'. Delete my current card details and add a new card {{CARD_NUMBER}} with CVV {{CARD_CVV}} and expiry date {{EXPIRY_MONTH_NAME}} {{EXPIRY_YEAR}}. Use the zipcode of my current house address.",
+    "task_type": "GUI Comprehension, Action Execution, Information Retrieval",
+    "simulator_config": {
+      "start_date": "today",
+      "user_persona": "{{USER_EMAIL}}"
+    },
+    "grader_config": {
+      "state_grader_configs": [
+        {
+          "assertions": [
+            {
+              "expected": ["==1"],
+              "operator": "ARRAY_LENGTH_MATCH"
+            },
+            {
+              "operator": "STRING_EQUALS",
+              "expected": ["{{CARD_NUMBER}}"],
+              "path_to_actual": "$[0].cardNumber"
+            },
+            {
+              "operator": "STRING_EQUALS",
+              "expected": ["{{CARD_CVV}}"],
+              "path_to_actual": "$[0].cvc"
+            },
+            {
+              "operator": "STRING_EQUALS",
+              "expected": ["{{EXPIRY_MM_YY}}"],
+              "path_to_actual": "$[0].expiry"
+            },
+            {
+              "operator": "STRING_EQUALS",
+              "paths_to_expected": ["$.address.zipCode"],
+              "path_to_actual": "$[0].zipCode"
+            }
+          ],
+          "path_to_actual": "$.user.currentUser.paymentMethods"
+        }
+      ],
+      "extract_states_config": {
+        "expected_state_functions": [
+          {
+            "args": {
+              "type": "house",
+              "user": "{{USER_EMAIL}}"
+            },
+            "function": "get_user_address"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "template_settings": {
+      "template_id": "rate-last-order",
+      "task_category_L1": ["Ratings & Reviews"],
+      "task_category_L2": ["Review creation"],
+      "capability": ["Instruction following", "Text generation"]
+    },
+    "start_url": "https://dashdoor.rlgym.turing.com/home",
+    "task_statement": "Log in using email '{{USER_EMAIL}}' and password '{{USER_PASSWORD}}'. Rate my last order from {{RESTAURANT_NAME}} a {{RATING_NUM}} star because the {{ITEM_NAME}} was {{COMPLAINT_1}} and {{COMPLAINT_2}}.",
+    "task_type": "GUI Comprehension, Action Execution",
+    "simulator_config": {
+      "start_date": "today",
+      "user_persona": "{{USER_EMAIL}}"
+    },
+    "grader_config": {
+      "state_grader_configs": [
+        {
+          "assertions": [
+            {
+              "operator": "STRING_EQUALS",
+              "path_to_actual": "$.vendorName",
+              "expected": ["{{RESTAURANT_NAME}}"]
+            },
+            {
+              "operator": "NUMERIC_MATCH",
+              "path_to_actual": "$.rating",
+              "expected": ["=={{RATING_NUM}}"]
+            },
+            {
+              "operator": "STRING_CONTAINS",
+              "path_to_actual": "$.content",
+              "expected": ["{{ITEM_NAME}}", "{{COMPLAINT_1}}", "{{COMPLAINT_2}}"]
+            }
+          ],
+          "path_to_actual": "$.reviews.newReviews[0]"
+        }
+      ],
+      "extract_states_config": {
+        "expected_state_functions": [
+          {
+            "args": {},
+            "function": "get_user_address"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "template_settings": {
+      "template_id": "clear-invalid-carts",
+      "task_category_L1": ["Cart Management"],
+      "task_category_L2": ["Cart cleanup"],
+      "capability": ["Search and filtering", "Instruction following"]
+    },
+    "start_url": "https://dashdoor.rlgym.turing.com/home",
+    "task_statement": "Log in using email '{{USER_EMAIL}}' and password '{{USER_PASSWORD}}'. I recently changed my address so remove all the carts from restaurants no longer in my area.",
+    "task_type": "GUI Comprehension, Action Execution, Decision Making, Element Identification",
+    "simulator_config": {
+      "start_date": "today",
+      "user_persona": "{{USER_EMAIL}}"
+    },
+    "grader_config": {
+      "state_grader_configs": [
+        {
+          "assertions": [
+            {
+              "operator": "ARRAY_STRING_EQUALS",
+              "path_to_actual": "$.carts[*].storeId",
+              "paths_to_expected": ["$.carts[*].storeId"]
+            }
+          ]
+        }
+      ],
+      "extract_states_config": {
+        "expected_state_functions": [
+          {
+            "args": {
+              "user": "{{USER_EMAIL}}"
+            },
+            "function": "get_user_address"
+          },
+          {
+            "args": {
+              "lat": "$[0].address.lat",
+              "lng": "$[0].address.lng"
+            },
+            "function": "get_restaurants"
+          },
+          {
+            "args": {
+              "limit": 1,
+              "filters": {
+                "restaurant_names": "$[1].restaurants[*].name"
+              }
+            },
+            "function": "get_carts"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "template_settings": {
+      "template_id": "replace-cart-item",
+      "task_category_L1": ["Cart Management"],
+      "task_category_L2": ["Cart editing & item swaps", "Delivery scheduling"],
+      "capability": ["Cart manipulation", "Scheduling", "Order Placement"]
+    },
+    "start_url": "https://dashdoor.rlgym.turing.com/home",
+    "task_statement": "Log in using email '{{USER_EMAIL}}' and password '{{USER_PASSWORD}}'. I created a cart from {{RESTAURANT_NAME}} not too long ago, replace one of the {{ITEM_TO_REPLACE}} with a {{ITEM_TO_ADD}} and place an order for {{DELIVERY_TIME}} tomorrow.",
+    "task_type": "GUI Comprehension, Action Execution",
+    "simulator_config": {
+      "start_date": "today",
+      "user_persona": "{{USER_EMAIL}}"
+    },
+    "grader_config": {
+      "state_grader_configs": [
+        {
+          "assertions": [
+            {
+              "operator": "ARRAY_STRING_EQUALS",
+              "path_to_actual": "$.items[*].id",
+              "paths_to_expected": ["$.carts[0].items[*].id", "$.items[0].id"]
+            },
+            {
+              "operator": "NUMERIC_MATCH",
+              "path_to_actual": "$.items[?(@.name == '{{ITEM_TO_REPLACE}}')].quantity",
+              "expected": ["==1"]
+            },
+            {
+              "operator": "STRING_CONTAINS",
+              "path_to_actual": "$.deliveryOption.deliveryTime",
+              "paths_to_expected": ["$.date"]
+            },
+            {
+              "operator": "STRING_CONTAINS",
+              "path_to_actual": "$.deliveryOption.deliveryTime",
+              "paths_to_expected": ["$.slot"]
+            }
+          ],
+          "path_to_actual": "$.orders[0]"
+        }
+      ],
+      "extract_states_config": {
+        "expected_state_functions": [
+          {
+            "function": "get_carts",
+            "args": {
+              "limit": 1,
+              "filters": {
+                "restaurant_names": ["{{RESTAURANT_NAME}}"]
+              }
+            }
+          },
+          {
+            "function": "get_items",
+            "args": {
+              "limit": 1,
+              "keywords": ["{{ITEM_TO_ADD}}"],
+              "restaurant_id": "$[0].carts[0].storeId"
+            }
+          },
+          {
+            "function": "get_date_N_days_from_today",
+            "args": {
+              "days": 1
+            }
+          },
+          {
+            "function": "get_time_slot",
+            "args": {
+              "time": "{{DELIVERY_TIME}}"
+            }
+          }
+        ]
+      }
+    }
+  },
+  {
+    "template_settings": {
+      "template_id": "reorder-with-addons",
+      "task_category_L1": ["Reorder"],
+      "task_category_L2": [
+        "Reorder & past orders",
+        "Cart editing & item swaps",
+        "Coupon application"
+      ],
+      "capability": ["Order history analysis", "Instruction following", "Order Placement"]
+    },
+    "start_url": "https://dashdoor.rlgym.turing.com/home",
+    "task_statement": "Log in using email '{{USER_EMAIL}}' and password '{{USER_PASSWORD}}'. Reorder my last order from {{RESTAURANT_NAME}}, also add {{ITEM_QTY}} servings of {{RESTAURANT_ITEM}} this time. Place the order to my apartment on {{STREET}}. The apartment number is {{APARTMENT_NUMBER}} and {{ENTRY_CODE}} is the entry code. Apply {{PROMO_CODE}} coupon",
+    "task_type": "GUI Comprehension, Action Execution, Decision Making, Element Identification, Multi-Step Task Planning",
+    "simulator_config": {
+      "start_date": "today",
+      "user_persona": "{{USER_EMAIL}}"
+    },
+    "grader_config": {
+      "state_grader_configs": [
+        {
+          "assertions": [
+            {
+              "operator": "STRING_EQUALS",
+              "expected": ["apartment"],
+              "path_to_actual": "$.addressType"
+            },
+            {
+              "operator": "STRING_EQUALS",
+              "expected": ["{{STREET}}"],
+              "path_to_actual": "$.street"
+            },
+            {
+              "operator": "STRING_EQUALS",
+              "expected": ["{{ENTRY_CODE}}"],
+              "path_to_actual": "$.entryCode"
+            },
+            {
+              "operator": "STRING_EQUALS",
+              "expected": ["{{APARTMENT_NUMBER}}"],
+              "path_to_actual": "$.apartmentSuite"
+            }
+          ],
+          "path_to_actual": "$.orders[0].deliveryAddress"
+        },
+        {
+          "assertions": [
+            {
+              "operator": "STRING_EQUALS",
+              "paths_to_expected": ["$.deal.id"]
+            }
+          ],
+          "path_to_actual": "$.orders[0].appliedDeal.id"
+        },
+        {
+          "assertions": [
+            {
+              "operator": "ARRAY_STRING_EQUALS",
+              "path_to_actual": "$.items[*].name",
+              "paths_to_expected": ["$.orders[0].items[*].name", "$.items[*].name"]
+            },
+            {
+              "operator": "NUMERIC_MATCH",
+              "path_to_actual": "$.items[?(@.name == '{{RESTAURANT_ITEM}}')].quantity",
+              "expected": ["=={{ITEM_QTY}}"]
+            }
+          ],
+          "path_to_actual": "$.orders[0]"
+        }
+      ],
+      "extract_states_config": {
+        "expected_state_functions": [
+          {
+            "args": {
+              "promocode": "{{PROMO_CODE}}"
+            },
+            "function": "get_deal"
+          },
+          {
+            "args": {
+              "name": "{{RESTAURANT_NAME}}"
+            },
+            "function": "get_restaurants"
+          },
+          {
+            "args": {
+              "limit": 1,
+              "email": "{{USER_EMAIL}}",
+              "restaurant_id": "$[1].restaurants[0].id",
+              "sort_type": [
+                {
+                  "key": "orderDate",
+                  "order": "desc"
+                }
+              ]
+            },
+            "function": "get_orders"
+          },
+          {
+            "args": {
+              "limit": 1,
+              "keywords": ["{{RESTAURANT_ITEM_KEYWORDS}}"],
+              "restaurant_id": "$[1].restaurants[0].id"
+            },
+            "function": "get_items"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "template_settings": {
+      "template_id": "express-nearest-order",
+      "task_category_L1": ["Menu Viewing"],
+      "task_category_L2": [
+        "Restaurant discovery & filtering",
+        "Delivery options",
+        "Coupon application"
+      ],
+      "capability": ["Search and filtering", "Decision making", "Order Placement"]
+    },
+    "start_url": "https://dashdoor.rlgym.turing.com/home",
+    "task_statement": "Log in using email '{{USER_EMAIL}}' and password '{{USER_PASSWORD}}'. Order {{DELIVERY_OPTION}} delivery of a {{RESTAURANT_ITEM}} from the nearest {{MEMBERSHIP_TYPE}} restaurant from my {{ADDRESS_TYPE}} address. Apply {{PROMO_CODE}}",
+    "task_type": "GUI Comprehension, Action Execution, Decision Making, Element Identification",
+    "grader_config": {
+      "state_grader_configs": [
+        {
+          "assertions": [
+            {
+              "operator": "STRING_EQUALS",
+              "paths_to_expected": ["$.deal.id"]
+            }
+          ],
+          "path_to_actual": "$.orders[0].appliedDeal.id"
+        },
+        {
+          "assertions": [
+            {
+              "operator": "STRING_EQUALS",
+              "paths_to_expected": ["$.address.id"]
+            }
+          ],
+          "path_to_actual": "$.orders[0].deliveryAddress.id"
+        },
+        {
+          "assertions": [
+            {
+              "operator": "STRING_EQUALS",
+              "expected": ["{{DELIVERY_OPTION}}"]
+            }
+          ],
+          "path_to_actual": "$.orders[0].deliveryOption.type"
+        },
+        {
+          "assertions": [
+            {
+              "operator": "STRING_EQUALS",
+              "path_to_actual": "$.items[0].name",
+              "paths_to_expected": ["$.items[0].name"]
+            },
+            {
+              "expected": ["==1"],
+              "operator": "ARRAY_LENGTH_MATCH",
+              "path_to_actual": "$.items[*]"
+            }
+          ],
+          "path_to_actual": "$.orders[0]"
+        }
+      ],
+      "extract_states_config": {
+        "expected_state_functions": [
+          {
+            "args": {
+              "type": "{{ADDRESS_TYPE}}",
+              "user": "{{USER_EMAIL}}"
+            },
+            "function": "get_user_address"
+          },
+          {
+            "args": {
+              "promocode": "{{PROMO_CODE}}"
+            },
+            "function": "get_deal"
+          },
+          {
+            "args": {
+              "lat": "$[0].address.lat",
+              "lng": "$[0].address.lng",
+              "limit": 1,
+              "filters": {
+                "item_keyword": "{{RESTAURANT_ITEM}}",
+                "dashpass": true
+              },
+              "sort_type": [
+                {
+                  "key": "distance",
+                  "order": "asc"
+                }
+              ]
+            },
+            "function": "get_restaurants"
+          },
+          {
+            "args": {
+              "limit": 1,
+              "keywords": ["{{RESTAURANT_ITEM}}"],
+              "restaurant_id": "$[2].restaurants[0].id"
+            },
+            "function": "get_items"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "template_settings": {
+      "template_id": "cheapest-item-filter",
+      "task_category_L1": ["Cart Management"],
+      "task_category_L2": ["Price filtering", "Restaurant exclusion"],
+      "capability": ["Search and filtering", "Decision making"]
+    },
+    "start_url": "https://dashdoor.rlgym.turing.com/home",
+    "task_statement": "Log in using email '{{USER_EMAIL}}' and password '{{USER_PASSWORD}}'. Order the cheapest {{RESTAURANT_ITEM}} you can find, just don't order from {{EXCLUDED_RESTAURANT}}, they were terrible last time",
+    "task_type": "GUI Comprehension, Action Execution, Element Identification, Decision Making",
+    "grader_config": {
+      "state_grader_configs": [
+        {
+          "assertions": [
+            {
+              "operator": "STRING_EQUALS",
+              "path_to_actual": "$.items[0].name",
+              "paths_to_expected": ["$.items[0].name"]
+            },
+            {
+              "expected": ["==1"],
+              "operator": "ARRAY_LENGTH_MATCH",
+              "path_to_actual": "$.items[*]"
+            },
+            {
+              "operator": "STRING_EQUALS",
+              "path_to_actual": "$.storeId",
+              "paths_to_expected": ["$.items[0].restaurantId"]
+            }
+          ],
+          "path_to_actual": "$.orders[0]"
+        }
+      ],
+      "extract_states_config": {
+        "expected_state_functions": [
+          {
+            "args": {
+              "user": "{{USER_EMAIL}}"
+            },
+            "function": "get_user_address"
+          },
+          {
+            "args": {
+              "lat": "$[0].address.lat",
+              "lng": "$[0].address.lng",
+              "limit": 1,
+              "name": "{{EXCLUDED_RESTAURANT}}"
+            },
+            "function": "get_restaurants"
+          },
+          {
+            "args": {
+              "limit": 1,
+              "keywords": ["{{RESTAURANT_ITEM}}"],
+              "filters": {
+                "restaurant_ids_not_in": "$[1].restaurants[*].id"
+              },
+              "sort_type": [
+                {
+                  "key": "price",
+                  "order": "asc"
+                }
+              ]
+            },
+            "function": "get_items"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "template_settings": {
+      "template_id": "top-rated-category",
+      "task_category_L1": ["Ratings & Reviews"],
+      "task_category_L2": ["Review-based recommendations"],
+      "capability": ["Ratings analysis", "Decision making", "Order Placement"]
+    },
+    "start_url": "https://dashdoor.rlgym.turing.com/home",
+    "task_statement": "Log in using email '{{USER_EMAIL}}' and password '{{USER_PASSWORD}}'. I wanted to try {{RESTAURANT}}, can you order the best rated item from the {{MENU_CATEGORY}}?",
+    "task_type": "GUI Comprehension, Action Execution, Decision Making, Element Identification",
+    "grader_config": {
+      "state_grader_configs": [
+        {
+          "assertions": [
+            {
+              "operator": "STRING_EQUALS",
+              "path_to_actual": "$.items[0].name",
+              "paths_to_expected": ["$.items[0].name"]
+            },
+            {
+              "expected": ["==1"],
+              "operator": "ARRAY_LENGTH_MATCH",
+              "path_to_actual": "$.items[*]"
+            },
+            {
+              "operator": "STRING_EQUALS",
+              "path_to_actual": "$.storeId",
+              "paths_to_expected": ["$.items[0].restaurantId"]
+            }
+          ],
+          "path_to_actual": "$.orders[0]"
+        }
+      ],
+      "extract_states_config": {
+        "expected_state_functions": [
+          {
+            "args": {
+              "user": "{{USER_EMAIL}}"
+            },
+            "function": "get_user_address"
+          },
+          {
+            "args": {
+              "lat": "$[0].address.lat",
+              "lng": "$[0].address.lng",
+              "limit": 1,
+              "name": "{{RESTAURANT}}"
+            },
+            "function": "get_restaurants"
+          },
+          {
+            "args": {
+              "limit": 1,
+              "restaurant_id": "$[1].restaurants[0].id",
+              "filters": {
+                "menu_categories": ["{{MENU_CATEGORY}}"]
+              },
+              "sort_type": [
+                {
+                  "key": "rating",
+                  "order": "desc"
+                }
+              ]
+            },
+            "function": "get_items"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "template_settings": {
+      "template_id": "best-deal-order",
+      "task_category_L1": ["Menu Viewing"],
+      "task_category_L2": ["Price & deal optimization", "Restaurant discovery & filtering"],
+      "capability": ["Search and filtering", "Decision making", "Order Placement"]
+    },
+    "start_url": "https://dashdoor.rlgym.turing.com/home",
+    "task_statement": "Log in using email '{{USER_EMAIL}}' and password '{{USER_PASSWORD}}'. I need to place an order at my {{ADDRESS_TYPE}} address. Look for cheapest restaurants with deals and pick the best one. Order enough {{MENU_CATEGORY}} to meet the spending limit for the deal.",
+    "task_type": "GUI Comprehension, Action Execution, Multi-Step Task Planning, Decision Making",
+    "grader_config": {
+      "state_grader_configs": [
+        {
+          "assertions": [
+            {
+              "operator": "STRING_EQUALS",
+              "paths_to_expected": ["$.address.id"]
+            }
+          ],
+          "path_to_actual": "$.orders[0].deliveryAddress.id"
+        },
+        {
+          "assertions": [
+            {
+              "operator": "STRING_EQUALS",
+              "paths_to_expected": ["$.restaurants[0].deals[0].id"]
+            }
+          ],
+          "path_to_actual": "$.orders[0].appliedDeal.id"
+        },
+        {
+          "assertions": [
+            {
+              "operator": "STRING_EQUALS",
+              "path_to_actual": "$.items[*].menuCategoryId",
+              "paths_to_expected": ["$.categories[0].id"]
+            },
+            {
+              "operator": "STRING_EQUALS",
+              "path_to_actual": "$.storeId",
+              "paths_to_expected": ["$.restaurants[0].id"]
+            }
+          ],
+          "path_to_actual": "$.orders[0]"
+        }
+      ],
+      "extract_states_config": {
+        "expected_state_functions": [
+          {
+            "args": {
+              "type": "{{ADDRESS_TYPE}}",
+              "user": "{{USER_EMAIL}}"
+            },
+            "function": "get_user_address"
+          },
+          {
+            "args": {
+              "lat": "$[0].address.lat",
+              "lng": "$[0].address.lng",
+              "limit": 1,
+              "filters": {
+                "has_deals": true
+              },
+              "sort_type": [
+                {
+                  "key": "priceRange",
+                  "order": "asc"
+                },
+                {
+                  "key": "rating",
+                  "order": "desc"
+                }
+              ]
+            },
+            "function": "get_restaurants"
+          },
+          {
+            "args": {
+              "restaurant_id": "$[1].restaurants[0].id",
+              "keyword": "{{MENU_CATEGORY}}",
+              "limit": 1
+            },
+            "function": "get_menu_categories"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "template_settings": {
+      "template_id": "bulk-simple-order",
+      "task_category_L1": ["Cart Management"],
+      "task_category_L2": [
+        "Cart editing & item swaps",
+        "Price filtering",
+        "Contact info management"
+      ],
+      "capability": ["Instruction following", "Search and filtering", "UI Elements: Text Fields"]
+    },
+    "start_url": "https://dashdoor.rlgym.turing.com/home",
+    "task_statement": "Log in using email '{{USER_EMAIL}}' and password '{{USER_PASSWORD}}'. Order {{MAIN_ITEM_QTY}} {{MAIN_ITEM}} from {{RESTAURANT}}, make sure no customizations are selected. Also order {{DRINK_QTY}} of the cheapest available {{DRINK_CATEGORY}}. Change the contact number for the order to {{CONTACT_NUMBER}}",
+    "task_type": "GUI Comprehension, Action Execution, Element Identification, Decision Making",
+    "grader_config": {
+      "state_grader_configs": [
+        {
+          "assertions": [
+            {
+              "operator": "STRING_EQUALS",
+              "paths_to_expected": ["$.address.id"]
+            }
+          ],
+          "path_to_actual": "$.orders[0].deliveryAddress.id"
+        },
+        {
+          "assertions": [
+            {
+              "operator": "STRING_EQUALS",
+              "expected": ["{{CONTACT_NUMBER}}"]
+            }
+          ],
+          "path_to_actual": "$.orders[0].phoneNumber.number"
+        },
+        {
+          "assertions": [
+            {
+              "operator": "ARRAY_STRING_EQUALS",
+              "path_to_actual": "$.items[*].id",
+              "paths_to_expected": ["$.items[*].id"]
+            },
+            {
+              "expected": ["==2"],
+              "operator": "ARRAY_LENGTH_MATCH",
+              "path_to_actual": "$.items[*]"
+            },
+            {
+              "operator": "NUMERIC_MATCH",
+              "path_to_actual": "$.items[0].quantity",
+              "expected": ["=={{MAIN_ITEM_QTY}}"]
+            },
+            {
+              "operator": "NUMERIC_MATCH",
+              "path_to_actual": "$.items[1].quantity",
+              "expected": ["=={{DRINK_QTY}}"]
+            },
+            {
+              "operator": "STRING_EQUALS",
+              "path_to_actual": "$.items[?(@.name == '{{MAIN_ITEM_NAME}}')].modifications[*]",
+              "expected": [""]
+            }
+          ],
+          "path_to_actual": "$.orders[0]"
+        }
+      ],
+      "extract_states_config": {
+        "expected_state_functions": [
+          {
+            "args": {
+              "user": "{{USER_EMAIL}}"
+            },
+            "function": "get_user_address"
+          },
+          {
+            "args": {
+              "lat": "$[0].address.lat",
+              "lng": "$[0].address.lng",
+              "limit": 1,
+              "name": "{{RESTAURANT}}",
+              "sort_type": [
+                {
+                  "key": "priceRange",
+                  "order": "asc"
+                },
+                {
+                  "key": "rating",
+                  "order": "desc"
+                }
+              ]
+            },
+            "function": "get_restaurants"
+          },
+          {
+            "args": {
+              "limit": 1,
+              "keywords": ["{{MAIN_ITEM}}"],
+              "restaurant_id": "$[1].restaurants[0].id"
+            },
+            "function": "get_items"
+          },
+          {
+            "args": {
+              "limit": 1,
+              "filters": {
+                "menu_categories": ["{{DRINK_CATEGORY}}"]
+              },
+              "sort_type": [
+                {
+                  "key": "price",
+                  "order": "asc"
+                },
+                {
+                  "key": "rating",
+                  "order": "desc"
+                }
+              ],
+              "restaurant_id": "$[1].restaurants[0].id"
+            },
+            "function": "get_items"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "template_settings": {
+      "template_id": "update-delivery-instructions",
+      "task_category_L1": ["Address Entry & Validation"],
+      "task_category_L2": ["Address & delivery instructions"],
+      "capability": ["Instruction following", "UI Elements: Text Fields"]
+    },
+    "start_url": "https://dashdoor.rlgym.turing.com/home",
+    "task_statement": "Log in using email '{{USER_EMAIL}}' and password '{{USER_PASSWORD}}'. My {{ADDRESS_TYPE}} building recently had an entry code added. The code is {{ENTRY_CODE}}. Also delivery folks are no longer allowed to go beyond the {{DELIVERY_LOCATION}}, so make sure you update the drop off location and the delivery instructions accordingly",
+    "task_type": "GUI Comprehension, Action Execution, Element Identification",
+    "grader_config": {
+      "state_grader_configs": [
+        {
+          "assertions": [
+            {
+              "operator": "STRING_EQUALS",
+              "expected": ["{{ENTRY_CODE}}"],
+              "path_to_actual": "$.entryCode"
+            },
+            {
+              "operator": "STRING_EQUALS",
+              "expected": ["leave"],
+              "path_to_actual": "$.deliveryPreference"
+            },
+            {
+              "operator": "STRING_EQUALS",
+              "expected": ["{{DELIVERY_LOCATION}}"],
+              "path_to_actual": "$.deliveryLocation"
+            },
+            {
+              "operator": "STRING_CONTAINS",
+              "expected": ["{{DELIVERY_LOCATION}}"],
+              "path_to_actual": "$.deliveryInstructions"
+            },
+            {
+              "operator": "STRING_NOT_CONTAINS",
+              "paths_to_expected": ["$.address.deliveryInstructions"],
+              "path_to_actual": "$.deliveryInstructions"
+            }
+          ],
+          "path_to_actual": "$.user.currentUser.addresses[?(@.addressType == '{{ADDRESS_TYPE}}')]"
+        }
+      ],
+      "extract_states_config": {
+        "expected_state_functions": [
+          {
+            "args": {
+              "type": "{{ADDRESS_TYPE}}",
+              "user": "{{USER_EMAIL}}"
+            },
+            "function": "get_user_address"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "template_settings": {
+      "template_id": "lowest-calorie-dessert",
+      "task_category_L1": ["Cart Management"],
+      "task_category_L2": ["Diet & calorie filtering", "Item customization"],
+      "capability": ["Search and filtering", "Decision making", "Order Placement"]
+    },
+    "start_url": "https://dashdoor.rlgym.turing.com/home",
+    "task_statement": "Log in using email '{{USER_EMAIL}}' and password '{{USER_PASSWORD}}'. Find the best {{RESTAURANT_CATEGORY}} restaurant near my {{ADDRESS_TYPE}} and order {{TOTAL_SERVINGS}} servings of the lowest calorie {{MENU_CATEGORY}}. If there is an option for {{SAUCE_OPTION}} add it with one of the servings.",
+    "task_type": "GUI Comprehension, Action Execution, Multi-Step Task Planning, Decision Making",
+    "grader_config": {
+      "state_grader_configs": [
+        {
+          "assertions": [
+            {
+              "operator": "STRING_EQUALS",
+              "paths_to_expected": ["$.address.id"]
+            }
+          ],
+          "path_to_actual": "$.orders[0].deliveryAddress.id"
+        },
+        {
+          "assertions": [
+            {
+              "operator": "STRING_EQUALS",
+              "path_to_actual": "$.items[*].name",
+              "paths_to_expected": ["$.items[*].name"]
+            },
+            {
+              "expected": ["==2"],
+              "operator": "ARRAY_LENGTH_MATCH",
+              "path_to_actual": "$.items[*]"
+            },
+            {
+              "operator": "STRING_EQUALS",
+              "path_to_actual": "$.storeId",
+              "paths_to_expected": ["$.restaurants[0].id"]
+            },
+            {
+              "expected": ["==1"],
+              "operator": "ARRAY_LENGTH_MATCH",
+              "path_to_actual": "$.items[?(@.modifications[*].options[*].optionName == '{{SAUCE_OPTION}}')]"
+            }
+          ],
+          "path_to_actual": "$.orders[0]"
+        }
+      ],
+      "extract_states_config": {
+        "expected_state_functions": [
+          {
+            "args": {
+              "type": "{{ADDRESS_TYPE}}",
+              "user": "{{USER_EMAIL}}"
+            },
+            "function": "get_user_address"
+          },
+          {
+            "args": {
+              "lat": "$[0].address.lat",
+              "lng": "$[0].address.lng",
+              "limit": 1,
+              "filters": {
+                "categories": ["{{RESTAURANT_CATEGORY}}"]
+              },
+              "sort_type": [
+                {
+                  "key": "rating",
+                  "order": "desc"
+                },
+                {
+                  "key": "ratingCount",
+                  "order": "desc"
+                }
+              ]
+            },
+            "function": "get_restaurants"
+          },
+          {
+            "args": {
+              "limit": 1,
+              "filters": {
+                "menu_categories": ["{{MENU_CATEGORY}}"]
+              },
+              "sort_type": [
+                {
+                  "key": "calories",
+                  "order": "asc"
+                }
+              ],
+              "restaurant_id": "$[1].restaurants[0].id"
+            },
+            "function": "get_items"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "template_settings": {
+      "template_id": "top-rated-history",
+      "task_category_L1": ["Ratings & Reviews"],
+      "task_category_L2": ["Review-based recommendations"],
+      "capability": ["Ratings analysis", "Search and filtering", "Decision making"]
+    },
+    "start_url": "https://dashdoor.rlgym.turing.com/home",
+    "task_statement": "Log in using email '{{USER_EMAIL}}' and password '{{USER_PASSWORD}}'. Go through the reviews that I've given for restaurants and pick the one that I've given the highest rating and order the best rated {{ITEM_FILTER}} item from it.",
+    "task_type": "GUI Comprehension, Action Execution, Decision Making, Multi-Step Task Planning",
+    "grader_config": {
+      "state_grader_configs": [
+        {
+          "assertions": [
+            {
+              "operator": "BOOL",
+              "path_to_actual": "$.orders[0].deliveryAddress.default"
+            }
+          ]
+        },
+        {
+          "assertions": [
+            {
+              "operator": "STRING_EQUALS",
+              "path_to_actual": "$.items[*].name",
+              "paths_to_expected": ["$.items[*].name"]
+            },
+            {
+              "expected": ["==1"],
+              "operator": "ARRAY_LENGTH_MATCH",
+              "path_to_actual": "$.items[*]"
+            },
+            {
+              "operator": "STRING_EQUALS",
+              "path_to_actual": "$.storeId",
+              "paths_to_expected": ["$.items[0].restaurantId"]
+            }
+          ],
+          "path_to_actual": "$.orders[0]"
+        }
+      ],
+      "extract_states_config": {
+        "expected_state_functions": [
+          {
+            "args": {
+              "user": "{{USER_EMAIL}}"
+            },
+            "function": "get_user_address"
+          },
+          {
+            "args": {
+              "email": "{{USER_EMAIL}}",
+              "sort_type": [
+                {
+                  "key": "rating",
+                  "order": "desc"
+                }
+              ]
+            },
+            "function": "get_reviews"
+          },
+          {
+            "args": {
+              "limit": 1,
+              "filters": {
+                "featured": true
+              },
+              "sort_type": [
+                {
+                  "key": "rating",
+                  "order": "desc"
+                }
+              ],
+              "restaurant_id": "$[1].reviews[0].storeId"
+            },
+            "function": "get_items"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "template_settings": {
+      "template_id": "helpful-review-items",
+      "task_category_L1": ["Ratings & Reviews"],
+      "task_category_L2": ["Review-based recommendations"],
+      "capability": ["Ratings analysis", "Instruction following"]
+    },
+    "start_url": "https://dashdoor.rlgym.turing.com/home",
+    "task_statement": "Log in using email '{{USER_EMAIL}}' and password '{{USER_PASSWORD}}'. Somebody recommended {{RESTAURANT}} to me, could you go through the reviews and find the review that people found the most helpful and add the liked items from it to my cart",
+    "task_type": "GUI Comprehension, Action Execution, Decision Making, Element Identification",
+    "grader_config": {
+      "state_grader_configs": [
+        {
+          "assertions": [
+            {
+              "operator": "ARRAY_STRING_EQUALS",
+              "path_to_actual": "$.items[*].itemName",
+              "paths_to_expected": ["$.reviews[0].likedItems[*].itemName"]
+            },
+            {
+              "operator": "STRING_EQUALS",
+              "path_to_actual": "$.storeId",
+              "paths_to_expected": ["$.reviews[0].storeId"]
+            }
+          ],
+          "path_to_actual": "$.carts[?(@.storeName == '{{RESTAURANT}}')]"
+        }
+      ],
+      "extract_states_config": {
+        "expected_state_functions": [
+          {
+            "args": {
+              "name": "{{RESTAURANT}}"
+            },
+            "function": "get_restaurants"
+          },
+          {
+            "args": {
+              "limit": 1,
+              "restaurant_id": "$[0].restaurants[0].id",
+              "has_liked_items": true,
+              "sort_type": [
+                {
+                  "key": "helpfulCount",
+                  "order": "desc"
+                }
+              ]
+            },
+            "function": "get_reviews"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "template_settings": {
+      "template_id": "cheapest-rated-slices",
+      "task_category_L1": ["Menu Viewing", "Cart Management"],
+      "task_category_L2": ["Restaurant discovery & filtering", "Menu exploration"],
+      "capability": ["Search and filtering", "Decision making", "Order Placement"]
+    },
+    "start_url": "https://dashdoor.rlgym.turing.com/home",
+    "task_statement": "Log in using email '{{USER_EMAIL}}' and password '{{USER_PASSWORD}}'. I recently moved and want to explore {{CUISINE}} restaurants near my new {{ADDRESS_TYPE}}. Order two of the cheapest {{MENU_CATEGORY}} available at the nearest {{MIN_RATING}} star or above {{CUISINE}} place.",
+    "task_type": "GUI Comprehension, Action Execution, Decision Making, Element Identification, Multi-Step Task Planning",
+    "grader_config": {
+      "state_grader_configs": [
+        {
+          "assertions": [
+            {
+              "operator": "STRING_EQUALS",
+              "paths_to_expected": ["$.address.id"]
+            }
+          ],
+          "path_to_actual": "$.orders[0].deliveryAddress.id"
+        },
+        {
+          "assertions": [
+            {
+              "operator": "ARRAY_STRING_EQUALS",
+              "path_to_actual": "$.items[*].name",
+              "paths_to_expected": ["$.items[*].name"]
+            },
+            {
+              "operator": "STRING_EQUALS",
+              "path_to_actual": "$.storeId",
+              "paths_to_expected": ["$.restaurants[0].id"]
+            }
+          ],
+          "path_to_actual": "$.orders[0]"
+        }
+      ],
+      "extract_states_config": {
+        "expected_state_functions": [
+          {
+            "args": {
+              "type": "{{ADDRESS_TYPE}}",
+              "user": "{{USER_EMAIL}}"
+            },
+            "function": "get_user_address"
+          },
+          {
+            "args": {
+              "lat": "$[0].address.lat",
+              "lng": "$[0].address.lng",
+              "limit": 1,
+              "filters": {
+                "cuisines": ["{{CUISINE}}"],
+                "ratingXAndAbove": "{{MIN_RATING}}"
+              },
+              "sort_type": [
+                {
+                  "key": "distance",
+                  "order": "asc"
+                }
+              ]
+            },
+            "function": "get_restaurants"
+          },
+          {
+            "args": {
+              "limit": 2,
+              "filters": {
+                "menu_categories": ["{{MENU_CATEGORY}}"]
+              },
+              "sort_type": [
+                {
+                  "key": "price",
+                  "order": "asc"
+                }
+              ],
+              "restaurant_id": "$[1].restaurants[0].id"
+            },
+            "function": "get_items"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "template_settings": {
+      "template_id": "cheapest-liked-combo",
+      "task_category_L1": ["Menu Viewing", "Cart Management"],
+      "task_category_L2": ["Price & rating tradeoffs", "Item selection"],
+      "capability": ["Search and filtering", "Decision making", "Order Placement"]
+    },
+    "start_url": "https://dashdoor.rlgym.turing.com/",
+    "task_statement": "Log in using email '{{USER_EMAIL}}' and password '{{USER_PASSWORD}}'. I want to order from {{RESTAURANT}}. Order the cheapest and most liked one of the {{MENU_CATEGORY}} and also add a {{ADDITIONAL_ITEM}}.",
+    "task_type": "GUI Comprehension, Action Execution, Element Identification",
+    "grader_config": {
+      "state_grader_configs": [
+        {
+          "assertions": [
+            {
+              "operator": "ARRAY_STRING_EQUALS",
+              "path_to_actual": "$.items[*].name",
+              "paths_to_expected": ["$.items[0].name", "$.items[0].name"]
+            },
+            {
+              "expected": ["==2"],
+              "operator": "ARRAY_LENGTH_MATCH",
+              "path_to_actual": "$.items[*]"
+            },
+            {
+              "operator": "STRING_EQUALS",
+              "path_to_actual": "$.restaurantId",
+              "paths_to_expected": ["$.restaurants[0].id"]
+            }
+          ],
+          "path_to_actual": "$.orders[0]"
+        }
+      ],
+      "extract_states_config": {
+        "expected_state_functions": [
+          {
+            "args": {
+              "name": "{{RESTAURANT}}"
+            },
+            "function": "get_restaurants"
+          },
+          {
+            "args": {
+              "restaurant_id": "$[0].restaurants[0].id",
+              "filters": {
+                "menu_categories": ["{{MENU_CATEGORY}}"]
+              },
+              "sort_type": [
+                {
+                  "key": "price",
+                  "order": "asc"
+                },
+                {
+                  "key": "rating",
+                  "order": "desc"
+                }
+              ],
+              "limit": 1
+            },
+            "function": "get_items"
+          },
+          {
+            "args": {
+              "restaurant_id": "$[0].restaurants[0].id",
+              "keywords": ["{{ADDITIONAL_ITEM_KEYWORDS}}"],
+              "limit": 1
+            },
+            "function": "get_items"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "template_settings": {
+      "template_id": "cheapest-nearby-item",
+      "task_category_L1": ["Menu Viewing"],
+      "task_category_L2": ["Cuisine filtering", "Price filtering"],
+      "capability": ["Search and filtering", "Decision making", "Order Placement"]
+    },
+    "start_url": "https://dashdoor.rlgym.turing.com/home",
+    "task_statement": "Log in using email '{{USER_EMAIL}}' and password '{{USER_PASSWORD}}'. Order the cheapest {{RESTAURANT_ITEM}} from the {{CUISINE}} restaurant nearest to my {{ADDRESS_TYPE}}.",
+    "grader_config": {
+      "state_grader_configs": [
+        {
+          "assertions": [
+            {
+              "operator": "STRING_EQUALS",
+              "path_to_actual": "$.deliveryAddress.id",
+              "paths_to_expected": ["$.address.id"]
+            },
+            {
+              "operator": "STRING_EQUALS",
+              "path_to_actual": "$.items[0].name",
+              "paths_to_expected": ["$.items[0].name"]
+            },
+            {
+              "operator": "ARRAY_LENGTH_MATCH",
+              "path_to_actual": "$.items[*]",
+              "expected": ["==1"]
+            },
+            {
+              "operator": "STRING_EQUALS",
+              "path_to_actual": "$.storeId",
+              "paths_to_expected": ["$.restaurants[0].id"]
+            }
+          ],
+          "path_to_actual": "$.orders[0]"
+        }
+      ],
+      "extract_states_config": {
+        "expected_state_functions": [
+          {
+            "function": "get_user_address",
+            "args": {
+              "user": "{{USER_EMAIL}}",
+              "type": "{{ADDRESS_TYPE}}"
+            }
+          },
+          {
+            "function": "get_restaurants",
+            "args": {
+              "lat": "$[0].address.lat",
+              "lng": "$[0].address.lng",
+              "filters": {
+                "cuisines": ["{{CUISINE}}"]
+              },
+              "sort_type": [
+                {
+                  "key": "distance",
+                  "order": "asc"
+                }
+              ],
+              "limit": 1
+            }
+          },
+          {
+            "function": "get_items",
+            "args": {
+              "restaurant_id": "$[1].restaurants[0].id",
+              "filters": {
+                "menu_categories": ["{{MENU_CATEGORY}}"]
+              },
+              "sort_type": [
+                {
+                  "key": "price",
+                  "order": "asc"
+                }
+              ],
+              "limit": 1
+            }
+          }
+        ]
+      }
+    }
+  },
+  {
+    "template_settings": {
+      "template_id": "multi-express-orders",
+      "task_category_L1": ["Menu Viewing", "Cart Management", "Checkout"],
+      "task_category_L2": [
+        "Multi-restaurant ordering",
+        "Review-based recommendations",
+        "Delivery scheduling"
+      ],
+      "capability": ["Search and filtering", "Decision making", "Order Placement", "Scheduling"]
+    },
+    "start_url": "https://dashdoor.rlgym.turing.com/",
+    "task_statement": "Log in using email '{{USER_EMAIL}}' and password '{{USER_PASSWORD}}'. First place an order for a {{RESTAURANT_1_ITEM_1}} and {{RESTAURANT_1_ITEM_2}} from {{RESTAURANT_1}}. Also place an order for {{RESTAURANT_2_ITEM}} from the best rated {{CUISINE}} restaurant available. Make sure you mark both for {{DELIVERY_OPTION}} delivery",
+    "task_type": "GUI Comprehension, Action Execution, Element Identification",
+    "grader_config": {
+      "state_grader_configs": [
+        {
+          "assertions": [
+            {
+              "operator": "ARRAY_STRING_EQUALS",
+              "path_to_actual": "$.items[*].name",
+              "paths_to_expected": ["$.items[*].name"]
+            },
+            {
+              "operator": "STRING_EQUALS",
+              "path_to_actual": "$.storeId",
+              "paths_to_expected": ["$.restaurants[0].id"]
+            }
+          ],
+          "path_to_actual": "$.orders[0]"
+        },
+        {
+          "assertions": [
+            {
+              "operator": "STRING_EQUALS",
+              "path_to_actual": "$.orders[0].deliveryOption.type",
+              "expected": ["{{DELIVERY_OPTION}}"]
+            }
+          ]
+        },
+        {
+          "assertions": [
+            {
+              "operator": "ARRAY_STRING_EQUALS",
+              "path_to_actual": "$.items[*].name",
+              "paths_to_expected": ["$.items[*].name"]
+            },
+            {
+              "operator": "STRING_EQUALS",
+              "path_to_actual": "$.storeId",
+              "paths_to_expected": ["$.restaurants[0].id"]
+            }
+          ],
+          "path_to_actual": "$.orders[1]"
+        },
+        {
+          "assertions": [
+            {
+              "operator": "STRING_EQUALS",
+              "path_to_actual": "$.orders[1].deliveryOption.type",
+              "expected": ["{{DELIVERY_OPTION}}"]
+            }
+          ]
+        }
+      ],
+      "extract_states_config": {
+        "expected_state_functions": [
+          {
+            "args": {
+              "user": "{{USER_EMAIL}}"
+            },
+            "function": "get_user_address"
+          },
+          {
+            "function": "get_restaurants",
+            "args": {
+              "lat": "$[0].address.lat",
+              "lng": "$[0].address.lng",
+              "name": "{{RESTAURANT_1}}",
+              "limit": 1
+            }
+          },
+          {
+            "function": "get_items",
+            "args": {
+              "restaurant_id": "$[1].restaurants[0].id",
+              "keywords": ["{{RESTAURANT_1_ITEM_1}}", "{{RESTAURANT_1_ITEM_2}}"],
+              "limit": 2
+            }
+          },
+          {
+            "function": "get_restaurants",
+            "args": {
+              "lat": "$[0].address.lat",
+              "lng": "$[0].address.lng",
+              "filters": {
+                "cuisines": ["{{CUISINE}}"]
+              },
+              "sort_type": [
+                {
+                  "key": "rating",
+                  "order": "desc"
+                }
+              ],
+              "limit": 1
+            }
+          },
+          {
+            "function": "get_items",
+            "args": {
+              "restaurant_id": "$[3].restaurants[0].id",
+              "keywords": ["{{RESTAURANT_2_ITEM}}"],
+              "limit": 1
+            }
+          }
+        ]
+      }
+    }
+  },
+  {
+    "template_settings": {
+      "template_id": "gift-coffee-order",
+      "task_category_L1": ["Menu Viewing", "Cart Management", "Checkout"],
+      "task_category_L2": ["Multi-address ordering", "Restaurant discovery & filtering"],
+      "capability": ["Search and filtering", "Decision making", "Order Placement"]
+    },
+    "start_url": "https://dashdoor.rlgym.turing.com/home",
+    "task_statement": "Log in using email '{{USER_EMAIL}}' and password '{{USER_PASSWORD}}'. I need to send {{RESTAURANT_ITEM}} for my mum at the {{ADDRESS_TYPE}} address on my profile. Find the best {{CUISINE}} place near that address that has {{RESTAURANT_ITEM}} and order {{ITEM_QUANTITY}}.",
+    "task_type": "GUI Comprehension, Action Execution, Element Identification",
+    "grader_config": {
+      "state_grader_configs": [
+        {
+          "path_to_actual": "$.orders[0]",
+          "assertions": [
+            {
+              "operator": "STRING_EQUALS",
+              "path_to_actual": "$.deliveryAddress.id",
+              "paths_to_expected": ["$.address.id"]
+            },
+            {
+              "operator": "ARRAY_LENGTH_MATCH",
+              "path_to_actual": "$.items[*]",
+              "expected": ["==1"]
+            },
+            {
+              "operator": "STRING_EQUALS",
+              "path_to_actual": "$.items[0].name",
+              "paths_to_expected": ["$.items[0].name"]
+            },
+            {
+              "operator": "NUMERIC_MATCH",
+              "path_to_actual": "$.items[0].quantity",
+              "expected": ["=={{ITEM_QUANTITY}}"]
+            },
+            {
+              "operator": "STRING_EQUALS",
+              "path_to_actual": "$.storeId",
+              "paths_to_expected": ["$.restaurants[0].id"]
+            }
+          ]
+        }
+      ],
+      "extract_states_config": {
+        "expected_state_functions": [
+          {
+            "function": "get_user_address",
+            "args": {
+              "user": "{{USER_EMAIL}}",
+              "type": "{{ADDRESS_TYPE}}"
+            }
+          },
+          {
+            "function": "get_restaurants",
+            "args": {
+              "lat": "$[0].address.lat",
+              "lng": "$[0].address.lng",
+              "filters": {
+                "item_keyword": "{{RESTAURANT_ITEM}}"
+              },
+              "sort_type": [
+                {
+                  "key": "rating",
+                  "order": "desc"
+                }
+              ],
+              "limit": 1
+            }
+          },
+          {
+            "function": "get_items",
+            "args": {
+              "restaurant_id": "$[1].restaurants[0].id",
+              "keywords": ["{{RESTAURANT_ITEM}}"],
+              "limit": 1
+            }
+          }
+        ]
+      }
+    }
+  },
+  {
+    "template_settings": {
+      "template_id": "list-affordable-cuisine",
+      "task_category_L1": ["Item Selection & Customization"],
+      "task_category_L2": ["Restaurant comparison", "Price filtering"],
+      "capability": ["Search and filtering", "Decision making"]
+    },
+    "start_url": "https://dashdoor.rlgym.turing.com/home",
+    "task_statement": "Log in using email '{{USER_EMAIL}}' and password '{{USER_PASSWORD}}'. I want to eat {{CUISINE}} cuisine today. Can you find a restaurant nearby which serves {{CUISINE}} cuisine? Tell me the top {{RESULT_COUNT}} most affordable restaurant names that are nearest to me.",
+    "task_type": "GUI Comprehension, Multi-Step Task Planning, Information Retrieval, Decision Making",
+    "grader_config": {
+      "answer_grader_config": {
+        "assertions": [
+          {
+            "operator": "STRING_CONTAINS",
+            "paths_to_expected": ["$.restaurants[*].name"]
+          }
+        ]
+      },
+      "extract_states_config": {
+        "expected_state_functions": [
+          {
+            "function": "get_restaurants",
+            "args": {
+              "filters": {
+                "cuisines": ["{{CUISINE}}"]
+              },
+              "sort_type": [
+                {
+                  "key": "priceRange",
+                  "order": "asc"
+                },
+                {
+                  "key": "distance",
+                  "order": "asc"
+                }
+              ],
+              "limit": "{{RESULT_COUNT}}"
+            }
+          }
+        ]
+      }
+    }
+  },
+  {
+    "template_settings": {
+      "template_id": "positive-order-review",
+      "task_category_L1": ["Ratings & Reviews"],
+      "task_category_L2": ["Delivery time filtering", "Price & rating tradeoffs"],
+      "capability": ["Search and filtering", "Decision making", "Order Placement"]
+    },
+    "start_url": "https://dashdoor.rlgym.turing.com/",
+    "task_statement": "Log in using email '{{USER_EMAIL}}' and password '{{USER_PASSWORD}}'. I really liked the food that I ordered last time from {{RESTAURANT}}. Leave a {{RATING}} star rating on that order and add a review as follows- {{REVIEW_TEXT}}",
+    "task_type": "GUI Comprehension, Action Execution, Element Identification",
+    "grader_config": {
+      "state_grader_configs": [
+        {
+          "assertions": [
+            {
+              "operator": "ARRAY_LENGTH_MATCH",
+              "expected": ["==1"]
+            },
+            {
+              "operator": "STRING_EQUALS",
+              "paths_to_expected": ["$.orders[0].id"],
+              "path_to_actual": "$[0].orderId"
+            },
+            {
+              "operator": "NUMERIC_MATCH",
+              "expected": ["{{RATING}}"],
+              "path_to_actual": "$[0].rating"
+            },
+            {
+              "operator": "STRING_CONTAINS",
+              "expected": "{{REVIEW_KEYWORDS}}",
+              "path_to_actual": "$[0].content"
+            }
+          ],
+          "path_to_actual": "$.reviews.newReviews"
+        }
+      ],
+      "extract_states_config": {
+        "expected_state_functions": [
+          {
+            "args": {
+              "name": "{{RESTAURANT}}",
+              "limit": 1
+            },
+            "function": "get_restaurants"
+          },
+          {
+            "args": {
+              "restaurant_id": "$[0].restaurants[0].id",
+              "user": "{{USER_EMAIL}}",
+              "limit": 1,
+              "sort_type": {
+                "key": "orderDate",
+                "order": "desc"
+              }
+            },
+            "function": "get_orders"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "template_settings": {
+      "template_id": "nearest-coffee-cart",
+      "task_category_L1": ["Search"],
+      "task_category_L2": ["Item selection"],
+      "capability": ["Instruction following", "Search and filtering", "Decision making"]
+    },
+    "start_url": "https://dashdoor.rlgym.turing.com/home",
+    "task_statement": "Log in using the email '{{USER_EMAIL}}' and password '{{USER_PASSWORD}}'. Look for the nearest {{RESTAURANT_TYPE}} and add a {{RESTAURANT_ITEM}} to my cart.",
+    "task_type": "GUI Comprehension, Action Execution, Element Identification, Decision Making",
+    "grader_config": {
+      "state_grader_configs": [
+        {
+          "assertions": [
+            {
+              "operator": "ARRAY_LENGTH_MATCH",
+              "path_to_actual": "$.items",
+              "expected": ["==1"]
+            },
+            {
+              "operator": "STRING_CONTAINS",
+              "path_to_actual": "$.items[0].itemName",
+              "paths_to_expected": ["$.items[0].name"]
+            },
+            {
+              "operator": "NUMERIC_MATCH",
+              "path_to_actual": "$.items[0].quantity",
+              "expected": ["==1"]
+            },
+            {
+              "operator": "STRING_EQUALS",
+              "path_to_actual": "$.storeId",
+              "paths_to_expected": ["$.restaurants[0].id"]
+            }
+          ],
+          "path_to_actual": "$.carts[-1]"
+        }
+      ],
+      "extract_states_config": {
+        "expected_state_functions": [
+          {
+            "args": {
+              "user": "{{USER_EMAIL}}"
+            },
+            "function": "get_user_address"
+          },
+          {
+            "args": {
+              "lat": "$[0].address.lat",
+              "lng": "$[0].address.lng",
+              "limit": 1,
+              "filters": {
+                "item_keyword": "{{RESTAURANT_ITEM}}"
+              },
+              "sort_type": [
+                {
+                  "key": "distance",
+                  "order": "asc"
+                }
+              ]
+            },
+            "function": "get_restaurants"
+          },
+          {
+            "args": {
+              "restaurant_id": "$[1].restaurants[0].id",
+              "keywords": ["{{RESTAURANT_ITEM}}"],
+              "limit": 1
+            },
+            "function": "get_items"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "template_settings": {
+      "template_id": "search-express-order",
+      "task_category_L1": ["Order placement"],
+      "task_category_L2": ["Search"],
+      "capability": ["Instruction following", "Search and filtering", "Decision making"]
+    },
+    "start_url": "https://dashdoor.rlgym.turing.com/home",
+    "task_statement": "Log in using email '{{USER_EMAIL}}' and password '{{USER_PASSWORD}}'. Search for {{RESTAURANT_ITEM}} and order them from the closest restaurant, make an {{DELIVERY_OPTION}} delivery.",
+    "task_type": "GUI Comprehension, Action Execution, Element Identification, Decision Making",
+    "grader_config": {
+      "state_grader_configs": [
+        {
+          "assertions": [
+            {
+              "operator": "ARRAY_LENGTH_MATCH",
+              "path_to_actual": "$.items",
+              "expected": ["==1"]
+            },
+            {
+              "operator": "STRING_CONTAINS",
+              "path_to_actual": "$.items[0].name",
+              "paths_to_expected": ["$.items[0].name"]
+            },
+            {
+              "operator": "NUMERIC_MATCH",
+              "path_to_actual": "$.items[0].quantity",
+              "expected": ["==1"]
+            },
+            {
+              "operator": "STRING_EQUALS",
+              "path_to_actual": "$.storeId",
+              "paths_to_expected": ["$.restaurants[0].id"]
+            },
+            {
+              "operator": "STRING_EQUALS",
+              "path_to_actual": "$.deliveryOption.type",
+              "expected": ["{{DELIVERY_OPTION}}"]
+            }
+          ],
+          "path_to_actual": "$.orders[0]"
+        }
+      ],
+      "extract_states_config": {
+        "expected_state_functions": [
+          {
+            "args": {
+              "user": "{{USER_EMAIL}}"
+            },
+            "function": "get_user_address"
+          },
+          {
+            "args": {
+              "lat": "$[0].address.lat",
+              "lng": "$[0].address.lng",
+              "limit": 1,
+              "filters": {
+                "item_keyword": "{{RESTAURANT_ITEM}}"
+              },
+              "sort_type": [
+                {
+                  "key": "distance",
+                  "order": "asc"
+                }
+              ]
+            },
+            "function": "get_restaurants"
+          },
+          {
+            "args": {
+              "restaurant_id": "$[1].restaurants[0].id",
+              "keywords": ["{{RESTAURANT_ITEM}}"],
+              "limit": 1
+            },
+            "function": "get_items"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "template_settings": {
+      "template_id": "list-cheapest-items",
+      "task_category_L1": ["Search"],
+      "task_category_L2": [],
+      "capability": ["Scrolling", "Decision making"]
+    },
+    "start_url": "https://dashdoor.rlgym.turing.com/home",
+    "task_statement": "Log in using email '{{USER_EMAIL}}' and password '{{USER_PASSWORD}}'. Can you search for {{RESTAURANT_ITEM}} and list {{RESULT_COUNT}} restaurants that sell them the cheapest",
+    "task_type": "GUI Comprehension, Action Execution, Information Retrieval, Decision Making",
+    "grader_config": {
+      "answer_grader_config": {
+        "assertions": [
+          {
+            "operator": "STRING_CONTAINS",
+            "paths_to_expected": ["$.items[*].restaurantName"]
+          }
+        ]
+      },
+      "extract_states_config": {
+        "expected_state_functions": [
+          {
+            "args": {
+              "user": "{{USER_EMAIL}}"
+            },
+            "function": "get_user_address"
+          },
+          {
+            "args": {
+              "lat": "$[0].address.lat",
+              "lng": "$[0].address.lng",
+              "keywords": ["{{RESTAURANT_ITEM}}"],
+              "sort_type": [
+                {
+                  "key": "price",
+                  "order": "asc"
+                }
+              ],
+              "limit": "{{RESULT_COUNT}}"
+            },
+            "function": "get_items"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "template_settings": {
+      "template_id": "find-matching-restaurant",
+      "task_category_L1": ["Search and filtering"],
+      "task_category_L2": ["Restaurant identification"],
+      "capability": ["Search", "Decision making", "Ratings analysis"]
+    },
+    "start_url": "https://dashdoor.rlgym.turing.com/home",
+    "task_statement": "Log in using email '{{USER_EMAIL}}' and password '{{USER_PASSWORD}}'. Can you find the best rated restaurant that sells both a {{RESTAURANT_ITEM_1}} and {{RESTAURANT_ITEM_2}}",
+    "task_type": "GUI Comprehension, Action Execution, Information Retrieval, Decision Making, Element Identification",
+    "grader_config": {
+      "answer_grader_config": {
+        "assertions": [
+          {
+            "operator": "STRING_CONTAINS",
+            "paths_to_expected": ["$.restaurants[0].name"]
+          }
+        ]
+      },
+      "extract_states_config": {
+        "expected_state_functions": [
+          {
+            "args": {
+              "user": "{{USER_EMAIL}}"
+            },
+            "function": "get_user_address"
+          },
+          {
+            "args": {
+              "lat": "$[0].address.lat",
+              "lng": "$[0].address.lng",
+              "filters": {
+                "has_all_item_keywords": ["{{RESTAURANT_ITEM_1}}", "{{RESTAURANT_ITEM_2}}"]
+              },
+              "sort_type": [
+                {
+                  "key": "rating",
+                  "order": "desc"
+                }
+              ],
+              "limit": 1
+            },
+            "function": "get_restaurants"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "template_settings": {
+      "template_id": "top-liked-entrees",
+      "task_category_L1": ["Menu viewing/selection"],
+      "task_category_L2": ["Review-based recommendations"],
+      "capability": ["Ratings analysis", "Decision making", "Order Placement"]
+    },
+    "start_url": "https://dashdoor.rlgym.turing.com/",
+    "task_statement": "Log in using email '{{USER_EMAIL}}' and password '{{USER_PASSWORD}}'. I wanted to try {{RESTAURANT}}, go through the {{MENU_CATEGORY}} and add the {{ITEM_COUNT}} most liked ones to my cart. Place an order for my {{ADDRESS_TYPE}} address.",
+    "task_type": "GUI Comprehension, Action Execution, Decision Making, Element Identification",
+    "grader_config": {
+      "state_grader_configs": [
+        {
+          "assertions": [
+            {
+              "operator": "STRING_EQUALS",
+              "paths_to_expected": ["$.address.id"],
+              "path_to_actual": "$.deliveryAddress.id"
+            }
+          ],
+          "path_to_actual": "$.orders[0]"
+        },
+        {
+          "assertions": [
+            {
+              "operator": "ARRAY_LENGTH_MATCH",
+              "path_to_actual": "$.items[*]",
+              "expected": ["=={{ITEM_COUNT}}"]
+            },
+            {
+              "operator": "STRING_EQUALS",
+              "path_to_actual": "$.restaurantId",
+              "paths_to_expected": ["$.restaurants[0].id"]
+            },
+            {
+              "operator": "ARRAY_STRING_CONTAINS",
+              "path_to_actual": "$.items[*].name",
+              "paths_to_expected": ["$.items[*].name"]
+            }
+          ],
+          "path_to_actual": "$.orders[0]"
+        }
+      ],
+      "extract_states_config": {
+        "expected_state_functions": [
+          {
+            "args": {
+              "type": "{{ADDRESS_TYPE}}",
+              "user": "{{USER_EMAIL}}"
+            },
+            "function": "get_user_address"
+          },
+          {
+            "args": {
+              "lat": "$[0].address.lat",
+              "lng": "$[0].address.lng",
+              "name": "{{RESTAURANT}}",
+              "sort_type": [
+                {
+                  "key": "rating",
+                  "order": "desc"
+                },
+                {
+                  "key": "ratingCount",
+                  "order": "desc"
+                }
+              ]
+            },
+            "function": "get_restaurants"
+          },
+          {
+            "args": {
+              "restaurant_id": "$[1].restaurants[0].id",
+              "limit": "{{ITEM_COUNT}}",
+              "filters": {
+                "menu_categories": ["{{MENU_CATEGORY}}"]
+              },
+              "sort_type": [
+                {
+                  "key": "rating",
+                  "order": "desc"
+                },
+                {
+                  "key": "ratingCount",
+                  "order": "desc"
+                }
+              ]
+            },
+            "function": "get_items"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "template_settings": {
+      "template_id": "scheduled-best-item",
+      "task_category_L1": ["Ratings & Reviews"],
+      "task_category_L2": ["Review-based recommendations", "Delivery scheduling"],
+      "capability": ["Search and filtering", "Decision making", "Scheduling", "Order Placement"]
+    },
+    "start_url": "https://dashdoor.rlgym.turing.com/",
+    "task_statement": "Log in using email '{{USER_EMAIL}}' and password '{{USER_PASSWORD}}'. I am craving some {{RESTAURANT_ITEM}}, please order them for me. Just make sure you order from the restaurant that has the best rating for it. Also, I'll be at my {{ADDRESS_TYPE}} address by {{BASE_TIME}} so place this order for about {{TIME_OFFSET}} after that.",
+    "task_type": "GUI Comprehension, Action Execution, Decision Making, Element Identification, Multi-Step Task Planning",
+    "grader_config": {
+      "state_grader_configs": [
+        {
+          "assertions": [
+            {
+              "operator": "STRING_EQUALS",
+              "path_to_actual": "$.deliveryAddress.id",
+              "paths_to_expected": ["$.address.id"]
+            },
+            {
+              "operator": "STRING_EQUALS",
+              "path_to_actual": "$.deliveryOption.type",
+              "expected": ["schedule"]
+            },
+            {
+              "operator": "STRING_EQUALS",
+              "path_to_actual": "$.deliveryOption.scheduledTimeSlot",
+              "paths_to_expected": ["$.slot"]
+            }
+          ],
+          "path_to_actual": "$.orders[0]"
+        },
+        {
+          "assertions": [
+            {
+              "operator": "ARRAY_LENGTH_MATCH",
+              "expected": ["==1"],
+              "path_to_actual": "$.items[*]"
+            },
+            {
+              "operator": "STRING_EQUALS",
+              "path_to_actual": "$.restaurantId",
+              "paths_to_expected": ["$.items[0].restaurantId"]
+            },
+            {
+              "operator": "STRING_CONTAINS",
+              "path_to_actual": "$.items[0].name",
+              "paths_to_expected": ["$.items[0].name"]
+            }
+          ],
+          "path_to_actual": "$.orders[0]"
+        }
+      ],
+      "extract_states_config": {
+        "expected_state_functions": [
+          {
+            "args": {
+              "type": "{{ADDRESS_TYPE}}",
+              "user": "{{USER_EMAIL}}"
+            },
+            "function": "get_user_address"
+          },
+          {
+            "args": {
+              "keywords": ["{{RESTAURANT_ITEM}}"],
+              "lat": "$[0].address.lat",
+              "lng": "$[0].address.lng",
+              "sort_type": [
+                {
+                  "key": "rating",
+                  "order": "desc"
+                },
+                {
+                  "key": "ratingCount",
+                  "order": "desc"
+                }
+              ]
+            },
+            "function": "get_items"
+          },
+          {
+            "function": "get_time_slot",
+            "args": {
+              "time": "{{SCHEDULED_TIME}}"
+            }
+          }
+        ]
+      }
+    }
+  },
+  {
+    "template_settings": {
+      "template_id": "healthy-fixed-order",
+      "task_category_L1": ["Menu viewing", "Item selection"],
+      "task_category_L2": ["Order placement"],
+      "capability": ["Search and filtering"]
+    },
+    "start_url": "https://dashdoor.rlgym.turing.com/",
+    "task_statement": "Log in using email '{{USER_EMAIL}}' and password '{{USER_PASSWORD}}'. Go to {{SECTION}} section and find restaurant {{RESTAURANT}} and order {{ITEM_1_QTY}} {{ITEM_1}}, {{ITEM_2_QTY}} {{ITEM_2}}, {{ITEM_3_QTY}} {{ITEM_3}}.",
+    "task_type": "GUI Comprehension, Element Identification, Action Execution",
+    "grader_config": {
+      "state_grader_configs": [
+        {
+          "assertions": [
+            {
+              "operator": "STRING_EQUALS",
+              "path_to_actual": "$.deliveryAddress.id",
+              "paths_to_expected": ["$.address.id"]
+            }
+          ],
+          "path_to_actual": "$.orders[0]"
+        },
+        {
+          "assertions": [
+            {
+              "operator": "ARRAY_LENGTH_MATCH",
+              "path_to_actual": "$.items[*]",
+              "expected": ["==3"]
+            },
+            {
+              "operator": "STRING_EQUALS",
+              "path_to_actual": "$.restaurantId",
+              "paths_to_expected": ["$.restaurants[0].id"]
+            },
+            {
+              "operator": "ARRAY_STRING_EQUALS",
+              "path_to_actual": "$.items[*].name",
+              "paths_to_expected": ["$.items[0].name", "$.items[0].name", "$.items[0].name"]
+            },
+            {
+              "operator": "NUMERIC_MATCH",
+              "path_to_actual": "$.items[?(@.name == '{{ITEM_1_NAME}}')].quantity",
+              "expected": ["=={{ITEM_1_QTY}}"]
+            },
+            {
+              "operator": "NUMERIC_MATCH",
+              "path_to_actual": "$.items[?(@.name == '{{ITEM_2_NAME}}')].quantity",
+              "expected": ["=={{ITEM_2_QTY}}"]
+            },
+            {
+              "operator": "NUMERIC_MATCH",
+              "path_to_actual": "$.items[?(@.name == '{{ITEM_3_NAME}}')].quantity",
+              "expected": ["=={{ITEM_3_QTY}}"]
+            }
+          ],
+          "path_to_actual": "$.orders[0]"
+        }
+      ],
+      "extract_states_config": {
+        "expected_state_functions": [
+          {
+            "args": {
+              "user": "{{USER_EMAIL}}"
+            },
+            "function": "get_user_address"
+          },
+          {
+            "args": {
+              "name": "{{RESTAURANT}}",
+              "limit": 1
+            },
+            "function": "get_restaurants"
+          },
+          {
+            "args": {
+              "restaurant_id": "$[1].restaurants[0].id",
+              "keywords": ["{{ITEM_1}}"],
+              "limit": 1
+            },
+            "function": "get_items"
+          },
+          {
+            "args": {
+              "restaurant_id": "$[1].restaurants[0].id",
+              "keywords": ["{{ITEM_2}}"],
+              "limit": 1
+            },
+            "function": "get_items"
+          },
+          {
+            "args": {
+              "restaurant_id": "$[1].restaurants[0].id",
+              "keywords": ["{{ITEM_3}}"],
+              "limit": 1
+            },
+            "function": "get_items"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "template_settings": {
+      "template_id": "scheduled-group-order",
+      "task_category_L1": ["Menu viewing", "Item selection"],
+      "task_category_L2": ["Order placement"],
+      "capability": ["Search and filtering"]
+    },
+    "start_url": "https://dashdoor.rlgym.turing.com/",
+    "task_statement": "Log in using email '{{USER_EMAIL}}' and password '{{USER_PASSWORD}}'. Find the restaurant '{{RESTAURANT}}' and order {{RESTAURANT_ITEM}} for {{ITEM_QUANTITY}} people, schedule the delivery for {{SCHEDULED_TIME}}",
+    "task_type": "GUI Comprehension, Element Identification, Action Execution",
+    "grader_config": {
+      "state_grader_configs": [
+        {
+          "assertions": [
+            {
+              "operator": "STRING_EQUALS",
+              "path_to_actual": "$.deliveryAddress.id",
+              "paths_to_expected": ["$.address.id"]
+            },
+            {
+              "operator": "STRING_EQUALS",
+              "path_to_actual": "$.deliveryOption.type",
+              "expected": ["schedule"]
+            },
+            {
+              "operator": "STRING_EQUALS",
+              "path_to_actual": "$.deliveryOption.scheduledTimeSlot",
+              "paths_to_expected": ["$.slot"]
+            }
+          ],
+          "path_to_actual": "$.orders[0]"
+        },
+        {
+          "assertions": [
+            {
+              "operator": "ARRAY_LENGTH_MATCH",
+              "expected": ["==1"],
+              "path_to_actual": "$.items[*]"
+            },
+            {
+              "operator": "STRING_EQUALS",
+              "path_to_actual": "$.restaurantId",
+              "paths_to_expected": ["$.restaurants[0].id"]
+            },
+            {
+              "operator": "STRING_CONTAINS",
+              "path_to_actual": "$.items[0].name",
+              "paths_to_expected": ["$.items[0].name"]
+            },
+            {
+              "operator": "NUMERIC_MATCH",
+              "path_to_actual": "$.items[0].quantity",
+              "expected": ["=={{ITEM_QUANTITY}}"]
+            }
+          ],
+          "path_to_actual": "$.orders[0]"
+        }
+      ],
+      "extract_states_config": {
+        "expected_state_functions": [
+          {
+            "args": {
+              "user": "{{USER_EMAIL}}"
+            },
+            "function": "get_user_address"
+          },
+          {
+            "args": {
+              "lat": "$[0].address.lat",
+              "lng": "$[0].address.lng",
+              "name": "{{RESTAURANT}}"
+            },
+            "function": "get_restaurants"
+          },
+          {
+            "args": {
+              "keywords": ["{{RESTAURANT_ITEM}}"],
+              "restaurant_id": "$[1].restaurants[0].id"
+            },
+            "function": "get_items"
+          },
+          {
+            "function": "get_time_slot",
+            "args": {
+              "time": "{{SCHEDULED_TIME}}"
+            }
+          }
+        ]
+      }
+    }
+  },
+  {
+    "template_settings": {
+      "template_id": "update-cart-quantity",
+      "task_category_L1": ["Cart Management"],
+      "task_category_L2": ["Item management"],
+      "capability": ["UI understanding", "Button clicking"]
+    },
+    "start_url": "https://dashdoor.rlgym.turing.com/",
+    "task_statement": "Log in using email '{{USER_EMAIL}}' and password '{{USER_PASSWORD}}'. I created a cart from {{RESTAURANT}}. Could you update the quantity of the item I've added to {{TARGET_QUANTITY}}?",
+    "task_type": "GUI Comprehension, Action Execution, Element Identification",
+    "grader_config": {
+      "state_grader_configs": [
+        {
+          "assertions": [
+            {
+              "operator": "ARRAY_LENGTH_MATCH",
+              "expected": ["==1"],
+              "path_to_actual": "$.items[*]"
+            },
+            {
+              "operator": "NUMERIC_MATCH",
+              "path_to_actual": "$.items[0].quantity",
+              "expected": ["=={{TARGET_QUANTITY}}"]
+            }
+          ],
+          "path_to_actual": "$.carts[?(@.storeName == '{{RESTAURANT}}')]"
+        }
+      ],
+      "extract_states_config": {
+        "expected_state_functions": [
+          {
+            "args": {
+              "user": "{{USER_EMAIL}}",
+              "filters": {
+                "restaurant_names": ["{{RESTAURANT}}"]
+              },
+              "limit": 1
+            },
+            "function": "get_carts"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "template_settings": {
+      "template_id": "build-specific-cart",
+      "task_category_L1": ["Cart Management"],
+      "task_category_L2": ["Item selection"],
+      "capability": ["Scrolling", "Searching"]
+    },
+    "start_url": "https://dashdoor.rlgym.turing.com/",
+    "task_statement": "Log in using email '{{USER_EMAIL}}' and password '{{USER_PASSWORD}}'. Can you please prep a cart from {{RESTAURANT}} with {{ITEM_1_QTY}} serving of {{ITEM_1}}, {{ITEM_2_QTY}} {{ITEM_2}}, and {{ITEM_3_QTY}} {{ITEM_3}}?",
+    "task_type": "GUI Comprehension, Action Execution, Element Identification",
+    "grader_config": {
+      "state_grader_configs": [
+        {
+          "assertions": [
+            {
+              "operator": "ARRAY_LENGTH_MATCH",
+              "path_to_actual": "$.items[*]",
+              "expected": ["==3"]
+            },
+            {
+              "operator": "STRING_EQUALS",
+              "path_to_actual": "$.storeId",
+              "paths_to_expected": ["$.restaurants[0].id"]
+            },
+            {
+              "operator": "ARRAY_STRING_EQUALS",
+              "path_to_actual": "$.items[*].itemName",
+              "paths_to_expected": ["$.items[*].name"]
+            },
+            {
+              "operator": "ARRAY_NUMERIC_MATCH",
+              "path_to_actual": "$.items[*].quantity",
+              "expected": ["==1"]
+            }
+          ],
+          "path_to_actual": "$.carts[-1]"
+        }
+      ],
+      "extract_states_config": {
+        "expected_state_functions": [
+          {
+            "args": {
+              "user": "{{USER_EMAIL}}"
+            },
+            "function": "get_user_address"
+          },
+          {
+            "args": {
+              "lat": "$[0].address.lat",
+              "lng": "$[0].address.lng",
+              "name": "{{RESTAURANT}}",
+              "limit": 1
+            },
+            "function": "get_restaurants"
+          },
+          {
+            "args": {
+              "restaurant_id": "$[1].restaurants[0].id",
+              "keywords": ["{{ITEM_1}}", "{{ITEM_2}}", "{{ITEM_3}}"],
+              "limit": 3
+            },
+            "function": "get_items"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "template_settings": {
+      "template_id": "list-menu-options",
+      "task_category_L1": ["Menu viewing"],
+      "task_category_L2": ["Item selection"],
+      "capability": ["Identification"]
+    },
+    "start_url": "https://dashdoor.rlgym.turing.com/",
+    "task_statement": "Log in using email '{{USER_EMAIL}}' and password '{{USER_PASSWORD}}'. Does {{RESTAURANT}} have any options in {{ITEM_CATEGORY}}? Could you please share them?",
+    "task_type": "GUI Comprehension, Action Execution, Information Retrieval",
+    "grader_config": {
+      "answer_grader_config": {
+        "assertions": [
+          {
+            "operator": "STRING_CONTAINS",
+            "paths_to_expected": ["$.items[*].name"]
+          }
+        ]
+      },
+      "extract_states_config": {
+        "expected_state_functions": [
+          {
+            "args": {
+              "user": "{{USER_EMAIL}}"
+            },
+            "function": "get_user_address"
+          },
+          {
+            "args": {
+              "lat": "$[0].address.lat",
+              "lng": "$[0].address.lng",
+              "name": "{{RESTAURANT}}",
+              "limit": 1
+            },
+            "function": "get_restaurants"
+          },
+          {
+            "args": {
+              "restaurant_id": "$[1].restaurants[0].id",
+              "keywords": ["{{ITEM_CATEGORY}}"]
+            },
+            "function": "get_items"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "template_settings": {
+      "template_id": "list-rated-restaurants",
+      "task_category_L1": ["Item search"],
+      "task_category_L2": ["Filter usage"],
+      "capability": ["Identification", "Decision making"]
+    },
+    "start_url": "https://dashdoor.rlgym.turing.com/",
+    "task_statement": "Log in using email '{{USER_EMAIL}}' and password '{{USER_PASSWORD}}'. Find and list authentic {{CUISINE}} restaurants that serve {{RESTAURANT_ITEM}} and have a rating of {{MIN_RATING}} or higher and within {{MAX_DISTANCE}} of my location",
+    "task_type": "GUI Comprehension, Action Execution, Information Retrieval, Decision Making",
+    "grader_config": {
+      "llm_grader_config": {
+        "instruction": "The answer should clearly state that there are NO restaurants that satisfy all criterion. The answer may still suggest other restaurants",
+        "include_trajectory": false
+      },
+      "extract_states_config": {
+        "expected_state_functions": [
+          {
+            "args": {
+              "user": "{{USER_EMAIL}}"
+            },
+            "function": "get_user_address"
+          }
+        ]
+      }
+    }
+  }
+]

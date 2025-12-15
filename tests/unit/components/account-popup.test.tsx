@@ -16,6 +16,7 @@ vi.mock('next/navigation', () => ({
 vi.mock('lucide-react', () => ({
   Globe: () => <div data-testid="globe-icon">Globe</div>,
   Lock: () => <div data-testid="lock-icon">Lock</div>,
+  Heart: () => <div data-testid="heart-icon">Heart</div>,
 }));
 
 // Mock user store

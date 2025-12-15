@@ -151,9 +151,11 @@ describe('VerticalListPage', () => {
       expect(screen.getByText('New')).toBeInTheDocument();
     });
 
-    it('should render Open badge when store is open', () => {
+    it('should render delivery time when store is open', () => {
       render(<VerticalListPage {...defaultProps} />);
-      expect(screen.getByText('Open')).toBeInTheDocument();
+      // When store is open, it shows delivery time instead of "Open" badge
+      expect(screen.getByText('25-35 min')).toBeInTheDocument();
+      expect(screen.queryByText('Closed')).not.toBeInTheDocument();
     });
   });
 

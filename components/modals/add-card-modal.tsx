@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { X } from 'lucide-react';
+import { validateUSZipCode } from '@/lib/utils/zip-code-validation';
 
 interface AddCardModalProps {
   isOpen: boolean;
@@ -155,9 +156,10 @@ export default function AddCardModal({ isOpen, onClose, onAddCard }: AddCardModa
       }
     }
 
-    // Validate zip code (must be 5 digits)
-    if (zipCode.length !== 5) {
-      newErrors.zipCode = 'Zip code must be 5 digits';
+    // Validate zip code using comprehensive validation
+    const zipValidation = validateUSZipCode(zipCode);
+    if (!zipValidation.isValid) {
+      newErrors.zipCode = zipValidation.error;
       isValid = false;
     }
 

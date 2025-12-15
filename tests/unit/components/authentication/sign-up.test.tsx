@@ -1,7 +1,7 @@
 import { vi } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import SignUp from '@/components/authentication/sign-up';
-import { isValidEmail, isValidName } from '@/lib/utils/helperFunctions';
+import { isValidEmail, validateName } from '@/lib/utils/helperFunctions';
 import { useUserStore } from '@/store/user-store';
 
 // Mock dependencies
@@ -47,9 +47,36 @@ describe('SignUp Component', () => {
     (isValidEmail as ReturnType<typeof vi.fn>).mockImplementation((email: string) => {
       return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
     });
-    (isValidName as ReturnType<typeof vi.fn>).mockImplementation((name: string) => {
-      return /^[a-zA-Z0-9\s\-'.,]+$/.test(name) && name.length <= 119;
-    });
+    (validateName as ReturnType<typeof vi.fn>).mockImplementation(
+      (name: string, fieldName: string = 'Name') => {
+        const errors: string[] = [];
+        const MAX_LENGTH = 119;
+        const validPattern = /^[a-zA-Z0-9\s\-'.,]+$/;
+
+        if (name.length > MAX_LENGTH) {
+          errors.push(`${fieldName} cannot exceed ${MAX_LENGTH} characters`);
+        }
+
+        if (!validPattern.test(name)) {
+          const invalidChars = name
+            .split('')
+            .filter(char => !/[a-zA-Z0-9\s\-'.,]/.test(char))
+            .filter((char, index, self) => self.indexOf(char) === index);
+
+          if (invalidChars.length > 0) {
+            const charDisplay = invalidChars.map(c => `"${c}"`).join(', ');
+            errors.push(
+              `${fieldName} contains invalid character${invalidChars.length > 1 ? 's' : ''}: ${charDisplay}`
+            );
+          }
+        }
+
+        return {
+          isValid: errors.length === 0,
+          errors,
+        };
+      }
+    );
   });
 
   it('should render sign up form', () => {
@@ -102,9 +129,7 @@ describe('SignUp Component', () => {
 
         await waitFor(() => {
           expect(
-            screen.getByText(
-              'First name must only contain letters, numbers, spaces, hyphens, apostrophes, periods, and commas'
-            )
+            screen.getByText('First name contains invalid character: "@"')
           ).toBeInTheDocument();
         });
       });
@@ -166,9 +191,7 @@ describe('SignUp Component', () => {
 
         await waitFor(() => {
           expect(
-            screen.getByText(
-              'Last name must only contain letters, numbers, spaces, hyphens, apostrophes, periods, and commas'
-            )
+            screen.getByText('Last name contains invalid character: "#"')
           ).toBeInTheDocument();
         });
       });
@@ -246,10 +269,12 @@ describe('SignUp Component', () => {
         );
 
         const phoneInput = screen.getByLabelText(/mobile number/i);
-        // First enter a valid value
-        fireEvent.change(phoneInput, { target: { value: '1234567890' } });
+        // First enter a valid value (using valid US format)
+        fireEvent.change(phoneInput, { target: { value: '5556234567' } });
         // Then clear it
         fireEvent.change(phoneInput, { target: { value: '' } });
+        // Trigger blur to run validation
+        fireEvent.blur(phoneInput);
 
         await waitFor(() => {
           expect(screen.getByText('Phone number is required')).toBeInTheDocument();
@@ -266,10 +291,12 @@ describe('SignUp Component', () => {
         );
 
         const phoneInput = screen.getByLabelText(/mobile number/i);
-        fireEvent.change(phoneInput, { target: { value: '123abc456' } });
+        // Non-numeric chars are stripped, leaving only 6 digits which is too short for US
+        fireEvent.change(phoneInput, { target: { value: '234abc567' } });
+        fireEvent.blur(phoneInput);
 
         await waitFor(() => {
-          expect(screen.getByText('Phone number is required')).toBeInTheDocument();
+          expect(screen.getByText('Phone number must be 10 digits for US')).toBeInTheDocument();
         });
       });
 
@@ -283,15 +310,15 @@ describe('SignUp Component', () => {
         );
 
         const phoneInput = screen.getByLabelText(/mobile number/i);
-        fireEvent.change(phoneInput, { target: { value: '1234567' } });
+        fireEvent.change(phoneInput, { target: { value: '2345678' } });
         fireEvent.blur(phoneInput);
 
         await waitFor(() => {
-          expect(screen.getByText('Phone number is invalid')).toBeInTheDocument();
+          expect(screen.getByText('Phone number must be 10 digits for US')).toBeInTheDocument();
         });
       });
 
-      it('should show error when phone number is too long (12 digits)', async () => {
+      it('should show error when phone number is too short (9 digits)', async () => {
         render(
           <SignUp
             onShowOTP={mockOnShowOTP}
@@ -301,15 +328,15 @@ describe('SignUp Component', () => {
         );
 
         const phoneInput = screen.getByLabelText(/mobile number/i);
-        fireEvent.change(phoneInput, { target: { value: '123456789012' } });
+        fireEvent.change(phoneInput, { target: { value: '234567890' } });
         fireEvent.blur(phoneInput);
 
         await waitFor(() => {
-          expect(screen.getByText('Phone number is invalid')).toBeInTheDocument();
+          expect(screen.getByText('Phone number must be 10 digits for US')).toBeInTheDocument();
         });
       });
 
-      it('should accept valid phone number length of 8 digits', async () => {
+      it('should accept valid phone number length of 10 digits with valid area code', async () => {
         render(
           <SignUp
             onShowOTP={mockOnShowOTP}
@@ -319,12 +346,11 @@ describe('SignUp Component', () => {
         );
 
         const phoneInput = screen.getByLabelText(/mobile number/i);
-        fireEvent.change(phoneInput, { target: { value: '12345678' } });
+        fireEvent.change(phoneInput, { target: { value: '2345678901' } });
         fireEvent.blur(phoneInput);
 
         await waitFor(() => {
-          expect(screen.queryByText('Phone number is invalid')).not.toBeInTheDocument();
-          expect(screen.queryByText('Phone number is required')).not.toBeInTheDocument();
+          expect(screen.queryByText(/Phone number/i)).not.toBeInTheDocument();
         });
       });
 
@@ -338,12 +364,11 @@ describe('SignUp Component', () => {
         );
 
         const phoneInput = screen.getByLabelText(/mobile number/i);
-        fireEvent.change(phoneInput, { target: { value: '1234567890' } });
+        fireEvent.change(phoneInput, { target: { value: '5556234567' } });
         fireEvent.blur(phoneInput);
 
         await waitFor(() => {
-          expect(screen.queryByText('Phone number is invalid')).not.toBeInTheDocument();
-          expect(screen.queryByText('Phone number is required')).not.toBeInTheDocument();
+          expect(screen.queryByText(/Phone number/i)).not.toBeInTheDocument();
         });
       });
     });
@@ -472,7 +497,7 @@ describe('SignUp Component', () => {
         target: { value: 'john@example.com' },
       });
       fireEvent.change(screen.getByLabelText(/mobile number/i), {
-        target: { value: '1234567890' },
+        target: { value: '5556234567' },
       });
       fireEvent.change(screen.getByLabelText(/password/i), {
         target: { value: 'Password123!' },
@@ -490,7 +515,7 @@ describe('SignUp Component', () => {
       const existingUser = {
         id: '1',
         email: 'existing@example.com',
-        phoneNumber: '+11234567890',
+        phoneNumber: '+15556234567',
       };
       (useUserStore as unknown as ReturnType<typeof vi.fn>).mockImplementation((selector?: any) => {
         if (selector) {
@@ -521,7 +546,7 @@ describe('SignUp Component', () => {
         target: { value: 'existing@example.com' },
       });
       fireEvent.change(screen.getByLabelText(/mobile number/i), {
-        target: { value: '1234567890' },
+        target: { value: '2345678901' },
       });
       fireEvent.change(screen.getByLabelText(/password/i), {
         target: { value: 'Password123!' },
@@ -544,7 +569,7 @@ describe('SignUp Component', () => {
       const existingUser = {
         id: '1',
         email: 'different@example.com',
-        phoneNumber: '+11234567890',
+        phoneNumber: '+15556234567',
       };
       (useUserStore as unknown as ReturnType<typeof vi.fn>).mockImplementation((selector?: any) => {
         if (selector) {
@@ -575,7 +600,7 @@ describe('SignUp Component', () => {
         target: { value: 'new@example.com' },
       });
       fireEvent.change(screen.getByLabelText(/mobile number/i), {
-        target: { value: '1234567890' },
+        target: { value: '5556234567' },
       });
       fireEvent.change(screen.getByLabelText(/password/i), {
         target: { value: 'Password123!' },

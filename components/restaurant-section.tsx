@@ -1,11 +1,47 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import type { Restaurant } from '@/constants/restaurants';
 import { getDefaultRating } from '@/lib/utils/rating-utils';
 import { useRestaurantsOpenStatus } from '@/lib/hooks/use-restaurant-open-status';
+import { useAllDeals } from '@/lib/hooks/use-deals';
+import type { Deal } from '@/types/deal-types';
+
+/**
+ * Format a deal into a short display text for restaurant cards
+ * Examples:
+ * - "20% off $25+, Up to $6 off"
+ * - "$3 off on $15+"
+ */
+function formatDealText(deal: Deal): string {
+  const { discountType, discountValue, minimumPurchase, maximumDiscount } = deal;
+
+  if (!discountType || discountValue === undefined) {
+    // If no discount info, fall back to title
+    return deal.title;
+  }
+
+  if (discountType === 'percentage') {
+    let text = `${discountValue}% off`;
+    if (minimumPurchase && minimumPurchase > 0) {
+      text += ` $${minimumPurchase}+`;
+    }
+    if (maximumDiscount && maximumDiscount > 0) {
+      text += `. Up to $${maximumDiscount} off`;
+    }
+    return text;
+  } else if (discountType === 'fixed') {
+    let text = `$${discountValue} off`;
+    if (minimumPurchase && minimumPurchase > 0) {
+      text += ` on $${minimumPurchase}+`;
+    }
+    return text;
+  }
+
+  return deal.title;
+}
 
 interface RestaurantSectionProps {
   title: string;
@@ -27,6 +63,29 @@ export default function RestaurantSection({
 
   // Calculate open status based on user's local time
   const openStatusMap = useRestaurantsOpenStatus(restaurants);
+
+  // Fetch all deals to show restaurant-specific deals on cards
+  const { data: allDeals } = useAllDeals();
+
+  // Create a map of restaurant ID to their first restaurant-specific deal
+  const restaurantDealsMap = useMemo(() => {
+    const map = new Map<string, Deal>();
+    if (!allDeals) return map;
+
+    // Filter to only restaurant-specific deals (not common deals)
+    const restaurantSpecificDeals = allDeals.filter(
+      (deal: Deal) => deal.restaurantId !== null
+    );
+
+    // Group by restaurant and take the first deal for each
+    for (const deal of restaurantSpecificDeals) {
+      if (deal.restaurantId && !map.has(deal.restaurantId)) {
+        map.set(deal.restaurantId, deal);
+      }
+    }
+
+    return map;
+  }, [allDeals]);
 
   // Calculate how many cards can fit and their optimal width
   useEffect(() => {
@@ -126,6 +185,13 @@ export default function RestaurantSection({
                 </div>
 
                 <div className="text-sm text-gray-500">{restaurant.deliveryFee}</div>
+
+                {/* Restaurant-specific deal */}
+                {restaurantDealsMap.has(restaurant.id) && (
+                  <div className="text-xs font-medium text-red-600 mt-1 bg-red-50 px-2 py-0.5 rounded inline-block">
+                    {formatDealText(restaurantDealsMap.get(restaurant.id)!)}
+                  </div>
+                )}
               </div>
             </div>
           </Link>

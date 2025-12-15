@@ -5,6 +5,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import Header from '@/components/header';
 // import LandingPageFooter from '@/components/landing-page-footer';
 import LayoutWrapper from '@/components/layout-wrapper';
+import MerchantLayout from './merchant-layout';
 import Snackbar from '@/components/snackbar';
 import { useUserStore } from '@/store/user-store';
 import { useCarts } from '@/lib/hooks/use-carts';
@@ -77,9 +78,12 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
       !tempAddress &&
       pathname !== '/' &&
       !pathname.startsWith('/auth') &&
+      !pathname.startsWith('/delivery') &&
+      !pathname.startsWith('/merchant') &&
       !isPasswordResetPage
     ) {
-      // If user is not logged in, has no temp address, and is not on "/" or "/auth" paths, redirect to "/"
+      // If user is not logged in, has no temp address, and is not on "/" or "/auth" or "/delivery" paths, redirect to "/"
+      // Note: /delivery paths have their own authentication flow handled by the delivery layout
       router.replace('/');
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -95,6 +99,10 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
         <Snackbar />
       </div>
     );
+  }
+
+  if (pathname?.startsWith('/merchant')) {
+    return <MerchantLayout>{children}</MerchantLayout>;
   }
 
   return (
