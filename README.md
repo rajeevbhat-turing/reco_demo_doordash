@@ -66,13 +66,15 @@ To set up the project for local development:
    npm install
    ```
 
-2. **Create a `.env` file** with `LIBSQL_URL` (defaults to `.env`):
+2. **Create a `.env` file** with `LIBSQL_URL`, `DELIVERY_LIBSQL_URL` and `MERCHANT_LIBSQL_URL` (defaults to `.env`):
 
    ```sh
    LIBSQL_URL=your_libsql_url_here
+   DELIVERY_LIBSQL_URL=your_delivery_libsql_url_here
+   MERCHANT_LIBSQL_URL=your_merchant_libsql_url_here
    ```
 
-Note: The default DB is located at `data/db` folder and named `dashdoor.db`
+Note: The default DBs are located inside the `data/db` folder
 
 3. **Run the development server**:
 
