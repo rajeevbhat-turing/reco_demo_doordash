@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { X, Clock, Calendar } from 'lucide-react';
+import { useBootstrapStore } from '@/store/bootstrap-store';
 
 interface ScheduleDeliveryModalProps {
   isOpen: boolean;
@@ -33,6 +34,9 @@ export default function ScheduleDeliveryModal({
   restaurantName,
 }: ScheduleDeliveryModalProps) {
   const dialogRef = useRef<HTMLDivElement>(null);
+  
+  // Get current time from bootstrap store (supports simulated time)
+  const getCurrentTime = useBootstrapStore(state => state.getCurrentTime);
   
   // Parse hours to ensure they're numbers (handles integers, integer strings, and ISO date strings)
   // Returns { value, isValid } to distinguish between 0 (midnight) and invalid values
@@ -132,10 +136,10 @@ export default function ScheduleDeliveryModal({
     };
   }, [isOpen, onClose]);
 
-  // Generate dates dynamically starting from today
+  // Generate dates dynamically starting from today (supports simulated time)
   const generateDates = () => {
     const dates = [];
-    const today = new Date();
+    const today = getCurrentTime();
     const dayNames = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
 
     for (let i = 0; i < 5; i++) {
@@ -170,9 +174,10 @@ export default function ScheduleDeliveryModal({
   };
 
   // Generate time slots in 20-minute increments starting 30 minutes from now (for today)
+  // Supports simulated time via bootstrap
   const generateTimeSlotsForToday = (opening: number, closing: number) => {
     const slots: { value: string; display: string }[] = [];
-    const now = new Date();
+    const now = getCurrentTime();
     const currentHour = now.getHours();
 
     // Determine start time
@@ -236,9 +241,10 @@ export default function ScheduleDeliveryModal({
   };
 
   // Generate time slots for future days (full day from opening to closing)
+  // Supports simulated time via bootstrap
   const generateTimeSlotsForFutureDay = (opening: number, closing: number) => {
     const slots: { value: string; display: string }[] = [];
-    const now = new Date();
+    const now = getCurrentTime();
 
     // Start at restaurant opening time
     const startTime = new Date(now);
@@ -283,7 +289,7 @@ export default function ScheduleDeliveryModal({
     return slots;
   };
 
-  const dates = useMemo(() => generateDates(), []);
+  const dates = useMemo(() => generateDates(), [getCurrentTime]);
   
   // When restaurant is closed, default to tomorrow if no slots available today
   const getInitialDate = () => {
@@ -314,9 +320,9 @@ export default function ScheduleDeliveryModal({
   // Check if ASAP option should be shown (only if restaurant is currently open)
   const showAsapOption = isToday && !isRestaurantClosed;
 
-  // Get the full date object for the selected date
+  // Get the full date object for the selected date (supports simulated time)
   const getFullDateForSelectedDate = () => {
-    const today = new Date();
+    const today = getCurrentTime();
     const selectedDateNum = parseInt(selectedDate);
     const todayDateNum = today.getDate();
 

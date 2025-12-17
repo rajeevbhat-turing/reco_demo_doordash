@@ -48,6 +48,7 @@ import { useRestaurantOpenStatus } from '@/lib/hooks/use-restaurant-open-status'
 import { calculateDistance } from '@/lib/utils/distance-utils';
 import { calculateFees, calculateEstimatedTax } from '@/lib/utils/fee-calculator';
 import { useDeals } from '@/lib/hooks/use-deals';
+import { useBootstrapStore } from '@/store/bootstrap-store';
 import { Deal } from '@/types/deal-types';
 
 export default function CheckoutPage() {
@@ -86,6 +87,9 @@ export default function CheckoutPage() {
   } = useUserStore();
   const { addOrder } = useOrdersStore();
   const { getAppliedDealId, getFreeItemIds } = useDealsStore();
+  
+  // Get current time from bootstrap store (supports simulated time)
+  const getCurrentTime = useBootstrapStore(state => state.getCurrentTime);
 
   // Find the cart using query params first (before fetching restaurants)
   const currentCart = categoryParam && storeIdParam ? findCart(storeIdParam, categoryParam) : null;
@@ -607,10 +611,11 @@ export default function CheckoutPage() {
           }
         : null,
       // Order date should be iso string formatting should only done in the UI
-      orderDate: new Date().toISOString(),
+      // Supports simulated time via bootstrap
+      orderDate: getCurrentTime().toISOString(),
       // Set status to 'scheduled' if this is a scheduled delivery, otherwise 'pending'
       status: selectedDeliveryOption === 'schedule' && scheduledDate ? 'scheduled' : 'pending',
-      orderStatusUpdatedAt: new Date().toISOString(), // To track when the order status was last updated
+      orderStatusUpdatedAt: getCurrentTime().toISOString(), // To track when the order status was last updated
       remainingTime: deliveryTime, // Initialize with original delivery time
       orderType: 'Personal' as const, // Default to Personal
     };

@@ -12,6 +12,7 @@ import { ScheduledOrdersTable } from '@/components/merchant/orders/ScheduledOrde
 import { HistoryOrdersTable } from '@/components/merchant/orders/HistoryOrdersTable';
 import type { ProcessedOrder } from '@/components/merchant/orders/OrdersTableShared';
 import OrderDetailsModal from '@/components/merchant/modals/OrderDetailsModal';
+import { useBootstrapStore } from '@/store/bootstrap-store';
 
 const COMPLETED_STATUSES = ['delivered', 'cancelled', 'returned', 'abandoned'];
 const IN_PROGRESS_STATUSES = [
@@ -176,11 +177,15 @@ export default function MerchantStoreOrdersPage() {
     orders: storeOrders,
     updateOrder,
   } = useMerchantOrdersStore();
+  
+  // Get current time from bootstrap store (supports simulated time)
+  const getCurrentTime = useBootstrapStore(state => state.getCurrentTime);
+  
   const [searchValue, setSearchValue] = useState(searchQuery);
   const [lastUpdated, setLastUpdated] = useState(3);
   const [storeSet, setStoreSet] = useState(false);
   // Force re-render every 10 seconds to update order statuses and timers
-  const [currentTime, setCurrentTime] = useState(new Date());
+  const [currentTime, setCurrentTime] = useState(() => getCurrentTime());
   // Filter states
   const [channelFilter, setChannelFilter] = useState('');
   const [dateRangeFilter, setDateRangeFilter] = useState('7');
@@ -231,10 +236,10 @@ export default function MerchantStoreOrdersPage() {
             // ISO string
             orderDate = new Date(order.orderDate);
           } else {
-            orderDate = new Date();
+            orderDate = getCurrentTime(); // Supports simulated time
           }
         } catch {
-          orderDate = new Date();
+          orderDate = getCurrentTime(); // Supports simulated time
         }
 
         const rawStatus = String(order.status || 'pending').toLowerCase();
@@ -331,18 +336,19 @@ export default function MerchantStoreOrdersPage() {
     setSearchQuery(searchValue);
   }, [searchValue, setSearchQuery]);
 
-  // Update current time every second to trigger order status recalculations
+  // Update current time every 10 seconds to trigger order status recalculations
+  // Supports simulated time via bootstrap
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentTime(new Date());
+      setCurrentTime(getCurrentTime());
       setLastUpdated(prev => (prev >= 60 ? 1 : prev + 1));
     }, 10000);
     return () => clearInterval(interval);
-  }, []);
+  }, [getCurrentTime]);
 
   const handleRefresh = () => {
     setLastUpdated(0);
-    setCurrentTime(new Date());
+    setCurrentTime(getCurrentTime()); // Supports simulated time
     // Force refetch orders
     window.location.reload();
   };
@@ -374,11 +380,11 @@ export default function MerchantStoreOrdersPage() {
       (channelFilter === 'DashDoor' && order.fulfillmentType === 'DashDoor delivery') ||
       (channelFilter === 'Pickup' && order.fulfillmentType === 'Customer pickup');
 
-    // Date range filter
+    // Date range filter (supports simulated time)
     let matchesDateRange = true;
     if (dateRangeFilter !== 'all' && order.rawOrderDate) {
       const daysAgo = parseInt(dateRangeFilter);
-      const cutoffDate = new Date();
+      const cutoffDate = new Date(getCurrentTime());
       cutoffDate.setDate(cutoffDate.getDate() - daysAgo);
       matchesDateRange = order.rawOrderDate >= cutoffDate;
     }

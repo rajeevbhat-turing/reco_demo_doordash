@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react"
 import type { FilterState } from "@/components/filter-options"
+import { useBootstrapStore } from "@/store/bootstrap-store"
 
 interface FilterOption {
   id: string
@@ -116,6 +117,9 @@ export function useFilterOptions({
   hideCuisineFilter = false,
   hideDietaryFilter = false,
 }: UseFilterOptionsProps): UseFilterOptionsReturn {
+  // Get current time from bootstrap store (supports simulated time)
+  const getCurrentTime = useBootstrapStore(state => state.getCurrentTime)
+  
   const [filters, setFilters] = useState<FilterState>({
     underThirtyMins: false,
     deals: false,
@@ -176,14 +180,18 @@ export function useFilterOptions({
   const dietaryDropdownRef = useRef<HTMLDivElement>(null)
 
   // Generate date options (Today, Tomorrow, and next 3 days)
+  // Supports simulated time via bootstrap
   useEffect(() => {
-    const today = new Date()
+    const today = getCurrentTime()
     const options: ScheduleOption[] = []
+
+    // Get month name from the current time
+    const monthName = today.toLocaleDateString("en-US", { month: "short" })
 
     // Today
     options.push({
       day: "Today",
-      date: `May ${today.getDate()}`,
+      date: `${monthName} ${today.getDate()}`,
       fullDate: new Date(today),
     })
 
@@ -192,7 +200,7 @@ export function useFilterOptions({
     tomorrow.setDate(tomorrow.getDate() + 1)
     options.push({
       day: "Tomorrow",
-      date: `May ${tomorrow.getDate()}`,
+      date: `${monthName} ${tomorrow.getDate()}`,
       fullDate: new Date(tomorrow),
     })
 
@@ -202,19 +210,21 @@ export function useFilterOptions({
       nextDay.setDate(nextDay.getDate() + i)
 
       const dayName = nextDay.toLocaleDateString("en-US", { weekday: "long" })
+      const nextDayMonth = nextDay.toLocaleDateString("en-US", { month: "short" })
       options.push({
         day: dayName,
-        date: `May ${nextDay.getDate()}`,
+        date: `${nextDayMonth} ${nextDay.getDate()}`,
         fullDate: new Date(nextDay),
       })
     }
 
     setDateOptions(options)
-  }, [])
+  }, [getCurrentTime])
 
   // Generate time options based on selected day
+  // Supports simulated time via bootstrap
   useEffect(() => {
-    const now = new Date()
+    const now = getCurrentTime()
     const currentHour = now.getHours()
     const currentMinute = now.getMinutes()
 
@@ -260,7 +270,7 @@ export function useFilterOptions({
 
     setTimeOptions(times)
     setVisibleTimeOptions(times.slice(0, 6))
-  }, [selectedDay])
+  }, [selectedDay, getCurrentTime])
 
   // Auto-select rating 1 when dropdown opens (if no filter is currently applied)
   useEffect(() => {

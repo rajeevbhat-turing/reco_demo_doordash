@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { merchantDb } from '@/lib/merchant-db';
+import { getServerCurrentHour } from '@/lib/utils/time-utils';
 
-export async function GET(_request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id: storeId } = await params;
 
@@ -46,8 +47,9 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<{
         ? `${storeRaw.opening_hour} - ${storeRaw.closing_hour}`
         : 'Not set';
 
-    // Check if currently open
-    const currentHour = new Date().getHours();
+    // Check if currently open (supports bootstrap time offset)
+    const cookieHeader = request.headers.get('cookie');
+    const currentHour = getServerCurrentHour(cookieHeader);
     const openHour = storeRaw.opening_hour ? parseInt(storeRaw.opening_hour.split(':')[0]) : 0;
     const closeHour = storeRaw.closing_hour ? parseInt(storeRaw.closing_hour.split(':')[0]) : 24;
     const isOpen = currentHour >= openHour && currentHour < closeHour;
