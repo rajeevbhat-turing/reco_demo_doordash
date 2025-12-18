@@ -13,14 +13,14 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
       {
         ""assertions"": [
           {
-            ""operator"": ""ARRAY_STRING_EQUALS"",
+            ""operator"": ""STRING_EQUALS"",
             ""path_to_actual"": ""$.restaurantId"",
             ""paths_to_expected"": [
               ""$[1].restaurants[0].id""
             ]
           },
           {
-            ""operator"": ""ARRAY_STRING_EQUALS"",
+            ""operator"": ""STRING_EQUALS"",
             ""path_to_actual"": ""$.items[0].name"",
             ""paths_to_expected"": [
               ""$[2].items[0].name""
@@ -99,14 +99,14 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
       {
         ""assertions"": [
           {
-            ""operator"": ""ARRAY_STRING_EQUALS"",
+            ""operator"": ""STRING_EQUALS"",
             ""path_to_actual"": ""$.restaurantId"",
             ""paths_to_expected"": [
               ""$[1].restaurants[0].id""
             ]
           },
           {
-            ""operator"": ""ARRAY_STRING_EQUALS"",
+            ""operator"": ""STRING_EQUALS"",
             ""path_to_actual"": ""$.items[0].name"",
             ""paths_to_expected"": [
               ""$[2].items[0].name""
@@ -186,14 +186,14 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
       {
         ""assertions"": [
           {
-            ""operator"": ""ARRAY_STRING_EQUALS"",
+            ""operator"": ""STRING_EQUALS"",
             ""path_to_actual"": ""$.restaurantId"",
             ""paths_to_expected"": [
               ""$[1].restaurants[0].id""
             ]
           },
           {
-            ""operator"": ""ARRAY_STRING_EQUALS"",
+            ""operator"": ""STRING_EQUALS"",
             ""path_to_actual"": ""$.items[0].name"",
             ""paths_to_expected"": [
               ""$[2].items[0].name""
@@ -273,14 +273,14 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
       {
         ""assertions"": [
           {
-            ""operator"": ""ARRAY_STRING_EQUALS"",
+            ""operator"": ""STRING_EQUALS"",
             ""path_to_actual"": ""$.restaurantId"",
             ""paths_to_expected"": [
               ""$[1].restaurants[0].id""
             ]
           },
           {
-            ""operator"": ""ARRAY_STRING_EQUALS"",
+            ""operator"": ""STRING_EQUALS"",
             ""path_to_actual"": ""$.items[0].name"",
             ""paths_to_expected"": [
               ""$[2].items[0].name""
@@ -360,14 +360,14 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
       {
         ""assertions"": [
           {
-            ""operator"": ""ARRAY_STRING_EQUALS"",
+            ""operator"": ""STRING_EQUALS"",
             ""path_to_actual"": ""$.restaurantId"",
             ""paths_to_expected"": [
               ""$[1].restaurants[0].id""
             ]
           },
           {
-            ""operator"": ""ARRAY_STRING_EQUALS"",
+            ""operator"": ""STRING_EQUALS"",
             ""path_to_actual"": ""$.items[0].name"",
             ""paths_to_expected"": [
               ""$[2].items[0].name""
@@ -447,14 +447,14 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
       {
         ""assertions"": [
           {
-            ""operator"": ""ARRAY_STRING_EQUALS"",
+            ""operator"": ""STRING_EQUALS"",
             ""path_to_actual"": ""$.restaurantId"",
             ""paths_to_expected"": [
               ""$[1].restaurants[0].id""
             ]
           },
           {
-            ""operator"": ""ARRAY_STRING_EQUALS"",
+            ""operator"": ""STRING_EQUALS"",
             ""path_to_actual"": ""$.items[0].name"",
             ""paths_to_expected"": [
               ""$[2].items[0].name""
@@ -534,14 +534,14 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
       {
         ""assertions"": [
           {
-            ""operator"": ""ARRAY_STRING_EQUALS"",
+            ""operator"": ""STRING_EQUALS"",
             ""path_to_actual"": ""$.restaurantId"",
             ""paths_to_expected"": [
               ""$[1].restaurants[0].id""
             ]
           },
           {
-            ""operator"": ""ARRAY_STRING_EQUALS"",
+            ""operator"": ""STRING_EQUALS"",
             ""path_to_actual"": ""$.items[0].name"",
             ""paths_to_expected"": [
               ""$[2].items[0].name""
@@ -2431,7 +2431,7 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
       {
         ""assertions"": [
           {
-            ""operator"": ""ARRAY_STRING_EQUALS"",
+            ""operator"": ""JSON_EQUALS"",
             ""path_to_actual"": ""$.carts[*].storeId"",
             ""paths_to_expected"": [
               ""$.carts[*].storeId""
@@ -2481,7 +2481,7 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
       {
         ""assertions"": [
           {
-            ""operator"": ""ARRAY_STRING_EQUALS"",
+            ""operator"": ""JSON_EQUALS"",
             ""path_to_actual"": ""$.carts[*].storeId"",
             ""paths_to_expected"": [
               ""$.carts[*].storeId""
@@ -2532,7 +2532,7 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
       {
         ""assertions"": [
           {
-            ""operator"": ""ARRAY_STRING_EQUALS"",
+            ""operator"": ""JSON_EQUALS"",
             ""path_to_actual"": ""$.carts[*].storeId"",
             ""paths_to_expected"": [
               ""$.carts[*].storeId""
@@ -2583,7 +2583,7 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
       {
         ""assertions"": [
           {
-            ""operator"": ""ARRAY_STRING_EQUALS"",
+            ""operator"": ""JSON_EQUALS"",
             ""path_to_actual"": ""$.carts[*].storeId"",
             ""paths_to_expected"": [
               ""$.carts[*].storeId""
@@ -2634,7 +2634,7 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
       {
         ""assertions"": [
           {
-            ""operator"": ""ARRAY_STRING_EQUALS"",
+            ""operator"": ""JSON_EQUALS"",
             ""path_to_actual"": ""$.carts[*].storeId"",
             ""paths_to_expected"": [
               ""$.carts[*].storeId""
@@ -2685,7 +2685,7 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
       {
         ""assertions"": [
           {
-            ""operator"": ""ARRAY_STRING_EQUALS"",
+            ""operator"": ""JSON_EQUALS"",
             ""path_to_actual"": ""$.carts[*].storeId"",
             ""paths_to_expected"": [
               ""$.carts[*].storeId""
@@ -2736,7 +2736,7 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
       {
         ""assertions"": [
           {
-            ""operator"": ""ARRAY_STRING_EQUALS"",
+            ""operator"": ""JSON_EQUALS"",
             ""path_to_actual"": ""$.carts[*].storeId"",
             ""paths_to_expected"": [
               ""$.carts[*].storeId""
@@ -2788,7 +2788,7 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
       {
         ""assertions"": [
           {
-            ""operator"": ""ARRAY_STRING_EQUALS"",
+            ""operator"": ""JSON_EQUALS"",
             ""path_to_actual"": ""$.items[*].id"",
             ""paths_to_expected"": [
               ""$.carts[0].items[*].id"",
@@ -2872,7 +2872,7 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
       {
         ""assertions"": [
           {
-            ""operator"": ""ARRAY_STRING_EQUALS"",
+            ""operator"": ""JSON_EQUALS"",
             ""path_to_actual"": ""$.items[*].id"",
             ""paths_to_expected"": [
               ""$.carts[0].items[*].id"",
@@ -2957,7 +2957,7 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
       {
         ""assertions"": [
           {
-            ""operator"": ""ARRAY_STRING_EQUALS"",
+            ""operator"": ""JSON_EQUALS"",
             ""path_to_actual"": ""$.items[*].id"",
             ""paths_to_expected"": [
               ""$.carts[0].items[*].id"",
@@ -3042,7 +3042,7 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
       {
         ""assertions"": [
           {
-            ""operator"": ""ARRAY_STRING_EQUALS"",
+            ""operator"": ""JSON_EQUALS"",
             ""path_to_actual"": ""$.items[*].id"",
             ""paths_to_expected"": [
               ""$.carts[0].items[*].id"",
@@ -3127,7 +3127,7 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
       {
         ""assertions"": [
           {
-            ""operator"": ""ARRAY_STRING_EQUALS"",
+            ""operator"": ""JSON_EQUALS"",
             ""path_to_actual"": ""$.items[*].id"",
             ""paths_to_expected"": [
               ""$.carts[0].items[*].id"",
@@ -3212,7 +3212,7 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
       {
         ""assertions"": [
           {
-            ""operator"": ""ARRAY_STRING_EQUALS"",
+            ""operator"": ""JSON_EQUALS"",
             ""path_to_actual"": ""$.items[*].id"",
             ""paths_to_expected"": [
               ""$.carts[0].items[*].id"",
@@ -3297,7 +3297,7 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
       {
         ""assertions"": [
           {
-            ""operator"": ""ARRAY_STRING_EQUALS"",
+            ""operator"": ""JSON_EQUALS"",
             ""path_to_actual"": ""$.items[*].id"",
             ""paths_to_expected"": [
               ""$.carts[0].items[*].id"",
@@ -3426,7 +3426,7 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
       {
         ""assertions"": [
           {
-            ""operator"": ""ARRAY_STRING_EQUALS"",
+            ""operator"": ""JSON_EQUALS"",
             ""path_to_actual"": ""$.items[*].name"",
             ""paths_to_expected"": [
               ""$.orders[0].items[*].name"",
@@ -3544,7 +3544,7 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
       {
         ""assertions"": [
           {
-            ""operator"": ""ARRAY_STRING_EQUALS"",
+            ""operator"": ""JSON_EQUALS"",
             ""path_to_actual"": ""$.items[*].name"",
             ""paths_to_expected"": [
               ""$.orders[0].items[*].name"",
@@ -3662,7 +3662,7 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
       {
         ""assertions"": [
           {
-            ""operator"": ""ARRAY_STRING_EQUALS"",
+            ""operator"": ""JSON_EQUALS"",
             ""path_to_actual"": ""$.items[*].name"",
             ""paths_to_expected"": [
               ""$.orders[0].items[*].name"",
@@ -3780,7 +3780,7 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
       {
         ""assertions"": [
           {
-            ""operator"": ""ARRAY_STRING_EQUALS"",
+            ""operator"": ""JSON_EQUALS"",
             ""path_to_actual"": ""$.items[*].name"",
             ""paths_to_expected"": [
               ""$.orders[0].items[*].name"",
@@ -3898,7 +3898,7 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
       {
         ""assertions"": [
           {
-            ""operator"": ""ARRAY_STRING_EQUALS"",
+            ""operator"": ""JSON_EQUALS"",
             ""path_to_actual"": ""$.items[*].name"",
             ""paths_to_expected"": [
               ""$.orders[0].items[*].name"",
@@ -5552,7 +5552,7 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
       {
         ""assertions"": [
           {
-            ""operator"": ""ARRAY_STRING_EQUALS"",
+            ""operator"": ""JSON_EQUALS"",
             ""path_to_actual"": ""$.items[*].id"",
             ""paths_to_expected"": [
               ""$.items[*].id""
@@ -5684,7 +5684,7 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
       {
         ""assertions"": [
           {
-            ""operator"": ""ARRAY_STRING_EQUALS"",
+            ""operator"": ""JSON_EQUALS"",
             ""path_to_actual"": ""$.items[*].id"",
             ""paths_to_expected"": [
               ""$.items[*].id""
@@ -5817,7 +5817,7 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
       {
         ""assertions"": [
           {
-            ""operator"": ""ARRAY_STRING_EQUALS"",
+            ""operator"": ""JSON_EQUALS"",
             ""path_to_actual"": ""$.items[*].id"",
             ""paths_to_expected"": [
               ""$.items[*].id""
@@ -5950,7 +5950,7 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
       {
         ""assertions"": [
           {
-            ""operator"": ""ARRAY_STRING_EQUALS"",
+            ""operator"": ""JSON_EQUALS"",
             ""path_to_actual"": ""$.items[*].id"",
             ""paths_to_expected"": [
               ""$.items[*].id""
@@ -6878,7 +6878,7 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
       {
         ""assertions"": [
           {
-            ""operator"": ""ARRAY_STRING_EQUALS"",
+            ""operator"": ""JSON_EQUALS"",
             ""path_to_actual"": ""$.items[*].itemName"",
             ""paths_to_expected"": [
               ""$.reviews[0].likedItems[*].itemName""
@@ -6930,7 +6930,7 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
       {
         ""assertions"": [
           {
-            ""operator"": ""ARRAY_STRING_EQUALS"",
+            ""operator"": ""JSON_EQUALS"",
             ""path_to_actual"": ""$.items[*].itemName"",
             ""paths_to_expected"": [
               ""$.reviews[0].likedItems[*].itemName""
@@ -6983,7 +6983,7 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
       {
         ""assertions"": [
           {
-            ""operator"": ""ARRAY_STRING_EQUALS"",
+            ""operator"": ""JSON_EQUALS"",
             ""path_to_actual"": ""$.items[*].itemName"",
             ""paths_to_expected"": [
               ""$.reviews[0].likedItems[*].itemName""
@@ -7036,7 +7036,7 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
       {
         ""assertions"": [
           {
-            ""operator"": ""ARRAY_STRING_EQUALS"",
+            ""operator"": ""JSON_EQUALS"",
             ""path_to_actual"": ""$.items[*].itemName"",
             ""paths_to_expected"": [
               ""$.reviews[0].likedItems[*].itemName""
@@ -7089,7 +7089,7 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
       {
         ""assertions"": [
           {
-            ""operator"": ""ARRAY_STRING_EQUALS"",
+            ""operator"": ""JSON_EQUALS"",
             ""path_to_actual"": ""$.items[*].itemName"",
             ""paths_to_expected"": [
               ""$.reviews[0].likedItems[*].itemName""
@@ -7153,7 +7153,7 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
       {
         ""assertions"": [
           {
-            ""operator"": ""ARRAY_STRING_EQUALS"",
+            ""operator"": ""JSON_EQUALS"",
             ""path_to_actual"": ""$.items[*].name"",
             ""paths_to_expected"": [
               ""$.items[*].name""
@@ -7242,7 +7242,7 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
       {
         ""assertions"": [
           {
-            ""operator"": ""ARRAY_STRING_EQUALS"",
+            ""operator"": ""JSON_EQUALS"",
             ""path_to_actual"": ""$.items[*].name"",
             ""paths_to_expected"": [
               ""$.items[*].name""
@@ -7331,7 +7331,7 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
       {
         ""assertions"": [
           {
-            ""operator"": ""ARRAY_STRING_EQUALS"",
+            ""operator"": ""JSON_EQUALS"",
             ""path_to_actual"": ""$.items[*].name"",
             ""paths_to_expected"": [
               ""$.items[*].name""
@@ -7410,7 +7410,7 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
       {
         ""assertions"": [
           {
-            ""operator"": ""ARRAY_STRING_EQUALS"",
+            ""operator"": ""JSON_EQUALS"",
             ""path_to_actual"": ""$.items[*].name"",
             ""paths_to_expected"": [
               ""$[1].items[0].name"",
@@ -7481,7 +7481,7 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
       {
         ""assertions"": [
           {
-            ""operator"": ""ARRAY_STRING_EQUALS"",
+            ""operator"": ""JSON_EQUALS"",
             ""path_to_actual"": ""$.items[*].name"",
             ""paths_to_expected"": [
               ""$.items[0].name"",
@@ -7560,7 +7560,7 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
       {
         ""assertions"": [
           {
-            ""operator"": ""ARRAY_STRING_EQUALS"",
+            ""operator"": ""JSON_EQUALS"",
             ""path_to_actual"": ""$.items[*].name"",
             ""paths_to_expected"": [
               ""$.items[0].name"",
@@ -7639,7 +7639,7 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
       {
         ""assertions"": [
           {
-            ""operator"": ""ARRAY_STRING_EQUALS"",
+            ""operator"": ""JSON_EQUALS"",
             ""path_to_actual"": ""$.items[*].name"",
             ""paths_to_expected"": [
               ""$.items[0].name"",
@@ -7718,7 +7718,7 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
       {
         ""assertions"": [
           {
-            ""operator"": ""ARRAY_STRING_EQUALS"",
+            ""operator"": ""JSON_EQUALS"",
             ""path_to_actual"": ""$.items[*].name"",
             ""paths_to_expected"": [
               ""$.items[0].name"",
@@ -8073,7 +8073,7 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
       {
         ""assertions"": [
           {
-            ""operator"": ""ARRAY_STRING_EQUALS"",
+            ""operator"": ""JSON_EQUALS"",
             ""path_to_actual"": ""$.items[*].name"",
             ""paths_to_expected"": [
               ""$[2].items[*].name""
@@ -8103,7 +8103,7 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
       {
         ""assertions"": [
           {
-            ""operator"": ""ARRAY_STRING_EQUALS"",
+            ""operator"": ""JSON_EQUALS"",
             ""path_to_actual"": ""$.items[*].name"",
             ""paths_to_expected"": [
               ""$[4].items[*].name""
@@ -8201,7 +8201,7 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
       {
         ""assertions"": [
           {
-            ""operator"": ""ARRAY_STRING_EQUALS"",
+            ""operator"": ""JSON_EQUALS"",
             ""path_to_actual"": ""$.items[*].name"",
             ""paths_to_expected"": [
               ""$.items[*].name""
@@ -8231,7 +8231,7 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
       {
         ""assertions"": [
           {
-            ""operator"": ""ARRAY_STRING_EQUALS"",
+            ""operator"": ""JSON_EQUALS"",
             ""path_to_actual"": ""$.items[*].name"",
             ""paths_to_expected"": [
               ""$.items[*].name""
@@ -8330,7 +8330,7 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
       {
         ""assertions"": [
           {
-            ""operator"": ""ARRAY_STRING_EQUALS"",
+            ""operator"": ""JSON_EQUALS"",
             ""path_to_actual"": ""$.items[*].name"",
             ""paths_to_expected"": [
               ""$.items[*].name""
@@ -8360,7 +8360,7 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
       {
         ""assertions"": [
           {
-            ""operator"": ""ARRAY_STRING_EQUALS"",
+            ""operator"": ""JSON_EQUALS"",
             ""path_to_actual"": ""$.items[*].name"",
             ""paths_to_expected"": [
               ""$.items[*].name""
@@ -9942,14 +9942,14 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
       {
         ""assertions"": [
           {
-            ""operator"": ""ARRAY_STRING_EQUALS"",
+            ""operator"": ""JSON_EQUALS"",
             ""path_to_actual"": ""$.restaurantId"",
             ""paths_to_expected"": [
               ""$.restaurants[0].id""
             ]
           },
           {
-            ""operator"": ""ARRAY_STRING_EQUALS"",
+            ""operator"": ""JSON_EQUALS"",
             ""path_to_actual"": ""$.items[*].name"",
             ""paths_to_expected"": [
               ""$.items[*].name""
@@ -10150,7 +10150,7 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
             ]
           },
           {
-            ""operator"": ""ARRAY_STRING_EQUALS"",
+            ""operator"": ""JSON_EQUALS"",
             ""path_to_actual"": ""$.items[*].name"",
             ""paths_to_expected"": [
               ""$[2].items[0].name"",
@@ -10415,7 +10415,7 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
             ]
           },
           {
-            ""operator"": ""ARRAY_STRING_EQUALS"",
+            ""operator"": ""JSON_EQUALS"",
             ""path_to_actual"": ""$.items[*].itemName"",
             ""paths_to_expected"": [
               ""$[2].items[*].name""
@@ -10598,7 +10598,7 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
       {
         ""assertions"": [
           {
-            ""operator"": ""ARRAY_STRING_EQUALS"",
+            ""operator"": ""JSON_EQUALS"",
             ""path_to_actual"": ""$.items[*].name"",
             ""paths_to_expected"": [
               ""$.orders[0].items[*].name"",
@@ -11192,7 +11192,7 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
       {
         ""assertions"": [
           {
-            ""operator"": ""ARRAY_STRING_EQUALS"",
+            ""operator"": ""JSON_EQUALS"",
             ""path_to_actual"": ""$.items[*].id"",
             ""paths_to_expected"": [
               ""$.items[*].id""
@@ -11592,7 +11592,7 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
       {
         ""assertions"": [
           {
-            ""operator"": ""ARRAY_STRING_EQUALS"",
+            ""operator"": ""JSON_EQUALS"",
             ""path_to_actual"": ""$.items[*].itemName"",
             ""paths_to_expected"": [
               ""$.reviews[0].likedItems[*].itemName""
@@ -11645,7 +11645,7 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
       {
         ""assertions"": [
           {
-            ""operator"": ""ARRAY_STRING_EQUALS"",
+            ""operator"": ""JSON_EQUALS"",
             ""path_to_actual"": ""$.items[*].name"",
             ""paths_to_expected"": [
               ""$.items[0].name"",
@@ -11724,7 +11724,7 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
       {
         ""assertions"": [
           {
-            ""operator"": ""ARRAY_STRING_EQUALS"",
+            ""operator"": ""JSON_EQUALS"",
             ""path_to_actual"": ""$.items[*].name"",
             ""paths_to_expected"": [
               ""$.items[0].name"",
@@ -11803,7 +11803,7 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
       {
         ""assertions"": [
           {
-            ""operator"": ""ARRAY_STRING_EQUALS"",
+            ""operator"": ""JSON_EQUALS"",
             ""path_to_actual"": ""$.items[*].name"",
             ""paths_to_expected"": [
               ""$.items[*].name""
@@ -11833,7 +11833,7 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
       {
         ""assertions"": [
           {
-            ""operator"": ""ARRAY_STRING_EQUALS"",
+            ""operator"": ""JSON_EQUALS"",
             ""path_to_actual"": ""$.items[*].name"",
             ""paths_to_expected"": [
               ""$.items[*].name""
@@ -13007,7 +13007,7 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
       {
         ""assertions"": [
           {
-            ""operator"": ""ARRAY_STRING_EQUALS"",
+            ""operator"": ""JSON_EQUALS"",
             ""path_to_actual"": ""$.carts[*].storeId"",
             ""paths_to_expected"": [
               ""$.carts[*].storeId""
@@ -13058,7 +13058,7 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
       {
         ""assertions"": [
           {
-            ""operator"": ""ARRAY_STRING_EQUALS"",
+            ""operator"": ""JSON_EQUALS"",
             ""path_to_actual"": ""$.carts[*].storeId"",
             ""paths_to_expected"": [
               ""$.carts[*].storeId""
@@ -13109,7 +13109,7 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
       {
         ""assertions"": [
           {
-            ""operator"": ""ARRAY_STRING_EQUALS"",
+            ""operator"": ""JSON_EQUALS"",
             ""path_to_actual"": ""$.carts[*].storeId"",
             ""paths_to_expected"": [
               ""$.carts[*].storeId""
@@ -13488,7 +13488,7 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
       {
         ""assertions"": [
           {
-            ""operator"": ""ARRAY_STRING_EQUALS"",
+            ""operator"": ""JSON_EQUALS"",
             ""path_to_actual"": ""$.items[*].id"",
             ""paths_to_expected"": [
               ""$.items[*].id""
@@ -13705,7 +13705,7 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
       {
         ""assertions"": [
           {
-            ""operator"": ""ARRAY_STRING_EQUALS"",
+            ""operator"": ""JSON_EQUALS"",
             ""path_to_actual"": ""$.items[*].itemName"",
             ""paths_to_expected"": [
               ""$.reviews[0].likedItems[*].itemName""
@@ -13769,7 +13769,7 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
       {
         ""assertions"": [
           {
-            ""operator"": ""ARRAY_STRING_EQUALS"",
+            ""operator"": ""JSON_EQUALS"",
             ""path_to_actual"": ""$.items[*].name"",
             ""paths_to_expected"": [
               ""$.items[*].name""
@@ -13847,7 +13847,7 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
       {
         ""assertions"": [
           {
-            ""operator"": ""ARRAY_STRING_EQUALS"",
+            ""operator"": ""JSON_EQUALS"",
             ""path_to_actual"": ""$.items[*].name"",
             ""paths_to_expected"": [
               ""$.items[0].name"",
@@ -14577,7 +14577,7 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
             ]
           },
           {
-            ""operator"": ""ARRAY_STRING_EQUALS"",
+            ""operator"": ""JSON_EQUALS"",
             ""path_to_actual"": ""$.items[*].name"",
             ""paths_to_expected"": [
               ""$.items[0].name"",
@@ -14989,7 +14989,7 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
             ]
           },
           {
-            ""operator"": ""ARRAY_STRING_EQUALS"",
+            ""operator"": ""JSON_EQUALS"",
             ""path_to_actual"": ""$.items[*].itemName"",
             ""paths_to_expected"": [
               ""$.items[*].name""
@@ -15063,7 +15063,7 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
             ]
           },
           {
-            ""operator"": ""ARRAY_STRING_EQUALS"",
+            ""operator"": ""JSON_EQUALS"",
             ""path_to_actual"": ""$.items[*].itemName"",
             ""paths_to_expected"": [
               ""$.items[*].name""
@@ -15137,7 +15137,7 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
             ]
           },
           {
-            ""operator"": ""ARRAY_STRING_EQUALS"",
+            ""operator"": ""JSON_EQUALS"",
             ""path_to_actual"": ""$.items[*].itemName"",
             ""paths_to_expected"": [
               ""$.items[*].name""
@@ -15430,7 +15430,7 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
             ]
           },
           {
-            ""operator"": ""ARRAY_STRING_EQUALS"",
+            ""operator"": ""JSON_EQUALS"",
             ""path_to_actual"": ""$.items[*].name"",
             ""paths_to_expected"": [
               ""$[2].items[0].name"",

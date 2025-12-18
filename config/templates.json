@@ -14,12 +14,12 @@
         {
           "assertions": [
             {
-              "operator": "ARRAY_STRING_EQUALS",
+              "operator": "STRING_EQUALS",
               "path_to_actual": "$.restaurantId",
               "paths_to_expected": ["$[1].restaurants[0].id"]
             },
             {
-              "operator": "ARRAY_STRING_EQUALS",
+              "operator": "STRING_EQUALS",
               "path_to_actual": "$.items[0].name",
               "paths_to_expected": ["$[2].items[0].name"]
             },
@@ -341,7 +341,7 @@
         {
           "assertions": [
             {
-              "operator": "ARRAY_STRING_EQUALS",
+              "operator": "JSON_EQUALS",
               "path_to_actual": "$.carts[*].storeId",
               "paths_to_expected": ["$.carts[*].storeId"]
             }
@@ -395,7 +395,7 @@
         {
           "assertions": [
             {
-              "operator": "ARRAY_STRING_EQUALS",
+              "operator": "JSON_EQUALS",
               "path_to_actual": "$.items[*].id",
               "paths_to_expected": ["$.carts[0].items[*].id", "$.items[0].id"]
             },
@@ -510,7 +510,7 @@
         {
           "assertions": [
             {
-              "operator": "ARRAY_STRING_EQUALS",
+              "operator": "JSON_EQUALS",
               "path_to_actual": "$.items[*].name",
               "paths_to_expected": ["$.orders[0].items[*].name", "$.items[*].name"]
             },
@@ -932,7 +932,7 @@
         {
           "assertions": [
             {
-              "operator": "ARRAY_STRING_EQUALS",
+              "operator": "JSON_EQUALS",
               "path_to_actual": "$.items[*].id",
               "paths_to_expected": ["$.items[*].id"]
             },
@@ -1268,7 +1268,7 @@
         {
           "assertions": [
             {
-              "operator": "ARRAY_STRING_EQUALS",
+              "operator": "JSON_EQUALS",
               "path_to_actual": "$.items[*].itemName",
               "paths_to_expected": ["$.reviews[0].likedItems[*].itemName"]
             },
@@ -1331,7 +1331,7 @@
         {
           "assertions": [
             {
-              "operator": "ARRAY_STRING_EQUALS",
+              "operator": "JSON_EQUALS",
               "path_to_actual": "$.items[*].name",
               "paths_to_expected": ["$.items[*].name"]
             },
@@ -1406,7 +1406,7 @@
         {
           "assertions": [
             {
-              "operator": "ARRAY_STRING_EQUALS",
+              "operator": "JSON_EQUALS",
               "path_to_actual": "$.items[*].name",
               "paths_to_expected": ["$.items[0].name", "$.items[0].name"]
             },
@@ -1566,7 +1566,7 @@
         {
           "assertions": [
             {
-              "operator": "ARRAY_STRING_EQUALS",
+              "operator": "JSON_EQUALS",
               "path_to_actual": "$.items[*].name",
               "paths_to_expected": ["$.items[*].name"]
             },
@@ -1590,7 +1590,7 @@
         {
           "assertions": [
             {
-              "operator": "ARRAY_STRING_EQUALS",
+              "operator": "JSON_EQUALS",
               "path_to_actual": "$.items[*].name",
               "paths_to_expected": ["$.items[*].name"]
             },
@@ -2321,7 +2321,7 @@
               "paths_to_expected": ["$.restaurants[0].id"]
             },
             {
-              "operator": "ARRAY_STRING_EQUALS",
+              "operator": "JSON_EQUALS",
               "path_to_actual": "$.items[*].name",
               "paths_to_expected": ["$.items[0].name", "$.items[0].name", "$.items[0].name"]
             },
@@ -2547,7 +2547,7 @@
               "paths_to_expected": ["$.restaurants[0].id"]
             },
             {
-              "operator": "ARRAY_STRING_EQUALS",
+              "operator": "JSON_EQUALS",
               "path_to_actual": "$.items[*].itemName",
               "paths_to_expected": ["$.items[*].name"]
             },
