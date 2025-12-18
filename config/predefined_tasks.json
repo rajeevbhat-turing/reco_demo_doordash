@@ -2269,10 +2269,16 @@
         {
           "assertions": [
             {
-              "operator": "JSON_EQUALS",
+              "operator": "ARRAY_STRING_CONTAINS",
               "path_to_actual": "$.items[*].name",
               "paths_to_expected": [
-                "$[1].items[0].name",
+                "$[1].items[0].name"
+              ]
+            },
+            {
+              "operator": "ARRAY_STRING_CONTAINS",
+              "path_to_actual": "$.items[*].name",
+              "paths_to_expected": [
                 "$[2].items[0].name"
               ]
             },
@@ -2802,7 +2808,7 @@
             {
               "operator": "STRING_EQUALS",
               "paths_to_expected": [
-                "$.orders[0].id"
+                "$[1].orders[0].id"
               ],
               "path_to_actual": "$[0].orderId"
             },
@@ -3219,7 +3225,7 @@
             {
               "operator": "STRING_EQUALS",
               "paths_to_expected": [
-                "$.address.id"
+                "$[0].address.id"
               ],
               "path_to_actual": "$.deliveryAddress.id"
             }
@@ -3481,11 +3487,23 @@
               ]
             },
             {
-              "operator": "JSON_EQUALS",
+              "operator": "ARRAY_STRING_CONTAINS",
               "path_to_actual": "$.items[*].name",
               "paths_to_expected": [
-                "$[2].items[0].name",
-                "$[3].items[0].name",
+                "$[2].items[0].name"
+              ]
+            },
+            {
+              "operator": "ARRAY_STRING_CONTAINS",
+              "path_to_actual": "$.items[*].name",
+              "paths_to_expected": [
+                "$[3].items[0].name"
+              ]
+            },
+            {
+              "operator": "ARRAY_STRING_CONTAINS",
+              "path_to_actual": "$.items[*].name",
+              "paths_to_expected": [
                 "$[4].items[0].name"
               ]
             },

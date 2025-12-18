@@ -1406,9 +1406,14 @@
         {
           "assertions": [
             {
-              "operator": "JSON_EQUALS",
+              "operator": "ARRAY_STRING_CONTAINS",
               "path_to_actual": "$.items[*].name",
-              "paths_to_expected": ["$.items[0].name", "$.items[0].name"]
+              "paths_to_expected": ["$[1].items[0].name"]
+            },
+            {
+              "operator": "ARRAY_STRING_CONTAINS",
+              "path_to_actual": "$.items[*].name",
+              "paths_to_expected": [ "$[2].items[0].name"]
             },
             {
               "expected": ["==2"],
@@ -1418,7 +1423,7 @@
             {
               "operator": "STRING_EQUALS",
               "path_to_actual": "$.restaurantId",
-              "paths_to_expected": ["$.restaurants[0].id"]
+              "paths_to_expected": ["$[0].restaurants[0].id"]
             }
           ],
           "path_to_actual": "$.orders[0]"
@@ -1480,12 +1485,12 @@
             {
               "operator": "STRING_EQUALS",
               "path_to_actual": "$.deliveryAddress.id",
-              "paths_to_expected": ["$.address.id"]
+              "paths_to_expected": ["$[0].address.id"]
             },
             {
               "operator": "STRING_EQUALS",
               "path_to_actual": "$.items[0].name",
-              "paths_to_expected": ["$.items[0].name"]
+              "paths_to_expected": ["$[2].items[0].name"]
             },
             {
               "operator": "ARRAY_LENGTH_MATCH",
@@ -1495,7 +1500,7 @@
             {
               "operator": "STRING_EQUALS",
               "path_to_actual": "$.storeId",
-              "paths_to_expected": ["$.restaurants[0].id"]
+              "paths_to_expected": ["$[1].restaurants[0].id"]
             }
           ],
           "path_to_actual": "$.orders[0]"
@@ -1568,12 +1573,12 @@
             {
               "operator": "JSON_EQUALS",
               "path_to_actual": "$.items[*].name",
-              "paths_to_expected": ["$.items[*].name"]
+              "paths_to_expected": ["$[4].items[*].name"]
             },
             {
               "operator": "STRING_EQUALS",
               "path_to_actual": "$.storeId",
-              "paths_to_expected": ["$.restaurants[0].id"]
+              "paths_to_expected": ["$[3].restaurants[0].id"]
             }
           ],
           "path_to_actual": "$.orders[0]"
@@ -1592,12 +1597,12 @@
             {
               "operator": "JSON_EQUALS",
               "path_to_actual": "$.items[*].name",
-              "paths_to_expected": ["$.items[*].name"]
+              "paths_to_expected": ["$[2].items[*].name"]
             },
             {
               "operator": "STRING_EQUALS",
               "path_to_actual": "$.storeId",
-              "paths_to_expected": ["$.restaurants[0].id"]
+              "paths_to_expected": ["$[1].restaurants[0].id"]
             }
           ],
           "path_to_actual": "$.orders[1]"
@@ -1684,7 +1689,7 @@
             {
               "operator": "STRING_EQUALS",
               "path_to_actual": "$.deliveryAddress.id",
-              "paths_to_expected": ["$.address.id"]
+              "paths_to_expected": ["$[0].address.id"]
             },
             {
               "operator": "ARRAY_LENGTH_MATCH",
@@ -1694,7 +1699,7 @@
             {
               "operator": "STRING_EQUALS",
               "path_to_actual": "$.items[0].name",
-              "paths_to_expected": ["$.items[0].name"]
+              "paths_to_expected": ["$[2].items[0].name"]
             },
             {
               "operator": "NUMERIC_MATCH",
@@ -1704,7 +1709,7 @@
             {
               "operator": "STRING_EQUALS",
               "path_to_actual": "$.storeId",
-              "paths_to_expected": ["$.restaurants[0].id"]
+              "paths_to_expected": ["$[1].restaurants[0].id"]
             }
           ]
         }
@@ -1762,7 +1767,7 @@
         "assertions": [
           {
             "operator": "STRING_CONTAINS",
-            "paths_to_expected": ["$.restaurants[*].name"]
+            "paths_to_expected": ["$[0].restaurants[*].name"]
           }
         ]
       },
@@ -1811,7 +1816,7 @@
             },
             {
               "operator": "STRING_EQUALS",
-              "paths_to_expected": ["$.orders[0].id"],
+              "paths_to_expected": ["$[1].orders[0].id"],
               "path_to_actual": "$[0].orderId"
             },
             {
@@ -1875,7 +1880,7 @@
             {
               "operator": "STRING_CONTAINS",
               "path_to_actual": "$.items[0].itemName",
-              "paths_to_expected": ["$.items[0].name"]
+              "paths_to_expected": ["$[2].items[0].name"]
             },
             {
               "operator": "NUMERIC_MATCH",
@@ -1885,7 +1890,7 @@
             {
               "operator": "STRING_EQUALS",
               "path_to_actual": "$.storeId",
-              "paths_to_expected": ["$.restaurants[0].id"]
+              "paths_to_expected": ["$[1].restaurants[0].id"]
             }
           ],
           "path_to_actual": "$.carts[-1]"
@@ -1950,7 +1955,7 @@
             {
               "operator": "STRING_CONTAINS",
               "path_to_actual": "$.items[0].name",
-              "paths_to_expected": ["$.items[0].name"]
+              "paths_to_expected": ["$[2].items[0].name"]
             },
             {
               "operator": "NUMERIC_MATCH",
@@ -1960,7 +1965,7 @@
             {
               "operator": "STRING_EQUALS",
               "path_to_actual": "$.storeId",
-              "paths_to_expected": ["$.restaurants[0].id"]
+              "paths_to_expected": ["$[1].restaurants[0].id"]
             },
             {
               "operator": "STRING_EQUALS",
@@ -2023,7 +2028,7 @@
         "assertions": [
           {
             "operator": "STRING_CONTAINS",
-            "paths_to_expected": ["$.items[*].restaurantName"]
+            "paths_to_expected": ["$[1].items[*].restaurantName"]
           }
         ]
       },
@@ -2069,7 +2074,7 @@
         "assertions": [
           {
             "operator": "STRING_CONTAINS",
-            "paths_to_expected": ["$.restaurants[0].name"]
+            "paths_to_expected": ["$[1].restaurants[0].name"]
           }
         ]
       },
@@ -2118,7 +2123,7 @@
           "assertions": [
             {
               "operator": "STRING_EQUALS",
-              "paths_to_expected": ["$.address.id"],
+              "paths_to_expected": ["$[0].address.id"],
               "path_to_actual": "$.deliveryAddress.id"
             }
           ],
@@ -2134,12 +2139,12 @@
             {
               "operator": "STRING_EQUALS",
               "path_to_actual": "$.restaurantId",
-              "paths_to_expected": ["$.restaurants[0].id"]
+              "paths_to_expected": ["$[1].restaurants[0].id"]
             },
             {
               "operator": "ARRAY_STRING_CONTAINS",
               "path_to_actual": "$.items[*].name",
-              "paths_to_expected": ["$.items[*].name"]
+              "paths_to_expected": ["$[2].items[*].name"]
             }
           ],
           "path_to_actual": "$.orders[0]"
@@ -2213,7 +2218,7 @@
             {
               "operator": "STRING_EQUALS",
               "path_to_actual": "$.deliveryAddress.id",
-              "paths_to_expected": ["$.address.id"]
+              "paths_to_expected": ["$[0].address.id"]
             },
             {
               "operator": "STRING_EQUALS",
@@ -2223,7 +2228,7 @@
             {
               "operator": "STRING_EQUALS",
               "path_to_actual": "$.deliveryOption.scheduledTimeSlot",
-              "paths_to_expected": ["$.slot"]
+              "paths_to_expected": ["$[2].slot"]
             }
           ],
           "path_to_actual": "$.orders[0]"
@@ -2238,12 +2243,12 @@
             {
               "operator": "STRING_EQUALS",
               "path_to_actual": "$.restaurantId",
-              "paths_to_expected": ["$.items[0].restaurantId"]
+              "paths_to_expected": ["$[1].items[0].restaurantId"]
             },
             {
               "operator": "STRING_CONTAINS",
               "path_to_actual": "$.items[0].name",
-              "paths_to_expected": ["$.items[0].name"]
+              "paths_to_expected": ["$[1].items[0].name"]
             }
           ],
           "path_to_actual": "$.orders[0]"
@@ -2303,7 +2308,7 @@
             {
               "operator": "STRING_EQUALS",
               "path_to_actual": "$.deliveryAddress.id",
-              "paths_to_expected": ["$.address.id"]
+              "paths_to_expected": ["$[0].address.id"]
             }
           ],
           "path_to_actual": "$.orders[0]"
@@ -2318,12 +2323,22 @@
             {
               "operator": "STRING_EQUALS",
               "path_to_actual": "$.restaurantId",
-              "paths_to_expected": ["$.restaurants[0].id"]
+              "paths_to_expected": ["$[1].restaurants[0].id"]
             },
             {
-              "operator": "JSON_EQUALS",
+              "operator": "ARRAY_STRING_CONTAINS",
               "path_to_actual": "$.items[*].name",
-              "paths_to_expected": ["$.items[0].name", "$.items[0].name", "$.items[0].name"]
+              "paths_to_expected": ["$[2].items[0].name"]
+            },
+            {
+              "operator": "ARRAY_STRING_CONTAINS",
+              "path_to_actual": "$.items[*].name",
+              "paths_to_expected": [ "$[3].items[0].name"]
+            },
+            {
+              "operator": "ARRAY_STRING_CONTAINS",
+              "path_to_actual": "$.items[*].name",
+              "paths_to_expected": ["$[4].items[0].name"]
             },
             {
               "operator": "NUMERIC_MATCH",
@@ -2404,7 +2419,7 @@
             {
               "operator": "STRING_EQUALS",
               "path_to_actual": "$.deliveryAddress.id",
-              "paths_to_expected": ["$.address.id"]
+              "paths_to_expected": ["$[0].address.id"]
             },
             {
               "operator": "STRING_EQUALS",
@@ -2414,7 +2429,7 @@
             {
               "operator": "STRING_EQUALS",
               "path_to_actual": "$.deliveryOption.scheduledTimeSlot",
-              "paths_to_expected": ["$.slot"]
+              "paths_to_expected": ["$[3].slot"]
             }
           ],
           "path_to_actual": "$.orders[0]"
@@ -2429,12 +2444,12 @@
             {
               "operator": "STRING_EQUALS",
               "path_to_actual": "$.restaurantId",
-              "paths_to_expected": ["$.restaurants[0].id"]
+              "paths_to_expected": ["$[1].restaurants[0].id"]
             },
             {
               "operator": "STRING_CONTAINS",
               "path_to_actual": "$.items[0].name",
-              "paths_to_expected": ["$.items[0].name"]
+              "paths_to_expected": ["$[2].items[0].name"]
             },
             {
               "operator": "NUMERIC_MATCH",
@@ -2544,12 +2559,12 @@
             {
               "operator": "STRING_EQUALS",
               "path_to_actual": "$.storeId",
-              "paths_to_expected": ["$.restaurants[0].id"]
+              "paths_to_expected": ["$[1].restaurants[0].id"]
             },
             {
               "operator": "JSON_EQUALS",
               "path_to_actual": "$.items[*].itemName",
-              "paths_to_expected": ["$.items[*].name"]
+              "paths_to_expected": ["$[2].items[*].name"]
             },
             {
               "operator": "ARRAY_NUMERIC_MATCH",
@@ -2604,7 +2619,7 @@
         "assertions": [
           {
             "operator": "STRING_CONTAINS",
-            "paths_to_expected": ["$.items[*].name"]
+            "paths_to_expected": ["$[2].items[*].name"]
           }
         ]
       },

@@ -7414,12 +7414,16 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
       {
         ""assertions"": [
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""ARRAY_STRING_CONTAINS"",
             ""path_to_actual"": ""$.items[*].name"",
             ""paths_to_expected"": [
-              ""$[1].items[0].name"",
-              ""$[2].items[0].name""
+              ""$[1].items[0].name""
             ]
+          },
+          {
+            ""operator"": ""ARRAY_STRING_CONTAINS"",
+            ""path_to_actual"": ""$.items[*].name"",
+            ""paths_to_expected"": [ ""$[2].items[0].name""]
           },
           {
             ""expected"": [
@@ -7485,12 +7489,16 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
       {
         ""assertions"": [
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""ARRAY_STRING_CONTAINS"",
             ""path_to_actual"": ""$.items[*].name"",
             ""paths_to_expected"": [
-              ""$.items[0].name"",
-              ""$.items[0].name""
+              ""$[1].items[0].name""
             ]
+          },
+          {
+            ""operator"": ""ARRAY_STRING_CONTAINS"",
+            ""path_to_actual"": ""$.items[*].name"",
+            ""paths_to_expected"": [ ""$[2].items[0].name""]
           },
           {
             ""expected"": [
@@ -7503,7 +7511,7 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
             ""operator"": ""STRING_EQUALS"",
             ""path_to_actual"": ""$.restaurantId"",
             ""paths_to_expected"": [
-              ""$[1].restaurants[0].id""
+              ""$[0].restaurants[0].id""
             ]
           }
         ],
@@ -7564,12 +7572,16 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
       {
         ""assertions"": [
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""ARRAY_STRING_CONTAINS"",
             ""path_to_actual"": ""$.items[*].name"",
             ""paths_to_expected"": [
-              ""$.items[0].name"",
-              ""$.items[0].name""
+              ""$[1].items[0].name""
             ]
+          },
+          {
+            ""operator"": ""ARRAY_STRING_CONTAINS"",
+            ""path_to_actual"": ""$.items[*].name"",
+            ""paths_to_expected"": [ ""$[2].items[0].name""]
           },
           {
             ""expected"": [
@@ -7582,7 +7594,7 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
             ""operator"": ""STRING_EQUALS"",
             ""path_to_actual"": ""$.restaurantId"",
             ""paths_to_expected"": [
-              ""$[1].restaurants[0].id""
+              ""$[0].restaurants[0].id""
             ]
           }
         ],
@@ -7643,12 +7655,16 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
       {
         ""assertions"": [
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""ARRAY_STRING_CONTAINS"",
             ""path_to_actual"": ""$.items[*].name"",
             ""paths_to_expected"": [
-              ""$.items[0].name"",
-              ""$.items[0].name""
+              ""$[1].items[0].name""
             ]
+          },
+          {
+            ""operator"": ""ARRAY_STRING_CONTAINS"",
+            ""path_to_actual"": ""$.items[*].name"",
+            ""paths_to_expected"": [ ""$[2].items[0].name""]
           },
           {
             ""expected"": [
@@ -7661,7 +7677,7 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
             ""operator"": ""STRING_EQUALS"",
             ""path_to_actual"": ""$.restaurantId"",
             ""paths_to_expected"": [
-              ""$[1].restaurants[0].id""
+              ""$[0].restaurants[0].id""
             ]
           }
         ],
@@ -7722,12 +7738,16 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
       {
         ""assertions"": [
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""ARRAY_STRING_CONTAINS"",
             ""path_to_actual"": ""$.items[*].name"",
             ""paths_to_expected"": [
-              ""$.items[0].name"",
-              ""$.items[0].name""
+              ""$[1].items[0].name""
             ]
+          },
+          {
+            ""operator"": ""ARRAY_STRING_CONTAINS"",
+            ""path_to_actual"": ""$.items[*].name"",
+            ""paths_to_expected"": [ ""$[2].items[0].name""]
           },
           {
             ""expected"": [
@@ -7740,7 +7760,7 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
             ""operator"": ""STRING_EQUALS"",
             ""path_to_actual"": ""$.restaurantId"",
             ""paths_to_expected"": [
-              ""$[1].restaurants[0].id""
+              ""$[0].restaurants[0].id""
             ]
           }
         ],
@@ -7905,7 +7925,7 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
             ""operator"": ""STRING_EQUALS"",
             ""path_to_actual"": ""$.items[0].name"",
             ""paths_to_expected"": [
-              ""$.items[0].name""
+              ""$[2].items[0].name""
             ]
           },
           {
@@ -7995,7 +8015,7 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
             ""operator"": ""STRING_EQUALS"",
             ""path_to_actual"": ""$.items[0].name"",
             ""paths_to_expected"": [
-              ""$.items[0].name""
+              ""$[2].items[0].name""
             ]
           },
           {
@@ -8208,14 +8228,14 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
             ""operator"": ""JSON_EQUALS"",
             ""path_to_actual"": ""$.items[*].name"",
             ""paths_to_expected"": [
-              ""$[2].items[*].name""
+              ""$[4].items[*].name""
             ]
           },
           {
             ""operator"": ""STRING_EQUALS"",
             ""path_to_actual"": ""$.storeId"",
             ""paths_to_expected"": [
-              ""$[1].restaurants[0].id""
+              ""$[3].restaurants[0].id""
             ]
           }
         ],
@@ -8337,14 +8357,14 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
             ""operator"": ""JSON_EQUALS"",
             ""path_to_actual"": ""$.items[*].name"",
             ""paths_to_expected"": [
-              ""$[2].items[*].name""
+              ""$[4].items[*].name""
             ]
           },
           {
             ""operator"": ""STRING_EQUALS"",
             ""path_to_actual"": ""$.storeId"",
             ""paths_to_expected"": [
-              ""$[1].restaurants[0].id""
+              ""$[3].restaurants[0].id""
             ]
           }
         ],
@@ -8573,7 +8593,7 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
             ""operator"": ""STRING_EQUALS"",
             ""path_to_actual"": ""$.items[0].name"",
             ""paths_to_expected"": [
-              ""$.items[0].name""
+              ""$[2].items[0].name""
             ]
           },
           {
@@ -8661,7 +8681,7 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
             ""operator"": ""STRING_EQUALS"",
             ""path_to_actual"": ""$.items[0].name"",
             ""paths_to_expected"": [
-              ""$.items[0].name""
+              ""$[2].items[0].name""
             ]
           },
           {
@@ -8779,7 +8799,7 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
         {
           ""operator"": ""STRING_CONTAINS"",
           ""paths_to_expected"": [
-            ""$.restaurants[*].name""
+            ""$[0].restaurants[*].name""
           ]
         }
       ]
@@ -8822,7 +8842,7 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
         {
           ""operator"": ""STRING_CONTAINS"",
           ""paths_to_expected"": [
-            ""$.restaurants[*].name""
+            ""$[0].restaurants[*].name""
           ]
         }
       ]
@@ -8865,7 +8885,7 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
         {
           ""operator"": ""STRING_CONTAINS"",
           ""paths_to_expected"": [
-            ""$.restaurants[*].name""
+            ""$[0].restaurants[*].name""
           ]
         }
       ]
@@ -8908,7 +8928,7 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
         {
           ""operator"": ""STRING_CONTAINS"",
           ""paths_to_expected"": [
-            ""$.restaurants[*].name""
+            ""$[0].restaurants[*].name""
           ]
         }
       ]
@@ -8963,7 +8983,7 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
           {
             ""operator"": ""STRING_EQUALS"",
             ""paths_to_expected"": [
-              ""$.orders[0].id""
+              ""$[1].orders[0].id""
             ],
             ""path_to_actual"": ""$[0].orderId""
           },
@@ -9032,7 +9052,7 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
           {
             ""operator"": ""STRING_EQUALS"",
             ""paths_to_expected"": [
-              ""$.orders[0].id""
+              ""$[1].orders[0].id""
             ],
             ""path_to_actual"": ""$[0].orderId""
           },
@@ -9181,7 +9201,7 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
             ""operator"": ""STRING_CONTAINS"",
             ""path_to_actual"": ""$.items[0].itemName"",
             ""paths_to_expected"": [
-              ""$.items[0].name""
+              ""$[2].items[0].name""
             ]
           },
           {
@@ -9343,7 +9363,7 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
         {
           ""operator"": ""STRING_CONTAINS"",
           ""paths_to_expected"": [
-            ""$.items[*].restaurantName""
+            ""$[1].items[*].restaurantName""
           ]
         }
       ]
@@ -9388,7 +9408,7 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
         {
           ""operator"": ""STRING_CONTAINS"",
           ""paths_to_expected"": [
-            ""$.items[*].restaurantName""
+            ""$[1].items[*].restaurantName""
           ]
         }
       ]
@@ -9433,7 +9453,7 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
         {
           ""operator"": ""STRING_CONTAINS"",
           ""paths_to_expected"": [
-            ""$.items[*].restaurantName""
+            ""$[1].items[*].restaurantName""
           ]
         }
       ]
@@ -10154,13 +10174,21 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
             ]
           },
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""ARRAY_STRING_CONTAINS"",
             ""path_to_actual"": ""$.items[*].name"",
             ""paths_to_expected"": [
-              ""$[2].items[0].name"",
-              ""$[3].items[0].name"",
-              ""$[4].items[0].name""
+              ""$[2].items[0].name""
             ]
+          },
+          {
+            ""operator"": ""ARRAY_STRING_CONTAINS"",
+            ""path_to_actual"": ""$.items[*].name"",
+            ""paths_to_expected"": [ ""$[3].items[0].name""]
+          },
+          {
+            ""operator"": ""ARRAY_STRING_CONTAINS"",
+            ""path_to_actual"": ""$.items[*].name"",
+            ""paths_to_expected"": [""$[4].items[0].name""]
           },
           {
             ""operator"": ""NUMERIC_MATCH"",
@@ -11650,12 +11678,16 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
       {
         ""assertions"": [
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""ARRAY_STRING_CONTAINS"",
             ""path_to_actual"": ""$.items[*].name"",
             ""paths_to_expected"": [
-              ""$.items[0].name"",
-              ""$.items[0].name""
+              ""$[1].items[0].name""
             ]
+          },
+          {
+            ""operator"": ""ARRAY_STRING_CONTAINS"",
+            ""path_to_actual"": ""$.items[*].name"",
+            ""paths_to_expected"": [ ""$[2].items[0].name""]
           },
           {
             ""expected"": [
@@ -11668,7 +11700,7 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
             ""operator"": ""STRING_EQUALS"",
             ""path_to_actual"": ""$.restaurantId"",
             ""paths_to_expected"": [
-              ""$[1].restaurants[0].id""
+              ""$[0].restaurants[0].id""
             ]
           }
         ],
@@ -11729,12 +11761,16 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
       {
         ""assertions"": [
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""ARRAY_STRING_CONTAINS"",
             ""path_to_actual"": ""$.items[*].name"",
             ""paths_to_expected"": [
-              ""$.items[0].name"",
-              ""$.items[0].name""
+              ""$[1].items[0].name""
             ]
+          },
+          {
+            ""operator"": ""ARRAY_STRING_CONTAINS"",
+            ""path_to_actual"": ""$.items[*].name"",
+            ""paths_to_expected"": [ ""$[2].items[0].name""]
           },
           {
             ""expected"": [
@@ -11747,7 +11783,7 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
             ""operator"": ""STRING_EQUALS"",
             ""path_to_actual"": ""$.restaurantId"",
             ""paths_to_expected"": [
-              ""$[1].restaurants[0].id""
+              ""$[0].restaurants[0].id""
             ]
           }
         ],
@@ -11811,14 +11847,14 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
             ""operator"": ""JSON_EQUALS"",
             ""path_to_actual"": ""$.items[*].name"",
             ""paths_to_expected"": [
-              ""$[2].items[*].name""
+              ""$[4].items[*].name""
             ]
           },
           {
             ""operator"": ""STRING_EQUALS"",
             ""path_to_actual"": ""$.storeId"",
             ""paths_to_expected"": [
-              ""$[1].restaurants[0].id""
+              ""$[3].restaurants[0].id""
             ]
           }
         ],
@@ -11938,7 +11974,7 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
         {
           ""operator"": ""STRING_CONTAINS"",
           ""paths_to_expected"": [
-            ""$.restaurants[*].name""
+            ""$[0].restaurants[*].name""
           ]
         }
       ]
@@ -11988,7 +12024,7 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
           {
             ""operator"": ""STRING_EQUALS"",
             ""paths_to_expected"": [
-              ""$.orders[0].id""
+              ""$[1].orders[0].id""
             ],
             ""path_to_actual"": ""$[0].orderId""
           },
@@ -12053,7 +12089,7 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
             ""operator"": ""STRING_CONTAINS"",
             ""path_to_actual"": ""$.items[0].itemName"",
             ""paths_to_expected"": [
-              ""$.items[0].name""
+              ""$[2].items[0].name""
             ]
           },
           {
@@ -12133,7 +12169,7 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
             ""operator"": ""STRING_CONTAINS"",
             ""path_to_actual"": ""$.items[0].name"",
             ""paths_to_expected"": [
-              ""$.items[0].name""
+              ""$[2].items[0].name""
             ]
           },
           {
@@ -12220,7 +12256,7 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
             ""operator"": ""STRING_CONTAINS"",
             ""path_to_actual"": ""$.items[0].name"",
             ""paths_to_expected"": [
-              ""$.items[0].name""
+              ""$[2].items[0].name""
             ]
           },
           {
@@ -13853,12 +13889,16 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
       {
         ""assertions"": [
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""ARRAY_STRING_CONTAINS"",
             ""path_to_actual"": ""$.items[*].name"",
             ""paths_to_expected"": [
-              ""$.items[0].name"",
-              ""$.items[0].name""
+              ""$[1].items[0].name""
             ]
+          },
+          {
+            ""operator"": ""ARRAY_STRING_CONTAINS"",
+            ""path_to_actual"": ""$.items[*].name"",
+            ""paths_to_expected"": [ ""$[2].items[0].name""]
           },
           {
             ""expected"": [
@@ -13871,7 +13911,7 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
             ""operator"": ""STRING_EQUALS"",
             ""path_to_actual"": ""$.restaurantId"",
             ""paths_to_expected"": [
-              ""$[1].restaurants[0].id""
+              ""$[0].restaurants[0].id""
             ]
           }
         ],
@@ -13941,7 +13981,7 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
             ""operator"": ""STRING_EQUALS"",
             ""path_to_actual"": ""$.items[0].name"",
             ""paths_to_expected"": [
-              ""$.items[0].name""
+              ""$[2].items[0].name""
             ]
           },
           {
@@ -14040,7 +14080,7 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
             ""operator"": ""STRING_EQUALS"",
             ""path_to_actual"": ""$.items[0].name"",
             ""paths_to_expected"": [
-              ""$.items[0].name""
+              ""$[2].items[0].name""
             ]
           },
           {
@@ -14111,7 +14151,7 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
         {
           ""operator"": ""STRING_CONTAINS"",
           ""paths_to_expected"": [
-            ""$.restaurants[*].name""
+            ""$[0].restaurants[*].name""
           ]
         }
       ]
@@ -14163,7 +14203,7 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
             ""operator"": ""STRING_CONTAINS"",
             ""path_to_actual"": ""$.items[0].itemName"",
             ""paths_to_expected"": [
-              ""$.items[0].name""
+              ""$[2].items[0].name""
             ]
           },
           {
@@ -14243,7 +14283,7 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
             ""operator"": ""STRING_CONTAINS"",
             ""path_to_actual"": ""$.items[0].name"",
             ""paths_to_expected"": [
-              ""$.items[0].name""
+              ""$[2].items[0].name""
             ]
           },
           {
@@ -14321,7 +14361,7 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
         {
           ""operator"": ""STRING_CONTAINS"",
           ""paths_to_expected"": [
-            ""$.items[*].restaurantName""
+            ""$[1].items[*].restaurantName""
           ]
         }
       ]
@@ -14366,7 +14406,7 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
         {
           ""operator"": ""STRING_CONTAINS"",
           ""paths_to_expected"": [
-            ""$.items[*].restaurantName""
+            ""$[1].items[*].restaurantName""
           ]
         }
       ]
@@ -14475,7 +14515,7 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
             ""operator"": ""STRING_EQUALS"",
             ""path_to_actual"": ""$.deliveryOption.scheduledTimeSlot"",
             ""paths_to_expected"": [
-              ""$[3].slot""
+              ""$[2].slot""
             ]
           }
         ],
@@ -14494,14 +14534,14 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
             ""operator"": ""STRING_EQUALS"",
             ""path_to_actual"": ""$.restaurantId"",
             ""paths_to_expected"": [
-              ""$[2].items[0].restaurantId""
+              ""$[1].items[0].restaurantId""
             ]
           },
           {
             ""operator"": ""STRING_CONTAINS"",
             ""path_to_actual"": ""$.items[0].name"",
             ""paths_to_expected"": [
-              ""$.items[0].name""
+              ""$[1].items[0].name""
             ]
           }
         ],
@@ -14583,13 +14623,21 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
             ]
           },
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""ARRAY_STRING_CONTAINS"",
             ""path_to_actual"": ""$.items[*].name"",
             ""paths_to_expected"": [
-              ""$.items[0].name"",
-              ""$.items[0].name"",
-              ""$.items[0].name""
+              ""$[2].items[0].name""
             ]
+          },
+          {
+            ""operator"": ""ARRAY_STRING_CONTAINS"",
+            ""path_to_actual"": ""$.items[*].name"",
+            ""paths_to_expected"": [""$[3].items[0].name""]
+          },
+          {
+            ""operator"": ""ARRAY_STRING_CONTAINS"",
+            ""path_to_actual"": ""$.items[*].name"",
+            ""paths_to_expected"": [""$[4].items[0].name""]
           },
           {
             ""operator"": ""NUMERIC_MATCH"",
@@ -14718,7 +14766,7 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
             ""operator"": ""STRING_CONTAINS"",
             ""path_to_actual"": ""$.items[0].name"",
             ""paths_to_expected"": [
-              ""$.items[0].name""
+              ""$[2].items[0].name""
             ]
           },
           {
@@ -14820,7 +14868,7 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
             ""operator"": ""STRING_CONTAINS"",
             ""path_to_actual"": ""$.items[0].name"",
             ""paths_to_expected"": [
-              ""$.items[0].name""
+              ""$[2].items[0].name""
             ]
           },
           {
@@ -14922,7 +14970,7 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
             ""operator"": ""STRING_CONTAINS"",
             ""path_to_actual"": ""$.items[0].name"",
             ""paths_to_expected"": [
-              ""$.items[0].name""
+              ""$[2].items[0].name""
             ]
           },
           {
@@ -15204,7 +15252,7 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
         {
           ""operator"": ""STRING_CONTAINS"",
           ""paths_to_expected"": [
-            ""$.items[*].name""
+            ""$[2].items[*].name""
           ]
         }
       ]
@@ -15250,7 +15298,7 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
         {
           ""operator"": ""STRING_CONTAINS"",
           ""paths_to_expected"": [
-            ""$.items[*].name""
+            ""$[2].items[*].name""
           ]
         }
       ]
@@ -15296,7 +15344,7 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
         {
           ""operator"": ""STRING_CONTAINS"",
           ""paths_to_expected"": [
-            ""$.items[*].name""
+            ""$[2].items[*].name""
           ]
         }
       ]
@@ -15436,13 +15484,21 @@ full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_mod
             ]
           },
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""ARRAY_STRING_CONTAINS"",
             ""path_to_actual"": ""$.items[*].name"",
             ""paths_to_expected"": [
-              ""$[2].items[0].name"",
-              ""$[3].items[0].name"",
-              ""$[4].items[0].name""
+              ""$[2].items[0].name""
             ]
+          },
+          {
+            ""operator"": ""ARRAY_STRING_CONTAINS"",
+            ""path_to_actual"": ""$.items[*].name"",
+            ""paths_to_expected"": [ ""$[3].items[0].name""]
+          },
+          {
+            ""operator"": ""ARRAY_STRING_CONTAINS"",
+            ""path_to_actual"": ""$.items[*].name"",
+            ""paths_to_expected"": [""$[4].items[0].name""]
           },
           {
             ""operator"": ""NUMERIC_MATCH"",
