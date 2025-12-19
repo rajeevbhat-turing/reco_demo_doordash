@@ -27,6 +27,66 @@ python scripts/generate_tasks.py --max-total 50 --seed 42
 | `--max-per-template` | `5` | Max tasks per template type |
 | `--max-total` | unlimited | Total tasks limit |
 | `--seed` | - | Random seed for reproducibility |
+| `--pre-auth-pct` | `0.70` | Percentage of tasks using pre-authentication (0.0-1.0) |
+
+## Pre-Authentication Mode
+
+By default, 70% of generated tasks use **pre-authentication** via `simulator_config`, while 30% require **explicit login** in the task statement.
+
+> **Note:** This split applies only to **generated tasks**. Predefined tasks from `predefined_tasks.json` keep their original configuration.
+
+### Pre-Authenticated Tasks (70%)
+
+- Login instruction is removed from `task_statement`
+- `simulator_config.bootstrap_data.user` is set to the user's email
+
+**Example output:**
+```json
+{
+  "task_statement": "Order pizza from Mario's Pizzeria and add extra cheese.",
+  "simulator_config": {
+    "bootstrap_data": {
+      "date": "2025-12-19T12:00:00-08:00",
+      "timezone": "America/Los_Angeles",
+      "user": "john@example.com"
+    }
+  }
+}
+```
+
+### Explicit Login Tasks (30%)
+
+- Login instruction remains in `task_statement`
+- `simulator_config.bootstrap_data.user` is **not set**
+- The agent must handle authentication as part of the task
+
+**Example output:**
+```json
+{
+  "task_statement": "Log in using email 'john@example.com' and password 'pass123'. Order pizza from Mario's Pizzeria and add extra cheese.",
+  "simulator_config": {
+    "bootstrap_data": {
+      "date": "2025-12-19T12:00:00-08:00",
+      "timezone": "America/Los_Angeles"
+    }
+  }
+}
+```
+
+### Controlling the Split
+
+```bash
+# 80% pre-auth, 20% explicit login
+python scripts/generate_tasks.py --pre-auth-pct 0.80
+
+# All tasks require explicit login
+python scripts/generate_tasks.py --pre-auth-pct 0.0
+
+# All tasks use pre-authentication
+python scripts/generate_tasks.py --pre-auth-pct 1.0
+```
+
+---
 
 ## Templates
 
@@ -658,6 +718,8 @@ The generator supports predefined tasks from `config/predefined_tasks.json`. The
 - Are always assigned the `-001` suffix (e.g., `item-addon-order-001`)
 - Are added first before generated tasks for each template
 - Take priority over dynamically generated tasks
+- **Keep their original `simulator_config`** - they are NOT subject to the 70/30 pre-auth split
+- If a predefined task has `simulator_config.bootstrap_data.user`, the login prefix is automatically removed from its `task_statement`
 
 ---
 
@@ -673,9 +735,15 @@ The generator supports predefined tasks from `config/predefined_tasks.json`. The
     "task_category_L2": ["Sub Category"],
     "capability": ["Required Capability"]
   },
-  "task_id": "001",
   "start_url": "https://dashdoor.rlgym.turing.com/home",
-  "task_statement": "Log in using '{{USER_EMAIL}}'. Do something with {{MY_VARIABLE}}.",
+  "task_statement": "Do something with {{MY_VARIABLE}}.",
+  "task_type": "GUI Comprehension, Action Execution",
+  "simulator_config": {
+    "bootstrap_data": {
+      "date": "2025-12-19T12:00:00-08:00",
+      "timezone": "America/Los_Angeles"
+    }
+  },
   "grader_config": { ... }
 }
 ```
@@ -717,7 +785,45 @@ python scripts/generate_tasks.py --max-total 100 --seed 42
 
 # Use custom database and output path
 python scripts/generate_tasks.py --db data/db/custom.db --output output/tasks.csv
+
+# Generate tasks with 80% pre-authentication
+python scripts/generate_tasks.py --pre-auth-pct 0.80
+
+# Generate all tasks requiring explicit login (no pre-auth)
+python scripts/generate_tasks.py --pre-auth-pct 0.0
 ```
+
+---
+
+## Simulator Configuration
+
+All tasks include a `simulator_config` object that configures the simulation environment:
+
+```json
+"simulator_config": {
+  "bootstrap_data": {
+    "date": "2025-12-19T12:00:00-08:00",
+    "timezone": "America/Los_Angeles"
+  }
+}
+```
+
+### Bootstrap Data Fields
+
+| Field | Description |
+|-------|-------------|
+| `date` | Simulated date/time in ISO 8601 format (12:00 PM Los Angeles time) |
+| `timezone` | IANA timezone identifier (America/Los_Angeles) |
+| `user` | (Optional) User email for pre-authenticated sessions |
+
+### Configuration Types
+
+| Type | Fields | Description |
+|------|--------|-------------|
+| **Type A** | `date`, `timezone` | Standard bootstrap - user must log in |
+| **Type B** | `date`, `timezone`, `user` | Pre-authenticated session - login instruction removed from task statement |
+
+**Note:** Type B tasks have the login instruction removed from `task_statement` since the user is pre-authenticated via `bootstrap_data.user`.
 
 ---
 
