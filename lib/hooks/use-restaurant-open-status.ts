@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { checkIfOpen } from '@/lib/utils/restaurant-utils';
 import { Restaurant } from '@/constants/restaurants';
+import { useBootstrapStore } from '@/store/bootstrap-store';
 
 /**
  * Hook to calculate restaurant open/closed status based on user's local time.
@@ -18,6 +19,9 @@ export function useRestaurantOpenStatus(
   restaurant: Restaurant | null | undefined,
   updateInterval: number = 60000
 ): boolean {
+  // Get current hour from bootstrap store (supports simulated time)
+  const getCurrentHour = useBootstrapStore(state => state.getCurrentHour);
+  
   // Calculate initial status
   const calculateIsOpen = useMemo(() => {
     if (!restaurant) return false;
@@ -27,16 +31,16 @@ export function useRestaurantOpenStatus(
       return restaurant.isOpen;
     }
 
-    const currentHour = new Date().getHours();
+    const currentHour = getCurrentHour();
     return checkIfOpen(restaurant.openingHour, restaurant.closingHour, currentHour);
-  }, [restaurant]);
+  }, [restaurant, getCurrentHour]);
 
   const [isOpen, setIsOpen] = useState<boolean>(calculateIsOpen);
 
   useEffect(() => {
     if (!restaurant) return;
 
-    // Update immediately with user's local time
+    // Update immediately with user's local time (or simulated time)
     const checkStatus = () => {
       // If no hours data available, fall back to server-provided value
       if (restaurant.openingHour === undefined && restaurant.closingHour === undefined) {
@@ -44,7 +48,7 @@ export function useRestaurantOpenStatus(
         return;
       }
 
-      const currentHour = new Date().getHours();
+      const currentHour = getCurrentHour();
       const open = checkIfOpen(restaurant.openingHour, restaurant.closingHour, currentHour);
       setIsOpen(open);
     };
@@ -57,7 +61,7 @@ export function useRestaurantOpenStatus(
     const interval = setInterval(checkStatus, updateInterval);
 
     return () => clearInterval(interval);
-  }, [restaurant, updateInterval]);
+  }, [restaurant, updateInterval, getCurrentHour]);
 
   return isOpen;
 }
@@ -74,6 +78,8 @@ export function useRestaurantsOpenStatus(
   restaurants: Restaurant[] | null | undefined,
   updateInterval: number = 60000
 ): Map<string, boolean> {
+  // Get current hour from bootstrap store (supports simulated time)
+  const getCurrentHour = useBootstrapStore(state => state.getCurrentHour);
   const [openStatusMap, setOpenStatusMap] = useState<Map<string, boolean>>(new Map());
 
   useEffect(() => {
@@ -83,7 +89,7 @@ export function useRestaurantsOpenStatus(
     }
 
     const calculateAllStatuses = () => {
-      const currentHour = new Date().getHours();
+      const currentHour = getCurrentHour();
       const newMap = new Map<string, boolean>();
 
       restaurants.forEach(restaurant => {
@@ -106,7 +112,7 @@ export function useRestaurantsOpenStatus(
     const interval = setInterval(calculateAllStatuses, updateInterval);
 
     return () => clearInterval(interval);
-  }, [restaurants, updateInterval]);
+  }, [restaurants, updateInterval, getCurrentHour]);
 
   return openStatusMap;
 }
@@ -126,6 +132,7 @@ export function getRestaurantOpenStatus(restaurant: Restaurant | null | undefine
     return restaurant.isOpen;
   }
 
-  const currentHour = new Date().getHours();
+  // Use bootstrap store's getCurrentHour (supports simulated time)
+  const currentHour = useBootstrapStore.getState().getCurrentHour();
   return checkIfOpen(restaurant.openingHour, restaurant.closingHour, currentHour);
 }

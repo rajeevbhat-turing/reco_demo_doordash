@@ -1,10 +1,10 @@
 'use client';
 
-import { useRef, useState, useEffect, useMemo, useSyncExternalStore } from 'react';
+import { useRef, useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { useRestaurants } from '@/lib/hooks/use-restaurants';
-import { useUserStore } from '@/store/user-store';
+import { useQuery } from '@tanstack/react-query';
+import type { Restaurant } from '@/constants/restaurants';
 
 interface PromoBanner {
   id: string;
@@ -19,87 +19,55 @@ interface PromoBanner {
   textColor?: string;
 }
 
-export default function PromoBanners() {
+interface PromoBannersProps {
+  restaurants?: Restaurant[];
+}
+
+// Fetch function for promotional banners
+async function fetchPromotionalBanners(): Promise<PromoBanner[]> {
+  const response = await fetch('/api/promotionals');
+  const result = await response.json();
+
+  if (result.success && result.data) {
+    return result.data.map((promo: any) => ({
+      id: promo.id,
+      restaurantId: promo.restaurantId,
+      title: promo.title,
+      description: promo.description,
+      buttonText: promo.buttonText,
+      buttonColor: promo.buttonColor,
+      gradient: promo.gradient,
+      image: promo.image,
+      restaurantName: promo.restaurantName,
+      // Determine text color based on gradient (if gradient is dark, use white text)
+      textColor:
+        promo.gradient.includes('green-600') || promo.gradient.includes('green-700')
+          ? 'text-white'
+          : undefined,
+    }));
+  }
+  
+  return [];
+}
+
+export default function PromoBanners({ restaurants }: PromoBannersProps) {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const autoScrollResumeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAutoScrolling, setIsAutoScrolling] = useState(true);
-  const [banners, setBanners] = useState<PromoBanner[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
-  // Get user's address for location-based filtering
-  const isAuthenticated = useSyncExternalStore(
-    useUserStore.subscribe,
-    () => useUserStore.getState().isAuthenticated(),
-    () => false // fallback for SSR
-  );
-  const currentUser = useUserStore(state => state.currentUser);
-  const defaultAddress = currentUser?.addresses?.find(a => a.default);
-
-  // Get temp address for guest users
-  const tempAddress = useSyncExternalStore(
-    useUserStore.subscribe,
-    () => useUserStore.getState().getTempAddress(),
-    () => null // fallback for SSR
-  );
-
-  // Determine which address to use: logged-in user's default address or guest's temp address
-  const activeAddress = isAuthenticated ? defaultAddress : tempAddress;
-
-  // Fetch restaurants near user's address
-  const { data: restaurants, isLoading: isLoadingRestaurants } = useRestaurants(
-    activeAddress?.lat,
-    activeAddress?.lng,
-    10 // 10 mile radius
-  );
-
-  // Fetch promotional banners from API
-  useEffect(() => {
-    const fetchBanners = async () => {
-      try {
-        setIsLoading(true);
-        setError(null);
-        const response = await fetch('/api/promotionals');
-        const result = await response.json();
-
-        if (result.success && result.data) {
-          // Transform API data to component format
-          const transformedBanners = result.data.map((promo: any) => ({
-            id: promo.id,
-            restaurantId: promo.restaurantId,
-            title: promo.title,
-            description: promo.description,
-            buttonText: promo.buttonText,
-            buttonColor: promo.buttonColor,
-            gradient: promo.gradient,
-            image: promo.image,
-            restaurantName: promo.restaurantName,
-            // Determine text color based on gradient (if gradient is dark, use white text)
-            textColor:
-              promo.gradient.includes('green-600') || promo.gradient.includes('green-700')
-                ? 'text-white'
-                : undefined,
-          }));
-          setBanners(transformedBanners);
-        } else {
-          setError('Failed to load promotional banners');
-        }
-      } catch (err) {
-        console.error('Error fetching promotional banners:', err);
-        setError('Failed to load promotional banners');
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchBanners();
-  }, []);
+  // Use TanStack Query for caching promotional banners
+  const { data: banners = [], isLoading, error } = useQuery<PromoBanner[]>({
+    queryKey: ['promotionalBanners'],
+    queryFn: fetchPromotionalBanners,
+    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
+    retry: 1,
+  });
 
   // Filter banners to only include restaurants in delivery area
   const filteredBanners = useMemo(() => {
-    // If no address is set, loading restaurants, or no restaurants, don't show any banners
-    if (!activeAddress || isLoadingRestaurants || !restaurants) {
+    // If no restaurants available, don't show any banners
+    if (!restaurants || restaurants.length === 0) {
       return [];
     }
 
@@ -108,7 +76,7 @@ export default function PromoBanners() {
 
     // Filter banners to only include those whose restaurant is in delivery area
     return banners.filter(banner => restaurantIdsInDeliveryArea.has(banner.restaurantId));
-  }, [banners, restaurants, isLoadingRestaurants, activeAddress]);
+  }, [banners, restaurants]);
 
   // Update currentIndex based on scroll position
   useEffect(() => {
@@ -212,8 +180,8 @@ export default function PromoBanners() {
     []
   );
 
-  // Don't render if loading banners or restaurants, or if there's an error
-  if (isLoading || isLoadingRestaurants) {
+  // Show skeleton while loading banners (non-blocking - navigation still works)
+  if (isLoading) {
     return (
       <div className="relative mb-6">
         <div className="flex gap-4">
@@ -223,8 +191,8 @@ export default function PromoBanners() {
     );
   }
 
-  // Don't show anything if there's an error, no banners, or no address
-  if (error || filteredBanners.length === 0 || !activeAddress) {
+  // Don't show anything if there's an error or no banners
+  if (error || filteredBanners.length === 0) {
     return null;
   }
 

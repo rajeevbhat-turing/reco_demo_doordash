@@ -555,7 +555,7 @@ function HomeContent() {
         </>
       )}
       <div className="mt-4">
-        {!showStayTuned && !hasActiveFilters() && <PromoBanners />}
+        {!showStayTuned && !hasActiveFilters() && <PromoBanners restaurants={actualRestaurants} />}
 
         {/* Show filtered results when filters are active */}
         {hasActiveFilters() ? (

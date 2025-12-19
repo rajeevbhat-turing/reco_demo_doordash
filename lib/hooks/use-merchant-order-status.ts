@@ -3,6 +3,7 @@
 import { useEffect, useRef } from 'react';
 import { useMerchantOrdersStore, MerchantOrder } from '@/store/merchant-orders-store';
 import { useCurrentStore } from '@/lib/hooks/useCurrentStore';
+import { getCurrentTimestamp } from '@/store/bootstrap-store';
 
 // Configuration constants
 const UPDATE_INTERVAL = 3000; // Check every 3 seconds
@@ -60,7 +61,7 @@ function calculateNextStatus(order: MerchantOrder): string | null {
 
   // Check if order is old enough to auto-complete
   const orderDate = order.orderDate ? new Date(order.orderDate) : null;
-  const now = Date.now();
+  const now = getCurrentTimestamp(); // Supports simulated time
 
   // For DELIVERY orders: Auto-complete if order is more than 2 hours old (all non-completed statuses)
   if (!isPickup && orderDate) {
@@ -92,11 +93,11 @@ function calculateNextStatus(order: MerchantOrder): string | null {
   // Get or initialize start time for this order's current status
   const orderKey = `${order.id}-${currentStatus}`;
   if (!statusStartTimes.has(orderKey)) {
-    statusStartTimes.set(orderKey, Date.now());
+    statusStartTimes.set(orderKey, getCurrentTimestamp());
   }
 
   const statusStartTime = statusStartTimes.get(orderKey)!;
-  const elapsedSeconds = (Date.now() - statusStartTime) / 1000;
+  const elapsedSeconds = (getCurrentTimestamp() - statusStartTime) / 1000; // Supports simulated time
 
   // Handle preparing flow (DELIVERY ONLY): preparing → dasher_assigned → dasher_waiting
   if (!isPickup && PREPARING_FLOW_DELIVERY.includes(currentStatus)) {

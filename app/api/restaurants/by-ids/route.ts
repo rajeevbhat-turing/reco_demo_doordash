@@ -3,6 +3,7 @@ import { db } from '@/lib/db';
 import { calculateDeliveryTime, checkIfOpen, formatHours } from '@/lib/utils/restaurant-utils';
 import { getImageWithFallback } from '@/constants/image-placeholders';
 import { calculateDistance } from '@/lib/utils/distance-utils';
+import { getServerCurrentHour } from '@/lib/utils/time-utils';
 
 /**
  * GET /api/restaurants/by-ids
@@ -96,6 +97,10 @@ export async function GET(request: NextRequest) {
       ids
     );
 
+    // Get time from bootstrap cookie if set (for testing)
+    const cookieHeader = request.headers.get('cookie');
+    const currentHour = getServerCurrentHour(cookieHeader);
+
     // Transform data to match Restaurant interface
     const transformedRestaurants = restaurants.map(r => {
       // Calculate distance if user coordinates provided
@@ -108,7 +113,6 @@ export async function GET(request: NextRequest) {
       }
 
       const deliveryTime = distance !== null ? calculateDeliveryTime(distance) : '25-35 min';
-      const currentHour = new Date().getHours();
       const isOpen = checkIfOpen(r.opening_hour, r.closing_hour, currentHour);
 
       // Check if restaurant is out of delivery radius (10 miles)

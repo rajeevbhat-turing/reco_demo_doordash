@@ -8,6 +8,7 @@ import {
   SCHEDULED_STATUSES,
   isScheduledTimeReached,
 } from '@/lib/utils/order-utils';
+import { getCurrentTime } from '@/store/bootstrap-store';
 
 // Configuration constants
 const UPDATE_INTERVAL = 3000; // Interval in milliseconds to check for status updates (3 seconds)
@@ -47,7 +48,7 @@ function calculateNextStatus(order: Order): { newStatus: string; remainingTime: 
   }
 
   const orderDate = new Date(order.orderDate);
-  const now = new Date();
+  const now = getCurrentTime(); // Supports simulated time
   const elapsedSeconds = (now.getTime() - orderDate.getTime()) / 1000;
 
   // Calculate base preparation time based on number of items (in seconds)

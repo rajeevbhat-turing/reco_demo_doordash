@@ -142,6 +142,30 @@ def substitute_placeholders(obj: Any, variables: Dict[str, str]) -> Any:
     return obj
 
 
+def remove_login_prefix(statement: str) -> str:
+    """Remove the login instruction from the beginning of a task statement.
+    
+    Handles patterns like:
+    - "Log in using email 'x@y.com' and password 'pass'. Do something..."
+    - "Log in using the email 'x@y.com' and password 'pass'. Do something..."
+    
+    Returns the statement with the login instruction removed and first letter capitalized.
+    """
+    # Pattern to match login instructions at the start
+    pattern = r"^Log in using (?:the )?email '[^']+' and password '[^']+'\.\s*"
+    result = re.sub(pattern, "", statement, flags=re.IGNORECASE)
+    
+    # Capitalize the first letter of the remaining statement
+    if result:
+        result = result[0].upper() + result[1:] if len(result) > 1 else result.upper()
+    
+    return result
+
+
+# Percentage of tasks that should use pre-authentication via simulator_config
+PRE_AUTH_PERCENTAGE = 0.70
+
+
 # Calendar months (constant)
 MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
 
@@ -1484,15 +1508,54 @@ class TaskGenerator:
                 })
         return variables
     
+    def generate_pre_auth_assignments(self, count: int) -> List[bool]:
+        """Generate a shuffled list of pre-auth assignments for exact percentage split.
+        
+        Args:
+            count: Number of tasks to generate assignments for.
+            
+        Returns:
+            A shuffled list of booleans where True means pre-auth, False means explicit-login.
+            The ratio of True values matches PRE_AUTH_PERCENTAGE as closely as possible.
+        """
+        num_pre_auth = round(count * PRE_AUTH_PERCENTAGE)
+        assignments = [True] * num_pre_auth + [False] * (count - num_pre_auth)
+        random.shuffle(assignments)
+        return assignments
+    
     def generate_task_from_template(
         self,
         template: Dict[str, Any],
         task_id: str,
-        variables: Dict[str, str]
+        variables: Dict[str, str],
+        use_pre_auth: bool = False
     ) -> Dict[str, Any]:
+        """Generate a task from a template with variable substitution.
+        
+        Args:
+            template: The template dict to use.
+            task_id: The unique task identifier.
+            variables: Variables to substitute in the template.
+            use_pre_auth: If True, use simulator_config for pre-authentication.
+                          If False, keep explicit login in task_statement.
+        """
         task = copy.deepcopy(template)
         task = substitute_placeholders(task, variables)
         task["task_id"] = task_id
+        
+        if use_pre_auth and "USER_EMAIL" in variables:
+            # Add user to bootstrap_data for pre-authentication
+            if "simulator_config" not in task:
+                task["simulator_config"] = {}
+            if "bootstrap_data" not in task["simulator_config"]:
+                task["simulator_config"]["bootstrap_data"] = {}
+            
+            task["simulator_config"]["bootstrap_data"]["user"] = variables["USER_EMAIL"]
+            
+            # Remove login instruction from task_statement
+            if "task_statement" in task:
+                task["task_statement"] = remove_login_prefix(task["task_statement"])
+        
         return task
     
     def get_users_for_template(self, template_id: str) -> List[User]:
@@ -1559,13 +1622,28 @@ class TaskGenerator:
             if template_id in predefined_tasks:
                 predefined = copy.deepcopy(predefined_tasks[template_id])
                 predefined['task_id'] = f"{template_id}-001"
+                
+                # If predefined task has simulator_config.bootstrap_data.user, remove login prefix
+                if predefined.get("simulator_config", {}).get("bootstrap_data", {}).get("user"):
+                    if "task_statement" in predefined:
+                        predefined["task_statement"] = remove_login_prefix(predefined["task_statement"])
+                    auth_mode = "pre-auth"
+                else:
+                    auth_mode = "explicit-login"
+                
                 tasks.append(predefined)
                 template_task_count = 1
                 added_predefined_template_ids.add(template_id)
-                print(f"   [+] Task {template_id}-001: (predefined)")
+                print(f"   [+] Task {template_id}-001: (predefined, {auth_mode})")
             
             # Get appropriate user pool for this template
             users = self.get_users_for_template(template_id)
+            
+            # Pre-compute pre-auth assignments for exact percentage split
+            # Account for predefined task if it exists (it takes slot 1)
+            slots_available = max_tasks_per_template - template_task_count
+            pre_auth_assignments = self.generate_pre_auth_assignments(slots_available)
+            assignment_index = 0
             
             for user in users:
                 if max_total_tasks and len(tasks) >= max_total_tasks:
@@ -1590,15 +1668,21 @@ class TaskGenerator:
                 if not variables:
                     continue
                 
+                # Get pre-auth assignment from pre-computed list
+                use_pre_auth = pre_auth_assignments[assignment_index] if assignment_index < len(pre_auth_assignments) else False
+                assignment_index += 1
+                
                 # Task ID: template_id-001, template_id-002, etc.
                 template_task_count += 1
                 task_id = f"{template_id}-{template_task_count:03d}"
-                task = self.generate_task_from_template(template, task_id, variables)
+                task = self.generate_task_from_template(template, task_id, variables, use_pre_auth)
                 
                 tasks.append(task)
                 used_users.add(user.id)
                 
-                print(f"   [+] Task {task_id}: {user.email}")
+                # Determine auth mode for logging
+                auth_mode = "pre-auth" if task.get("simulator_config", {}).get("bootstrap_data", {}).get("user") else "explicit-login"
+                print(f"   [+] Task {task_id}: {user.email} ({auth_mode})")
             
             if template_task_count == 0:
                 print(f"   [WARN] No tasks generated - insufficient data for this template")
@@ -1626,8 +1710,17 @@ class TaskGenerator:
             for template_id in sorted(remaining_predefined):
                 predefined = copy.deepcopy(predefined_tasks[template_id])
                 predefined['task_id'] = f"{template_id}-001"
+                
+                # If predefined task has simulator_config.bootstrap_data.user, remove login prefix
+                if predefined.get("simulator_config", {}).get("bootstrap_data", {}).get("user"):
+                    if "task_statement" in predefined:
+                        predefined["task_statement"] = remove_login_prefix(predefined["task_statement"])
+                    auth_mode = "pre-auth"
+                else:
+                    auth_mode = "explicit-login"
+                
                 tasks.append(predefined)
-                print(f"   [+] Task {template_id}-001: (predefined, no template)")
+                print(f"   [+] Task {template_id}-001: (predefined, no template, {auth_mode})")
         
         return tasks
     
@@ -1670,7 +1763,7 @@ class TaskGenerator:
                 task_statement = task.get("task_statement", "")
                 
                 row = [
-                    json.dumps(clean_task, ensure_ascii=False),  # full_task_json
+                    json.dumps(clean_task, ensure_ascii=False, indent=2),  # full_task_json
                     json.dumps(task_category_L1),                # task_category_L1
                     json.dumps(task_category_L2),                # task_category_L2
                     json.dumps(task_capability),                 # task_capability
@@ -1697,11 +1790,17 @@ def main():
     parser.add_argument('--max-per-template', type=int, default=5, help='Max tasks per template type')
     parser.add_argument('--max-total', type=int, default=None, help='Max total tasks to generate')
     parser.add_argument('--seed', type=int, default=None, help='Random seed')
+    parser.add_argument('--pre-auth-pct', type=float, default=0.70, 
+                        help='Percentage of tasks to use pre-authentication via simulator_config (0.0-1.0, default: 0.70)')
     
     args = parser.parse_args()
     
     if args.seed is not None:
         random.seed(args.seed)
+    
+    # Update the global pre-auth percentage
+    global PRE_AUTH_PERCENTAGE
+    PRE_AUTH_PERCENTAGE = args.pre_auth_pct
     
     print("=" * 60)
     print("DashDoor Task Generator")
@@ -1710,6 +1809,7 @@ def main():
     print(f"Database: {args.db}")
     print(f"Max per template: {args.max_per_template}")
     print(f"Max total: {args.max_total or 'unlimited'}")
+    print(f"Pre-auth percentage: {args.pre_auth_pct * 100:.0f}%")
     print("=" * 60)
     
     try:
