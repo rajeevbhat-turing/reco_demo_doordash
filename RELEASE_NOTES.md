@@ -1,6 +1,56 @@
 # Release Notes
 
-##  December 15, 2025
+## December 19, 2025
+
+### 🎯 Task System Updates
+
+#### Bootstrap Data Configuration
+All 200 tasks now include proper time simulation configuration:
+
+- **Type A Tasks (60 tasks)**: Added base `bootstrap_data` with `date` and `timezone`
+  ```json
+  "simulator_config": {
+    "bootstrap_data": {
+      "date": "2025-12-19T12:00:00-08:00",
+      "timezone": "America/Los_Angeles"
+    }
+  }
+  ```
+
+- **Type B Tasks (140 tasks)**: Added `bootstrap_data` with `date`, `timezone`, and `user` + removed login instruction from `task_statement`
+  ```json
+  "simulator_config": {
+    "bootstrap_data": {
+      "date": "2025-12-19T12:00:00-08:00",
+      "timezone": "America/Los_Angeles",
+      "user": "email@example.com"
+    }
+  }
+  ```
+
+#### Verifier Index Fixes
+Updated 31 task verifiers to use explicit array indexing in JSONPath expressions:
+
+| Metric | Count |
+|--------|-------|
+| Total Tasks Updated | 39 |
+| Verifier Changes | 31 |
+| No Changes Required | 8 |
+
+**Key Changes:**
+- All `paths_to_expected` now use explicit array indexing (e.g., `$.address.id` → `$[0].address.id`)
+- Index `$[n]` references the nth expected state function result from `extract_states_config.expected_state_functions`
+
+#### Operator Changes
+Two tasks received operator updates for proper validation:
+- `cheapest-liked-combo`: `JSON_EQUALS` → `ARRAY_STRING_CONTAINS`
+- `healthy-fixed-order`: `JSON_EQUALS` → `ARRAY_STRING_CONTAINS`
+
+These changes split single assertions with multiple paths into separate assertions for independent validation.
+
+---
+
+## December 15, 2025
 
 ### 🚀 New Features
 
@@ -26,7 +76,7 @@
 
 #### Task System
 - **Task Generation Script** — Automated script for generating tasks with template settings
-- **135 Tested Tasks** — New batch of verified tasks added
+- **200 Tested Tasks** — New batch of verified tasks added
 - **Predefined Tasks** — System to ensure predefined tasks are always included
 - **Template Improvements** — Multiple new templates with better DB awareness
 
@@ -50,7 +100,7 @@
 
 #### Restaurant & Menu
 - **Restaurant Closed Status** — Fixed restaurants showing as open after closing time
-- **Empty Menu Categoriesf** — Hidden menu categories with no items in restaurant detail pages
+- **Empty Menu Categories** — Hidden menu categories with no items in restaurant detail pages
 - **Menu Item Dialog Status** — Proper handling of restaurant status in menu item dialog
 - **Add-on Required Handling** — Fixed case where add-on shows as required but prompt doesn't mention it
 - **Required Modifications** — Fixed selection to handle correct number of required modifications
