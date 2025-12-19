@@ -49,10 +49,15 @@ export async function GET(_request: NextRequest) {
       restaurantName: promo.restaurant_name,
     }));
 
-    return NextResponse.json({
+    const response = NextResponse.json({
       success: true,
       data: promotionalsData,
     });
+    
+    // Cache promotional data for 5 minutes
+    response.headers.set('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=60');
+    
+    return response;
   } catch (error) {
     console.error('❌ Fetch promotionals error:', error);
     return NextResponse.json(
