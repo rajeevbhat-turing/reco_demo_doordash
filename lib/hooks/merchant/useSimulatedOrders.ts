@@ -4,6 +4,7 @@ import { useEffect, useRef } from 'react';
 import { useCurrentStore } from '@/lib/hooks/useCurrentStore';
 import { useMerchantOrdersStore } from '@/store/merchant-orders-store';
 import { useMerchantMenuStore } from '@/store/merchant-menu-store';
+import { getCurrentTime } from '@/store/bootstrap-store';
 
 // Sample users for order simulation (from dashdoor.db)
 interface SampleUserAddress {
@@ -172,7 +173,7 @@ export function useSimulatedOrders(intervalMs: number = 60000) {
 
         const orderItems = Array.from(orderItemsMap.values());
 
-        const now = new Date();
+        const now = getCurrentTime(); // Supports simulated time
         const orderId = `DD-${Math.floor(Math.random() * 900000 + 100000)}`;
 
         // Randomly assign delivery or pickup (80% delivery, 20% pickup)

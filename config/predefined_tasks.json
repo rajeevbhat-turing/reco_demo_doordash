@@ -5,22 +5,24 @@
     "task_id": "item-addon-order-001",
     "task_type": "GUI Comprehension, Action Execution",
     "simulator_config": {
-      "start_date": "today",
-      "user_persona": "lena.bennett71@example.com"
+      "bootstrap_data": {
+        "date": "2025-12-19T12:00:00-08:00",
+        "timezone": "America/Los_Angeles"
+      }
     },
     "grader_config": {
       "state_grader_configs": [
         {
           "assertions": [
             {
-              "operator": "ARRAY_STRING_EQUALS",
+              "operator": "STRING_EQUALS",
               "path_to_actual": "$.restaurantId",
               "paths_to_expected": [
                 "$[1].restaurants[0].id"
               ]
             },
             {
-              "operator": "ARRAY_STRING_EQUALS",
+              "operator": "STRING_EQUALS",
               "path_to_actual": "$.items[0].name",
               "paths_to_expected": [
                 "$[2].items[0].name"
@@ -110,8 +112,10 @@
     "task_id": "nearest-cheapest-choice-001",
     "task_type": "Multi-Step Task Planning, Action Execution, GUI Comprehension, Element Identification",
     "simulator_config": {
-      "start_date": "today",
-      "user_persona": "quinn.bennett2227@inbox.local"
+      "bootstrap_data": {
+        "date": "2025-12-19T12:00:00-08:00",
+        "timezone": "America/Los_Angeles"
+      }
     },
     "grader_config": {
       "state_grader_configs": [
@@ -120,7 +124,7 @@
             {
               "operator": "STRING_EQUALS",
               "paths_to_expected": [
-                "$.address.id"
+                "$[0].address.id"
               ]
             }
           ],
@@ -132,7 +136,7 @@
               "operator": "STRING_EQUALS",
               "path_to_actual": "$.items[0].id",
               "paths_to_expected": [
-                "$.items[0].id"
+                "$[2].items[0].id"
               ]
             },
             {
@@ -221,8 +225,10 @@
     "task_id": "new-cheapest-restaurant-001",
     "task_type": "Multi-Step Task Planning, GUI Comprehension, Decision Making",
     "simulator_config": {
-      "start_date": "today",
-      "user_persona": "gavin.quintero980@example.com"
+      "bootstrap_data": {
+        "date": "2025-12-19T12:00:00-08:00",
+        "timezone": "America/Los_Angeles"
+      }
     },
     "grader_config": {
       "answer_grader_config": {
@@ -290,8 +296,10 @@
     "task_id": "hotel-cheapest-delivery-001",
     "task_type": "GUI Comprehension, Decision Making, Element Identification",
     "simulator_config": {
-      "start_date": "today",
-      "user_persona": "gavin.quintero980@example.com"
+      "bootstrap_data": {
+        "date": "2025-12-19T12:00:00-08:00",
+        "timezone": "America/Los_Angeles"
+      }
     },
     "grader_config": {
       "state_grader_configs": [
@@ -398,8 +406,10 @@
     "task_id": "replace-payment-card-001",
     "task_type": "GUI Comprehension, Action Execution, Information Retrieval",
     "simulator_config": {
-      "start_date": "today",
-      "user_persona": "gavin.quintero980@example.com"
+      "bootstrap_data": {
+        "date": "2025-12-19T12:00:00-08:00",
+        "timezone": "America/Los_Angeles"
+      }
     },
     "grader_config": {
       "state_grader_configs": [
@@ -435,7 +445,7 @@
             {
               "operator": "STRING_EQUALS",
               "paths_to_expected": [
-                "$.address.zipCode"
+                "$[0].address.zipCode"
               ],
               "path_to_actual": "$[0].zipCode"
             }
@@ -477,8 +487,10 @@
     "task_id": "rate-last-order-001",
     "task_type": "GUI Comprehension, Action Execution",
     "simulator_config": {
-      "start_date": "today",
-      "user_persona": "gavin.quintero980@example.com"
+      "bootstrap_data": {
+        "date": "2025-12-19T12:00:00-08:00",
+        "timezone": "America/Los_Angeles"
+      }
     },
     "grader_config": {
       "state_grader_configs": [
@@ -542,18 +554,20 @@
     "task_id": "clear-invalid-carts-001",
     "task_type": "GUI Comprehension, Action Execution, Decision Making, Element Identification",
     "simulator_config": {
-      "start_date": "today",
-      "user_persona": "yuna.lopez1959@mail.test"
+      "bootstrap_data": {
+        "date": "2025-12-19T12:00:00-08:00",
+        "timezone": "America/Los_Angeles"
+      }
     },
     "grader_config": {
       "state_grader_configs": [
         {
           "assertions": [
             {
-              "operator": "ARRAY_STRING_EQUALS",
+              "operator": "JSON_EQUALS",
               "path_to_actual": "$.carts[*].storeId",
               "paths_to_expected": [
-                "$.carts[*].storeId"
+                "$[2].carts[*].storeId"
               ]
             }
           ]
@@ -607,15 +621,17 @@
     "task_id": "replace-cart-item-001",
     "task_type": "GUI Comprehension, Action Execution",
     "simulator_config": {
-      "start_date": "today",
-      "user_persona": "yuna.lopez1959@mail.test"
+      "bootstrap_data": {
+        "date": "2025-12-19T12:00:00-08:00",
+        "timezone": "America/Los_Angeles"
+      }
     },
     "grader_config": {
       "state_grader_configs": [
         {
           "assertions": [
             {
-              "operator": "ARRAY_STRING_EQUALS",
+              "operator": "JSON_EQUALS",
               "path_to_actual": "$.items[*].id",
               "paths_to_expected": [
                 "$.carts[0].items[*].id",
@@ -633,14 +649,14 @@
               "operator": "STRING_CONTAINS",
               "path_to_actual": "$.deliveryOption.deliveryTime",
               "paths_to_expected": [
-                "$.date"
+                "$[2].date"
               ]
             },
             {
               "operator": "STRING_CONTAINS",
               "path_to_actual": "$.deliveryOption.deliveryTime",
               "paths_to_expected": [
-                "$.slot"
+                "$[3].slot"
               ]
             }
           ],
@@ -708,8 +724,10 @@
     "task_id": "low-calorie-order-001",
     "task_type": "GUI Comprehension, Action Execution, Decision Making, Element Identification, Multi-Step Task Planning",
     "simulator_config": {
-      "start_date": "today",
-      "user_persona": "lena.bennett40@example.com"
+      "bootstrap_data": {
+        "date": "2025-12-19T12:00:00-08:00",
+        "timezone": "America/Los_Angeles"
+      }
     },
     "grader_config": {
       "state_grader_configs": [
@@ -738,14 +756,14 @@
         {
           "assertions": [
             {
-              "operator": "ARRAY_STRING_EQUALS",
+              "operator": "STRING_EQUALS",
               "path_to_actual": "$.restaurantId",
               "paths_to_expected": [
                 "$.restaurants[0].id"
               ]
             },
             {
-              "operator": "ARRAY_STRING_EQUALS",
+              "operator": "JSON_EQUALS",
               "path_to_actual": "$.items[*].name",
               "paths_to_expected": [
                 "$.items[*].name"
@@ -855,8 +873,10 @@
     "task_id": "reorder-with-addons-001",
     "task_type": "GUI Comprehension, Action Execution, Decision Making, Element Identification, Multi-Step Task Planning",
     "simulator_config": {
-      "start_date": "today",
-      "user_persona": "aiden.kaufman2119@mail.test"
+      "bootstrap_data": {
+        "date": "2025-12-19T12:00:00-08:00",
+        "timezone": "America/Los_Angeles"
+      }
     },
     "grader_config": {
       "state_grader_configs": [
@@ -898,7 +918,7 @@
             {
               "operator": "STRING_EQUALS",
               "paths_to_expected": [
-                "$.deal.id"
+                "$[0].deal.id"
               ]
             }
           ],
@@ -907,11 +927,11 @@
         {
           "assertions": [
             {
-              "operator": "ARRAY_STRING_EQUALS",
+              "operator": "JSON_EQUALS",
               "path_to_actual": "$.items[*].name",
               "paths_to_expected": [
-                "$.orders[0].items[*].name",
-                "$.items[*].name"
+                "$[2].orders[0].items[*].name",
+                "$[3].items[*].name"
               ]
             },
             {
@@ -990,8 +1010,10 @@
     "task_id": "express-nearest-order-001",
     "task_type": "GUI Comprehension, Action Execution, Decision Making, Element Identification",
     "simulator_config": {
-      "start_date": "today",
-      "user_persona": "lena.bennett71@example.com"
+      "bootstrap_data": {
+        "date": "2025-12-19T12:00:00-08:00",
+        "timezone": "America/Los_Angeles"
+      }
     },
     "grader_config": {
       "state_grader_configs": [
@@ -1000,7 +1022,7 @@
             {
               "operator": "STRING_EQUALS",
               "paths_to_expected": [
-                "$.deal.id"
+                "$[1].deal.id"
               ]
             }
           ],
@@ -1011,7 +1033,7 @@
             {
               "operator": "STRING_EQUALS",
               "paths_to_expected": [
-                "$.address.id"
+                "$[0].address.id"
               ]
             }
           ],
@@ -1034,7 +1056,7 @@
               "operator": "STRING_EQUALS",
               "path_to_actual": "$.items[0].name",
               "paths_to_expected": [
-                "$.items[0].name"
+                "$[3].items[0].name"
               ]
             },
             {
@@ -1118,8 +1140,10 @@
     "task_id": "cheapest-item-filter-001",
     "task_type": "GUI Comprehension, Element Identification, Decision Making",
     "simulator_config": {
-      "start_date": "today",
-      "user_persona": "lena.bennett71@example.com"
+      "bootstrap_data": {
+        "date": "2025-12-19T12:00:00-08:00",
+        "timezone": "America/Los_Angeles"
+      }
     },
     "grader_config": {
       "state_grader_configs": [
@@ -1129,7 +1153,7 @@
               "operator": "STRING_EQUALS",
               "path_to_actual": "$.items[0].name",
               "paths_to_expected": [
-                "$.items[0].name"
+                "$[2].items[0].name"
               ]
             },
             {
@@ -1143,7 +1167,7 @@
               "operator": "STRING_EQUALS",
               "path_to_actual": "$.storeId",
               "paths_to_expected": [
-                "$.items[0].restaurantId"
+                "$[2].items[0].restaurantId"
               ]
             }
           ],
@@ -1210,8 +1234,10 @@
     "task_id": "top-rated-category-001",
     "task_type": "GUI Comprehension, Action Execution, Decision Making, Element Identification, Information Retrieval",
     "simulator_config": {
-      "start_date": "today",
-      "user_persona": "lena.bennett71@example.com"
+      "bootstrap_data": {
+        "date": "2025-12-19T12:00:00-08:00",
+        "timezone": "America/Los_Angeles"
+      }
     },
     "grader_config": {
       "state_grader_configs": [
@@ -1221,7 +1247,7 @@
               "operator": "STRING_EQUALS",
               "path_to_actual": "$.items[0].name",
               "paths_to_expected": [
-                "$.items[0].name"
+                "$[2].items[0].name"
               ]
             },
             {
@@ -1235,7 +1261,7 @@
               "operator": "STRING_EQUALS",
               "path_to_actual": "$.storeId",
               "paths_to_expected": [
-                "$.items[0].restaurantId"
+                "$[2].items[0].restaurantId"
               ]
             }
           ],
@@ -1302,8 +1328,10 @@
     "task_id": "best-deal-order-001",
     "task_type": "GUI Comprehension, Action Execution, Multi-Step Task Planning, Decision Making",
     "simulator_config": {
-      "start_date": "today",
-      "user_persona": "elias.kaufman88@dashdoor.test"
+      "bootstrap_data": {
+        "date": "2025-12-19T12:00:00-08:00",
+        "timezone": "America/Los_Angeles"
+      }
     },
     "grader_config": {
       "state_grader_configs": [
@@ -1312,7 +1340,7 @@
             {
               "operator": "STRING_EQUALS",
               "paths_to_expected": [
-                "$.address.id"
+                "$[0].address.id"
               ]
             }
           ],
@@ -1323,7 +1351,7 @@
             {
               "operator": "STRING_EQUALS",
               "paths_to_expected": [
-                "$.restaurants[0].deals[0].id"
+                "$[1].restaurants[0].deals[0].id"
               ]
             }
           ],
@@ -1335,14 +1363,14 @@
               "operator": "STRING_EQUALS",
               "path_to_actual": "$.items[*].menuCategoryId",
               "paths_to_expected": [
-                "$.categories[0].id"
+                "$[2].categories[0].id"
               ]
             },
             {
               "operator": "STRING_EQUALS",
               "path_to_actual": "$.storeId",
               "paths_to_expected": [
-                "$.restaurants[0].id"
+                "$[1].restaurants[0].id"
               ]
             }
           ],
@@ -1413,8 +1441,10 @@
     "task_id": "bulk-simple-order-001",
     "task_type": "GUI Comprehension, Action Execution",
     "simulator_config": {
-      "start_date": "today",
-      "user_persona": "lena.bennett71@example.com"
+      "bootstrap_data": {
+        "date": "2025-12-19T12:00:00-08:00",
+        "timezone": "America/Los_Angeles"
+      }
     },
     "grader_config": {
       "state_grader_configs": [
@@ -1423,7 +1453,7 @@
             {
               "operator": "STRING_EQUALS",
               "paths_to_expected": [
-                "$.address.id"
+                "$[0].address.id"
               ]
             }
           ],
@@ -1443,10 +1473,11 @@
         {
           "assertions": [
             {
-              "operator": "ARRAY_STRING_EQUALS",
+              "operator": "JSON_EQUALS",
               "path_to_actual": "$.items[*].id",
               "paths_to_expected": [
-                "$.items[*].id"
+                "$[2].items[0].id",
+                "$[3].items[0].id"
               ]
             },
             {
@@ -1567,8 +1598,10 @@
     "task_id": "update-delivery-instructions-001",
     "task_type": "GUI Comprehension, Action Execution",
     "simulator_config": {
-      "start_date": "today",
-      "user_persona": "elias.kaufman88@dashdoor.test"
+      "bootstrap_data": {
+        "date": "2025-12-19T12:00:00-08:00",
+        "timezone": "America/Los_Angeles"
+      }
     },
     "grader_config": {
       "state_grader_configs": [
@@ -1605,7 +1638,7 @@
             {
               "operator": "STRING_NOT_CONTAINS",
               "paths_to_expected": [
-                "$.address.deliveryInstructions"
+                "$[0].address.deliveryInstructions"
               ],
               "path_to_actual": "$.deliveryInstructions"
             }
@@ -1646,8 +1679,10 @@
     "task_id": "lowest-calorie-dessert-001",
     "task_type": "GUI Comprehension, Action Execution, Multi-Step Task Planning, Decision Making",
     "simulator_config": {
-      "start_date": "today",
-      "user_persona": "elias.kaufman88@dashdoor.test"
+      "bootstrap_data": {
+        "date": "2025-12-19T12:00:00-08:00",
+        "timezone": "America/Los_Angeles"
+      }
     },
     "grader_config": {
       "state_grader_configs": [
@@ -1656,7 +1691,7 @@
             {
               "operator": "STRING_EQUALS",
               "paths_to_expected": [
-                "$.address.id"
+                "$[0].address.id"
               ]
             }
           ],
@@ -1668,7 +1703,7 @@
               "operator": "STRING_EQUALS",
               "path_to_actual": "$.items[*].name",
               "paths_to_expected": [
-                "$.items[*].name"
+                "$[2].items[*].name"
               ]
             },
             {
@@ -1682,7 +1717,7 @@
               "operator": "STRING_EQUALS",
               "path_to_actual": "$.storeId",
               "paths_to_expected": [
-                "$.restaurants[0].id"
+                "$[1].restaurants[0].id"
               ]
             },
             {
@@ -1772,8 +1807,10 @@
     "task_id": "top-rated-history-001",
     "task_type": "GUI Comprehension, Action Execution, Decision Making, Multi-Step Task Planning",
     "simulator_config": {
-      "start_date": "today",
-      "user_persona": "willow.bennett2904@example.com"
+      "bootstrap_data": {
+        "date": "2025-12-19T12:00:00-08:00",
+        "timezone": "America/Los_Angeles"
+      }
     },
     "grader_config": {
       "state_grader_configs": [
@@ -1791,7 +1828,7 @@
               "operator": "STRING_EQUALS",
               "path_to_actual": "$.items[*].name",
               "paths_to_expected": [
-                "$.items[*].name"
+                "$[2].items[*].name"
               ]
             },
             {
@@ -1805,7 +1842,7 @@
               "operator": "STRING_EQUALS",
               "path_to_actual": "$.storeId",
               "paths_to_expected": [
-                "$.items[0].restaurantId"
+                "$[2].items[0].restaurantId"
               ]
             }
           ],
@@ -1873,25 +1910,27 @@
     "task_id": "helpful-review-items-001",
     "task_type": "GUI Comprehension, Action Execution, Decision Making, Element Identification",
     "simulator_config": {
-      "start_date": "today",
-      "user_persona": "lena.bennett71@example.com"
+      "bootstrap_data": {
+        "date": "2025-12-19T12:00:00-08:00",
+        "timezone": "America/Los_Angeles"
+      }
     },
     "grader_config": {
       "state_grader_configs": [
         {
           "assertions": [
             {
-              "operator": "ARRAY_STRING_EQUALS",
+              "operator": "JSON_EQUALS",
               "path_to_actual": "$.items[*].itemName",
               "paths_to_expected": [
-                "$.reviews[0].likedItems[*].itemName"
+                "$[1].reviews[0].likedItems[*].itemName"
               ]
             },
             {
               "operator": "STRING_EQUALS",
               "path_to_actual": "$.storeId",
               "paths_to_expected": [
-                "$.reviews[0].storeId"
+                "$[1].reviews[0].storeId"
               ]
             }
           ],
@@ -1944,8 +1983,10 @@
     "task_id": "item-with-sauce-001",
     "task_type": "GUI Comprehension, Action Execution, Element Identification",
     "simulator_config": {
-      "start_date": "today",
-      "user_persona": "lena.bennett71@example.com"
+      "bootstrap_data": {
+        "date": "2025-12-19T12:00:00-08:00",
+        "timezone": "America/Los_Angeles"
+      }
     },
     "grader_config": {
       "state_grader_configs": [
@@ -2138,6 +2179,12 @@
         "UI Elements: Dropdowns",
         "Order Placement"
       ]
+    },
+    "simulator_config": {
+      "bootstrap_data": {
+        "date": "2025-12-19T12:00:00-08:00",
+        "timezone": "America/Los_Angeles"
+      }
     }
   },
   {
@@ -2146,8 +2193,10 @@
     "task_id": "cheapest-rated-slices-001",
     "task_type": "GUI Comprehension, Element Identification, Action Execution",
     "simulator_config": {
-      "start_date": "today",
-      "user_persona": "lena.bennett71@example.com"
+      "bootstrap_data": {
+        "date": "2025-12-19T12:00:00-08:00",
+        "timezone": "America/Los_Angeles"
+      }
     },
     "grader_config": {
       "state_grader_configs": [
@@ -2167,7 +2216,7 @@
           "path_to_actual": "$.orders[0]",
           "assertions": [
             {
-              "operator": "ARRAY_STRING_EQUALS",
+              "operator": "JSON_EQUALS",
               "path_to_actual": "$.items[*].name",
               "paths_to_expected": [
                 "$[2].items[*].name"
@@ -2268,10 +2317,16 @@
         {
           "assertions": [
             {
-              "operator": "ARRAY_STRING_EQUALS",
+              "operator": "ARRAY_STRING_CONTAINS",
               "path_to_actual": "$.items[*].name",
               "paths_to_expected": [
-                "$[1].items[0].name",
+                "$[1].items[0].name"
+              ]
+            },
+            {
+              "operator": "ARRAY_STRING_CONTAINS",
+              "path_to_actual": "$.items[*].name",
+              "paths_to_expected": [
                 "$[2].items[0].name"
               ]
             },
@@ -2345,6 +2400,12 @@
         "Decision making",
         "Order Placement"
       ]
+    },
+    "simulator_config": {
+      "bootstrap_data": {
+        "date": "2025-12-19T12:00:00-08:00",
+        "timezone": "America/Los_Angeles"
+      }
     }
   },
   {
@@ -2353,8 +2414,10 @@
     "task_id": "cheapest-nearby-item-001",
     "task_type": "GUI Comprehension, Action Execution",
     "simulator_config": {
-      "start_date": "today",
-      "user_persona": "lena.bennett71@example.com"
+      "bootstrap_data": {
+        "date": "2025-12-19T12:00:00-08:00",
+        "timezone": "America/Los_Angeles"
+      }
     },
     "grader_config": {
       "state_grader_configs": [
@@ -2468,7 +2531,7 @@
         {
           "assertions": [
             {
-              "operator": "ARRAY_STRING_EQUALS",
+              "operator": "JSON_EQUALS",
               "path_to_actual": "$.items[*].name",
               "paths_to_expected": [
                 "$[2].items[*].name"
@@ -2498,7 +2561,7 @@
         {
           "assertions": [
             {
-              "operator": "ARRAY_STRING_EQUALS",
+              "operator": "JSON_EQUALS",
               "path_to_actual": "$.items[*].name",
               "paths_to_expected": [
                 "$[4].items[*].name"
@@ -2605,6 +2668,12 @@
         "Order Placement",
         "Scheduling"
       ]
+    },
+    "simulator_config": {
+      "bootstrap_data": {
+        "date": "2025-12-19T12:00:00-08:00",
+        "timezone": "America/Los_Angeles"
+      }
     }
   },
   {
@@ -2613,8 +2682,10 @@
     "task_id": "gift-coffee-order-001",
     "task_type": "GUI Comprehension, Action Execution, Multi-Step Task Planning, Decision Making",
     "simulator_config": {
-      "start_date": "today",
-      "user_persona": "lena.bennett71@example.com"
+      "bootstrap_data": {
+        "date": "2025-12-19T12:00:00-08:00",
+        "timezone": "America/Los_Angeles"
+      }
     },
     "grader_config": {
       "state_grader_configs": [
@@ -2723,8 +2794,10 @@
     "task_id": "list-affordable-cuisine-001",
     "task_type": "Multi-Step Task Planning, Information Retrieval, Decision Making",
     "simulator_config": {
-      "start_date": "today",
-      "user_persona": "elias.kaufman88@dashdoor.test"
+      "bootstrap_data": {
+        "date": "2025-12-19T12:00:00-08:00",
+        "timezone": "America/Los_Angeles"
+      }
     },
     "grader_config": {
       "answer_grader_config": {
@@ -2785,8 +2858,10 @@
     "task_id": "positive-order-review-001",
     "task_type": "Action Execution, Decision Making",
     "simulator_config": {
-      "start_date": "today",
-      "user_persona": "elias.kaufman88@dashdoor.test"
+      "bootstrap_data": {
+        "date": "2025-12-19T12:00:00-08:00",
+        "timezone": "America/Los_Angeles"
+      }
     },
     "grader_config": {
       "state_grader_configs": [
@@ -2801,7 +2876,7 @@
             {
               "operator": "STRING_EQUALS",
               "paths_to_expected": [
-                "$.orders[0].id"
+                "$[1].orders[0].id"
               ],
               "path_to_actual": "$[0].orderId"
             },
@@ -2875,8 +2950,10 @@
     "task_id": "nearest-coffee-cart-001",
     "task_type": "Action Execution, GUI Comprehension",
     "simulator_config": {
-      "start_date": "today",
-      "user_persona": "omar.walsh1396@dashdoor.test"
+      "bootstrap_data": {
+        "date": "2025-12-19T12:00:00-08:00",
+        "timezone": "America/Los_Angeles"
+      }
     },
     "grader_config": {
       "state_grader_configs": [
@@ -2974,8 +3051,10 @@
     "task_id": "search-express-order-001",
     "task_type": "Action Execution, GUI Comprehension, Decision Making",
     "simulator_config": {
-      "start_date": "today",
-      "user_persona": "lena.bennett71@example.com"
+      "bootstrap_data": {
+        "date": "2025-12-19T12:00:00-08:00",
+        "timezone": "America/Los_Angeles"
+      }
     },
     "grader_config": {
       "state_grader_configs": [
@@ -3080,8 +3159,10 @@
     "task_id": "list-cheapest-items-001",
     "task_type": "GUI Comprehension, Action Execution, Decision Making",
     "simulator_config": {
-      "start_date": "today",
-      "user_persona": "lena.bennett71@example.com"
+      "bootstrap_data": {
+        "date": "2025-12-19T12:00:00-08:00",
+        "timezone": "America/Los_Angeles"
+      }
     },
     "grader_config": {
       "answer_grader_config": {
@@ -3141,8 +3222,10 @@
     "task_id": "find-matching-restaurant-001",
     "task_type": "GUI Comprehension, Action Execution, Decision Making, Element Identification",
     "simulator_config": {
-      "start_date": "today",
-      "user_persona": "lena.bennett71@example.com"
+      "bootstrap_data": {
+        "date": "2025-12-19T12:00:00-08:00",
+        "timezone": "America/Los_Angeles"
+      }
     },
     "grader_config": {
       "answer_grader_config": {
@@ -3208,8 +3291,10 @@
     "task_id": "top-liked-entrees-001",
     "task_type": "GUI Comprehension, Action Execution, Decision Making, Element Identification",
     "simulator_config": {
-      "start_date": "today",
-      "user_persona": "lena.bennett71@example.com"
+      "bootstrap_data": {
+        "date": "2025-12-19T12:00:00-08:00",
+        "timezone": "America/Los_Angeles"
+      }
     },
     "grader_config": {
       "state_grader_configs": [
@@ -3218,7 +3303,7 @@
             {
               "operator": "STRING_EQUALS",
               "paths_to_expected": [
-                "$.address.id"
+                "$[0].address.id"
               ],
               "path_to_actual": "$.deliveryAddress.id"
             }
@@ -3326,8 +3411,10 @@
     "task_id": "scheduled-best-item-001",
     "task_type": "GUI Comprehension, Action Execution, Decision Making, Element Identification, Information Retrieval",
     "simulator_config": {
-      "start_date": "today",
-      "user_persona": "lena.bennett71@example.com"
+      "bootstrap_data": {
+        "date": "2025-12-19T12:00:00-08:00",
+        "timezone": "America/Los_Angeles"
+      }
     },
     "grader_config": {
       "state_grader_configs": [
@@ -3446,8 +3533,10 @@
     "task_id": "healthy-fixed-order-001",
     "task_type": "GUI Comprehension, Element Identification, Action Execution",
     "simulator_config": {
-      "start_date": "today",
-      "user_persona": "omar.walsh1396@dashdoor.test"
+      "bootstrap_data": {
+        "date": "2025-12-19T12:00:00-08:00",
+        "timezone": "America/Los_Angeles"
+      }
     },
     "grader_config": {
       "state_grader_configs": [
@@ -3480,11 +3569,23 @@
               ]
             },
             {
-              "operator": "ARRAY_STRING_EQUALS",
+              "operator": "ARRAY_STRING_CONTAINS",
               "path_to_actual": "$.items[*].name",
               "paths_to_expected": [
-                "$[2].items[0].name",
-                "$[3].items[0].name",
+                "$[2].items[0].name"
+              ]
+            },
+            {
+              "operator": "ARRAY_STRING_CONTAINS",
+              "path_to_actual": "$.items[*].name",
+              "paths_to_expected": [
+                "$[3].items[0].name"
+              ]
+            },
+            {
+              "operator": "ARRAY_STRING_CONTAINS",
+              "path_to_actual": "$.items[*].name",
+              "paths_to_expected": [
                 "$[4].items[0].name"
               ]
             },
@@ -3582,8 +3683,10 @@
     "task_id": "scheduled-group-order-001",
     "task_type": "GUI Comprehension, Element Identification, Action Execution",
     "simulator_config": {
-      "start_date": "today",
-      "user_persona": "omar.walsh1396@dashdoor.test"
+      "bootstrap_data": {
+        "date": "2025-12-19T12:00:00-08:00",
+        "timezone": "America/Los_Angeles"
+      }
     },
     "grader_config": {
       "state_grader_configs": [
@@ -3702,8 +3805,10 @@
     "task_id": "update-cart-quantity-001",
     "task_type": "GUI Comprehension, Action Execution",
     "simulator_config": {
-      "start_date": "today",
-      "user_persona": "omar.walsh1396@dashdoor.test"
+      "bootstrap_data": {
+        "date": "2025-12-19T12:00:00-08:00",
+        "timezone": "America/Los_Angeles"
+      }
     },
     "grader_config": {
       "state_grader_configs": [
@@ -3765,8 +3870,10 @@
     "task_id": "build-specific-cart-001",
     "task_type": "GUI Comprehension, Action Execution",
     "simulator_config": {
-      "start_date": "today",
-      "user_persona": "lena.bennett71@example.com"
+      "bootstrap_data": {
+        "date": "2025-12-19T12:00:00-08:00",
+        "timezone": "America/Los_Angeles"
+      }
     },
     "grader_config": {
       "state_grader_configs": [
@@ -3787,7 +3894,7 @@
               ]
             },
             {
-              "operator": "ARRAY_STRING_EQUALS",
+              "operator": "JSON_EQUALS",
               "path_to_actual": "$.items[*].itemName",
               "paths_to_expected": [
                 "$[2].items[*].name"
@@ -3857,8 +3964,10 @@
     "task_id": "list-menu-options-001",
     "task_type": "GUI Comprehension, Action Execution, Decision Making",
     "simulator_config": {
-      "start_date": "today",
-      "user_persona": "lena.bennett71@example.com"
+      "bootstrap_data": {
+        "date": "2025-12-19T12:00:00-08:00",
+        "timezone": "America/Los_Angeles"
+      }
     },
     "grader_config": {
       "answer_grader_config": {
@@ -3920,8 +4029,10 @@
     "task_id": "list-rated-restaurants-001",
     "task_type": "GUI Comprehension, Action Execution, Decision Making",
     "simulator_config": {
-      "start_date": "today",
-      "user_persona": "lena.bennett71@example.com"
+      "bootstrap_data": {
+        "date": "2025-12-19T12:00:00-08:00",
+        "timezone": "America/Los_Angeles"
+      }
     },
     "grader_config": {
       "llm_grader_config": {

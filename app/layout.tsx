@@ -6,6 +6,7 @@ import MainLayout from './main-layout';
 import { GlobalContextProvider } from './global-context';
 import { QueryProvider } from '@/lib/providers/query-provider';
 import { ConditionalMainLayout } from './conditional-main-layout';
+import { BootstrapInitializer } from '@/components/bootstrap-initializer';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -24,6 +25,7 @@ export default function RootLayout({
       <body className={inter.className}>
         <QueryProvider>
           <GlobalContextProvider>
+            <BootstrapInitializer />
             <ConditionalMainLayout>{children}</ConditionalMainLayout>
           </GlobalContextProvider>
         </QueryProvider>

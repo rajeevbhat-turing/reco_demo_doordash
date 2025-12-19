@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { merchantDb } from '@/lib/merchant-db';
+import { getServerCurrentHour } from '@/lib/utils/time-utils';
 
 /**
  * GET /api/merchant/restaurants
@@ -72,6 +73,10 @@ export async function GET(request: NextRequest) {
       );
     }
 
+    // Get time from bootstrap cookie if set (for testing)
+    const cookieHeader = request.headers.get('cookie');
+    const currentHour = getServerCurrentHour(cookieHeader);
+
     // Transform data
     const transformedStores = stores.map(s => {
       // Format opening hours
@@ -79,7 +84,6 @@ export async function GET(request: NextRequest) {
         s.opening_hour && s.closing_hour ? `${s.opening_hour} - ${s.closing_hour}` : 'Not set';
 
       // Check if currently open
-      const currentHour = new Date().getHours();
       const openHour = s.opening_hour ? parseInt(s.opening_hour.split(':')[0]) : 0;
       const closeHour = s.closing_hour ? parseInt(s.closing_hour.split(':')[0]) : 24;
       const isOpen = currentHour >= openHour && currentHour < closeHour;

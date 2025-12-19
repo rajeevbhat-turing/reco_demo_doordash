@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { calculateDeliveryTime, checkIfOpen, formatHours } from '@/lib/utils/restaurant-utils';
 import { getImageWithFallback } from '@/constants/image-placeholders';
+import { getServerCurrentHour } from '@/lib/utils/time-utils';
 
 /**
  * GET /api/restaurants
@@ -105,11 +106,14 @@ export async function GET(request: NextRequest) {
       [lat, lng, lat, radius]
     );
 
+    // Get time from bootstrap cookie if set (for testing)
+    const cookieHeader = request.headers.get('cookie');
+    const currentHour = getServerCurrentHour(cookieHeader);
+
     // Transform data to match Restaurant interface
     const transformedRestaurants = restaurants.map(r => {
       const distance = parseFloat(r.distance);
       const deliveryTime = calculateDeliveryTime(distance);
-      const currentHour = new Date().getHours();
       const isOpen = checkIfOpen(r.opening_hour, r.closing_hour, currentHour);
 
       return {

@@ -58,3 +58,40 @@ declare module '@date-fns/utc' {
     constructor(...args: any[]);
   }
 }
+
+// Bootstrap API - Global window functions for time simulation
+interface BootstrapConfig {
+  date?: string; // ISO 8601 date string (e.g., "2025-02-14T18:30:00Z")
+  user?: string; // User email to auto-login
+}
+
+interface BootstrapStatus {
+  isBootstrapped: boolean;
+  currentTime: string;
+  timeOffset: string | null;
+  simulatedUser: string | null;
+  bootstrapTimestamp: string | null;
+}
+
+declare global {
+  interface Window {
+    /**
+     * Bootstrap the application with simulated time and/or user
+     * 
+     * @example
+     * window.bootstrap({ date: "2025-02-14T18:30:00Z" })
+     * window.bootstrap({ date: "2025-02-14T18:30:00Z", user: "john@example.com" })
+     */
+    bootstrap: (config: BootstrapConfig) => void;
+    
+    /**
+     * Clear all bootstrap settings and return to real system time
+     */
+    clearBootstrap: () => void;
+    
+    /**
+     * Get the current bootstrap status for debugging
+     */
+    getBootstrapStatus: () => BootstrapStatus;
+  }
+}

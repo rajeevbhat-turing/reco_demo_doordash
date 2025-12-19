@@ -1,3 +1,5 @@
+import { getCurrentTime } from '@/store/bootstrap-store';
+
 // Get order status message
 export const getOrderStatusMessage = (orderStatus: string): string => {
   switch (orderStatus) {
@@ -139,8 +141,8 @@ export const calculateOrderCompletionTime = (
     return completionTime.toISOString();
   }
 
-  // For any other status, return current time
-  return new Date().toISOString();
+  // For any other status, return current time (supports simulated time)
+  return getCurrentTime().toISOString();
 };
 
 // Get delivery status message (early, on time, late)
@@ -156,7 +158,7 @@ export const getDeliveryStatus = (
 
   try {
     const orderDateTime = new Date(orderDate);
-    const now = new Date();
+    const now = getCurrentTime(); // Supports simulated time
 
     // Parse original delivery time to get the original expected delivery window
     const originalMatch = originalDeliveryTime.match(/(\d+)(?:-(\d+))?\s*min/i);
@@ -203,7 +205,7 @@ export const getDeliveryStatus = (
 export const getEstimatedDeliveryTime = (orderDate: string, deliveryTime: string): string => {
   try {
     const orderDateTime = new Date(orderDate);
-    const now = new Date();
+    const now = getCurrentTime(); // Supports simulated time
 
     // Parse delivery time (e.g., "25-35 min" -> min: 25, max: 35)
     const match = deliveryTime.match(/(\d+)(?:-(\d+))?\s*min/i);
@@ -255,7 +257,7 @@ export const isScheduledTimeReached = (
   }
 
   try {
-    const now = new Date();
+    const now = getCurrentTime(); // Supports simulated time
 
     // Parse the scheduled date
     const schedDate =
