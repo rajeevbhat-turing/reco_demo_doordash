@@ -735,7 +735,7 @@ The generator supports predefined tasks from `config/predefined_tasks.json`. The
     "task_category_L2": ["Sub Category"],
     "capability": ["Required Capability"]
   },
-  "start_url": "https://dashdoor.rlgym.turing.com/home",
+  "start_url": "https://dashdoor-prod.rlgym.turing.com/home",
   "task_statement": "Do something with {{MY_VARIABLE}}.",
   "task_type": "GUI Comprehension, Action Execution",
   "simulator_config": {
