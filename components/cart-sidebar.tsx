@@ -661,7 +661,7 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
                           loading="lazy"
                         />
                         <button
-                          className={`absolute bottom-1 right-1 rounded-full p-1 shadow-md transition-colors ${
+                          className={`absolute bottom-1 right-1 rounded-full p-1 shadow-[0_4px_14px_rgba(0,0,0,0.4)] transition-colors ${
                             isRestaurantClosed
                               ? 'bg-gray-200 cursor-not-allowed'
                               : 'bg-white hover:bg-gray-50'

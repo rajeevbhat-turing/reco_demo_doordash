@@ -1085,7 +1085,7 @@ export default function RestaurantPage() {
                                 loading="lazy"
                               />
                               <button
-                                className={`absolute bottom-1 right-1 w-8 h-8 rounded-full flex items-center justify-center shadow-md transition-colors ${
+                                className={`absolute bottom-1 right-1 w-8 h-8 rounded-full flex items-center justify-center shadow-[0_4px_14px_rgba(0,0,0,0.4)] transition-colors ${
                                   restaurant && !isRestaurantOpen
                                     ? 'bg-gray-200 cursor-not-allowed'
                                     : 'bg-white hover:bg-gray-50'
@@ -1243,7 +1243,7 @@ export default function RestaurantPage() {
                               loading="lazy"
                             />
                             <button
-                              className={`absolute bottom-3 right-3 w-8 h-8 rounded-full flex items-center justify-center shadow-md transition-colors ${
+                              className={`absolute bottom-3 right-3 w-8 h-8 rounded-full flex items-center justify-center shadow-[0_4px_14px_rgba(0,0,0,0.4)] transition-colors ${
                                 restaurant && !isRestaurantOpen
                                   ? 'bg-gray-200 cursor-not-allowed'
                                   : 'bg-white hover:bg-gray-50'
@@ -1308,7 +1308,7 @@ export default function RestaurantPage() {
                               loading="lazy"
                             />
                             <button
-                              className={`absolute bottom-3 right-3 w-8 h-8 rounded-full flex items-center justify-center shadow-md transition-colors ${
+                              className={`absolute bottom-3 right-3 w-8 h-8 rounded-full flex items-center justify-center shadow-[0_4px_14px_rgba(0,0,0,0.4)] transition-colors ${
                                 restaurant && !isRestaurantOpen
                                   ? 'bg-gray-200 cursor-not-allowed'
                                   : 'bg-white hover:bg-gray-50'
