@@ -413,9 +413,12 @@ Updated the `modification_name` in `get_modifications` function calls to use the
 | Option Type | Before | After |
 |-------------|--------|-------|
 | Small, Medium, Large | `"modification_name": "add-ons"` | `"modification_name": "size"` |
+| Berry Compote, etc. | `"modification_name": "add-ons"` | `"modification_name": "sauce choice"` |
 | extra cheese, etc. | `"modification_name": "add-ons"` | `"modification_name": "add-ons"` (unchanged) |
 
-**Affected Tasks (5 tasks with size modifications):**
+**Affected Tasks:**
+
+**Size modifications (5 tasks):**
 
 | Task ID | Option | modification_name |
 |---------|--------|-------------------|
@@ -425,10 +428,15 @@ Updated the `modification_name` in `get_modifications` function calls to use the
 | `item-addon-order-006` | Large | `"size"` |
 | `item-addon-order-007` | Large | `"size"` |
 
-**Tasks with add-on modifications (unchanged):**
+**Sauce choice modifications (1 task):**
+
+| Task ID | Option | modification_name |
+|---------|--------|-------------------|
+| `item-addon-order-004` | Berry Compote | `"sauce choice"` |
+
+**Add-on modifications (1 task):**
 
 | Task ID | Option | modification_name |
 |---------|--------|-------------------|
 | `item-addon-order-001` | extra cheese | `"add-ons"` |
-| `item-addon-order-004` | Berry Compote | `"add-ons"` |
 

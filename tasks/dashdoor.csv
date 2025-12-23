@@ -356,7 +356,7 @@ item-addon-order-004,"{
         {
           ""args"": {
             ""item_id"": ""$[2].items[0].id"",
-            ""modification_name"": ""add-ons"",
+            ""modification_name"": ""sauce choice"",
             ""option_name"": ""Berry Compote""
           },
           ""function"": ""get_modifications""
