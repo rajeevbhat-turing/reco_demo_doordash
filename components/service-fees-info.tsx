@@ -2,14 +2,31 @@
 
 import { useEffect, useRef } from 'react';
 import { X } from 'lucide-react';
+import { getCategoryConfig } from '@/lib/utils/fee-calculator';
+import type { CartCategory } from '@/store/cart-store';
+
+interface Restaurant {
+  id?: string;
+  name?: string;
+  isFreeDelivery?: boolean;
+  minDeliveryFee?: number;
+  dashPass?: boolean;
+}
 
 interface ServiceFeesInfoProps {
   isOpen: boolean;
   onClose: () => void;
+  restaurant?: Restaurant | null;
+  category?: CartCategory;
 }
 
-export default function ServiceFeesInfo({ isOpen, onClose }: ServiceFeesInfoProps) {
+export default function ServiceFeesInfo({ isOpen, onClose, restaurant, category = 'restaurant' }: ServiceFeesInfoProps) {
   const dialogRef = useRef<HTMLDivElement>(null);
+
+  // Get fee configuration from the fee calculator
+  const feeConfig = getCategoryConfig(category);
+  const serviceFeePercentage = Math.round(feeConfig.serviceFeePercentage * 100);
+  const minServiceFee = feeConfig.minServiceFee.toFixed(2);
 
   useEffect(() => {
     const handleEscapeKey = (event: KeyboardEvent) => {
@@ -41,6 +58,17 @@ export default function ServiceFeesInfo({ isOpen, onClose }: ServiceFeesInfoProp
 
   if (!isOpen) return null;
 
+  // Calculate delivery fee display
+  const getDeliveryFeeDisplay = () => {
+    if (restaurant?.isFreeDelivery) {
+      return '$0.00';
+    }
+    if (restaurant?.minDeliveryFee) {
+      return `$${(restaurant.minDeliveryFee / 100).toFixed(2)}`;
+    }
+    return '$1.99';
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
       <div
@@ -52,59 +80,42 @@ export default function ServiceFeesInfo({ isOpen, onClose }: ServiceFeesInfoProp
         </button>
 
         <div className="p-6">
-          <h2 className="text-xl font-bold mb-4">Pricing & Fees</h2>
+          {/* Delivery Fee */}
+          <div className="mb-6">
+            <h2 className="text-xl font-bold mb-2">Delivery Fee: {getDeliveryFeeDisplay()}</h2>
+            <p className="text-sm text-gray-700">
+              This is a flat fee that varies for each store based on your location and other factors. 
+              It helps us pay Dashers and facilitate convenient delivery. Promotions or discounts that 
+              reduce delivery fees may apply. Distance surcharges may apply for deliveries beyond 2 miles.
+            </p>
+          </div>
 
-          <div className="space-y-4 mb-8">
-            <div>
-              <h3 className="font-medium mb-1">Menu Prices</h3>
-              <p className="text-sm text-gray-700">
-                This merchant sets prices. Those prices may be higher than prices in-store or
-                elsewhere for this location. In-store promotions may not apply. Prices for delivery
-                and pickup may vary. This merchant pays Dashdoor a commission on orders.
-              </p>
-            </div>
+          {/* Service Fee */}
+          <div className="mb-6">
+            <h2 className="text-xl font-bold mb-2">Service Fee: {serviceFeePercentage}% of subtotal</h2>
+            <p className="text-sm text-gray-700">
+              This fee is typically {serviceFeePercentage}% of your subtotal (minimum ${minServiceFee}). It helps us pay 
+              Dashers and facilitate convenient delivery. For deliveries beyond 5 miles, an additional 10% 
+              may be added to the service fee.
+            </p>
+          </div>
 
-            <div>
-              <h3 className="font-medium mb-1">Service Fee</h3>
-              <p className="text-sm text-gray-700">
-                This fee goes to Dashdoor. The service fee may vary but is 15% of your subtotal for
-                most restaurant orders (and 5% for most eligible DashPass restaurant orders). A
-                flat, minimum service fee may apply on small orders.
-              </p>
-            </div>
+          {/* Other DoorDash Fees */}
+          <div className="mb-6">
+            <h2 className="text-xl font-bold mb-2">Other Dashdoor Fees</h2>
+            <p className="text-sm text-gray-700">
+              Express fees ($2.99 for faster delivery) and fees in response to local regulations may apply. 
+              These fees go to Dashdoor.
+            </p>
+          </div>
 
-            <div>
-              <h3 className="font-medium mb-1">Delivery Fee</h3>
-              <p className="text-sm text-gray-700">
-                The delivery fee is a flat fee that goes to Dashdoor. The delivery fee is $0 on
-                eligible DashPass restaurant orders.
-              </p>
-            </div>
-
-            <div>
-              <h3 className="font-medium mb-1">Other Dashdoor Fees</h3>
-              <p className="text-sm text-gray-700">
-                Expanded range fees, Beyond local area fees, express fees, small order fees, and
-                fees in response to local regulations may apply. Each are separate fees, all of
-                which go to Dashdoor.
-              </p>
-            </div>
-
-            <div>
-              <h3 className="font-medium mb-1">Government Fees</h3>
-              <p className="text-sm text-gray-700">
-                Other fees such as bag fees and bottle fees required by law may apply. Some of these
-                fees may be retained by Dashdoor.
-              </p>
-            </div>
-
-            <div>
-              <h3 className="font-medium mb-1">Checkout</h3>
-              <p className="text-sm text-gray-700">
-                You can see all of the fees that apply to your order at checkout prior to completing
-                the transaction.
-              </p>
-            </div>
+          {/* Menu Pricing */}
+          <div className="mb-8">
+            <h2 className="text-xl font-bold mb-2">Menu Pricing</h2>
+            <p className="text-sm text-gray-700">
+              This merchant sets prices. Those prices may be higher than prices in-store or elsewhere 
+              for this location. In-store promotions may not apply. Prices for delivery and pickup may vary.
+            </p>
           </div>
 
           <button

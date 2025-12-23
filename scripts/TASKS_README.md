@@ -105,7 +105,10 @@ Orders a specific menu item with an add-on/modification from a restaurant.
 |-------------|-------------|
 | `{{RESTAURANT}}` | Restaurant name |
 | `{{RESTAURANT_ITEM}}` | Menu item name |
-| `{{ITEM_ADD_ON}}` | Optional add-on name |
+| `{{ITEM_ADD_ON}}` | Option name (e.g., "extra cheese", "Medium") |
+| `{{MODIFICATION_NAME}}` | Modification type from database (e.g., "add-ons", "size") - used in grader config |
+
+**Note:** The `MODIFICATION_NAME` is dynamically set based on the modification description in the database. This ensures the grader correctly matches size options (Small, Medium, Large) to the "size" modification and add-ons (extra cheese, etc.) to the "add-ons" modification.
 
 ---
 
@@ -833,6 +836,7 @@ The script outputs a CSV file with the following columns:
 
 | Column | Description |
 |--------|-------------|
+| `task_id` | Unique task identifier |
 | `full_task_json` | Complete task configuration as JSON |
 | `task_category_L1` | High-level task category |
 | `task_category_L2` | Sub-category |

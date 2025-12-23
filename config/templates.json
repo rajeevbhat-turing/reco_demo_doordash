@@ -50,9 +50,9 @@
             },
             {
               "operator": "STRING_EQUALS",
-              "path_to_actual": "$.items[0].modifications[0].options[0].id",
+              "path_to_actual": "$.items[0].modifications[0].options[0].optionId",
               "paths_to_expected": [
-                "$[3].modifications[0].options[0].id"
+                "$[3].modification.options[0].id"
               ]
             }
           ],
@@ -89,7 +89,7 @@
           {
             "args": {
               "item_id": "$[2].items[0].id",
-              "modification_name": "add-ons",
+              "modification_name": "{{MODIFICATION_NAME}}",
               "option_name": "{{ITEM_ADD_ON}}"
             },
             "function": "get_modifications"
