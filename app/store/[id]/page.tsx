@@ -888,9 +888,9 @@ export default function RestaurantPage() {
               </div>
               <div className="flex items-center text-sm text-gray-500 mt-2">
                 <span>Service fees apply</span>
-                {/* <button onClick={() => setServiceFeesInfoOpen(true)} className="ml-1">
-                  <Info className="h-4 w-4 text-gray-500" />
-                </button> */}
+                  <button onClick={() => setServiceFeesInfoOpen(true)} className="ml-1">
+                    <Info className="h-4 w-4 text-gray-500" />
+                  </button>
               </div>
               <div className="flex justify-center mt-6">
                 <button
@@ -1146,10 +1146,13 @@ export default function RestaurantPage() {
                                 2
                               )} minimum delivery fee`}
                         </span>
-                        {/* <div className="flex items-center text-gray-800 text-sm">
+                        <button 
+                          onClick={() => setServiceFeesInfoOpen(true)}
+                          className="flex items-center text-gray-800 text-sm hover:underline"
+                        >
                           <span>pricing & fees</span>
                           <Info className="h-4 w-4 ml-1 text-gray-500" />
-                        </div> */}
+                        </button>
                       </div>
                     </div>
                     {restaurantInNearby ? (
@@ -1470,7 +1473,7 @@ export default function RestaurantPage() {
         isRestaurantOpen={isRestaurantOpen}
       />
       {/* Service Fees Info Dialog */}
-      <ServiceFeesInfo isOpen={serviceFeesInfoOpen} onClose={handleCloseServiceFeesInfo} />
+      <ServiceFeesInfo isOpen={serviceFeesInfoOpen} onClose={handleCloseServiceFeesInfo} restaurant={restaurant} />
       {/* Outside Delivery Area Modal */}
       <OutsideDeliveryAreaModal
         isOpen={outsideDeliveryAreaModalOpen}
