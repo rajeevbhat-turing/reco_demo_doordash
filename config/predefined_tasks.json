@@ -1,6 +1,6 @@
 [
   {
-    "start_url": "https://dashdoor.rlgym.turing.com/home",
+    "start_url": "https://dashdoor-prod.rlgym.turing.com/home",
     "task_statement": "Log in using email 'lena.bennett71@example.com' and password 'c69fieW7G93U'. Order mac & cheese from West diner, select the extra cheese add on",
     "task_id": "item-addon-order-001",
     "task_type": "GUI Comprehension, Action Execution",
@@ -107,7 +107,7 @@
     }
   },
   {
-    "start_url": "https://dashdoor.rlgym.turing.com/home",
+    "start_url": "https://dashdoor-prod.rlgym.turing.com/home",
     "task_statement": "Log in using email 'quinn.bennett2227@inbox.local' and password 'A6A4UaZcsiIp'. Order from the nearest vegetarian restaurant. Get either a grain bowl or a cucumber salad, choosing the cheaper option, and if they cost the same, pick the one with the higher rating. Have it delivered to my apartment address.",
     "task_id": "nearest-cheapest-choice-001",
     "task_type": "Multi-Step Task Planning, Action Execution, GUI Comprehension, Element Identification",
@@ -220,7 +220,7 @@
     }
   },
   {
-    "start_url": "https://dashdoor.rlgym.turing.com/home",
+    "start_url": "https://dashdoor-prod.rlgym.turing.com/home",
     "task_statement": "Log in using email 'gavin.quintero980@example.com' and password 'EjhU7tqizInA'. Help me find the best cheapest vegan or vegetarian restaurant option that I have not ordered from in the past.",
     "task_id": "new-cheapest-restaurant-001",
     "task_type": "Multi-Step Task Planning, GUI Comprehension, Decision Making",
@@ -291,7 +291,7 @@
     }
   },
   {
-    "start_url": "https://dashdoor.rlgym.turing.com/home",
+    "start_url": "https://dashdoor-prod.rlgym.turing.com/home",
     "task_statement": "Log in using email 'gavin.quintero980@example.com' and password 'EjhU7tqizInA'. Add the address 456 Park Avenue, New york for the hotel I am currently staying at. My room number is 304 and hotel name is heaven heights. Have an express delivery of the cheapest chocolate lava pots nearby to my hotel. I want the delivery person to meet me at the hotel lobby.",
     "task_id": "hotel-cheapest-delivery-001",
     "task_type": "GUI Comprehension, Decision Making, Element Identification",
@@ -401,7 +401,7 @@
     }
   },
   {
-    "start_url": "https://dashdoor.rlgym.turing.com/home",
+    "start_url": "https://dashdoor-prod.rlgym.turing.com/home",
     "task_statement": "Log in using email 'gavin.quintero980@example.com' and password 'EjhU7tqizInA'. Delete my current card details and add a new card 7867 7867 7867 7867 with CVV 111 and expiry date june 2029. Use the zipcode of my current address.",
     "task_id": "replace-payment-card-001",
     "task_type": "GUI Comprehension, Action Execution, Information Retrieval",
@@ -482,7 +482,7 @@
     }
   },
   {
-    "start_url": "https://dashdoor.rlgym.turing.com/home",
+    "start_url": "https://dashdoor-prod.rlgym.turing.com/home",
     "task_statement": "Log in using email 'gavin.quintero980@example.com' and password 'EjhU7tqizInA'. Rate my last order from Fiona Kitchen a 1 star because the cardomom churros were soggy and definitely not worth the high price tag",
     "task_id": "rate-last-order-001",
     "task_type": "GUI Comprehension, Action Execution",
@@ -549,7 +549,7 @@
     }
   },
   {
-    "start_url": "https://dashdoor.rlgym.turing.com/home",
+    "start_url": "https://dashdoor-prod.rlgym.turing.com/home",
     "task_statement": "Log in using email 'yuna.lopez1959@mail.test' and password 'vv7sqJGGkNct'. I recently changed my address so remove all the carts from restaurants no longer in my area.",
     "task_id": "clear-invalid-carts-001",
     "task_type": "GUI Comprehension, Action Execution, Decision Making, Element Identification",
@@ -616,7 +616,7 @@
     }
   },
   {
-    "start_url": "https://dashdoor.rlgym.turing.com/home",
+    "start_url": "https://dashdoor-prod.rlgym.turing.com/home",
     "task_statement": "Log in using email 'yuna.lopez1959@mail.test' and password 'vv7sqJGGkNct'. I created a cart from Desserts Cellar not too long ago, replace one of the smoked salmon tartine with a Truffle Smash Burger and place an order for 3:15 PM tomorrow.",
     "task_id": "replace-cart-item-001",
     "task_type": "GUI Comprehension, Action Execution",
@@ -719,7 +719,7 @@
     }
   },
   {
-    "start_url": "https://dashdoor.rlgym.turing.com/home",
+    "start_url": "https://dashdoor-prod.rlgym.turing.com/home",
     "task_statement": "Log in using email 'lena.bennett40@example.com' and password '3FkyOt9PO5kg'. Lets order desserts from Rosa's pantry. But since I am on a diet make sure you pick the two different lowest calorie options. And also add chicken bites for my nephew, keep the spice level mild. Apply the SAVE20 coupon. Use the card ending with 7957 for payment.",
     "task_id": "low-calorie-order-001",
     "task_type": "GUI Comprehension, Action Execution, Decision Making, Element Identification, Multi-Step Task Planning",
@@ -868,7 +868,7 @@
     }
   },
   {
-    "start_url": "https://dashdoor.rlgym.turing.com/home",
+    "start_url": "https://dashdoor-prod.rlgym.turing.com/home",
     "task_statement": "Log in using email 'aiden.kaufman2119@mail.test' and password 'sBmjm9uG7SYH'. Reorder my last order from Hannah's Cantina, also add 2 servings of Crispy Cauliflower Tacos this time. Place the order to my apartment on 555 Elm Avenue. The apartment number is 205 and 782 is the entry code. Apply SAVE20 coupon",
     "task_id": "reorder-with-addons-001",
     "task_type": "GUI Comprehension, Action Execution, Decision Making, Element Identification, Multi-Step Task Planning",
@@ -1005,7 +1005,7 @@
     }
   },
   {
-    "start_url": "https://dashdoor.rlgym.turing.com/home",
+    "start_url": "https://dashdoor-prod.rlgym.turing.com/home",
     "task_statement": "Log in using email 'lena.bennett71@example.com' and password 'c69fieW7G93U'. Order express delivery of a ginger salmon bowl from the nearest dashpass restaurant from my house address. Apply SAVE10",
     "task_id": "express-nearest-order-001",
     "task_type": "GUI Comprehension, Action Execution, Decision Making, Element Identification",
@@ -1135,7 +1135,7 @@
     }
   },
   {
-    "start_url": "https://dashdoor.rlgym.turing.com/home",
+    "start_url": "https://dashdoor-prod.rlgym.turing.com/home",
     "task_statement": "Log in using email 'lena.bennett71@example.com' and password 'c69fieW7G93U'. Order the cheapest cauliflower tacos you can find, just don't order from desserts table, they were terrible last time",
     "task_id": "cheapest-item-filter-001",
     "task_type": "GUI Comprehension, Element Identification, Decision Making",
@@ -1229,7 +1229,7 @@
     }
   },
   {
-    "start_url": "https://dashdoor.rlgym.turing.com/home",
+    "start_url": "https://dashdoor-prod.rlgym.turing.com/home",
     "task_statement": "Log in using email 'lena.bennett71@example.com' and password 'c69fieW7G93U'. I wanted to try Greek House, can you order the best rated item from the Family Meals?",
     "task_id": "top-rated-category-001",
     "task_type": "GUI Comprehension, Action Execution, Decision Making, Element Identification, Information Retrieval",
@@ -1323,7 +1323,7 @@
     }
   },
   {
-    "start_url": "https://dashdoor.rlgym.turing.com/home",
+    "start_url": "https://dashdoor-prod.rlgym.turing.com/home",
     "task_statement": "Log in using email 'elias.kaufman88@dashdoor.test' and password 'rn4bgFlzdANy'. I need to place a order at my home address. Look for cheapest restaurants with deals and pick the best one. Order enough desserts to meet the spending limit for the deal.",
     "task_id": "best-deal-order-001",
     "task_type": "GUI Comprehension, Action Execution, Multi-Step Task Planning, Decision Making",
@@ -1436,7 +1436,7 @@
     }
   },
   {
-    "start_url": "https://dashdoor.rlgym.turing.com/home",
+    "start_url": "https://dashdoor-prod.rlgym.turing.com/home",
     "task_statement": "Log in using email 'lena.bennett71@example.com' and password 'c69fieW7G93U'. Order two truffle smash burgers from cedar kitchen, make sure no customizations are selected. Also order 2 of the cheapest available drinks. Change the contact number for the order to 7137834912",
     "task_id": "bulk-simple-order-001",
     "task_type": "GUI Comprehension, Action Execution",
@@ -1593,7 +1593,7 @@
     }
   },
   {
-    "start_url": "https://dashdoor.rlgym.turing.com/home",
+    "start_url": "https://dashdoor-prod.rlgym.turing.com/home",
     "task_statement": "Log in using email 'elias.kaufman88@dashdoor.test' and password 'rn4bgFlzdANy'. My apartment building recently had an entry code added. The code is 4280. Also delivery folks are no longer allowed to go beyond the lobby, so make sure you update the drop off location and the delivery instructions accordingly",
     "task_id": "update-delivery-instructions-001",
     "task_type": "GUI Comprehension, Action Execution",
@@ -1674,7 +1674,7 @@
     }
   },
   {
-    "start_url": "https://dashdoor.rlgym.turing.com/home",
+    "start_url": "https://dashdoor-prod.rlgym.turing.com/home",
     "task_statement": "Log in using email 'elias.kaufman88@dashdoor.test' and password 'rn4bgFlzdANy'. Find the best healthy restaurant near my house and order 3 servings of the lowest calorie dessert. If there is an option for caramel sauce add it with one of the servings.",
     "task_id": "lowest-calorie-dessert-001",
     "task_type": "GUI Comprehension, Action Execution, Multi-Step Task Planning, Decision Making",
@@ -1802,7 +1802,7 @@
     }
   },
   {
-    "start_url": "https://dashdoor.rlgym.turing.com/home",
+    "start_url": "https://dashdoor-prod.rlgym.turing.com/home",
     "task_statement": "Log in using email 'willow.bennett2904@example.com' and password 'aV3aVaMQ2PBW'. Go through the reviews that I've given for restaurants and pick the one that I've given the highest rating and order the best rated featured item from it.",
     "task_id": "top-rated-history-001",
     "task_type": "GUI Comprehension, Action Execution, Decision Making, Multi-Step Task Planning",
@@ -1905,7 +1905,7 @@
     }
   },
   {
-    "start_url": "https://dashdoor.rlgym.turing.com/home",
+    "start_url": "https://dashdoor-prod.rlgym.turing.com/home",
     "task_statement": "Log in using email 'lena.bennett71@example.com' and password 'c69fieW7G93U'. Somebody recommended Mediterranean Kitchen to me, could you go through the reviews and find the review that people found the most helpful and add the liked items from it to my cart",
     "task_id": "helpful-review-items-001",
     "task_type": "GUI Comprehension, Action Execution, Decision Making, Element Identification",
@@ -1978,7 +1978,7 @@
     }
   },
   {
-    "start_url": "https://dashdoor.rlgym.turing.com/home",
+    "start_url": "https://dashdoor-prod.rlgym.turing.com/home",
     "task_statement": "Log in using email 'lena.bennett71@example.com' and password 'c69fieW7G93U'. Order mango sticky rice from sushi pantry with berry compote sauce",
     "task_id": "item-with-sauce-001",
     "task_type": "GUI Comprehension, Action Execution, Element Identification",
@@ -2068,7 +2068,7 @@
     }
   },
   {
-    "start_url": "https://dashdoor.rlgym.turing.com/",
+    "start_url": "https://dashdoor-prod.rlgym.turing.com/",
     "task_statement": "Log in using the email 'lena.bennett71@example.com' and password 'c69fieW7G93U'. Select my apartment address and add sweet potato wedges, with beef as the protein option, to my cart from Nora's Pizzeria",
     "task_id": "add-item-cart-001",
     "task_type": "GUI Comprehension, Action Execution, Element Identification",
@@ -2188,7 +2188,7 @@
     }
   },
   {
-    "start_url": "https://dashdoor.rlgym.turing.com/home",
+    "start_url": "https://dashdoor-prod.rlgym.turing.com/home",
     "task_statement": "Log in using email 'lena.bennett71@example.com' and password 'c69fieW7G93U'. I recently moved and want to explore pizzerias near my new apartment. Order two of the cheapest slices available at the nearest 4 star or above pizza place.",
     "task_id": "cheapest-rated-slices-001",
     "task_type": "GUI Comprehension, Element Identification, Action Execution",
@@ -2308,7 +2308,7 @@
     }
   },
   {
-    "start_url": "https://dashdoor.rlgym.turing.com/",
+    "start_url": "https://dashdoor-prod.rlgym.turing.com/",
     "task_statement": "Log in using email 'elias.kaufman88@dashdoor.test' and password 'rn4bgFlzdANy'. I want to order from di fara pizza. Order the cheapest and most liked one of the classic pizzas and also add a soda can.",
     "task_id": "cheapest-liked-combo-001",
     "task_type": "GUI Comprehension, Element Identification, Action Execution",
@@ -2409,7 +2409,7 @@
     }
   },
   {
-    "start_url": "https://dashdoor.rlgym.turing.com/home",
+    "start_url": "https://dashdoor-prod.rlgym.turing.com/home",
     "task_statement": "Log in using email 'lena.bennett71@example.com' and password 'c69fieW7G93U'. Order the cheapest sushi roll from the japanese restaurant nearest to my apartment.",
     "task_id": "cheapest-nearby-item-001",
     "task_type": "GUI Comprehension, Action Execution",
@@ -2522,7 +2522,7 @@
     }
   },
   {
-    "start_url": "https://dashdoor.rlgym.turing.com/",
+    "start_url": "https://dashdoor-prod.rlgym.turing.com/",
     "task_statement": "Log in using email 'lena.bennett71@example.com' and password 'c69fieW7G93U'. First place an order for a dragon and rainbow rolls from Tokyo Japanese Kitchen. Also place an order for thai fried rice from the best rated thai restaurant available. Make sure you mark both for express delivery",
     "task_id": "multi-express-orders-001",
     "task_type": "GUI Comprehension, Element Identification, Action Execution",
@@ -2677,7 +2677,7 @@
     }
   },
   {
-    "start_url": "https://dashdoor.rlgym.turing.com/home",
+    "start_url": "https://dashdoor-prod.rlgym.turing.com/home",
     "task_statement": "Log in using email 'lena.bennett71@example.com' and password 'c69fieW7G93U'. I need to send coffee for my mum at the house address on my profile. Find the best coffee place near that address that has iced coffee and order two.",
     "task_id": "gift-coffee-order-001",
     "task_type": "GUI Comprehension, Action Execution, Multi-Step Task Planning, Decision Making",
@@ -2789,7 +2789,7 @@
     }
   },
   {
-    "start_url": "https://dashdoor.rlgym.turing.com/home",
+    "start_url": "https://dashdoor-prod.rlgym.turing.com/home",
     "task_statement": "Log in using email 'elias.kaufman88@dashdoor.test' and password 'rn4bgFlzdANy'. I want to eat Indian cuisine today. Can you find a restaurant nearby which serves Indian cuisine? Tell me the top 3 most affordable restaurant names that are nearest to me.",
     "task_id": "list-affordable-cuisine-001",
     "task_type": "Multi-Step Task Planning, Information Retrieval, Decision Making",
@@ -2853,7 +2853,7 @@
     }
   },
   {
-    "start_url": "https://dashdoor.rlgym.turing.com/",
+    "start_url": "https://dashdoor-prod.rlgym.turing.com/",
     "task_statement": "Log in using email 'elias.kaufman88@dashdoor.test' and password 'rn4bgFlzdANy'. I really liked the food that I ordered last time from Buffalo Wild Wings. Leave a 5 star rating on that order and add a review as follows- food tasted really good especially the traditional wings, those were great.",
     "task_id": "positive-order-review-001",
     "task_type": "Action Execution, Decision Making",
@@ -2945,7 +2945,7 @@
     }
   },
   {
-    "start_url": "https://dashdoor.rlgym.turing.com/home",
+    "start_url": "https://dashdoor-prod.rlgym.turing.com/home",
     "task_statement": "Log in using the email 'omar.walsh1396@dashdoor.test' and password 'aMORYrXC2ohy'. Look for the nearest coffee shop and add a coffee to my cart.",
     "task_id": "nearest-coffee-cart-001",
     "task_type": "Action Execution, GUI Comprehension",
@@ -3046,7 +3046,7 @@
     }
   },
   {
-    "start_url": "https://dashdoor.rlgym.turing.com/home",
+    "start_url": "https://dashdoor-prod.rlgym.turing.com/home",
     "task_statement": "Log in using email 'lena.bennett71@example.com' and password 'c69fieW7G93U'. Search for blueberry pancakes and order them from the closest restaurant, make an express delivery.",
     "task_id": "search-express-order-001",
     "task_type": "Action Execution, GUI Comprehension, Decision Making",
@@ -3154,7 +3154,7 @@
     }
   },
   {
-    "start_url": "https://dashdoor.rlgym.turing.com/home",
+    "start_url": "https://dashdoor-prod.rlgym.turing.com/home",
     "task_statement": "Log in using email 'lena.bennett71@example.com' and password 'c69fieW7G93U'. Can you search for truffle smash burger and list 3 restaurants that sell them the cheapest",
     "task_id": "list-cheapest-items-001",
     "task_type": "GUI Comprehension, Action Execution, Decision Making",
@@ -3217,7 +3217,7 @@
     }
   },
   {
-    "start_url": "https://dashdoor.rlgym.turing.com/home",
+    "start_url": "https://dashdoor-prod.rlgym.turing.com/home",
     "task_statement": "Log in using email 'lena.bennett71@example.com' and password 'c69fieW7G93U'. Can you find the best rated restaurant that sells both a grilled chicken sandwich and nuggets",
     "task_id": "find-matching-restaurant-001",
     "task_type": "GUI Comprehension, Action Execution, Decision Making, Element Identification",
@@ -3286,7 +3286,7 @@
     }
   },
   {
-    "start_url": "https://dashdoor.rlgym.turing.com/",
+    "start_url": "https://dashdoor-prod.rlgym.turing.com/",
     "task_statement": "Log in using email 'lena.bennett71@example.com' and password 'c69fieW7G93U'. I wanted to try panda express, go through the entrees and add the two most liked ones to my cart. Place an order for my home address.",
     "task_id": "top-liked-entrees-001",
     "task_type": "GUI Comprehension, Action Execution, Decision Making, Element Identification",
@@ -3406,7 +3406,7 @@
     }
   },
   {
-    "start_url": "https://dashdoor.rlgym.turing.com/",
+    "start_url": "https://dashdoor-prod.rlgym.turing.com/",
     "task_statement": "Log in using email 'lena.bennett71@example.com' and password 'c69fieW7G93U'. I am craving some sweet potato wedges, please order them for me. Just make sure you order from the restaurant that has the best rating for it. Also, I'll be at my home address by 10 PM so place this order for about half an hour after that.",
     "task_id": "scheduled-best-item-001",
     "task_type": "GUI Comprehension, Action Execution, Decision Making, Element Identification, Information Retrieval",
@@ -3528,7 +3528,7 @@
     }
   },
   {
-    "start_url": "https://dashdoor.rlgym.turing.com/",
+    "start_url": "https://dashdoor-prod.rlgym.turing.com/",
     "task_statement": "Log in using email 'omar.walsh1396@dashdoor.test' and password 'aMORYrXC2ohy'. Go to healthy section and find restaurant Sweetgreen and order 1 bottled water, 2 harvest bowl, 1 organic lemonade.",
     "task_id": "healthy-fixed-order-001",
     "task_type": "GUI Comprehension, Element Identification, Action Execution",
@@ -3678,7 +3678,7 @@
     }
   },
   {
-    "start_url": "https://dashdoor.rlgym.turing.com/",
+    "start_url": "https://dashdoor-prod.rlgym.turing.com/",
     "task_statement": "Log in using email 'omar.walsh1396@dashdoor.test' and password 'aMORYrXC2ohy' Find the restaurant 'The Mama's Mediterranean' and order chicken shwarma platter for 4 people, schedule the delivery for 7:30 PM",
     "task_id": "scheduled-group-order-001",
     "task_type": "GUI Comprehension, Element Identification, Action Execution",
@@ -3800,7 +3800,7 @@
     }
   },
   {
-    "start_url": "https://dashdoor.rlgym.turing.com/",
+    "start_url": "https://dashdoor-prod.rlgym.turing.com/",
     "task_statement": "Log in using email 'omar.walsh1396@dashdoor.test' and password 'aMORYrXC2ohy'. I created a cart from Atlanta Cellar. Could you update the quantity of the item I've added to 1?",
     "task_id": "update-cart-quantity-001",
     "task_type": "GUI Comprehension, Action Execution",
@@ -3865,7 +3865,7 @@
     }
   },
   {
-    "start_url": "https://dashdoor.rlgym.turing.com/",
+    "start_url": "https://dashdoor-prod.rlgym.turing.com/",
     "task_statement": "Log in using email 'lena.bennett71@example.com' and password 'c69fieW7G93U'. Can you please prep a cart from olive garden with 1 serving of calamari, 1 shrimp scampi, and 1 Tiramisu?",
     "task_id": "build-specific-cart-001",
     "task_type": "GUI Comprehension, Action Execution",
@@ -3959,7 +3959,7 @@
     }
   },
   {
-    "start_url": "https://dashdoor.rlgym.turing.com/",
+    "start_url": "https://dashdoor-prod.rlgym.turing.com/",
     "task_statement": "Log in using email 'lena.bennett71@example.com' and password 'c69fieW7G93U'. Does the cheesecake factory have an options in chocolate cheesecakes? Could you please share them?",
     "task_id": "list-menu-options-001",
     "task_type": "GUI Comprehension, Action Execution, Decision Making",
@@ -4024,7 +4024,7 @@
     }
   },
   {
-    "start_url": "https://dashdoor.rlgym.turing.com/",
+    "start_url": "https://dashdoor-prod.rlgym.turing.com/",
     "task_statement": "Log in using email 'lena.bennett71@example.com' and password 'c69fieW7G93U'. Find and list authentic Vietnamese restaurants that serve pho and have a rating of 4 or higher and within a mile of my location",
     "task_id": "list-rated-restaurants-001",
     "task_type": "GUI Comprehension, Action Execution, Decision Making",

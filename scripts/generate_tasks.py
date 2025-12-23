@@ -793,6 +793,7 @@ class TaskGenerator:
                         "RESTAURANT": restaurant.name,
                         "RESTAURANT_ITEM": item.name,
                         "ITEM_ADD_ON": option.name,
+                        "MODIFICATION_NAME": mod.description.lower(),
                     })
                     return variables
             return None
@@ -1730,6 +1731,7 @@ class TaskGenerator:
         
         # CSV columns
         columns = [
+            'task_id',
             'full_task_json',
             'task_category_L1',
             'task_category_L2', 
@@ -1759,10 +1761,12 @@ class TaskGenerator:
                 clean_task = {k: v for k, v in task.items() if k != 'template_settings'}
                 clean_task['template_id'] = template_id
                 
-                # Get task statement
+                # Get task_id and task statement
+                task_id = task.get("task_id", "")
                 task_statement = task.get("task_statement", "")
                 
                 row = [
+                    task_id,                                     # task_id
                     json.dumps(clean_task, ensure_ascii=False, indent=2),  # full_task_json
                     json.dumps(task_category_L1),                # task_category_L1
                     json.dumps(task_category_L2),                # task_category_L2

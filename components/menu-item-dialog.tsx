@@ -14,6 +14,7 @@ import {
 import { cn } from '@/lib/utils';
 import { haveSameModifications, generateCartItemId } from '@/lib/utils/cart-merge';
 import { useRestaurantOpenStatus } from '@/lib/hooks/use-restaurant-open-status';
+import SpecialInstructionsModal from '@/components/modals/special-instructions-modal';
 
 // Types for the menu item options
 interface MenuItemOption {
@@ -58,6 +59,9 @@ export default function MenuItemDialog({ isOpen, onClose, item, restaurant }: Me
   const [visibleModifications, setVisibleModifications] = useState<Modification[]>([]);
   const [quantity, setQuantity] = useState(1);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [specialInstructions, setSpecialInstructions] = useState('');
+  const [unavailableOption, setUnavailableOption] = useState('merchant_recommendation');
+  const [showSpecialInstructionsModal, setShowSpecialInstructionsModal] = useState(false);
   const dialogRef = useRef<HTMLDivElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const { addItem, findCart, updateQuantity } = useCartStore();
@@ -93,8 +97,10 @@ export default function MenuItemDialog({ isOpen, onClose, item, restaurant }: Me
       };
     } else {
       document.body.style.overflow = 'auto';
-      // Reset quantity when dialog closes
+      // Reset quantity and special instructions when dialog closes
       setQuantity(1);
+      setSpecialInstructions('');
+      setUnavailableOption('merchant_recommendation');
     }
   }, [isOpen, onClose]);
 
@@ -459,6 +465,10 @@ export default function MenuItemDialog({ isOpen, onClose, item, restaurant }: Me
       appliedModifications: formattedModifications.length > 0 ? formattedModifications : undefined,
       menuCategoryId: itemWithCategory.categoryId,
       menuCategoryName: itemWithCategory.categoryName || itemWithCategory.category,
+      specialInstructions: specialInstructions?.trim() ? {
+        text: specialInstructions?.trim(),
+        ifUnavailable: unavailableOption as 'merchant_recommendation' | 'refund' | 'contact' | 'cancel',
+      } : undefined,
     };
 
     // Use haveSameModifications to check if item with same modifications exists
@@ -483,7 +493,7 @@ export default function MenuItemDialog({ isOpen, onClose, item, restaurant }: Me
   const decrementQuantity = () => setQuantity(prev => (prev > 1 ? prev - 1 : 1));
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+    <div className={`fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 ${showSpecialInstructionsModal ? 'invisible' : ''}`}>
       <div
         ref={dialogRef}
         className="relative bg-white rounded-lg w-full max-w-xl max-h-[90vh] flex flex-col"
@@ -519,6 +529,9 @@ export default function MenuItemDialog({ isOpen, onClose, item, restaurant }: Me
                   {Math.round(getDefaultRating(item.rating) * 20)}% ({item.ratingCount})
                 </span>
               </div>
+            )}
+            {item.description && (
+              <p className="text-gray-600 text-sm mb-2">{item.description}</p>
             )}
             {item.calories && <div className="text-gray-500">{item.calories} Cal</div>}
 
@@ -740,6 +753,25 @@ export default function MenuItemDialog({ isOpen, onClose, item, restaurant }: Me
                   </div>
                 );
               })}
+
+            {/* Preferences Section */}
+            <div className="mt-6 px-2">
+              <div className="flex items-center justify-between mb-2">
+                <h3 className="font-semibold text-base">Preferences</h3>
+                <span className="text-gray-500 text-sm">(Optional)</span>
+              </div>
+              <button
+                onClick={() => setShowSpecialInstructionsModal(true)}
+                className="w-full flex items-center justify-between py-4 hover:bg-gray-50 transition-colors border-b border-gray-200"
+              >
+                <span className="text-base">Add Special Instructions</span>
+                <ChevronDown className="h-5 w-5 text-gray-400 -rotate-90" />
+              </button>
+              {/* Show special instructions preview if added */}
+              {specialInstructions && (
+                <p className="text-sm text-gray-600 mt-2 px-1">{specialInstructions}</p>
+              )}
+            </div>
           </div>
         </div>
         {/* End of scrollable content */}
@@ -796,6 +828,18 @@ export default function MenuItemDialog({ isOpen, onClose, item, restaurant }: Me
           </div>
         </div>
       </div>
+
+      {/* Special Instructions Modal */}
+      <SpecialInstructionsModal
+        isOpen={showSpecialInstructionsModal}
+        onClose={() => setShowSpecialInstructionsModal(false)}
+        onSave={(instructions, option) => {
+          setSpecialInstructions(instructions);
+          setUnavailableOption(option);
+        }}
+        initialInstructions={specialInstructions}
+        initialUnavailableOption={unavailableOption}
+      />
     </div>
   );
 }

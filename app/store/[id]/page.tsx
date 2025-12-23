@@ -888,9 +888,9 @@ export default function RestaurantPage() {
               </div>
               <div className="flex items-center text-sm text-gray-500 mt-2">
                 <span>Service fees apply</span>
-                {/* <button onClick={() => setServiceFeesInfoOpen(true)} className="ml-1">
-                  <Info className="h-4 w-4 text-gray-500" />
-                </button> */}
+                  <button onClick={() => setServiceFeesInfoOpen(true)} className="ml-1">
+                    <Info className="h-4 w-4 text-gray-500" />
+                  </button>
               </div>
               <div className="flex justify-center mt-6">
                 <button
@@ -1054,14 +1054,30 @@ export default function RestaurantPage() {
                           onClick={() => openItemDialog(item)}
                         >
                           <div className="p-3 flex justify-between">
-                            <div>
+                            <div className="flex-1 min-w-0 pr-3">
                               <h3 className="font-medium">{item.name}</h3>
                               {item.calories && (
                                 <p className="text-sm text-gray-500">({item.calories})</p>
                               )}
                               <p className="text-gray-900 mt-1">{item.price}</p>
+                              {item.description && (
+                                <p className="text-sm text-gray-500 mt-1 line-clamp-2">{item.description}</p>
+                              )}
+                              {item.rating && item.rating != 0 && (
+                                <div className="flex items-center mt-1">
+                                  <ThumbsUp className="w-4 h-4 text-gray-500 mr-1" strokeWidth={2} />
+                                  <span className="text-sm">
+                                    {Math.round(getDefaultRating(item.rating) * 20)}%
+                                  </span>
+                                  {item.ratingCount && (
+                                    <span className="text-sm text-gray-500 ml-1">
+                                      ({item.ratingCount})
+                                    </span>
+                                  )}
+                                </div>
+                              )}
                             </div>
-                            <div className="relative w-24 h-24">
+                            <div className="relative w-24 h-24 flex-shrink-0">
                               <img
                                 src={item.image || '/placeholder.svg'}
                                 alt={item.name}
@@ -1069,7 +1085,7 @@ export default function RestaurantPage() {
                                 loading="lazy"
                               />
                               <button
-                                className={`absolute bottom-1 right-1 w-8 h-8 rounded-full flex items-center justify-center shadow-md transition-colors ${
+                                className={`absolute bottom-1 right-1 w-8 h-8 rounded-full flex items-center justify-center shadow-[0_4px_14px_rgba(0,0,0,0.4)] transition-colors ${
                                   restaurant && !isRestaurantOpen
                                     ? 'bg-gray-200 cursor-not-allowed'
                                     : 'bg-white hover:bg-gray-50'
@@ -1130,10 +1146,13 @@ export default function RestaurantPage() {
                                 2
                               )} minimum delivery fee`}
                         </span>
-                        {/* <div className="flex items-center text-gray-800 text-sm">
+                        <button 
+                          onClick={() => setServiceFeesInfoOpen(true)}
+                          className="flex items-center text-gray-800 text-sm hover:underline"
+                        >
                           <span>pricing & fees</span>
                           <Info className="h-4 w-4 ml-1 text-gray-500" />
-                        </div> */}
+                        </button>
                       </div>
                     </div>
                     {restaurantInNearby ? (
@@ -1227,7 +1246,7 @@ export default function RestaurantPage() {
                               loading="lazy"
                             />
                             <button
-                              className={`absolute bottom-3 right-3 w-8 h-8 rounded-full flex items-center justify-center shadow-md transition-colors ${
+                              className={`absolute bottom-3 right-3 w-8 h-8 rounded-full flex items-center justify-center shadow-[0_4px_14px_rgba(0,0,0,0.4)] transition-colors ${
                                 restaurant && !isRestaurantOpen
                                   ? 'bg-gray-200 cursor-not-allowed'
                                   : 'bg-white hover:bg-gray-50'
@@ -1292,7 +1311,7 @@ export default function RestaurantPage() {
                               loading="lazy"
                             />
                             <button
-                              className={`absolute bottom-3 right-3 w-8 h-8 rounded-full flex items-center justify-center shadow-md transition-colors ${
+                              className={`absolute bottom-3 right-3 w-8 h-8 rounded-full flex items-center justify-center shadow-[0_4px_14px_rgba(0,0,0,0.4)] transition-colors ${
                                 restaurant && !isRestaurantOpen
                                   ? 'bg-gray-200 cursor-not-allowed'
                                   : 'bg-white hover:bg-gray-50'
@@ -1321,6 +1340,9 @@ export default function RestaurantPage() {
                               <p className="text-sm text-gray-500">({item.calories})</p>
                             )}
                             <p className="text-gray-900 mt-1">{item.price}</p>
+                            {item.description && (
+                              <p className="text-sm text-gray-500 mt-1 line-clamp-2">{item.description}</p>
+                            )}
                             {item.rating && item.rating != 0 && (
                               <div className="flex items-center mt-1">
                                 <ThumbsUp className="w-4 h-4 text-gray-500 mr-1" strokeWidth={2} />
@@ -1370,14 +1392,30 @@ export default function RestaurantPage() {
                             onClick={() => openItemDialog(item)}
                           >
                             <div className="p-3 flex justify-between">
-                              <div>
+                              <div className="flex-1 min-w-0 pr-3">
                                 <h3 className="font-medium">{item.name}</h3>
                                 {item.calories && (
                                   <p className="text-sm text-gray-500">({item.calories})</p>
                                 )}
                                 <p className="text-gray-900 mt-1">{item.price}</p>
+                                {item.description && (
+                                  <p className="text-sm text-gray-500 mt-1 line-clamp-2">{item.description}</p>
+                                )}
+                                {item.rating && item.rating != 0 && (
+                                  <div className="flex items-center mt-1">
+                                    <ThumbsUp className="w-4 h-4 text-gray-500 mr-1" strokeWidth={2} />
+                                    <span className="text-sm">
+                                      {Math.round(getDefaultRating(item.rating) * 20)}%
+                                    </span>
+                                    {item.ratingCount && (
+                                      <span className="text-sm text-gray-500 ml-1">
+                                        ({item.ratingCount})
+                                      </span>
+                                    )}
+                                  </div>
+                                )}
                               </div>
-                              <div className="relative w-24 h-24">
+                              <div className="relative w-24 h-24 flex-shrink-0">
                                 <img
                                   src={item.image || '/placeholder.svg'}
                                   alt={item.name}
@@ -1435,7 +1473,7 @@ export default function RestaurantPage() {
         isRestaurantOpen={isRestaurantOpen}
       />
       {/* Service Fees Info Dialog */}
-      <ServiceFeesInfo isOpen={serviceFeesInfoOpen} onClose={handleCloseServiceFeesInfo} />
+      <ServiceFeesInfo isOpen={serviceFeesInfoOpen} onClose={handleCloseServiceFeesInfo} restaurant={restaurant} />
       {/* Outside Delivery Area Modal */}
       <OutsideDeliveryAreaModal
         isOpen={outsideDeliveryAreaModalOpen}

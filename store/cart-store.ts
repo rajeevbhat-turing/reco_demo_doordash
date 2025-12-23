@@ -10,6 +10,12 @@ import { haveSameModifications, generateCartItemId } from '@/lib/utils/cart-merg
 // Define supported cart categories
 export type CartCategory = 'restaurant' | 'grocery' | 'retail' | 'convenience' | 'pets';
 
+// Special instructions for an item
+export interface SpecialInstructions {
+  text: string;
+  ifUnavailable: 'merchant_recommendation' | 'refund' | 'contact' | 'cancel';
+}
+
 // Base cart item interface (simplified - no vendor info)
 export interface CartItem {
   id: number | string
@@ -21,6 +27,7 @@ export interface CartItem {
   appliedModifications?: AppliedModification[]
   menuCategoryId?: string
   menuCategoryName?: string
+  specialInstructions?: SpecialInstructions  // Optional special instructions for the item
 }
 
 // Cart interface - represents a cart for a single vendor/store

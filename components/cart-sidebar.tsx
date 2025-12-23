@@ -559,6 +559,9 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
                   {item.customizations && (
                     <p className="text-xs text-gray-600 mt-1">{item.customizations}</p>
                   )}
+                  {item.specialInstructions?.text && (
+                    <p className="text-xs text-gray-600 mt-1">&quot;{item.specialInstructions.text}&quot;</p>
+                  )}
                   <div className="mt-2 flex items-center justify-between">
                     <div className="text-sm">
                       ${(getItemPrice(item) * item.quantity).toFixed(2)}
@@ -658,7 +661,7 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
                           loading="lazy"
                         />
                         <button
-                          className={`absolute bottom-1 right-1 rounded-full p-1 shadow-md transition-colors ${
+                          className={`absolute bottom-1 right-1 rounded-full p-1 shadow-[0_4px_14px_rgba(0,0,0,0.4)] transition-colors ${
                             isRestaurantClosed
                               ? 'bg-gray-200 cursor-not-allowed'
                               : 'bg-white hover:bg-gray-50'
