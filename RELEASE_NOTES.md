@@ -1,5 +1,119 @@
 # Release Notes
 
+## December 23, 2025
+
+### 🎨 UI Improvements
+
+#### Food Descriptions Added to Menu Item Cards
+Added menu item descriptions from the database to all relevant sections of the store page:
+- Description is displayed above the item rating (Liked ratio) for better visual hierarchy
+- Descriptions are limited to 2 lines with `line-clamp-2` to maintain consistent card heights
+- Excluded from the Featured Items carousel to keep that section compact
+
+**Files Modified:**
+| File | Changes |
+|------|---------|
+| `app/store/[id]/page.tsx` | Added `item.description` rendering in Most Ordered section, Regular Menu Categories, and Search Results |
+| `components/menu-item-dialog.tsx` | Added description display below item name in the menu item detail dialog |
+
+#### Enhanced "Add to Cart" Button Visibility
+Applied a stronger custom box-shadow to all "Add to cart" plus buttons for better visibility against any background color:
+- **Before:** `shadow-md` (subtle, blends with white backgrounds)
+- **After:** `shadow-[0_4px_14px_rgba(0,0,0,0.4)]` (distinctive, visible on any background)
+
+**Files Modified:**
+| File | Changes |
+|------|---------|
+| `app/store/[id]/page.tsx` | Updated shadow on plus buttons in Most Ordered gallery, Regular Menu Categories, and Search Results |
+| `components/cart-sidebar.tsx` | Updated shadow on plus buttons for cart item thumbnails |
+| `components/modals/deal-modal.tsx` | Updated shadow on plus buttons in the free items selection modal |
+
+#### Pricing & Fees Modal Implementation
+Made the "pricing & fees" text in the store page header clickable, opening a comprehensive ServiceFeesInfo modal with dynamic fee information:
+
+**Modal Content Includes:**
+- **Delivery Fee** — Dynamic based on restaurant's `isFreeDelivery` and `minDeliveryFee` settings
+- **Service Fee** — Shows actual percentage (15%) and minimum ($4.99) from fee calculator, notes 10% increase for distances > 5 miles
+- **Other Dashdoor Fees** — Express delivery fees ($2.99), regulatory fees
+- **Menu Pricing** — Merchant pricing disclaimer
+
+**Fee Structure (from `lib/utils/fee-calculator.ts`):**
+- Service Fee: 15% of subtotal (minimum $4.99)
+- Distance > 5 miles: +10% service fee
+- Express Delivery: +$2.99 surcharge
+- Distance-based delivery surcharges:
+  - 0-2 miles: No surcharge
+  - 2-5 miles: $0.50/mile
+  - 5-10 miles: $0.75/mile
+  - 10+ miles: $1.00/mile
+
+**Files Modified:**
+| File | Changes |
+|------|---------|
+| `app/store/[id]/page.tsx` | Added click handler to "pricing & fees" text, added state management for modal, passed restaurant data |
+| `components/service-fees-info.tsx` | Updated to accept restaurant and category props, dynamically displays fee information from fee-calculator.ts |
+
+#### Special Instructions Feature
+Implemented a complete special instructions feature with a dedicated modal:
+
+**Data Structure:**
+```typescript
+export interface SpecialInstructions {
+  text: string;
+  ifUnavailable: 'merchant_recommendation' | 'refund' | 'contact' | 'cancel';
+}
+
+export interface CartItem {
+  // ... other fields
+  specialInstructions?: SpecialInstructions;
+}
+```
+
+**If Unavailable Options:**
+- Go with merchant recommendation — Let the restaurant substitute
+- Get a refund for the item — Refund if unavailable
+- Contact me — Dasher contacts customer
+- Cancel the entire order — Cancel if item unavailable
+
+**UI/UX Details:**
+- Modal uses React Portal to render outside parent DOM hierarchy
+- Prevents event bubbling to avoid closing parent modals
+- Menu item dialog becomes invisible while special instructions modal is open
+- Instructions displayed with quotes in cart and order views
+
+**Files Modified:**
+| File | Changes |
+|------|---------|
+| `store/cart-store.ts` | Added `SpecialInstructions` interface with `text` and `ifUnavailable` fields to `CartItem` |
+| `components/modals/special-instructions-modal.tsx` | New file — Modal component for entering special instructions |
+| `components/menu-item-dialog.tsx` | Added "Preferences" section with button to open special instructions modal |
+| `components/cart-sidebar.tsx` | Displays special instructions text for cart items |
+| `app/checkout/page.tsx` | Displays special instructions in order summary, includes in order data |
+| `app/orders/[orderId]/page.tsx` | Displays special instructions in order details |
+
+---
+
+### 🎯 Task System Updates
+
+#### Duplicate Task IDs Fixed
+Identified tasks with duplicate IDs in the task dataset. Each task now has a unique identifier assigned, ensuring proper task tracking and evaluation. The duplicate entries were detected and reassigned sequential IDs to maintain data integrity.
+
+#### Duplicate Task Statements Fixed
+Replaced duplicate tasks with unique ones. The task dataset now contains distinct task entries, eliminating redundancy and ensuring each task represents a unique test scenario.
+
+#### Modification Path Mismatch Fixed
+Corrected the JSON path references in the grader configuration for item-addon-order tasks:
+- **path_to_actual:** Changed from `$.items[0].modifications[0].options[0].id` to `$.items[0].modifications[0].options[0].optionId` to correctly reference the option identifier in the cart items structure
+- **paths_to_expected:** Changed from `$[3].modifications[0].options[0].id` to `$[3].modification.options[0].id` to align with the actual response structure returned by the expected state functions
+
+#### Dynamic Modification Name
+The `modification_name` parameter in the grader configuration is now dynamically determined on task generation based on the actual modification type from the database. Size-related options (Small, Medium, Large) correctly use "size" as the modification name, while other options use "add-ons". The existing tasks in `dashdoor.csv` have been updated with this fix.
+
+#### Task ID Column Added
+Added `task_id` as a dedicated first column in the CSV output for better task identification and tracking.
+
+---
+
 ## December 19, 2025
 
 ### 🎯 Task System Updates
