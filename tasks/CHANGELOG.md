@@ -364,3 +364,71 @@ Two tasks required operator changes in addition to index fixes:
 
 These changes split single assertions with multiple paths into separate assertions for independent validation.
 
+---
+
+## Updates on December 23, 2025
+
+### CSV Structure Changes
+
+#### Added `task_id` Column
+
+Added a new `task_id` column as the first column in the CSV, extracted from the `full_task_json` field.
+
+| Column Order | Before | After |
+|--------------|--------|-------|
+| 1 | `full_task_json` | `task_id` |
+| 2 | `task_category_L1` | `full_task_json` |
+| 3 | ... | `task_category_L1` |
+
+---
+
+### Duplicate Task Fix
+
+#### Issue
+The CSV contained duplicate task IDs and task statements.
+
+#### Resolution
+- Removed the duplicate task entry
+- Re-assigned unique sequential IDs and task statements to ensure all tasks are unique
+
+---
+
+### `item-addon-order` Template - Modification Path Fixes
+
+#### Path Changes for All `item-addon-order` Tasks
+
+Updated grader config paths to correctly reference modification data:
+
+| Path Type | Before | After |
+|-----------|--------|-------|
+| `path_to_actual` | `$.items[0].modifications[0].options[0].id` | `$.items[0].modifications[0].options[0].optionId` |
+| `paths_to_expected` | `$[3].modifications[0].options[0].id` | `$[3].modification.options[0].id` |
+
+**Reason:** The actual order data uses `optionId` (not `id`) for modification options, and the expected state from `get_modifications` returns a singular `modification` object (not `modifications` array).
+
+#### Dynamic `modification_name` for Size vs Add-on Options
+
+Updated the `modification_name` in `get_modifications` function calls to use the correct modification type from the database:
+
+| Option Type | Before | After |
+|-------------|--------|-------|
+| Small, Medium, Large | `"modification_name": "add-ons"` | `"modification_name": "size"` |
+| extra cheese, etc. | `"modification_name": "add-ons"` | `"modification_name": "add-ons"` (unchanged) |
+
+**Affected Tasks (5 tasks with size modifications):**
+
+| Task ID | Option | modification_name |
+|---------|--------|-------------------|
+| `item-addon-order-002` | Medium | `"size"` |
+| `item-addon-order-003` | Small | `"size"` |
+| `item-addon-order-005` | Large | `"size"` |
+| `item-addon-order-006` | Large | `"size"` |
+| `item-addon-order-007` | Large | `"size"` |
+
+**Tasks with add-on modifications (unchanged):**
+
+| Task ID | Option | modification_name |
+|---------|--------|-------------------|
+| `item-addon-order-001` | extra cheese | `"add-ons"` |
+| `item-addon-order-004` | Berry Compote | `"add-ons"` |
+
