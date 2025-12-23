@@ -1,7 +1,26 @@
 import { vi } from 'vitest';
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import PromoBanners from '@/components/promo-banners';
+import type { Restaurant } from '@/constants/restaurants';
+
+// Create a wrapper component that provides QueryClient
+const createTestQueryClient = () =>
+  new QueryClient({
+    defaultOptions: {
+      queries: {
+        retry: false,
+      },
+    },
+  });
+
+const renderWithQueryClient = (ui: React.ReactElement) => {
+  const testQueryClient = createTestQueryClient();
+  return render(
+    <QueryClientProvider client={testQueryClient}>{ui}</QueryClientProvider>
+  );
+};
 
 // Mock lucide-react
 vi.mock('lucide-react', () => ({
@@ -14,46 +33,6 @@ vi.mock('next/link', () => ({
   default: ({ children, href }: { children: React.ReactNode; href: string }) => (
     <a href={href}>{children}</a>
   ),
-}));
-
-// Mock stores and hooks
-const {
-  mockIsAuthenticated,
-  mockCurrentUser,
-  mockGetTempAddress,
-  mockUserStoreSubscribe,
-  mockUseRestaurants,
-} = vi.hoisted(() => ({
-  mockIsAuthenticated: vi.fn(() => false),
-  mockCurrentUser: vi.fn(() => null as any),
-  mockGetTempAddress: vi.fn(() => null as any),
-  mockUserStoreSubscribe: vi.fn(() => () => {}),
-  mockUseRestaurants: vi.fn(() => ({ data: null as any, isLoading: false })),
-}));
-
-vi.mock('@/store/user-store', () => ({
-  useUserStore: Object.assign(
-    (selector: any) => {
-      const state = {
-        currentUser: mockCurrentUser(),
-        getTempAddress: mockGetTempAddress,
-        isAuthenticated: mockIsAuthenticated,
-      };
-      return selector ? selector(state) : state;
-    },
-    {
-      subscribe: mockUserStoreSubscribe,
-      getState: () => ({
-        isAuthenticated: mockIsAuthenticated,
-        getTempAddress: mockGetTempAddress,
-        currentUser: mockCurrentUser(),
-      }),
-    }
-  ),
-}));
-
-vi.mock('@/lib/hooks/use-restaurants', () => ({
-  useRestaurants: mockUseRestaurants,
 }));
 
 // Mock fetch
@@ -91,17 +70,7 @@ const mockPromotionalData = {
 const mockRestaurants = [
   { id: 'rest-1', name: 'Test Restaurant' },
   { id: 'rest-2', name: 'Another Restaurant' },
-];
-
-const mockAddress = {
-  id: 'addr-1',
-  street: '123 Main St',
-  city: 'San Francisco',
-  state: 'CA',
-  zipCode: '94102',
-  lat: 37.7749,
-  lng: -122.4194,
-};
+] as Restaurant[];
 
 describe('PromoBanners', () => {
   beforeEach(() => {
@@ -111,11 +80,8 @@ describe('PromoBanners', () => {
     });
   });
 
-  it('should not render when no address is set', async () => {
-    mockGetTempAddress.mockReturnValue(null);
-    mockUseRestaurants.mockReturnValue({ data: mockRestaurants, isLoading: false });
-
-    render(<PromoBanners />);
+  it('should not render when no restaurants are provided', async () => {
+    renderWithQueryClient(<PromoBanners />);
 
     await waitFor(() => {
       expect(screen.queryByTestId('promo-banners-container')).not.toBeInTheDocument();
@@ -123,10 +89,7 @@ describe('PromoBanners', () => {
   });
 
   it('should render banners when data is loaded', async () => {
-    mockGetTempAddress.mockReturnValue(mockAddress);
-    mockUseRestaurants.mockReturnValue({ data: mockRestaurants, isLoading: false });
-
-    render(<PromoBanners />);
+    renderWithQueryClient(<PromoBanners restaurants={mockRestaurants} />);
 
     await waitFor(() => {
       expect(screen.getByText('Test Promo')).toBeInTheDocument();
@@ -134,10 +97,7 @@ describe('PromoBanners', () => {
   });
 
   it('should display banner title and description', async () => {
-    mockGetTempAddress.mockReturnValue(mockAddress);
-    mockUseRestaurants.mockReturnValue({ data: mockRestaurants, isLoading: false });
-
-    render(<PromoBanners />);
+    renderWithQueryClient(<PromoBanners restaurants={mockRestaurants} />);
 
     await waitFor(() => {
       expect(screen.getByText('Test Promo')).toBeInTheDocument();
@@ -146,10 +106,7 @@ describe('PromoBanners', () => {
   });
 
   it('should display button text', async () => {
-    mockGetTempAddress.mockReturnValue(mockAddress);
-    mockUseRestaurants.mockReturnValue({ data: mockRestaurants, isLoading: false });
-
-    render(<PromoBanners />);
+    renderWithQueryClient(<PromoBanners restaurants={mockRestaurants} />);
 
     await waitFor(() => {
       expect(screen.getByText('Order Now')).toBeInTheDocument();
@@ -157,10 +114,7 @@ describe('PromoBanners', () => {
   });
 
   it('should link to restaurant store page', async () => {
-    mockGetTempAddress.mockReturnValue(mockAddress);
-    mockUseRestaurants.mockReturnValue({ data: mockRestaurants, isLoading: false });
-
-    render(<PromoBanners />);
+    renderWithQueryClient(<PromoBanners restaurants={mockRestaurants} />);
 
     await waitFor(() => {
       const links = screen.getAllByRole('link');
@@ -169,11 +123,10 @@ describe('PromoBanners', () => {
   });
 
   it('should filter out banners for restaurants not in delivery area', async () => {
-    mockGetTempAddress.mockReturnValue(mockAddress);
     // Only rest-1 is in delivery area
-    mockUseRestaurants.mockReturnValue({ data: [{ id: 'rest-1' }], isLoading: false });
-
-    render(<PromoBanners />);
+    const limitedRestaurants = [{ id: 'rest-1', name: 'Test Restaurant' }] as Restaurant[];
+    
+    renderWithQueryClient(<PromoBanners restaurants={limitedRestaurants} />);
 
     await waitFor(() => {
       expect(screen.getByText('Test Promo')).toBeInTheDocument();
@@ -182,8 +135,7 @@ describe('PromoBanners', () => {
   });
 
   it('should not show right arrow on last banner', async () => {
-    mockGetTempAddress.mockReturnValue(mockAddress);
-    mockUseRestaurants.mockReturnValue({ data: [{ id: 'rest-1' }], isLoading: false });
+    const limitedRestaurants = [{ id: 'rest-1', name: 'Test Restaurant' }] as Restaurant[];
 
     // Only one banner in delivery area
     mockFetch.mockResolvedValue({
@@ -194,7 +146,7 @@ describe('PromoBanners', () => {
         }),
     });
 
-    render(<PromoBanners />);
+    renderWithQueryClient(<PromoBanners restaurants={limitedRestaurants} />);
 
     await waitFor(() => {
       expect(screen.getByText('Test Promo')).toBeInTheDocument();
@@ -204,10 +156,7 @@ describe('PromoBanners', () => {
   });
 
   it('should not show left arrow on first banner', async () => {
-    mockGetTempAddress.mockReturnValue(mockAddress);
-    mockUseRestaurants.mockReturnValue({ data: mockRestaurants, isLoading: false });
-
-    render(<PromoBanners />);
+    renderWithQueryClient(<PromoBanners restaurants={mockRestaurants} />);
 
     await waitFor(() => {
       expect(screen.getByText('Test Promo')).toBeInTheDocument();
@@ -217,13 +166,11 @@ describe('PromoBanners', () => {
   });
 
   it('should handle API error gracefully', async () => {
-    mockGetTempAddress.mockReturnValue(mockAddress);
-    mockUseRestaurants.mockReturnValue({ data: mockRestaurants, isLoading: false });
     mockFetch.mockResolvedValue({
       json: () => Promise.resolve({ success: false }),
     });
 
-    render(<PromoBanners />);
+    renderWithQueryClient(<PromoBanners restaurants={mockRestaurants} />);
 
     await waitFor(() => {
       expect(screen.queryByTestId('promo-banners-container')).not.toBeInTheDocument();
@@ -231,25 +178,17 @@ describe('PromoBanners', () => {
   });
 
   it('should handle fetch error gracefully', async () => {
-    mockGetTempAddress.mockReturnValue(mockAddress);
-    mockUseRestaurants.mockReturnValue({ data: mockRestaurants, isLoading: false });
     mockFetch.mockRejectedValue(new Error('Network error'));
 
-    render(<PromoBanners />);
+    renderWithQueryClient(<PromoBanners restaurants={mockRestaurants} />);
 
     await waitFor(() => {
       expect(screen.queryByTestId('promo-banners-container')).not.toBeInTheDocument();
     });
   });
 
-  it('should use authenticated user address when logged in', async () => {
-    mockIsAuthenticated.mockReturnValue(true);
-    mockCurrentUser.mockReturnValue({
-      addresses: [{ ...mockAddress, default: true }],
-    });
-    mockUseRestaurants.mockReturnValue({ data: mockRestaurants, isLoading: false });
-
-    render(<PromoBanners />);
+  it('should render with restaurants prop', async () => {
+    renderWithQueryClient(<PromoBanners restaurants={mockRestaurants} />);
 
     await waitFor(() => {
       expect(screen.getByText('Test Promo')).toBeInTheDocument();
@@ -257,10 +196,7 @@ describe('PromoBanners', () => {
   });
 
   it('should pause auto-scroll on mouse enter', async () => {
-    mockGetTempAddress.mockReturnValue(mockAddress);
-    mockUseRestaurants.mockReturnValue({ data: mockRestaurants, isLoading: false });
-
-    render(<PromoBanners />);
+    renderWithQueryClient(<PromoBanners restaurants={mockRestaurants} />);
 
     await waitFor(() => {
       expect(screen.getByText('Test Promo')).toBeInTheDocument();
@@ -272,10 +208,7 @@ describe('PromoBanners', () => {
   });
 
   it('should resume auto-scroll on mouse leave', async () => {
-    mockGetTempAddress.mockReturnValue(mockAddress);
-    mockUseRestaurants.mockReturnValue({ data: mockRestaurants, isLoading: false });
-
-    render(<PromoBanners />);
+    renderWithQueryClient(<PromoBanners restaurants={mockRestaurants} />);
 
     await waitFor(() => {
       expect(screen.getByText('Test Promo')).toBeInTheDocument();
@@ -288,10 +221,7 @@ describe('PromoBanners', () => {
   });
 
   it('should render banner images', async () => {
-    mockGetTempAddress.mockReturnValue(mockAddress);
-    mockUseRestaurants.mockReturnValue({ data: mockRestaurants, isLoading: false });
-
-    render(<PromoBanners />);
+    renderWithQueryClient(<PromoBanners restaurants={mockRestaurants} />);
 
     await waitFor(() => {
       const images = screen.getAllByRole('img');
@@ -301,10 +231,7 @@ describe('PromoBanners', () => {
   });
 
   it('should use placeholder when banner image fails to load', async () => {
-    mockGetTempAddress.mockReturnValue(mockAddress);
-    mockUseRestaurants.mockReturnValue({ data: mockRestaurants, isLoading: false });
-
-    render(<PromoBanners />);
+    renderWithQueryClient(<PromoBanners restaurants={mockRestaurants} />);
 
     await waitFor(() => {
       const images = screen.getAllByRole('img');
@@ -313,11 +240,8 @@ describe('PromoBanners', () => {
     });
   });
 
-  it('should not render when no restaurants in delivery area', async () => {
-    mockGetTempAddress.mockReturnValue(mockAddress);
-    mockUseRestaurants.mockReturnValue({ data: [], isLoading: false });
-
-    render(<PromoBanners />);
+  it('should not render when restaurants array is empty', async () => {
+    renderWithQueryClient(<PromoBanners restaurants={[]} />);
 
     await waitFor(() => {
       expect(screen.queryByTestId('promo-banners-container')).not.toBeInTheDocument();
@@ -325,10 +249,7 @@ describe('PromoBanners', () => {
   });
 
   it('should navigate to store page when clicking banner', async () => {
-    mockGetTempAddress.mockReturnValue(mockAddress);
-    mockUseRestaurants.mockReturnValue({ data: mockRestaurants, isLoading: false });
-
-    render(<PromoBanners />);
+    renderWithQueryClient(<PromoBanners restaurants={mockRestaurants} />);
 
     await waitFor(() => {
       expect(screen.getByText('Test Promo')).toBeInTheDocument();
@@ -341,14 +262,13 @@ describe('PromoBanners', () => {
   });
 
   it('should only display banners for restaurants in delivery area', async () => {
-    mockGetTempAddress.mockReturnValue(mockAddress);
     // rest-1 and rest-3 in delivery area, but rest-3 has no promo banner
-    mockUseRestaurants.mockReturnValue({
-      data: [{ id: 'rest-1' }, { id: 'rest-3' }],
-      isLoading: false,
-    });
+    const limitedRestaurants = [
+      { id: 'rest-1', name: 'Test Restaurant' },
+      { id: 'rest-3', name: 'Third Restaurant' },
+    ] as Restaurant[];
 
-    render(<PromoBanners />);
+    renderWithQueryClient(<PromoBanners restaurants={limitedRestaurants} />);
 
     await waitFor(() => {
       // rest-1 promo should be visible

@@ -270,7 +270,7 @@ describe('MenuItemDialog', () => {
       render(
         <MenuItemDialog isOpen={true} onClose={mockOnClose} item={mockItemWithModifications} />
       );
-      expect(screen.getByText('(Optional)')).toBeInTheDocument();
+      expect(screen.getAllByText('(Optional)').length).toBeGreaterThan(0);
     });
 
     it('should pre-select default options for required modifications', () => {

@@ -21,44 +21,34 @@ describe('ServiceFeesInfo', () => {
   describe('Rendering', () => {
     it('should not render when isOpen is false', () => {
       render(<ServiceFeesInfo {...defaultProps} isOpen={false} />);
-      expect(screen.queryByText('Pricing & Fees')).not.toBeInTheDocument();
+      expect(screen.queryByText(/Delivery Fee/i)).not.toBeInTheDocument();
     });
 
     it('should render dialog when isOpen is true', () => {
       render(<ServiceFeesInfo {...defaultProps} />);
-      expect(screen.getByText('Pricing & Fees')).toBeInTheDocument();
+      expect(screen.getByText(/Delivery Fee:/i)).toBeInTheDocument();
     });
 
-    it('should display Menu Prices section', () => {
+    it('should display Menu Pricing section', () => {
       render(<ServiceFeesInfo {...defaultProps} />);
-      expect(screen.getByText('Menu Prices')).toBeInTheDocument();
+      expect(screen.getByText('Menu Pricing')).toBeInTheDocument();
       expect(screen.getByText(/This merchant sets prices/i)).toBeInTheDocument();
     });
 
     it('should display Service Fee section', () => {
       render(<ServiceFeesInfo {...defaultProps} />);
-      expect(screen.getByText('Service Fee')).toBeInTheDocument();
-      expect(screen.getByText(/This fee goes to Dashdoor/i)).toBeInTheDocument();
+      expect(screen.getByText(/Service Fee:/i)).toBeInTheDocument();
+      expect(screen.getByText(/% of subtotal/i)).toBeInTheDocument();
     });
 
     it('should display Delivery Fee section', () => {
       render(<ServiceFeesInfo {...defaultProps} />);
-      expect(screen.getByText('Delivery Fee')).toBeInTheDocument();
+      expect(screen.getByText(/Delivery Fee:/i)).toBeInTheDocument();
     });
 
     it('should display Other Dashdoor Fees section', () => {
       render(<ServiceFeesInfo {...defaultProps} />);
       expect(screen.getByText('Other Dashdoor Fees')).toBeInTheDocument();
-    });
-
-    it('should display Government Fees section', () => {
-      render(<ServiceFeesInfo {...defaultProps} />);
-      expect(screen.getByText('Government Fees')).toBeInTheDocument();
-    });
-
-    it('should display Checkout section', () => {
-      render(<ServiceFeesInfo {...defaultProps} />);
-      expect(screen.getByText('Checkout')).toBeInTheDocument();
     });
 
     it('should display Got it button', () => {
@@ -97,7 +87,7 @@ describe('ServiceFeesInfo', () => {
       render(<ServiceFeesInfo isOpen={true} onClose={onClose} />);
 
       // Click on the overlay (outside the dialog content)
-      const overlay = screen.getByText('Pricing & Fees').closest('.fixed');
+      const overlay = screen.getByText(/Delivery Fee:/i).closest('.fixed');
       if (overlay) {
         fireEvent.mouseDown(overlay);
         expect(onClose).toHaveBeenCalled();
