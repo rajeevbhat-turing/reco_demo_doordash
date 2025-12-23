@@ -1054,14 +1054,30 @@ export default function RestaurantPage() {
                           onClick={() => openItemDialog(item)}
                         >
                           <div className="p-3 flex justify-between">
-                            <div>
+                            <div className="flex-1 min-w-0 pr-3">
                               <h3 className="font-medium">{item.name}</h3>
                               {item.calories && (
                                 <p className="text-sm text-gray-500">({item.calories})</p>
                               )}
                               <p className="text-gray-900 mt-1">{item.price}</p>
+                              {item.description && (
+                                <p className="text-sm text-gray-500 mt-1 line-clamp-2">{item.description}</p>
+                              )}
+                              {item.rating && item.rating != 0 && (
+                                <div className="flex items-center mt-1">
+                                  <ThumbsUp className="w-4 h-4 text-gray-500 mr-1" strokeWidth={2} />
+                                  <span className="text-sm">
+                                    {Math.round(getDefaultRating(item.rating) * 20)}%
+                                  </span>
+                                  {item.ratingCount && (
+                                    <span className="text-sm text-gray-500 ml-1">
+                                      ({item.ratingCount})
+                                    </span>
+                                  )}
+                                </div>
+                              )}
                             </div>
-                            <div className="relative w-24 h-24">
+                            <div className="relative w-24 h-24 flex-shrink-0">
                               <img
                                 src={item.image || '/placeholder.svg'}
                                 alt={item.name}
@@ -1321,6 +1337,9 @@ export default function RestaurantPage() {
                               <p className="text-sm text-gray-500">({item.calories})</p>
                             )}
                             <p className="text-gray-900 mt-1">{item.price}</p>
+                            {item.description && (
+                              <p className="text-sm text-gray-500 mt-1 line-clamp-2">{item.description}</p>
+                            )}
                             {item.rating && item.rating != 0 && (
                               <div className="flex items-center mt-1">
                                 <ThumbsUp className="w-4 h-4 text-gray-500 mr-1" strokeWidth={2} />
@@ -1370,14 +1389,30 @@ export default function RestaurantPage() {
                             onClick={() => openItemDialog(item)}
                           >
                             <div className="p-3 flex justify-between">
-                              <div>
+                              <div className="flex-1 min-w-0 pr-3">
                                 <h3 className="font-medium">{item.name}</h3>
                                 {item.calories && (
                                   <p className="text-sm text-gray-500">({item.calories})</p>
                                 )}
                                 <p className="text-gray-900 mt-1">{item.price}</p>
+                                {item.description && (
+                                  <p className="text-sm text-gray-500 mt-1 line-clamp-2">{item.description}</p>
+                                )}
+                                {item.rating && item.rating != 0 && (
+                                  <div className="flex items-center mt-1">
+                                    <ThumbsUp className="w-4 h-4 text-gray-500 mr-1" strokeWidth={2} />
+                                    <span className="text-sm">
+                                      {Math.round(getDefaultRating(item.rating) * 20)}%
+                                    </span>
+                                    {item.ratingCount && (
+                                      <span className="text-sm text-gray-500 ml-1">
+                                        ({item.ratingCount})
+                                      </span>
+                                    )}
+                                  </div>
+                                )}
                               </div>
-                              <div className="relative w-24 h-24">
+                              <div className="relative w-24 h-24 flex-shrink-0">
                                 <img
                                   src={item.image || '/placeholder.svg'}
                                   alt={item.name}
