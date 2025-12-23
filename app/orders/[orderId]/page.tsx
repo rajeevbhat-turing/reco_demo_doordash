@@ -530,6 +530,10 @@ export default function OrderReceiptPage() {
                     });
                     const itemImage = menuItem?.image || (item as any).image || '/placeholder.svg';
 
+                    // Get modifications and special instructions
+                    const itemModifications = (item as any).modifications;
+                    const itemSpecialInstructions = (item as any).specialInstructions;
+
                     return (
                       <div key={item.id} className="flex items-start gap-2">
                         <div className="w-10 h-10 bg-gray-100 rounded flex items-center justify-center flex-shrink-0 overflow-hidden">
@@ -541,9 +545,32 @@ export default function OrderReceiptPage() {
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="flex justify-between items-start gap-2">
-                            <p className="text-sm font-medium truncate">
-                              {item.quantity}x {item.name}
-                            </p>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-medium truncate">
+                                {item.quantity}x {item.name}
+                              </p>
+                              {/* Show modifications */}
+                              {itemModifications && itemModifications.length > 0 && (
+                                <p className="text-xs text-gray-500 mt-0.5">
+                                  {itemModifications
+                                    .flatMap((mod: any) =>
+                                      mod.options?.map((opt: any) =>
+                                        opt.quantity > 1
+                                          ? `${opt.optionName} (x${opt.quantity})`
+                                          : opt.optionName
+                                      )
+                                    )
+                                    .filter(Boolean)
+                                    .join(' · ')}
+                                </p>
+                              )}
+                              {/* Show special instructions */}
+                              {itemSpecialInstructions?.text && (
+                                <p className="text-xs text-gray-500 mt-0.5">
+                                  &quot;{itemSpecialInstructions.text}&quot;
+                                </p>
+                              )}
+                            </div>
                             <div className="flex items-center gap-2 flex-shrink-0">
                               {(() => {
                                 const finalPrice =

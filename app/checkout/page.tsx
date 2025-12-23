@@ -542,6 +542,10 @@ export default function CheckoutPage() {
             final_price: finalPrice,
             menuCategoryId: item.menuCategoryId,
             menuCategoryName: item.menuCategoryName,
+            specialInstructions: item.specialInstructions ? {
+              text: item.specialInstructions.text,
+              ifUnavailable: item.specialInstructions.ifUnavailable,
+            } : undefined,
             modifications: item.appliedModifications?.map(appliedMod => ({
               modificationId: appliedMod.modificationId,
               modificationDescription: appliedMod.modificationDescription,
@@ -1870,8 +1874,13 @@ export default function CheckoutPage() {
                                     {item.itemName}
                                   </h4>
                                   {item.customizations && (
-                                    <p className="text-xs text-gray-600 mb-2">
+                                    <p className="text-xs text-gray-600 mb-1">
                                       {item.customizations}
+                                    </p>
+                                  )}
+                                  {item.specialInstructions?.text && (
+                                    <p className="text-xs text-gray-600 mb-2">
+                                      &quot;{item.specialInstructions.text}&quot;
                                     </p>
                                   )}
                                   <div className="flex flex-col gap-2 items-start">

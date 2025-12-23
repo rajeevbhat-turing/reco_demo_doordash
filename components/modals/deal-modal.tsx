@@ -260,7 +260,7 @@ export default function DealModal({ isOpen, onClose, deal, isRestaurantOpen }: D
                   <div className="flex-shrink-0 absolute right-1 bottom-1">
                     <button
                       onClick={() => handleAddToCart(item)}
-                      className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors shadow-xl 
+                      className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors shadow-[0_4px_14px_rgba(0,0,0,0.4)] 
                         ${isRestaurantOpen ? 'bg-white hover:bg-gray-50' : 'bg-gray-200 cursor-not-allowed'}`}
                       aria-label={`Add ${item.name}`}
                       disabled={!isRestaurantOpen}
