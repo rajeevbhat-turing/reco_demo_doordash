@@ -559,6 +559,9 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
                   {item.customizations && (
                     <p className="text-xs text-gray-600 mt-1">{item.customizations}</p>
                   )}
+                  {item.specialInstructions?.text && (
+                    <p className="text-xs text-gray-600 mt-1">&quot;{item.specialInstructions.text}&quot;</p>
+                  )}
                   <div className="mt-2 flex items-center justify-between">
                     <div className="text-sm">
                       ${(getItemPrice(item) * item.quantity).toFixed(2)}
