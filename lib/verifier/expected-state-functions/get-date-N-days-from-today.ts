@@ -1,3 +1,5 @@
+import { getCurrentTime } from '@/store/bootstrap-store';
+
 export interface GetDateNDaysFromTodayArgs {
   days: number; // Number of days from today (positive for future, negative for past)
 }
@@ -26,8 +28,8 @@ export async function get_date_N_days_from_today(
 ): Promise<GetDateNDaysFromTodayResult> {
   const { days } = args;
   
-  // Get today's date
-  const today = new Date();
+  // Get today's date (respects bootstrap time if set)
+  const today = getCurrentTime();
   
   // Calculate target date by adding days
   const targetDate = new Date(today);
