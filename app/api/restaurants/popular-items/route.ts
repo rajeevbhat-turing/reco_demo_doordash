@@ -90,9 +90,10 @@ export async function GET(request: NextRequest) {
 
     // Filter by popular or featured
     if (search && search.trim()) {
-      // If searching, filter by search term
-      query += ' AND LOWER(mi.name) LIKE ?';
-      queryParams.push(`%${search.toLowerCase()}%`);
+      // If searching, filter by search term (name or description)
+      query += ' AND (LOWER(mi.name) LIKE ? OR LOWER(mi.description) LIKE ?)';
+      const searchTerm = `%${search.toLowerCase()}%`;
+      queryParams.push(searchTerm, searchTerm);
     } else {
       // If not searching, show popular/featured items
       query += ' AND (mi.popular = 1 OR mi.featured = 1)';

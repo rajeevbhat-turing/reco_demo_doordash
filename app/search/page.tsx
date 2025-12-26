@@ -245,7 +245,10 @@ export default function SearchPage() {
 
       if (allMenuItems.length > 0) {
         allMenuItems.forEach(item => {
-          if (item.name.toLowerCase().includes(lowerQuery)) {
+          if (
+            (item.name && item.name.toLowerCase().includes(lowerQuery)) ||
+            (item.description && item.description.toLowerCase().includes(lowerQuery))
+          ) {
             // Check both possible ID fields
             const restaurantId = item.restaurant_id || item.restaurantId;
             if (restaurantId) {
@@ -358,10 +361,21 @@ export default function SearchPage() {
       .slice(0, 3); // Max 3 popular restaurants
   }, [filteredRestaurants]);
 
-  // Menu items are already filtered by the API (by search query or popular/featured)
+  // Filter menu items by search query (name or description)
   const matchedMenuItems = useMemo(() => {
-    return allMenuItems.slice(0, 20);
-  }, [allMenuItems]);
+    if (!searchQuery) {
+      // No search query - show popular/featured items
+      return allMenuItems.slice(0, 20);
+    }
+    
+    const lowerQuery = searchQuery.toLowerCase();
+    return allMenuItems
+      .filter(item =>
+        (item.name && item.name.toLowerCase().includes(lowerQuery)) ||
+        (item.description && item.description.toLowerCase().includes(lowerQuery))
+      )
+      .slice(0, 20);
+  }, [allMenuItems, searchQuery]);
 
   // Remaining restaurants (after popular, shown below dishes)
   const remainingRestaurants = useMemo(() => {

@@ -148,9 +148,9 @@ const SearchBar = () => {
 
     const lowerSearchTerm = searchTerm.toLowerCase();
     const matchingItems = allMenuItems.filter(
-      item => item.name.toLowerCase().includes(lowerSearchTerm)
-      // || (item.description && item.description.toLowerCase().includes(lowerSearchTerm))
-      // || (item.category_name && item.category_name.toLowerCase().includes(lowerSearchTerm)),
+      item =>
+        (item.name && item.name.toLowerCase().includes(lowerSearchTerm)) ||
+        (item.description && item.description.toLowerCase().includes(lowerSearchTerm))
     );
 
     const restaurantMatches = new Map<string, { restaurant: any; items: string[] }>();
