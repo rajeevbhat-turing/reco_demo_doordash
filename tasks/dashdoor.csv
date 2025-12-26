@@ -17082,3 +17082,261 @@ helpful-review-items-008,"{
   },
   ""task_id"": ""helpful-review-items-008""
 }","[""Ratings & Reviews""]","[""Review-based recommendations""]","[""Ratings analysis"", ""Instruction following""]","Somebody recommended Fast Food Table to me, could you go through the reviews and find the review that people found the most helpful and add the liked items from it to my cart",,,,
+login-password-001,"{
+  ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
+  ""task_statement"": ""Log in using email 'yuna.lopez1959@mail.test' and password 'vv7sqJGGkNct'"",
+  ""task_id"": ""login-password-001"",
+  ""task_type"": ""GUI Comprehension, Action Execution"",
+  ""simulator_config"": {
+    ""bootstrap_data"": {
+      ""date"": ""2025-12-19T12:00:00-08:00"",
+      ""timezone"": ""America/Los_Angeles""
+    }
+  },
+  ""grader_config"": {
+    ""state_grader_configs"": [
+      {
+        ""assertions"": [
+          {
+            ""operator"": ""BOOL"",
+            ""path_to_actual"": ""$.isAuthenticated""
+          },
+          {
+            ""operator"": ""STRING_EQUALS"",
+            ""path_to_actual"": ""$.currentUser.email"",
+            ""expected"": [
+              ""yuna.lopez1959@mail.test""
+            ]
+          }
+        ],
+        ""path_to_actual"": ""$.user""
+      }
+    ],
+    ""extract_states_config"": {
+      ""expected_state_functions"": [
+      ]
+    }
+  }
+}","[""Sign in""]","[""Password auth""]","[""Sign in""]",Log in using email 'yuna.lopez1959@mail.test' and password 'vv7sqJGGkNct',,10,Easy,
+login-password-002,"{
+  ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
+  ""task_statement"": ""Log in using email 'lena.bennett71@example.com' and password 'vv7sqJGGkNct'"",
+  ""task_id"": ""login-password-002"",
+  ""task_type"": ""GUI Comprehension, Action Execution"",
+  ""simulator_config"": {
+    ""bootstrap_data"": {
+      ""date"": ""2025-12-19T12:00:00-08:00"",
+      ""timezone"": ""America/Los_Angeles""
+    }
+  },
+  ""grader_config"": {
+    ""state_grader_configs"": [
+      {
+        ""assertions"": [
+          {
+            ""operator"": ""BOOL"",
+            ""path_to_actual"": ""$.isAuthenticated""
+          },
+          {
+            ""operator"": ""STRING_EQUALS"",
+            ""path_to_actual"": ""$.currentUser.email"",
+            ""expected"": [
+              ""lena.bennett71@example.com""
+            ]
+          }
+        ],
+        ""path_to_actual"": ""$.user""
+      }
+    ],
+    ""extract_states_config"": {
+      ""expected_state_functions"": [
+      ]
+    }
+  }
+}","[""Sign in""]","[""Password auth""]","[""Sign in""]",Log in using email 'lena.bennett71@example.com' and password 'vv7sqJGGkNct',,10,Easy,
+login-otp-001,"{
+  ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
+  ""task_statement"": ""Log in using email 'yuna.lopez1959@mail.test' and use the OTP 984214"",
+  ""task_id"": ""login-otp-001"",
+  ""task_type"": ""GUI Comprehension, Action Execution"",
+  ""simulator_config"": {
+    ""bootstrap_data"": {
+      ""date"": ""2025-12-19T12:00:00-08:00"",
+      ""timezone"": ""America/Los_Angeles""
+    }
+  },
+  ""grader_config"": {
+    ""state_grader_configs"": [
+      {
+        ""assertions"": [
+          {
+            ""operator"": ""BOOL"",
+            ""path_to_actual"": ""$.isAuthenticated""
+          },
+          {
+            ""operator"": ""STRING_EQUALS"",
+            ""path_to_actual"": ""$.currentUser.email"",
+            ""expected"": [
+              ""yuna.lopez1959@mail.test""
+            ]
+          }
+        ],
+        ""path_to_actual"": ""$.user""
+      }
+    ],
+    ""extract_states_config"": {
+      ""expected_state_functions"": [
+      ]
+    }
+  }
+}","[""Sign in""]","[""OTP""]","[""Sign in""]",Log in using email 'yuna.lopez1959@mail.test' and use the OTP 984214,,10,Easy,
+login-otp-002,"{
+  ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
+  ""task_statement"": ""Log in using email 'lena.bennett71@example.com' and use the OTP 324231"",
+  ""task_id"": ""login-otp-002"",
+  ""task_type"": ""GUI Comprehension, Action Execution"",
+  ""simulator_config"": {
+    ""bootstrap_data"": {
+      ""date"": ""2025-12-19T12:00:00-08:00"",
+      ""timezone"": ""America/Los_Angeles""
+    }
+  },
+  ""grader_config"": {
+    ""state_grader_configs"": [
+      {
+        ""assertions"": [
+          {
+            ""operator"": ""BOOL"",
+            ""path_to_actual"": ""$.isAuthenticated""
+          },
+          {
+            ""operator"": ""STRING_EQUALS"",
+            ""path_to_actual"": ""$.currentUser.email"",
+            ""expected"": [
+              ""lena.bennett71@example.com""
+            ]
+          }
+        ],
+        ""path_to_actual"": ""$.user""
+      }
+    ],
+    ""extract_states_config"": {
+      ""expected_state_functions"": [
+      ]
+    }
+  }
+}","[""Sign in""]","[""OTP""]","[""Sign in""]",Log in using email 'lena.bennett71@example.com' and use the OTP 324231,,10,Easy,
+user-signup-001,"{
+  ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
+  ""task_statement"": ""Can you sign up using the email jhon.doe@example.com and phone number 4363624623. Use the name Jhon Doe. Use password 'str0ngPassword!'. Use OTP 143511."",
+  ""task_id"": ""user-signup-001"",
+  ""task_type"": ""GUI Comprehension, Action Execution"",
+  ""simulator_config"": {
+    ""bootstrap_data"": {
+      ""date"": ""2025-12-19T12:00:00-08:00"",
+      ""timezone"": ""America/Los_Angeles""
+    }
+  },
+  ""grader_config"": {
+    ""state_grader_configs"": [
+      {
+        ""assertions"": [
+          {
+            ""operator"": ""BOOL"",
+            ""path_to_actual"": ""$.isAuthenticated""
+          },
+          {
+            ""operator"": ""STRING_EQUALS"",
+            ""path_to_actual"": ""$.currentUser.email"",
+            ""expected"": [
+              ""jhon.doe@example.com""
+            ]
+          },
+          {
+            ""operator"": ""STRING_EQUALS"",
+            ""path_to_actual"": ""$.currentUser.name"",
+            ""expected"": [
+              ""Jhon Doe""
+            ]
+          },
+          {
+            ""operator"": ""STRING_EQUALS"",
+            ""path_to_actual"": ""$.currentUser.password"",
+            ""expected"": [
+              ""str0ngPassword!""
+            ]
+          },
+          {
+            ""operator"": ""STRING_EQUALS"",
+            ""path_to_actual"": ""$.currentUser.phoneNumber"",
+            ""expected"": [
+              ""4363624623""
+            ]
+          }
+        ],
+        ""path_to_actual"": ""$.user""
+      }
+    ],
+    ""extract_states_config"": {
+      ""expected_state_functions"": [
+      ]
+    }
+  }
+}","[""Sign up""]","[""OTP""]","[""Sign up""]",Can you sign up using the email jhon.doe@example.com and phone number 4363624623. Use the name Jhon Doe. Use password 'str0ngPassword!'. Use OTP 143511.,,,,
+user-signup-002,"{
+  ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
+  ""task_statement"": ""Can you sign up using the email jane.doe@example.com and phone number 6374394601. Use the name Jane Doe. Use password 'passw0rd!$stronG'. Use OTP 143511."",
+  ""task_id"": ""user-signup-002"",
+  ""task_type"": ""GUI Comprehension, Action Execution"",
+  ""simulator_config"": {
+    ""bootstrap_data"": {
+      ""date"": ""2025-12-19T12:00:00-08:00"",
+      ""timezone"": ""America/Los_Angeles""
+    }
+  },
+  ""grader_config"": {
+    ""state_grader_configs"": [
+      {
+        ""assertions"": [
+          {
+            ""operator"": ""BOOL"",
+            ""path_to_actual"": ""$.isAuthenticated""
+          },
+          {
+            ""operator"": ""STRING_EQUALS"",
+            ""path_to_actual"": ""$.currentUser.email"",
+            ""expected"": [
+              ""jane.doe@example.com""
+            ]
+          },
+          {
+            ""operator"": ""STRING_EQUALS"",
+            ""path_to_actual"": ""$.currentUser.name"",
+            ""expected"": [
+              ""Jane Doe""
+            ]
+          },
+          {
+            ""operator"": ""STRING_EQUALS"",
+            ""path_to_actual"": ""$.currentUser.password"",
+            ""expected"": [
+              ""passw0rd!$stronG""
+            ]
+          },
+          {
+            ""operator"": ""STRING_EQUALS"",
+            ""path_to_actual"": ""$.currentUser.phoneNumber"",
+            ""expected"": [
+              ""6374394601""
+            ]
+          }
+        ],
+        ""path_to_actual"": ""$.user""
+      }
+    ],
+    ""extract_states_config"": {
+      ""expected_state_functions"": [
+      ]
+    }
+  }
+}","[""Sign up""]","[""OTP""]","[""Sign up""]",Can you sign up using the email jane.doe@example.com and phone number 6374394601. Use the name Jane Doe. Use password 'passw0rd!$stronG'. Use OTP 143511.,,,,
