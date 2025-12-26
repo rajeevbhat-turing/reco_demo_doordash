@@ -2576,7 +2576,14 @@ clear-invalid-carts-001,"{
       {
         ""assertions"": [
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""JSON_PART_OF"",
+            ""path_to_actual"": ""$.carts[*].storeId"",
+            ""paths_to_expected"": [
+              ""$[2].carts[*].storeId""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.carts[*].storeId"",
             ""paths_to_expected"": [
               ""$[2].carts[*].storeId""
@@ -2628,7 +2635,14 @@ clear-invalid-carts-002,"{
       {
         ""assertions"": [
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""JSON_PART_OF"",
+            ""path_to_actual"": ""$.carts[*].storeId"",
+            ""paths_to_expected"": [
+              ""$[2].carts[*].storeId""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.carts[*].storeId"",
             ""paths_to_expected"": [
               ""$[2].carts[*].storeId""
@@ -2681,7 +2695,14 @@ clear-invalid-carts-003,"{
       {
         ""assertions"": [
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""JSON_PART_OF"",
+            ""path_to_actual"": ""$.carts[*].storeId"",
+            ""paths_to_expected"": [
+              ""$[2].carts[*].storeId""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.carts[*].storeId"",
             ""paths_to_expected"": [
               ""$[2].carts[*].storeId""
@@ -2735,7 +2756,14 @@ clear-invalid-carts-004,"{
       {
         ""assertions"": [
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""JSON_PART_OF"",
+            ""path_to_actual"": ""$.carts[*].storeId"",
+            ""paths_to_expected"": [
+              ""$[2].carts[*].storeId""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.carts[*].storeId"",
             ""paths_to_expected"": [
               ""$[2].carts[*].storeId""
@@ -2789,7 +2817,14 @@ clear-invalid-carts-005,"{
       {
         ""assertions"": [
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""JSON_PART_OF"",
+            ""path_to_actual"": ""$.carts[*].storeId"",
+            ""paths_to_expected"": [
+              ""$[2].carts[*].storeId""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.carts[*].storeId"",
             ""paths_to_expected"": [
               ""$[2].carts[*].storeId""
@@ -2843,7 +2878,14 @@ clear-invalid-carts-006,"{
       {
         ""assertions"": [
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""JSON_PART_OF"",
+            ""path_to_actual"": ""$.carts[*].storeId"",
+            ""paths_to_expected"": [
+              ""$[2].carts[*].storeId""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.carts[*].storeId"",
             ""paths_to_expected"": [
               ""$[2].carts[*].storeId""
@@ -2897,7 +2939,14 @@ clear-invalid-carts-007,"{
       {
         ""assertions"": [
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""JSON_PART_OF"",
+            ""path_to_actual"": ""$.carts[*].storeId"",
+            ""paths_to_expected"": [
+              ""$[2].carts[*].storeId""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.carts[*].storeId"",
             ""paths_to_expected"": [
               ""$[2].carts[*].storeId""
@@ -2951,7 +3000,15 @@ replace-cart-item-001,"{
       {
         ""assertions"": [
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""JSON_PART_OF"",
+            ""path_to_actual"": ""$.items[*].id"",
+            ""paths_to_expected"": [
+              ""$[0].carts[0].items[*].id"",
+              ""$[1].items[0].id""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.items[*].id"",
             ""paths_to_expected"": [
               ""$[0].carts[0].items[*].id"",
@@ -3037,7 +3094,15 @@ replace-cart-item-002,"{
       {
         ""assertions"": [
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""JSON_PART_OF"",
+            ""path_to_actual"": ""$.items[*].id"",
+            ""paths_to_expected"": [
+              ""$[0].carts[0].items[*].id"",
+              ""$[1].items[0].id""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.items[*].id"",
             ""paths_to_expected"": [
               ""$[0].carts[0].items[*].id"",
@@ -3124,7 +3189,15 @@ replace-cart-item-003,"{
       {
         ""assertions"": [
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""JSON_PART_OF"",
+            ""path_to_actual"": ""$.items[*].id"",
+            ""paths_to_expected"": [
+              ""$[0].carts[0].items[*].id"",
+              ""$[1].items[0].id""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.items[*].id"",
             ""paths_to_expected"": [
               ""$[0].carts[0].items[*].id"",
@@ -3211,7 +3284,15 @@ replace-cart-item-004,"{
       {
         ""assertions"": [
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""JSON_PART_OF"",
+            ""path_to_actual"": ""$.items[*].id"",
+            ""paths_to_expected"": [
+              ""$[0].carts[0].items[*].id"",
+              ""$[1].items[0].id""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.items[*].id"",
             ""paths_to_expected"": [
               ""$[0].carts[0].items[*].id"",
@@ -3299,7 +3380,15 @@ replace-cart-item-005,"{
       {
         ""assertions"": [
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""JSON_PART_OF"",
+            ""path_to_actual"": ""$.items[*].id"",
+            ""paths_to_expected"": [
+              ""$[0].carts[0].items[*].id"",
+              ""$[1].items[0].id""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.items[*].id"",
             ""paths_to_expected"": [
               ""$[0].carts[0].items[*].id"",
@@ -3386,7 +3475,15 @@ replace-cart-item-006,"{
       {
         ""assertions"": [
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""JSON_PART_OF"",
+            ""path_to_actual"": ""$.items[*].id"",
+            ""paths_to_expected"": [
+              ""$[0].carts[0].items[*].id"",
+              ""$[1].items[0].id""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.items[*].id"",
             ""paths_to_expected"": [
               ""$[0].carts[0].items[*].id"",
@@ -3474,7 +3571,15 @@ replace-cart-item-007,"{
       {
         ""assertions"": [
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""JSON_PART_OF"",
+            ""path_to_actual"": ""$.items[*].id"",
+            ""paths_to_expected"": [
+              ""$[0].carts[0].items[*].id"",
+              ""$[1].items[0].id""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.items[*].id"",
             ""paths_to_expected"": [
               ""$[0].carts[0].items[*].id"",
@@ -3606,7 +3711,15 @@ reorder-with-addons-002,"{
       {
         ""assertions"": [
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""JSON_PART_OF"",
+            ""path_to_actual"": ""$.items[*].name"",
+            ""paths_to_expected"": [
+              ""$[2].orders[0].items[*].name"",
+              ""$[3].items[*].name""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.items[*].name"",
             ""paths_to_expected"": [
               ""$[2].orders[0].items[*].name"",
@@ -3727,7 +3840,15 @@ reorder-with-addons-003,"{
       {
         ""assertions"": [
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""JSON_PART_OF"",
+            ""path_to_actual"": ""$.items[*].name"",
+            ""paths_to_expected"": [
+              ""$[2].orders[0].items[*].name"",
+              ""$[3].items[*].name""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.items[*].name"",
             ""paths_to_expected"": [
               ""$[2].orders[0].items[*].name"",
@@ -3848,7 +3969,15 @@ reorder-with-addons-004,"{
       {
         ""assertions"": [
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""JSON_PART_OF"",
+            ""path_to_actual"": ""$.items[*].name"",
+            ""paths_to_expected"": [
+              ""$[2].orders[0].items[*].name"",
+              ""$[3].items[*].name""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.items[*].name"",
             ""paths_to_expected"": [
               ""$[2].orders[0].items[*].name"",
@@ -3968,7 +4097,15 @@ reorder-with-addons-005,"{
       {
         ""assertions"": [
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""JSON_PART_OF"",
+            ""path_to_actual"": ""$.items[*].name"",
+            ""paths_to_expected"": [
+              ""$[2].orders[0].items[*].name"",
+              ""$[3].items[*].name""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.items[*].name"",
             ""paths_to_expected"": [
               ""$[2].orders[0].items[*].name"",
@@ -4089,7 +4226,15 @@ reorder-with-addons-007,"{
       {
         ""assertions"": [
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""JSON_PART_OF"",
+            ""path_to_actual"": ""$.items[*].name"",
+            ""paths_to_expected"": [
+              ""$[2].orders[0].items[*].name"",
+              ""$[3].items[*].name""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.items[*].name"",
             ""paths_to_expected"": [
               ""$[2].orders[0].items[*].name"",
@@ -5867,7 +6012,15 @@ bulk-simple-order-001,"{
       {
         ""assertions"": [
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""JSON_PART_OF"",
+            ""path_to_actual"": ""$.items[*].id"",
+            ""paths_to_expected"": [
+              ""$[2].items[0].id"",
+              ""$[3].items[0].id""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.items[*].id"",
             ""paths_to_expected"": [
               ""$[2].items[0].id"",
@@ -6000,7 +6153,15 @@ bulk-simple-order-002,"{
       {
         ""assertions"": [
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""JSON_PART_OF"",
+            ""path_to_actual"": ""$.items[*].id"",
+            ""paths_to_expected"": [
+              ""$[2].items[0].id"",
+              ""$[3].items[0].id""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.items[*].id"",
             ""paths_to_expected"": [
               ""$[2].items[0].id"",
@@ -6140,7 +6301,15 @@ bulk-simple-order-005,"{
       {
         ""assertions"": [
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""JSON_PART_OF"",
+            ""path_to_actual"": ""$.items[*].id"",
+            ""paths_to_expected"": [
+              ""$[2].items[0].id"",
+              ""$[3].items[0].id""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.items[*].id"",
             ""paths_to_expected"": [
               ""$[2].items[0].id"",
@@ -6281,7 +6450,15 @@ bulk-simple-order-007,"{
       {
         ""assertions"": [
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""JSON_PART_OF"",
+            ""path_to_actual"": ""$.items[*].id"",
+            ""paths_to_expected"": [
+              ""$[2].items[0].id"",
+              ""$[3].items[0].id""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.items[*].id"",
             ""paths_to_expected"": [
               ""$[2].items[0].id"",
@@ -7284,7 +7461,14 @@ helpful-review-items-001,"{
       {
         ""assertions"": [
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""JSON_PART_OF"",
+            ""path_to_actual"": ""$.items[*].itemName"",
+            ""paths_to_expected"": [
+              ""$[1].reviews[0].likedItems[*].itemName""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.items[*].itemName"",
             ""paths_to_expected"": [
               ""$[1].reviews[0].likedItems[*].itemName""
@@ -7336,7 +7520,14 @@ helpful-review-items-002,"{
       {
         ""assertions"": [
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""JSON_PART_OF"",
+            ""path_to_actual"": ""$.items[*].itemName"",
+            ""paths_to_expected"": [
+              ""$[1].reviews[0].likedItems[*].itemName""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.items[*].itemName"",
             ""paths_to_expected"": [
               ""$[1].reviews[0].likedItems[*].itemName""
@@ -7396,7 +7587,14 @@ helpful-review-items-003,"{
       {
         ""assertions"": [
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""JSON_PART_OF"",
+            ""path_to_actual"": ""$.items[*].itemName"",
+            ""paths_to_expected"": [
+              ""$[1].reviews[0].likedItems[*].itemName""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.items[*].itemName"",
             ""paths_to_expected"": [
               ""$[1].reviews[0].likedItems[*].itemName""
@@ -7456,7 +7654,14 @@ helpful-review-items-007,"{
       {
         ""assertions"": [
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""JSON_PART_OF"",
+            ""path_to_actual"": ""$.items[*].itemName"",
+            ""paths_to_expected"": [
+              ""$[1].reviews[0].likedItems[*].itemName""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.items[*].itemName"",
             ""paths_to_expected"": [
               ""$[1].reviews[0].likedItems[*].itemName""
@@ -7527,7 +7732,14 @@ cheapest-rated-slices-002,"{
       {
         ""assertions"": [
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""JSON_PART_OF"",
+            ""path_to_actual"": ""$.items[*].name"",
+            ""paths_to_expected"": [
+              ""$[2].items[*].name""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.items[*].name"",
             ""paths_to_expected"": [
               ""$[2].items[*].name""
@@ -7623,7 +7835,14 @@ cheapest-rated-slices-005,"{
       {
         ""assertions"": [
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""JSON_PART_OF"",
+            ""path_to_actual"": ""$.items[*].name"",
+            ""paths_to_expected"": [
+              ""$[2].items[*].name""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.items[*].name"",
             ""paths_to_expected"": [
               ""$[2].items[*].name""
@@ -7719,7 +7938,14 @@ cheapest-rated-slices-007,"{
       {
         ""assertions"": [
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""JSON_PART_OF"",
+            ""path_to_actual"": ""$.items[*].name"",
+            ""paths_to_expected"": [
+              ""$[2].items[*].name""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.items[*].name"",
             ""paths_to_expected"": [
               ""$[2].items[*].name""
@@ -8548,7 +8774,14 @@ multi-express-orders-001,"{
       {
         ""assertions"": [
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""JSON_PART_OF"",
+            ""path_to_actual"": ""$.items[*].name"",
+            ""paths_to_expected"": [
+              ""$[2].items[*].name""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.items[*].name"",
             ""paths_to_expected"": [
               ""$[2].items[*].name""
@@ -8578,7 +8811,14 @@ multi-express-orders-001,"{
       {
         ""assertions"": [
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""JSON_PART_OF"",
+            ""path_to_actual"": ""$.items[*].name"",
+            ""paths_to_expected"": [
+              ""$[4].items[*].name""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.items[*].name"",
             ""paths_to_expected"": [
               ""$[4].items[*].name""
@@ -8683,7 +8923,14 @@ multi-express-orders-003,"{
       {
         ""assertions"": [
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""JSON_PART_OF"",
+            ""path_to_actual"": ""$.items[*].name"",
+            ""paths_to_expected"": [
+              ""$[4].items[*].name""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.items[*].name"",
             ""paths_to_expected"": [
               ""$[4].items[*].name""
@@ -8713,7 +8960,14 @@ multi-express-orders-003,"{
       {
         ""assertions"": [
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""JSON_PART_OF"",
+            ""path_to_actual"": ""$.items[*].name"",
+            ""paths_to_expected"": [
+              ""$[2].items[*].name""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.items[*].name"",
             ""paths_to_expected"": [
               ""$[2].items[*].name""
@@ -8818,7 +9072,14 @@ multi-express-orders-005,"{
       {
         ""assertions"": [
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""JSON_PART_OF"",
+            ""path_to_actual"": ""$.items[*].name"",
+            ""paths_to_expected"": [
+              ""$[4].items[*].name""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.items[*].name"",
             ""paths_to_expected"": [
               ""$[4].items[*].name""
@@ -8848,7 +9109,14 @@ multi-express-orders-005,"{
       {
         ""assertions"": [
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""JSON_PART_OF"",
+            ""path_to_actual"": ""$.items[*].name"",
+            ""paths_to_expected"": [
+              ""$[2].items[*].name""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.items[*].name"",
             ""paths_to_expected"": [
               ""$[2].items[*].name""
@@ -10553,17 +10821,26 @@ low-calorie-order-001,"{
       {
         ""assertions"": [
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""STRING_EQUALS"",
             ""path_to_actual"": ""$.restaurantId"",
             ""paths_to_expected"": [
-              ""$[1].restaurants[0].id""
+              ""$[2].restaurants[0].id""
             ]
           },
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""JSON_PART_OF"",
             ""path_to_actual"": ""$.items[*].name"",
             ""paths_to_expected"": [
-              ""$[2].items[*].name""
+              ""$[3].items[*].name"",
+              ""$[4].items[*].name""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
+            ""path_to_actual"": ""$.items[*].name"",
+            ""paths_to_expected"": [
+              ""$[3].items[*].name""
+              ""$[4].items[*].name""
             ]
           },
           {
@@ -11051,7 +11328,14 @@ build-specific-cart-001,"{
             ]
           },
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""JSON_PART_OF"",
+            ""path_to_actual"": ""$.items[*].itemName"",
+            ""paths_to_expected"": [
+              ""$[2].items[*].name""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.items[*].itemName"",
             ""paths_to_expected"": [
               ""$[2].items[*].name""
@@ -11243,7 +11527,15 @@ reorder-with-addons-006,"{
       {
         ""assertions"": [
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""JSON_PART_OF"",
+            ""path_to_actual"": ""$.items[*].name"",
+            ""paths_to_expected"": [
+              ""$[2].orders[0].items[*].name"",
+              ""$[3].items[*].name""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.items[*].name"",
             ""paths_to_expected"": [
               ""$[2].orders[0].items[*].name"",
@@ -11866,7 +12158,15 @@ bulk-simple-order-003,"{
       {
         ""assertions"": [
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""JSON_PART_OF"",
+            ""path_to_actual"": ""$.items[*].id"",
+            ""paths_to_expected"": [
+              ""$[2].items[0].id"",
+              ""$[3].items[0].id""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.items[*].id"",
             ""paths_to_expected"": [
               ""$[2].items[0].id"",
@@ -12300,7 +12600,14 @@ helpful-review-items-006,"{
       {
         ""assertions"": [
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""JSON_PART_OF"",
+            ""path_to_actual"": ""$.items[*].itemName"",
+            ""paths_to_expected"": [
+              ""$[1].reviews[0].likedItems[*].itemName""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.items[*].itemName"",
             ""paths_to_expected"": [
               ""$[1].reviews[0].likedItems[*].itemName""
@@ -12544,7 +12851,14 @@ multi-express-orders-006,"{
       {
         ""assertions"": [
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""JSON_PART_OF"",
+            ""path_to_actual"": ""$.items[*].name"",
+            ""paths_to_expected"": [
+              ""$[4].items[*].name""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.items[*].name"",
             ""paths_to_expected"": [
               ""$[4].items[*].name""
@@ -12574,7 +12888,14 @@ multi-express-orders-006,"{
       {
         ""assertions"": [
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""JSON_PART_OF"",
+            ""path_to_actual"": ""$.items[*].name"",
+            ""paths_to_expected"": [
+              ""$[2].items[*].name""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.items[*].name"",
             ""paths_to_expected"": [
               ""$[2].items[*].name""
@@ -13835,7 +14156,14 @@ clear-invalid-carts-008,"{
       {
         ""assertions"": [
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""JSON_PART_OF"",
+            ""path_to_actual"": ""$.carts[*].storeId"",
+            ""paths_to_expected"": [
+              ""$[2].carts[*].storeId""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.carts[*].storeId"",
             ""paths_to_expected"": [
               ""$[2].carts[*].storeId""
@@ -13889,7 +14217,14 @@ clear-invalid-carts-009,"{
       {
         ""assertions"": [
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""JSON_PART_OF"",
+            ""path_to_actual"": ""$.carts[*].storeId"",
+            ""paths_to_expected"": [
+              ""$[2].carts[*].storeId""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.carts[*].storeId"",
             ""paths_to_expected"": [
               ""$[2].carts[*].storeId""
@@ -13943,7 +14278,14 @@ clear-invalid-carts-010,"{
       {
         ""assertions"": [
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""JSON_PART_OF"",
+            ""path_to_actual"": ""$.carts[*].storeId"",
+            ""paths_to_expected"": [
+              ""$[2].carts[*].storeId""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.carts[*].storeId"",
             ""paths_to_expected"": [
               ""$[2].carts[*].storeId""
@@ -14347,7 +14689,15 @@ bulk-simple-order-004,"{
       {
         ""assertions"": [
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""JSON_PART_OF"",
+            ""path_to_actual"": ""$.items[*].id"",
+            ""paths_to_expected"": [
+              ""$[2].items[0].id"",
+              ""$[3].items[0].id""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.items[*].id"",
             ""paths_to_expected"": [
               ""$[2].items[0].id"",
@@ -14579,7 +14929,14 @@ helpful-review-items-004,"{
       {
         ""assertions"": [
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""JSON_PART_OF"",
+            ""path_to_actual"": ""$.items[*].itemName"",
+            ""paths_to_expected"": [
+              ""$[1].reviews[0].likedItems[*].itemName""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.items[*].itemName"",
             ""paths_to_expected"": [
               ""$[1].reviews[0].likedItems[*].itemName""
@@ -14650,7 +15007,14 @@ cheapest-rated-slices-004,"{
       {
         ""assertions"": [
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""JSON_PART_OF"",
+            ""path_to_actual"": ""$.items[*].name"",
+            ""paths_to_expected"": [
+              ""$[2].items[*].name""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.items[*].name"",
             ""paths_to_expected"": [
               ""$[2].items[*].name""
@@ -15991,7 +16355,14 @@ build-specific-cart-003,"{
             ]
           },
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""JSON_PART_OF"",
+            ""path_to_actual"": ""$.items[*].itemName"",
+            ""paths_to_expected"": [
+              ""$[2].items[*].name""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.items[*].itemName"",
             ""paths_to_expected"": [
               ""$[2].items[*].name""
@@ -16071,7 +16442,14 @@ build-specific-cart-004,"{
             ]
           },
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""JSON_PART_OF"",
+            ""path_to_actual"": ""$.items[*].itemName"",
+            ""paths_to_expected"": [
+              ""$[2].items[*].name""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.items[*].itemName"",
             ""paths_to_expected"": [
               ""$[2].items[*].name""
@@ -16151,7 +16529,14 @@ build-specific-cart-005,"{
             ]
           },
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""JSON_PART_OF"",
+            ""path_to_actual"": ""$.items[*].itemName"",
+            ""paths_to_expected"": [
+              ""$[2].items[*].name""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.items[*].itemName"",
             ""paths_to_expected"": [
               ""$[2].items[*].name""
@@ -16580,7 +16965,14 @@ helpful-review-items-008,"{
       {
         ""assertions"": [
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""JSON_PART_OF"",
+            ""path_to_actual"": ""$.items[*].itemName"",
+            ""paths_to_expected"": [
+              ""$[1].reviews[0].likedItems[*].itemName""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.items[*].itemName"",
             ""paths_to_expected"": [
               ""$[1].reviews[0].likedItems[*].itemName""
