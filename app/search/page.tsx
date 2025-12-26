@@ -610,6 +610,8 @@ export default function SearchPage() {
                         itemName: item.name,
                         price: price,
                         image: item.image || '/placeholder.svg',
+                        menuCategoryId: item.categoryId,
+                        menuCategoryName: item.categoryName || item.category,
                       },
                       'restaurant',
                       restaurantName, // Use the resolved restaurant name

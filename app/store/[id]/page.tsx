@@ -627,6 +627,8 @@ export default function RestaurantPage() {
       itemName: item.name, // Use itemName instead of name
       price: item.price,
       image: item.image,
+      menuCategoryId: item.categoryId,
+      menuCategoryName: item.categoryName || item.category,
     };
 
     const restaurantId = item.restaurantId || id;

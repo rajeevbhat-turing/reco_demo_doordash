@@ -309,6 +309,8 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
           itemName: item.name,
           price: item.price,
           image: item.image,
+          menuCategoryId: item.categoryId,
+          menuCategoryName: item.categoryName || item.category,
         },
         'restaurant',
         currentCart.storeName,
