@@ -1,5 +1,99 @@
 # Release Notes
 
+## December 26, 2025
+
+### 🗄️ Data Quality Fixes
+
+#### 1A. Review Sentiment-Rating Mismatches
+**Table Modified:** `user_reviews`
+
+**Issue:** 4,978 reviews had ratings that didn't match their text content. Examples included:
+- "Yummy!" with 1-star
+- "amazing... highly recommend" with 3-stars
+- "will order again" with 1-star
+- "disappointed" with 5-stars
+
+**Fix:** Updated review ratings to match sentiment:
+- Upgraded 4,547 positive reviews (1-4 stars → 5 stars)
+- Downgraded 444 negative reviews (3-5 stars → 1-2 stars)
+
+**Current Status:** All reviews now have ratings matching their sentiment. Rating distribution follows a realistic pattern (61% five-star, 6.5% one-star, 5.7% three-star).
+
+---
+
+#### 1B. Unrealistic Rating Distribution
+**Table Modified:** `user_reviews`
+
+**Issue:** Distribution was too flat with 43.9% of reviews at 3-4 stars. Real-world reviews are more polarized (J-curve: mostly 5-star or 1-star, fewer middle ratings).
+
+**Fix:** Adjusted distribution by converting middle ratings based on content sentiment to create polarization at extremes.
+
+**Current Status:** Achieved J-curve distribution with 67.5% at extremes (high/low) and only 5.7% at mid-range. Restaurant average ratings now range from 2.86-4.66 (spread: 1.8 stars) instead of a narrow 3.6-4.0 clustering.
+
+---
+
+#### 2. Restaurant Name-Menu Mismatches
+**Table Modified:** `menu_items`
+
+**Issue:** 11 restaurants had names indicating specific foods but didn't serve those items.
+
+**Fix:** Added 27 new menu items matching restaurant names.
+
+**Current Status:** All restaurants now have menu items matching their name.
+
+---
+
+#### 3. Missing Categories (Ice Cream, Alcohol)
+**No Fix Needed** — Database already contains complete category data.
+
+**Analysis:** Both categories exist in the database with proper data.
+
+---
+
+#### 4. Dietary Preference Filters Not Working
+**No Fix Needed** — Database has complete and correct dietary preference data.
+
+**Analysis:** Issue may be a frontend filtering logic problem, not a data issue.
+
+---
+
+### 🔧 Verifier Updates
+
+#### Set Equality Using JSON_PART_OF + JSON_CONTAINS
+
+**Use Case:** For tasks requiring unordered array comparison (same elements, order irrelevant), use the combination of `JSON_PART_OF` and `JSON_CONTAINS` operators.
+
+**How It Works:**
+- `JSON_PART_OF` ensures `actual ⊆ expected`
+- `JSON_CONTAINS` ensures `expected ⊆ actual`
+- Together, they effectively check set equality (same elements, regardless of order)
+
+**Example Configuration:**
+```json
+[
+  {
+    "operator": "JSON_PART_OF",
+    "path_to_actual": "$[*].productId",
+    "paths_to_expected": [
+      "$[0].products[*].id",
+      "$[1].products[*].id",
+      "$[2].products[*].id"
+    ]
+  },
+  {
+    "operator": "JSON_CONTAINS",
+    "path_to_actual": "$[*].productId",
+    "paths_to_expected": [
+      "$[0].products[*].id",
+      "$[1].products[*].id",
+      "$[2].products[*].id"
+    ]
+  }
+]
+```
+
+---
+
 ## December 23, 2025
 
 ### 🎨 UI Improvements
