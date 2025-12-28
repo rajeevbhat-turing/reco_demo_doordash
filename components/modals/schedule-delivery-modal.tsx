@@ -37,6 +37,24 @@ export default function ScheduleDeliveryModal({
   
   // Get current time from bootstrap store (supports simulated time)
   const getCurrentTime = useBootstrapStore(state => state.getCurrentTime);
+  const getCurrentHour = useBootstrapStore(state => state.getCurrentHour);
+  const simulatedTimezone = useBootstrapStore(state => state.simulatedTimezone);
+  // Subscribe to timeOffsetMs so component re-renders when bootstrap time changes
+  const timeOffsetMs = useBootstrapStore(state => state.timeOffsetMs);
+  
+  // Helper to get minutes in the simulated timezone
+  const getMinutesInTimezone = (date: Date): number => {
+    if (simulatedTimezone) {
+      const formatter = new Intl.DateTimeFormat('en-US', {
+        minute: 'numeric',
+        timeZone: simulatedTimezone,
+      });
+      const parts = formatter.formatToParts(date);
+      const minutePart = parts.find(p => p.type === 'minute');
+      return parseInt(minutePart?.value ?? '0', 10);
+    }
+    return date.getMinutes();
+  };
   
   // Parse hours to ensure they're numbers (handles integers, integer strings, and ISO date strings)
   // Returns { value, isValid } to distinguish between 0 (midnight) and invalid values
@@ -96,6 +114,30 @@ export default function ScheduleDeliveryModal({
   // Use parsed values if valid, otherwise use sensible defaults
   const openingHour = parsedOpening.isValid ? parsedOpening.value : 9; // Default 9 AM
   const closingHour = parsedClosing.isValid ? parsedClosing.value : 23; // Default 11 PM
+  
+  // Debug logging for time slot issues
+  useEffect(() => {
+    if (isOpen) {
+      const now = getCurrentTime();
+      console.log('[ScheduleModal Debug]', {
+        restaurantOpeningHour,
+        restaurantClosingHour,
+        parsedOpening,
+        parsedClosing,
+        openingHour,
+        closingHour,
+        currentTime: now.toISOString(),
+        currentHourLocal: now.getHours(),
+        currentHourTimezone: getCurrentHour(),
+        currentMinutesLocal: now.getMinutes(),
+        currentMinutesTimezone: getMinutesInTimezone(now),
+        simulatedTimezone,
+        timeOffsetMs,
+        isRestaurantClosed,
+      });
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen, restaurantOpeningHour, restaurantClosingHour, parsedOpening, parsedClosing, openingHour, closingHour, getCurrentTime, getCurrentHour, simulatedTimezone, timeOffsetMs, isRestaurantClosed]);
   
   // Format hour for display (e.g., 9 -> "9:00 AM", 22 -> "10:00 PM")
   const formatHourDisplay = (hour: number): string => {
@@ -173,12 +215,24 @@ export default function ScheduleDeliveryModal({
     return hour >= opening && hour < closing;
   };
 
-  // Generate time slots in 20-minute increments starting 30 minutes from now (for today)
-  // Supports simulated time via bootstrap
+  // Generate time slots in 20-minute increments starting from current time (for today)
+  // Supports simulated time via bootstrap and timezone
   const generateTimeSlotsForToday = (opening: number, closing: number) => {
     const slots: { value: string; display: string }[] = [];
     const now = getCurrentTime();
-    const currentHour = now.getHours();
+    // Use timezone-aware hour and minutes
+    const currentHour = getCurrentHour();
+    const currentMinutes = getMinutesInTimezone(now);
+
+    console.log('[generateTimeSlotsForToday]', {
+      opening,
+      closing,
+      now: now.toISOString(),
+      currentHour,
+      currentMinutes,
+      simulatedTimezone,
+      isWithinHours: isWithinOperatingHours(currentHour, opening, closing),
+    });
 
     // Determine start time
     let startTime: Date;
@@ -188,17 +242,24 @@ export default function ScheduleDeliveryModal({
       // Start from restaurant opening time
       startTime = new Date(now);
       startTime.setHours(opening, 0, 0, 0);
+      console.log('[generateTimeSlotsForToday] Branch: before opening, start from opening time');
     } else if (!isWithinOperatingHours(currentHour, opening, closing)) {
       // Restaurant is closed and won't open again today - return empty slots
+      console.log('[generateTimeSlotsForToday] Branch: after closing, returning empty');
       return [];
     } else {
-      // Restaurant is open - start 30 minutes from now
-      startTime = new Date(now.getTime() + 30 * 60000);
-      // Round to next 20-minute interval
-      const minutes = startTime.getMinutes();
-      const roundedMinutes = Math.ceil(minutes / 20) * 20;
-      startTime.setMinutes(roundedMinutes);
-      startTime.setSeconds(0);
+      // Restaurant is open - round current time UP to next 20-minute interval
+      // This gives users slots starting from the next available 20-min window
+      startTime = new Date(now);
+      const roundedMinutes = Math.ceil(currentMinutes / 20) * 20;
+      
+      if (roundedMinutes >= 60) {
+        // Rolled over to next hour
+        startTime.setHours(currentHour + 1, 0, 0, 0);
+      } else {
+        startTime.setHours(currentHour, roundedMinutes, 0, 0);
+      }
+      console.log('[generateTimeSlotsForToday] Branch: within hours, startTime:', startTime.toISOString());
     }
 
     // Determine end time based on restaurant closing hour
@@ -211,8 +272,24 @@ export default function ScheduleDeliveryModal({
       endTime.setHours(closing, 0, 0, 0);
     }
 
+    console.log('[generateTimeSlotsForToday] Times:', {
+      startTime: startTime.toISOString(),
+      endTime: endTime.toISOString(),
+      startTimeMs: startTime.getTime(),
+      endTimeMs: endTime.getTime(),
+      canGenerateSlots: startTime < endTime,
+    });
+
+    // If startTime is already at or past endTime, no slots available
+    if (startTime >= endTime) {
+      console.log('[generateTimeSlotsForToday] startTime >= endTime, returning empty');
+      return [];
+    }
+
     let currentTime = new Date(startTime);
 
+    // Generate slots up to (but not including) the closing time
+    // The last valid slot ends at closing time
     while (currentTime < endTime) {
       const startHours = currentTime.getHours();
       const startMinutes = currentTime.getMinutes();
@@ -289,7 +366,9 @@ export default function ScheduleDeliveryModal({
     return slots;
   };
 
-  const dates = useMemo(() => generateDates(), [getCurrentTime]);
+  // Include isOpen, timeOffsetMs, and simulatedTimezone in deps to regenerate dates when modal opens or bootstrap changes
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const dates = useMemo(() => generateDates(), [getCurrentTime, isOpen, timeOffsetMs, simulatedTimezone]);
   
   // When restaurant is closed, default to tomorrow if no slots available today
   const getInitialDate = () => {
@@ -308,13 +387,37 @@ export default function ScheduleDeliveryModal({
   const [selectedTimeType, setSelectedTimeType] = useState<'asap' | 'later'>(isRestaurantClosed ? 'later' : 'asap');
   const [selectedTimeSlot, setSelectedTimeSlot] = useState<string>('');
 
+  // Reset state when modal opens or bootstrap time/timezone changes
+  useEffect(() => {
+    if (isOpen) {
+      setSelectedDate(getInitialDate());
+      setSelectedTimeType(isRestaurantClosed ? 'later' : 'asap');
+      setSelectedTimeSlot('');
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen, timeOffsetMs, simulatedTimezone]);
+
   // Check if today is selected
   const isToday = selectedDate === dates[0].date;
 
+  console.log('[ScheduleModal] State check:', {
+    selectedDate,
+    'dates[0].date': dates[0]?.date,
+    isToday,
+    selectedTimeType,
+    datesLength: dates.length,
+  });
+
   // Get appropriate time slots based on whether it's today or a future day
+  // Include isOpen, timeOffsetMs, and simulatedTimezone in deps to recalculate when modal opens or bootstrap changes
   const timeSlots = useMemo(
-    () => (isToday ? generateTimeSlotsForToday(openingHour, closingHour) : generateTimeSlotsForFutureDay(openingHour, closingHour)),
-    [isToday, openingHour, closingHour]
+    () => {
+      const slots = isToday ? generateTimeSlotsForToday(openingHour, closingHour) : generateTimeSlotsForFutureDay(openingHour, closingHour);
+      console.log('[ScheduleModal] Generated timeSlots:', slots.length, 'slots');
+      return slots;
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [isToday, openingHour, closingHour, isOpen, timeOffsetMs, simulatedTimezone]
   );
   
   // Check if ASAP option should be shown (only if restaurant is currently open)
