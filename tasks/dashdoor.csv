@@ -1,13 +1,14 @@
 task_id,full_task_json,task_category_L1,task_category_L2,task_capability,task,policy_model,sumpass@10,difficulty,grader_summary
 item-addon-order-001,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""Log in using email 'lena.bennett71@example.com' and password 'c69fieW7G93U'. Order mac & cheese from West diner, select the extra cheese add on"",
+  ""task_statement"": ""Order mac & cheese from West diner, select the extra cheese add on"",
   ""task_id"": ""item-addon-order-001"",
   ""task_type"": ""GUI Comprehension, Action Execution"",
   ""simulator_config"": {
     ""bootstrap_data"": {
       ""date"": ""2025-12-19T12:00:00-08:00"",
-      ""timezone"": ""America/Los_Angeles""
+      ""timezone"": ""America/Los_Angeles"",
+      ""user"": ""lena.bennett71@example.com""
     }
   },
   ""grader_config"": {
@@ -91,7 +92,7 @@ item-addon-order-001,"{
       ]
     }
   }
-}","[""Order placement""]","[""Customizations""]","[""Search and filtering"", ""Instruction following""]","Log in using email 'lena.bennett71@example.com' and password 'c69fieW7G93U'. Order mac & cheese from West diner, select the extra cheese add on",,9,Easy,
+}","[""Order placement""]","[""Customizations""]","[""Search and filtering"", ""Instruction following""]","Order mac & cheese from West diner, select the extra cheese add on",,9,Easy,
 item-addon-order-002,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
   ""task_statement"": ""Order Bruschetta from Cafe by Frank's, select the Medium add on"",
@@ -188,7 +189,7 @@ item-addon-order-002,"{
 }","[""Order placement""]","[""Customizations""]","[""Search and filtering"", ""Instruction following""]","Order Bruschetta from Cafe by Frank's, select the Medium add on",,9,Easy,
 item-addon-order-003,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""Log in using email 'nora.chambers2@mail.test' and password 'UVRBoMFTXptv'. Order BBQ Burger from Golden Burger, select the Small add on"",
+  ""task_statement"": ""Order BBQ Burger from Golden Burger, select the Small add on"",
   ""task_type"": ""GUI Comprehension, Action Execution"",
   ""grader_config"": {
     ""state_grader_configs"": [
@@ -275,13 +276,14 @@ item-addon-order-003,"{
   ""simulator_config"": {
     ""bootstrap_data"": {
       ""date"": ""2025-12-19T12:00:00-08:00"",
-      ""timezone"": ""America/Los_Angeles""
+      ""timezone"": ""America/Los_Angeles"",
+      ""user"": ""nora.chambers2@mail.test""
     }
   }
-}","[""Order placement""]","[""Customizations""]","[""Search and filtering"", ""Instruction following""]","Log in using email 'nora.chambers2@mail.test' and password 'UVRBoMFTXptv'. Order BBQ Burger from Golden Burger, select the Small add on",,9,Easy,
+}","[""Order placement""]","[""Customizations""]","[""Search and filtering"", ""Instruction following""]","Order BBQ Burger from Golden Burger, select the Small add on",,9,Easy,
 item-addon-order-004,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""Log in using email 'hannah.young3@example.com' and password 'PvFMKFl8zE8A'. Order Mango Sticky Rice from Coastal Smokehouse, select the Berry Compote add on"",
+  ""task_statement"": ""Order Mango Sticky Rice from Coastal Smokehouse, select the Berry Compote add on"",
   ""task_type"": ""GUI Comprehension, Action Execution"",
   ""grader_config"": {
     ""state_grader_configs"": [
@@ -368,10 +370,11 @@ item-addon-order-004,"{
   ""simulator_config"": {
     ""bootstrap_data"": {
       ""date"": ""2025-12-19T12:00:00-08:00"",
-      ""timezone"": ""America/Los_Angeles""
+      ""timezone"": ""America/Los_Angeles"",
+      ""user"": ""hannah.young3@example.com""
     }
   }
-}","[""Order placement""]","[""Customizations""]","[""Search and filtering"", ""Instruction following""]","Log in using email 'hannah.young3@example.com' and password 'PvFMKFl8zE8A'. Order Mango Sticky Rice from Coastal Smokehouse, select the Berry Compote add on",,9,Easy,
+}","[""Order placement""]","[""Customizations""]","[""Search and filtering"", ""Instruction following""]","Order Mango Sticky Rice from Coastal Smokehouse, select the Berry Compote add on",,9,Easy,
 item-addon-order-005,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
   ""task_statement"": ""Order Lo Mein from The South Palace, select the Large add on"",
@@ -468,7 +471,7 @@ item-addon-order-005,"{
 }","[""Order placement""]","[""Customizations""]","[""Search and filtering"", ""Instruction following""]","Order Lo Mein from The South Palace, select the Large add on",,9,Easy,
 item-addon-order-006,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""Log in using email 'quinn.chambers5@inbox.local' and password 'B853IgN95Dci'. Order Fettuccine Alfredo from West Village Cucina, select the Large add on"",
+  ""task_statement"": ""Order Fettuccine Alfredo from West Village Cucina, select the Large add on"",
   ""task_type"": ""GUI Comprehension, Action Execution"",
   ""grader_config"": {
     ""state_grader_configs"": [
@@ -555,10 +558,11 @@ item-addon-order-006,"{
   ""simulator_config"": {
     ""bootstrap_data"": {
       ""date"": ""2025-12-19T12:00:00-08:00"",
-      ""timezone"": ""America/Los_Angeles""
+      ""timezone"": ""America/Los_Angeles"",
+      ""user"": ""quinn.chambers5@inbox.local""
     }
   }
-}","[""Order placement""]","[""Customizations""]","[""Search and filtering"", ""Instruction following""]","Log in using email 'quinn.chambers5@inbox.local' and password 'B853IgN95Dci'. Order Fettuccine Alfredo from West Village Cucina, select the Large add on",,9,Easy,
+}","[""Order placement""]","[""Customizations""]","[""Search and filtering"", ""Instruction following""]","Order Fettuccine Alfredo from West Village Cucina, select the Large add on",,9,Easy,
 item-addon-order-007,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
   ""task_statement"": ""Order Lamb Rogan Josh from Tandoor by West, select the Large add on"",
@@ -927,7 +931,7 @@ nearest-cheapest-choice-003,"{
 }","[""Menu Viewing""]","[""Restaurant discovery & filtering"", ""Price & rating tradeoffs""]","[""Search and filtering"", ""Decision making"", ""Instruction following""]","Order from the nearest Seafood restaurant. Get either a Calamari or a Ceviche, choosing the cheaper option, and if they cost the same, pick the one with the higher rating. Have it delivered to my other address.",,3,Medium,
 nearest-cheapest-choice-004,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""Log in using email 'willow.nguyen9@dashdoor.test' and password 'nZzih6tZg1v6'. Order from the nearest Sandwiches restaurant. Get either a Sweet Potato Wedges or a Mini Cheeseburger Sliders, choosing the cheaper option, and if they cost the same, pick the one with the higher rating. Have it delivered to my office address."",
+  ""task_statement"": ""Order from the nearest Sandwiches restaurant. Get either a Sweet Potato Wedges or a Mini Cheeseburger Sliders, choosing the cheaper option, and if they cost the same, pick the one with the higher rating. Have it delivered to my office address."",
   ""grader_config"": {
     ""state_grader_configs"": [
       {
@@ -1017,10 +1021,11 @@ nearest-cheapest-choice-004,"{
   ""simulator_config"": {
     ""bootstrap_data"": {
       ""date"": ""2025-12-19T12:00:00-08:00"",
-      ""timezone"": ""America/Los_Angeles""
+      ""timezone"": ""America/Los_Angeles"",
+      ""user"": ""willow.nguyen9@dashdoor.test""
     }
   }
-}","[""Menu Viewing""]","[""Restaurant discovery & filtering"", ""Price & rating tradeoffs""]","[""Search and filtering"", ""Decision making"", ""Instruction following""]","Log in using email 'willow.nguyen9@dashdoor.test' and password 'nZzih6tZg1v6'. Order from the nearest Sandwiches restaurant. Get either a Sweet Potato Wedges or a Mini Cheeseburger Sliders, choosing the cheaper option, and if they cost the same, pick the one with the higher rating. Have it delivered to my office address.",,3,Medium,
+}","[""Menu Viewing""]","[""Restaurant discovery & filtering"", ""Price & rating tradeoffs""]","[""Search and filtering"", ""Decision making"", ""Instruction following""]","Order from the nearest Sandwiches restaurant. Get either a Sweet Potato Wedges or a Mini Cheeseburger Sliders, choosing the cheaper option, and if they cost the same, pick the one with the higher rating. Have it delivered to my office address.",,3,Medium,
 nearest-cheapest-choice-005,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
   ""task_statement"": ""I want to get either a Citrus Shrimp Tacos or a Sweet Potato Wedges, choosing the cheaper option, and if they cost the same, pick the one with the higher rating. Have it delivered to my office address."",
@@ -1100,7 +1105,7 @@ nearest-cheapest-choice-005,"{
 }","[""Menu Viewing""]","[""Restaurant discovery & filtering"", ""Price & rating tradeoffs""]","[""Search and filtering"", ""Decision making"", ""Instruction following""]","I want to get either a Citrus Shrimp Tacos or a Sweet Potato Wedges, choosing the cheaper option, and if they cost the same, pick the one with the higher rating. Have it delivered to my office address.",,3,Medium,
 nearest-cheapest-choice-006,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""Log in using email 'quinn.sawyer11@example.com' and password 'itAhCrNipR0H'. Order from the nearest Salads restaurant. Get either a Custom Salad or a Bottled Water, choosing the cheaper option, and if they cost the same, pick the one with the higher rating. Have it delivered to my other address."",
+  ""task_statement"": ""Order from the nearest Salads restaurant. Get either a Custom Salad or a Bottled Water, choosing the cheaper option, and if they cost the same, pick the one with the higher rating. Have it delivered to my other address."",
   ""grader_config"": {
     ""state_grader_configs"": [
       {
@@ -1190,10 +1195,11 @@ nearest-cheapest-choice-006,"{
   ""simulator_config"": {
     ""bootstrap_data"": {
       ""date"": ""2025-12-19T12:00:00-08:00"",
-      ""timezone"": ""America/Los_Angeles""
+      ""timezone"": ""America/Los_Angeles"",
+      ""user"": ""quinn.sawyer11@example.com""
     }
   }
-}","[""Menu Viewing""]","[""Restaurant discovery & filtering"", ""Price & rating tradeoffs""]","[""Search and filtering"", ""Decision making"", ""Instruction following""]","Log in using email 'quinn.sawyer11@example.com' and password 'itAhCrNipR0H'. Order from the nearest Salads restaurant. Get either a Custom Salad or a Bottled Water, choosing the cheaper option, and if they cost the same, pick the one with the higher rating. Have it delivered to my other address.",,3,Medium,
+}","[""Menu Viewing""]","[""Restaurant discovery & filtering"", ""Price & rating tradeoffs""]","[""Search and filtering"", ""Decision making"", ""Instruction following""]","Order from the nearest Salads restaurant. Get either a Custom Salad or a Bottled Water, choosing the cheaper option, and if they cost the same, pick the one with the higher rating. Have it delivered to my other address.",,3,Medium,
 nearest-cheapest-choice-007,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
   ""task_statement"": ""I want to get either a Mini Cheeseburger or a Cheeseburger, choosing the cheaper option, and if they cost the same, pick the one with the higher rating. Have it delivered to my other address."",
@@ -1266,7 +1272,8 @@ nearest-cheapest-choice-007,"{
   ""simulator_config"": {
     ""bootstrap_data"": {
       ""date"": ""2025-12-19T12:00:00-08:00"",
-      ""timezone"": ""America/Los_Angeles""
+      ""timezone"": ""America/Los_Angeles"",
+      ""user"": ""elias.young12@dashdoor.test""
     }
   }
 }","[""Menu Viewing""]","[""Restaurant discovery & filtering"", ""Price & rating tradeoffs""]","[""Search and filtering"", ""Decision making"", ""Instruction following""]","I want to get either a Mini Cheeseburger or a Cheeseburger, choosing the cheaper option, and if they cost the same, pick the one with the higher rating. Have it delivered to my other address.",,3,Medium,
@@ -1328,12 +1335,13 @@ new-cheapest-restaurant-001,"{
 }","[""Order History""]","[""Restaurant discovery & filtering"", ""Reorder & past orders""]","[""Order history analysis"", ""Search and filtering"", ""Decision making""]",Help me find the best cheapest vegan or vegetarian restaurant option that I have not ordered from in the past.,,6,Medium,
 new-cheapest-restaurant-002,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""Log in using email 'milo.walsh13@dashdoor.test' and password 'bmncNnz5BhgJ'. Help me find the best cheapest Steakhouse or Thai restaurant option that I have not ordered from in the past."",
+  ""task_statement"": ""Help me find the best cheapest Steakhouse or Thai restaurant option that I have not ordered from in the past."",
   ""task_type"": ""Multi-Step Task Planning, GUI Comprehension, Decision Making"",
   ""simulator_config"": {
     ""bootstrap_data"": {
       ""date"": ""2025-12-19T12:00:00-08:00"",
-      ""timezone"": ""America/Los_Angeles""
+      ""timezone"": ""America/Los_Angeles"",
+      ""user"": ""milo.walsh13@dashdoor.test""
     }
   },
   ""grader_config"": {
@@ -1380,15 +1388,16 @@ new-cheapest-restaurant-002,"{
     }
   },
   ""task_id"": ""new-cheapest-restaurant-002""
-}","[""Order History""]","[""Restaurant discovery & filtering"", ""Reorder & past orders""]","[""Order history analysis"", ""Search and filtering"", ""Decision making""]",Log in using email 'milo.walsh13@dashdoor.test' and password 'bmncNnz5BhgJ'. Help me find the best cheapest Steakhouse or Thai restaurant option that I have not ordered from in the past.,,6,Medium,
+}","[""Order History""]","[""Restaurant discovery & filtering"", ""Reorder & past orders""]","[""Order history analysis"", ""Search and filtering"", ""Decision making""]",Help me find the best cheapest Steakhouse or Thai restaurant option that I have not ordered from in the past.,,6,Medium,
 new-cheapest-restaurant-003,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""Log in using email 'elias.quintero14@inbox.local' and password 'M6GKHVjk9tCS'. Help me find the best cheapest Chinese or Breakfast & Brunch restaurant option that I have not ordered from in the past."",
+  ""task_statement"": ""Help me find the best cheapest Chinese or Breakfast & Brunch restaurant option that I have not ordered from in the past."",
   ""task_type"": ""Multi-Step Task Planning, GUI Comprehension, Decision Making"",
   ""simulator_config"": {
     ""bootstrap_data"": {
       ""date"": ""2025-12-19T12:00:00-08:00"",
-      ""timezone"": ""America/Los_Angeles""
+      ""timezone"": ""America/Los_Angeles"",
+      ""user"": ""elias.quintero14@inbox.local""
     }
   },
   ""grader_config"": {
@@ -1435,7 +1444,7 @@ new-cheapest-restaurant-003,"{
     }
   },
   ""task_id"": ""new-cheapest-restaurant-003""
-}","[""Order History""]","[""Restaurant discovery & filtering"", ""Reorder & past orders""]","[""Order history analysis"", ""Search and filtering"", ""Decision making""]",Log in using email 'elias.quintero14@inbox.local' and password 'M6GKHVjk9tCS'. Help me find the best cheapest Chinese or Breakfast & Brunch restaurant option that I have not ordered from in the past.,,6,Medium,
+}","[""Order History""]","[""Restaurant discovery & filtering"", ""Reorder & past orders""]","[""Order history analysis"", ""Search and filtering"", ""Decision making""]",Help me find the best cheapest Chinese or Breakfast & Brunch restaurant option that I have not ordered from in the past.,,6,Medium,
 new-cheapest-restaurant-004,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
   ""task_statement"": ""Help me find the best cheapest Middle Eastern or American restaurant option that I have not ordered from in the past."",
@@ -1662,7 +1671,7 @@ new-cheapest-restaurant-007,"{
 }","[""Order History""]","[""Restaurant discovery & filtering"", ""Reorder & past orders""]","[""Order history analysis"", ""Search and filtering"", ""Decision making""]",Help me find the best cheapest Seafood or Chinese restaurant option that I have not ordered from in the past.,,6,Medium,
 replace-payment-card-001,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""Delete my current card details and add a new card 7867 7867 7867 7867 with CVV 111 and expiry date june 2029. Use the zipcode of my current address."",
+  ""task_statement"": ""Delete my current card details and add a new card 7867786778677867 with CVV 111 and expiry date june 2029. Use the zipcode of my current address."",
   ""task_id"": ""replace-payment-card-001"",
   ""task_type"": ""GUI Comprehension, Action Execution, Information Retrieval"",
   ""simulator_config"": {
@@ -1726,10 +1735,10 @@ replace-payment-card-001,"{
       ]
     }
   }
-}","[""Payment & Checkout""]","[""Payment method management""]","[""Instruction following"", ""Form filling"", ""UI Elements: Text Fields""]",Delete my current card details and add a new card 7867 7867 7867 7867 with CVV 111 and expiry date june 2029. Use the zipcode of my current address.,,5,Medium,
+}","[""Payment & Checkout""]","[""Payment method management""]","[""Instruction following"", ""Form filling"", ""UI Elements: Text Fields""]",Delete my current card details and add a new card 7867786778677867 with CVV 111 and expiry date june 2029. Use the zipcode of my current address.,,5,Medium,
 replace-payment-card-002,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""Delete my current card details and add a new card 5144 5814 6576 6241 with CVV 289 and expiry date March 2028. Use the zipcode of my current house address."",
+  ""task_statement"": ""Delete my current card details and add a new card 5144581465766241 with CVV 289 and expiry date March 2028. Use the zipcode of my current house address."",
   ""task_type"": ""GUI Comprehension, Action Execution, Information Retrieval"",
   ""simulator_config"": {
     ""bootstrap_data"": {
@@ -1793,7 +1802,7 @@ replace-payment-card-002,"{
     }
   },
   ""task_id"": ""replace-payment-card-002""
-}","[""Payment & Checkout""]","[""Payment method management""]","[""Instruction following"", ""Form filling"", ""UI Elements: Text Fields""]",Delete my current card details and add a new card 5144 5814 6576 6241 with CVV 289 and expiry date March 2028. Use the zipcode of my current house address.,,5,Medium,
+}","[""Payment & Checkout""]","[""Payment method management""]","[""Instruction following"", ""Form filling"", ""UI Elements: Text Fields""]",Delete my current card details and add a new card 5144581465766241 with CVV 289 and expiry date March 2028. Use the zipcode of my current house address.,,5,Medium,
 replace-payment-card-003,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
   ""task_statement"": ""Delete my current card details and add a new card 4253200929882094 with CVV 575 and expiry date May 2032. Use the zipcode of my current house address."",
@@ -2238,12 +2247,13 @@ rate-last-order-002,"{
 }","[""Ratings & Reviews""]","[""Review creation""]","[""Instruction following"", ""Text generation""]",Rate my last order from Chipotle Mexican Grill a 1 star because the Chicken Bowl was stale and overcooked.,,8,Easy,
 rate-last-order-003,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""Log in using email 'soren.young21@dashdoor.test' and password '1tpQP3JTkLoa'. Rate my last order from Aunties' Fish & Chips a 5 star because the Shrimp Scampi was delicious and fresh."",
+  ""task_statement"": ""Rate my last order from Aunties' Fish & Chips a 5 star because the Shrimp Scampi was delicious and fresh."",
   ""task_type"": ""GUI Comprehension, Action Execution"",
   ""simulator_config"": {
     ""bootstrap_data"": {
       ""date"": ""2025-12-19T12:00:00-08:00"",
-      ""timezone"": ""America/Los_Angeles""
+      ""timezone"": ""America/Los_Angeles"",
+      ""user"": ""soren.young21@dashdoor.test""
     }
   },
   ""grader_config"": {
@@ -2287,7 +2297,7 @@ rate-last-order-003,"{
     }
   },
   ""task_id"": ""rate-last-order-003""
-}","[""Ratings & Reviews""]","[""Review creation""]","[""Instruction following"", ""Text generation""]",Log in using email 'soren.young21@dashdoor.test' and password '1tpQP3JTkLoa'. Rate my last order from Aunties' Fish & Chips a 5 star because the Shrimp Scampi was delicious and fresh.,,8,Easy,
+}","[""Ratings & Reviews""]","[""Review creation""]","[""Instruction following"", ""Text generation""]",Rate my last order from Aunties' Fish & Chips a 5 star because the Shrimp Scampi was delicious and fresh.,,8,Easy,
 rate-last-order-004,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
   ""task_statement"": ""Rate my last order from Brooklyn Smokehouse a 3 star because the Garlic Herb Fries was mediocre and arrived lukewarm."",
@@ -2343,12 +2353,13 @@ rate-last-order-004,"{
 }","[""Ratings & Reviews""]","[""Review creation""]","[""Instruction following"", ""Text generation""]",Rate my last order from Brooklyn Smokehouse a 3 star because the Garlic Herb Fries was mediocre and arrived lukewarm.,,8,Easy,
 rate-last-order-005,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""Log in using email 'nora.nguyen25@mail.test' and password 'aM31d8gfXEsm'. Rate my last order from Isla's House a 2 star because the Miso Glazed Salmon Tacos was wrong and missing."",
+  ""task_statement"": ""Rate my last order from Isla's House a 2 star because the Miso Glazed Salmon Tacos was wrong and missing."",
   ""task_type"": ""GUI Comprehension, Action Execution"",
   ""simulator_config"": {
     ""bootstrap_data"": {
       ""date"": ""2025-12-19T12:00:00-08:00"",
-      ""timezone"": ""America/Los_Angeles""
+      ""timezone"": ""America/Los_Angeles"",
+      ""user"": ""nora.nguyen25@mail.test""
     }
   },
   ""grader_config"": {
@@ -2392,7 +2403,7 @@ rate-last-order-005,"{
     }
   },
   ""task_id"": ""rate-last-order-005""
-}","[""Ratings & Reviews""]","[""Review creation""]","[""Instruction following"", ""Text generation""]",Log in using email 'nora.nguyen25@mail.test' and password 'aM31d8gfXEsm'. Rate my last order from Isla's House a 2 star because the Miso Glazed Salmon Tacos was wrong and missing.,,8,Easy,
+}","[""Ratings & Reviews""]","[""Review creation""]","[""Instruction following"", ""Text generation""]",Rate my last order from Isla's House a 2 star because the Miso Glazed Salmon Tacos was wrong and missing.,,8,Easy,
 rate-last-order-006,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
   ""task_statement"": ""Rate my last order from Auntie's Indian Grill a 5 star because the Pakoras was fantastic and fresh."",
@@ -2516,7 +2527,14 @@ clear-invalid-carts-001,"{
       {
         ""assertions"": [
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""JSON_PART_OF"",
+            ""path_to_actual"": ""$.carts[*].storeId"",
+            ""paths_to_expected"": [
+              ""$[2].carts[*].storeId""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.carts[*].storeId"",
             ""paths_to_expected"": [
               ""$[2].carts[*].storeId""
@@ -2555,12 +2573,13 @@ clear-invalid-carts-001,"{
 }","[""Cart Management""]","[""Cart cleanup""]","[""Search and filtering"", ""Instruction following""]",I recently changed my address so remove all the carts from restaurants no longer in my area.,,0,Hard,
 clear-invalid-carts-002,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""Log in using email 'lena.greene37@mail.test' and password 'u4MtdBcyxx9l'. I recently changed my address so remove all the carts from restaurants no longer in my area."",
+  ""task_statement"": ""I recently changed my address so remove all the carts from restaurants no longer in my area."",
   ""task_type"": ""GUI Comprehension, Action Execution, Decision Making, Element Identification"",
   ""simulator_config"": {
     ""bootstrap_data"": {
       ""date"": ""2025-12-19T12:00:00-08:00"",
-      ""timezone"": ""America/Los_Angeles""
+      ""timezone"": ""America/Los_Angeles"",
+      ""user"": ""lena.greene37@mail.test""
     }
   },
   ""grader_config"": {
@@ -2568,7 +2587,14 @@ clear-invalid-carts-002,"{
       {
         ""assertions"": [
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""JSON_PART_OF"",
+            ""path_to_actual"": ""$.carts[*].storeId"",
+            ""paths_to_expected"": [
+              ""$[2].carts[*].storeId""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.carts[*].storeId"",
             ""paths_to_expected"": [
               ""$[2].carts[*].storeId""
@@ -2605,15 +2631,16 @@ clear-invalid-carts-002,"{
     }
   },
   ""task_id"": ""clear-invalid-carts-002""
-}","[""Cart Management""]","[""Cart cleanup""]","[""Search and filtering"", ""Instruction following""]",Log in using email 'lena.greene37@mail.test' and password 'u4MtdBcyxx9l'. I recently changed my address so remove all the carts from restaurants no longer in my area.,,0,Hard,
+}","[""Cart Management""]","[""Cart cleanup""]","[""Search and filtering"", ""Instruction following""]",I recently changed my address so remove all the carts from restaurants no longer in my area.,,0,Hard,
 clear-invalid-carts-003,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""Log in using email 'milo.kaufman48@mail.test' and password 'Nx5MYjCPC1za'. I recently changed my address so remove all the carts from restaurants no longer in my area."",
+  ""task_statement"": ""I recently changed my address so remove all the carts from restaurants no longer in my area."",
   ""task_type"": ""GUI Comprehension, Action Execution, Decision Making, Element Identification"",
   ""simulator_config"": {
     ""bootstrap_data"": {
       ""date"": ""2025-12-19T12:00:00-08:00"",
-      ""timezone"": ""America/Los_Angeles""
+      ""timezone"": ""America/Los_Angeles"",
+      ""user"": ""milo.kaufman48@mail.test""
     }
   },
   ""grader_config"": {
@@ -2621,7 +2648,14 @@ clear-invalid-carts-003,"{
       {
         ""assertions"": [
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""JSON_PART_OF"",
+            ""path_to_actual"": ""$.carts[*].storeId"",
+            ""paths_to_expected"": [
+              ""$[2].carts[*].storeId""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.carts[*].storeId"",
             ""paths_to_expected"": [
               ""$[2].carts[*].storeId""
@@ -2658,7 +2692,7 @@ clear-invalid-carts-003,"{
     }
   },
   ""task_id"": ""clear-invalid-carts-003""
-}","[""Cart Management""]","[""Cart cleanup""]","[""Search and filtering"", ""Instruction following""]",Log in using email 'milo.kaufman48@mail.test' and password 'Nx5MYjCPC1za'. I recently changed my address so remove all the carts from restaurants no longer in my area.,,0,Hard,
+}","[""Cart Management""]","[""Cart cleanup""]","[""Search and filtering"", ""Instruction following""]",I recently changed my address so remove all the carts from restaurants no longer in my area.,,0,Hard,
 clear-invalid-carts-004,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
   ""task_statement"": ""I recently changed my address so remove all the carts from restaurants no longer in my area."",
@@ -2675,7 +2709,14 @@ clear-invalid-carts-004,"{
       {
         ""assertions"": [
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""JSON_PART_OF"",
+            ""path_to_actual"": ""$.carts[*].storeId"",
+            ""paths_to_expected"": [
+              ""$[2].carts[*].storeId""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.carts[*].storeId"",
             ""paths_to_expected"": [
               ""$[2].carts[*].storeId""
@@ -2729,7 +2770,14 @@ clear-invalid-carts-005,"{
       {
         ""assertions"": [
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""JSON_PART_OF"",
+            ""path_to_actual"": ""$.carts[*].storeId"",
+            ""paths_to_expected"": [
+              ""$[2].carts[*].storeId""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.carts[*].storeId"",
             ""paths_to_expected"": [
               ""$[2].carts[*].storeId""
@@ -2783,7 +2831,14 @@ clear-invalid-carts-006,"{
       {
         ""assertions"": [
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""JSON_PART_OF"",
+            ""path_to_actual"": ""$.carts[*].storeId"",
+            ""paths_to_expected"": [
+              ""$[2].carts[*].storeId""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.carts[*].storeId"",
             ""paths_to_expected"": [
               ""$[2].carts[*].storeId""
@@ -2837,7 +2892,14 @@ clear-invalid-carts-007,"{
       {
         ""assertions"": [
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""JSON_PART_OF"",
+            ""path_to_actual"": ""$.carts[*].storeId"",
+            ""paths_to_expected"": [
+              ""$[2].carts[*].storeId""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.carts[*].storeId"",
             ""paths_to_expected"": [
               ""$[2].carts[*].storeId""
@@ -2877,13 +2939,14 @@ clear-invalid-carts-007,"{
 }","[""Cart Management""]","[""Cart cleanup""]","[""Search and filtering"", ""Instruction following""]",I recently changed my address so remove all the carts from restaurants no longer in my area.,,0,Hard,
 replace-cart-item-001,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""Log in using email 'yuna.lopez1959@mail.test' and password 'vv7sqJGGkNct'. I created a cart from Desserts Cellar not too long ago, replace one of the smoked salmon tartine with a Truffle Smash Burger and place an order for 3:15 PM tomorrow."",
+  ""task_statement"": ""I created a cart from Desserts Cellar not too long ago, replace one of the smoked salmon tartine with a Truffle Smash Burger and place an order for 3:15 PM tomorrow."",
   ""task_id"": ""replace-cart-item-001"",
   ""task_type"": ""GUI Comprehension, Action Execution"",
   ""simulator_config"": {
     ""bootstrap_data"": {
       ""date"": ""2025-12-19T12:00:00-08:00"",
-      ""timezone"": ""America/Los_Angeles""
+      ""timezone"": ""America/Los_Angeles"",
+      ""user"": ""yuna.lopez1959@mail.test""
     }
   },
   ""grader_config"": {
@@ -2891,7 +2954,15 @@ replace-cart-item-001,"{
       {
         ""assertions"": [
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""JSON_PART_OF"",
+            ""path_to_actual"": ""$.items[*].id"",
+            ""paths_to_expected"": [
+              ""$[0].carts[0].items[*].id"",
+              ""$[1].items[0].id""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.items[*].id"",
             ""paths_to_expected"": [
               ""$[0].carts[0].items[*].id"",
@@ -2961,7 +3032,7 @@ replace-cart-item-001,"{
       ]
     }
   }
-}","[""Cart Management""]","[""Cart editing & item swaps"", ""Delivery scheduling""]","[""Cart manipulation"", ""Scheduling"", ""Order Placement""]","Log in using email 'yuna.lopez1959@mail.test' and password 'vv7sqJGGkNct'. I created a cart from Desserts Cellar not too long ago, replace one of the smoked salmon tartine with a Truffle Smash Burger and place an order for 3:15 PM tomorrow.",,7,Medium,
+}","[""Cart Management""]","[""Cart editing & item swaps"", ""Delivery scheduling""]","[""Cart manipulation"", ""Scheduling"", ""Order Placement""]","I created a cart from Desserts Cellar not too long ago, replace one of the smoked salmon tartine with a Truffle Smash Burger and place an order for 3:15 PM tomorrow.",,7,Medium,
 replace-cart-item-002,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
   ""task_statement"": ""I created a cart from Sushi Pantry not too long ago, replace one of the Bourbon Glazed Pork Tenderloin with a Chocolate Lava Pots and place an order for 6:00 PM-6:20 PM tomorrow."",
@@ -2969,7 +3040,8 @@ replace-cart-item-002,"{
   ""simulator_config"": {
     ""bootstrap_data"": {
       ""date"": ""2025-12-19T12:00:00-08:00"",
-      ""timezone"": ""America/Los_Angeles""
+      ""timezone"": ""America/Los_Angeles"",
+      ""user"": ""nora.bennett66@example.com""
     }
   },
   ""grader_config"": {
@@ -2977,7 +3049,15 @@ replace-cart-item-002,"{
       {
         ""assertions"": [
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""JSON_PART_OF"",
+            ""path_to_actual"": ""$.items[*].id"",
+            ""paths_to_expected"": [
+              ""$[0].carts[0].items[*].id"",
+              ""$[1].items[0].id""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.items[*].id"",
             ""paths_to_expected"": [
               ""$[0].carts[0].items[*].id"",
@@ -3056,7 +3136,8 @@ replace-cart-item-003,"{
   ""simulator_config"": {
     ""bootstrap_data"": {
       ""date"": ""2025-12-19T12:00:00-08:00"",
-      ""timezone"": ""America/Los_Angeles""
+      ""timezone"": ""America/Los_Angeles"",
+      ""user"": ""talia.turner79@inbox.local""
     }
   },
   ""grader_config"": {
@@ -3064,7 +3145,15 @@ replace-cart-item-003,"{
       {
         ""assertions"": [
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""JSON_PART_OF"",
+            ""path_to_actual"": ""$.items[*].id"",
+            ""paths_to_expected"": [
+              ""$[0].carts[0].items[*].id"",
+              ""$[1].items[0].id""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.items[*].id"",
             ""paths_to_expected"": [
               ""$[0].carts[0].items[*].id"",
@@ -3143,7 +3232,8 @@ replace-cart-item-004,"{
   ""simulator_config"": {
     ""bootstrap_data"": {
       ""date"": ""2025-12-19T12:00:00-08:00"",
-      ""timezone"": ""America/Los_Angeles""
+      ""timezone"": ""America/Los_Angeles"",
+      ""user"": ""elias.sawyer80@example.com""
     }
   },
   ""grader_config"": {
@@ -3151,7 +3241,15 @@ replace-cart-item-004,"{
       {
         ""assertions"": [
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""JSON_PART_OF"",
+            ""path_to_actual"": ""$.items[*].id"",
+            ""paths_to_expected"": [
+              ""$[0].carts[0].items[*].id"",
+              ""$[1].items[0].id""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.items[*].id"",
             ""paths_to_expected"": [
               ""$[0].carts[0].items[*].id"",
@@ -3239,7 +3337,15 @@ replace-cart-item-005,"{
       {
         ""assertions"": [
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""JSON_PART_OF"",
+            ""path_to_actual"": ""$.items[*].id"",
+            ""paths_to_expected"": [
+              ""$[0].carts[0].items[*].id"",
+              ""$[1].items[0].id""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.items[*].id"",
             ""paths_to_expected"": [
               ""$[0].carts[0].items[*].id"",
@@ -3318,7 +3424,8 @@ replace-cart-item-006,"{
   ""simulator_config"": {
     ""bootstrap_data"": {
       ""date"": ""2025-12-19T12:00:00-08:00"",
-      ""timezone"": ""America/Los_Angeles""
+      ""timezone"": ""America/Los_Angeles"",
+      ""user"": ""omar.owens131@mail.test""
     }
   },
   ""grader_config"": {
@@ -3326,7 +3433,15 @@ replace-cart-item-006,"{
       {
         ""assertions"": [
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""JSON_PART_OF"",
+            ""path_to_actual"": ""$.items[*].id"",
+            ""paths_to_expected"": [
+              ""$[0].carts[0].items[*].id"",
+              ""$[1].items[0].id""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.items[*].id"",
             ""paths_to_expected"": [
               ""$[0].carts[0].items[*].id"",
@@ -3414,7 +3529,15 @@ replace-cart-item-007,"{
       {
         ""assertions"": [
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""JSON_PART_OF"",
+            ""path_to_actual"": ""$.items[*].id"",
+            ""paths_to_expected"": [
+              ""$[0].carts[0].items[*].id"",
+              ""$[1].items[0].id""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.items[*].id"",
             ""paths_to_expected"": [
               ""$[0].carts[0].items[*].id"",
@@ -3546,7 +3669,15 @@ reorder-with-addons-002,"{
       {
         ""assertions"": [
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""JSON_PART_OF"",
+            ""path_to_actual"": ""$.items[*].name"",
+            ""paths_to_expected"": [
+              ""$[2].orders[0].items[*].name"",
+              ""$[3].items[*].name""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.items[*].name"",
             ""paths_to_expected"": [
               ""$[2].orders[0].items[*].name"",
@@ -3667,7 +3798,15 @@ reorder-with-addons-003,"{
       {
         ""assertions"": [
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""JSON_PART_OF"",
+            ""path_to_actual"": ""$.items[*].name"",
+            ""paths_to_expected"": [
+              ""$[2].orders[0].items[*].name"",
+              ""$[3].items[*].name""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.items[*].name"",
             ""paths_to_expected"": [
               ""$[2].orders[0].items[*].name"",
@@ -3788,7 +3927,15 @@ reorder-with-addons-004,"{
       {
         ""assertions"": [
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""JSON_PART_OF"",
+            ""path_to_actual"": ""$.items[*].name"",
+            ""paths_to_expected"": [
+              ""$[2].orders[0].items[*].name"",
+              ""$[3].items[*].name""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.items[*].name"",
             ""paths_to_expected"": [
               ""$[2].orders[0].items[*].name"",
@@ -3851,12 +3998,13 @@ reorder-with-addons-004,"{
 }","[""Reorder""]","[""Reorder & past orders"", ""Cart editing & item swaps"", ""Coupon application""]","[""Order history analysis"", ""Instruction following"", ""Order Placement""]","Reorder my last order from Skyline Kitchen, also add 4 servings of Mango Sticky Rice this time. Place the order to my apartment on My Buddy's, 4416 N Clark St. The apartment number is 571 and 9908 is the entry code. Apply CC7OFF coupon",,1,Hard,
 reorder-with-addons-005,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""Log in using email 'nora.reed246@dashdoor.test' and password 'aHmBKZw3vO1J'. Reorder my last order from Skyline Bistro, also add 3 servings of Mango Lassi this time. Place the order to my apartment on 371 Hanover St. The apartment number is 186 and 5837 is the entry code. Apply JC20OFF coupon"",
+  ""task_statement"": ""Reorder my last order from Skyline Bistro, also add 3 servings of Mango Lassi this time. Place the order to my apartment on 371 Hanover St. The apartment number is 186 and 5837 is the entry code. Apply JC20OFF coupon"",
   ""task_type"": ""GUI Comprehension, Action Execution, Decision Making, Element Identification, Multi-Step Task Planning"",
   ""simulator_config"": {
     ""bootstrap_data"": {
       ""date"": ""2025-12-19T12:00:00-08:00"",
-      ""timezone"": ""America/Los_Angeles""
+      ""timezone"": ""America/Los_Angeles"",
+      ""user"": ""nora.reed246@dashdoor.test""
     }
   },
   ""grader_config"": {
@@ -3908,7 +4056,15 @@ reorder-with-addons-005,"{
       {
         ""assertions"": [
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""JSON_PART_OF"",
+            ""path_to_actual"": ""$.items[*].name"",
+            ""paths_to_expected"": [
+              ""$[2].orders[0].items[*].name"",
+              ""$[3].items[*].name""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.items[*].name"",
             ""paths_to_expected"": [
               ""$[2].orders[0].items[*].name"",
@@ -3968,7 +4124,7 @@ reorder-with-addons-005,"{
     }
   },
   ""task_id"": ""reorder-with-addons-005""
-}","[""Reorder""]","[""Reorder & past orders"", ""Cart editing & item swaps"", ""Coupon application""]","[""Order history analysis"", ""Instruction following"", ""Order Placement""]","Log in using email 'nora.reed246@dashdoor.test' and password 'aHmBKZw3vO1J'. Reorder my last order from Skyline Bistro, also add 3 servings of Mango Lassi this time. Place the order to my apartment on 371 Hanover St. The apartment number is 186 and 5837 is the entry code. Apply JC20OFF coupon",,1,Hard,
+}","[""Reorder""]","[""Reorder & past orders"", ""Cart editing & item swaps"", ""Coupon application""]","[""Order history analysis"", ""Instruction following"", ""Order Placement""]","Reorder my last order from Skyline Bistro, also add 3 servings of Mango Lassi this time. Place the order to my apartment on 371 Hanover St. The apartment number is 186 and 5837 is the entry code. Apply JC20OFF coupon",,1,Hard,
 reorder-with-addons-007,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
   ""task_statement"": ""Reorder my last order from Evergreen Market, also add 2 servings of Passionfruit Agua Fresca this time. Place the order to my apartment on 7530 S Stony Island Ave. The apartment number is 44U and 5860 is the entry code. Apply SRB16OFF coupon"",
@@ -4029,7 +4185,15 @@ reorder-with-addons-007,"{
       {
         ""assertions"": [
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""JSON_PART_OF"",
+            ""path_to_actual"": ""$.items[*].name"",
+            ""paths_to_expected"": [
+              ""$[2].orders[0].items[*].name"",
+              ""$[3].items[*].name""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.items[*].name"",
             ""paths_to_expected"": [
               ""$[2].orders[0].items[*].name"",
@@ -4753,7 +4917,7 @@ cheapest-item-filter-002,"{
 }","[""Cart Management""]","[""Price filtering"", ""Restaurant exclusion""]","[""Search and filtering"", ""Decision making""]","Order the cheapest Yuzu Lime Soda you can find, just don't order from Seafood Market, they were terrible last time",,0,Hard,
 cheapest-item-filter-004,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""Log in using email 'lena.bennett40@example.com' and password '3FkyOt9PO5kg'. Order the cheapest Seaweed Salad you can find, just don't order from Saigon Vietnamese Cafe, they were terrible last time"",
+  ""task_statement"": ""Order the cheapest Seaweed Salad you can find, just don't order from Saigon Vietnamese Cafe, they were terrible last time"",
   ""task_type"": ""GUI Comprehension, Action Execution, Element Identification, Decision Making"",
   ""grader_config"": {
     ""state_grader_configs"": [
@@ -4826,13 +4990,14 @@ cheapest-item-filter-004,"{
   ""simulator_config"": {
     ""bootstrap_data"": {
       ""date"": ""2025-12-19T12:00:00-08:00"",
-      ""timezone"": ""America/Los_Angeles""
+      ""timezone"": ""America/Los_Angeles"",
+      ""user"": ""lena.bennett40@example.com""
     }
   }
-}","[""Cart Management""]","[""Price filtering"", ""Restaurant exclusion""]","[""Search and filtering"", ""Decision making""]","Log in using email 'lena.bennett40@example.com' and password '3FkyOt9PO5kg'. Order the cheapest Seaweed Salad you can find, just don't order from Saigon Vietnamese Cafe, they were terrible last time",,0,Hard,
+}","[""Cart Management""]","[""Price filtering"", ""Restaurant exclusion""]","[""Search and filtering"", ""Decision making""]","Order the cheapest Seaweed Salad you can find, just don't order from Saigon Vietnamese Cafe, they were terrible last time",,0,Hard,
 cheapest-item-filter-005,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""Log in using email 'isla.xu41@dashdoor.test' and password 'e6qEPJZjRc2D'. Order the cheapest Hot Dog you can find, just don't order from North End Burger Co., they were terrible last time"",
+  ""task_statement"": ""Order the cheapest Hot Dog you can find, just don't order from North End Burger Co., they were terrible last time"",
   ""task_type"": ""GUI Comprehension, Action Execution, Element Identification, Decision Making"",
   ""grader_config"": {
     ""state_grader_configs"": [
@@ -4905,10 +5070,11 @@ cheapest-item-filter-005,"{
   ""simulator_config"": {
     ""bootstrap_data"": {
       ""date"": ""2025-12-19T12:00:00-08:00"",
-      ""timezone"": ""America/Los_Angeles""
+      ""timezone"": ""America/Los_Angeles"",
+      ""user"": ""isla.xu41@dashdoor.test""
     }
   }
-}","[""Cart Management""]","[""Price filtering"", ""Restaurant exclusion""]","[""Search and filtering"", ""Decision making""]","Log in using email 'isla.xu41@dashdoor.test' and password 'e6qEPJZjRc2D'. Order the cheapest Hot Dog you can find, just don't order from North End Burger Co., they were terrible last time",,0,Hard,
+}","[""Cart Management""]","[""Price filtering"", ""Restaurant exclusion""]","[""Search and filtering"", ""Decision making""]","Order the cheapest Hot Dog you can find, just don't order from North End Burger Co., they were terrible last time",,0,Hard,
 cheapest-item-filter-007,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
   ""task_statement"": ""Order the cheapest Whole30 Salad Bowl you can find, just don't order from Hannah's Cantina, they were terrible last time"",
@@ -5144,7 +5310,8 @@ top-rated-category-004,"{
   ""simulator_config"": {
     ""bootstrap_data"": {
       ""date"": ""2025-12-19T12:00:00-08:00"",
-      ""timezone"": ""America/Los_Angeles""
+      ""timezone"": ""America/Los_Angeles"",
+      ""user"": ""quinn.manning46@mail.test""
     }
   }
 }","[""Ratings & Reviews""]","[""Review-based recommendations""]","[""Ratings analysis"", ""Decision making"", ""Order Placement""]","I wanted to try Isla's House, can you order the best rated item from the Sides & Shares?",,1,Hard,
@@ -5230,7 +5397,7 @@ top-rated-category-005,"{
 }","[""Ratings & Reviews""]","[""Review-based recommendations""]","[""Ratings analysis"", ""Decision making"", ""Order Placement""]","I wanted to try Harvest Tavern, can you order the best rated item from the Sides & Shares?",,1,Hard,
 top-rated-category-006,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""Log in using email 'uma.sawyer49@inbox.local' and password 'aLO7ZOE8JV45'. I wanted to try Isla's House, can you order the best rated item from the Street Tacos?"",
+  ""task_statement"": ""I wanted to try Isla's House, can you order the best rated item from the Street Tacos?"",
   ""task_type"": ""GUI Comprehension, Action Execution, Decision Making, Element Identification"",
   ""grader_config"": {
     ""state_grader_configs"": [
@@ -5303,10 +5470,11 @@ top-rated-category-006,"{
   ""simulator_config"": {
     ""bootstrap_data"": {
       ""date"": ""2025-12-19T12:00:00-08:00"",
-      ""timezone"": ""America/Los_Angeles""
+      ""timezone"": ""America/Los_Angeles"",
+      ""user"": ""uma.sawyer49@inbox.local""
     }
   }
-}","[""Ratings & Reviews""]","[""Review-based recommendations""]","[""Ratings analysis"", ""Decision making"", ""Order Placement""]","Log in using email 'uma.sawyer49@inbox.local' and password 'aLO7ZOE8JV45'. I wanted to try Isla's House, can you order the best rated item from the Street Tacos?",,1,Hard,
+}","[""Ratings & Reviews""]","[""Review-based recommendations""]","[""Ratings analysis"", ""Decision making"", ""Order Placement""]","I wanted to try Isla's House, can you order the best rated item from the Street Tacos?",,1,Hard,
 top-rated-category-007,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
   ""task_statement"": ""I wanted to try Fish Market by Kings, can you order the most expensive item from the Raw Bar?"",
@@ -5487,7 +5655,7 @@ best-deal-order-002,"{
 }","[""Menu Viewing""]","[""Price & deal optimization"", ""Restaurant discovery & filtering""]","[""Search and filtering"", ""Decision making"", ""Order Placement""]",I need to place an order at my office address. Look for cheapest restaurants with deals and pick the best one. Order enough Sides to meet the spending limit for the deal.,,0,Hard,
 best-deal-order-005,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""Log in using email 'willow.zimmerman55@inbox.local' and password 'GsJGRg8Tu9g7'. I need to place an order at my office address. Look for cheapest restaurants with deals and pick the best one. Order enough Drinks to meet the spending limit for the deal."",
+  ""task_statement"": ""I need to place an order at my office address. Look for cheapest restaurants with deals and pick the best one. Order enough Drinks to meet the spending limit for the deal."",
   ""task_type"": ""GUI Comprehension, Action Execution, Multi-Step Task Planning, Decision Making"",
   ""grader_config"": {
     ""state_grader_configs"": [
@@ -5578,10 +5746,11 @@ best-deal-order-005,"{
   ""simulator_config"": {
     ""bootstrap_data"": {
       ""date"": ""2025-12-19T12:00:00-08:00"",
-      ""timezone"": ""America/Los_Angeles""
+      ""timezone"": ""America/Los_Angeles"",
+      ""user"": ""willow.zimmerman55@inbox.local""
     }
   }
-}","[""Menu Viewing""]","[""Price & deal optimization"", ""Restaurant discovery & filtering""]","[""Search and filtering"", ""Decision making"", ""Order Placement""]",Log in using email 'willow.zimmerman55@inbox.local' and password 'GsJGRg8Tu9g7'. I need to place an order at my office address. Look for cheapest restaurants with deals and pick the best one. Order enough Drinks to meet the spending limit for the deal.,,0,Hard,
+}","[""Menu Viewing""]","[""Price & deal optimization"", ""Restaurant discovery & filtering""]","[""Search and filtering"", ""Decision making"", ""Order Placement""]",I need to place an order at my office address. Look for cheapest restaurants with deals and pick the best one. Order enough Drinks to meet the spending limit for the deal.,,0,Hard,
 best-deal-order-006,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
   ""task_statement"": ""I need to place an order at my hotel address. Look for cheapest restaurants with deals and pick the best one. Order enough Entrees to meet the spending limit for the deal."",
@@ -5817,7 +5986,15 @@ bulk-simple-order-001,"{
       {
         ""assertions"": [
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""JSON_PART_OF"",
+            ""path_to_actual"": ""$.items[*].id"",
+            ""paths_to_expected"": [
+              ""$[2].items[0].id"",
+              ""$[3].items[0].id""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.items[*].id"",
             ""paths_to_expected"": [
               ""$[2].items[0].id"",
@@ -5921,7 +6098,7 @@ bulk-simple-order-001,"{
 }","[""Cart Management""]","[""Cart editing & item swaps"", ""Price filtering"", ""Contact info management""]","[""Instruction following"", ""Search and filtering"", ""UI Elements: Text Fields""]","Order two truffle smash burgers from cedar kitchen, make sure no customizations are selected. Also order 2 of the cheapest available drinks. Change the contact number for the order to 7137834912",,4,Medium,
 bulk-simple-order-002,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""Log in using email 'hannah.underwood58@example.com' and password 'ijNBhWwzR9Fo'. Order 4 Onion Rings from Happy's Gourmet Burgers, make sure no customizations are selected. Also order 3 of the cheapest available Shakes & Beverages. Change the contact number for the order to 411-979-8317"",
+  ""task_statement"": ""Order 4 Onion Rings from Happy's Gourmet Burgers, make sure no customizations are selected. Also order 3 of the cheapest available Shakes & Beverages. Change the contact number for the order to 411-979-8317"",
   ""task_type"": ""GUI Comprehension, Action Execution, Element Identification, Decision Making"",
   ""grader_config"": {
     ""state_grader_configs"": [
@@ -5950,7 +6127,15 @@ bulk-simple-order-002,"{
       {
         ""assertions"": [
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""JSON_PART_OF"",
+            ""path_to_actual"": ""$.items[*].id"",
+            ""paths_to_expected"": [
+              ""$[2].items[0].id"",
+              ""$[3].items[0].id""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.items[*].id"",
             ""paths_to_expected"": [
               ""$[2].items[0].id"",
@@ -6055,10 +6240,11 @@ bulk-simple-order-002,"{
   ""simulator_config"": {
     ""bootstrap_data"": {
       ""date"": ""2025-12-19T12:00:00-08:00"",
-      ""timezone"": ""America/Los_Angeles""
+      ""timezone"": ""America/Los_Angeles"",
+      ""user"": ""hannah.underwood58@example.com""
     }
   }
-}","[""Cart Management""]","[""Cart editing & item swaps"", ""Price filtering"", ""Contact info management""]","[""Instruction following"", ""Search and filtering"", ""UI Elements: Text Fields""]","Log in using email 'hannah.underwood58@example.com' and password 'ijNBhWwzR9Fo'. Order 4 Onion Rings from Happy's Gourmet Burgers, make sure no customizations are selected. Also order 3 of the cheapest available Shakes & Beverages. Change the contact number for the order to 411-979-8317",,4,Medium,
+}","[""Cart Management""]","[""Cart editing & item swaps"", ""Price filtering"", ""Contact info management""]","[""Instruction following"", ""Search and filtering"", ""UI Elements: Text Fields""]","Order 4 Onion Rings from Happy's Gourmet Burgers, make sure no customizations are selected. Also order 3 of the cheapest available Shakes & Beverages. Change the contact number for the order to 411-979-8317",,4,Medium,
 bulk-simple-order-005,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
   ""task_statement"": ""Order 2 Lemon Olive Oil Cake from Desserts Table, make sure no customizations are selected. Also order 1 of the cheapest available Family Meals. Change the contact number for the order to 8347178022"",
@@ -6090,7 +6276,15 @@ bulk-simple-order-005,"{
       {
         ""assertions"": [
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""JSON_PART_OF"",
+            ""path_to_actual"": ""$.items[*].id"",
+            ""paths_to_expected"": [
+              ""$[2].items[0].id"",
+              ""$[3].items[0].id""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.items[*].id"",
             ""paths_to_expected"": [
               ""$[2].items[0].id"",
@@ -6231,7 +6425,15 @@ bulk-simple-order-007,"{
       {
         ""assertions"": [
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""JSON_PART_OF"",
+            ""path_to_actual"": ""$.items[*].id"",
+            ""paths_to_expected"": [
+              ""$[2].items[0].id"",
+              ""$[3].items[0].id""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.items[*].id"",
             ""paths_to_expected"": [
               ""$[2].items[0].id"",
@@ -6343,13 +6545,14 @@ bulk-simple-order-007,"{
 }","[""Cart Management""]","[""Cart editing & item swaps"", ""Price filtering"", ""Contact info management""]","[""Instruction following"", ""Search and filtering"", ""UI Elements: Text Fields""]","Order 4 Coleslaw from Fish Market by Kings, make sure no customizations are selected. Also order 2 of the cheapest available Appetizers. Change the contact number for the order to 948-272-5378",,4,Medium,
 update-delivery-instructions-001,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""Log in using email 'elias.kaufman88@dashdoor.test' and password 'rn4bgFlzdANy'. My apartment building recently had an entry code added. The code is 4280. Also delivery folks are no longer allowed to go beyond the lobby, so make sure you update the drop off location and the delivery instructions accordingly"",
+  ""task_statement"": ""My apartment building recently had an entry code added. The code is 4280. Also delivery folks are no longer allowed to go beyond the lobby, so make sure you update the drop off location and the delivery instructions accordingly"",
   ""task_id"": ""update-delivery-instructions-001"",
   ""task_type"": ""GUI Comprehension, Action Execution"",
   ""simulator_config"": {
     ""bootstrap_data"": {
       ""date"": ""2025-12-19T12:00:00-08:00"",
-      ""timezone"": ""America/Los_Angeles""
+      ""timezone"": ""America/Los_Angeles"",
+      ""user"": ""elias.kaufman88@dashdoor.test""
     }
   },
   ""grader_config"": {
@@ -6407,7 +6610,7 @@ update-delivery-instructions-001,"{
       ]
     }
   }
-}","[""Address Entry & Validation""]","[""Address & delivery instructions""]","[""Instruction following"", ""UI Elements: Text Fields""]","Log in using email 'elias.kaufman88@dashdoor.test' and password 'rn4bgFlzdANy'. My apartment building recently had an entry code added. The code is 4280. Also delivery folks are no longer allowed to go beyond the lobby, so make sure you update the drop off location and the delivery instructions accordingly",,0,Hard,
+}","[""Address Entry & Validation""]","[""Address & delivery instructions""]","[""Instruction following"", ""UI Elements: Text Fields""]","My apartment building recently had an entry code added. The code is 4280. Also delivery folks are no longer allowed to go beyond the lobby, so make sure you update the drop off location and the delivery instructions accordingly",,0,Hard,
 update-delivery-instructions-002,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
   ""task_statement"": ""My other building recently had an gate code added. The code is 2721. Also delivery folks are no longer allowed to go beyond the front door, so make sure you update the drop off location and the delivery instructions accordingly"",
@@ -6713,7 +6916,8 @@ lowest-calorie-dessert-002,"{
   ""simulator_config"": {
     ""bootstrap_data"": {
       ""date"": ""2025-12-19T12:00:00-08:00"",
-      ""timezone"": ""America/Los_Angeles""
+      ""timezone"": ""America/Los_Angeles"",
+      ""user"": ""lena.turner75@mail.test""
     }
   }
 }","[""Cart Management""]","[""Diet & calorie filtering"", ""Item customization""]","[""Search and filtering"", ""Decision making"", ""Order Placement""]",Find the best Italian restaurant near my hotel and order 3 servings of the lowest calorie Classic Pastas.,,1,Hard,
@@ -7233,7 +7437,14 @@ helpful-review-items-001,"{
       {
         ""assertions"": [
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""JSON_PART_OF"",
+            ""path_to_actual"": ""$.items[*].itemName"",
+            ""paths_to_expected"": [
+              ""$[1].reviews[0].likedItems[*].itemName""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.items[*].itemName"",
             ""paths_to_expected"": [
               ""$[1].reviews[0].likedItems[*].itemName""
@@ -7285,7 +7496,14 @@ helpful-review-items-002,"{
       {
         ""assertions"": [
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""JSON_PART_OF"",
+            ""path_to_actual"": ""$.items[*].itemName"",
+            ""paths_to_expected"": [
+              ""$[1].reviews[0].likedItems[*].itemName""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.items[*].itemName"",
             ""paths_to_expected"": [
               ""$[1].reviews[0].likedItems[*].itemName""
@@ -7345,7 +7563,14 @@ helpful-review-items-003,"{
       {
         ""assertions"": [
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""JSON_PART_OF"",
+            ""path_to_actual"": ""$.items[*].itemName"",
+            ""paths_to_expected"": [
+              ""$[1].reviews[0].likedItems[*].itemName""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.items[*].itemName"",
             ""paths_to_expected"": [
               ""$[1].reviews[0].likedItems[*].itemName""
@@ -7405,7 +7630,14 @@ helpful-review-items-007,"{
       {
         ""assertions"": [
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""JSON_PART_OF"",
+            ""path_to_actual"": ""$.items[*].itemName"",
+            ""paths_to_expected"": [
+              ""$[1].reviews[0].likedItems[*].itemName""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.items[*].itemName"",
             ""paths_to_expected"": [
               ""$[1].reviews[0].likedItems[*].itemName""
@@ -7476,7 +7708,14 @@ cheapest-rated-slices-002,"{
       {
         ""assertions"": [
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""JSON_PART_OF"",
+            ""path_to_actual"": ""$.items[*].name"",
+            ""paths_to_expected"": [
+              ""$[2].items[*].name""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.items[*].name"",
             ""paths_to_expected"": [
               ""$[2].items[*].name""
@@ -7572,7 +7811,14 @@ cheapest-rated-slices-005,"{
       {
         ""assertions"": [
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""JSON_PART_OF"",
+            ""path_to_actual"": ""$.items[*].name"",
+            ""paths_to_expected"": [
+              ""$[2].items[*].name""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.items[*].name"",
             ""paths_to_expected"": [
               ""$[2].items[*].name""
@@ -7668,7 +7914,14 @@ cheapest-rated-slices-007,"{
       {
         ""assertions"": [
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""JSON_PART_OF"",
+            ""path_to_actual"": ""$.items[*].name"",
+            ""paths_to_expected"": [
+              ""$[2].items[*].name""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.items[*].name"",
             ""paths_to_expected"": [
               ""$[2].items[*].name""
@@ -7831,7 +8084,7 @@ cheapest-liked-combo-001,"{
 }","[""Menu Viewing"", ""Cart Management""]","[""Price & rating tradeoffs"", ""Item selection""]","[""Search and filtering"", ""Decision making"", ""Order Placement""]",I want to order from di fara pizza. Order the cheapest and most liked one of the classic pizzas and also add a soda can.,,10,Easy,
 cheapest-liked-combo-002,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""Log in using email 'diana.vega102@inbox.local' and password 'gbud5hJGFyUF'. I want to order from Willow's Cellar. Order the cheapest and most liked one of the Starters and also add a Kimchi Slaw."",
+  ""task_statement"": ""I want to order from Willow's Cellar. Order the cheapest and most liked one of the Starters and also add a Kimchi Slaw."",
   ""task_type"": ""GUI Comprehension, Action Execution, Element Identification"",
   ""grader_config"": {
     ""state_grader_configs"": [
@@ -7916,10 +8169,11 @@ cheapest-liked-combo-002,"{
   ""simulator_config"": {
     ""bootstrap_data"": {
       ""date"": ""2025-12-19T12:00:00-08:00"",
-      ""timezone"": ""America/Los_Angeles""
+      ""timezone"": ""America/Los_Angeles"",
+      ""user"": ""diana.vega102@inbox.local""
     }
   }
-}","[""Menu Viewing"", ""Cart Management""]","[""Price & rating tradeoffs"", ""Item selection""]","[""Search and filtering"", ""Decision making"", ""Order Placement""]",Log in using email 'diana.vega102@inbox.local' and password 'gbud5hJGFyUF'. I want to order from Willow's Cellar. Order the cheapest and most liked one of the Starters and also add a Kimchi Slaw.,,10,Easy,
+}","[""Menu Viewing"", ""Cart Management""]","[""Price & rating tradeoffs"", ""Item selection""]","[""Search and filtering"", ""Decision making"", ""Order Placement""]",I want to order from Willow's Cellar. Order the cheapest and most liked one of the Starters and also add a Kimchi Slaw.,,10,Easy,
 cheapest-liked-combo-003,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
   ""task_statement"": ""I want to order from Quinn's Grill. Order the cheapest and most liked one of the Sides and also add a Mango Lassi."",
@@ -8483,7 +8737,8 @@ cheapest-nearby-item-005,"{
   ""simulator_config"": {
     ""bootstrap_data"": {
       ""date"": ""2025-12-19T12:00:00-08:00"",
-      ""timezone"": ""America/Los_Angeles""
+      ""timezone"": ""America/Los_Angeles"",
+      ""user"": ""priya.bennett112@inbox.local""
     }
   }
 }","[""Menu Viewing""]","[""Cuisine filtering"", ""Price filtering""]","[""Search and filtering"", ""Decision making"", ""Order Placement""]",Order the cheapest Family Meals item from the Korean restaurant nearest to my other address.,,8,Easy,
@@ -8497,7 +8752,14 @@ multi-express-orders-001,"{
       {
         ""assertions"": [
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""JSON_PART_OF"",
+            ""path_to_actual"": ""$.items[*].name"",
+            ""paths_to_expected"": [
+              ""$[2].items[*].name""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.items[*].name"",
             ""paths_to_expected"": [
               ""$[2].items[*].name""
@@ -8527,7 +8789,14 @@ multi-express-orders-001,"{
       {
         ""assertions"": [
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""JSON_PART_OF"",
+            ""path_to_actual"": ""$.items[*].name"",
+            ""paths_to_expected"": [
+              ""$[4].items[*].name""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.items[*].name"",
             ""paths_to_expected"": [
               ""$[4].items[*].name""
@@ -8632,7 +8901,14 @@ multi-express-orders-003,"{
       {
         ""assertions"": [
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""JSON_PART_OF"",
+            ""path_to_actual"": ""$.items[*].name"",
+            ""paths_to_expected"": [
+              ""$[4].items[*].name""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.items[*].name"",
             ""paths_to_expected"": [
               ""$[4].items[*].name""
@@ -8662,7 +8938,14 @@ multi-express-orders-003,"{
       {
         ""assertions"": [
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""JSON_PART_OF"",
+            ""path_to_actual"": ""$.items[*].name"",
+            ""paths_to_expected"": [
+              ""$[2].items[*].name""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.items[*].name"",
             ""paths_to_expected"": [
               ""$[2].items[*].name""
@@ -8754,7 +9037,8 @@ multi-express-orders-003,"{
   ""simulator_config"": {
     ""bootstrap_data"": {
       ""date"": ""2025-12-19T12:00:00-08:00"",
-      ""timezone"": ""America/Los_Angeles""
+      ""timezone"": ""America/Los_Angeles"",
+      ""user"": ""lena.hayes116@example.com""
     }
   }
 }","[""Menu Viewing"", ""Cart Management"", ""Checkout""]","[""Multi-restaurant ordering"", ""Review-based recommendations"", ""Delivery scheduling""]","[""Search and filtering"", ""Decision making"", ""Order Placement"", ""Scheduling""]",First place an order for a Mango Sticky Rice and Chocolate Lava Pots from Skyline Kitchen. Also place an order for Sparkling Hibiscus Tea from the best rated Japanese restaurant available. Make sure you mark both for express delivery,,0,Hard,
@@ -8767,7 +9051,14 @@ multi-express-orders-005,"{
       {
         ""assertions"": [
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""JSON_PART_OF"",
+            ""path_to_actual"": ""$.items[*].name"",
+            ""paths_to_expected"": [
+              ""$[4].items[*].name""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.items[*].name"",
             ""paths_to_expected"": [
               ""$[4].items[*].name""
@@ -8797,7 +9088,14 @@ multi-express-orders-005,"{
       {
         ""assertions"": [
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""JSON_PART_OF"",
+            ""path_to_actual"": ""$.items[*].name"",
+            ""paths_to_expected"": [
+              ""$[2].items[*].name""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.items[*].name"",
             ""paths_to_expected"": [
               ""$[2].items[*].name""
@@ -8896,13 +9194,14 @@ multi-express-orders-005,"{
 }","[""Menu Viewing"", ""Cart Management"", ""Checkout""]","[""Multi-restaurant ordering"", ""Review-based recommendations"", ""Delivery scheduling""]","[""Search and filtering"", ""Decision making"", ""Order Placement"", ""Scheduling""]",First place an order for a Grilled Cheese Dippers and Chef's Taco Party Pack from Denver Grill. Also place an order for Sesame Cucumber Salad from the best rated Steakhouse restaurant available. Make sure you mark both for express delivery,,0,Hard,
 gift-coffee-order-001,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""Log in using email 'lena.bennett71@example.com' and password 'c69fieW7G93U'. I need to send coffee for my mum at the house address on my profile. Find the best coffee place near that address that has iced coffee and order two."",
+  ""task_statement"": ""I need to send coffee for my mum at the house address on my profile. Find the best coffee place near that address that has iced coffee and order two."",
   ""task_id"": ""gift-coffee-order-001"",
   ""task_type"": ""GUI Comprehension, Action Execution, Multi-Step Task Planning, Decision Making"",
   ""simulator_config"": {
     ""bootstrap_data"": {
       ""date"": ""2025-12-19T12:00:00-08:00"",
-      ""timezone"": ""America/Los_Angeles""
+      ""timezone"": ""America/Los_Angeles"",
+      ""user"": ""lena.bennett71@example.com""
     }
   },
   ""grader_config"": {
@@ -8987,10 +9286,10 @@ gift-coffee-order-001,"{
       ]
     }
   }
-}","[""Menu Viewing"", ""Cart Management"", ""Checkout""]","[""Multi-address ordering"", ""Restaurant discovery & filtering""]","[""Search and filtering"", ""Decision making"", ""Order Placement""]",Log in using email 'lena.bennett71@example.com' and password 'c69fieW7G93U'. I need to send coffee for my mum at the house address on my profile. Find the best coffee place near that address that has iced coffee and order two.,,4,Medium,
+}","[""Menu Viewing"", ""Cart Management"", ""Checkout""]","[""Multi-address ordering"", ""Restaurant discovery & filtering""]","[""Search and filtering"", ""Decision making"", ""Order Placement""]",I need to send coffee for my mum at the house address on my profile. Find the best coffee place near that address that has iced coffee and order two.,,4,Medium,
 gift-coffee-order-002,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""Log in using email 'omar.quintero121@inbox.local' and password 'qGcbfSil6gmp'. I need to send Green Goddess Cobb Salad for my mum at the hotel address on my profile. Find the best Chicken place near that address that has Green Goddess Cobb Salad and order 3."",
+  ""task_statement"": ""I need to send Green Goddess Cobb Salad for my mum at the hotel address on my profile. Find the best Chicken place near that address that has Green Goddess Cobb Salad and order 3."",
   ""task_type"": ""GUI Comprehension, Action Execution, Element Identification"",
   ""grader_config"": {
     ""state_grader_configs"": [
@@ -9078,10 +9377,11 @@ gift-coffee-order-002,"{
   ""simulator_config"": {
     ""bootstrap_data"": {
       ""date"": ""2025-12-19T12:00:00-08:00"",
-      ""timezone"": ""America/Los_Angeles""
+      ""timezone"": ""America/Los_Angeles"",
+      ""user"": ""omar.quintero121@inbox.local""
     }
   }
-}","[""Menu Viewing"", ""Cart Management"", ""Checkout""]","[""Multi-address ordering"", ""Restaurant discovery & filtering""]","[""Search and filtering"", ""Decision making"", ""Order Placement""]",Log in using email 'omar.quintero121@inbox.local' and password 'qGcbfSil6gmp'. I need to send Green Goddess Cobb Salad for my mum at the hotel address on my profile. Find the best Chicken place near that address that has Green Goddess Cobb Salad and order 3.,,4,Medium,
+}","[""Menu Viewing"", ""Cart Management"", ""Checkout""]","[""Multi-address ordering"", ""Restaurant discovery & filtering""]","[""Search and filtering"", ""Decision making"", ""Order Placement""]",I need to send Green Goddess Cobb Salad for my mum at the hotel address on my profile. Find the best Chicken place near that address that has Green Goddess Cobb Salad and order 3.,,4,Medium,
 gift-coffee-order-003,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
   ""task_statement"": ""I need to send Calamari Fritti for my mum at the apartment address on my profile. Find the best Pizza place near that address that has Calamari Fritti and order 2."",
@@ -9279,7 +9579,7 @@ list-affordable-cuisine-002,"{
 }","[""Item Selection & Customization""]","[""Restaurant comparison"", ""Price filtering""]","[""Search and filtering"", ""Decision making""]",I want to eat Italian cuisine today. Can you find a restaurant nearby which serves Italian cuisine? Tell me the top 5 most affordable restaurant names that are nearest to me.,,3,Medium,
 list-affordable-cuisine-003,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""Log in using email 'xavier.ellison128@inbox.local' and password 'T6fDxdbyLEoC'. I want to eat Korean cuisine today. Can you find a restaurant nearby which serves Korean cuisine? Tell me the top 5 most affordable restaurant names that are nearest to me."",
+  ""task_statement"": ""I want to eat Korean cuisine today. Can you find a restaurant nearby which serves Korean cuisine? Tell me the top 5 most affordable restaurant names that are nearest to me."",
   ""task_type"": ""GUI Comprehension, Multi-Step Task Planning, Information Retrieval, Decision Making"",
   ""grader_config"": {
     ""answer_grader_config"": {
@@ -9322,13 +9622,14 @@ list-affordable-cuisine-003,"{
   ""simulator_config"": {
     ""bootstrap_data"": {
       ""date"": ""2025-12-19T12:00:00-08:00"",
-      ""timezone"": ""America/Los_Angeles""
+      ""timezone"": ""America/Los_Angeles"",
+      ""user"": ""xavier.ellison128@inbox.local""
     }
   }
-}","[""Item Selection & Customization""]","[""Restaurant comparison"", ""Price filtering""]","[""Search and filtering"", ""Decision making""]",Log in using email 'xavier.ellison128@inbox.local' and password 'T6fDxdbyLEoC'. I want to eat Korean cuisine today. Can you find a restaurant nearby which serves Korean cuisine? Tell me the top 5 most affordable restaurant names that are nearest to me.,,3,Medium,
+}","[""Item Selection & Customization""]","[""Restaurant comparison"", ""Price filtering""]","[""Search and filtering"", ""Decision making""]",I want to eat Korean cuisine today. Can you find a restaurant nearby which serves Korean cuisine? Tell me the top 5 most affordable restaurant names that are nearest to me.,,3,Medium,
 list-affordable-cuisine-005,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""Log in using email 'aiden.quintero130@dashdoor.test' and password 'OB6JqCpsNa3r'. I want to eat Burgers cuisine today. Can you find a restaurant nearby which serves Burgers cuisine? Tell me the top 5 most affordable restaurant names that are nearest to me."",
+  ""task_statement"": ""I want to eat Burgers cuisine today. Can you find a restaurant nearby which serves Burgers cuisine? Tell me the top 5 most affordable restaurant names that are nearest to me."",
   ""task_type"": ""GUI Comprehension, Multi-Step Task Planning, Information Retrieval, Decision Making"",
   ""grader_config"": {
     ""answer_grader_config"": {
@@ -9371,10 +9672,11 @@ list-affordable-cuisine-005,"{
   ""simulator_config"": {
     ""bootstrap_data"": {
       ""date"": ""2025-12-19T12:00:00-08:00"",
-      ""timezone"": ""America/Los_Angeles""
+      ""timezone"": ""America/Los_Angeles"",
+      ""user"": ""aiden.quintero130@dashdoor.test""
     }
   }
-}","[""Item Selection & Customization""]","[""Restaurant comparison"", ""Price filtering""]","[""Search and filtering"", ""Decision making""]",Log in using email 'aiden.quintero130@dashdoor.test' and password 'OB6JqCpsNa3r'. I want to eat Burgers cuisine today. Can you find a restaurant nearby which serves Burgers cuisine? Tell me the top 5 most affordable restaurant names that are nearest to me.,,3,Medium,
+}","[""Item Selection & Customization""]","[""Restaurant comparison"", ""Price filtering""]","[""Search and filtering"", ""Decision making""]",I want to eat Burgers cuisine today. Can you find a restaurant nearby which serves Burgers cuisine? Tell me the top 5 most affordable restaurant names that are nearest to me.,,3,Medium,
 list-affordable-cuisine-007,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
   ""task_statement"": ""I want to eat Burgers cuisine today. Can you find a restaurant nearby which serves Burgers cuisine? Tell me the top 3 most affordable restaurant names that are nearest to me."",
@@ -9427,13 +9729,14 @@ list-affordable-cuisine-007,"{
 }","[""Item Selection & Customization""]","[""Restaurant comparison"", ""Price filtering""]","[""Search and filtering"", ""Decision making""]",I want to eat Burgers cuisine today. Can you find a restaurant nearby which serves Burgers cuisine? Tell me the top 3 most affordable restaurant names that are nearest to me.,,3,Medium,
 positive-order-review-001,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""Log in using email 'elias.kaufman88@dashdoor.test' and password 'rn4bgFlzdANy'. I really liked the food that I ordered last time from Buffalo Wild Wings. Leave a 5 star rating on that order and add a review as follows- food tasted really good especially the traditional wings, those were great."",
+  ""task_statement"": ""I really liked the food that I ordered last time from Buffalo Wild Wings. Leave a 5 star rating on that order and add a review as follows- food tasted really good especially the traditional wings, those were great."",
   ""task_id"": ""positive-order-review-001"",
   ""task_type"": ""Action Execution, Decision Making"",
   ""simulator_config"": {
     ""bootstrap_data"": {
       ""date"": ""2025-12-19T12:00:00-08:00"",
-      ""timezone"": ""America/Los_Angeles""
+      ""timezone"": ""America/Los_Angeles"",
+      ""user"": ""elias.kaufman88@dashdoor.test""
     }
   },
   ""grader_config"": {
@@ -9500,7 +9803,7 @@ positive-order-review-001,"{
       ]
     }
   }
-}","[""Ratings & Reviews""]","[""Delivery time filtering"", ""Price & rating tradeoffs""]","[""Search and filtering"", ""Decision making"", ""Order Placement""]","Log in using email 'elias.kaufman88@dashdoor.test' and password 'rn4bgFlzdANy'. I really liked the food that I ordered last time from Buffalo Wild Wings. Leave a 5 star rating on that order and add a review as follows- food tasted really good especially the traditional wings, those were great.",,8,Easy,
+}","[""Ratings & Reviews""]","[""Delivery time filtering"", ""Price & rating tradeoffs""]","[""Search and filtering"", ""Decision making"", ""Order Placement""]","I really liked the food that I ordered last time from Buffalo Wild Wings. Leave a 5 star rating on that order and add a review as follows- food tasted really good especially the traditional wings, those were great.",,8,Easy,
 positive-order-review-003,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
   ""task_statement"": ""I really liked the food that I ordered last time from The South Palace. Leave a 4 star rating on that order and add a review as follows- Best order I've had in a long time!"",
@@ -9999,13 +10302,14 @@ list-cheapest-items-007,"{
 }","[""Search""]",[],"[""Scrolling"", ""Decision making""]",Can you search for Yuzu Lime Soda and list 4 restaurants that sell them the cheapest,,0,Hard,
 find-matching-restaurant-001,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""Log in using email 'lena.bennett71@example.com' and password 'c69fieW7G93U'. Can you find the best rated restaurant that sells both a grilled chicken sandwich and nuggets"",
+  ""task_statement"": ""Can you find the best rated restaurant that sells both a grilled chicken sandwich and nuggets"",
   ""task_id"": ""find-matching-restaurant-001"",
   ""task_type"": ""GUI Comprehension, Action Execution, Decision Making, Element Identification"",
   ""simulator_config"": {
     ""bootstrap_data"": {
       ""date"": ""2025-12-19T12:00:00-08:00"",
-      ""timezone"": ""America/Los_Angeles""
+      ""timezone"": ""America/Los_Angeles"",
+      ""user"": ""lena.bennett71@example.com""
     }
   },
   ""grader_config"": {
@@ -10050,10 +10354,10 @@ find-matching-restaurant-001,"{
       ]
     }
   }
-}","[""Search and filtering""]","[""Restaurant identification""]","[""Search"", ""Decision making"", ""Ratings analysis""]",Log in using email 'lena.bennett71@example.com' and password 'c69fieW7G93U'. Can you find the best rated restaurant that sells both a grilled chicken sandwich and nuggets,,5,Medium,
+}","[""Search and filtering""]","[""Restaurant identification""]","[""Search"", ""Decision making"", ""Ratings analysis""]",Can you find the best rated restaurant that sells both a grilled chicken sandwich and nuggets,,5,Medium,
 find-matching-restaurant-002,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""Log in using email 'gavin.xu161@example.com' and password 'MNtX3uowd6lb'. Can you find the best rated restaurant that sells both a White Steamed Rice and Super Greens"",
+  ""task_statement"": ""Can you find the best rated restaurant that sells both a White Steamed Rice and Super Greens"",
   ""task_type"": ""GUI Comprehension, Action Execution, Information Retrieval, Decision Making, Element Identification"",
   ""grader_config"": {
     ""answer_grader_config"": {
@@ -10101,10 +10405,11 @@ find-matching-restaurant-002,"{
   ""simulator_config"": {
     ""bootstrap_data"": {
       ""date"": ""2025-12-19T12:00:00-08:00"",
-      ""timezone"": ""America/Los_Angeles""
+      ""timezone"": ""America/Los_Angeles"",
+      ""user"": ""gavin.xu161@example.com""
     }
   }
-}","[""Search and filtering""]","[""Restaurant identification""]","[""Search"", ""Decision making"", ""Ratings analysis""]",Log in using email 'gavin.xu161@example.com' and password 'MNtX3uowd6lb'. Can you find the best rated restaurant that sells both a White Steamed Rice and Super Greens,,5,Medium,
+}","[""Search and filtering""]","[""Restaurant identification""]","[""Search"", ""Decision making"", ""Ratings analysis""]",Can you find the best rated restaurant that sells both a White Steamed Rice and Super Greens,,5,Medium,
 find-matching-restaurant-007,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
   ""task_statement"": ""Can you find the best rated restaurant that sells both a Mango Lassi and Sparkling Hibiscus Tea"",
@@ -10367,19 +10672,21 @@ top-liked-entrees-003,"{
   ""simulator_config"": {
     ""bootstrap_data"": {
       ""date"": ""2025-12-19T12:00:00-08:00"",
-      ""timezone"": ""America/Los_Angeles""
+      ""timezone"": ""America/Los_Angeles"",
+      ""user"": ""rosa.quintero168@inbox.local""
     }
   }
 }","[""Menu viewing/selection""]","[""Review-based recommendations""]","[""Ratings analysis"", ""Decision making"", ""Order Placement""]","I wanted to try Hannah's Cantina, go through the Street Tacos and add the 2 most liked ones to my cart. Place an order for my apartment address.",,0,Hard,
 hotel-cheapest-delivery-001,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""Log in using email 'gavin.quintero980@example.com' and password 'EjhU7tqizInA'. Add the address 456 Park Avenue, New york for the hotel I am currently staying at. My room number is 304 and hotel name is heaven heights. Have an express delivery of the cheapest chocolate lava pots nearby to my hotel. I want the delivery person to meet me at the hotel lobby."",
+  ""task_statement"": ""Add the address 456 Park Avenue, New york for the hotel I am currently staying at. My room number is 304 and hotel name is heaven heights. Have an express delivery of the cheapest chocolate lava pots nearby to my hotel. I want the delivery person to meet me at the hotel lobby."",
   ""task_id"": ""hotel-cheapest-delivery-001"",
   ""task_type"": ""GUI Comprehension, Decision Making, Element Identification"",
   ""simulator_config"": {
     ""bootstrap_data"": {
       ""date"": ""2025-12-19T12:00:00-08:00"",
-      ""timezone"": ""America/Los_Angeles""
+      ""timezone"": ""America/Los_Angeles"",
+      ""user"": ""gavin.quintero980@example.com""
     }
   },
   ""grader_config"": {
@@ -10464,7 +10771,7 @@ hotel-cheapest-delivery-001,"{
       ]
     }
   }
-}","[""Address Entry & Validation""]","[""Address & delivery instructions"", ""Price filtering""]","[""Instruction following"", ""Search and filtering"", ""Order Placement""]","Log in using email 'gavin.quintero980@example.com' and password 'EjhU7tqizInA'. Add the address 456 Park Avenue, New york for the hotel I am currently staying at. My room number is 304 and hotel name is heaven heights. Have an express delivery of the cheapest chocolate lava pots nearby to my hotel. I want the delivery person to meet me at the hotel lobby.",,0,Hard,
+}","[""Address Entry & Validation""]","[""Address & delivery instructions"", ""Price filtering""]","[""Instruction following"", ""Search and filtering"", ""Order Placement""]","Add the address 456 Park Avenue, New york for the hotel I am currently staying at. My room number is 304 and hotel name is heaven heights. Have an express delivery of the cheapest chocolate lava pots nearby to my hotel. I want the delivery person to meet me at the hotel lobby.",,0,Hard,
 low-calorie-order-001,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
   ""task_statement"": ""Lets order desserts from Rosa's pantry. But since I am on a diet make sure you pick the two different lowest calorie options. And also add chicken bites for my nephew, keep the spice level mild. Apply the SAVE20 coupon. Use the card ending with 7957 for payment."",
@@ -10504,17 +10811,26 @@ low-calorie-order-001,"{
       {
         ""assertions"": [
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""STRING_EQUALS"",
             ""path_to_actual"": ""$.restaurantId"",
             ""paths_to_expected"": [
-              ""$[1].restaurants[0].id""
+              ""$[2].restaurants[0].id""
             ]
           },
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""JSON_PART_OF"",
             ""path_to_actual"": ""$.items[*].name"",
             ""paths_to_expected"": [
-              ""$[2].items[*].name""
+              ""$[3].items[*].name"",
+              ""$[4].items[*].name""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
+            ""path_to_actual"": ""$.items[*].name"",
+            ""paths_to_expected"": [
+              ""$[3].items[*].name"",
+              ""$[4].items[*].name""
             ]
           },
           {
@@ -10600,13 +10916,14 @@ low-calorie-order-001,"{
 }","[""Menu Viewing""]","[""Diet & calorie filtering"", ""Item customization"", ""Coupon application""]","[""Search and filtering"", ""Decision making"", ""Order Placement""]","Lets order desserts from Rosa's pantry. But since I am on a diet make sure you pick the two different lowest calorie options. And also add chicken bites for my nephew, keep the spice level mild. Apply the SAVE20 coupon. Use the card ending with 7957 for payment.",,9,Easy,
 item-with-sauce-001,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""Log in using email 'lena.bennett71@example.com' and password 'c69fieW7G93U'. Order mango sticky rice from sushi pantry with berry compote sauce"",
+  ""task_statement"": ""Order mango sticky rice from sushi pantry with berry compote sauce"",
   ""task_id"": ""item-with-sauce-001"",
   ""task_type"": ""GUI Comprehension, Action Execution, Element Identification"",
   ""simulator_config"": {
     ""bootstrap_data"": {
       ""date"": ""2025-12-19T12:00:00-08:00"",
-      ""timezone"": ""America/Los_Angeles""
+      ""timezone"": ""America/Los_Angeles"",
+      ""user"": ""lena.bennett71@example.com""
     }
   },
   ""grader_config"": {
@@ -10673,7 +10990,7 @@ item-with-sauce-001,"{
       ]
     }
   }
-}","[""Cart Management""]","[""Item customization""]","[""Instruction following"", ""Order Placement""]",Log in using email 'lena.bennett71@example.com' and password 'c69fieW7G93U'. Order mango sticky rice from sushi pantry with berry compote sauce,,7,Medium,
+}","[""Cart Management""]","[""Item customization""]","[""Instruction following"", ""Order Placement""]",Order mango sticky rice from sushi pantry with berry compote sauce,,7,Medium,
 healthy-fixed-order-001,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
   ""task_statement"": ""Go to healthy section and find restaurant Sweetgreen and order 1 bottled water, 2 harvest bowl, 1 organic lemonade."",
@@ -10813,13 +11130,14 @@ healthy-fixed-order-001,"{
 }","[""Menu viewing"", ""Item selection""]","[""Order placement""]","[""Search and filtering""]","Go to healthy section and find restaurant Sweetgreen and order 1 bottled water, 2 harvest bowl, 1 organic lemonade.",,5,Medium,
 scheduled-group-order-001,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""Log in using email 'omar.walsh1396@dashdoor.test' and password 'aMORYrXC2ohy' Find the restaurant 'The Mama's Mediterranean' and order chicken shwarma platter for 4 people, schedule the delivery for 7:30 PM"",
+  ""task_statement"": ""Find the restaurant 'The Mama's Mediterranean' and order chicken shwarma platter for 4 people, schedule the delivery for 7:30 PM"",
   ""task_id"": ""scheduled-group-order-001"",
   ""task_type"": ""GUI Comprehension, Element Identification, Action Execution"",
   ""simulator_config"": {
     ""bootstrap_data"": {
       ""date"": ""2025-12-19T12:00:00-08:00"",
-      ""timezone"": ""America/Los_Angeles""
+      ""timezone"": ""America/Los_Angeles"",
+      ""user"": ""omar.walsh1396@dashdoor.test""
     }
   },
   ""grader_config"": {
@@ -10918,7 +11236,7 @@ scheduled-group-order-001,"{
       ]
     }
   }
-}","[""Menu viewing"", ""Item selection""]","[""Order placement""]","[""Search and filtering""]","Log in using email 'omar.walsh1396@dashdoor.test' and password 'aMORYrXC2ohy' Find the restaurant 'The Mama's Mediterranean' and order chicken shwarma platter for 4 people, schedule the delivery for 7:30 PM",,7,Medium,
+}","[""Menu viewing"", ""Item selection""]","[""Order placement""]","[""Search and filtering""]","Find the restaurant 'The Mama's Mediterranean' and order chicken shwarma platter for 4 people, schedule the delivery for 7:30 PM",,7,Medium,
 update-cart-quantity-001,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
   ""task_statement"": ""I created a cart from Atlanta Cellar. Could you update the quantity of the item I've added to 1?"",
@@ -11002,7 +11320,14 @@ build-specific-cart-001,"{
             ]
           },
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""JSON_PART_OF"",
+            ""path_to_actual"": ""$.items[*].itemName"",
+            ""paths_to_expected"": [
+              ""$[2].items[*].name""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.items[*].itemName"",
             ""paths_to_expected"": [
               ""$[2].items[*].name""
@@ -11194,7 +11519,15 @@ reorder-with-addons-006,"{
       {
         ""assertions"": [
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""JSON_PART_OF"",
+            ""path_to_actual"": ""$.items[*].name"",
+            ""paths_to_expected"": [
+              ""$[2].orders[0].items[*].name"",
+              ""$[3].items[*].name""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.items[*].name"",
             ""paths_to_expected"": [
               ""$[2].orders[0].items[*].name"",
@@ -11263,7 +11596,8 @@ express-nearest-order-001,"{
   ""simulator_config"": {
     ""bootstrap_data"": {
       ""date"": ""2025-12-19T12:00:00-08:00"",
-      ""timezone"": ""America/Los_Angeles""
+      ""timezone"": ""America/Los_Angeles"",
+      ""user"": ""lena.bennett71@example.com""
     }
   },
   ""grader_config"": {
@@ -11832,7 +12166,15 @@ bulk-simple-order-003,"{
       {
         ""assertions"": [
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""JSON_PART_OF"",
+            ""path_to_actual"": ""$.items[*].id"",
+            ""paths_to_expected"": [
+              ""$[2].items[0].id"",
+              ""$[3].items[0].id""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.items[*].id"",
             ""paths_to_expected"": [
               ""$[2].items[0].id"",
@@ -12073,7 +12415,8 @@ update-delivery-instructions-004,"{
   ""simulator_config"": {
     ""bootstrap_data"": {
       ""date"": ""2025-12-19T12:00:00-08:00"",
-      ""timezone"": ""America/Los_Angeles""
+      ""timezone"": ""America/Los_Angeles"",
+      ""user"": ""uma.walsh70@example.com""
     }
   }
 }","[""Address Entry & Validation""]","[""Address & delivery instructions""]","[""Instruction following"", ""UI Elements: Text Fields""]","My other building recently had an gate code added. The code is 2091. Also delivery folks are no longer allowed to go beyond the lobby, so make sure you update the drop off location and the delivery instructions accordingly",,0,Hard,
@@ -12140,7 +12483,8 @@ update-delivery-instructions-006,"{
   ""simulator_config"": {
     ""bootstrap_data"": {
       ""date"": ""2025-12-19T12:00:00-08:00"",
-      ""timezone"": ""America/Los_Angeles""
+      ""timezone"": ""America/Los_Angeles"",
+      ""user"": ""hannah.manning72@inbox.local""
     }
   }
 }","[""Address Entry & Validation""]","[""Address & delivery instructions""]","[""Instruction following"", ""UI Elements: Text Fields""]","My other building recently had an gate code added. The code is 4954. Also delivery folks are no longer allowed to go beyond the lobby, so make sure you update the drop off location and the delivery instructions accordingly",,0,Hard,
@@ -12259,7 +12603,14 @@ helpful-review-items-006,"{
       {
         ""assertions"": [
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""JSON_PART_OF"",
+            ""path_to_actual"": ""$.items[*].itemName"",
+            ""paths_to_expected"": [
+              ""$[1].reviews[0].likedItems[*].itemName""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.items[*].itemName"",
             ""paths_to_expected"": [
               ""$[1].reviews[0].likedItems[*].itemName""
@@ -12503,7 +12854,14 @@ multi-express-orders-006,"{
       {
         ""assertions"": [
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""JSON_PART_OF"",
+            ""path_to_actual"": ""$.items[*].name"",
+            ""paths_to_expected"": [
+              ""$[4].items[*].name""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.items[*].name"",
             ""paths_to_expected"": [
               ""$[4].items[*].name""
@@ -12533,7 +12891,14 @@ multi-express-orders-006,"{
       {
         ""assertions"": [
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""JSON_PART_OF"",
+            ""path_to_actual"": ""$.items[*].name"",
+            ""paths_to_expected"": [
+              ""$[2].items[*].name""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.items[*].name"",
             ""paths_to_expected"": [
               ""$[2].items[*].name""
@@ -12754,7 +13119,7 @@ positive-order-review-006,"{
 }","[""Ratings & Reviews""]","[""Delivery time filtering"", ""Price & rating tradeoffs""]","[""Search and filtering"", ""Decision making"", ""Order Placement""]",I really liked the food that I ordered last time from Sweetgreen. Leave a 5 star rating on that order and add a review as follows- The food was absolutely delicious and fresh!,,8,Easy,
 nearest-coffee-cart-006,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""Log in using the email 'gavin.reed145@dashdoor.test' and password 'tblbCAk4n6Sz'. Look for the nearest cafe and add a Charred Broccoli Grain Bowl to my cart."",
+  ""task_statement"": ""Look for the nearest cafe and add a Charred Broccoli Grain Bowl to my cart."",
   ""task_type"": ""GUI Comprehension, Action Execution, Element Identification, Decision Making"",
   ""grader_config"": {
     ""state_grader_configs"": [
@@ -12834,10 +13199,11 @@ nearest-coffee-cart-006,"{
   ""simulator_config"": {
     ""bootstrap_data"": {
       ""date"": ""2025-12-19T12:00:00-08:00"",
-      ""timezone"": ""America/Los_Angeles""
+      ""timezone"": ""America/Los_Angeles"",
+      ""user"": ""gavin.reed145@dashdoor.test""
     }
   }
-}","[""Search""]","[""Item selection""]","[""Instruction following"", ""Search and filtering"", ""Decision making""]",Log in using the email 'gavin.reed145@dashdoor.test' and password 'tblbCAk4n6Sz'. Look for the nearest cafe and add a Charred Broccoli Grain Bowl to my cart.,,7,Medium,
+}","[""Search""]","[""Item selection""]","[""Instruction following"", ""Search and filtering"", ""Decision making""]",Look for the nearest cafe and add a Charred Broccoli Grain Bowl to my cart.,,7,Medium,
 search-express-order-006,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
   ""task_statement"": ""Search for Fish & Chips and order them from the closest restaurant, make an express delivery."",
@@ -13179,7 +13545,7 @@ top-liked-entrees-004,"{
 }","[""Menu viewing/selection""]","[""Review-based recommendations""]","[""Ratings analysis"", ""Decision making"", ""Order Placement""]","I wanted to try Indian Kitchen, go through the Beverages and add the 3 most liked ones to my cart. Place an order for my hotel address.",,0,Hard,
 nearest-cheapest-choice-008,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""Log in using email 'lena.owens6@mail.test' and password 'gWk7J6rWs77h'. Order from the nearest Greek restaurant. Get either a Mango Lassi or a Passionfruit Agua Fresca, choosing the cheaper option, and if they cost the same, pick the one with the higher rating. Have it delivered to my hotel address."",
+  ""task_statement"": ""Order from the nearest Greek restaurant. Get either a Mango Lassi or a Passionfruit Agua Fresca, choosing the cheaper option, and if they cost the same, pick the one with the higher rating. Have it delivered to my hotel address."",
   ""grader_config"": {
     ""state_grader_configs"": [
       {
@@ -13269,13 +13635,14 @@ nearest-cheapest-choice-008,"{
   ""simulator_config"": {
     ""bootstrap_data"": {
       ""date"": ""2025-12-19T12:00:00-08:00"",
-      ""timezone"": ""America/Los_Angeles""
+      ""timezone"": ""America/Los_Angeles"",
+      ""user"": ""lena.owens6@mail.test""
     }
   }
-}","[""Menu Viewing""]","[""Restaurant discovery & filtering"", ""Price & rating tradeoffs""]","[""Search and filtering"", ""Decision making"", ""Instruction following""]","Log in using email 'lena.owens6@mail.test' and password 'gWk7J6rWs77h'. Order from the nearest Greek restaurant. Get either a Mango Lassi or a Passionfruit Agua Fresca, choosing the cheaper option, and if they cost the same, pick the one with the higher rating. Have it delivered to my hotel address.",,3,Medium,
+}","[""Menu Viewing""]","[""Restaurant discovery & filtering"", ""Price & rating tradeoffs""]","[""Search and filtering"", ""Decision making"", ""Instruction following""]","Order from the nearest Greek restaurant. Get either a Mango Lassi or a Passionfruit Agua Fresca, choosing the cheaper option, and if they cost the same, pick the one with the higher rating. Have it delivered to my hotel address.",,3,Medium,
 nearest-cheapest-choice-009,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""Log in using email 'aiden.reed8@dashdoor.test' and password '2RlTZQcYTbYT'. Order from the nearest Indian restaurant. Get either a Samosas or a Masala Chai, choosing the cheaper option, and if they cost the same, pick the one with the higher rating. Have it delivered to my other address."",
+  ""task_statement"": ""Order from the nearest Indian restaurant. Get either a Samosas or a Masala Chai, choosing the cheaper option, and if they cost the same, pick the one with the higher rating. Have it delivered to my other address."",
   ""grader_config"": {
     ""state_grader_configs"": [
       {
@@ -13365,18 +13732,20 @@ nearest-cheapest-choice-009,"{
   ""simulator_config"": {
     ""bootstrap_data"": {
       ""date"": ""2025-12-19T12:00:00-08:00"",
-      ""timezone"": ""America/Los_Angeles""
+      ""timezone"": ""America/Los_Angeles"",
+      ""user"": ""aiden.reed8@dashdoor.test""
     }
   }
-}","[""Menu Viewing""]","[""Restaurant discovery & filtering"", ""Price & rating tradeoffs""]","[""Search and filtering"", ""Decision making"", ""Instruction following""]","Log in using email 'aiden.reed8@dashdoor.test' and password '2RlTZQcYTbYT'. Order from the nearest Indian restaurant. Get either a Samosas or a Masala Chai, choosing the cheaper option, and if they cost the same, pick the one with the higher rating. Have it delivered to my other address.",,3,Medium,
+}","[""Menu Viewing""]","[""Restaurant discovery & filtering"", ""Price & rating tradeoffs""]","[""Search and filtering"", ""Decision making"", ""Instruction following""]","Order from the nearest Indian restaurant. Get either a Samosas or a Masala Chai, choosing the cheaper option, and if they cost the same, pick the one with the higher rating. Have it delivered to my other address.",,3,Medium,
 new-cheapest-restaurant-008,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""Log in using email 'jasper.greene10@dashdoor.test' and password '5pIrRzgiQXbh'. Help me find the best cheapest Chinese or Breakfast & Brunch restaurant option that I have not ordered from in the past."",
+  ""task_statement"": ""Help me find the best cheapest Chinese or Breakfast & Brunch restaurant option that I have not ordered from in the past."",
   ""task_type"": ""Multi-Step Task Planning, GUI Comprehension, Decision Making"",
   ""simulator_config"": {
     ""bootstrap_data"": {
       ""date"": ""2025-12-19T12:00:00-08:00"",
-      ""timezone"": ""America/Los_Angeles""
+      ""timezone"": ""America/Los_Angeles"",
+      ""user"": ""jasper.greene10@dashdoor.test""
     }
   },
   ""grader_config"": {
@@ -13423,15 +13792,16 @@ new-cheapest-restaurant-008,"{
     }
   },
   ""task_id"": ""new-cheapest-restaurant-008""
-}","[""Order History""]","[""Restaurant discovery & filtering"", ""Reorder & past orders""]","[""Order history analysis"", ""Search and filtering"", ""Decision making""]",Log in using email 'jasper.greene10@dashdoor.test' and password '5pIrRzgiQXbh'. Help me find the best cheapest Chinese or Breakfast & Brunch restaurant option that I have not ordered from in the past.,,6,Medium,
+}","[""Order History""]","[""Restaurant discovery & filtering"", ""Reorder & past orders""]","[""Order history analysis"", ""Search and filtering"", ""Decision making""]",Help me find the best cheapest Chinese or Breakfast & Brunch restaurant option that I have not ordered from in the past.,,6,Medium,
 new-cheapest-restaurant-009,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""Log in using email 'elias.young12@dashdoor.test' and password 'ZfTvMUHoXTBz'. Help me find the best cheapest Korean or Wings restaurant option that I have not ordered from in the past."",
+  ""task_statement"": ""Help me find the best cheapest Korean or Wings restaurant option that I have not ordered from in the past."",
   ""task_type"": ""Multi-Step Task Planning, GUI Comprehension, Decision Making"",
   ""simulator_config"": {
     ""bootstrap_data"": {
       ""date"": ""2025-12-19T12:00:00-08:00"",
-      ""timezone"": ""America/Los_Angeles""
+      ""timezone"": ""America/Los_Angeles"",
+      ""user"": ""elias.young12@dashdoor.test""
     }
   },
   ""grader_config"": {
@@ -13478,15 +13848,16 @@ new-cheapest-restaurant-009,"{
     }
   },
   ""task_id"": ""new-cheapest-restaurant-009""
-}","[""Order History""]","[""Restaurant discovery & filtering"", ""Reorder & past orders""]","[""Order history analysis"", ""Search and filtering"", ""Decision making""]",Log in using email 'elias.young12@dashdoor.test' and password 'ZfTvMUHoXTBz'. Help me find the best cheapest Korean or Wings restaurant option that I have not ordered from in the past.,,6,Medium,
+}","[""Order History""]","[""Restaurant discovery & filtering"", ""Reorder & past orders""]","[""Order history analysis"", ""Search and filtering"", ""Decision making""]",Help me find the best cheapest Korean or Wings restaurant option that I have not ordered from in the past.,,6,Medium,
 replace-payment-card-008,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""Log in using email 'elias.chambers15@example.com' and password 'eaAXZY7rzsj6'. Delete my current card details and add a new card 8240269670284190 with CVV 070 and expiry date June 2029. Use the zipcode of my current house address."",
+  ""task_statement"": ""Delete my current card details and add a new card 8240269670284190 with CVV 070 and expiry date June 2029. Use the zipcode of my current house address."",
   ""task_type"": ""GUI Comprehension, Action Execution, Information Retrieval"",
   ""simulator_config"": {
     ""bootstrap_data"": {
       ""date"": ""2025-12-19T12:00:00-08:00"",
-      ""timezone"": ""America/Los_Angeles""
+      ""timezone"": ""America/Los_Angeles"",
+      ""user"": ""elias.chambers15@example.com""
     }
   },
   ""grader_config"": {
@@ -13544,7 +13915,7 @@ replace-payment-card-008,"{
     }
   },
   ""task_id"": ""replace-payment-card-008""
-}","[""Payment & Checkout""]","[""Payment method management""]","[""Instruction following"", ""Form filling"", ""UI Elements: Text Fields""]",Log in using email 'elias.chambers15@example.com' and password 'eaAXZY7rzsj6'. Delete my current card details and add a new card 8240269670284190 with CVV 070 and expiry date June 2029. Use the zipcode of my current house address.,,5,Medium,
+}","[""Payment & Checkout""]","[""Payment method management""]","[""Instruction following"", ""Form filling"", ""UI Elements: Text Fields""]",Delete my current card details and add a new card 8240269670284190 with CVV 070 and expiry date June 2029. Use the zipcode of my current house address.,,5,Medium,
 replace-payment-card-009,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
   ""task_statement"": ""Delete my current card details and add a new card 7221804577742812 with CVV 258 and expiry date May 2033. Use the zipcode of my current house address."",
@@ -13773,12 +14144,13 @@ rate-last-order-010,"{
 }","[""Ratings & Reviews""]","[""Review creation""]","[""Instruction following"", ""Text generation""]",Rate my last order from Bar & Grill by Famous a 3 star because the Onion Rings was average and a bit pricey.,,8,Easy,
 clear-invalid-carts-008,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""Log in using email 'aiden.reed23@mail.test' and password 'yG3s6apzxDR9'. I recently changed my address so remove all the carts from restaurants no longer in my area."",
+  ""task_statement"": ""I recently changed my address so remove all the carts from restaurants no longer in my area."",
   ""task_type"": ""GUI Comprehension, Action Execution, Decision Making, Element Identification"",
   ""simulator_config"": {
     ""bootstrap_data"": {
       ""date"": ""2025-12-19T12:00:00-08:00"",
-      ""timezone"": ""America/Los_Angeles""
+      ""timezone"": ""America/Los_Angeles"",
+      ""user"": ""aiden.reed23@mail.test""
     }
   },
   ""grader_config"": {
@@ -13786,7 +14158,14 @@ clear-invalid-carts-008,"{
       {
         ""assertions"": [
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""JSON_PART_OF"",
+            ""path_to_actual"": ""$.carts[*].storeId"",
+            ""paths_to_expected"": [
+              ""$[2].carts[*].storeId""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.carts[*].storeId"",
             ""paths_to_expected"": [
               ""$[2].carts[*].storeId""
@@ -13823,7 +14202,7 @@ clear-invalid-carts-008,"{
     }
   },
   ""task_id"": ""clear-invalid-carts-008""
-}","[""Cart Management""]","[""Cart cleanup""]","[""Search and filtering"", ""Instruction following""]",Log in using email 'aiden.reed23@mail.test' and password 'yG3s6apzxDR9'. I recently changed my address so remove all the carts from restaurants no longer in my area.,,0,Hard,
+}","[""Cart Management""]","[""Cart cleanup""]","[""Search and filtering"", ""Instruction following""]",I recently changed my address so remove all the carts from restaurants no longer in my area.,,0,Hard,
 clear-invalid-carts-009,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
   ""task_statement"": ""I recently changed my address so remove all the carts from restaurants no longer in my area."",
@@ -13840,7 +14219,14 @@ clear-invalid-carts-009,"{
       {
         ""assertions"": [
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""JSON_PART_OF"",
+            ""path_to_actual"": ""$.carts[*].storeId"",
+            ""paths_to_expected"": [
+              ""$[2].carts[*].storeId""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.carts[*].storeId"",
             ""paths_to_expected"": [
               ""$[2].carts[*].storeId""
@@ -13894,7 +14280,14 @@ clear-invalid-carts-010,"{
       {
         ""assertions"": [
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""JSON_PART_OF"",
+            ""path_to_actual"": ""$.carts[*].storeId"",
+            ""paths_to_expected"": [
+              ""$[2].carts[*].storeId""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.carts[*].storeId"",
             ""paths_to_expected"": [
               ""$[2].carts[*].storeId""
@@ -13934,7 +14327,7 @@ clear-invalid-carts-010,"{
 }","[""Cart Management""]","[""Cart cleanup""]","[""Search and filtering"", ""Instruction following""]",I recently changed my address so remove all the carts from restaurants no longer in my area.,,0,Hard,
 cheapest-item-filter-008,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""Log in using email 'bella.fischer27@dashdoor.test' and password 'iByZzlcYLJg1'. Order the cheapest Smoked Salmon Tartine you can find, just don't order from Franks' Deli & Grill, they were terrible last time"",
+  ""task_statement"": ""Order the cheapest Smoked Salmon Tartine you can find, just don't order from Franks' Deli & Grill, they were terrible last time"",
   ""task_type"": ""GUI Comprehension, Action Execution, Element Identification, Decision Making"",
   ""grader_config"": {
     ""state_grader_configs"": [
@@ -14007,13 +14400,14 @@ cheapest-item-filter-008,"{
   ""simulator_config"": {
     ""bootstrap_data"": {
       ""date"": ""2025-12-19T12:00:00-08:00"",
-      ""timezone"": ""America/Los_Angeles""
+      ""timezone"": ""America/Los_Angeles"",
+      ""user"": ""bella.fischer27@dashdoor.test""
     }
   }
-}","[""Cart Management""]","[""Price filtering"", ""Restaurant exclusion""]","[""Search and filtering"", ""Decision making""]","Log in using email 'bella.fischer27@dashdoor.test' and password 'iByZzlcYLJg1'. Order the cheapest Smoked Salmon Tartine you can find, just don't order from Franks' Deli & Grill, they were terrible last time",,0,Hard,
+}","[""Cart Management""]","[""Price filtering"", ""Restaurant exclusion""]","[""Search and filtering"", ""Decision making""]","Order the cheapest Smoked Salmon Tartine you can find, just don't order from Franks' Deli & Grill, they were terrible last time",,0,Hard,
 cheapest-item-filter-009,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""Log in using email 'isla.anderson31@example.com' and password 'gVK0lE89hxt9'. Order the cheapest Dal Makhani you can find, just don't order from Joe's Golden Palace, they were terrible last time"",
+  ""task_statement"": ""Order the cheapest Dal Makhani you can find, just don't order from Joe's Golden Palace, they were terrible last time"",
   ""task_type"": ""GUI Comprehension, Action Execution, Element Identification, Decision Making"",
   ""grader_config"": {
     ""state_grader_configs"": [
@@ -14086,13 +14480,14 @@ cheapest-item-filter-009,"{
   ""simulator_config"": {
     ""bootstrap_data"": {
       ""date"": ""2025-12-19T12:00:00-08:00"",
-      ""timezone"": ""America/Los_Angeles""
+      ""timezone"": ""America/Los_Angeles"",
+      ""user"": ""isla.anderson31@example.com""
     }
   }
-}","[""Cart Management""]","[""Price filtering"", ""Restaurant exclusion""]","[""Search and filtering"", ""Decision making""]","Log in using email 'isla.anderson31@example.com' and password 'gVK0lE89hxt9'. Order the cheapest Dal Makhani you can find, just don't order from Joe's Golden Palace, they were terrible last time",,0,Hard,
+}","[""Cart Management""]","[""Price filtering"", ""Restaurant exclusion""]","[""Search and filtering"", ""Decision making""]","Order the cheapest Dal Makhani you can find, just don't order from Joe's Golden Palace, they were terrible last time",,0,Hard,
 top-rated-category-008,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""Log in using email 'isla.ingram33@dashdoor.test' and password '8FutShQVR3DC'. I wanted to try Copper Kitchen, can you order the best rated item from the Street Tacos?"",
+  ""task_statement"": ""I wanted to try Copper Kitchen, can you order the best rated item from the Street Tacos?"",
   ""task_type"": ""GUI Comprehension, Action Execution, Decision Making, Element Identification"",
   ""grader_config"": {
     ""state_grader_configs"": [
@@ -14165,10 +14560,11 @@ top-rated-category-008,"{
   ""simulator_config"": {
     ""bootstrap_data"": {
       ""date"": ""2025-12-19T12:00:00-08:00"",
-      ""timezone"": ""America/Los_Angeles""
+      ""timezone"": ""America/Los_Angeles"",
+      ""user"": ""isla.ingram33@dashdoor.test""
     }
   }
-}","[""Ratings & Reviews""]","[""Review-based recommendations""]","[""Ratings analysis"", ""Decision making"", ""Order Placement""]","Log in using email 'isla.ingram33@dashdoor.test' and password '8FutShQVR3DC'. I wanted to try Copper Kitchen, can you order the best rated item from the Street Tacos?",,1,Hard,
+}","[""Ratings & Reviews""]","[""Review-based recommendations""]","[""Ratings analysis"", ""Decision making"", ""Order Placement""]","I wanted to try Copper Kitchen, can you order the best rated item from the Street Tacos?",,1,Hard,
 best-deal-order-008,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
   ""task_statement"": ""I need to place an order at my house address. Look for cheapest restaurants with deals and pick the best one. Order enough Drinks to meet the spending limit for the deal."",
@@ -14298,7 +14694,15 @@ bulk-simple-order-004,"{
       {
         ""assertions"": [
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""JSON_PART_OF"",
+            ""path_to_actual"": ""$.items[*].id"",
+            ""paths_to_expected"": [
+              ""$[2].items[0].id"",
+              ""$[3].items[0].id""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.items[*].id"",
             ""paths_to_expected"": [
               ""$[2].items[0].id"",
@@ -14530,7 +14934,14 @@ helpful-review-items-004,"{
       {
         ""assertions"": [
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""JSON_PART_OF"",
+            ""path_to_actual"": ""$.items[*].itemName"",
+            ""paths_to_expected"": [
+              ""$[1].reviews[0].likedItems[*].itemName""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.items[*].itemName"",
             ""paths_to_expected"": [
               ""$[1].reviews[0].likedItems[*].itemName""
@@ -14601,7 +15012,14 @@ cheapest-rated-slices-004,"{
       {
         ""assertions"": [
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""JSON_PART_OF"",
+            ""path_to_actual"": ""$.items[*].name"",
+            ""paths_to_expected"": [
+              ""$[2].items[*].name""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.items[*].name"",
             ""paths_to_expected"": [
               ""$[2].items[*].name""
@@ -15306,7 +15724,7 @@ list-cheapest-items-008,"{
 }","[""Search""]",[],"[""Scrolling"", ""Decision making""]",Can you search for Street Corn Elote and list 3 restaurants that sell them the cheapest,,0,Hard,
 find-matching-restaurant-004,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""Log in using email 'gavin.underwood108@mail.test' and password 'J57eD2t8nhtt'. Can you find the best rated restaurant that sells both a Lemon Olive Oil Cake and Cold Brew Horchata"",
+  ""task_statement"": ""Can you find the best rated restaurant that sells both a Lemon Olive Oil Cake and Cold Brew Horchata"",
   ""task_type"": ""GUI Comprehension, Action Execution, Information Retrieval, Decision Making, Element Identification"",
   ""grader_config"": {
     ""answer_grader_config"": {
@@ -15354,13 +15772,14 @@ find-matching-restaurant-004,"{
   ""simulator_config"": {
     ""bootstrap_data"": {
       ""date"": ""2025-12-19T12:00:00-08:00"",
-      ""timezone"": ""America/Los_Angeles""
+      ""timezone"": ""America/Los_Angeles"",
+      ""user"": ""gavin.underwood108@mail.test""
     }
   }
-}","[""Search and filtering""]","[""Restaurant identification""]","[""Search"", ""Decision making"", ""Ratings analysis""]",Log in using email 'gavin.underwood108@mail.test' and password 'J57eD2t8nhtt'. Can you find the best rated restaurant that sells both a Lemon Olive Oil Cake and Cold Brew Horchata,,5,Medium,
+}","[""Search and filtering""]","[""Restaurant identification""]","[""Search"", ""Decision making"", ""Ratings analysis""]",Can you find the best rated restaurant that sells both a Lemon Olive Oil Cake and Cold Brew Horchata,,5,Medium,
 scheduled-best-item-003,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""Log in using email 'lena.hayes116@example.com' and password 'yETgTvSW6cQG'. I am craving some Citrus Shrimp Tacos, please order them for me. Just make sure you order from the restaurant that has the best rating for it. Also, I'll be at my office address by 1:00 PM so place this order for about 2 hours after that."",
+  ""task_statement"": ""I am craving some Citrus Shrimp Tacos, please order them for me. Just make sure you order from the restaurant that has the best rating for it. Also, I'll be at my office address by 1:00 PM so place this order for about 2 hours after that."",
   ""task_type"": ""GUI Comprehension, Action Execution, Decision Making, Element Identification, Multi-Step Task Planning"",
   ""grader_config"": {
     ""state_grader_configs"": [
@@ -15459,10 +15878,11 @@ scheduled-best-item-003,"{
   ""simulator_config"": {
     ""bootstrap_data"": {
       ""date"": ""2025-12-19T12:00:00-08:00"",
-      ""timezone"": ""America/Los_Angeles""
+      ""timezone"": ""America/Los_Angeles"",
+      ""user"": ""lena.hayes116@example.com""
     }
   }
-}","[""Ratings & Reviews""]","[""Review-based recommendations"", ""Delivery scheduling""]","[""Search and filtering"", ""Decision making"", ""Scheduling"", ""Order Placement""]","Log in using email 'lena.hayes116@example.com' and password 'yETgTvSW6cQG'. I am craving some Citrus Shrimp Tacos, please order them for me. Just make sure you order from the restaurant that has the best rating for it. Also, I'll be at my office address by 1:00 PM so place this order for about 2 hours after that.",,0,Hard,
+}","[""Ratings & Reviews""]","[""Review-based recommendations"", ""Delivery scheduling""]","[""Search and filtering"", ""Decision making"", ""Scheduling"", ""Order Placement""]","I am craving some Citrus Shrimp Tacos, please order them for me. Just make sure you order from the restaurant that has the best rating for it. Also, I'll be at my office address by 1:00 PM so place this order for about 2 hours after that.",,0,Hard,
 healthy-fixed-order-004,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
   ""task_statement"": ""Go to featured section and find restaurant Evergreen Market and order 2 Cold Brew Horchata, 2 Smoked Salmon Tartine, 1 DashPass Pasta Night."",
@@ -15929,7 +16349,7 @@ scheduled-group-order-005,"{
 }","[""Menu viewing"", ""Item selection""]","[""Order placement""]","[""Search and filtering""]","Find the restaurant 'Willow's House' and order Green Chile Turkey Burger for 5 people, schedule the delivery for 3:00 PM-3:20 PM",,7,Medium,
 build-specific-cart-003,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""Log in using email 'xavier.ellison128@inbox.local' and password 'T6fDxdbyLEoC'. Can you please prep a cart from Desserts Table with 1 serving of Sweet Potato Wedges, 1 Bulgogi Kimchi Burger, and 1 Kimchi Slaw?"",
+  ""task_statement"": ""Can you please prep a cart from Desserts Table with 1 serving of Sweet Potato Wedges, 1 Bulgogi Kimchi Burger, and 1 Kimchi Slaw?"",
   ""task_type"": ""GUI Comprehension, Action Execution, Element Identification"",
   ""grader_config"": {
     ""state_grader_configs"": [
@@ -15950,7 +16370,14 @@ build-specific-cart-003,"{
             ]
           },
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""JSON_PART_OF"",
+            ""path_to_actual"": ""$.items[*].itemName"",
+            ""paths_to_expected"": [
+              ""$[2].items[*].name""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.items[*].itemName"",
             ""paths_to_expected"": [
               ""$[2].items[*].name""
@@ -16003,13 +16430,14 @@ build-specific-cart-003,"{
   ""simulator_config"": {
     ""bootstrap_data"": {
       ""date"": ""2025-12-19T12:00:00-08:00"",
-      ""timezone"": ""America/Los_Angeles""
+      ""timezone"": ""America/Los_Angeles"",
+      ""user"": ""xavier.ellison128@inbox.local""
     }
   }
-}","[""Cart Management""]","[""Item selection""]","[""Scrolling"", ""Searching""]","Log in using email 'xavier.ellison128@inbox.local' and password 'T6fDxdbyLEoC'. Can you please prep a cart from Desserts Table with 1 serving of Sweet Potato Wedges, 1 Bulgogi Kimchi Burger, and 1 Kimchi Slaw?",,7,Medium,
+}","[""Cart Management""]","[""Item selection""]","[""Scrolling"", ""Searching""]","Can you please prep a cart from Desserts Table with 1 serving of Sweet Potato Wedges, 1 Bulgogi Kimchi Burger, and 1 Kimchi Slaw?",,7,Medium,
 build-specific-cart-004,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""Log in using email 'diana.bennett129@dashdoor.test' and password 'K9ixd7fI16Jg'. Can you please prep a cart from Ocean Fish Market with 1 serving of Coleslaw, 1 Clam Chowder, and 1 Grilled Salmon?"",
+  ""task_statement"": ""Can you please prep a cart from Ocean Fish Market with 1 serving of Coleslaw, 1 Clam Chowder, and 1 Grilled Salmon?"",
   ""task_type"": ""GUI Comprehension, Action Execution, Element Identification"",
   ""grader_config"": {
     ""state_grader_configs"": [
@@ -16030,7 +16458,14 @@ build-specific-cart-004,"{
             ]
           },
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""JSON_PART_OF"",
+            ""path_to_actual"": ""$.items[*].itemName"",
+            ""paths_to_expected"": [
+              ""$[2].items[*].name""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.items[*].itemName"",
             ""paths_to_expected"": [
               ""$[2].items[*].name""
@@ -16083,13 +16518,14 @@ build-specific-cart-004,"{
   ""simulator_config"": {
     ""bootstrap_data"": {
       ""date"": ""2025-12-19T12:00:00-08:00"",
-      ""timezone"": ""America/Los_Angeles""
+      ""timezone"": ""America/Los_Angeles"",
+      ""user"": ""diana.bennett129@dashdoor.test""
     }
   }
-}","[""Cart Management""]","[""Item selection""]","[""Scrolling"", ""Searching""]","Log in using email 'diana.bennett129@dashdoor.test' and password 'K9ixd7fI16Jg'. Can you please prep a cart from Ocean Fish Market with 1 serving of Coleslaw, 1 Clam Chowder, and 1 Grilled Salmon?",,7,Medium,
+}","[""Cart Management""]","[""Item selection""]","[""Scrolling"", ""Searching""]","Can you please prep a cart from Ocean Fish Market with 1 serving of Coleslaw, 1 Clam Chowder, and 1 Grilled Salmon?",,7,Medium,
 build-specific-cart-005,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""Log in using email 'aiden.quintero130@dashdoor.test' and password 'OB6JqCpsNa3r'. Can you please prep a cart from Classic Kitchen with 1 serving of Milkshake, 2 Turkey Club, and 1 Chicken Tenders?"",
+  ""task_statement"": ""Can you please prep a cart from Classic Kitchen with 1 serving of Milkshake, 2 Turkey Club, and 1 Chicken Tenders?"",
   ""task_type"": ""GUI Comprehension, Action Execution, Element Identification"",
   ""grader_config"": {
     ""state_grader_configs"": [
@@ -16110,7 +16546,14 @@ build-specific-cart-005,"{
             ]
           },
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""JSON_PART_OF"",
+            ""path_to_actual"": ""$.items[*].itemName"",
+            ""paths_to_expected"": [
+              ""$[2].items[*].name""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.items[*].itemName"",
             ""paths_to_expected"": [
               ""$[2].items[*].name""
@@ -16177,13 +16620,14 @@ build-specific-cart-005,"{
   ""simulator_config"": {
     ""bootstrap_data"": {
       ""date"": ""2025-12-19T12:00:00-08:00"",
-      ""timezone"": ""America/Los_Angeles""
+      ""timezone"": ""America/Los_Angeles"",
+      ""user"": ""aiden.quintero130@dashdoor.test""
     }
   }
-}","[""Cart Management""]","[""Item selection""]","[""Scrolling"", ""Searching""]","Log in using email 'aiden.quintero130@dashdoor.test' and password 'OB6JqCpsNa3r'. Can you please prep a cart from Classic Kitchen with 1 serving of Milkshake, 2 Turkey Club, and 1 Chicken Tenders?",,7,Medium,
+}","[""Cart Management""]","[""Item selection""]","[""Scrolling"", ""Searching""]","Can you please prep a cart from Classic Kitchen with 1 serving of Milkshake, 2 Turkey Club, and 1 Chicken Tenders?",,7,Medium,
 list-menu-options-003,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""Log in using email 'zane.kaufman133@inbox.local' and password 'VqGcYIJFnpXT'. Does Classic Delicatessen have any options in Bagels? Could you please share them?"",
+  ""task_statement"": ""Does Classic Delicatessen have any options in Bagels? Could you please share them?"",
   ""task_type"": ""GUI Comprehension, Action Execution, Information Retrieval"",
   ""grader_config"": {
     ""answer_grader_config"": {
@@ -16229,10 +16673,11 @@ list-menu-options-003,"{
   ""simulator_config"": {
     ""bootstrap_data"": {
       ""date"": ""2025-12-19T12:00:00-08:00"",
-      ""timezone"": ""America/Los_Angeles""
+      ""timezone"": ""America/Los_Angeles"",
+      ""user"": ""zane.kaufman133@inbox.local""
     }
   }
-}","[""Menu viewing""]","[""Item selection""]","[""Identification""]",Log in using email 'zane.kaufman133@inbox.local' and password 'VqGcYIJFnpXT'. Does Classic Delicatessen have any options in Bagels? Could you please share them?,,9,Easy,
+}","[""Menu viewing""]","[""Item selection""]","[""Identification""]",Does Classic Delicatessen have any options in Bagels? Could you please share them?,,9,Easy,
 list-menu-options-004,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
   ""task_statement"": ""Does Central Cafe have any options in Soups? Could you please share them?"",
@@ -16552,7 +16997,14 @@ helpful-review-items-008,"{
       {
         ""assertions"": [
           {
-            ""operator"": ""JSON_EQUALS"",
+            ""operator"": ""JSON_PART_OF"",
+            ""path_to_actual"": ""$.items[*].itemName"",
+            ""paths_to_expected"": [
+              ""$[1].reviews[0].likedItems[*].itemName""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.items[*].itemName"",
             ""paths_to_expected"": [
               ""$[1].reviews[0].likedItems[*].itemName""
