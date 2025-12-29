@@ -1,5 +1,61 @@
 # Release Notes
 
+## December 28, 2025
+
+### 🎯 Task System Updates
+
+#### Task Distribution Restructured
+Updated task distribution for `simulator_config`:
+
+| Type | Task Count | Description |
+|------|------------|-------------|
+| **Auto-Login (Type A)** | 200 | `bootstrap_data` with `date`, `timezone`, and `user` — login instruction removed from task statement |
+| **Login/Signup Flow (Type B)** | 6 | `bootstrap_data` with `date` and `timezone` only — login instruction retained for testing auth flows |
+
+**Type A Tasks (200):** Use auto-login via `bootstrap_data.user` for streamlined testing
+```json
+"simulator_config": {
+  "bootstrap_data": {
+    "date": "2025-12-19T12:00:00-08:00",
+    "timezone": "America/Los_Angeles",
+    "user": "email@example.com"
+  }
+}
+```
+
+**Type B Tasks (6):** Test login/signup authentication flows without auto-login
+```json
+"simulator_config": {
+  "bootstrap_data": {
+    "date": "2025-12-19T12:00:00-08:00",
+    "timezone": "America/Los_Angeles"
+  }
+}
+```
+
+#### Verifier Operator Replacements
+Replaced `JSON_EQUALS` operator with more flexible alternatives:
+
+| Before | After | Use Case |
+|--------|-------|----------|
+| `JSON_EQUALS` | `JSON_PART_OF` | Actual value is a subset of expected |
+| `JSON_EQUALS` | `JSON_CONTAINS` | Expected value is contained within actual |
+
+**Reason:** `JSON_EQUALS` requires exact matches which can be too strict. The new operators allow:
+- `JSON_PART_OF`: Validates that actual state properties exist within expected state (partial match)
+- `JSON_CONTAINS`: Validates that expected values are present in actual state (containment check)
+
+#### Expected State Function Fix
+Fixed `get_date_N_days_from_today` to use current date from `bootstrap_data` instead of system date:
+
+| Before | After |
+|--------|-------|
+| Uses system date (`new Date()`) | Uses `bootstrap_data.date` from simulator config |
+
+This ensures date-dependent assertions (e.g., scheduled orders, delivery times) match the simulated time context.
+
+---
+
 ## December 23, 2025
 
 ### 🎨 UI Improvements
