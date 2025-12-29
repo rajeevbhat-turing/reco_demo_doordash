@@ -217,7 +217,6 @@ export default function UserRatingsModal({
                   <Link
                     key={vendor.vendorId}
                     href={`/store/${vendor.vendorId}`}
-                    target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center gap-4 px-6 py-4 border-b border-[#e5e5e5]"
                   >

@@ -221,7 +221,6 @@ export default function UserProfilePage() {
                     <Link
                       key={vendor.vendorId}
                       href={`/store/${vendor.vendorId}`}
-                      target="_blank"
                       rel="noopener noreferrer"
                       className="flex-shrink-0 flex flex-col items-center hover:opacity-70 transition-opacity"
                     >
