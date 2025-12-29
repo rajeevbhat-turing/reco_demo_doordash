@@ -7320,7 +7320,7 @@ top-rated-history-005,"{
       ]
     }
   },
-  ""task_id"": ""top-rated-history-002"",
+  ""task_id"": ""top-rated-history-005"",
   ""simulator_config"": {
     ""bootstrap_data"": {
       ""date"": ""2025-12-19T12:00:00-08:00"",
@@ -7411,7 +7411,7 @@ top-rated-history-007,"{
       ]
     }
   },
-  ""task_id"": ""top-rated-history-002"",
+  ""task_id"": ""top-rated-history-007"",
   ""simulator_config"": {
     ""bootstrap_data"": {
       ""date"": ""2025-12-19T12:00:00-08:00"",
@@ -14272,7 +14272,7 @@ clear-invalid-carts-010,"{
     ""bootstrap_data"": {
       ""date"": ""2025-12-19T12:00:00-08:00"",
       ""timezone"": ""America/Los_Angeles"",
-      ""user"": ""milo.kaufman48@mail.test""
+      ""user"": ""gavin.chambers1757@mail.test""
     }
   },
   ""grader_config"": {
@@ -14300,7 +14300,7 @@ clear-invalid-carts-010,"{
       ""expected_state_functions"": [
         {
           ""args"": {
-            ""user"": ""milo.kaufman48@mail.test""
+            ""user"": ""gavin.chambers1757@mail.test""
           },
           ""function"": ""get_user_address""
         },
@@ -16786,13 +16786,13 @@ list-menu-options-005,"{
 }","[""Menu viewing""]","[""Item selection""]","[""Identification""]",Does The Rosa's Wok have any options in Appetizers? Could you please share them?,,9,Easy,
 replace-payment-card-010,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""Delete my current card details and add a new card 8240269670284190 with CVV 070 and expiry date June 2029. Use the zipcode of my current house address."",
+  ""task_statement"": ""Delete my current card details and add a new card 8348269670484890 with CVV 145 and expiry date July 2029. Use the zipcode of my current house address."",
   ""task_type"": ""GUI Comprehension, Action Execution, Information Retrieval"",
   ""simulator_config"": {
     ""bootstrap_data"": {
       ""date"": ""2025-12-19T12:00:00-08:00"",
       ""timezone"": ""America/Los_Angeles"",
-      ""user"": ""elias.chambers15@example.com""
+      ""user"": ""isla.zimmerman231@mail.test""
     }
   },
   ""grader_config"": {
@@ -16800,37 +16800,27 @@ replace-payment-card-010,"{
       {
         ""assertions"": [
           {
-            ""expected"": [
-              ""==1""
-            ],
+            ""expected"": [""==1""],
             ""operator"": ""ARRAY_LENGTH_MATCH""
           },
           {
             ""operator"": ""STRING_EQUALS"",
-            ""expected"": [
-              ""8240269670284190""
-            ],
+            ""expected"": [""8348269670484890""],
             ""path_to_actual"": ""$[0].cardNumber""
           },
           {
             ""operator"": ""STRING_EQUALS"",
-            ""expected"": [
-              ""070""
-            ],
+            ""expected"": [""145""],
             ""path_to_actual"": ""$[0].cvc""
           },
           {
             ""operator"": ""STRING_EQUALS"",
-            ""expected"": [
-              ""06/29""
-            ],
+            ""expected"": [""07/29""],
             ""path_to_actual"": ""$[0].expiry""
           },
           {
             ""operator"": ""STRING_EQUALS"",
-            ""paths_to_expected"": [
-              ""$[0].address.zipCode""
-            ],
+            ""paths_to_expected"": [""$[0].address.zipCode""],
             ""path_to_actual"": ""$[0].zipCode""
           }
         ],
@@ -16842,7 +16832,7 @@ replace-payment-card-010,"{
         {
           ""args"": {
             ""type"": ""house"",
-            ""user"": ""elias.chambers15@example.com""
+            ""user"": ""isla.zimmerman231@mail.test""
           },
           ""function"": ""get_user_address""
         }
