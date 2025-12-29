@@ -1685,7 +1685,7 @@ replace-payment-card-001,"{
           {
             ""operator"": ""STRING_EQUALS"",
             ""expected"": [
-              ""7867 7867 7867 7867""
+              ""7867786778677867""
             ],
             ""path_to_actual"": ""$[0].cardNumber""
           },
@@ -1699,7 +1699,7 @@ replace-payment-card-001,"{
           {
             ""operator"": ""STRING_EQUALS"",
             ""expected"": [
-              ""06 / 29""
+              ""06/29""
             ],
             ""path_to_actual"": ""$[0].expiry""
           },
@@ -1751,7 +1751,7 @@ replace-payment-card-002,"{
           {
             ""operator"": ""STRING_EQUALS"",
             ""expected"": [
-              ""5144 5814 6576 6241""
+              ""5144581465766241""
             ],
             ""path_to_actual"": ""$[0].cardNumber""
           },
@@ -1765,7 +1765,7 @@ replace-payment-card-002,"{
           {
             ""operator"": ""STRING_EQUALS"",
             ""expected"": [
-              ""03 / 28""
+              ""03/28""
             ],
             ""path_to_actual"": ""$[0].expiry""
           },
@@ -1818,7 +1818,7 @@ replace-payment-card-003,"{
           {
             ""operator"": ""STRING_EQUALS"",
             ""expected"": [
-              ""4253 2009 2988 2094""
+              ""4253200929882094""
             ],
             ""path_to_actual"": ""$[0].cardNumber""
           },
@@ -1832,7 +1832,7 @@ replace-payment-card-003,"{
           {
             ""operator"": ""STRING_EQUALS"",
             ""expected"": [
-              ""05 / 32""
+              ""05/32""
             ],
             ""path_to_actual"": ""$[0].expiry""
           },
@@ -1885,7 +1885,7 @@ replace-payment-card-004,"{
           {
             ""operator"": ""STRING_EQUALS"",
             ""expected"": [
-              ""3511 9378 3994 8408""
+              ""3511937839948408""
             ],
             ""path_to_actual"": ""$[0].cardNumber""
           },
@@ -1899,7 +1899,7 @@ replace-payment-card-004,"{
           {
             ""operator"": ""STRING_EQUALS"",
             ""expected"": [
-              ""10 / 28""
+              ""10/28""
             ],
             ""path_to_actual"": ""$[0].expiry""
           },
@@ -1952,7 +1952,7 @@ replace-payment-card-005,"{
           {
             ""operator"": ""STRING_EQUALS"",
             ""expected"": [
-              ""7487 0549 9723 6654""
+              ""7487054997236654""
             ],
             ""path_to_actual"": ""$[0].cardNumber""
           },
@@ -1966,7 +1966,7 @@ replace-payment-card-005,"{
           {
             ""operator"": ""STRING_EQUALS"",
             ""expected"": [
-              ""02 / 29""
+              ""02/29""
             ],
             ""path_to_actual"": ""$[0].expiry""
           },
@@ -2019,7 +2019,7 @@ replace-payment-card-006,"{
           {
             ""operator"": ""STRING_EQUALS"",
             ""expected"": [
-              ""3282 0884 2593 9125""
+              ""3282088425939125""
             ],
             ""path_to_actual"": ""$[0].cardNumber""
           },
@@ -2033,7 +2033,7 @@ replace-payment-card-006,"{
           {
             ""operator"": ""STRING_EQUALS"",
             ""expected"": [
-              ""04 / 35""
+              ""04/35""
             ],
             ""path_to_actual"": ""$[0].expiry""
           },
@@ -2086,7 +2086,7 @@ replace-payment-card-007,"{
           {
             ""operator"": ""STRING_EQUALS"",
             ""expected"": [
-              ""9792 0848 2891 2749""
+              ""9792084828912749""
             ],
             ""path_to_actual"": ""$[0].cardNumber""
           },
@@ -2100,7 +2100,7 @@ replace-payment-card-007,"{
           {
             ""operator"": ""STRING_EQUALS"",
             ""expected"": [
-              ""03 / 30""
+              ""03/30""
             ],
             ""path_to_actual"": ""$[0].expiry""
           },
@@ -13502,7 +13502,7 @@ replace-payment-card-008,"{
           {
             ""operator"": ""STRING_EQUALS"",
             ""expected"": [
-              ""8240 2696 7028 4190""
+              ""8240269670284190""
             ],
             ""path_to_actual"": ""$[0].cardNumber""
           },
@@ -13516,7 +13516,7 @@ replace-payment-card-008,"{
           {
             ""operator"": ""STRING_EQUALS"",
             ""expected"": [
-              ""06 / 29""
+              ""06/29""
             ],
             ""path_to_actual"": ""$[0].expiry""
           },
@@ -13569,7 +13569,7 @@ replace-payment-card-009,"{
           {
             ""operator"": ""STRING_EQUALS"",
             ""expected"": [
-              ""7221 8045 7774 2812""
+              ""7221804577742812""
             ],
             ""path_to_actual"": ""$[0].cardNumber""
           },
@@ -13583,7 +13583,7 @@ replace-payment-card-009,"{
           {
             ""operator"": ""STRING_EQUALS"",
             ""expected"": [
-              ""05 / 33""
+              ""05/33""
             ],
             ""path_to_actual"": ""$[0].expiry""
           },
@@ -16363,7 +16363,7 @@ replace-payment-card-010,"{
           {
             ""operator"": ""STRING_EQUALS"",
             ""expected"": [
-              ""8240 2696 7028 4190""
+              ""8240269670284190""
             ],
             ""path_to_actual"": ""$[0].cardNumber""
           },
@@ -16377,7 +16377,7 @@ replace-payment-card-010,"{
           {
             ""operator"": ""STRING_EQUALS"",
             ""expected"": [
-              ""06 / 29""
+              ""06/29""
             ],
             ""path_to_actual"": ""$[0].expiry""
           },

@@ -170,9 +170,9 @@ export default function AddCardModal({ isOpen, onClose, onAddCard }: AddCardModa
   const handleSubmit = () => {
     if (validateForm()) {
       onAddCard({
-        cardNumber,
+        cardNumber: cardNumber.replace(/\s/g, ''),
         cvc,
-        expiration,
+        expiration: expiration.replace(/\s/g, ''),
         zipCode,
       });
       // Reset form
