@@ -12,10 +12,10 @@ Expanded dietary filter coverage by adding more restaurant category mappings, si
 | 1 | Vegetarian | 84 | ✅ |
 | 2 | Dairy-free | 80 | ✅ |
 | 3 | Low-carb | 69 | ✅ |
-| 4 | Nut-free | 64 | ✅ NEW |
+| 4 | Nut-free | 64 | ✅ |
 | 5 | Vegan | 27 | ✅ |
 
-**Key Update:** Added Nut-free as a new dietary filter option with 64 matching restaurants.
+**Key Update:** Mapped 64 Nut-free restaurants.
 
 ---
 
