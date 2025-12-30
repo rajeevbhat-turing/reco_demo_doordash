@@ -1,5 +1,24 @@
 # Release Notes
 
+## December 30, 2025
+
+### 🥗 Dietary Preferences Expanded
+
+#### New Restaurant Category Mappings
+Expanded dietary filter coverage by adding more restaurant category mappings, significantly improving the number of restaurants matching each dietary preference:
+
+| # | Filter | Restaurants | Status |
+|---|--------|-------------|--------|
+| 1 | Vegetarian | 84 | ✅ |
+| 2 | Dairy-free | 80 | ✅ |
+| 3 | Low-carb | 69 | ✅ |
+| 4 | Nut-free | 64 | ✅ NEW |
+| 5 | Vegan | 27 | ✅ |
+
+**Key Update:** Added Nut-free as a new dietary filter option with 64 matching restaurants.
+
+---
+
 ## December 28, 2025
 
 ### 🎯 Task System Updates
