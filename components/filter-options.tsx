@@ -520,32 +520,24 @@ const FilterOptions = forwardRef<FilterOptionsRef, FilterOptionsProps>(
                   </div>
                   <div className="flex-1 overflow-y-auto px-6 pb-4 min-h-0">
                     <div className="space-y-2">
-                      {[
-                        'Vegan',
-                        'Vegetarian',
-                        'Gluten-free',
-                        'Halal',
-                        'Kosher',
-                        'Dairy-free',
-                        'Nut-free',
-                        'Low-carb',
-                        'Keto-friendly',
-                      ].map(dietary => (
-                        <button
-                          key={dietary}
-                          className={`w-full px-4 py-3 rounded-lg text-left text-sm font-medium flex items-center justify-between ${
-                            selectedDietaryPreferences.includes(dietary)
-                              ? 'bg-black text-white'
-                              : 'bg-gray-100 text-gray-900 hover:bg-gray-200'
-                          }`}
-                          onClick={() => handleDietaryToggle(dietary)}
-                        >
-                          <span>{dietary}</span>
-                          {selectedDietaryPreferences.includes(dietary) && (
-                            <Check className="h-4 w-4" />
-                          )}
-                        </button>
-                      ))}
+                      {['Vegan', 'Vegetarian', 'Low-carb', 'Nut-free', 'Dairy-free'].map(
+                        dietary => (
+                          <button
+                            key={dietary}
+                            className={`w-full px-4 py-3 rounded-lg text-left text-sm font-medium flex items-center justify-between ${
+                              selectedDietaryPreferences.includes(dietary)
+                                ? 'bg-black text-white'
+                                : 'bg-gray-100 text-gray-900 hover:bg-gray-200'
+                            }`}
+                            onClick={() => handleDietaryToggle(dietary)}
+                          >
+                            <span>{dietary}</span>
+                            {selectedDietaryPreferences.includes(dietary) && (
+                              <Check className="h-4 w-4" />
+                            )}
+                          </button>
+                        )
+                      )}
                     </div>
                   </div>
                   <div className="flex justify-between p-6 pt-4 border-t border-gray-100 bg-white flex-shrink-0 rounded-b-lg">
