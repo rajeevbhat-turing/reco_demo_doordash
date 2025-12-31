@@ -34,12 +34,23 @@ COPY --from=builder --chown=nextjs:nodejs \
   /app/node_modules/@libsql/linux-x64-musl \
   ./node_modules/@libsql/linux-x64-musl
 
+# Copy database files
 COPY ./data/db/dashdoor.db /app/dashdoor.db
-ENV LIBSQL_URL=file:/app/dashdoor.db
 COPY ./data/db/delivery.db /app/delivery.db
-ENV DELIVERY_LIBSQL_URL=file:/app/delivery.db
 COPY ./data/db/merchant.db /app/merchant.db
-ENV MERCHANT_LIBSQL_URL=file:/app/merchant.db
+
+# Database URLs - can be overridden at build time or runtime
+ARG LIBSQL_URL=file:/app/dashdoor.db
+ARG DELIVERY_LIBSQL_URL=file:/app/delivery.db
+ARG MERCHANT_LIBSQL_URL=file:/app/merchant.db
+
+ENV LIBSQL_URL=${LIBSQL_URL}
+ENV DELIVERY_LIBSQL_URL=${DELIVERY_LIBSQL_URL}
+ENV MERCHANT_LIBSQL_URL=${MERCHANT_LIBSQL_URL}
+
+# Image prefix URL for S3 bucket - can be overridden at build time or runtime
+ARG PREFIX_URL=https://meta-ui-images.s3.us-west-2.amazonaws.com/
+ENV PREFIX_URL=${PREFIX_URL}
 
 USER nextjs
 
