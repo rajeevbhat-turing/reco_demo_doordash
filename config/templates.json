@@ -122,6 +122,7 @@
     },
     "start_url": "https://dashdoor-prod.rlgym.turing.com/home",
     "task_statement": "Log in using email '{{USER_EMAIL}}' and password '{{USER_PASSWORD}}'. Order from the nearest {{CUISINE}} restaurant. Get either a {{RESTAURANT_ITEM_1}} or a {{RESTAURANT_ITEM_2}}, choosing the cheaper option, and if they cost the same, pick the one with the higher rating. Have it delivered to my {{ADDRESS_TYPE}} address.",
+    "task_type": "GUI Comprehension, Action Execution, Decision Making, Element Identification, Multi-Step Task Planning",
     "grader_config": {
       "state_grader_configs": [
         {
@@ -1916,6 +1917,7 @@
     },
     "start_url": "https://dashdoor-prod.rlgym.turing.com/home",
     "task_statement": "Log in using email '{{USER_EMAIL}}' and password '{{USER_PASSWORD}}'. Order the cheapest {{RESTAURANT_ITEM}} from the {{CUISINE}} restaurant nearest to my {{ADDRESS_TYPE}}.",
+    "task_type": "GUI Comprehension, Action Execution, Element Identification, Decision Making",
     "grader_config": {
       "state_grader_configs": [
         {

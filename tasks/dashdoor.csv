@@ -830,7 +830,8 @@ nearest-cheapest-choice-002,"{
       ""timezone"": ""America/Los_Angeles"",
       ""user"": ""willow.lopez7@inbox.local""
     }
-  }
+  },
+  ""task_type"": ""GUI Comprehension, Action Execution, Decision Making, Element Identification, Multi-Step Task Planning""
 }","[""Menu Viewing""]","[""Restaurant discovery & filtering"", ""Price & rating tradeoffs""]","[""Search and filtering"", ""Decision making"", ""Instruction following""]","Order from the nearest Thai restaurant. Get either a Red Curry or a Tom Yum, choosing the cheaper option, and if they cost the same, pick the one with the higher rating. Have it delivered to my office address.",,3,Medium,
 nearest-cheapest-choice-003,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
@@ -927,7 +928,8 @@ nearest-cheapest-choice-003,"{
       ""timezone"": ""America/Los_Angeles"",
       ""user"": ""aiden.reed8@dashdoor.test""
     }
-  }
+  },
+  ""task_type"": ""GUI Comprehension, Action Execution, Decision Making, Element Identification, Multi-Step Task Planning""
 }","[""Menu Viewing""]","[""Restaurant discovery & filtering"", ""Price & rating tradeoffs""]","[""Search and filtering"", ""Decision making"", ""Instruction following""]","Order from the nearest Seafood restaurant. Get either a Calamari or a Ceviche, choosing the cheaper option, and if they cost the same, pick the one with the higher rating. Have it delivered to my other address.",,3,Medium,
 nearest-cheapest-choice-004,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
@@ -1024,7 +1026,8 @@ nearest-cheapest-choice-004,"{
       ""timezone"": ""America/Los_Angeles"",
       ""user"": ""willow.nguyen9@dashdoor.test""
     }
-  }
+  },
+  ""task_type"": ""GUI Comprehension, Action Execution, Decision Making, Element Identification, Multi-Step Task Planning""
 }","[""Menu Viewing""]","[""Restaurant discovery & filtering"", ""Price & rating tradeoffs""]","[""Search and filtering"", ""Decision making"", ""Instruction following""]","Order from the nearest Sandwiches restaurant. Get either a Sweet Potato Wedges or a Mini Cheeseburger Sliders, choosing the cheaper option, and if they cost the same, pick the one with the higher rating. Have it delivered to my office address.",,3,Medium,
 nearest-cheapest-choice-005,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
@@ -1101,7 +1104,8 @@ nearest-cheapest-choice-005,"{
       ""timezone"": ""America/Los_Angeles"",
       ""user"": ""jasper.greene10@dashdoor.test""
     }
-  }
+  },
+  ""task_type"": ""GUI Comprehension, Action Execution, Decision Making, Element Identification, Multi-Step Task Planning""
 }","[""Menu Viewing""]","[""Restaurant discovery & filtering"", ""Price & rating tradeoffs""]","[""Search and filtering"", ""Decision making"", ""Instruction following""]","I want to get either a Citrus Shrimp Tacos or a Sweet Potato Wedges, choosing the cheaper option, and if they cost the same, pick the one with the higher rating. Have it delivered to my office address.",,3,Medium,
 nearest-cheapest-choice-006,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
@@ -1198,7 +1202,8 @@ nearest-cheapest-choice-006,"{
       ""timezone"": ""America/Los_Angeles"",
       ""user"": ""quinn.sawyer11@example.com""
     }
-  }
+  },
+  ""task_type"": ""GUI Comprehension, Action Execution, Decision Making, Element Identification, Multi-Step Task Planning""
 }","[""Menu Viewing""]","[""Restaurant discovery & filtering"", ""Price & rating tradeoffs""]","[""Search and filtering"", ""Decision making"", ""Instruction following""]","Order from the nearest Salads restaurant. Get either a Custom Salad or a Bottled Water, choosing the cheaper option, and if they cost the same, pick the one with the higher rating. Have it delivered to my other address.",,3,Medium,
 nearest-cheapest-choice-007,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
@@ -1275,7 +1280,8 @@ nearest-cheapest-choice-007,"{
       ""timezone"": ""America/Los_Angeles"",
       ""user"": ""elias.young12@dashdoor.test""
     }
-  }
+  },
+  ""task_type"": ""GUI Comprehension, Action Execution, Decision Making, Element Identification, Multi-Step Task Planning""
 }","[""Menu Viewing""]","[""Restaurant discovery & filtering"", ""Price & rating tradeoffs""]","[""Search and filtering"", ""Decision making"", ""Instruction following""]","I want to get either a Mini Cheeseburger or a Cheeseburger, choosing the cheaper option, and if they cost the same, pick the one with the higher rating. Have it delivered to my other address.",,3,Medium,
 new-cheapest-restaurant-001,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
@@ -8643,7 +8649,8 @@ cheapest-nearby-item-002,"{
       ""timezone"": ""America/Los_Angeles"",
       ""user"": ""gavin.underwood108@mail.test""
     }
-  }
+  },
+  ""task_type"": ""GUI Comprehension, Action Execution, Element Identification, Decision Making""
 }","[""Menu Viewing""]","[""Cuisine filtering"", ""Price filtering""]","[""Search and filtering"", ""Decision making"", ""Order Placement""]",Order the cheapest Chef's Specials item from the Asian restaurant nearest to my other address.,,8,Easy,
 cheapest-nearby-item-005,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
@@ -8740,7 +8747,8 @@ cheapest-nearby-item-005,"{
       ""timezone"": ""America/Los_Angeles"",
       ""user"": ""priya.bennett112@inbox.local""
     }
-  }
+  },
+  ""task_type"": ""GUI Comprehension, Action Execution, Element Identification, Decision Making""
 }","[""Menu Viewing""]","[""Cuisine filtering"", ""Price filtering""]","[""Search and filtering"", ""Decision making"", ""Order Placement""]",Order the cheapest Family Meals item from the Korean restaurant nearest to my other address.,,8,Easy,
 multi-express-orders-001,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
@@ -13638,7 +13646,8 @@ nearest-cheapest-choice-008,"{
       ""timezone"": ""America/Los_Angeles"",
       ""user"": ""lena.owens6@mail.test""
     }
-  }
+  },
+  ""task_type"": ""GUI Comprehension, Action Execution, Decision Making, Element Identification, Multi-Step Task Planning""
 }","[""Menu Viewing""]","[""Restaurant discovery & filtering"", ""Price & rating tradeoffs""]","[""Search and filtering"", ""Decision making"", ""Instruction following""]","Order from the nearest Greek restaurant. Get either a Mango Lassi or a Passionfruit Agua Fresca, choosing the cheaper option, and if they cost the same, pick the one with the higher rating. Have it delivered to my hotel address.",,3,Medium,
 nearest-cheapest-choice-009,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
@@ -13735,7 +13744,8 @@ nearest-cheapest-choice-009,"{
       ""timezone"": ""America/Los_Angeles"",
       ""user"": ""aiden.reed8@dashdoor.test""
     }
-  }
+  },
+  ""task_type"": ""GUI Comprehension, Action Execution, Decision Making, Element Identification, Multi-Step Task Planning""
 }","[""Menu Viewing""]","[""Restaurant discovery & filtering"", ""Price & rating tradeoffs""]","[""Search and filtering"", ""Decision making"", ""Instruction following""]","Order from the nearest Indian restaurant. Get either a Samosas or a Masala Chai, choosing the cheaper option, and if they cost the same, pick the one with the higher rating. Have it delivered to my other address.",,3,Medium,
 new-cheapest-restaurant-008,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
@@ -15282,7 +15292,8 @@ cheapest-nearby-item-004,"{
       ""timezone"": ""America/Los_Angeles"",
       ""user"": ""aiden.ingram73@dashdoor.test""
     }
-  }
+  },
+  ""task_type"": ""GUI Comprehension, Action Execution, Element Identification, Decision Making""
 }","[""Menu Viewing""]","[""Cuisine filtering"", ""Price filtering""]","[""Search and filtering"", ""Decision making"", ""Order Placement""]",Order the cheapest item from appetizers from the Pizza restaurant nearest to my office.,,8,Easy,
 gift-coffee-order-005,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
