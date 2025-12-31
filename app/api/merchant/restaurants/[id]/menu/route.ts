@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { merchantDb } from '@/lib/merchant-db';
+import { getImageWithFallback } from '@/constants/image-placeholders';
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -140,7 +141,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       categoryId: item.category_id,
       name: item.name,
       description: item.description || null,
-      image: item.image || null,
+      image: getImageWithFallback(item.image, 'image'),
       pickupPrice: `$${(item.pickup_price / 100).toFixed(2)}`,
       deliveryPrice: `$${(item.delivery_price / 100).toFixed(2)}`,
       status: item.status,

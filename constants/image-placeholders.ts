@@ -11,6 +11,9 @@ export const PLACEHOLDER_USER = '/placeholder.svg';
 // This pattern is used in the database to mark unavailable images
 export const DUMMY_IMAGE_PATTERN = 'https://static.dashdoor.test';
 
+// Image prefix URL from environment variable for S3 bucket
+export const IMAGE_PREFIX_URL = process.env.PREFIX_URL || '';
+
 /**
  * Checks if an image URL is valid (not null, not empty, and not a dummy link)
  * This function must be deterministic - same input always produces same output
@@ -87,6 +90,23 @@ export function getPlaceholderImage(type: 'logo' | 'user' | 'image' = 'image'): 
 }
 
 /**
+ * Checks if a URL is a relative path that needs the prefix
+ * Relative paths are paths like "dashdoor/restaurants/..." that need the S3 prefix
+ */
+function isRelativePath(url: string): boolean {
+  // Already a full URL
+  if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('//')) {
+    return false;
+  }
+  // Local placeholder paths
+  if (url.startsWith('/')) {
+    return false;
+  }
+  // This is a relative path that needs the prefix
+  return true;
+}
+
+/**
  * Gets a fallback image URL, checking if the provided URL is valid
  * @param url - The image URL to check
  * @param type - The type of image (determines which placeholder to use)
@@ -108,6 +128,10 @@ export function getImageWithFallback(
 
   // Use validation function
   if (isValidImageUrl(trimmed)) {
+    // If it's a relative path and we have a prefix, prepend it
+    if (isRelativePath(trimmed) && IMAGE_PREFIX_URL) {
+      return `${IMAGE_PREFIX_URL}${trimmed}`;
+    }
     return trimmed;
   }
 
