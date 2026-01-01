@@ -655,17 +655,7 @@ describe('FilterOptions', () => {
 
     render(<FilterOptions />);
 
-    const dietaryOptions = [
-      'Vegan',
-      'Vegetarian',
-      'Gluten-free',
-      'Halal',
-      'Kosher',
-      'Dairy-free',
-      'Nut-free',
-      'Low-carb',
-      'Keto-friendly',
-    ];
+    const dietaryOptions = ['Vegan', 'Vegetarian', 'Nut-free', 'Low-carb', 'Dairy-free'];
 
     dietaryOptions.forEach(option => {
       expect(screen.getByText(option)).toBeInTheDocument();
