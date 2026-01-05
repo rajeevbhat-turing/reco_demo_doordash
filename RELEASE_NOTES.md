@@ -2,7 +2,7 @@
 
 ## January 6, 2026
 
-- Moved 12,173 images to AWS S3 bucket from Cloudinary
+- Moved images to AWS S3 bucket from Cloudinary
 - Updated the DB to use relative paths so that you can use any provider (even local) as long as the proper relative path is followed
 - Added `task_type` to 11 tasks and for the 2 templates
 
