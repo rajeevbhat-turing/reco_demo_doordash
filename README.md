@@ -34,6 +34,10 @@ Dashdoor is an RL-Gym designed to test and train AI models on food delivery plat
   - Customers can rate restaurants and delivery experience
   - Display aggregated ratings and reviews
 
+## Images
+
+The images are zipped and uploaded [here](https://meta-ui-images.s3.us-west-2.amazonaws.com/zipped_images/dashdoor_20260105_142217.zip). You can just extract this ZIP file and copy the `dashdoor` folder anywhere, even locally and then update the `PREFIX_URL` (see how to handle this environment variable below) with the proper path. After that, everything will work as expected.
+
 ## Local Setup
 
 Whenever running this project, please use Docker.
