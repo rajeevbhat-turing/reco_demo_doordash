@@ -36,7 +36,23 @@ Dashdoor is an RL-Gym designed to test and train AI models on food delivery plat
 
 ## Images
 
-The images are zipped and uploaded [here](https://meta-ui-images.s3.us-west-2.amazonaws.com/zipped_images/dashdoor_20260105_142217.zip). You can just extract this ZIP file and copy the `dashdoor` folder anywhere, even locally and then update the `PREFIX_URL` (see how to handle this environment variable below) with the proper path. After that, everything will work as expected.
+Images are stored in the database as **relative paths** (e.g., `dashdoor/restaurants/98/menu_items/1.jpg`) and are dynamically prefixed with the `PREFIX_URL` environment variable at runtime. This allows flexible CDN/hosting configuration without database changes.
+
+### Image Hosting
+
+- **Storage**: Images are hosted on AWS S3 (default: `https://meta-ui-images.s3.us-west-2.amazonaws.com/`)
+- **Database**: All image URLs in the database are relative paths
+- **Runtime**: The `PREFIX_URL` environment variable is used to construct full URLs
+- **Configuration**: Set `PREFIX_URL` in `.env.local` to point to your CDN or local image server
+
+### Getting Images
+
+The images are zipped and uploaded [here](https://meta-ui-images.s3.us-west-2.amazonaws.com/zipped_images/dashdoor_20260105_142217.zip). You can:
+1. Extract the ZIP file and upload to your own S3 bucket/CDN
+2. Extract locally and serve via a local server
+3. Update `PREFIX_URL` to point to your image location
+
+After setting `PREFIX_URL`, all images will load correctly.
 
 ## Local Setup
 
