@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { merchantDb } from '@/lib/merchant-db';
+import { getImageWithFallback } from '@/constants/image-placeholders';
 
 /**
  * GET /api/merchant/reviews/[storeId]
@@ -97,7 +98,7 @@ export async function GET(
       if (!photosByReview.has(photo.review_id)) {
         photosByReview.set(photo.review_id, []);
       }
-      photosByReview.get(photo.review_id)!.push(photo.url);
+      photosByReview.get(photo.review_id)!.push(getImageWithFallback(photo.url, 'image'));
     });
 
     // Group liked items by review_id
@@ -109,7 +110,7 @@ export async function GET(
       likedItemsByReview.get(item.review_id)!.push({
         id: item.menu_item_id,
         name: item.item_name,
-        image: item.item_image,
+        image: getImageWithFallback(item.item_image, 'image'),
         storeId: item.store_id,
       });
     });

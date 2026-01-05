@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { merchantDb } from '@/lib/merchant-db';
+import { getImageWithFallback } from '@/constants/image-placeholders';
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
@@ -79,7 +80,7 @@ export async function GET(request: NextRequest) {
         name: oi.name,
         quantity: oi.quantity,
         price: oi.price / 100, // Convert cents to dollars
-        image: oi.image,
+        image: getImageWithFallback(oi.image, 'image'),
       });
     });
 

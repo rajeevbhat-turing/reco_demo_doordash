@@ -34,6 +34,10 @@ Dashdoor is an RL-Gym designed to test and train AI models on food delivery plat
   - Customers can rate restaurants and delivery experience
   - Display aggregated ratings and reviews
 
+## Images
+
+The images are zipped and uploaded [here](https://meta-ui-images.s3.us-west-2.amazonaws.com/zipped_images/dashdoor_20260105_142217.zip). You can just extract this ZIP file and copy the `dashdoor` folder anywhere, even locally and then update the `PREFIX_URL` (see how to handle this environment variable below) with the proper path. After that, everything will work as expected.
+
 ## Local Setup
 
 Whenever running this project, please use Docker.
@@ -56,6 +60,34 @@ To run the app using Docker, follow these steps:
 
 3. **Open your browser** and navigate to `localhost:3000` to see the app running.
 
+### Docker Environment Variables
+
+Environment variables can be overridden at **build time** or **runtime**:
+
+#### Override at Build Time
+
+Use `--build-arg` to set values when building the image:
+
+```sh
+docker build -f ./Dockerfile.prod -t dashdoor \
+  --build-arg PREFIX_URL=https://my-cdn.cloudfront.net/ \
+  --build-arg LIBSQL_URL=file:/custom/path/dashdoor.db \
+  . --load
+```
+
+#### Override at Runtime
+
+Use `-e` flag to set values when running the container:
+
+```sh
+docker run -p 3000:3000 \
+  -e PREFIX_URL=https://my-cdn.cloudfront.net/ \
+  -e LIBSQL_URL=file:/custom/path/dashdoor.db \
+  dashdoor
+```
+
+> **Note**: Runtime values take precedence over build-time values.
+
 ## Development Setup
 
 To set up the project for local development:
@@ -66,15 +98,22 @@ To set up the project for local development:
    npm install
    ```
 
-2. **Create a `.env` file** with `LIBSQL_URL`, `DELIVERY_LIBSQL_URL` and `MERCHANT_LIBSQL_URL` (defaults to `.env`):
+2. **Set up environment variables** by copying the example file:
 
    ```sh
-   LIBSQL_URL=your_libsql_url_here
-   DELIVERY_LIBSQL_URL=your_delivery_libsql_url_here
-   MERCHANT_LIBSQL_URL=your_merchant_libsql_url_here
+   cp .env.example .env
    ```
 
-Note: The default DBs are located inside the `data/db` folder
+   The `.env.example` file contains all required environment variables with default values:
+
+   | Variable | Description | Default |
+   |----------|-------------|---------|
+   | `LIBSQL_URL` | Main DashDoor database | `file:./data/db/dashdoor.db` |
+   | `DELIVERY_LIBSQL_URL` | Delivery portal database | `file:./data/db/delivery.db` |
+   | `MERCHANT_LIBSQL_URL` | Merchant portal database | `file:./data/db/merchant.db` |
+   | `PREFIX_URL` | S3 bucket URL prefix for images | `https://meta-ui-images.s3.us-west-2.amazonaws.com/` |
+
+   > **Note**: The default database files are located inside the `data/db` folder.
 
 3. **Run the development server**:
 
@@ -83,3 +122,24 @@ Note: The default DBs are located inside the `data/db` folder
    ```
 
 4. **Open your browser** and navigate to `localhost:3000` to see the app running.
+
+## Environment Variables
+
+### Database URLs
+
+The application uses three separate SQLite databases:
+- **dashdoor.db** - Main consumer app (restaurants, menu items, orders, reviews)
+- **delivery.db** - Delivery partner portal (drivers, deliveries, earnings)
+- **merchant.db** - Merchant portal (store management, menu management)
+
+### Image Storage
+
+Images are stored in the database as relative paths (e.g., `dashdoor/restaurants/1/logo/logo.jpg`). The `PREFIX_URL` environment variable is prepended to these paths to form the full URL:
+
+```
+PREFIX_URL + relative_path = full_image_url
+https://meta-ui-images.s3.us-west-2.amazonaws.com/ + dashdoor/restaurants/1/logo/logo.jpg
+= https://meta-ui-images.s3.us-west-2.amazonaws.com/dashdoor/restaurants/1/logo/logo.jpg
+```
+
+This allows you to switch image hosting providers by simply changing the `PREFIX_URL`.

@@ -146,13 +146,14 @@ export default function AddCardModal({ isOpen, onClose, onAddCard }: AddCardModa
       if (month < 1 || month > 12) {
         newErrors.expiration = 'Invalid month';
         isValid = false;
-      }
-      // Check if card is expired
-      const currentYear = new Date().getFullYear() % 100;
-      const currentMonth = new Date().getMonth() + 1;
-      if (year < currentYear || (year === currentYear && month < currentMonth)) {
-        newErrors.expiration = 'Card is expired';
-        isValid = false;
+      } else {
+        // Only check if card is expired when month is valid
+        const currentYear = new Date().getFullYear() % 100;
+        const currentMonth = new Date().getMonth() + 1;
+        if (year < currentYear || (year === currentYear && month < currentMonth)) {
+          newErrors.expiration = 'Card is expired';
+          isValid = false;
+        }
       }
     }
 

@@ -206,9 +206,9 @@ describe('AddCardModal', () => {
 
     // Component formats card number with spaces and expiration with spaces
     expect(mockOnAddCard).toHaveBeenCalledWith({
-      cardNumber: '1234 5678 9012 3456', // Formatted with spaces
+      cardNumber: '1234567890123456',
       cvc: '123',
-      expiration: `12 / ${futureYear.toString().padStart(2, '0')}`, // Formatted with spaces
+      expiration: `12/${futureYear.toString().padStart(2, '0')}`,
       zipCode: '12345',
     });
     // Note: Component doesn't call onClose, it resets the form

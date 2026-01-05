@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { deliveryDb } from '@/lib/delivery-db';
+import { getImageWithFallback } from '@/constants/image-placeholders';
 
 /**
  * GET /api/delivery/orders
@@ -81,7 +82,7 @@ export async function GET(request: NextRequest) {
       id: order.id,
       partnerId: order.partnerId,
       storeName: order.storeName,
-      storeLogo: order.storeLogo,
+      storeLogo: getImageWithFallback(order.storeLogo, 'logo'),
       storeAddress: order.storeAddress,
       customerName: order.customerName,
       customerAddress: order.customerAddress,
