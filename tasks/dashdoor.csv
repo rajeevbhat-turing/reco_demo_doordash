@@ -1285,7 +1285,7 @@ nearest-cheapest-choice-007,"{
 }","[""Menu Viewing""]","[""Restaurant discovery & filtering"", ""Price & rating tradeoffs""]","[""Search and filtering"", ""Decision making"", ""Instruction following""]","I want to get either a Mini Cheeseburger or a Cheeseburger, choosing the cheaper option, and if they cost the same, pick the one with the higher rating. Have it delivered to my other address.",,3,Medium,
 new-cheapest-restaurant-001,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""Help me find the best cheapest vegan or vegetarian restaurant option that I have not ordered from in the past."",
+  ""task_statement"": ""Help me find vegan or vegetarian restaurants. Apply the lowest price filter possible and find the highest rated restaurant that I've not ordered from before."",
   ""task_id"": ""new-cheapest-restaurant-001"",
   ""task_type"": ""Multi-Step Task Planning, GUI Comprehension, Decision Making"",
   ""simulator_config"": {
@@ -1338,7 +1338,7 @@ new-cheapest-restaurant-001,"{
       ]
     }
   }
-}","[""Order History""]","[""Restaurant discovery & filtering"", ""Reorder & past orders""]","[""Order history analysis"", ""Search and filtering"", ""Decision making""]",Help me find the best cheapest vegan or vegetarian restaurant option that I have not ordered from in the past.,,6,Medium,
+}","[""Order History""]","[""Restaurant discovery & filtering"", ""Reorder & past orders""]","[""Order history analysis"", ""Search and filtering"", ""Decision making""]",Help me find vegan or vegetarian restaurants. Apply the lowest price filter possible and find the highest rated restaurant that I've not ordered from before..,,6,Medium,
 new-cheapest-restaurant-002,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
   ""task_statement"": ""Help me find the best cheapest Steakhouse or Thai restaurant option that I have not ordered from in the past."",
