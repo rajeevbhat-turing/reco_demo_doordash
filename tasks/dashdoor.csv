@@ -9687,7 +9687,7 @@ list-affordable-cuisine-005,"{
 }","[""Item Selection & Customization""]","[""Restaurant comparison"", ""Price filtering""]","[""Search and filtering"", ""Decision making""]","I want to eat Burgers cuisine today. Can you find a restaurant nearby which serves thai cuisine? Apply the lowest price filters possible ($, $$, etc) and tell me 5 restaurant names that are nearest to me. A lower price rating is more important than the restaurant being closer.",,3,Medium,
 list-affordable-cuisine-007,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""I want to eat Burgers cuisine today. Can you find a restaurant nearby which serves Burgers cuisine? Tell me the top 3 most affordable restaurant names that are nearest to me."",
+  ""task_statement"": ""I want to eat Burgers cuisine today. Can you find a restaurant nearby which serves Mexican cuisine? Apply the lowest price filters possible ($, $$, etc) and tell me 3 restaurant names that are nearest to me. A lower price rating is more important than the restaurant being closer."",
   ""task_type"": ""GUI Comprehension, Multi-Step Task Planning, Information Retrieval, Decision Making"",
   ""grader_config"": {
     ""answer_grader_config"": {
@@ -9707,7 +9707,7 @@ list-affordable-cuisine-007,"{
           ""args"": {
             ""filters"": {
               ""cuisines"": [
-                ""Burgers""
+                ""Mexican""
               ]
             },
             ""sort_type"": [
