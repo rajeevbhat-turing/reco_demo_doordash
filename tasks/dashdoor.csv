@@ -1621,7 +1621,7 @@ new-cheapest-restaurant-006,"{
 }","[""Order History""]","[""Restaurant discovery & filtering"", ""Reorder & past orders""]","[""Order history analysis"", ""Search and filtering"", ""Decision making""]",Help me find Korean or Middle Eastern restaurants. Apply the lowest price filter possible and find the highest rated restaurant that I've not ordered from before.,,6,Medium,
 new-cheapest-restaurant-007,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""Help me find the best cheapest Seafood or Chinese restaurant option that I have not ordered from in the past."",
+  ""task_statement"": ""Help me find Seafood or Chinese restaurants. Apply the lowest price filter possible and find the highest rated restaurant that I've not ordered from before."",
   ""task_type"": ""Multi-Step Task Planning, GUI Comprehension, Decision Making"",
   ""simulator_config"": {
     ""bootstrap_data"": {
@@ -1674,7 +1674,7 @@ new-cheapest-restaurant-007,"{
     }
   },
   ""task_id"": ""new-cheapest-restaurant-007""
-}","[""Order History""]","[""Restaurant discovery & filtering"", ""Reorder & past orders""]","[""Order history analysis"", ""Search and filtering"", ""Decision making""]",Help me find the best cheapest Seafood or Chinese restaurant option that I have not ordered from in the past.,,6,Medium,
+}","[""Order History""]","[""Restaurant discovery & filtering"", ""Reorder & past orders""]","[""Order history analysis"", ""Search and filtering"", ""Decision making""]",Help me find Seafood or Chinese restaurants. Apply the lowest price filter possible and find the highest rated restaurant that I've not ordered from before.,,6,Medium,
 replace-payment-card-001,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
   ""task_statement"": ""Delete my current card details and add a new card 7867786778677867 with CVV 111 and expiry date june 2029. Use the zipcode of my current address."",
