@@ -8005,7 +8005,7 @@ cheapest-rated-slices-007,"{
 }","[""Menu Viewing"", ""Cart Management""]","[""Restaurant discovery & filtering"", ""Menu exploration""]","[""Search and filtering"", ""Decision making"", ""Order Placement""]",I recently moved and want to explore Korean restaurants near my new house. Order two of the cheapest Starters available at the nearest 3 star or above Korean place.,,0,Hard,
 cheapest-liked-combo-001,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""I want to order from di fara pizza. Order the cheapest and most liked one of the classic pizzas and also add a soda can."",
+  ""task_statement"": ""I want to order from di fara pizza. Order the cheapest classic pizzas and also add a soda can."",
   ""task_id"": ""cheapest-liked-combo-001"",
   ""task_type"": ""GUI Comprehension, Element Identification, Action Execution"",
   ""grader_config"": {
@@ -8013,16 +8013,18 @@ cheapest-liked-combo-001,"{
       {
         ""assertions"": [
           {
-            ""operator"": ""ARRAY_STRING_CONTAINS"",
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.items[*].name"",
             ""paths_to_expected"": [
-              ""$[1].items[0].name""
+              ""$[1].items[0].name"",
+              ""$[2].items[0].name""
             ]
           },
           {
-            ""operator"": ""ARRAY_STRING_CONTAINS"",
+            ""operator"": ""JSON_PART_OF"",
             ""path_to_actual"": ""$.items[*].name"",
             ""paths_to_expected"": [
+              ""$[1].items[0].name"",
               ""$[2].items[0].name""
             ]
           },
@@ -8087,26 +8089,28 @@ cheapest-liked-combo-001,"{
       ""user"": ""elias.kaufman88@dashdoor.test""
     }
   }
-}","[""Menu Viewing"", ""Cart Management""]","[""Price & rating tradeoffs"", ""Item selection""]","[""Search and filtering"", ""Decision making"", ""Order Placement""]",I want to order from di fara pizza. Order the cheapest and most liked one of the classic pizzas and also add a soda can.,,10,Easy,
+}","[""Menu Viewing"", ""Cart Management""]","[""Price & rating tradeoffs"", ""Item selection""]","[""Search and filtering"", ""Decision making"", ""Order Placement""]",I want to order from di fara pizza. Order the cheapest classic pizzas and also add a soda can.,,10,Easy,
 cheapest-liked-combo-002,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""I want to order from Willow's Cellar. Order the cheapest and most liked one of the Starters and also add a Kimchi Slaw."",
+  ""task_statement"": ""I want to order from Willow's Cellar. Order the cheapest Starters and also add a Kimchi Slaw."",
   ""task_type"": ""GUI Comprehension, Action Execution, Element Identification"",
   ""grader_config"": {
     ""state_grader_configs"": [
       {
         ""assertions"": [
           {
-            ""operator"": ""ARRAY_STRING_CONTAINS"",
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.items[*].name"",
             ""paths_to_expected"": [
-              ""$[1].items[0].name""
+              ""$[1].items[0].name"",
+              ""$[2].items[0].name""
             ]
           },
           {
-            ""operator"": ""ARRAY_STRING_CONTAINS"",
+            ""operator"": ""JSON_PART_OF"",
             ""path_to_actual"": ""$.items[*].name"",
             ""paths_to_expected"": [
+              ""$[1].items[0].name"",
               ""$[2].items[0].name""
             ]
           },
@@ -8179,26 +8183,28 @@ cheapest-liked-combo-002,"{
       ""user"": ""diana.vega102@inbox.local""
     }
   }
-}","[""Menu Viewing"", ""Cart Management""]","[""Price & rating tradeoffs"", ""Item selection""]","[""Search and filtering"", ""Decision making"", ""Order Placement""]",I want to order from Willow's Cellar. Order the cheapest and most liked one of the Starters and also add a Kimchi Slaw.,,10,Easy,
+}","[""Menu Viewing"", ""Cart Management""]","[""Price & rating tradeoffs"", ""Item selection""]","[""Search and filtering"", ""Decision making"", ""Order Placement""]",I want to order from Willow's Cellar. Order the cheapest Starters and also add a Kimchi Slaw.,,10,Easy,
 cheapest-liked-combo-003,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""I want to order from Quinn's Grill. Order the cheapest and most liked one of the Sides and also add a Mango Lassi."",
+  ""task_statement"": ""I want to order from Quinn's Grill. Order the cheapest Sides and also add a Mango Lassi."",
   ""task_type"": ""GUI Comprehension, Action Execution, Element Identification"",
   ""grader_config"": {
     ""state_grader_configs"": [
       {
         ""assertions"": [
           {
-            ""operator"": ""ARRAY_STRING_CONTAINS"",
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.items[*].name"",
             ""paths_to_expected"": [
-              ""$[1].items[0].name""
+              ""$[1].items[0].name"",
+              ""$[2].items[0].name""
             ]
           },
           {
-            ""operator"": ""ARRAY_STRING_CONTAINS"",
+            ""operator"": ""JSON_PART_OF"",
             ""path_to_actual"": ""$.items[*].name"",
             ""paths_to_expected"": [
+              ""$[1].items[0].name"",
               ""$[2].items[0].name""
             ]
           },
@@ -8271,29 +8277,31 @@ cheapest-liked-combo-003,"{
       ""user"": ""jasper.turner103@example.com""
     }
   }
-}","[""Menu Viewing"", ""Cart Management""]","[""Price & rating tradeoffs"", ""Item selection""]","[""Search and filtering"", ""Decision making"", ""Order Placement""]",I want to order from Quinn's Grill. Order the cheapest and most liked one of the Sides and also add a Mango Lassi.,,10,Easy,
+}","[""Menu Viewing"", ""Cart Management""]","[""Price & rating tradeoffs"", ""Item selection""]","[""Search and filtering"", ""Decision making"", ""Order Placement""]",I want to order from Quinn's Grill. Order the cheapest Sides and also add a Mango Lassi.,,10,Easy,
 cheapest-liked-combo-005,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""I want to order from Brooklyn Smokehouse. Order the cheapest and most liked one of the Starters and also add a Crispy Cauliflower Tacos."",
+  ""task_statement"": ""I want to order from Brooklyn Smokehouse. Order the cheapest Starters and also add a Crispy Cauliflower Tacos."",
   ""task_type"": ""GUI Comprehension, Action Execution, Element Identification"",
   ""grader_config"": {
     ""state_grader_configs"": [
       {
         ""assertions"": [
           {
-            ""operator"": ""ARRAY_STRING_CONTAINS"",
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.items[*].name"",
             ""paths_to_expected"": [
-              ""$[1].items[0].name""
-            ]
-          },
-          {
-            ""operator"": ""ARRAY_STRING_CONTAINS"",
-            ""path_to_actual"": ""$.items[*].name"",
-            ""paths_to_expected"": [
+              ""$[1].items[0].name"",
               ""$[2].items[0].name""
             ]
           },
+          {
+            ""operator"": ""JSON_PART_OF"",
+            ""path_to_actual"": ""$.items[*].name"",
+            ""paths_to_expected"": [
+              ""$[1].items[0].name"",
+              ""$[2].items[0].name""
+            ]
+          },,
           {
             ""expected"": [
               ""==2""
@@ -8363,26 +8371,28 @@ cheapest-liked-combo-005,"{
       ""user"": ""bella.quintero105@mail.test""
     }
   }
-}","[""Menu Viewing"", ""Cart Management""]","[""Price & rating tradeoffs"", ""Item selection""]","[""Search and filtering"", ""Decision making"", ""Order Placement""]",I want to order from Brooklyn Smokehouse. Order the cheapest and most liked one of the Starters and also add a Crispy Cauliflower Tacos.,,10,Easy,
+}","[""Menu Viewing"", ""Cart Management""]","[""Price & rating tradeoffs"", ""Item selection""]","[""Search and filtering"", ""Decision making"", ""Order Placement""]",I want to order from Brooklyn Smokehouse. Order the cheapest Starters and also add a Crispy Cauliflower Tacos.,,10,Easy,
 cheapest-liked-combo-007,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""I want to order from Chinese Pantry. Order the cheapest and most liked one of the Sides & Shares and also add a Chocolate Lava Pots."",
+  ""task_statement"": ""I want to order from Chinese Pantry. Order the cheapest Sides & Shares and also add a Chocolate Lava Pots."",
   ""task_type"": ""GUI Comprehension, Action Execution, Element Identification"",
   ""grader_config"": {
     ""state_grader_configs"": [
       {
         ""assertions"": [
           {
-            ""operator"": ""ARRAY_STRING_CONTAINS"",
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.items[*].name"",
             ""paths_to_expected"": [
-              ""$[1].items[0].name""
+              ""$[1].items[0].name"",
+              ""$[2].items[0].name""
             ]
           },
           {
-            ""operator"": ""ARRAY_STRING_CONTAINS"",
+            ""operator"": ""JSON_PART_OF"",
             ""path_to_actual"": ""$.items[*].name"",
             ""paths_to_expected"": [
+              ""$[1].items[0].name"",
               ""$[2].items[0].name""
             ]
           },
@@ -8455,7 +8465,7 @@ cheapest-liked-combo-007,"{
       ""user"": ""willow.turner107@inbox.local""
     }
   }
-}","[""Menu Viewing"", ""Cart Management""]","[""Price & rating tradeoffs"", ""Item selection""]","[""Search and filtering"", ""Decision making"", ""Order Placement""]",I want to order from Chinese Pantry. Order the cheapest and most liked one of the Sides & Shares and also add a Chocolate Lava Pots.,,10,Easy,
+}","[""Menu Viewing"", ""Cart Management""]","[""Price & rating tradeoffs"", ""Item selection""]","[""Search and filtering"", ""Decision making"", ""Order Placement""]",I want to order from Chinese Pantry. Order the cheapest Sides & Shares and also add a Chocolate Lava Pots.,,10,Easy,
 cheapest-nearby-item-001,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
   ""task_statement"": ""Order the cheapest sushi roll from the japanese restaurant nearest to my apartment."",
@@ -12671,23 +12681,25 @@ helpful-review-items-006,"{
 }","[""Ratings & Reviews""]","[""Review-based recommendations""]","[""Ratings analysis"", ""Instruction following""]","Somebody recommended Fiona's Tavern to me, could you go through the reviews and find the review that people found the most helpful and add the liked items from it to my cart. If there are more, please choose the latest one.",,2,Hard,
 cheapest-liked-combo-004,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""I want to order from Panera Bread. Order the cheapest and most liked one of the Bakery & Drinks and also add a Creamy Tomato Soup."",
+  ""task_statement"": ""I want to order from Panera Bread. Order the cheapest Bakery & Drinks in Lemon flavour and also add a Creamy Tomato Soup."",
   ""task_type"": ""GUI Comprehension, Action Execution, Element Identification"",
   ""grader_config"": {
     ""state_grader_configs"": [
       {
         ""assertions"": [
           {
-            ""operator"": ""ARRAY_STRING_CONTAINS"",
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.items[*].name"",
             ""paths_to_expected"": [
-              ""$[1].items[0].name""
+              ""$[1].items[0].name"",
+              ""$[2].items[0].name""
             ]
           },
           {
-            ""operator"": ""ARRAY_STRING_CONTAINS"",
+            ""operator"": ""JSON_PART_OF"",
             ""path_to_actual"": ""$.items[*].name"",
             ""paths_to_expected"": [
+              ""$[1].items[0].name"",
               ""$[2].items[0].name""
             ]
           },
@@ -12760,26 +12772,28 @@ cheapest-liked-combo-004,"{
       ""user"": ""yuna.bennett104@example.com""
     }
   }
-}","[""Menu Viewing"", ""Cart Management""]","[""Price & rating tradeoffs"", ""Item selection""]","[""Search and filtering"", ""Decision making"", ""Order Placement""]",I want to order from Panera Bread. Order the cheapest and most liked one of the Bakery & Drinks and also add a Creamy Tomato Soup.,,10,Easy,
+}","[""Menu Viewing"", ""Cart Management""]","[""Price & rating tradeoffs"", ""Item selection""]","[""Search and filtering"", ""Decision making"", ""Order Placement""]",I want to order from Panera Bread. Order the cheapest Bakery & Drinks in Lemon flavour and also add a Creamy Tomato Soup.,,10,Easy,
 cheapest-liked-combo-006,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""I want to order from Miami Market. Order the cheapest and most liked one of the Sides & Shares and also add a Citrus Ginger Salmon Bowl."",
+  ""task_statement"": ""I want to order from Miami Market. Order the cheapest Sides & Shares and also add a Citrus Ginger Salmon Bowl."",
   ""task_type"": ""GUI Comprehension, Action Execution, Element Identification"",
   ""grader_config"": {
     ""state_grader_configs"": [
       {
         ""assertions"": [
           {
-            ""operator"": ""ARRAY_STRING_CONTAINS"",
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.items[*].name"",
             ""paths_to_expected"": [
-              ""$[1].items[0].name""
+              ""$[1].items[0].name"",
+              ""$[2].items[0].name""
             ]
           },
           {
-            ""operator"": ""ARRAY_STRING_CONTAINS"",
+            ""operator"": ""JSON_PART_OF"",
             ""path_to_actual"": ""$.items[*].name"",
             ""paths_to_expected"": [
+              ""$[1].items[0].name"",
               ""$[2].items[0].name""
             ]
           },
@@ -12852,7 +12866,7 @@ cheapest-liked-combo-006,"{
       ""user"": ""zane.vega106@mail.test""
     }
   }
-}","[""Menu Viewing"", ""Cart Management""]","[""Price & rating tradeoffs"", ""Item selection""]","[""Search and filtering"", ""Decision making"", ""Order Placement""]",I want to order from Miami Market. Order the cheapest and most liked one of the Sides & Shares and also add a Citrus Ginger Salmon Bowl.,,10,Easy,
+}","[""Menu Viewing"", ""Cart Management""]","[""Price & rating tradeoffs"", ""Item selection""]","[""Search and filtering"", ""Decision making"", ""Order Placement""]",I want to order from Miami Market. Order the cheapest Sides & Shares and also add a Citrus Ginger Salmon Bowl.,,10,Easy,
 multi-express-orders-006,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
   ""task_statement"": ""First place an order for a Cold Brew Horchata and Sparkling Hibiscus Tea from Talia's Kitchen. Also place an order for Cannoli from the best rated Pizza restaurant available. Make sure you mark both for express delivery"",
@@ -15107,23 +15121,25 @@ cheapest-rated-slices-004,"{
 }","[""Menu Viewing"", ""Cart Management""]","[""Restaurant discovery & filtering"", ""Menu exploration""]","[""Search and filtering"", ""Decision making"", ""Order Placement""]",I recently moved and want to explore Vegan restaurants near my new hotel. Order two of the cheapest Beverages available at the nearest 3.5 star or above Vegan place.,,0,Hard,
 cheapest-liked-combo-008,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""I want to order from Diana's Market. Order the cheapest and most liked one of the Beverages and also add a Mediterranean Mezze Spread."",
+  ""task_statement"": ""I want to order from Diana's Market. Order the cheapest of the Beverages and also add a Mediterranean Mezze Spread."",
   ""task_type"": ""GUI Comprehension, Action Execution, Element Identification"",
   ""grader_config"": {
     ""state_grader_configs"": [
       {
         ""assertions"": [
           {
-            ""operator"": ""ARRAY_STRING_CONTAINS"",
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.items[*].name"",
             ""paths_to_expected"": [
-              ""$[1].items[0].name""
+              ""$[1].items[0].name"",
+              ""$[2].items[0].name""
             ]
           },
           {
-            ""operator"": ""ARRAY_STRING_CONTAINS"",
+            ""operator"": ""JSON_PART_OF"",
             ""path_to_actual"": ""$.items[*].name"",
             ""paths_to_expected"": [
+              ""$[1].items[0].name"",
               ""$[2].items[0].name""
             ]
           },
