@@ -6823,7 +6823,7 @@ update-delivery-instructions-007,"{
 }","[""Address Entry & Validation""]","[""Address & delivery instructions""]","[""Instruction following"", ""UI Elements: Text Fields""]","My office building recently changed the floor number to 21. Also delivery folks are no longer allowed to go beyond the lobby, so make sure you update the drop off location and the delivery instructions accordingly",,0,Hard,
 lowest-calorie-dessert-002,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""Find the best Italian restaurant near my hotel and order 3 servings of the lowest calorie Classic Pastas."",
+  ""task_statement"": ""Find the highest rated Italian restaurant near my hotel address and order 3 servings of the lowest calorie Classic Pastas."",
   ""task_type"": ""GUI Comprehension, Action Execution, Multi-Step Task Planning, Decision Making"",
   ""grader_config"": {
     ""state_grader_configs"": [
@@ -6926,7 +6926,7 @@ lowest-calorie-dessert-002,"{
       ""user"": ""lena.turner75@mail.test""
     }
   }
-}","[""Cart Management""]","[""Diet & calorie filtering"", ""Item customization""]","[""Search and filtering"", ""Decision making"", ""Order Placement""]",Find the best Italian restaurant near my hotel and order 3 servings of the lowest calorie Classic Pastas.,,1,Hard,
+}","[""Cart Management""]","[""Diet & calorie filtering"", ""Item customization""]","[""Search and filtering"", ""Decision making"", ""Order Placement""]",Find the highest rated Italian restaurant near my hotel address and order 3 servings of the lowest calorie Classic Pastas.,,1,Hard,
 lowest-calorie-dessert-005,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
   ""task_statement"": ""Find the best American restaurant near my office and order 2 servings of the lowest calorie Chef's Specials. If there is an option for Chicken add it with one of the servings."",
