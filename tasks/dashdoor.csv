@@ -9734,7 +9734,7 @@ list-affordable-cuisine-007,"{
       ""user"": ""zane.kaufman133@inbox.local""
     }
   }
-}","[""Item Selection & Customization""]","[""Restaurant comparison"", ""Price filtering""]","[""Search and filtering"", ""Decision making""]",I want to eat Burgers cuisine today. Can you find a restaurant nearby which serves Burgers cuisine? Tell me the top 3 most affordable restaurant names that are nearest to me.,,3,Medium,
+}","[""Item Selection & Customization""]","[""Restaurant comparison"", ""Price filtering""]","[""Search and filtering"", ""Decision making""]","I want to eat Burgers cuisine today. Can you find a restaurant nearby which serves Mexican cuisine? Apply the lowest price filters possible ($, $$, etc) and tell me 3 restaurant names that are nearest to me. A lower price rating is more important than the restaurant being closer.",,3,Medium,
 positive-order-review-001,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
   ""task_statement"": ""I really liked the food that I ordered last time from Buffalo Wild Wings. Leave a 5 star rating on that order and add a review as follows- food tasted really good especially the traditional wings, those were great."",
