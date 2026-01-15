@@ -9487,7 +9487,7 @@ gift-coffee-order-003,"{
 }","[""Menu Viewing"", ""Cart Management"", ""Checkout""]","[""Multi-address ordering"", ""Restaurant discovery & filtering""]","[""Search and filtering"", ""Decision making"", ""Order Placement""]",I need to send Calamari Fritti for my mum at the apartment address on my profile. Find the best Pizza place near that address that has Calamari Fritti and order 2.,,4,Medium,
 list-affordable-cuisine-001,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""I want to eat Indian cuisine today. Can you find a restaurant nearby which serves Indian cuisine? Tell me the top 3 most affordable restaurant names that are nearest to me."",
+  ""task_statement"": ""I want to eat Indian cuisine today. Can you find a restaurant nearby which serves Indian cuisine? Apply the lowest price filters possible ($, $$, etc) and tell me 3 restaurant names that are nearest to me. A lower price rating is more important than the restaurant being closer."",
   ""task_id"": ""list-affordable-cuisine-001"",
   ""task_type"": ""Multi-Step Task Planning, Information Retrieval, Decision Making"",
   ""simulator_config"": {
@@ -9534,10 +9534,10 @@ list-affordable-cuisine-001,"{
       ]
     }
   }
-}","[""Item Selection & Customization""]","[""Restaurant comparison"", ""Price filtering""]","[""Search and filtering"", ""Decision making""]",I want to eat Indian cuisine today. Can you find a restaurant nearby which serves Indian cuisine? Tell me the top 3 most affordable restaurant names that are nearest to me.,,3,Medium,
+}","[""Item Selection & Customization""]","[""Restaurant comparison"", ""Price filtering""]","[""Search and filtering"", ""Decision making""]","I want to eat Indian cuisine today. Can you find a restaurant nearby which serves Indian cuisine? Apply the lowest price filters possible ($, $$, etc) and tell me 3 restaurant names that are nearest to me. A lower price rating is more important than the restaurant being closer.",,3,Medium,
 list-affordable-cuisine-002,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""I want to eat Italian cuisine today. Can you find a restaurant nearby which serves Italian cuisine? Tell me the top 5 most affordable restaurant names that are nearest to me."",
+  ""task_statement"": ""I want to eat Italian cuisine today. Can you find a restaurant nearby which serves Italian cuisine? Apply the lowest price filters possible ($, $$, etc) and tell me 5 restaurant names that are nearest to me. A lower price rating is more important than the restaurant being closer."",
   ""task_type"": ""GUI Comprehension, Multi-Step Task Planning, Information Retrieval, Decision Making"",
   ""grader_config"": {
     ""answer_grader_config"": {
@@ -9584,7 +9584,7 @@ list-affordable-cuisine-002,"{
       ""user"": ""kai.quintero127@inbox.local""
     }
   }
-}","[""Item Selection & Customization""]","[""Restaurant comparison"", ""Price filtering""]","[""Search and filtering"", ""Decision making""]",I want to eat Italian cuisine today. Can you find a restaurant nearby which serves Italian cuisine? Tell me the top 5 most affordable restaurant names that are nearest to me.,,3,Medium,
+}","[""Item Selection & Customization""]","[""Restaurant comparison"", ""Price filtering""]","[""Search and filtering"", ""Decision making""]","I want to eat Italian cuisine today. Can you find a restaurant nearby which serves Italian cuisine? Apply the lowest price filters possible ($, $$, etc) and tell me 5 restaurant names that are nearest to me. A lower price rating is more important than the restaurant being closer.",,3,Medium,
 list-affordable-cuisine-003,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
   ""task_statement"": ""I want to eat Korean cuisine today. Can you find a restaurant nearby which serves Korean cuisine? Tell me the top 5 most affordable restaurant names that are nearest to me."",
