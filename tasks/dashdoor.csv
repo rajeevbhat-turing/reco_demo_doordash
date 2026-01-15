@@ -12498,7 +12498,7 @@ update-delivery-instructions-006,"{
 }","[""Address Entry & Validation""]","[""Address & delivery instructions""]","[""Instruction following"", ""UI Elements: Text Fields""]","My other building recently had an gate code added. The code is 4954. Also delivery folks are no longer allowed to go beyond the lobby, so make sure you update the drop off location and the delivery instructions accordingly",,0,Hard,
 lowest-calorie-dessert-003,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""Find the best Fast Food restaurant near my other and order 2 servings of the lowest calorie Drinks."",
+  ""task_statement"": ""Find the highest rated Fast Food restaurant near my address labelled other and order 2 servings of the lowest calorie Drinks."",
   ""task_type"": ""GUI Comprehension, Action Execution, Multi-Step Task Planning, Decision Making"",
   ""grader_config"": {
     ""state_grader_configs"": [
@@ -12601,7 +12601,7 @@ lowest-calorie-dessert-003,"{
       ""user"": ""bella.quintero76@dashdoor.test""
     }
   }
-}","[""Cart Management""]","[""Diet & calorie filtering"", ""Item customization""]","[""Search and filtering"", ""Decision making"", ""Order Placement""]",Find the best Fast Food restaurant near my other and order 2 servings of the lowest calorie Drinks.,,1,Hard,
+}","[""Cart Management""]","[""Diet & calorie filtering"", ""Item customization""]","[""Search and filtering"", ""Decision making"", ""Order Placement""]",Find the highest rated Fast Food restaurant near my address labelled other and order 2 servings of the lowest calorie Drinks.,,1,Hard,
 helpful-review-items-006,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
   ""task_statement"": ""Somebody recommended Fiona's Tavern to me, could you go through the reviews and find the review that people found the most helpful and add the liked items from it to my cart. If there are more, please choose the latest one."",
