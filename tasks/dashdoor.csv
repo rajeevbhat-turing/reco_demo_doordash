@@ -1341,7 +1341,7 @@ new-cheapest-restaurant-001,"{
 }","[""Order History""]","[""Restaurant discovery & filtering"", ""Reorder & past orders""]","[""Order history analysis"", ""Search and filtering"", ""Decision making""]",Help me find vegan or vegetarian restaurants. Apply the lowest price filter possible and find the highest rated restaurant that I've not ordered from before..,,6,Medium,
 new-cheapest-restaurant-002,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""Help me find the best cheapest Steakhouse or Thai restaurant option that I have not ordered from in the past."",
+  ""task_statement"": ""Help me find Steakhouse or Thai restaurants. Apply the lowest price filter possible and find the highest rated restaurant that I've not ordered from before."",
   ""task_type"": ""Multi-Step Task Planning, GUI Comprehension, Decision Making"",
   ""simulator_config"": {
     ""bootstrap_data"": {
@@ -1394,7 +1394,7 @@ new-cheapest-restaurant-002,"{
     }
   },
   ""task_id"": ""new-cheapest-restaurant-002""
-}","[""Order History""]","[""Restaurant discovery & filtering"", ""Reorder & past orders""]","[""Order history analysis"", ""Search and filtering"", ""Decision making""]",Help me find the best cheapest Steakhouse or Thai restaurant option that I have not ordered from in the past.,,6,Medium,
+}","[""Order History""]","[""Restaurant discovery & filtering"", ""Reorder & past orders""]","[""Order history analysis"", ""Search and filtering"", ""Decision making""]",Help me find Steakhouse or Thai restaurants. Apply the lowest price filter possible and find the highest rated restaurant that I've not ordered from before.,,6,Medium,
 new-cheapest-restaurant-003,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
   ""task_statement"": ""Help me find the best cheapest Chinese or Breakfast & Brunch restaurant option that I have not ordered from in the past."",
