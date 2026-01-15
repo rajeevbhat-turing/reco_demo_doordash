@@ -1453,7 +1453,7 @@ new-cheapest-restaurant-003,"{
 }","[""Order History""]","[""Restaurant discovery & filtering"", ""Reorder & past orders""]","[""Order history analysis"", ""Search and filtering"", ""Decision making""]",Help me find Chinese or Japanese restaurants. Apply the lowest price filter possible and find the highest rated restaurant that I've not ordered from before.,,6,Medium,
 new-cheapest-restaurant-004,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""Help me find the best cheapest Middle Eastern or American restaurant option that I have not ordered from in the past."",
+  ""task_statement"": ""Help me find Middle Eastern or American restaurants. Apply the lowest price filter possible and find the highest rated restaurant that I've not ordered from before."",
   ""task_type"": ""Multi-Step Task Planning, GUI Comprehension, Decision Making"",
   ""simulator_config"": {
     ""bootstrap_data"": {
@@ -1506,7 +1506,7 @@ new-cheapest-restaurant-004,"{
     }
   },
   ""task_id"": ""new-cheapest-restaurant-004""
-}","[""Order History""]","[""Restaurant discovery & filtering"", ""Reorder & past orders""]","[""Order history analysis"", ""Search and filtering"", ""Decision making""]",Help me find the best cheapest Middle Eastern or American restaurant option that I have not ordered from in the past.,,6,Medium,
+}","[""Order History""]","[""Restaurant discovery & filtering"", ""Reorder & past orders""]","[""Order history analysis"", ""Search and filtering"", ""Decision making""]",Help me find Middle Eastern or American restaurants. Apply the lowest price filter possible and find the highest rated restaurant that I've not ordered from before.,,6,Medium,
 new-cheapest-restaurant-005,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
   ""task_statement"": ""Help me find the best cheapest Breakfast & Brunch or Ethiopian restaurant option that I have not ordered from in the past."",
