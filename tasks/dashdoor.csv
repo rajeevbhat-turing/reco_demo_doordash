@@ -14824,7 +14824,7 @@ bulk-simple-order-004,"{
 }","[""Cart Management""]","[""Cart editing & item swaps"", ""Price filtering"", ""Contact info management""]","[""Instruction following"", ""Search and filtering"", ""UI Elements: Text Fields""]","Order 2 Chips & Queso from Chipotle Mexican Grill, make sure no customizations are selected. Also order 1 of the cheapest available Sides & Drinks. Change the contact number for the order to 547-752-7254",,4,Medium,
 lowest-calorie-dessert-008,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""Find the best American restaurant near my office and order 2 servings of the lowest calorie Desserts. If there is an option for Ice Cream add it with one of the servings."",
+  ""task_statement"": ""Find the highest rated American restaurant near my office and order 2 servings of the lowest calorie Desserts. If there is an option for Ice Cream add it with one of the servings."",
   ""task_type"": ""GUI Comprehension, Action Execution, Multi-Step Task Planning, Decision Making"",
   ""grader_config"": {
     ""state_grader_configs"": [
@@ -14867,7 +14867,7 @@ lowest-calorie-dessert-008,"{
               ""==1""
             ],
             ""operator"": ""ARRAY_LENGTH_MATCH"",
-            ""path_to_actual"": ""$.items[0].modifications[0].options[?(@.optionName == 'Ice Cream')]""
+            ""path_to_actual"": ""$.items[*].modifications[0].options[?(@.optionName == 'Ice Cream')]""
           }
         ],
         ""path_to_actual"": ""$.orders[0]""
@@ -14934,7 +14934,7 @@ lowest-calorie-dessert-008,"{
       ""user"": ""nora.zimmerman51@mail.test""
     }
   }
-}","[""Cart Management""]","[""Diet & calorie filtering"", ""Item customization""]","[""Search and filtering"", ""Decision making"", ""Order Placement""]",Find the best American restaurant near my office and order 2 servings of the lowest calorie Desserts. If there is an option for Ice Cream add it with one of the servings.,,1,Hard,
+}","[""Cart Management""]","[""Diet & calorie filtering"", ""Item customization""]","[""Search and filtering"", ""Decision making"", ""Order Placement""]",Find the highest rated American restaurant near my office and order 2 servings of the lowest calorie Desserts. If there is an option for Ice Cream add it with one of the servings.,,1,Hard,
 helpful-review-items-004,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
   ""task_statement"": ""Somebody recommended Copper Grill to me, could you go through the reviews and find the review that people found the most helpful and add the liked items from it to my cart"",
