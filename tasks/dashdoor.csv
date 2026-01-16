@@ -13416,7 +13416,7 @@ search-express-order-007,"{
 }","[""Order placement""]","[""Search""]","[""Instruction following"", ""Search and filtering"", ""Decision making""]","Search for Salmon New Orleans and order them from the closest restaurant, make an express delivery.",,6,Medium,
 find-matching-restaurant-005,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""Can you find the best rated restaurant that sells both a Chow Fun and Crab Rangoon"",
+  ""task_statement"": ""Can you find the best rated restaurant that sells both a Chow Fun and Crab Rangoon. Pick the closest one if there is more than one with the highest rating."",
   ""task_type"": ""GUI Comprehension, Action Execution, Information Retrieval, Decision Making, Element Identification"",
   ""grader_config"": {
     ""answer_grader_config"": {
@@ -13451,6 +13451,10 @@ find-matching-restaurant-005,"{
               {
                 ""key"": ""rating"",
                 ""order"": ""desc""
+              },
+              {
+                ""key"": ""distance"",
+                ""order"": ""asc""
               }
             ],
             ""limit"": 1
@@ -13468,7 +13472,7 @@ find-matching-restaurant-005,"{
       ""user"": ""quinn.xu164@mail.test""
     }
   }
-}","[""Search and filtering""]","[""Restaurant identification""]","[""Search"", ""Decision making"", ""Ratings analysis""]",Can you find the best rated restaurant that sells both a Chow Fun and Crab Rangoon,,5,Medium,
+}","[""Search and filtering""]","[""Restaurant identification""]","[""Search"", ""Decision making"", ""Ratings analysis""]",Can you find the best rated restaurant that sells both a Chow Fun and Crab Rangoon. Pick the closest one if there is more than one with the highest rating.,,5,Medium,
 top-liked-entrees-004,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
   ""task_statement"": ""I wanted to try Indian Kitchen, go through the Beverages and add the 3 most liked ones to my cart. Place an order for my hotel address."",
