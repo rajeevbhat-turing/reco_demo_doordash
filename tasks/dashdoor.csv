@@ -5955,7 +5955,7 @@ best-deal-order-007,"{
 }","[""Menu Viewing""]","[""Price & deal optimization"", ""Restaurant discovery & filtering""]","[""Search and filtering"", ""Decision making"", ""Order Placement""]",I need to place an order at my hotel address. Look for cheapest restaurants with deals and pick the best one. Order enough Drinks to meet the spending limit for the deal.,,0,Hard,
 bulk-simple-order-001,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""Order two truffle smash burgers from cedar kitchen, make sure no customizations are selected. Also order 2 of the cheapest available drinks. Change the contact number for the order to 7137834912"",
+  ""task_statement"": ""Order two truffle smash burgers from Golden Smokehouse, make sure no customizations are selected. Also order 2 units of the cheapest available drink. Change the contact number for the order to 7137834912"",
   ""task_id"": ""bulk-simple-order-001"",
   ""task_type"": ""GUI Comprehension, Action Execution"",
   ""simulator_config"": {
@@ -6052,7 +6052,7 @@ bulk-simple-order-001,"{
             ""lat"": ""$[0].address.lat"",
             ""lng"": ""$[0].address.lng"",
             ""limit"": 1,
-            ""name"": ""cedar kitchen"",
+            ""name"": ""Golden Smokehouse"",
             ""sort_type"": [
               {
                 ""key"": ""priceRange"",
@@ -6101,10 +6101,10 @@ bulk-simple-order-001,"{
       ]
     }
   }
-}","[""Cart Management""]","[""Cart editing & item swaps"", ""Price filtering"", ""Contact info management""]","[""Instruction following"", ""Search and filtering"", ""UI Elements: Text Fields""]","Order two truffle smash burgers from cedar kitchen, make sure no customizations are selected. Also order 2 of the cheapest available drinks. Change the contact number for the order to 7137834912",,4,Medium,
+}","[""Cart Management""]","[""Cart editing & item swaps"", ""Price filtering"", ""Contact info management""]","[""Instruction following"", ""Search and filtering"", ""UI Elements: Text Fields""]","Order two truffle smash burgers from Golden Smokehouse, make sure no customizations are selected. Also order 2 units of the cheapest available drink. Change the contact number for the order to 7137834912",,4,Medium,
 bulk-simple-order-002,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""Order 4 Onion Rings from Happy's Gourmet Burgers, make sure no customizations are selected. Also order 3 of the cheapest available Shakes & Beverages. Change the contact number for the order to 411-979-8317"",
+  ""task_statement"": ""Order 4 Onion Rings from Happy's Gourmet Burgers, make sure no customizations are selected. Also order 3 units of the cheapest available Shake & Beverage (other then water) . Change the contact number for the order to 4119798317"",
   ""task_type"": ""GUI Comprehension, Action Execution, Element Identification, Decision Making"",
   ""grader_config"": {
     ""state_grader_configs"": [
@@ -6250,7 +6250,7 @@ bulk-simple-order-002,"{
       ""user"": ""hannah.underwood58@example.com""
     }
   }
-}","[""Cart Management""]","[""Cart editing & item swaps"", ""Price filtering"", ""Contact info management""]","[""Instruction following"", ""Search and filtering"", ""UI Elements: Text Fields""]","Order 4 Onion Rings from Happy's Gourmet Burgers, make sure no customizations are selected. Also order 3 of the cheapest available Shakes & Beverages. Change the contact number for the order to 411-979-8317",,4,Medium,
+}","[""Cart Management""]","[""Cart editing & item swaps"", ""Price filtering"", ""Contact info management""]","[""Instruction following"", ""Search and filtering"", ""UI Elements: Text Fields""]","Order 4 Onion Rings from Happy's Gourmet Burgers, make sure no customizations are selected. Also order 3 units of the cheapest available Shake & Beverage (other then water). Change the contact number for the order to 4119798317",,4,Medium,
 bulk-simple-order-005,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
   ""task_statement"": ""Order 2 Lemon Olive Oil Cake from Desserts Table, make sure no customizations are selected. Also order 1 of the cheapest available Family Meals. Change the contact number for the order to 8347178022"",
@@ -6402,7 +6402,7 @@ bulk-simple-order-005,"{
 }","[""Cart Management""]","[""Cart editing & item swaps"", ""Price filtering"", ""Contact info management""]","[""Instruction following"", ""Search and filtering"", ""UI Elements: Text Fields""]","Order 2 Lemon Olive Oil Cake from Desserts Table, make sure no customizations are selected. Also order 1 of the cheapest available Family Meals. Change the contact number for the order to 8347178022",,4,Medium,
 bulk-simple-order-007,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""Order 4 Coleslaw from Fish Market by Kings, make sure no customizations are selected. Also order 2 of the cheapest available Appetizers. Change the contact number for the order to 948-272-5378"",
+  ""task_statement"": ""Order 4 Coleslaw from Fish Market by Kings, make sure no customizations are selected. Also order 2 units of the cheapest available Appetizer. Change the contact number for the order to 9482725378"",
   ""task_type"": ""GUI Comprehension, Action Execution, Element Identification, Decision Making"",
   ""grader_config"": {
     ""state_grader_configs"": [
@@ -6548,7 +6548,7 @@ bulk-simple-order-007,"{
       ""user"": ""omar.young67@example.com""
     }
   }
-}","[""Cart Management""]","[""Cart editing & item swaps"", ""Price filtering"", ""Contact info management""]","[""Instruction following"", ""Search and filtering"", ""UI Elements: Text Fields""]","Order 4 Coleslaw from Fish Market by Kings, make sure no customizations are selected. Also order 2 of the cheapest available Appetizers. Change the contact number for the order to 948-272-5378",,4,Medium,
+}","[""Cart Management""]","[""Cart editing & item swaps"", ""Price filtering"", ""Contact info management""]","[""Instruction following"", ""Search and filtering"", ""UI Elements: Text Fields""]","Order 4 Coleslaw from Fish Market by Kings, make sure no customizations are selected. Also order 2 units of the cheapest available Appetizer. Change the contact number for the order to 9482725378",,4,Medium,
 update-delivery-instructions-001,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
   ""task_statement"": ""My apartment building recently had an entry code added. The code is 4280. Also delivery folks are no longer allowed to go beyond the lobby, so make sure you update the drop off location and the delivery instructions accordingly"",
@@ -12155,7 +12155,7 @@ best-deal-order-004,"{
 }","[""Menu Viewing""]","[""Price & deal optimization"", ""Restaurant discovery & filtering""]","[""Search and filtering"", ""Decision making"", ""Order Placement""]",I need to place an order at my office address. Look for cheapest restaurants with deals and pick the best one. Order enough Entrees to meet the spending limit for the deal.,,0,Hard,
 bulk-simple-order-003,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""Order 3 Kimchi Slaw from Austin Cantina, make sure no customizations are selected. Also order 1 of the cheapest available Beverages. Change the contact number for the order to 938-554-6602"",
+  ""task_statement"": ""Order 3 Kimchi Slaw from Austin Cantina, make sure no customizations are selected. Also order 1 unit of the cheapest available Beverage. Change the contact number for the order to 9385546602"",
   ""task_type"": ""GUI Comprehension, Action Execution, Element Identification, Decision Making"",
   ""grader_config"": {
     ""state_grader_configs"": [
@@ -12301,7 +12301,7 @@ bulk-simple-order-003,"{
       ""user"": ""rosa.nguyen59@mail.test""
     }
   }
-}","[""Cart Management""]","[""Cart editing & item swaps"", ""Price filtering"", ""Contact info management""]","[""Instruction following"", ""Search and filtering"", ""UI Elements: Text Fields""]","Order 3 Kimchi Slaw from Austin Cantina, make sure no customizations are selected. Also order 1 of the cheapest available Beverages. Change the contact number for the order to 938-554-6602",,4,Medium,
+}","[""Cart Management""]","[""Cart editing & item swaps"", ""Price filtering"", ""Contact info management""]","[""Instruction following"", ""Search and filtering"", ""UI Elements: Text Fields""]","Order 3 Kimchi Slaw from Austin Cantina, make sure no customizations are selected. Also order 1 unit of the cheapest available Beverage. Change the contact number for the order to 9385546602",,4,Medium,
 update-delivery-instructions-003,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
   ""task_statement"": ""I recently checked into room 837 of the hotel building. Also delivery folks are no longer allowed to go beyond the lobby, so make sure you update the drop off location and the delivery instructions accordingly"",
@@ -14689,7 +14689,7 @@ best-deal-order-008,"{
 }","[""Menu Viewing""]","[""Price & deal optimization"", ""Restaurant discovery & filtering""]","[""Search and filtering"", ""Decision making"", ""Order Placement""]",I need to place an order at my house address. Look for cheapest restaurants with deals and pick the best one. Order enough Drinks to meet the spending limit for the deal.,,0,Hard,
 bulk-simple-order-004,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""Order 2 Chips & Queso from Chipotle Mexican Grill, make sure no customizations are selected. Also order 1 of the cheapest available Sides & Drinks. Change the contact number for the order to 547-752-7254"",
+  ""task_statement"": ""Order 2 Chips & Queso from Chipotle Mexican Grill, make sure no customizations are selected. Also order 1 unit of the cheapest available Sides & Drinks. Change the contact number for the order to 5477527254"",
   ""task_type"": ""GUI Comprehension, Action Execution, Element Identification, Decision Making"",
   ""grader_config"": {
     ""state_grader_configs"": [
@@ -14835,7 +14835,7 @@ bulk-simple-order-004,"{
       ""user"": ""rosa.ingram43@inbox.local""
     }
   }
-}","[""Cart Management""]","[""Cart editing & item swaps"", ""Price filtering"", ""Contact info management""]","[""Instruction following"", ""Search and filtering"", ""UI Elements: Text Fields""]","Order 2 Chips & Queso from Chipotle Mexican Grill, make sure no customizations are selected. Also order 1 of the cheapest available Sides & Drinks. Change the contact number for the order to 547-752-7254",,4,Medium,
+}","[""Cart Management""]","[""Cart editing & item swaps"", ""Price filtering"", ""Contact info management""]","[""Instruction following"", ""Search and filtering"", ""UI Elements: Text Fields""]","Order 2 Chips & Queso from Chipotle Mexican Grill, make sure no customizations are selected. Also order 1 unit of the cheapest available Sides & Drinks. Change the contact number for the order to 5477527254",,4,Medium,
 lowest-calorie-dessert-008,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
   ""task_statement"": ""Find the highest rated American restaurant near my office and order 2 servings of the lowest calorie Desserts. If there is an option for Ice Cream add it with one of the servings."",
