@@ -9983,7 +9983,7 @@ nearest-coffee-cart-001,"{
 }","[""Search""]","[""Item selection""]","[""Instruction following"", ""Search and filtering"", ""Decision making""]",Look for the nearest coffee shop and add a coffee to my cart.,,7,Medium,
 nearest-coffee-cart-007,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""Look for the nearest coffee shop and add a Bagel with Cream Cheese to my cart."",
+  ""task_statement"": ""Look for the nearest coffee shop that has Buttermilk Pancakes and add Buttermilk Pancakes to my cart."",
   ""task_type"": ""GUI Comprehension, Action Execution, Element Identification, Decision Making"",
   ""grader_config"": {
     ""state_grader_configs"": [
@@ -10035,7 +10035,7 @@ nearest-coffee-cart-007,"{
             ""lng"": ""$[0].address.lng"",
             ""limit"": 1,
             ""filters"": {
-              ""item_keyword"": ""Bagel with Cream Cheese""
+              ""item_keyword"": ""Buttermilk Pancakes""
             },
             ""sort_type"": [
               {
@@ -10050,7 +10050,7 @@ nearest-coffee-cart-007,"{
           ""args"": {
             ""restaurant_id"": ""$[1].restaurants[0].id"",
             ""keywords"": [
-              ""Bagel with Cream Cheese""
+              ""Buttermilk Pancakes""
             ],
             ""limit"": 1
           },
@@ -10067,7 +10067,7 @@ nearest-coffee-cart-007,"{
       ""user"": ""bella.diaz146@dashdoor.test""
     }
   }
-}","[""Search""]","[""Item selection""]","[""Instruction following"", ""Search and filtering"", ""Decision making""]",Look for the nearest coffee shop and add a Bagel with Cream Cheese to my cart.,,7,Medium,
+}","[""Search""]","[""Item selection""]","[""Instruction following"", ""Search and filtering"", ""Decision making""]",Look for the nearest coffee shop that has Buttermilk Pancakes and add Buttermilk Pancakes to my cart.,,7,Medium,
 search-express-order-001,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
   ""task_statement"": ""Search for blueberry pancakes and order them from the closest restaurant, make an express delivery."",
