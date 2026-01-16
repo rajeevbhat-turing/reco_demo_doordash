@@ -11450,7 +11450,7 @@ list-menu-options-001,"{
 }","[""Menu viewing""]","[""Item selection""]","[""Identification""]",Does the cheesecake factory have an options in chocolate cheesecakes? Could you please share them?,,9,Easy,
 list-rated-restaurants-001,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""Find and list authentic Vietnamese restaurants that serve pho and have a rating of 4 or higher and within a mile of my location"",
+  ""task_statement"": ""Search for Vietnamese restaurants that serve pho and have a rating of 4.5 or higher and are within a mile of my location"",
   ""task_id"": ""list-rated-restaurants-001"",
   ""task_type"": ""GUI Comprehension, Action Execution, Decision Making"",
   ""simulator_config"": {
@@ -11462,7 +11462,7 @@ list-rated-restaurants-001,"{
   },
   ""grader_config"": {
     ""llm_grader_config"": {
-      ""instruction"": ""The answer should clearly state that there are NO restaurants that satisfy all criterion. The answer may still suggest other restaurants"",
+      ""instruction"": ""The answer should clearly state that there are NO restaurants that satisfy all criterion. The answer may still suggest other restaurants with lower rating than 4.5 or that are outside of a mile radius"",
       ""include_trajectory"": false
     },
     ""extract_states_config"": {
@@ -11476,7 +11476,7 @@ list-rated-restaurants-001,"{
       ]
     }
   }
-}","[""Item search""]","[""Filter usage""]","[""Identification"", ""Decision making""]",Find and list authentic Vietnamese restaurants that serve pho and have a rating of 4 or higher and within a mile of my location,,7,Medium,
+}","[""Item search""]","[""Filter usage""]","[""Identification"", ""Decision making""]",Search for Vietnamese restaurants that serve pho and have a rating of 4.5 or higher and are within a mile of my location,,7,Medium,
 reorder-with-addons-006,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
   ""task_statement"": ""Reorder my last order from Copper Pantry, also add 3 servings of Chef's Taco Party Pack this time. Place the order to my apartment on 814 Nostrand Ave. The apartment number is 714 and 9195 is the entry code. Apply ST18OFF coupon"",
