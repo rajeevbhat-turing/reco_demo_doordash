@@ -9212,7 +9212,7 @@ multi-express-orders-005,"{
 }","[""Menu Viewing"", ""Cart Management"", ""Checkout""]","[""Multi-restaurant ordering"", ""Review-based recommendations"", ""Delivery scheduling""]","[""Search and filtering"", ""Decision making"", ""Order Placement"", ""Scheduling""]",First place an order for a Grilled Cheese Dippers and Chef's Taco Party Pack from Denver Grill. Also place an order for Sesame Cucumber Salad from the best rated Steakhouse restaurant available. Make sure you mark both for express delivery,,0,Hard,
 gift-coffee-order-001,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""I need to send coffee for my mum at the house address on my profile. Find the best coffee place near that address that has iced coffee and order two."",
+  ""task_statement"": ""I need to send coffee for my mum at the house address on my profile. Find a coffee place near that address that has iced coffee and order two."",
   ""task_id"": ""gift-coffee-order-001"",
   ""task_type"": ""GUI Comprehension, Action Execution, Multi-Step Task Planning, Decision Making"",
   ""simulator_config"": {
@@ -9304,10 +9304,10 @@ gift-coffee-order-001,"{
       ]
     }
   }
-}","[""Menu Viewing"", ""Cart Management"", ""Checkout""]","[""Multi-address ordering"", ""Restaurant discovery & filtering""]","[""Search and filtering"", ""Decision making"", ""Order Placement""]",I need to send coffee for my mum at the house address on my profile. Find the best coffee place near that address that has iced coffee and order two.,,4,Medium,
+}","[""Menu Viewing"", ""Cart Management"", ""Checkout""]","[""Multi-address ordering"", ""Restaurant discovery & filtering""]","[""Search and filtering"", ""Decision making"", ""Order Placement""]",I need to send coffee for my mum at the house address on my profile. Find a coffee place near that address that has iced coffee and order two..,,4,Medium,
 gift-coffee-order-002,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""I need to send Green Goddess Cobb Salad for my mum at the hotel address on my profile. Find the best Chicken place near that address that has Green Goddess Cobb Salad and order 3."",
+  ""task_statement"": ""I need to send Green Goddess Cobb Salad for my mum at the other address on my profile. Find a restaurant near that address that has Green Goddess Cobb Salad and order 3."",
   ""task_type"": ""GUI Comprehension, Action Execution, Element Identification"",
   ""grader_config"": {
     ""state_grader_configs"": [
@@ -9358,7 +9358,7 @@ gift-coffee-order-002,"{
           ""function"": ""get_user_address"",
           ""args"": {
             ""user"": ""omar.quintero121@inbox.local"",
-            ""type"": ""hotel""
+            ""type"": ""other""
           }
         },
         {
@@ -9399,10 +9399,10 @@ gift-coffee-order-002,"{
       ""user"": ""omar.quintero121@inbox.local""
     }
   }
-}","[""Menu Viewing"", ""Cart Management"", ""Checkout""]","[""Multi-address ordering"", ""Restaurant discovery & filtering""]","[""Search and filtering"", ""Decision making"", ""Order Placement""]",I need to send Green Goddess Cobb Salad for my mum at the hotel address on my profile. Find the best Chicken place near that address that has Green Goddess Cobb Salad and order 3.,,4,Medium,
+}","[""Menu Viewing"", ""Cart Management"", ""Checkout""]","[""Multi-address ordering"", ""Restaurant discovery & filtering""]","[""Search and filtering"", ""Decision making"", ""Order Placement""]",I need to send Green Goddess Cobb Salad for my mum at the other address on my profile. Find a restaurant near that address that has Green Goddess Cobb Salad and order 3.,,4,Medium,
 gift-coffee-order-003,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""I need to send Calamari Fritti for my mum at the apartment address on my profile. Find the best Pizza place near that address that has Calamari Fritti and order 2."",
+  ""task_statement"": ""I need to send Calamari Fritti for my mum at the apartment address on my profile. Order 2 Calamari Fritti from restaurant Famous Ristorante because they have the best taste ever."",
   ""task_type"": ""GUI Comprehension, Action Execution, Element Identification"",
   ""grader_config"": {
     ""state_grader_configs"": [
@@ -9494,7 +9494,7 @@ gift-coffee-order-003,"{
       ""user"": ""isla.vega122@dashdoor.test""
     }
   }
-}","[""Menu Viewing"", ""Cart Management"", ""Checkout""]","[""Multi-address ordering"", ""Restaurant discovery & filtering""]","[""Search and filtering"", ""Decision making"", ""Order Placement""]",I need to send Calamari Fritti for my mum at the apartment address on my profile. Find the best Pizza place near that address that has Calamari Fritti and order 2.,,4,Medium,
+}","[""Menu Viewing"", ""Cart Management"", ""Checkout""]","[""Multi-address ordering"", ""Restaurant discovery & filtering""]","[""Search and filtering"", ""Decision making"", ""Order Placement""]",I need to send Calamari Fritti for my mum at the apartment address on my profile. Order 2 Calamari Fritti from restaurant Famous Ristorante because they have the best taste ever..,,4,Medium,
 list-affordable-cuisine-001,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
   ""task_statement"": ""I want to eat Indian cuisine today. Can you find a restaurant nearby which serves Indian cuisine? Apply the lowest price filters possible ($, $$, etc) and tell me 3 restaurant names that are nearest to me. A lower price rating is more important than the restaurant being closer."",
@@ -15317,7 +15317,7 @@ cheapest-nearby-item-004,"{
 }","[""Menu Viewing""]","[""Cuisine filtering"", ""Price filtering""]","[""Search and filtering"", ""Decision making"", ""Order Placement""]",Order the cheapest item from appetizers from the Pizza restaurant nearest to my office.,,8,Easy,
 gift-coffee-order-005,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""I need to send Charred Broccoli Grain Bowl for my mum at the apartment address on my profile. Find the best American place near that address that has Charred Broccoli Grain Bowl with Chili Oil and order 3."",
+  ""task_statement"": ""I need to send some original cheesecake for my mum at the apartment address on my profile. Find a restaurant near that address that has original cheesecake and order 3."",
   ""task_type"": ""GUI Comprehension, Action Execution, Element Identification"",
   ""grader_config"": {
     ""state_grader_configs"": [
@@ -15377,7 +15377,7 @@ gift-coffee-order-005,"{
             ""lat"": ""$[0].address.lat"",
             ""lng"": ""$[0].address.lng"",
             ""filters"": {
-              ""item_keyword"": ""Charred Broccoli Grain Bowl""
+              ""item_keyword"": ""original cheesecake""
             },
             ""sort_type"": [
               {
@@ -15393,18 +15393,10 @@ gift-coffee-order-005,"{
           ""args"": {
             ""restaurant_id"": ""$[1].restaurants[0].id"",
             ""keywords"": [
-              ""Charred Broccoli Grain Bowl""
+              ""original cheesecake""
             ],
             ""limit"": 1
           }
-        },
-        {
-          ""args"": {
-            ""item_id"": ""$[2].items[0].id"",
-            ""modification_name"": ""extra toppings"",
-            ""option_name"": ""chili oil""
-          },
-          ""function"": ""get_modifications""
         }
       ]
     }
@@ -15417,7 +15409,7 @@ gift-coffee-order-005,"{
       ""user"": ""jasper.ingram84@mail.test""
     }
   }
-}","[""Menu Viewing"", ""Cart Management"", ""Checkout""]","[""Multi-address ordering"", ""Restaurant discovery & filtering""]","[""Search and filtering"", ""Decision making"", ""Order Placement""]",I need to send Charred Broccoli Grain Bowl for my mum at the apartment address on my profile. Find the best American place near that address that has Charred Broccoli Grain Bowl with Chili Oil and order 3.,,4,Medium,
+}","[""Menu Viewing"", ""Cart Management"", ""Checkout""]","[""Multi-address ordering"", ""Restaurant discovery & filtering""]","[""Search and filtering"", ""Decision making"", ""Order Placement""]",I need to send some original cheesecake for my mum at the apartment address on my profile. Find a restaurant near that address that has original cheesecake and order 3.,,4,Medium,
 list-affordable-cuisine-008,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
   ""task_statement"": ""I want to eat Mexican cuisine today. Can you find a restaurant nearby which serves Mexican cuisine? Tell me the top 5 most affordable restaurant names that are nearest to me."",
