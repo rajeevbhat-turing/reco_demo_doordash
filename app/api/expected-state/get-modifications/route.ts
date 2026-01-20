@@ -7,14 +7,17 @@ import { db } from '@/lib/db';
  * Query Parameters:
  * - userId: User ID (required)
  * - item_id: Menu item ID (required)
- * - modification_name: Modification description/name to search for (required, partial match, case-insensitive)
+ * - modification_name: Modification description/name to search for (required, partial match, case-insensitive). Can be empty string to match any modification.
  * - option_name: Specific option name to filter by (optional, partial match, case-insensitive)
+ * - is_required: Filter for only required modifications (optional, 'true' or 'false')
+ * - sort_options_by_price: Sort options by price ascending (cheapest first) instead of sort_order (optional, 'true' or 'false')
  *
  * Fetches modification details for a specific menu item:
  * 1. Finds the modification matching the name for the given item
- * 2. If option_name is provided, returns only the matching option
- * 3. If option_name is not provided, returns all options for the modification
- * 4. Options are ordered by sort_order ascending
+ * 2. If is_required is true, only returns required modifications
+ * 3. If option_name is provided, returns only the matching option
+ * 4. If option_name is not provided, returns all options for the modification
+ * 5. Options are ordered by sort_order ascending (or by price if sort_options_by_price is true)
  */
 export async function GET(request: NextRequest) {
   try {
@@ -23,6 +26,8 @@ export async function GET(request: NextRequest) {
     const itemId = searchParams.get('item_id');
     const modificationName = searchParams.get('modification_name');
     const optionName = searchParams.get('option_name');
+    const isRequired = searchParams.get('is_required') === 'true';
+    const sortOptionsByPrice = searchParams.get('sort_options_by_price') === 'true';
 
     if (!userId) {
       return NextResponse.json(
@@ -44,7 +49,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    if (!modificationName) {
+    if (!modificationName && modificationName !== '') {
       return NextResponse.json(
         {
           success: false,
@@ -54,9 +59,8 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // First, find the modification for this item
-    const modifications = await db.query<any>(
-      `SELECT
+    // Build the modification query
+    let modQuery = `SELECT
         id,
         menu_item_id,
         description,
@@ -65,11 +69,24 @@ export async function GET(request: NextRequest) {
         select_at_least,
         parent_option_id
       FROM modifications
-      WHERE menu_item_id = ?
-        AND LOWER(description) LIKE ?
-      LIMIT 1`,
-      [itemId, `%${modificationName.toLowerCase()}%`]
-    );
+      WHERE menu_item_id = ?`;
+    
+    const modParams: any[] = [itemId];
+
+    // Filter by modification name if provided (empty string matches any)
+    if (modificationName !== '') {
+      modQuery += ` AND LOWER(description) LIKE ?`;
+      modParams.push(`%${modificationName.toLowerCase()}%`);
+    }
+
+    // Filter by is_required if specified
+    if (isRequired) {
+      modQuery += ` AND is_required = 1`;
+    }
+
+    modQuery += ` LIMIT 1`;
+
+    const modifications = await db.query<any>(modQuery, modParams);
 
     if (!modifications || modifications.length === 0) {
       return NextResponse.json({
@@ -104,7 +121,12 @@ export async function GET(request: NextRequest) {
       optionsParams.push(`%${optionName.toLowerCase()}%`);
     }
 
-    optionsQuery += ' ORDER BY sort_order ASC';
+    // Sort by price (cheapest first) or by sort_order
+    if (sortOptionsByPrice) {
+      optionsQuery += ' ORDER BY price ASC, sort_order ASC';
+    } else {
+      optionsQuery += ' ORDER BY sort_order ASC';
+    }
 
     const options = await db.query<any>(optionsQuery, optionsParams);
 

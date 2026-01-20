@@ -1728,13 +1728,17 @@ Gets modification details and options for a specific menu item.
 ```typescript
 {
   item_id: string;           // Required: Menu item ID
-  modification_name: string; // Required: Modification description/name to search for (partial match, case-insensitive)
+  modification_name: string; // Required: Modification description/name to search for (partial match, case-insensitive). Can be empty string to match any modification.
   option_name?: string;      // Optional: Specific option name to filter by (partial match, case-insensitive)
+  is_required?: boolean;     // Optional: Filter for only required modifications (default: false)
+  sort_options_by_price?: boolean; // Optional: Sort options by price ascending (cheapest first) instead of sort_order (default: false)
 }
 ```
 
 ### Defaults
 - `option_name`: If not provided, returns all options for the modification
+- `is_required`: If not provided or false, matches any modification. If true, only matches required modifications.
+- `sort_options_by_price`: If not provided or false, options are sorted by sort_order. If true, options are sorted by price (cheapest first).
 
 ### Returns
 ```typescript
@@ -1823,6 +1827,33 @@ Finds modifications with "toppings" in the description (case-insensitive, partia
   }
 ]
 ```
+
+**Get cheapest required modification option:**
+```json
+{
+  "function": "get_modifications",
+  "args": {
+    "item_id": "menu-item-123",
+    "modification_name": "",
+    "is_required": true,
+    "sort_options_by_price": true
+  }
+}
+```
+This returns the first required modification for the item, with options sorted by price (cheapest first). The first option in the `options` array will be the cheapest one.
+
+**Get required modifications only:**
+```json
+{
+  "function": "get_modifications",
+  "args": {
+    "item_id": "menu-item-123",
+    "modification_name": "toppings",
+    "is_required": true
+  }
+}
+```
+Returns null if "toppings" modification exists but is not required.
 
 ### Notes
 - `modification_name` uses partial matching (e.g., "size" matches "Choose your size")

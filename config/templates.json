@@ -1627,14 +1627,21 @@
       ]
     },
     "start_url": "https://dashdoor-prod.rlgym.turing.com/home",
-    "task_statement": "Log in using email '{{USER_EMAIL}}' and password '{{USER_PASSWORD}}'. Somebody recommended {{RESTAURANT}} to me, could you go through the reviews and find the review that people found the most helpful and add the liked items from it to my cart",
+    "task_statement": "Log in using email '{{USER_EMAIL}}' and password '{{USER_PASSWORD}}'. Somebody recommended {{RESTAURANT}} to me. Could you go through the reviews, find the most helpful one that includes liked items, and add those items to my cart? If any modifications are required, choose the cheapest options.",
     "task_type": "GUI Comprehension, Action Execution, Decision Making, Element Identification",
     "grader_config": {
       "state_grader_configs": [
         {
           "assertions": [
             {
-              "operator": "JSON_EQUALS",
+              "operator": "JSON_PART_OF",
+              "path_to_actual": "$.items[*].itemName",
+              "paths_to_expected": [
+                "$[1].reviews[0].likedItems[*].itemName"
+              ]
+            },
+            {
+              "operator": "JSON_CONTAINS",
               "path_to_actual": "$.items[*].itemName",
               "paths_to_expected": [
                 "$[1].reviews[0].likedItems[*].itemName"
@@ -1645,6 +1652,13 @@
               "path_to_actual": "$.storeId",
               "paths_to_expected": [
                 "$[1].reviews[0].storeId"
+              ]
+            },
+            {
+              "operator": "STRING_EQUALS",
+              "path_to_actual": "$.items[0].appliedModifications[0].appliedOptions[0].optionId",
+              "paths_to_expected": [
+                "$[2].modification.options[0].id"
               ]
             }
           ],
@@ -1672,6 +1686,15 @@
               ]
             },
             "function": "get_reviews"
+          },
+          {
+            "args": {
+              "item_id": "$[1].reviews[0].likedItems[0].menuItemId",
+              "modification_name": "",
+              "is_required": true,
+              "sort_options_by_price": true
+            },
+            "function": "get_modifications"
           }
         ]
       }

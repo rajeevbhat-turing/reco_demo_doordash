@@ -659,7 +659,7 @@ item-addon-order-007,"{
 }","[""Order placement""]","[""Customizations""]","[""Search and filtering"", ""Instruction following""]","Order Lamb Rogan Josh from Tandoor by West, select the Large add on",,9,Easy,
 nearest-cheapest-choice-001,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""I want to get either a grain bowl or a cucumber salad, choosing the most expensive option, and if they cost the same, pick the one with the higher rating. Have it delivered to my apartment address."",
+  ""task_statement"": ""I want to get either a grain bowl or a cucumber salad from the nearest Ethiopian restaurant that has both items on the menu, choosing the most expensive option, and if they cost the same, pick the one with the higher rating. Have it delivered to my apartment address."",
   ""task_id"": ""nearest-cheapest-choice-001"",
   ""task_type"": ""Multi-Step Task Planning, Action Execution, GUI Comprehension, Element Identification"",
   ""simulator_config"": {
@@ -688,7 +688,7 @@ nearest-cheapest-choice-001,"{
             ""operator"": ""STRING_EQUALS"",
             ""path_to_actual"": ""$.items[0].id"",
             ""paths_to_expected"": [
-              ""$[1].items[0].id""
+              ""$[2].items[0].id""
             ]
           },
           {
@@ -713,6 +713,25 @@ nearest-cheapest-choice-001,"{
         },
         {
           ""args"": {
+            ""lat"": ""$[0].address.lat"",
+            ""lng"": ""$[0].address.lng"",
+            ""limit"": 1,
+            ""filters"": {
+              ""cuisines"": [
+                ""Ethiopian""
+              ]
+            },
+            ""sort_type"": [
+              {
+                ""key"": ""distance"",
+                ""order"": ""asc""
+              }
+            ]
+          },
+          ""function"": ""get_restaurants""
+        },
+        {
+          ""args"": {
             ""limit"": 1,
             ""keywords"": [
               ""cucumber salad"",
@@ -727,14 +746,15 @@ nearest-cheapest-choice-001,"{
                 ""key"": ""rating"",
                 ""order"": ""desc""
               }
-            ]
+            ],
+            ""restaurant_id"": ""$[1].restaurants[0].id""
           },
           ""function"": ""get_items""
         }
       ]
     }
   }
-}","[""Menu Viewing""]","[""Restaurant discovery & filtering"", ""Price & rating tradeoffs""]","[""Search and filtering"", ""Decision making"", ""Instruction following""]","I want to get either a grain bowl or a cucumber salad, choosing the most expensive option, and if they cost the same, pick the one with the higher rating. Have it delivered to my apartment address.",,3,Medium,
+}","[""Menu Viewing""]","[""Restaurant discovery & filtering"", ""Price & rating tradeoffs""]","[""Search and filtering"", ""Decision making"", ""Instruction following""]","I want to get either a grain bowl or a cucumber salad from the nearest Ethiopian restaurant that has both items on the menu, choosing the most expensive option, and if they cost the same, pick the one with the higher rating. Have it delivered to my apartment address.",,3,Medium,
 nearest-cheapest-choice-002,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
   ""task_statement"": ""Order from the nearest Thai restaurant. Get either a Red Curry or a Tom Yum, choosing the cheaper option, and if they cost the same, pick the one with the higher rating. Have it delivered to my office address."",
@@ -835,7 +855,7 @@ nearest-cheapest-choice-002,"{
 }","[""Menu Viewing""]","[""Restaurant discovery & filtering"", ""Price & rating tradeoffs""]","[""Search and filtering"", ""Decision making"", ""Instruction following""]","Order from the nearest Thai restaurant. Get either a Red Curry or a Tom Yum, choosing the cheaper option, and if they cost the same, pick the one with the higher rating. Have it delivered to my office address.",,3,Medium,
 nearest-cheapest-choice-003,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""Order from the nearest Seafood restaurant. Get either a Calamari or a Ceviche, choosing the cheaper option, and if they cost the same, pick the one with the higher rating. Have it delivered to my other address."",
+  ""task_statement"": ""Order from the nearest Pizza restaurant that has both Cheese Pizza and Pepperoni Pizza on the menu. Get either a Cheese Pizza or a Pepperoni Pizza, choosing the cheaper option, and if they cost the same, pick the one with the higher rating. Have it delivered to my other address."",
   ""grader_config"": {
     ""state_grader_configs"": [
       {
@@ -885,7 +905,7 @@ nearest-cheapest-choice-003,"{
             ""limit"": 1,
             ""filters"": {
               ""cuisines"": [
-                ""Seafood""
+                ""Pizza""
               ]
             },
             ""sort_type"": [
@@ -901,8 +921,8 @@ nearest-cheapest-choice-003,"{
           ""args"": {
             ""limit"": 1,
             ""keywords"": [
-              ""Calamari"",
-              ""Ceviche""
+              ""Cheese Pizza"",
+              ""Pepperoni Pizza""
             ],
             ""sort_type"": [
               {
@@ -930,10 +950,10 @@ nearest-cheapest-choice-003,"{
     }
   },
   ""task_type"": ""GUI Comprehension, Action Execution, Decision Making, Element Identification, Multi-Step Task Planning""
-}","[""Menu Viewing""]","[""Restaurant discovery & filtering"", ""Price & rating tradeoffs""]","[""Search and filtering"", ""Decision making"", ""Instruction following""]","Order from the nearest Seafood restaurant. Get either a Calamari or a Ceviche, choosing the cheaper option, and if they cost the same, pick the one with the higher rating. Have it delivered to my other address.",,3,Medium,
+}","[""Menu Viewing""]","[""Restaurant discovery & filtering"", ""Price & rating tradeoffs""]","[""Search and filtering"", ""Decision making"", ""Instruction following""]","Order from the nearest Pizza restaurant that has both Cheese Pizza and Pepperoni Pizza on the menu. Get either a Cheese Pizza or a Pepperoni Pizza, choosing the cheaper option, and if they cost the same, pick the one with the higher rating. Have it delivered to my other address.",,3,Medium,
 nearest-cheapest-choice-004,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""Order from the nearest Sandwiches restaurant. Get either a Sweet Potato Wedges or a Mini Cheeseburger Sliders, choosing the cheaper option, and if they cost the same, pick the one with the higher rating. Have it delivered to my office address."",
+  ""task_statement"": ""Order from the nearest Italian restaurant that has both Sweet Potato Wedges and Mini Cheeseburger Sliders on the menu. Get either a Sweet Potato Wedges or a Mini Cheeseburger Sliders, choosing the cheaper option, and if they cost the same, pick the one with the higher rating. Have it delivered to my office address."",
   ""grader_config"": {
     ""state_grader_configs"": [
       {
@@ -983,7 +1003,7 @@ nearest-cheapest-choice-004,"{
             ""limit"": 1,
             ""filters"": {
               ""cuisines"": [
-                ""Sandwiches""
+                ""Italian""
               ]
             },
             ""sort_type"": [
@@ -1028,88 +1048,10 @@ nearest-cheapest-choice-004,"{
     }
   },
   ""task_type"": ""GUI Comprehension, Action Execution, Decision Making, Element Identification, Multi-Step Task Planning""
-}","[""Menu Viewing""]","[""Restaurant discovery & filtering"", ""Price & rating tradeoffs""]","[""Search and filtering"", ""Decision making"", ""Instruction following""]","Order from the nearest Sandwiches restaurant. Get either a Sweet Potato Wedges or a Mini Cheeseburger Sliders, choosing the cheaper option, and if they cost the same, pick the one with the higher rating. Have it delivered to my office address.",,3,Medium,
+}","[""Menu Viewing""]","[""Restaurant discovery & filtering"", ""Price & rating tradeoffs""]","[""Search and filtering"", ""Decision making"", ""Instruction following""]","Order from the nearest Italian restaurant that has both Sweet Potato Wedges and Mini Cheeseburger Sliders on the menu. Get either a Sweet Potato Wedges or a Mini Cheeseburger Sliders, choosing the cheaper option, and if they cost the same, pick the one with the higher rating. Have it delivered to my office address.",,3,Medium,
 nearest-cheapest-choice-005,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""I want to get either a Citrus Shrimp Tacos or a Sweet Potato Wedges, choosing the cheaper option, and if they cost the same, pick the one with the higher rating. Have it delivered to my office address."",
-  ""grader_config"": {
-    ""state_grader_configs"": [
-      {
-        ""assertions"": [
-          {
-            ""operator"": ""STRING_EQUALS"",
-            ""paths_to_expected"": [
-              ""$[0].address.id""
-            ]
-          }
-        ],
-        ""path_to_actual"": ""$.orders[0].deliveryAddress.id""
-      },
-      {
-        ""assertions"": [
-          {
-            ""operator"": ""STRING_EQUALS"",
-            ""path_to_actual"": ""$.items[0].id"",
-            ""paths_to_expected"": [
-              ""$[1].items[0].id""
-            ]
-          },
-          {
-            ""expected"": [
-              ""==1""
-            ],
-            ""operator"": ""ARRAY_LENGTH_MATCH"",
-            ""path_to_actual"": ""$.items[*]""
-          }
-        ],
-        ""path_to_actual"": ""$.orders[0]""
-      }
-    ],
-    ""extract_states_config"": {
-      ""expected_state_functions"": [
-        {
-          ""args"": {
-            ""type"": ""office"",
-            ""user"": ""jasper.greene10@dashdoor.test""
-          },
-          ""function"": ""get_user_address""
-        },
-        {
-          ""args"": {
-            ""limit"": 1,
-            ""keywords"": [
-              ""Citrus Shrimp Tacos"",
-              ""Sweet Potato Wedges""
-            ],
-            ""sort_type"": [
-              {
-                ""key"": ""price"",
-                ""order"": ""asc""
-              },
-              {
-                ""key"": ""rating"",
-                ""order"": ""desc""
-              }
-            ]
-          },
-          ""function"": ""get_items""
-        }
-      ]
-    }
-  },
-  ""task_id"": ""nearest-cheapest-choice-005"",
-  ""simulator_config"": {
-    ""bootstrap_data"": {
-      ""date"": ""2025-12-19T12:00:00-08:00"",
-      ""timezone"": ""America/Los_Angeles"",
-      ""user"": ""jasper.greene10@dashdoor.test""
-    }
-  },
-  ""task_type"": ""GUI Comprehension, Action Execution, Decision Making, Element Identification, Multi-Step Task Planning""
-}","[""Menu Viewing""]","[""Restaurant discovery & filtering"", ""Price & rating tradeoffs""]","[""Search and filtering"", ""Decision making"", ""Instruction following""]","I want to get either a Citrus Shrimp Tacos or a Sweet Potato Wedges, choosing the cheaper option, and if they cost the same, pick the one with the higher rating. Have it delivered to my office address.",,3,Medium,
-nearest-cheapest-choice-006,"{
-  ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""Order from the nearest Salads restaurant. Get either a Custom Salad or a Bottled Water, choosing the cheaper option, and if they cost the same, pick the one with the higher rating. Have it delivered to my other address."",
+  ""task_statement"": ""Order from the nearest Mexican restaurant that has both Citrus Shrimp Tacos and Sweet Potato Wedges on the menu. Get either a Citrus Shrimp Tacos or a Sweet Potato Wedges, choosing the cheaper option, and if they cost the same, pick the one with the higher rating. Have it delivered to my house address."",
   ""grader_config"": {
     ""state_grader_configs"": [
       {
@@ -1147,8 +1089,8 @@ nearest-cheapest-choice-006,"{
       ""expected_state_functions"": [
         {
           ""args"": {
-            ""type"": ""other"",
-            ""user"": ""quinn.sawyer11@example.com""
+            ""type"": ""house"",
+            ""user"": ""jasper.greene10@dashdoor.test""
           },
           ""function"": ""get_user_address""
         },
@@ -1159,7 +1101,7 @@ nearest-cheapest-choice-006,"{
             ""limit"": 1,
             ""filters"": {
               ""cuisines"": [
-                ""Salads""
+                ""Mexican""
               ]
             },
             ""sort_type"": [
@@ -1175,8 +1117,106 @@ nearest-cheapest-choice-006,"{
           ""args"": {
             ""limit"": 1,
             ""keywords"": [
-              ""Custom Salad"",
-              ""Bottled Water""
+              ""Citrus Shrimp Tacos"",
+              ""Sweet Potato Wedges""
+            ],
+            ""sort_type"": [
+              {
+                ""key"": ""price"",
+                ""order"": ""asc""
+              },
+              {
+                ""key"": ""rating"",
+                ""order"": ""desc""
+              }
+            ],
+            ""restaurant_id"": ""$[1].restaurants[0].id""
+          },
+          ""function"": ""get_items""
+        }
+      ]
+    }
+  },
+  ""task_id"": ""nearest-cheapest-choice-005"",
+  ""simulator_config"": {
+    ""bootstrap_data"": {
+      ""date"": ""2025-12-19T12:00:00-08:00"",
+      ""timezone"": ""America/Los_Angeles"",
+      ""user"": ""jasper.greene10@dashdoor.test""
+    }
+  },
+  ""task_type"": ""GUI Comprehension, Action Execution, Decision Making, Element Identification, Multi-Step Task Planning""
+}","[""Menu Viewing""]","[""Restaurant discovery & filtering"", ""Price & rating tradeoffs""]","[""Search and filtering"", ""Decision making"", ""Instruction following""]","Order from the nearest Mexican restaurant that has both Citrus Shrimp Tacos and Sweet Potato Wedges on the menu. Get either a Citrus Shrimp Tacos or a Sweet Potato Wedges, choosing the cheaper option, and if they cost the same, pick the one with the higher rating. Have it delivered to my house address.",,3,Medium,
+nearest-cheapest-choice-006,"{
+  ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
+  ""task_statement"": ""Order from the nearest Mexican restaurant that has both Smoked Brisket Street Tacos and Bourbon Glazed Pork Tenderloin on the menu. Get either a Smoked Brisket Street Tacos or a Bourbon Glazed Pork Tenderloin, choosing the cheaper option, and if they cost the same, pick the one with the higher rating. Have it delivered to my other address."",
+  ""grader_config"": {
+    ""state_grader_configs"": [
+      {
+        ""assertions"": [
+          {
+            ""operator"": ""STRING_EQUALS"",
+            ""paths_to_expected"": [
+              ""$[0].address.id""
+            ]
+          }
+        ],
+        ""path_to_actual"": ""$.orders[0].deliveryAddress.id""
+      },
+      {
+        ""assertions"": [
+          {
+            ""operator"": ""STRING_EQUALS"",
+            ""path_to_actual"": ""$.items[0].name"",
+            ""paths_to_expected"": [
+              ""$[2].items[0].name""
+            ]
+          },
+          {
+            ""expected"": [
+              ""==1""
+            ],
+            ""operator"": ""ARRAY_LENGTH_MATCH"",
+            ""path_to_actual"": ""$.items[*]""
+          }
+        ],
+        ""path_to_actual"": ""$.orders[0]""
+      }
+    ],
+    ""extract_states_config"": {
+      ""expected_state_functions"": [
+        {
+          ""args"": {
+            ""type"": ""other"",
+            ""user"": ""quinn.sawyer11@example.com""
+          },
+          ""function"": ""get_user_address""
+        },
+        {
+          ""args"": {
+            ""lat"": ""$[0].address.lat"",
+            ""lng"": ""$[0].address.lng"",
+            ""limit"": 1,
+            ""filters"": {
+              ""cuisines"": [
+                ""Mexican""
+              ]
+            },
+            ""sort_type"": [
+              {
+                ""key"": ""distance"",
+                ""order"": ""asc""
+              }
+            ]
+          },
+          ""function"": ""get_restaurants""
+        },
+        {
+          ""args"": {
+            ""limit"": 1,
+            ""keywords"": [
+              ""Smoked Brisket Street Tacos"",
+              ""Bourbon Glazed Pork Tenderloin""
             ],
             ""sort_type"": [
               {
@@ -1204,10 +1244,10 @@ nearest-cheapest-choice-006,"{
     }
   },
   ""task_type"": ""GUI Comprehension, Action Execution, Decision Making, Element Identification, Multi-Step Task Planning""
-}","[""Menu Viewing""]","[""Restaurant discovery & filtering"", ""Price & rating tradeoffs""]","[""Search and filtering"", ""Decision making"", ""Instruction following""]","Order from the nearest Salads restaurant. Get either a Custom Salad or a Bottled Water, choosing the cheaper option, and if they cost the same, pick the one with the higher rating. Have it delivered to my other address.",,3,Medium,
+}","[""Menu Viewing""]","[""Restaurant discovery & filtering"", ""Price & rating tradeoffs""]","[""Search and filtering"", ""Decision making"", ""Instruction following""]","Order from the nearest Mexican restaurant that has both Smoked Brisket Street Tacos and Bourbon Glazed Pork Tenderloin on the menu. Get either a Smoked Brisket Street Tacos or a Bourbon Glazed Pork Tenderloin, choosing the cheaper option, and if they cost the same, pick the one with the higher rating. Have it delivered to my other address.",,3,Medium,
 nearest-cheapest-choice-007,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""I want to get either a Mini Cheeseburger or a Cheeseburger, choosing the cheaper option, and if they cost the same, pick the one with the higher rating. Have it delivered to my other address."",
+  ""task_statement"": ""I want to get either a Truffle Smash Burger or a Bacon Cheeseburger, choosing the cheaper option, and if they cost the same, pick the one with the higher rating. Have it delivered to my apartment address."",
   ""grader_config"": {
     ""state_grader_configs"": [
       {
@@ -1245,7 +1285,7 @@ nearest-cheapest-choice-007,"{
       ""expected_state_functions"": [
         {
           ""args"": {
-            ""type"": ""other"",
+            ""type"": ""apartment"",
             ""user"": ""elias.young12@dashdoor.test""
           },
           ""function"": ""get_user_address""
@@ -1254,8 +1294,8 @@ nearest-cheapest-choice-007,"{
           ""args"": {
             ""limit"": 1,
             ""keywords"": [
-              ""Mini Cheeseburger"",
-              ""Cheeseburger""
+              ""Truffle Smash Burger"",
+              ""Bacon Cheeseburger""
             ],
             ""sort_type"": [
               {
@@ -1282,7 +1322,7 @@ nearest-cheapest-choice-007,"{
     }
   },
   ""task_type"": ""GUI Comprehension, Action Execution, Decision Making, Element Identification, Multi-Step Task Planning""
-}","[""Menu Viewing""]","[""Restaurant discovery & filtering"", ""Price & rating tradeoffs""]","[""Search and filtering"", ""Decision making"", ""Instruction following""]","I want to get either a Mini Cheeseburger or a Cheeseburger, choosing the cheaper option, and if they cost the same, pick the one with the higher rating. Have it delivered to my other address.",,3,Medium,
+}","[""Menu Viewing""]","[""Restaurant discovery & filtering"", ""Price & rating tradeoffs""]","[""Search and filtering"", ""Decision making"", ""Instruction following""]","I want to get either a Truffle Smash Burger or a Bacon Cheeseburger, choosing the cheaper option, and if they cost the same, pick the one with the higher rating. Have it delivered to my apartment address.",,3,Medium,
 new-cheapest-restaurant-001,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
   ""task_statement"": ""Help me find vegan or vegetarian restaurants. Apply the lowest price filter possible and find the highest rated restaurant that I've not ordered from before."",
@@ -4416,10 +4456,19 @@ express-nearest-order-004,"{
       {
         ""assertions"": [
           {
-            ""operator"": ""STRING_EQUALS"",
-            ""path_to_actual"": ""$.items[0].name"",
+            ""operator"": ""JSON_CONTAINS"",
+            ""path_to_actual"": ""$.items[*].name"",
             ""paths_to_expected"": [
-              ""$[3].items[0].name""
+              ""$[3].items[0].name"",
+              ""$[3].items[1].name""
+            ]
+          },
+          {
+            ""operator"": ""JSON_PART_OF"",
+            ""path_to_actual"": ""$.items[*].name"",
+            ""paths_to_expected"": [
+              ""$[3].items[0].name"",
+              ""$[3].items[1].name""
             ]
           },
           {
@@ -4593,7 +4642,7 @@ express-nearest-order-005,"{
 }","[""Menu Viewing""]","[""Restaurant discovery & filtering"", ""Delivery options"", ""Coupon application""]","[""Search and filtering"", ""Decision making"", ""Order Placement""]",Order express delivery of a Sausage Deep Dish (Medium) from the nearest DashPass restaurant from my office address. Apply the SAVE5 deal.,,1,Hard,
 express-nearest-order-006,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""Order priority delivery of a 2 of the Original Cheesecake from the nearest DashPass restaurant from my hotel address. Apply SAVE10"",
+  ""task_statement"": ""Order express delivery of 2 of the Original Cheesecake from the nearest DashPass restaurant from my apartment address. Apply SAVE10"",
   ""task_type"": ""GUI Comprehension, Action Execution, Decision Making, Element Identification"",
   ""grader_config"": {
     ""state_grader_configs"": [
@@ -4661,7 +4710,7 @@ express-nearest-order-006,"{
       ""expected_state_functions"": [
         {
           ""args"": {
-            ""type"": ""hotel"",
+            ""type"": ""apartment"",
             ""user"": ""hannah.sawyer35@mail.test""
           },
           ""function"": ""get_user_address""
@@ -4711,10 +4760,10 @@ express-nearest-order-006,"{
       ""user"": ""hannah.sawyer35@mail.test""
     }
   }
-}","[""Menu Viewing""]","[""Restaurant discovery & filtering"", ""Delivery options"", ""Coupon application""]","[""Search and filtering"", ""Decision making"", ""Order Placement""]",Order priority delivery of a 2 of the Original Cheesecake from the nearest DashPass restaurant from my hotel address. Apply SAVE10,,1,Hard,
+}","[""Menu Viewing""]","[""Restaurant discovery & filtering"", ""Delivery options"", ""Coupon application""]","[""Search and filtering"", ""Decision making"", ""Order Placement""]",Order express delivery of 2 of the Original Cheesecake from the nearest DashPass restaurant from my apartment address. Apply SAVE10,,1,Hard,
 express-nearest-order-007,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""Order priority delivery of a Mediterranean Mezze Spread with Chili Oil from the nearest DashPass restaurant from my house address. Apply SAVE20"",
+  ""task_statement"": ""Order express delivery of a Mediterranean Mezze Spread with Chili Oil from the nearest DashPass restaurant from my house address. Apply SAVE20"",
   ""task_type"": ""GUI Comprehension, Action Execution, Decision Making, Element Identification"",
   ""grader_config"": {
     ""state_grader_configs"": [
@@ -4840,7 +4889,7 @@ express-nearest-order-007,"{
       ""user"": ""elias.fischer36@mail.test""
     }
   }
-}","[""Menu Viewing""]","[""Restaurant discovery & filtering"", ""Delivery options"", ""Coupon application""]","[""Search and filtering"", ""Decision making"", ""Order Placement""]",Order priority delivery of a Mediterranean Mezze Spread with Chili Oil from the nearest DashPass restaurant from my house address. Apply SAVE20,,1,Hard,
+}","[""Menu Viewing""]","[""Restaurant discovery & filtering"", ""Delivery options"", ""Coupon application""]","[""Search and filtering"", ""Decision making"", ""Order Placement""]",Order express delivery of a Mediterranean Mezze Spread with Chili Oil from the nearest DashPass restaurant from my house address. Apply SAVE20,,1,Hard,
 cheapest-item-filter-002,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
   ""task_statement"": ""Order the cheapest Yuzu Lime Soda you can find, just don't order from Seafood Market, they were terrible last time"",
@@ -4923,7 +4972,7 @@ cheapest-item-filter-002,"{
 }","[""Cart Management""]","[""Price filtering"", ""Restaurant exclusion""]","[""Search and filtering"", ""Decision making""]","Order the cheapest Yuzu Lime Soda you can find, just don't order from Seafood Market, they were terrible last time",,0,Hard,
 cheapest-item-filter-004,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""Order the cheapest Seaweed Salad you can find, just don't order from Saigon Vietnamese Cafe, they were terrible last time"",
+  ""task_statement"": ""Order the cheapest green chile turkey burger you can find, just don't order from Urban Habesha Kitchen, they were terrible last time"",
   ""task_type"": ""GUI Comprehension, Action Execution, Element Identification, Decision Making"",
   ""grader_config"": {
     ""state_grader_configs"": [
@@ -4967,7 +5016,7 @@ cheapest-item-filter-004,"{
             ""lat"": ""$[0].address.lat"",
             ""lng"": ""$[0].address.lng"",
             ""limit"": 1,
-            ""name"": ""Saigon Vietnamese Cafe""
+            ""name"": ""Urban Habesha Kitchen""
           },
           ""function"": ""get_restaurants""
         },
@@ -4975,7 +5024,7 @@ cheapest-item-filter-004,"{
           ""args"": {
             ""limit"": 1,
             ""keywords"": [
-              ""Seaweed Salad""
+              ""green chile turkey burger""
             ],
             ""filters"": {
               ""restaurant_ids_not_in"": ""$[1].restaurants[*].id""
@@ -5000,7 +5049,7 @@ cheapest-item-filter-004,"{
       ""user"": ""lena.bennett40@example.com""
     }
   }
-}","[""Cart Management""]","[""Price filtering"", ""Restaurant exclusion""]","[""Search and filtering"", ""Decision making""]","Order the cheapest Seaweed Salad you can find, just don't order from Saigon Vietnamese Cafe, they were terrible last time",,0,Hard,
+}","[""Cart Management""]","[""Price filtering"", ""Restaurant exclusion""]","[""Search and filtering"", ""Decision making""]","Order the cheapest green chile turkey burger you can find, just don't order from Urban Habesha Kitchen, they were terrible last time",,0,Hard,
 cheapest-item-filter-005,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
   ""task_statement"": ""Order the cheapest Hot Dog you can find, just don't order from North End Burger Co., they were terrible last time"",
@@ -5563,7 +5612,7 @@ top-rated-category-007,"{
 }","[""Ratings & Reviews""]","[""Review-based recommendations""]","[""Ratings analysis"", ""Decision making"", ""Order Placement""]","I wanted to try Fish Market by Kings, can you order the most expensive item from the Raw Bar?",,1,Hard,
 best-deal-order-002,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""I need to place an order at my office address. Look for cheapest restaurants with deals and pick the best one. Order enough Sides to meet the spending limit for the deal."",
+  ""task_statement"": ""I need to place an order at my office address with Express delivery. Filter restaurants with deals and apply the lowest price filter possible and from the results pick the highest rated (for ties prefer one with more reviews). Order 2 Entrees, 2 Sides, and 2 Drinks. Apply the first deal listed in the Deals & Benefits section on the restaurant page while checking out."",
   ""task_type"": ""GUI Comprehension, Action Execution, Multi-Step Task Planning, Decision Making"",
   ""grader_config"": {
     ""state_grader_configs"": [
@@ -5593,16 +5642,41 @@ best-deal-order-002,"{
         ""assertions"": [
           {
             ""operator"": ""STRING_EQUALS"",
+            ""expected"": [
+              ""express""
+            ]
+          }
+        ],
+        ""path_to_actual"": ""$.orders[0].deliveryOption.type""
+          },
+      {
+        ""assertions"": [
+          {
+            ""operator"": ""STRING_EQUALS"",
+            ""path_to_actual"": ""$.storeId"",
+            ""paths_to_expected"": [
+              ""$[1].restaurants[0].id""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.items[*].menuCategoryId"",
             ""paths_to_expected"": [
               ""$[2].categories[0].id""
             ]
           },
           {
-            ""operator"": ""STRING_EQUALS"",
-            ""path_to_actual"": ""$.storeId"",
+            ""operator"": ""JSON_CONTAINS"",
+            ""path_to_actual"": ""$.items[*].menuCategoryId"",
             ""paths_to_expected"": [
-              ""$[1].restaurants[0].id""
+              ""$[3].categories[0].id""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
+            ""path_to_actual"": ""$.items[*].menuCategoryId"",
+            ""paths_to_expected"": [
+              ""$[4].categories[0].id""
             ]
           }
         ],
@@ -5642,7 +5716,23 @@ best-deal-order-002,"{
         {
           ""args"": {
             ""restaurant_id"": ""$[1].restaurants[0].id"",
+            ""keyword"": ""Entrees"",
+            ""limit"": 1
+          },
+          ""function"": ""get_menu_categories""
+        },
+        {
+          ""args"": {
+            ""restaurant_id"": ""$[1].restaurants[0].id"",
             ""keyword"": ""Sides"",
+            ""limit"": 1
+          },
+          ""function"": ""get_menu_categories""
+        },
+        {
+          ""args"": {
+            ""restaurant_id"": ""$[1].restaurants[0].id"",
+            ""keyword"": ""Drinks"",
             ""limit"": 1
           },
           ""function"": ""get_menu_categories""
@@ -5658,10 +5748,10 @@ best-deal-order-002,"{
       ""user"": ""nora.zimmerman51@mail.test""
     }
   }
-}","[""Menu Viewing""]","[""Price & deal optimization"", ""Restaurant discovery & filtering""]","[""Search and filtering"", ""Decision making"", ""Order Placement""]",I need to place an order at my office address. Look for cheapest restaurants with deals and pick the best one. Order enough Sides to meet the spending limit for the deal.,,0,Hard,
+}","[""Menu Viewing""]","[""Price & deal optimization"", ""Restaurant discovery & filtering""]","[""Search and filtering"", ""Decision making"", ""Order Placement""]",I need to place an order at my office address with Express delivery. Filter restaurants with deals and apply the lowest price filter possible and from the results pick the highest rated (for ties prefer one with more reviews). Order 2 Entrees 2 Sides and 2 Drinks. Apply the first deal listed in the Deals & Benefits section on the restaurant page while checking out.,,0,Hard,
 best-deal-order-005,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""I need to place an order at my office address. Look for cheapest restaurants with deals and pick the best one. Order enough Drinks to meet the spending limit for the deal."",
+  ""task_statement"": ""I need to place an order at my office address with Express delivery from Mike's Pastry. Order 4 Cappuccino and 1 Chocolate Dipped Cannoli. Apply the deal listed in the Deals & Benefits section on the restaurant page while checking out."",
   ""task_type"": ""GUI Comprehension, Action Execution, Multi-Step Task Planning, Decision Making"",
   ""grader_config"": {
     ""state_grader_configs"": [
@@ -5680,8 +5770,8 @@ best-deal-order-005,"{
         ""assertions"": [
           {
             ""operator"": ""STRING_EQUALS"",
-            ""paths_to_expected"": [
-              ""$[1].restaurants[0].deals[0].id""
+            ""expected"": [
+              ""mikes-pastry-free-delivery-153""
             ]
           }
         ],
@@ -5691,17 +5781,31 @@ best-deal-order-005,"{
         ""assertions"": [
           {
             ""operator"": ""STRING_EQUALS"",
-            ""path_to_actual"": ""$.items[*].menuCategoryId"",
-            ""paths_to_expected"": [
-              ""$[2].categories[0].id""
+            ""expected"": [
+              ""express""
             ]
-          },
+          }
+        ],
+        ""path_to_actual"": ""$.orders[0].deliveryOption.type""
+      },
+      {
+        ""assertions"": [
           {
             ""operator"": ""STRING_EQUALS"",
             ""path_to_actual"": ""$.storeId"",
-            ""paths_to_expected"": [
-              ""$[1].restaurants[0].id""
+            ""expected"": [
+              ""153""
             ]
+          },
+          {
+            ""operator"": ""NUMERIC_MATCH"",
+            ""path_to_actual"": ""$.items[?(@.name == 'Cappuccino')].quantity"",
+            ""expected"": [""==4""]
+          },
+          {
+            ""operator"": ""NUMERIC_MATCH"",
+            ""path_to_actual"": ""$.items[?(@.name == 'Chocolate Dipped Cannoli')].quantity"",
+            ""expected"": [""==1""]
           }
         ],
         ""path_to_actual"": ""$.orders[0]""
@@ -5715,35 +5819,6 @@ best-deal-order-005,"{
             ""user"": ""willow.zimmerman55@inbox.local""
           },
           ""function"": ""get_user_address""
-        },
-        {
-          ""args"": {
-            ""lat"": ""$[0].address.lat"",
-            ""lng"": ""$[0].address.lng"",
-            ""limit"": 1,
-            ""filters"": {
-              ""has_deals"": true
-            },
-            ""sort_type"": [
-              {
-                ""key"": ""priceRange"",
-                ""order"": ""asc""
-              },
-              {
-                ""key"": ""rating"",
-                ""order"": ""desc""
-              }
-            ]
-          },
-          ""function"": ""get_restaurants""
-        },
-        {
-          ""args"": {
-            ""restaurant_id"": ""$[1].restaurants[0].id"",
-            ""keyword"": ""Drinks"",
-            ""limit"": 1
-          },
-          ""function"": ""get_menu_categories""
         }
       ]
     }
@@ -5756,10 +5831,10 @@ best-deal-order-005,"{
       ""user"": ""willow.zimmerman55@inbox.local""
     }
   }
-}","[""Menu Viewing""]","[""Price & deal optimization"", ""Restaurant discovery & filtering""]","[""Search and filtering"", ""Decision making"", ""Order Placement""]",I need to place an order at my office address. Look for cheapest restaurants with deals and pick the best one. Order enough Drinks to meet the spending limit for the deal.,,0,Hard,
+}","[""Menu Viewing""]","[""Price & deal optimization"", ""Restaurant discovery & filtering""]","[""Search and filtering"", ""Decision making"", ""Order Placement""]",I need to place an order at my office address with Express delivery from Mike's Pastry. Order 4 Cappuccino and 1 Chocolate Dipped Cannoli. Apply the deal listed in the Deals & Benefits section on the restaurant page while checking out.,,0,Hard,
 best-deal-order-006,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""I need to place an order at my hotel address. Look for cheapest restaurants with deals and pick the best one. Order enough Entrees to meet the spending limit for the deal."",
+  ""task_statement"": ""I need to place an order at my hotel address. Filter restaurants with deals and apply the lowest price filter possible and from the results pick the highest rated (for ties prefer one with more reviews). Order enough Entrees to meet the deal minimum. Apply the first deal listed in the Deals & Benefits section on the restaurant page while checking out."",
   ""task_type"": ""GUI Comprehension, Action Execution, Multi-Step Task Planning, Decision Making"",
   ""grader_config"": {
     ""state_grader_configs"": [
@@ -5789,16 +5864,16 @@ best-deal-order-006,"{
         ""assertions"": [
           {
             ""operator"": ""STRING_EQUALS"",
-            ""path_to_actual"": ""$.items[*].menuCategoryId"",
-            ""paths_to_expected"": [
-              ""$[2].categories[0].id""
-            ]
-          },
-          {
-            ""operator"": ""STRING_EQUALS"",
             ""path_to_actual"": ""$.storeId"",
             ""paths_to_expected"": [
               ""$[1].restaurants[0].id""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
+            ""path_to_actual"": ""$.items[*].menuCategoryId"",
+            ""paths_to_expected"": [
+              ""$[2].categories[0].id""
             ]
           }
         ],
@@ -5854,10 +5929,10 @@ best-deal-order-006,"{
       ""user"": ""hannah.anderson56@example.com""
     }
   }
-}","[""Menu Viewing""]","[""Price & deal optimization"", ""Restaurant discovery & filtering""]","[""Search and filtering"", ""Decision making"", ""Order Placement""]",I need to place an order at my hotel address. Look for cheapest restaurants with deals and pick the best one. Order enough Entrees to meet the spending limit for the deal.,,0,Hard,
+}","[""Menu Viewing""]","[""Price & deal optimization"", ""Restaurant discovery & filtering""]","[""Search and filtering"", ""Decision making"", ""Order Placement""]",I need to place an order at my hotel address. Filter restaurants with deals and apply the lowest price filter possible and from the results pick the highest rated (for ties prefer one with more reviews). Order enough Entrees to meet the deal minimum. Apply the first deal listed in the Deals & Benefits section on the restaurant page while checking out.,,0,Hard,
 best-deal-order-007,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""I need to place an order at my hotel address. Look for cheapest restaurants with deals and pick the best one. Order enough Drinks to meet the spending limit for the deal."",
+  ""task_statement"": ""I need to place an order at my hotel address. Filter restaurants with deals and apply the lowest price filter possible and from the results pick the highest rated (for ties prefer one with more reviews). Order enough Sides to meet the deal minimum. Apply the first deal listed in the Deals & Benefits section on the restaurant page while checking out."",
   ""task_type"": ""GUI Comprehension, Action Execution, Multi-Step Task Planning, Decision Making"",
   ""grader_config"": {
     ""state_grader_configs"": [
@@ -5887,16 +5962,16 @@ best-deal-order-007,"{
         ""assertions"": [
           {
             ""operator"": ""STRING_EQUALS"",
-            ""path_to_actual"": ""$.items[*].menuCategoryId"",
-            ""paths_to_expected"": [
-              ""$[2].categories[0].id""
-            ]
-          },
-          {
-            ""operator"": ""STRING_EQUALS"",
             ""path_to_actual"": ""$.storeId"",
             ""paths_to_expected"": [
               ""$[1].restaurants[0].id""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
+            ""path_to_actual"": ""$.items[*].menuCategoryId"",
+            ""paths_to_expected"": [
+              ""$[2].categories[0].id""
             ]
           }
         ],
@@ -5936,7 +6011,7 @@ best-deal-order-007,"{
         {
           ""args"": {
             ""restaurant_id"": ""$[1].restaurants[0].id"",
-            ""keyword"": ""Drinks"",
+            ""keyword"": ""Sides"",
             ""limit"": 1
           },
           ""function"": ""get_menu_categories""
@@ -5952,7 +6027,7 @@ best-deal-order-007,"{
       ""user"": ""jasper.owens57@dashdoor.test""
     }
   }
-}","[""Menu Viewing""]","[""Price & deal optimization"", ""Restaurant discovery & filtering""]","[""Search and filtering"", ""Decision making"", ""Order Placement""]",I need to place an order at my hotel address. Look for cheapest restaurants with deals and pick the best one. Order enough Drinks to meet the spending limit for the deal.,,0,Hard,
+}","[""Menu Viewing""]","[""Price & deal optimization"", ""Restaurant discovery & filtering""]","[""Search and filtering"", ""Decision making"", ""Order Placement""]",I need to place an order at my hotel address. Filter restaurants with deals and apply the lowest price filter possible and from the results pick the highest rated (for ties prefer one with more reviews). Order enough Sides to meet the deal minimum. Apply the first deal listed in the Deals & Benefits section on the restaurant page while checking out.,,0,Hard,
 bulk-simple-order-001,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
   ""task_statement"": ""Order two truffle smash burgers from Golden Smokehouse, make sure no customizations are selected. Also order 2 units of the cheapest available drink. Change the contact number for the order to 7137834912"",
@@ -7428,14 +7503,14 @@ top-rated-history-007,"{
 }","[""Ratings & Reviews""]","[""Review-based recommendations""]","[""Ratings analysis"", ""Search and filtering"", ""Decision making""]",Go through the reviews that I've given for restaurants and pick the one that I've given the highest rating and order the best rated from the Drinks menu.,,2,Hard,
 helpful-review-items-001,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""Somebody recommended Mediterranean Kitchen to me, could you go through the reviews and find the review that people found the most helpful and add the liked items from it to my cart"",
+  ""task_statement"": ""Somebody recommended Mediterranean Kitchen to me. Could you check the reviews and find the most helpful one that includes liked items, then add those items to my cart? If any required modifications exist, choose the cheapest options."",
   ""task_id"": ""helpful-review-items-001"",
   ""task_type"": ""GUI Comprehension, Action Execution, Decision Making, Element Identification"",
   ""simulator_config"": {
     ""bootstrap_data"": {
       ""date"": ""2025-12-19T12:00:00-08:00"",
       ""timezone"": ""America/Los_Angeles"",
-      ""user"": ""lena.bennett71@example.com""
+      ""user"": ""yuna.nguyen18@mail.test""
     }
   },
   ""grader_config"": {
@@ -7461,6 +7536,13 @@ helpful-review-items-001,"{
             ""path_to_actual"": ""$.storeId"",
             ""paths_to_expected"": [
               ""$[1].reviews[0].storeId""
+            ]
+          },
+          {
+            ""operator"": ""STRING_EQUALS"",
+            ""path_to_actual"": ""$.items[0].appliedModifications[0].appliedOptions[0].optionId"",
+            ""paths_to_expected"": [
+              ""$[2].modification.options[0].id""
             ]
           }
         ],
@@ -7488,14 +7570,23 @@ helpful-review-items-001,"{
             ]
           },
           ""function"": ""get_reviews""
+        },
+        {
+          ""args"": {
+            ""item_id"": ""$[1].reviews[0].likedItems[0].menuItemId"",
+            ""modification_name"": """",
+            ""is_required"": true,
+            ""sort_options_by_price"": true
+          },
+          ""function"": ""get_modifications""
         }
       ]
     }
   }
-}","[""Ratings & Reviews""]","[""Review-based recommendations""]","[""Ratings analysis"", ""Instruction following""]","Somebody recommended Mediterranean Kitchen to me, could you go through the reviews and find the review that people found the most helpful and add the liked items from it to my cart",,2,Hard,
+}","[""Ratings & Reviews""]","[""Review-based recommendations""]","[""Ratings analysis"", ""Instruction following""]","Somebody recommended Mediterranean Kitchen to me. Could you check the reviews and find the most helpful one that includes liked items, then add those items to my cart? If any required modifications exist, choose the cheapest options.",,2,Hard,
 helpful-review-items-002,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""Somebody recommended Salads House to me, could you go through the reviews and find the review that people found the most helpful and add the liked items from it to my cart. If there are required modifications, then apply the cheapest"",
+  ""task_statement"": ""Somebody recommended Salads House to me. Could you check the reviews and find the most helpful one that includes liked items, then add those items to my cart? If any required modifications exist, choose the cheapest options."",
   ""task_type"": ""GUI Comprehension, Action Execution, Decision Making, Element Identification"",
   ""grader_config"": {
     ""state_grader_configs"": [
@@ -7520,6 +7611,13 @@ helpful-review-items-002,"{
             ""path_to_actual"": ""$.storeId"",
             ""paths_to_expected"": [
               ""$[1].reviews[0].storeId""
+            ]
+          },
+          {
+            ""operator"": ""STRING_EQUALS"",
+            ""path_to_actual"": ""$.items[0].appliedModifications[0].appliedOptions[0].optionId"",
+            ""paths_to_expected"": [
+              ""$[2].modification.options[0].id""
             ]
           }
         ],
@@ -7547,6 +7645,15 @@ helpful-review-items-002,"{
             ]
           },
           ""function"": ""get_reviews""
+        },
+        {
+          ""args"": {
+            ""item_id"": ""$[1].reviews[0].likedItems[0].menuItemId"",
+            ""modification_name"": """",
+            ""is_required"": true,
+            ""sort_options_by_price"": true
+          },
+          ""function"": ""get_modifications""
         }
       ]
     }
@@ -7559,10 +7666,10 @@ helpful-review-items-002,"{
       ""user"": ""quinn.zimmerman1700@mail.test""
     }
   }
-}","[""Ratings & Reviews""]","[""Review-based recommendations""]","[""Ratings analysis"", ""Instruction following""]","Somebody recommended Salads House to me, could you go through the reviews and find the review that people found the most helpful and add the liked items from it to my cart. If there are required modifications, then apply the cheapest",,2,Hard,
+}","[""Ratings & Reviews""]","[""Review-based recommendations""]","[""Ratings analysis"", ""Instruction following""]","Somebody recommended Salads House to me. Could you check the reviews and find the most helpful one that includes liked items, then add those items to my cart? If any required modifications exist, choose the cheapest options.",,2,Hard,
 helpful-review-items-003,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""Somebody recommended Maple Market to me, could you go through the reviews and find the review with a liked item that people found the most helpful and add the liked items from it to my cart"",
+  ""task_statement"": ""Somebody recommended Maple Market to me. Could you check the reviews and find the most helpful one that includes liked items, then add those items to my cart? If any required modifications exist, choose the cheapest options."",
   ""task_type"": ""GUI Comprehension, Action Execution, Decision Making, Element Identification"",
   ""grader_config"": {
     ""state_grader_configs"": [
@@ -7587,6 +7694,13 @@ helpful-review-items-003,"{
             ""path_to_actual"": ""$.storeId"",
             ""paths_to_expected"": [
               ""$[1].reviews[0].storeId""
+            ]
+          },
+          {
+            ""operator"": ""STRING_EQUALS"",
+            ""path_to_actual"": ""$.items[0].appliedModifications[0].appliedOptions[0].optionId"",
+            ""paths_to_expected"": [
+              ""$[2].modification.options[0].id""
             ]
           }
         ],
@@ -7614,6 +7728,15 @@ helpful-review-items-003,"{
             ]
           },
           ""function"": ""get_reviews""
+        },
+        {
+          ""args"": {
+            ""item_id"": ""$[1].reviews[0].likedItems[0].menuItemId"",
+            ""modification_name"": """",
+            ""is_required"": true,
+            ""sort_options_by_price"": true
+          },
+          ""function"": ""get_modifications""
         }
       ]
     }
@@ -7626,10 +7749,10 @@ helpful-review-items-003,"{
       ""user"": ""yuna.zimmerman28@dashdoor.test""
     }
   }
-}","[""Ratings & Reviews""]","[""Review-based recommendations""]","[""Ratings analysis"", ""Instruction following""]","Somebody recommended Maple Market to me, could you go through the reviews and find the review with a liked item that people found the most helpful and add the liked items from it to my cart",,2,Hard,
+}","[""Ratings & Reviews""]","[""Review-based recommendations""]","[""Ratings analysis"", ""Instruction following""]","Somebody recommended Maple Market to me. Could you check the reviews and find the most helpful one that includes liked items, then add those items to my cart? If any required modifications exist, choose the cheapest options.",,2,Hard,
 helpful-review-items-007,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""Somebody recommended Gavin's Market to me, could you go through the reviews and find the review that people found the most helpful and add the liked items from it to my cart"",
+  ""task_statement"": ""Somebody recommended Gavin's Market to me. Could you check the reviews and find the most helpful one that includes liked items, then add those items to my cart? If any required modifications exist, choose the cheapest options."",
   ""task_type"": ""GUI Comprehension, Action Execution, Decision Making, Element Identification"",
   ""grader_config"": {
     ""state_grader_configs"": [
@@ -7654,6 +7777,13 @@ helpful-review-items-007,"{
             ""path_to_actual"": ""$.storeId"",
             ""paths_to_expected"": [
               ""$[1].reviews[0].storeId""
+            ]
+          },
+          {
+            ""operator"": ""STRING_EQUALS"",
+            ""path_to_actual"": ""$.items[0].appliedModifications[0].appliedOptions[0].optionId"",
+            ""paths_to_expected"": [
+              ""$[2].modification.options[0].id""
             ]
           }
         ],
@@ -7681,6 +7811,15 @@ helpful-review-items-007,"{
             ]
           },
           ""function"": ""get_reviews""
+        },
+        {
+          ""args"": {
+            ""item_id"": ""$[1].reviews[0].likedItems[0].menuItemId"",
+            ""modification_name"": """",
+            ""is_required"": true,
+            ""sort_options_by_price"": true
+          },
+          ""function"": ""get_modifications""
         }
       ]
     }
@@ -7693,10 +7832,10 @@ helpful-review-items-007,"{
       ""user"": ""lena.chambers96@dashdoor.test""
     }
   }
-}","[""Ratings & Reviews""]","[""Review-based recommendations""]","[""Ratings analysis"", ""Instruction following""]","Somebody recommended Gavin's Market to me, could you go through the reviews and find the review that people found the most helpful and add the liked items from it to my cart",,2,Hard,
+}","[""Ratings & Reviews""]","[""Review-based recommendations""]","[""Ratings analysis"", ""Instruction following""]","Somebody recommended Gavin’s Market to me. Could you check the reviews and find the most helpful one that includes liked items, then add those items to my cart? If any required modifications exist, choose the cheapest options.",,2,Hard,
 cheapest-rated-slices-002,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""I recently moved and want to explore American restaurants near my new apartment. Order two of the cheapest Desserts available at the nearest 3.5 star or above American place."",
+  ""task_statement"": ""I recently moved and want to explore American restaurants near my new apartment. Order two different dessert items with the lowest prices from the nearest 3.5 star or above American place."",
   ""task_type"": ""GUI Comprehension, Action Execution, Decision Making, Element Identification, Multi-Step Task Planning"",
   ""grader_config"": {
     ""state_grader_configs"": [
@@ -7796,10 +7935,10 @@ cheapest-rated-slices-002,"{
       ""user"": ""milo.sawyer91@mail.test""
     }
   }
-}","[""Menu Viewing"", ""Cart Management""]","[""Restaurant discovery & filtering"", ""Menu exploration""]","[""Search and filtering"", ""Decision making"", ""Order Placement""]",I recently moved and want to explore American restaurants near my new apartment. Order two of the cheapest Desserts available at the nearest 3.5 star or above American place.,,0,Hard,
+}","[""Menu Viewing"", ""Cart Management""]","[""Restaurant discovery & filtering"", ""Menu exploration""]","[""Search and filtering"", ""Decision making"", ""Order Placement""]",I recently moved and want to explore American restaurants near my new apartment. Order two different dessert items with the lowest prices from the nearest 3.5 star or above American place.,,0,Hard,
 cheapest-rated-slices-005,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""I recently moved and want to explore Vietnamese restaurants near my new house. Order two of the cheapest Beverages available at the nearest 4 star or above Vietnamese place."",
+  ""task_statement"": ""I recently moved and want to explore Vietnamese restaurants near my new house. Order two different pho with the lowest prices from the nearest 4 star or above Vietnamese place."",
   ""task_type"": ""GUI Comprehension, Action Execution, Decision Making, Element Identification, Multi-Step Task Planning"",
   ""grader_config"": {
     ""state_grader_configs"": [
@@ -7875,7 +8014,7 @@ cheapest-rated-slices-005,"{
             ""limit"": 2,
             ""filters"": {
               ""menu_categories"": [
-                ""Beverages""
+                ""Pho""
               ]
             },
             ""sort_type"": [
@@ -7899,7 +8038,7 @@ cheapest-rated-slices-005,"{
       ""user"": ""victor.greene99@dashdoor.test""
     }
   }
-}","[""Menu Viewing"", ""Cart Management""]","[""Restaurant discovery & filtering"", ""Menu exploration""]","[""Search and filtering"", ""Decision making"", ""Order Placement""]",I recently moved and want to explore Vietnamese restaurants near my new house. Order two of the cheapest Beverages available at the nearest 4 star or above Vietnamese place.,,0,Hard,
+}","[""Menu Viewing"", ""Cart Management""]","[""Restaurant discovery & filtering"", ""Menu exploration""]","[""Search and filtering"", ""Decision making"", ""Order Placement""]",I recently moved and want to explore Vietnamese restaurants near my new house. Order two different pho with the lowest prices from the nearest 4 star or above Vietnamese place.,,0,Hard,
 cheapest-rated-slices-007,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
   ""task_statement"": ""I recently moved and want to explore Korean restaurants near my new house. Order two of the cheapest Starters available at the nearest 3 star or above Korean place."",
@@ -10934,7 +11073,7 @@ low-calorie-order-001,"{
 }","[""Menu Viewing""]","[""Diet & calorie filtering"", ""Item customization"", ""Coupon application""]","[""Search and filtering"", ""Decision making"", ""Order Placement""]","Lets order desserts from Rosa's pantry. But since I am on a diet make sure you pick the two different lowest calorie options. And also add chicken bites for my nephew, keep the spice level mild. Apply the SAVE20 coupon. Use the card ending with 7957 for payment.",,9,Easy,
 item-with-sauce-001,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""Order mango sticky rice from sushi pantry with berry compote sauce"",
+  ""task_statement"": ""Order mango sticky rice from Maple House with berry compote sauce"",
   ""task_id"": ""item-with-sauce-001"",
   ""task_type"": ""GUI Comprehension, Action Execution, Element Identification"",
   ""simulator_config"": {
@@ -10991,7 +11130,7 @@ item-with-sauce-001,"{
       ""expected_state_functions"": [
         {
           ""args"": {
-            ""name"": ""sushi pantry""
+            ""name"": ""Maple House""
           },
           ""function"": ""get_restaurants""
         },
@@ -11008,7 +11147,7 @@ item-with-sauce-001,"{
       ]
     }
   }
-}","[""Cart Management""]","[""Item customization""]","[""Instruction following"", ""Order Placement""]",Order mango sticky rice from sushi pantry with berry compote sauce,,7,Medium,
+}","[""Cart Management""]","[""Item customization""]","[""Instruction following"", ""Order Placement""]",Order mango sticky rice from Maple House with berry compote sauce,,7,Medium,
 healthy-fixed-order-001,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
   ""task_statement"": ""Go to healthy section and find restaurant Sweetgreen and order 1 bottled water, 2 harvest bowl, 1 organic lemonade."",
@@ -11737,7 +11876,7 @@ express-nearest-order-001,"{
 }","[""Menu Viewing""]","[""Restaurant discovery & filtering"", ""Delivery options"", ""Coupon application""]","[""Search and filtering"", ""Decision making"", ""Order Placement""]",Order express delivery of a ginger salmon bowl with hot sauce from the nearest dashpass restaurant from my house address. Apply SAVE10,,1,Hard,
 cheapest-item-filter-001,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""Order the cheapest cauliflower tacos you can find, just don't order from desserts table, they were terrible last time"",
+  ""task_statement"": ""Order the cheapest cauliflower tacos you can find, just don't order from burgers pantry, they were terrible last time"",
   ""task_id"": ""cheapest-item-filter-001"",
   ""task_type"": ""GUI Comprehension, Element Identification, Decision Making"",
   ""simulator_config"": {
@@ -11789,7 +11928,7 @@ cheapest-item-filter-001,"{
             ""lat"": ""$[0].address.lat"",
             ""lng"": ""$[0].address.lng"",
             ""limit"": 1,
-            ""name"": ""desserts table""
+            ""name"": ""burgers pantry""
           },
           ""function"": ""get_restaurants""
         },
@@ -11814,7 +11953,7 @@ cheapest-item-filter-001,"{
       ]
     }
   }
-}","[""Cart Management""]","[""Price filtering"", ""Restaurant exclusion""]","[""Search and filtering"", ""Decision making""]","Order the cheapest cauliflower tacos you can find, just don't order from desserts table, they were terrible last time",,0,Hard,
+}","[""Cart Management""]","[""Price filtering"", ""Restaurant exclusion""]","[""Search and filtering"", ""Decision making""]","Order the cheapest cauliflower tacos you can find, just don't order from brugers pantry, they were terrible last time",,0,Hard,
 cheapest-item-filter-003,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
   ""task_statement"": ""Order the cheapest Miso Caramel Cheesecake you can find, just don't order from Uncle's Basil, they were terrible last time"",
@@ -12057,7 +12196,7 @@ top-rated-category-003,"{
 }","[""Ratings & Reviews""]","[""Review-based recommendations""]","[""Ratings analysis"", ""Decision making"", ""Order Placement""]","I wanted to try Olive Garden, can you order the best rated item from the Classic Pastas?",,1,Hard,
 best-deal-order-004,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""I need to place an order at my office address. Look for cheapest restaurants with deals and pick the best one. Order enough Entrees to meet the spending limit for the deal."",
+  ""task_statement"": ""I need to place an order at my office address. Filter restaurants with deals and apply the lowest price filter possible and from the results pick the highest rated (for ties prefer one with more reviews). Order 2 Entrees, 2 Sides, and 2 Drinks. Apply the first deal listed in the Deals & Benefits section on the restaurant page while checking out."",
   ""task_type"": ""GUI Comprehension, Action Execution, Multi-Step Task Planning, Decision Making"",
   ""grader_config"": {
     ""state_grader_configs"": [
@@ -12087,16 +12226,30 @@ best-deal-order-004,"{
         ""assertions"": [
           {
             ""operator"": ""STRING_EQUALS"",
+            ""path_to_actual"": ""$.storeId"",
+            ""paths_to_expected"": [
+              ""$[1].restaurants[0].id""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
             ""path_to_actual"": ""$.items[*].menuCategoryId"",
             ""paths_to_expected"": [
               ""$[2].categories[0].id""
             ]
           },
           {
-            ""operator"": ""STRING_EQUALS"",
-            ""path_to_actual"": ""$.storeId"",
+            ""operator"": ""JSON_CONTAINS"",
+            ""path_to_actual"": ""$.items[*].menuCategoryId"",
             ""paths_to_expected"": [
-              ""$[1].restaurants[0].id""
+              ""$[3].categories[0].id""
+            ]
+          },
+          {
+            ""operator"": ""JSON_CONTAINS"",
+            ""path_to_actual"": ""$.items[*].menuCategoryId"",
+            ""paths_to_expected"": [
+              ""$[4].categories[0].id""
             ]
           }
         ],
@@ -12140,6 +12293,22 @@ best-deal-order-004,"{
             ""limit"": 1
           },
           ""function"": ""get_menu_categories""
+        },
+        {
+          ""args"": {
+            ""restaurant_id"": ""$[1].restaurants[0].id"",
+            ""keyword"": ""Sides"",
+            ""limit"": 1
+          },
+          ""function"": ""get_menu_categories""
+        },
+        {
+          ""args"": {
+            ""restaurant_id"": ""$[1].restaurants[0].id"",
+            ""keyword"": ""Drinks"",
+            ""limit"": 1
+          },
+          ""function"": ""get_menu_categories""
         }
       ]
     }
@@ -12152,7 +12321,7 @@ best-deal-order-004,"{
       ""user"": ""kai.xu54@inbox.local""
     }
   }
-}","[""Menu Viewing""]","[""Price & deal optimization"", ""Restaurant discovery & filtering""]","[""Search and filtering"", ""Decision making"", ""Order Placement""]",I need to place an order at my office address. Look for cheapest restaurants with deals and pick the best one. Order enough Entrees to meet the spending limit for the deal.,,0,Hard,
+}","[""Menu Viewing""]","[""Price & deal optimization"", ""Restaurant discovery & filtering""]","[""Search and filtering"", ""Decision making"", ""Order Placement""]",I need to place an order at my office address. Filter restaurants with deals and apply the lowest price filter possible and from the results pick the highest rated (for ties prefer one with more reviews). Order 2 Entrees 2 Sides and 2 Drinks. Apply the first deal listed in the Deals & Benefits section on the restaurant page while checking out.,,0,Hard,
 bulk-simple-order-003,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
   ""task_statement"": ""Order 3 Kimchi Slaw from Austin Cantina, make sure no customizations are selected. Also order 1 unit of the cheapest available Beverage. Change the contact number for the order to 9385546602"",
@@ -12614,7 +12783,7 @@ lowest-calorie-dessert-003,"{
 }","[""Cart Management""]","[""Diet & calorie filtering"", ""Item customization""]","[""Search and filtering"", ""Decision making"", ""Order Placement""]",Find the highest rated Fast Food restaurant near my address labelled other and order 2 servings of the lowest calorie Drinks.,,1,Hard,
 helpful-review-items-006,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""Somebody recommended Fiona's Tavern to me, could you go through the reviews and find the review that people found the most helpful and add the liked items from it to my cart. If there are more, please choose the latest one."",
+  ""task_statement"": ""Somebody recommended Willow's Table to me. Could you check the reviews and find the most helpful one that includes liked items, then add those items to my cart? If any required modifications exist, choose the cheapest options."",
   ""task_type"": ""GUI Comprehension, Action Execution, Decision Making, Element Identification"",
   ""grader_config"": {
     ""state_grader_configs"": [
@@ -12640,16 +12809,23 @@ helpful-review-items-006,"{
             ""paths_to_expected"": [
               ""$[1].reviews[0].storeId""
             ]
+          },
+          {
+            ""operator"": ""STRING_EQUALS"",
+            ""path_to_actual"": ""$.items[0].appliedModifications[0].appliedOptions[0].optionId"",
+            ""paths_to_expected"": [
+              ""$[2].modification.options[0].id""
+            ]
           }
         ],
-        ""path_to_actual"": ""$.carts[?(@.storeName == 'Fiona\\'s Tavern')]""
+        ""path_to_actual"": ""$.carts[?(@.storeName == 'Willow\\'s Table')]""
       }
     ],
     ""extract_states_config"": {
       ""expected_state_functions"": [
         {
           ""args"": {
-            ""name"": ""Fiona's Tavern""
+            ""name"": ""Willow's Table""
           },
           ""function"": ""get_restaurants""
         },
@@ -12666,6 +12842,15 @@ helpful-review-items-006,"{
             ]
           },
           ""function"": ""get_reviews""
+        },
+        {
+          ""args"": {
+            ""item_id"": ""$[1].reviews[0].likedItems[0].menuItemId"",
+            ""modification_name"": """",
+            ""is_required"": true,
+            ""sort_options_by_price"": true
+          },
+          ""function"": ""get_modifications""
         }
       ]
     }
@@ -12678,7 +12863,7 @@ helpful-review-items-006,"{
       ""user"": ""isla.lopez94@dashdoor.test""
     }
   }
-}","[""Ratings & Reviews""]","[""Review-based recommendations""]","[""Ratings analysis"", ""Instruction following""]","Somebody recommended Fiona's Tavern to me, could you go through the reviews and find the review that people found the most helpful and add the liked items from it to my cart. If there are more, please choose the latest one.",,2,Hard,
+}","[""Ratings & Reviews""]","[""Review-based recommendations""]","[""Ratings analysis"", ""Instruction following""]","Somebody recommended Willow's Table to me. Could you check the reviews and find the most helpful one that includes liked items, then add those items to my cart? If any required modifications exist, choose the cheapest options.",,2,Hard,
 cheapest-liked-combo-004,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
   ""task_statement"": ""I want to order from Panera Bread. Order the cheapest Bakery & Drinks in Lemon flavour and also add a Creamy Tomato Soup."",
@@ -14955,7 +15140,7 @@ lowest-calorie-dessert-008,"{
 }","[""Cart Management""]","[""Diet & calorie filtering"", ""Item customization""]","[""Search and filtering"", ""Decision making"", ""Order Placement""]",Find the highest rated American restaurant near my office and order 2 servings of the lowest calorie Desserts. If there is an option for Ice Cream add it with one of the servings.,,1,Hard,
 helpful-review-items-004,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""Somebody recommended Copper Grill to me, could you go through the reviews and find the review that people found the most helpful and add the liked items from it to my cart"",
+  ""task_statement"": ""Somebody recommended Copper Grill to me. Could you check the reviews and find the most helpful one that includes liked items, then add those items to my cart? If any required modifications exist, choose the cheapest options."",
   ""task_type"": ""GUI Comprehension, Action Execution, Decision Making, Element Identification"",
   ""grader_config"": {
     ""state_grader_configs"": [
@@ -14980,6 +15165,13 @@ helpful-review-items-004,"{
             ""path_to_actual"": ""$.storeId"",
             ""paths_to_expected"": [
               ""$[1].reviews[0].storeId""
+            ]
+          },
+          {
+            ""operator"": ""STRING_EQUALS"",
+            ""path_to_actual"": ""$.items[0].appliedModifications[0].appliedOptions[0].optionId"",
+            ""paths_to_expected"": [
+              ""$[2].modification.options[0].id""
             ]
           }
         ],
@@ -15007,6 +15199,15 @@ helpful-review-items-004,"{
             ]
           },
           ""function"": ""get_reviews""
+        },
+        {
+          ""args"": {
+            ""item_id"": ""$[1].reviews[0].likedItems[0].menuItemId"",
+            ""modification_name"": """",
+            ""is_required"": true,
+            ""sort_options_by_price"": true
+          },
+          ""function"": ""get_modifications""
         }
       ]
     }
@@ -15019,10 +15220,10 @@ helpful-review-items-004,"{
       ""user"": ""jasper.bennett60@example.com""
     }
   }
-}","[""Ratings & Reviews""]","[""Review-based recommendations""]","[""Ratings analysis"", ""Instruction following""]","Somebody recommended Copper Grill to me, could you go through the reviews and find the review that people found the most helpful and add the liked items from it to my cart",,2,Hard,
+}","[""Ratings & Reviews""]","[""Review-based recommendations""]","[""Ratings analysis"", ""Instruction following""]","Somebody recommended Copper Grill to me. Could you check the reviews and find the most helpful one that includes liked items, then add those items to my cart? If any required modifications exist, choose the cheapest options.",,2,Hard,
 cheapest-rated-slices-004,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""I recently moved and want to explore Vegan restaurants near my new hotel. Order two of the cheapest Beverages available at the nearest 3.5 star or above Vegan place."",
+  ""task_statement"": ""I recently checked in and want to explore Italian restaurants near my hotel. Order two different classic pastas with the lowest prices from the nearest 3.5 star or above Italian place."",
   ""task_type"": ""GUI Comprehension, Action Execution, Decision Making, Element Identification, Multi-Step Task Planning"",
   ""grader_config"": {
     ""state_grader_configs"": [
@@ -15080,7 +15281,7 @@ cheapest-rated-slices-004,"{
             ""limit"": 1,
             ""filters"": {
               ""cuisines"": [
-                ""Vegan""
+                ""Italian""
               ],
               ""ratingXAndAbove"": ""3.5""
             },
@@ -15098,7 +15299,7 @@ cheapest-rated-slices-004,"{
             ""limit"": 2,
             ""filters"": {
               ""menu_categories"": [
-                ""Beverages""
+                ""classic pastas""
               ]
             },
             ""sort_type"": [
@@ -15122,7 +15323,7 @@ cheapest-rated-slices-004,"{
       ""user"": ""isla.lopez64@example.com""
     }
   }
-}","[""Menu Viewing"", ""Cart Management""]","[""Restaurant discovery & filtering"", ""Menu exploration""]","[""Search and filtering"", ""Decision making"", ""Order Placement""]",I recently moved and want to explore Vegan restaurants near my new hotel. Order two of the cheapest Beverages available at the nearest 3.5 star or above Vegan place.,,0,Hard,
+}","[""Menu Viewing"", ""Cart Management""]","[""Restaurant discovery & filtering"", ""Menu exploration""]","[""Search and filtering"", ""Decision making"", ""Order Placement""]",I recently checked in and want to explore Italian restaurants near my hotel. Order two different classic pastas with the lowest prices from the nearest 3.5 star or above Italian place.,,0,Hard,
 cheapest-liked-combo-008,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
   ""task_statement"": ""I want to order from Diana's Market. Order the cheapest of the Beverages and also add a Mediterranean Mezze Spread."",
@@ -15908,7 +16109,7 @@ scheduled-best-item-003,"{
 }","[""Ratings & Reviews""]","[""Review-based recommendations"", ""Delivery scheduling""]","[""Search and filtering"", ""Decision making"", ""Scheduling"", ""Order Placement""]","I am craving some Citrus Shrimp Tacos, please order them for me. Just make sure you order from the restaurant that has the best rating for it. Also, I'll be at my office address by 1:00 PM so place this order for about 2 hours after that.",,0,Hard,
 healthy-fixed-order-004,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""Go to featured section and find restaurant Evergreen Market and order 2 Cold Brew Horchata, 2 Smoked Salmon Tartine, 1 DashPass Pasta Night."",
+  ""task_statement"": ""Go to breakfast section and find restaurant Shake Shack and order 1 Double ShackBurger (make sure no customizations are applied) and a bottled water."",
   ""task_type"": ""GUI Comprehension, Element Identification, Action Execution"",
   ""grader_config"": {
     ""state_grader_configs"": [
@@ -15930,7 +16131,7 @@ healthy-fixed-order-004,"{
             ""operator"": ""ARRAY_LENGTH_MATCH"",
             ""path_to_actual"": ""$.items[*]"",
             ""expected"": [
-              ""==3""
+              ""==2""
             ]
           },
           {
@@ -15955,29 +16156,15 @@ healthy-fixed-order-004,"{
             ]
           },
           {
-            ""operator"": ""ARRAY_STRING_CONTAINS"",
-            ""path_to_actual"": ""$.items[*].name"",
-            ""paths_to_expected"": [
-              ""$[4].items[0].name""
-            ]
-          },
-          {
             ""operator"": ""NUMERIC_MATCH"",
-            ""path_to_actual"": ""$.items[?(@.name == 'Cold Brew Horchata')].quantity"",
+            ""path_to_actual"": ""$.items[?(@.name == 'Double ShackBurger')].quantity"",
             ""expected"": [
-              ""==2""
+              ""==1""
             ]
           },
           {
             ""operator"": ""NUMERIC_MATCH"",
-            ""path_to_actual"": ""$.items[?(@.name == 'Smoked Salmon Tartine')].quantity"",
-            ""expected"": [
-              ""==2""
-            ]
-          },
-          {
-            ""operator"": ""NUMERIC_MATCH"",
-            ""path_to_actual"": ""$.items[?(@.name == 'DashPass Pasta Night')].quantity"",
+            ""path_to_actual"": ""$.items[?(@.name == 'Bottled Water')].quantity"",
             ""expected"": [
               ""==1""
             ]
@@ -15996,16 +16183,16 @@ healthy-fixed-order-004,"{
         },
         {
           ""args"": {
-            ""name"": ""Evergreen Market"",
+            ""name"": ""Shake Shack"",
             ""limit"": 1
           },
           ""function"": ""get_restaurants""
         },
         {
           ""args"": {
-            ""restaurant_id"": ""$[1].restaurants[0].id"",
+            ""restaurantId"": ""$[1].restaurants[0].id"",
             ""keywords"": [
-              ""Cold Brew Horchata""
+              ""Double ShackBurger""
             ],
             ""limit"": 1
           },
@@ -16013,19 +16200,9 @@ healthy-fixed-order-004,"{
         },
         {
           ""args"": {
-            ""restaurant_id"": ""$[1].restaurants[0].id"",
+            ""restaurantId"": ""$[1].restaurants[0].id"",
             ""keywords"": [
-              ""Smoked Salmon Tartine""
-            ],
-            ""limit"": 1
-          },
-          ""function"": ""get_items""
-        },
-        {
-          ""args"": {
-            ""restaurant_id"": ""$[1].restaurants[0].id"",
-            ""keywords"": [
-              ""DashPass Pasta Night""
+              ""Bottled Water""
             ],
             ""limit"": 1
           },
@@ -16042,7 +16219,7 @@ healthy-fixed-order-004,"{
       ""user"": ""omar.quintero121@inbox.local""
     }
   }
-}","[""Menu viewing"", ""Item selection""]","[""Order placement""]","[""Search and filtering""]","Go to featured section and find restaurant Evergreen Market and order 2 Cold Brew Horchata, 2 Smoked Salmon Tartine, 1 DashPass Pasta Night.",,5,Medium,
+}","[""Menu viewing"", ""Item selection""]","[""Order placement""]","[""Search and filtering""]","Go to breakfast section and find restaurant Shake Shack and order 1 Double ShackBurger (make sure no customizations are applied) and 1 bottled water.",,5,Medium,
 scheduled-group-order-002,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
   ""task_statement"": ""Find the restaurant 'Desserts Table' and order Bulgogi Kimchi Burger for 5 people, schedule the delivery for 1:00 PM-1:20 PM"",
@@ -17003,7 +17180,7 @@ healthy-fixed-order-002,"{
 }","[""Menu viewing"", ""Item selection""]","[""Order placement""]","[""Search and filtering""]","Go to other section and find restaurant Papa's Indian Grill and order 1 Lamb Rogan Josh, 1 Chana Masala, 2 Mango Lassi.",,,,
 helpful-review-items-008,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""Somebody recommended Fast Food Table to me, could you go through the reviews and find the review that people found the most helpful that has a liked item and add the liked items from it to my cart"",
+  ""task_statement"": ""Somebody recommended Fast Food Table to me, could you go through the reviews and find the review that people found the most helpful that has a liked item and add the liked items from it to my cart. If there are required modifications, then apply the cheapest"",
   ""task_type"": ""GUI Comprehension, Action Execution, Decision Making, Element Identification"",
   ""grader_config"": {
     ""state_grader_configs"": [
@@ -17028,6 +17205,13 @@ helpful-review-items-008,"{
             ""path_to_actual"": ""$.storeId"",
             ""paths_to_expected"": [
               ""$[1].reviews[0].storeId""
+            ]
+          },
+          {
+            ""operator"": ""STRING_EQUALS"",
+            ""path_to_actual"": ""$.items[0].appliedModifications[0].appliedOptions[0].optionId"",
+            ""paths_to_expected"": [
+              ""$[2].modification.options[0].id""
             ]
           }
         ],
@@ -17055,6 +17239,15 @@ helpful-review-items-008,"{
             ]
           },
           ""function"": ""get_reviews""
+        },
+        {
+          ""args"": {
+            ""item_id"": ""$[1].reviews[0].likedItems[0].menuItemId"",
+            ""modification_name"": """",
+            ""is_required"": true,
+            ""sort_options_by_price"": true
+          },
+          ""function"": ""get_modifications""
         }
       ]
     }
@@ -17067,7 +17260,7 @@ helpful-review-items-008,"{
     }
   },
   ""task_id"": ""helpful-review-items-008""
-}","[""Ratings & Reviews""]","[""Review-based recommendations""]","[""Ratings analysis"", ""Instruction following""]","Somebody recommended Fast Food Table to me, could you go through the reviews and find the review that people found the most helpful that has a liked item and add the liked items from it to my cart",,,,
+}","[""Ratings & Reviews""]","[""Review-based recommendations""]","[""Ratings analysis"", ""Instruction following""]","Somebody recommended Fast Food Table to me, could you go through the reviews and find the review that people found the most helpful that has a liked item and add the liked items from it to my cart. If there are required modifications, then apply the cheapest",,,,
 login-password-001,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
   ""task_statement"": ""Log in using email 'yuna.lopez1959@mail.test' and password 'vv7sqJGGkNct'"",

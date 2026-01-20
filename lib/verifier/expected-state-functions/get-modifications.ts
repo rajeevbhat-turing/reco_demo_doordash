@@ -25,8 +25,10 @@ export interface ModificationResult {
 
 export interface GetModificationsArgs {
   item_id: string; // Required: Menu item ID
-  modification_name: string; // Required: Modification description/name to search for
+  modification_name: string; // Required: Modification description/name to search for (can be empty string to match any)
   option_name?: string; // Optional: Specific option name to filter by
+  is_required?: boolean; // Optional: Filter for only required modifications
+  sort_options_by_price?: boolean; // Optional: Sort options by price ascending (cheapest first) instead of sort_order
 }
 
 export interface GetModificationsResult {
@@ -49,7 +51,7 @@ export async function get_modifications(
     return null;
   }
 
-  const { item_id, modification_name, option_name } = args;
+  const { item_id, modification_name, option_name, is_required, sort_options_by_price } = args;
 
   try {
     // Build query parameters
@@ -60,6 +62,14 @@ export async function get_modifications(
 
     if (option_name) {
       params.append('option_name', option_name);
+    }
+
+    if (is_required) {
+      params.append('is_required', 'true');
+    }
+
+    if (sort_options_by_price) {
+      params.append('sort_options_by_price', 'true');
     }
 
     // Call API route
