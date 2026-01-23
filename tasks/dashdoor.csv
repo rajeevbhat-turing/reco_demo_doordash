@@ -8440,7 +8440,7 @@ cheapest-liked-combo-005,"{
               ""$[1].items[0].name"",
               ""$[2].items[0].name""
             ]
-          },,
+          },
           {
             ""expected"": [
               ""==2""
@@ -16219,7 +16219,7 @@ healthy-fixed-order-004,"{
       ""user"": ""omar.quintero121@inbox.local""
     }
   }
-}","[""Menu viewing"", ""Item selection""]","[""Order placement""]","[""Search and filtering""]","Go to breakfast section and find restaurant Shake Shack and order 1 Double ShackBurger (make sure no customizations are applied) and 1 bottled water.",,5,Medium,
+}","[""Menu viewing"", ""Item selection""]","[""Order placement""]","[""Search and filtering""]",Go to breakfast section and find restaurant Shake Shack and order 1 Double ShackBurger (make sure no customizations are applied) and 1 bottled water.,,5,Medium,
 scheduled-group-order-002,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
   ""task_statement"": ""Find the restaurant 'Desserts Table' and order Bulgogi Kimchi Burger for 5 people, schedule the delivery for 1:00 PM-1:20 PM"",
