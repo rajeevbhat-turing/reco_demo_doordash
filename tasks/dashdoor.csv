@@ -4415,114 +4415,112 @@ express-nearest-order-002,"{
   }
 }","[""Menu Viewing""]","[""Restaurant discovery & filtering"", ""Delivery options"", ""Coupon application""]","[""Search and filtering"", ""Decision making"", ""Order Placement""]",Order priority delivery of a Classic Eggs Benedict from the nearest DashPass restaurant from my apartment address. Apply SAVE5,,1,Hard,
 express-nearest-order-004,"{
-  ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""Order express delivery of a Bourbon Glazed Pork Tenderloin and Kimchi Slaw with Hot Sauce from Talia's Pantry restaurant from my apartment address. Apply TALIAPANTRYSIDE"",
-  ""task_type"": ""GUI Comprehension, Action Execution, Decision Making, Element Identification"",
-  ""grader_config"": {
-    ""state_grader_configs"": [
+  ""start_url"":""https://dashdoor-prod.rlgym.turing.com"",
+  ""task_statement"":""Order express delivery of a Bourbon Glazed Pork Tenderloin and Kimchi Slaw with Hot Sauce from Talia's Pantry restaurant from my apartment address. Apply TALIAPANTRYSIDE"",
+  ""task_type"":""GUI Comprehension, Action Execution, Decision Making, Element Identification"",
+  ""grader_config"":{
+    ""state_grader_configs"":[
       {
-        ""assertions"": [
+        ""assertions"":[
           {
-            ""operator"": ""STRING_EQUALS"",
-            ""paths_to_expected"": [
+            ""operator"":""STRING_EQUALS"",
+            ""paths_to_expected"":[
               ""$[1].deal.id""
             ]
           }
         ],
-        ""path_to_actual"": ""$.orders[0].appliedDeal.id""
+        ""path_to_actual"":""$.orders[0].appliedDeal.id""
       },
       {
-        ""assertions"": [
+        ""assertions"":[
           {
-            ""operator"": ""STRING_EQUALS"",
-            ""paths_to_expected"": [
+            ""operator"":""STRING_EQUALS"",
+            ""paths_to_expected"":[
               ""$[0].address.id""
             ]
           }
         ],
-        ""path_to_actual"": ""$.orders[0].deliveryAddress.id""
+        ""path_to_actual"":""$.orders[0].deliveryAddress.id""
       },
       {
-        ""assertions"": [
+        ""assertions"":[
           {
-            ""operator"": ""STRING_EQUALS"",
-            ""expected"": [
+            ""operator"":""STRING_EQUALS"",
+            ""expected"":[
               ""express""
             ]
           }
         ],
-        ""path_to_actual"": ""$.orders[0].deliveryOption.type""
+        ""path_to_actual"":""$.orders[0].deliveryOption.type""
       },
       {
-        ""assertions"": [
+        ""assertions"":[
           {
-            ""operator"": ""JSON_CONTAINS"",
-            ""path_to_actual"": ""$.items[*].name"",
-            ""paths_to_expected"": [
-              ""$[3].items[0].name"",
-              ""$[3].items[1].name""
+            ""operator"":""JSON_CONTAINS"",
+            ""path_to_actual"":""$.items[*].name"",
+            ""paths_to_expected"":[
+              ""$[3].items[*].name""
             ]
           },
           {
-            ""operator"": ""JSON_PART_OF"",
-            ""path_to_actual"": ""$.items[*].name"",
-            ""paths_to_expected"": [
-              ""$[3].items[0].name"",
-              ""$[3].items[1].name""
+            ""operator"":""JSON_PART_OF"",
+            ""path_to_actual"":""$.items[*].name"",
+            ""paths_to_expected"":[
+              ""$[3].items[*].name""
             ]
           },
           {
-            ""expected"": [
+            ""expected"":[
               ""==2""
             ],
-            ""operator"": ""ARRAY_LENGTH_MATCH"",
-            ""path_to_actual"": ""$.items[*]""
+            ""operator"":""ARRAY_LENGTH_MATCH"",
+            ""path_to_actual"":""$.items[*]""
           }
         ],
-        ""path_to_actual"": ""$.orders[0]""
+        ""path_to_actual"":""$.orders[0]""
       }
     ],
-    ""extract_states_config"": {
-      ""expected_state_functions"": [
+    ""extract_states_config"":{
+      ""expected_state_functions"":[
         {
-          ""args"": {
-            ""type"": ""apartment"",
-            ""user"": ""elias.young12@dashdoor.test""
+          ""args"":{
+            ""type"":""apartment"",
+            ""user"":""elias.young12@dashdoor.test""
           },
-          ""function"": ""get_user_address""
+          ""function"":""get_user_address""
         },
         {
-          ""args"": {
-            ""promocode"": ""TALIAPANTRYSIDE""
+          ""args"":{
+            ""promocode"":""TALIAPANTRYSIDE""
           },
-          ""function"": ""get_deal""
+          ""function"":""get_deal""
         },
         {
-          ""args"": {
-            ""name"": ""Talia's Pantry""
+          ""args"":{
+            ""name"":""Talia's Pantry""
           },
-          ""function"": ""get_restaurants""
+          ""function"":""get_restaurants""
         },
         {
-          ""args"": {
-            ""limit"": 2,
-            ""keywords"": [
+          ""args"":{
+            ""limit"":2,
+            ""keywords"":[
               ""Bourbon Glazed Pork Tenderloin"",
               ""Kimchi Slaw""
             ],
-            ""restaurant_id"": ""$[2].restaurants[0].id""
+            ""restaurant_id"":""$[2].restaurants[0].id""
           },
-          ""function"": ""get_items""
+          ""function"":""get_items""
         }
       ]
     }
   },
-  ""task_id"": ""express-nearest-order-004"",
-  ""simulator_config"": {
-    ""bootstrap_data"": {
-      ""date"": ""2025-12-19T12:00:00-08:00"",
-      ""timezone"": ""America/Los_Angeles"",
-      ""user"": ""elias.young12@dashdoor.test""
+  ""task_id"":""express-nearest-order-004"",
+  ""simulator_config"":{
+    ""bootstrap_data"":{
+      ""date"":""2025-12-19T12:00:00-08:00"",
+      ""timezone"":""America/Los_Angeles"",
+      ""user"":""elias.young12@dashdoor.test""
     }
   }
 }","[""Menu Viewing""]","[""Restaurant discovery & filtering"", ""Delivery options"", ""Coupon application""]","[""Search and filtering"", ""Decision making"", ""Order Placement""]",Order express delivery of a Bourbon Glazed Pork Tenderloin and Kimchi Slaw with Hot Sauce from Talia's Pantry restaurant from my apartment address. Apply TALIAPANTRYSIDE,,1,Hard,
@@ -6029,870 +6027,862 @@ best-deal-order-007,"{
   }
 }","[""Menu Viewing""]","[""Price & deal optimization"", ""Restaurant discovery & filtering""]","[""Search and filtering"", ""Decision making"", ""Order Placement""]",I need to place an order at my hotel address. Filter restaurants with deals and apply the lowest price filter possible and from the results pick the highest rated (for ties prefer one with more reviews). Order enough Sides to meet the deal minimum. Apply the first deal listed in the Deals & Benefits section on the restaurant page while checking out.,,0,Hard,
 bulk-simple-order-001,"{
-  ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""Order two truffle smash burgers from Golden Smokehouse, make sure no customizations are selected. Also order 2 units of the cheapest available drink. Change the contact number for the order to 7137834912"",
-  ""task_id"": ""bulk-simple-order-001"",
-  ""task_type"": ""GUI Comprehension, Action Execution"",
-  ""simulator_config"": {
-    ""bootstrap_data"": {
-      ""date"": ""2025-12-19T12:00:00-08:00"",
-      ""timezone"": ""America/Los_Angeles"",
-      ""user"": ""lena.bennett71@example.com""
+  ""start_url"":""https://dashdoor-prod.rlgym.turing.com"",
+  ""task_statement"":""Order two truffle smash burgers from Golden Smokehouse, make sure no customizations are selected. Also order 2 units of the cheapest available drink. Change the contact number for the order to 7137834912"",
+  ""task_id"":""bulk-simple-order-001"",
+  ""task_type"":""GUI Comprehension, Action Execution"",
+  ""simulator_config"":{
+    ""bootstrap_data"":{
+      ""date"":""2025-12-19T12:00:00-08:00"",
+      ""timezone"":""America/Los_Angeles"",
+      ""user"":""lena.bennett71@example.com""
     }
   },
-  ""grader_config"": {
-    ""state_grader_configs"": [
+  ""grader_config"":{
+    ""state_grader_configs"":[
       {
-        ""assertions"": [
+        ""assertions"":[
           {
-            ""operator"": ""STRING_EQUALS"",
-            ""paths_to_expected"": [
+            ""operator"":""STRING_EQUALS"",
+            ""paths_to_expected"":[
               ""$[0].address.id""
             ]
           }
         ],
-        ""path_to_actual"": ""$.orders[0].deliveryAddress.id""
+        ""path_to_actual"":""$.orders[0].deliveryAddress.id""
       },
       {
-        ""assertions"": [
+        ""assertions"":[
           {
-            ""operator"": ""STRING_EQUALS"",
-            ""expected"": [
+            ""operator"":""STRING_EQUALS"",
+            ""expected"":[
               ""7137834912""
             ]
           }
         ],
-        ""path_to_actual"": ""$.orders[0].phoneNumber.number""
+        ""path_to_actual"":""$.orders[0].phoneNumber.number""
       },
       {
-        ""assertions"": [
+        ""assertions"":[
           {
-            ""operator"": ""JSON_PART_OF"",
-            ""path_to_actual"": ""$.items[*].id"",
-            ""paths_to_expected"": [
-              ""$[2].items[0].id"",
-              ""$[3].items[0].id""
+            ""operator"":""JSON_PART_OF"",
+            ""path_to_actual"":""$.items[*].id"",
+            ""paths_to_expected"":[
+              ""$[*].items[0].id""
             ]
           },
           {
-            ""operator"": ""JSON_CONTAINS"",
-            ""path_to_actual"": ""$.items[*].id"",
-            ""paths_to_expected"": [
-              ""$[2].items[0].id"",
-              ""$[3].items[0].id""
+            ""operator"":""JSON_CONTAINS"",
+            ""path_to_actual"":""$.items[*].id"",
+            ""paths_to_expected"":[
+              ""$[*].items[0].id""
             ]
           },
           {
-            ""expected"": [
+            ""expected"":[
               ""==2""
             ],
-            ""operator"": ""ARRAY_LENGTH_MATCH"",
-            ""path_to_actual"": ""$.items[*]""
+            ""operator"":""ARRAY_LENGTH_MATCH"",
+            ""path_to_actual"":""$.items[*]""
           },
           {
-            ""operator"": ""NUMERIC_MATCH"",
-            ""path_to_actual"": ""$.items[0].quantity"",
-            ""expected"": [
+            ""operator"":""NUMERIC_MATCH"",
+            ""path_to_actual"":""$.items[0].quantity"",
+            ""expected"":[
               ""==2""
             ]
           },
           {
-            ""operator"": ""NUMERIC_MATCH"",
-            ""path_to_actual"": ""$.items[1].quantity"",
-            ""expected"": [
+            ""operator"":""NUMERIC_MATCH"",
+            ""path_to_actual"":""$.items[1].quantity"",
+            ""expected"":[
               ""==2""
             ]
           },
           {
-            ""operator"": ""STRING_EQUALS"",
-            ""path_to_actual"": ""$.items[?(@.name == 'Truffle Smash Burger')].modifications[*]"",
-            ""expected"": [
+            ""operator"":""STRING_EQUALS"",
+            ""path_to_actual"":""$.items[?(@.name == 'Truffle Smash Burger')].modifications[*]"",
+            ""expected"":[
               """"
             ]
           }
         ],
-        ""path_to_actual"": ""$.orders[0]""
+        ""path_to_actual"":""$.orders[0]""
       }
     ],
-    ""extract_states_config"": {
-      ""expected_state_functions"": [
+    ""extract_states_config"":{
+      ""expected_state_functions"":[
         {
-          ""args"": {
-            ""user"": ""lena.bennett71@example.com""
+          ""args"":{
+            ""user"":""lena.bennett71@example.com""
           },
-          ""function"": ""get_user_address""
+          ""function"":""get_user_address""
         },
         {
-          ""args"": {
-            ""lat"": ""$[0].address.lat"",
-            ""lng"": ""$[0].address.lng"",
-            ""limit"": 1,
-            ""name"": ""Golden Smokehouse"",
-            ""sort_type"": [
+          ""args"":{
+            ""lat"":""$[0].address.lat"",
+            ""lng"":""$[0].address.lng"",
+            ""limit"":1,
+            ""name"":""Golden Smokehouse"",
+            ""sort_type"":[
               {
-                ""key"": ""priceRange"",
-                ""order"": ""asc""
+                ""key"":""priceRange"",
+                ""order"":""asc""
               },
               {
-                ""key"": ""rating"",
-                ""order"": ""desc""
+                ""key"":""rating"",
+                ""order"":""desc""
               }
             ]
           },
-          ""function"": ""get_restaurants""
+          ""function"":""get_restaurants""
         },
         {
-          ""args"": {
-            ""limit"": 1,
-            ""keywords"": [
+          ""args"":{
+            ""limit"":1,
+            ""keywords"":[
               ""truffle smash burger""
             ],
-            ""restaurant_id"": ""$[1].restaurants[0].id""
+            ""restaurant_id"":""$[1].restaurants[0].id""
           },
-          ""function"": ""get_items""
+          ""function"":""get_items""
         },
         {
-          ""args"": {
-            ""limit"": 1,
-            ""filters"": {
-              ""menu_categories"": [
+          ""args"":{
+            ""limit"":1,
+            ""filters"":{
+              ""menu_categories"":[
                 ""beverages""
               ]
             },
-            ""sort_type"": [
+            ""sort_type"":[
               {
-                ""key"": ""price"",
-                ""order"": ""asc""
+                ""key"":""price"",
+                ""order"":""asc""
               },
               {
-                ""key"": ""rating"",
-                ""order"": ""desc""
+                ""key"":""rating"",
+                ""order"":""desc""
               }
             ],
-            ""restaurant_id"": ""$[1].restaurants[0].id""
+            ""restaurant_id"":""$[1].restaurants[0].id""
           },
-          ""function"": ""get_items""
+          ""function"":""get_items""
         }
       ]
     }
   }
 }","[""Cart Management""]","[""Cart editing & item swaps"", ""Price filtering"", ""Contact info management""]","[""Instruction following"", ""Search and filtering"", ""UI Elements: Text Fields""]","Order two truffle smash burgers from Golden Smokehouse, make sure no customizations are selected. Also order 2 units of the cheapest available drink. Change the contact number for the order to 7137834912",,4,Medium,
 bulk-simple-order-002,"{
-  ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""Order 4 Onion Rings from Happy's Gourmet Burgers, make sure no customizations are selected. Also order 3 units of the cheapest available Shake & Beverage (other then water) . Change the contact number for the order to 4119798317"",
-  ""task_type"": ""GUI Comprehension, Action Execution, Element Identification, Decision Making"",
-  ""grader_config"": {
-    ""state_grader_configs"": [
+  ""start_url"":""https://dashdoor-prod.rlgym.turing.com"",
+  ""task_statement"":""Order 4 Onion Rings from Happy's Gourmet Burgers, make sure no customizations are selected. Also order 3 units of the cheapest available Shake & Beverage (other then water) . Change the contact number for the order to 4119798317"",
+  ""task_type"":""GUI Comprehension, Action Execution, Element Identification, Decision Making"",
+  ""grader_config"":{
+    ""state_grader_configs"":[
       {
-        ""assertions"": [
+        ""assertions"":[
           {
-            ""operator"": ""STRING_EQUALS"",
-            ""paths_to_expected"": [
+            ""operator"":""STRING_EQUALS"",
+            ""paths_to_expected"":[
               ""$[0].address.id""
             ]
           }
         ],
-        ""path_to_actual"": ""$.orders[0].deliveryAddress.id""
+        ""path_to_actual"":""$.orders[0].deliveryAddress.id""
       },
       {
-        ""assertions"": [
+        ""assertions"":[
           {
-            ""operator"": ""STRING_EQUALS"",
-            ""expected"": [
+            ""operator"":""STRING_EQUALS"",
+            ""expected"":[
               ""4119798317""
             ]
           }
         ],
-        ""path_to_actual"": ""$.orders[0].phoneNumber.number""
+        ""path_to_actual"":""$.orders[0].phoneNumber.number""
       },
       {
-        ""assertions"": [
+        ""assertions"":[
           {
-            ""operator"": ""JSON_PART_OF"",
-            ""path_to_actual"": ""$.items[*].id"",
-            ""paths_to_expected"": [
-              ""$[2].items[0].id"",
-              ""$[3].items[0].id""
+            ""operator"":""JSON_PART_OF"",
+            ""path_to_actual"":""$.items[*].id"",
+            ""paths_to_expected"":[
+              ""$[*].items[0].id""
             ]
           },
           {
-            ""operator"": ""JSON_CONTAINS"",
-            ""path_to_actual"": ""$.items[*].id"",
-            ""paths_to_expected"": [
-              ""$[2].items[0].id"",
-              ""$[3].items[0].id""
+            ""operator"":""JSON_CONTAINS"",
+            ""path_to_actual"":""$.items[*].id"",
+            ""paths_to_expected"":[
+              ""$[*].items[0].id""
             ]
           },
           {
-            ""expected"": [
+            ""expected"":[
               ""==2""
             ],
-            ""operator"": ""ARRAY_LENGTH_MATCH"",
-            ""path_to_actual"": ""$.items[*]""
+            ""operator"":""ARRAY_LENGTH_MATCH"",
+            ""path_to_actual"":""$.items[*]""
           },
           {
-            ""operator"": ""NUMERIC_MATCH"",
-            ""path_to_actual"": ""$.items[0].quantity"",
-            ""expected"": [
+            ""operator"":""NUMERIC_MATCH"",
+            ""path_to_actual"":""$.items[0].quantity"",
+            ""expected"":[
               ""==4""
             ]
           },
           {
-            ""operator"": ""NUMERIC_MATCH"",
-            ""path_to_actual"": ""$.items[1].quantity"",
-            ""expected"": [
+            ""operator"":""NUMERIC_MATCH"",
+            ""path_to_actual"":""$.items[1].quantity"",
+            ""expected"":[
               ""==3""
             ]
           },
           {
-            ""operator"": ""STRING_EQUALS"",
-            ""path_to_actual"": ""$.items[?(@.name == 'Onion Rings')].modifications[*]"",
-            ""expected"": [
+            ""operator"":""STRING_EQUALS"",
+            ""path_to_actual"":""$.items[?(@.name == 'Onion Rings')].modifications[*]"",
+            ""expected"":[
               """"
             ]
           }
         ],
-        ""path_to_actual"": ""$.orders[0]""
+        ""path_to_actual"":""$.orders[0]""
       }
     ],
-    ""extract_states_config"": {
-      ""expected_state_functions"": [
+    ""extract_states_config"":{
+      ""expected_state_functions"":[
         {
-          ""args"": {
-            ""user"": ""hannah.underwood58@example.com""
+          ""args"":{
+            ""user"":""hannah.underwood58@example.com""
           },
-          ""function"": ""get_user_address""
+          ""function"":""get_user_address""
         },
         {
-          ""args"": {
-            ""lat"": ""$[0].address.lat"",
-            ""lng"": ""$[0].address.lng"",
-            ""limit"": 1,
-            ""name"": ""Happy's Gourmet Burgers"",
-            ""sort_type"": [
+          ""args"":{
+            ""lat"":""$[0].address.lat"",
+            ""lng"":""$[0].address.lng"",
+            ""limit"":1,
+            ""name"":""Happy's Gourmet Burgers"",
+            ""sort_type"":[
               {
-                ""key"": ""priceRange"",
-                ""order"": ""asc""
+                ""key"":""priceRange"",
+                ""order"":""asc""
               },
               {
-                ""key"": ""rating"",
-                ""order"": ""desc""
+                ""key"":""rating"",
+                ""order"":""desc""
               }
             ]
           },
-          ""function"": ""get_restaurants""
+          ""function"":""get_restaurants""
         },
         {
-          ""args"": {
-            ""limit"": 1,
-            ""keywords"": [
+          ""args"":{
+            ""limit"":1,
+            ""keywords"":[
               ""Onion Rings""
             ],
-            ""restaurant_id"": ""$[1].restaurants[0].id""
+            ""restaurant_id"":""$[1].restaurants[0].id""
           },
-          ""function"": ""get_items""
+          ""function"":""get_items""
         },
         {
-          ""args"": {
-            ""limit"": 1,
-            ""filters"": {
-              ""menu_categories"": [
+          ""args"":{
+            ""limit"":1,
+            ""filters"":{
+              ""menu_categories"":[
                 ""Shakes & Beverages""
               ]
             },
-            ""sort_type"": [
+            ""sort_type"":[
               {
-                ""key"": ""price"",
-                ""order"": ""asc""
+                ""key"":""price"",
+                ""order"":""asc""
               },
               {
-                ""key"": ""rating"",
-                ""order"": ""desc""
+                ""key"":""rating"",
+                ""order"":""desc""
               }
             ],
-            ""restaurant_id"": ""$[1].restaurants[0].id""
+            ""restaurant_id"":""$[1].restaurants[0].id""
           },
-          ""function"": ""get_items""
+          ""function"":""get_items""
         }
       ]
     }
   },
-  ""task_id"": ""bulk-simple-order-002"",
-  ""simulator_config"": {
-    ""bootstrap_data"": {
-      ""date"": ""2025-12-19T12:00:00-08:00"",
-      ""timezone"": ""America/Los_Angeles"",
-      ""user"": ""hannah.underwood58@example.com""
+  ""task_id"":""bulk-simple-order-002"",
+  ""simulator_config"":{
+    ""bootstrap_data"":{
+      ""date"":""2025-12-19T12:00:00-08:00"",
+      ""timezone"":""America/Los_Angeles"",
+      ""user"":""hannah.underwood58@example.com""
     }
   }
 }","[""Cart Management""]","[""Cart editing & item swaps"", ""Price filtering"", ""Contact info management""]","[""Instruction following"", ""Search and filtering"", ""UI Elements: Text Fields""]","Order 4 Onion Rings from Happy's Gourmet Burgers, make sure no customizations are selected. Also order 3 units of the cheapest available Shake & Beverage (other then water). Change the contact number for the order to 4119798317",,4,Medium,
 bulk-simple-order-005,"{
-  ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""Order 2 Lemon Olive Oil Cake from Desserts Table, make sure no customizations are selected. Also order 1 of the cheapest available Family Meals. Change the contact number for the order to 8347178022"",
-  ""task_type"": ""GUI Comprehension, Action Execution, Element Identification, Decision Making"",
-  ""grader_config"": {
-    ""state_grader_configs"": [
+  ""start_url"":""https://dashdoor-prod.rlgym.turing.com"",
+  ""task_statement"":""Order 2 Lemon Olive Oil Cake from Desserts Table, make sure no customizations are selected. Also order 1 of the cheapest available Family Meals. Change the contact number for the order to 8347178022"",
+  ""task_type"":""GUI Comprehension, Action Execution, Element Identification, Decision Making"",
+  ""grader_config"":{
+    ""state_grader_configs"":[
       {
-        ""assertions"": [
+        ""assertions"":[
           {
-            ""operator"": ""STRING_EQUALS"",
-            ""paths_to_expected"": [
+            ""operator"":""STRING_EQUALS"",
+            ""paths_to_expected"":[
               ""$[0].address.id""
             ]
           }
         ],
-        ""path_to_actual"": ""$.orders[0].deliveryAddress.id""
+        ""path_to_actual"":""$.orders[0].deliveryAddress.id""
       },
       {
-        ""assertions"": [
+        ""assertions"":[
           {
-            ""operator"": ""STRING_EQUALS"",
-            ""expected"": [
+            ""operator"":""STRING_EQUALS"",
+            ""expected"":[
               ""8347178022""
             ]
           }
         ],
-        ""path_to_actual"": ""$.orders[0].phoneNumber.number""
+        ""path_to_actual"":""$.orders[0].phoneNumber.number""
       },
       {
-        ""assertions"": [
+        ""assertions"":[
           {
-            ""operator"": ""JSON_PART_OF"",
-            ""path_to_actual"": ""$.items[*].id"",
-            ""paths_to_expected"": [
-              ""$[2].items[0].id"",
-              ""$[3].items[0].id""
+            ""operator"":""JSON_PART_OF"",
+            ""path_to_actual"":""$.items[*].id"",
+            ""paths_to_expected"":[
+              ""$[*].items[0].id""
             ]
           },
           {
-            ""operator"": ""JSON_CONTAINS"",
-            ""path_to_actual"": ""$.items[*].id"",
-            ""paths_to_expected"": [
-              ""$[2].items[0].id"",
-              ""$[3].items[0].id""
+            ""operator"":""JSON_CONTAINS"",
+            ""path_to_actual"":""$.items[*].id"",
+            ""paths_to_expected"":[
+              ""$[*].items[0].id""
             ]
           },
           {
-            ""expected"": [
+            ""expected"":[
               ""==2""
             ],
-            ""operator"": ""ARRAY_LENGTH_MATCH"",
-            ""path_to_actual"": ""$.items[*]""
+            ""operator"":""ARRAY_LENGTH_MATCH"",
+            ""path_to_actual"":""$.items[*]""
           },
           {
-            ""operator"": ""NUMERIC_MATCH"",
-            ""path_to_actual"": ""$.items[0].quantity"",
-            ""expected"": [
+            ""operator"":""NUMERIC_MATCH"",
+            ""path_to_actual"":""$.items[0].quantity"",
+            ""expected"":[
               ""==2""
             ]
           },
           {
-            ""operator"": ""NUMERIC_MATCH"",
-            ""path_to_actual"": ""$.items[1].quantity"",
-            ""expected"": [
+            ""operator"":""NUMERIC_MATCH"",
+            ""path_to_actual"":""$.items[1].quantity"",
+            ""expected"":[
               ""==1""
             ]
           },
           {
-            ""operator"": ""STRING_EQUALS"",
-            ""path_to_actual"": ""$.items[?(@.name == 'Lemon Olive Oil Cake')].modifications[*]"",
-            ""expected"": [
+            ""operator"":""STRING_EQUALS"",
+            ""path_to_actual"":""$.items[?(@.name == 'Lemon Olive Oil Cake')].modifications[*]"",
+            ""expected"":[
               """"
             ]
           }
         ],
-        ""path_to_actual"": ""$.orders[0]""
+        ""path_to_actual"":""$.orders[0]""
       }
     ],
-    ""extract_states_config"": {
-      ""expected_state_functions"": [
+    ""extract_states_config"":{
+      ""expected_state_functions"":[
         {
-          ""args"": {
-            ""user"": ""isla.lopez64@example.com""
+          ""args"":{
+            ""user"":""isla.lopez64@example.com""
           },
-          ""function"": ""get_user_address""
+          ""function"":""get_user_address""
         },
         {
-          ""args"": {
-            ""lat"": ""$[0].address.lat"",
-            ""lng"": ""$[0].address.lng"",
-            ""limit"": 1,
-            ""name"": ""Desserts Table"",
-            ""sort_type"": [
+          ""args"":{
+            ""lat"":""$[0].address.lat"",
+            ""lng"":""$[0].address.lng"",
+            ""limit"":1,
+            ""name"":""Desserts Table"",
+            ""sort_type"":[
               {
-                ""key"": ""priceRange"",
-                ""order"": ""asc""
+                ""key"":""priceRange"",
+                ""order"":""asc""
               },
               {
-                ""key"": ""rating"",
-                ""order"": ""desc""
+                ""key"":""rating"",
+                ""order"":""desc""
               }
             ]
           },
-          ""function"": ""get_restaurants""
+          ""function"":""get_restaurants""
         },
         {
-          ""args"": {
-            ""limit"": 1,
-            ""keywords"": [
+          ""args"":{
+            ""limit"":1,
+            ""keywords"":[
               ""Lemon Olive Oil Cake""
             ],
-            ""restaurant_id"": ""$[1].restaurants[0].id""
+            ""restaurant_id"":""$[1].restaurants[0].id""
           },
-          ""function"": ""get_items""
+          ""function"":""get_items""
         },
         {
-          ""args"": {
-            ""limit"": 1,
-            ""filters"": {
-              ""menu_categories"": [
+          ""args"":{
+            ""limit"":1,
+            ""filters"":{
+              ""menu_categories"":[
                 ""Family Meals""
               ]
             },
-            ""sort_type"": [
+            ""sort_type"":[
               {
-                ""key"": ""price"",
-                ""order"": ""asc""
+                ""key"":""price"",
+                ""order"":""asc""
               },
               {
-                ""key"": ""rating"",
-                ""order"": ""desc""
+                ""key"":""rating"",
+                ""order"":""desc""
               }
             ],
-            ""restaurant_id"": ""$[1].restaurants[0].id""
+            ""restaurant_id"":""$[1].restaurants[0].id""
           },
-          ""function"": ""get_items""
+          ""function"":""get_items""
         }
       ]
     }
   },
-  ""task_id"": ""bulk-simple-order-005"",
-  ""simulator_config"": {
-    ""bootstrap_data"": {
-      ""date"": ""2025-12-19T12:00:00-08:00"",
-      ""timezone"": ""America/Los_Angeles"",
-      ""user"": ""isla.lopez64@example.com""
+  ""task_id"":""bulk-simple-order-005"",
+  ""simulator_config"":{
+    ""bootstrap_data"":{
+      ""date"":""2025-12-19T12:00:00-08:00"",
+      ""timezone"":""America/Los_Angeles"",
+      ""user"":""isla.lopez64@example.com""
     }
   }
 }","[""Cart Management""]","[""Cart editing & item swaps"", ""Price filtering"", ""Contact info management""]","[""Instruction following"", ""Search and filtering"", ""UI Elements: Text Fields""]","Order 2 Lemon Olive Oil Cake from Desserts Table, make sure no customizations are selected. Also order 1 of the cheapest available Family Meals. Change the contact number for the order to 8347178022",,4,Medium,
 bulk-simple-order-007,"{
-  ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""Order 4 Coleslaw from Fish Market by Kings, make sure no customizations are selected. Also order 2 units of the cheapest available Appetizer. Change the contact number for the order to 9482725378"",
-  ""task_type"": ""GUI Comprehension, Action Execution, Element Identification, Decision Making"",
-  ""grader_config"": {
-    ""state_grader_configs"": [
+  ""start_url"":""https://dashdoor-prod.rlgym.turing.com"",
+  ""task_statement"":""Order 4 Coleslaw from Fish Market by Kings, make sure no customizations are selected. Also order 2 units of the cheapest available Appetizer. Change the contact number for the order to 9482725378"",
+  ""task_type"":""GUI Comprehension, Action Execution, Element Identification, Decision Making"",
+  ""grader_config"":{
+    ""state_grader_configs"":[
       {
-        ""assertions"": [
+        ""assertions"":[
           {
-            ""operator"": ""STRING_EQUALS"",
-            ""paths_to_expected"": [
+            ""operator"":""STRING_EQUALS"",
+            ""paths_to_expected"":[
               ""$[0].address.id""
             ]
           }
         ],
-        ""path_to_actual"": ""$.orders[0].deliveryAddress.id""
+        ""path_to_actual"":""$.orders[0].deliveryAddress.id""
       },
       {
-        ""assertions"": [
+        ""assertions"":[
           {
-            ""operator"": ""STRING_EQUALS"",
-            ""expected"": [
+            ""operator"":""STRING_EQUALS"",
+            ""expected"":[
               ""9482725378""
             ]
           }
         ],
-        ""path_to_actual"": ""$.orders[0].phoneNumber.number""
+        ""path_to_actual"":""$.orders[0].phoneNumber.number""
       },
       {
-        ""assertions"": [
+        ""assertions"":[
           {
-            ""operator"": ""JSON_PART_OF"",
-            ""path_to_actual"": ""$.items[*].id"",
-            ""paths_to_expected"": [
-              ""$[2].items[0].id"",
-              ""$[3].items[0].id""
+            ""operator"":""JSON_PART_OF"",
+            ""path_to_actual"":""$.items[*].id"",
+            ""paths_to_expected"":[
+              ""$[*].items[0].id""
             ]
           },
           {
-            ""operator"": ""JSON_CONTAINS"",
-            ""path_to_actual"": ""$.items[*].id"",
-            ""paths_to_expected"": [
-              ""$[2].items[0].id"",
-              ""$[3].items[0].id""
+            ""operator"":""JSON_CONTAINS"",
+            ""path_to_actual"":""$.items[*].id"",
+            ""paths_to_expected"":[
+              ""$[*].items[0].id""
             ]
           },
           {
-            ""expected"": [
+            ""expected"":[
               ""==2""
             ],
-            ""operator"": ""ARRAY_LENGTH_MATCH"",
-            ""path_to_actual"": ""$.items[*]""
+            ""operator"":""ARRAY_LENGTH_MATCH"",
+            ""path_to_actual"":""$.items[*]""
           },
           {
-            ""operator"": ""NUMERIC_MATCH"",
-            ""path_to_actual"": ""$.items[0].quantity"",
-            ""expected"": [
+            ""operator"":""NUMERIC_MATCH"",
+            ""path_to_actual"":""$.items[0].quantity"",
+            ""expected"":[
               ""==4""
             ]
           },
           {
-            ""operator"": ""NUMERIC_MATCH"",
-            ""path_to_actual"": ""$.items[1].quantity"",
-            ""expected"": [
+            ""operator"":""NUMERIC_MATCH"",
+            ""path_to_actual"":""$.items[1].quantity"",
+            ""expected"":[
               ""==2""
             ]
           },
           {
-            ""operator"": ""STRING_EQUALS"",
-            ""path_to_actual"": ""$.items[?(@.name == 'Coleslaw')].modifications[*]"",
-            ""expected"": [
+            ""operator"":""STRING_EQUALS"",
+            ""path_to_actual"":""$.items[?(@.name == 'Coleslaw')].modifications[*]"",
+            ""expected"":[
               """"
             ]
           }
         ],
-        ""path_to_actual"": ""$.orders[0]""
+        ""path_to_actual"":""$.orders[0]""
       }
     ],
-    ""extract_states_config"": {
-      ""expected_state_functions"": [
+    ""extract_states_config"":{
+      ""expected_state_functions"":[
         {
-          ""args"": {
-            ""user"": ""omar.young67@example.com""
+          ""args"":{
+            ""user"":""omar.young67@example.com""
           },
-          ""function"": ""get_user_address""
+          ""function"":""get_user_address""
         },
         {
-          ""args"": {
-            ""lat"": ""$[0].address.lat"",
-            ""lng"": ""$[0].address.lng"",
-            ""limit"": 1,
-            ""name"": ""Fish Market by Kings"",
-            ""sort_type"": [
+          ""args"":{
+            ""lat"":""$[0].address.lat"",
+            ""lng"":""$[0].address.lng"",
+            ""limit"":1,
+            ""name"":""Fish Market by Kings"",
+            ""sort_type"":[
               {
-                ""key"": ""priceRange"",
-                ""order"": ""asc""
+                ""key"":""priceRange"",
+                ""order"":""asc""
               },
               {
-                ""key"": ""rating"",
-                ""order"": ""desc""
+                ""key"":""rating"",
+                ""order"":""desc""
               }
             ]
           },
-          ""function"": ""get_restaurants""
+          ""function"":""get_restaurants""
         },
         {
-          ""args"": {
-            ""limit"": 1,
-            ""keywords"": [
+          ""args"":{
+            ""limit"":1,
+            ""keywords"":[
               ""Coleslaw""
             ],
-            ""restaurant_id"": ""$[1].restaurants[0].id""
+            ""restaurant_id"":""$[1].restaurants[0].id""
           },
-          ""function"": ""get_items""
+          ""function"":""get_items""
         },
         {
-          ""args"": {
-            ""limit"": 1,
-            ""filters"": {
-              ""menu_categories"": [
+          ""args"":{
+            ""limit"":1,
+            ""filters"":{
+              ""menu_categories"":[
                 ""Appetizers""
               ]
             },
-            ""sort_type"": [
+            ""sort_type"":[
               {
-                ""key"": ""price"",
-                ""order"": ""asc""
+                ""key"":""price"",
+                ""order"":""asc""
               },
               {
-                ""key"": ""rating"",
-                ""order"": ""desc""
+                ""key"":""rating"",
+                ""order"":""desc""
               }
             ],
-            ""restaurant_id"": ""$[1].restaurants[0].id""
+            ""restaurant_id"":""$[1].restaurants[0].id""
           },
-          ""function"": ""get_items""
+          ""function"":""get_items""
         }
       ]
     }
   },
-  ""task_id"": ""bulk-simple-order-007"",
-  ""simulator_config"": {
-    ""bootstrap_data"": {
-      ""date"": ""2025-12-19T12:00:00-08:00"",
-      ""timezone"": ""America/Los_Angeles"",
-      ""user"": ""omar.young67@example.com""
+  ""task_id"":""bulk-simple-order-007"",
+  ""simulator_config"":{
+    ""bootstrap_data"":{
+      ""date"":""2025-12-19T12:00:00-08:00"",
+      ""timezone"":""America/Los_Angeles"",
+      ""user"":""omar.young67@example.com""
     }
   }
 }","[""Cart Management""]","[""Cart editing & item swaps"", ""Price filtering"", ""Contact info management""]","[""Instruction following"", ""Search and filtering"", ""UI Elements: Text Fields""]","Order 4 Coleslaw from Fish Market by Kings, make sure no customizations are selected. Also order 2 units of the cheapest available Appetizer. Change the contact number for the order to 9482725378",,4,Medium,
 update-delivery-instructions-001,"{
-  ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""My apartment building recently had an entry code added. The code is 4280. Also delivery folks are no longer allowed to go beyond the lobby, so make sure you update the drop off location and the delivery instructions accordingly"",
-  ""task_id"": ""update-delivery-instructions-001"",
-  ""task_type"": ""GUI Comprehension, Action Execution"",
-  ""simulator_config"": {
-    ""bootstrap_data"": {
-      ""date"": ""2025-12-19T12:00:00-08:00"",
-      ""timezone"": ""America/Los_Angeles"",
-      ""user"": ""elias.kaufman88@dashdoor.test""
+  ""start_url"":""https://dashdoor-prod.rlgym.turing.com"",
+  ""task_statement"":""My apartment building recently had an entry code added. The code is 4280. Also delivery folks are no longer allowed to go beyond the lobby, so make sure you update the drop off location and the delivery instructions accordingly"",
+  ""task_id"":""update-delivery-instructions-001"",
+  ""task_type"":""GUI Comprehension, Action Execution"",
+  ""simulator_config"":{
+    ""bootstrap_data"":{
+      ""date"":""2025-12-19T12:00:00-08:00"",
+      ""timezone"":""America/Los_Angeles"",
+      ""user"":""elias.kaufman88@dashdoor.test""
     }
   },
-  ""grader_config"": {
-    ""state_grader_configs"": [
+  ""grader_config"":{
+    ""state_grader_configs"":[
       {
-        ""assertions"": [
+        ""assertions"":[
           {
-            ""operator"": ""STRING_EQUALS"",
-            ""expected"": [
+            ""operator"":""STRING_EQUALS"",
+            ""expected"":[
               ""4280""
             ],
-            ""path_to_actual"": ""$.entryCode""
+            ""path_to_actual"":""$[0].entryCode""
           },
           {
-            ""operator"": ""STRING_EQUALS"",
-            ""expected"": [
+            ""operator"":""STRING_EQUALS"",
+            ""expected"":[
               ""leave""
             ],
-            ""path_to_actual"": ""$.deliveryPreference""
+            ""path_to_actual"":""$[0].deliveryPreference""
           },
           {
-            ""operator"": ""STRING_EQUALS"",
-            ""expected"": [
+            ""operator"":""STRING_EQUALS"",
+            ""expected"":[
               ""lobby""
             ],
-            ""path_to_actual"": ""$.deliveryLocation""
+            ""path_to_actual"":""$[0].deliveryLocation""
           },
           {
-            ""operator"": ""STRING_CONTAINS"",
-            ""expected"": [
+            ""operator"":""STRING_CONTAINS"",
+            ""expected"":[
               ""lobby""
             ],
-            ""path_to_actual"": ""$.deliveryInstructions""
+            ""path_to_actual"":""$[0].deliveryInstructions""
           },
           {
-            ""operator"": ""STRING_NOT_CONTAINS"",
-            ""paths_to_expected"": [
+            ""operator"":""STRING_NOT_CONTAINS"",
+            ""paths_to_expected"":[
               ""$[0].address.deliveryInstructions""
             ],
-            ""path_to_actual"": ""$.deliveryInstructions""
+            ""path_to_actual"":""$[0].deliveryInstructions""
           }
         ],
-        ""path_to_actual"": ""$.user.currentUser.addresses[?(@.addressType == 'apartment' )]""
+        ""path_to_actual"":""$.user.currentUser.addresses[?(@.addressType == 'apartment' )]""
       }
     ],
-    ""extract_states_config"": {
-      ""expected_state_functions"": [
+    ""extract_states_config"":{
+      ""expected_state_functions"":[
         {
-          ""args"": {
-            ""type"": ""apartment"",
-            ""user"": ""elias.kaufman88@dashdoor.test""
+          ""args"":{
+            ""type"":""apartment"",
+            ""user"":""elias.kaufman88@dashdoor.test""
           },
-          ""function"": ""get_user_address""
+          ""function"":""get_user_address""
         }
       ]
     }
   }
 }","[""Address Entry & Validation""]","[""Address & delivery instructions""]","[""Instruction following"", ""UI Elements: Text Fields""]","My apartment building recently had an entry code added. The code is 4280. Also delivery folks are no longer allowed to go beyond the lobby, so make sure you update the drop off location and the delivery instructions accordingly",,0,Hard,
 update-delivery-instructions-002,"{
-  ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""My other building recently had an gate code added. The code is 2721. Also delivery folks are no longer allowed to go beyond the front door, so make sure you update the drop off location and the delivery instructions accordingly"",
-  ""task_type"": ""GUI Comprehension, Action Execution, Element Identification"",
-  ""grader_config"": {
-    ""state_grader_configs"": [
+  ""start_url"":""https://dashdoor-prod.rlgym.turing.com"",
+  ""task_statement"":""My other building recently had an gate code added. The code is 2721. Also delivery folks are no longer allowed to go beyond the front door, so make sure you update the drop off location and the delivery instructions accordingly"",
+  ""task_type"":""GUI Comprehension, Action Execution, Element Identification"",
+  ""grader_config"":{
+    ""state_grader_configs"":[
       {
-        ""assertions"": [
+        ""assertions"":[
           {
-            ""operator"": ""STRING_EQUALS"",
-            ""expected"": [
+            ""operator"":""STRING_EQUALS"",
+            ""expected"":[
               ""2721""
             ],
-            ""path_to_actual"": ""$.gateCode""
+            ""path_to_actual"":""$[0].gateCode""
           },
           {
-            ""operator"": ""STRING_EQUALS"",
-            ""expected"": [
+            ""operator"":""STRING_EQUALS"",
+            ""expected"":[
               ""leave""
             ],
-            ""path_to_actual"": ""$.deliveryPreference""
+            ""path_to_actual"":""$[0].deliveryPreference""
           },
           {
-            ""operator"": ""STRING_EQUALS"",
-            ""expected"": [
+            ""operator"":""STRING_EQUALS"",
+            ""expected"":[
               ""door""
             ],
-            ""path_to_actual"": ""$.deliveryLocation""
+            ""path_to_actual"":""$[0].deliveryLocation""
           },
           {
-            ""operator"": ""STRING_CONTAINS"",
-            ""expected"": [
+            ""operator"":""STRING_CONTAINS"",
+            ""expected"":[
               ""front door""
             ],
-            ""path_to_actual"": ""$.deliveryInstructions""
+            ""path_to_actual"":""$[0].deliveryInstructions""
           },
           {
-            ""operator"": ""STRING_NOT_CONTAINS"",
-            ""paths_to_expected"": [
+            ""operator"":""STRING_NOT_CONTAINS"",
+            ""paths_to_expected"":[
               ""$[0].address.deliveryInstructions""
             ],
-            ""path_to_actual"": ""$.deliveryInstructions""
+            ""path_to_actual"":""$[0].deliveryInstructions""
           }
         ],
-        ""path_to_actual"": ""$.user.currentUser.addresses[?(@.addressType == 'other')]""
+        ""path_to_actual"":""$.user.currentUser.addresses[?(@.addressType == 'other')]""
       }
     ],
-    ""extract_states_config"": {
-      ""expected_state_functions"": [
+    ""extract_states_config"":{
+      ""expected_state_functions"":[
         {
-          ""args"": {
-            ""type"": ""other"",
-            ""user"": ""gavin.patel68@example.com""
+          ""args"":{
+            ""type"":""other"",
+            ""user"":""gavin.patel68@example.com""
           },
-          ""function"": ""get_user_address""
+          ""function"":""get_user_address""
         }
       ]
     }
   },
-  ""task_id"": ""update-delivery-instructions-002"",
-  ""simulator_config"": {
-    ""bootstrap_data"": {
-      ""date"": ""2025-12-19T12:00:00-08:00"",
-      ""timezone"": ""America/Los_Angeles"",
-      ""user"": ""gavin.patel68@example.com""
+  ""task_id"":""update-delivery-instructions-002"",
+  ""simulator_config"":{
+    ""bootstrap_data"":{
+      ""date"":""2025-12-19T12:00:00-08:00"",
+      ""timezone"":""America/Los_Angeles"",
+      ""user"":""gavin.patel68@example.com""
     }
   }
 }","[""Address Entry & Validation""]","[""Address & delivery instructions""]","[""Instruction following"", ""UI Elements: Text Fields""]","My other building recently had an gate code added. The code is 2721. Also delivery folks are no longer allowed to go beyond the front door, so make sure you update the drop off location and the delivery instructions accordingly",,0,Hard,
 update-delivery-instructions-005,"{
-  ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""My apartment building recently had an entry code added. The code is 6332. Also delivery folks are no longer allowed to go beyond the lobby, so make sure you update the drop off location and the delivery instructions accordingly"",
-  ""task_type"": ""GUI Comprehension, Action Execution, Element Identification"",
-  ""grader_config"": {
-    ""state_grader_configs"": [
+  ""start_url"":""https://dashdoor-prod.rlgym.turing.com"",
+  ""task_statement"":""My apartment building recently had an entry code added. The code is 6332. Also delivery folks are no longer allowed to go beyond the lobby, so make sure you update the drop off location and the delivery instructions accordingly"",
+  ""task_type"":""GUI Comprehension, Action Execution, Element Identification"",
+  ""grader_config"":{
+    ""state_grader_configs"":[
       {
-        ""assertions"": [
+        ""assertions"":[
           {
-            ""operator"": ""STRING_EQUALS"",
-            ""expected"": [
+            ""operator"":""STRING_EQUALS"",
+            ""expected"":[
               ""6332""
             ],
-            ""path_to_actual"": ""$.entryCode""
+            ""path_to_actual"":""$[0].entryCode""
           },
           {
-            ""operator"": ""STRING_EQUALS"",
-            ""expected"": [
+            ""operator"":""STRING_EQUALS"",
+            ""expected"":[
               ""leave""
             ],
-            ""path_to_actual"": ""$.deliveryPreference""
+            ""path_to_actual"":""$[0].deliveryPreference""
           },
           {
-            ""operator"": ""STRING_EQUALS"",
-            ""expected"": [
+            ""operator"":""STRING_EQUALS"",
+            ""expected"":[
               ""lobby""
             ],
-            ""path_to_actual"": ""$.deliveryLocation""
+            ""path_to_actual"":""$[0].deliveryLocation""
           },
           {
-            ""operator"": ""STRING_CONTAINS"",
-            ""expected"": [
+            ""operator"":""STRING_CONTAINS"",
+            ""expected"":[
               ""lobby""
             ],
-            ""path_to_actual"": ""$.deliveryInstructions""
+            ""path_to_actual"":""$[0].deliveryInstructions""
           },
           {
-            ""operator"": ""STRING_NOT_CONTAINS"",
-            ""paths_to_expected"": [
+            ""operator"":""STRING_NOT_CONTAINS"",
+            ""paths_to_expected"":[
               ""$[0].address.deliveryInstructions""
             ],
-            ""path_to_actual"": ""$.deliveryInstructions""
+            ""path_to_actual"":""$[0].deliveryInstructions""
           }
         ],
-        ""path_to_actual"": ""$.user.currentUser.addresses[?(@.addressType == 'apartment')]""
+        ""path_to_actual"":""$.user.currentUser.addresses[?(@.addressType == 'apartment')]""
       }
     ],
-    ""extract_states_config"": {
-      ""expected_state_functions"": [
+    ""extract_states_config"":{
+      ""expected_state_functions"":[
         {
-          ""args"": {
-            ""type"": ""apartment"",
-            ""user"": ""lena.bennett71@example.com""
+          ""args"":{
+            ""type"":""apartment"",
+            ""user"":""lena.bennett71@example.com""
           },
-          ""function"": ""get_user_address""
+          ""function"":""get_user_address""
         }
       ]
     }
   },
-  ""task_id"": ""update-delivery-instructions-005"",
-  ""simulator_config"": {
-    ""bootstrap_data"": {
-      ""date"": ""2025-12-19T12:00:00-08:00"",
-      ""timezone"": ""America/Los_Angeles"",
-      ""user"": ""lena.bennett71@example.com""
+  ""task_id"":""update-delivery-instructions-005"",
+  ""simulator_config"":{
+    ""bootstrap_data"":{
+      ""date"":""2025-12-19T12:00:00-08:00"",
+      ""timezone"":""America/Los_Angeles"",
+      ""user"":""lena.bennett71@example.com""
     }
   }
 }","[""Address Entry & Validation""]","[""Address & delivery instructions""]","[""Instruction following"", ""UI Elements: Text Fields""]","My apartment building recently had an entry code added. The code is 6332. Also delivery folks are no longer allowed to go beyond the lobby, so make sure you update the drop off location and the delivery instructions accordingly",,0,Hard,
 update-delivery-instructions-007,"{
-  ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""My office building recently changed the floor number to 21. Also delivery folks are no longer allowed to go beyond the lobby, so make sure you update the drop off location and the delivery instructions accordingly"",
-  ""task_type"": ""GUI Comprehension, Action Execution, Element Identification"",
-  ""grader_config"": {
-    ""state_grader_configs"": [
+  ""start_url"":""https://dashdoor-prod.rlgym.turing.com"",
+  ""task_statement"":""My office building recently changed the floor number to 21. Also delivery folks are no longer allowed to go beyond the lobby, so make sure you update the drop off location and the delivery instructions accordingly"",
+  ""task_type"":""GUI Comprehension, Action Execution, Element Identification"",
+  ""grader_config"":{
+    ""state_grader_configs"":[
       {
-        ""assertions"": [
+        ""assertions"":[
           {
-            ""operator"": ""STRING_EQUALS"",
-            ""expected"": [
+            ""operator"":""STRING_EQUALS"",
+            ""expected"":[
               ""21""
             ],
-            ""path_to_actual"": ""$.suiteFloor""
+            ""path_to_actual"":""$[0].suiteFloor""
           },
           {
-            ""operator"": ""STRING_EQUALS"",
-            ""expected"": [
+            ""operator"":""STRING_EQUALS"",
+            ""expected"":[
               ""leave""
             ],
-            ""path_to_actual"": ""$.deliveryPreference""
+            ""path_to_actual"":""$[0].deliveryPreference""
           },
           {
-            ""operator"": ""STRING_EQUALS"",
-            ""expected"": [
+            ""operator"":""STRING_EQUALS"",
+            ""expected"":[
               ""lobby""
             ],
-            ""path_to_actual"": ""$.deliveryLocation""
+            ""path_to_actual"":""$[0].deliveryLocation""
           },
           {
-            ""operator"": ""STRING_CONTAINS"",
-            ""expected"": [
+            ""operator"":""STRING_CONTAINS"",
+            ""expected"":[
               ""lobby""
             ],
-            ""path_to_actual"": ""$.deliveryInstructions""
+            ""path_to_actual"":""$[0].deliveryInstructions""
           },
           {
-            ""operator"": ""STRING_NOT_CONTAINS"",
-            ""paths_to_expected"": [
+            ""operator"":""STRING_NOT_CONTAINS"",
+            ""paths_to_expected"":[
               ""$[0].address.deliveryInstructions""
             ],
-            ""path_to_actual"": ""$.deliveryInstructions""
+            ""path_to_actual"":""$[0].deliveryInstructions""
           }
         ],
-        ""path_to_actual"": ""$.user.currentUser.addresses[?(@.addressType == 'office')]""
+        ""path_to_actual"":""$.user.currentUser.addresses[?(@.addressType == 'office')]""
       }
     ],
-    ""extract_states_config"": {
-      ""expected_state_functions"": [
+    ""extract_states_config"":{
+      ""expected_state_functions"":[
         {
-          ""args"": {
-            ""type"": ""office"",
-            ""user"": ""aiden.ingram73@dashdoor.test""
+          ""args"":{
+            ""type"":""office"",
+            ""user"":""aiden.ingram73@dashdoor.test""
           },
-          ""function"": ""get_user_address""
+          ""function"":""get_user_address""
         }
       ]
     }
   },
-  ""task_id"": ""update-delivery-instructions-007"",
-  ""simulator_config"": {
-    ""bootstrap_data"": {
-      ""date"": ""2025-12-19T12:00:00-08:00"",
-      ""timezone"": ""America/Los_Angeles"",
-      ""user"": ""aiden.ingram73@dashdoor.test""
+  ""task_id"":""update-delivery-instructions-007"",
+  ""simulator_config"":{
+    ""bootstrap_data"":{
+      ""date"":""2025-12-19T12:00:00-08:00"",
+      ""timezone"":""America/Los_Angeles"",
+      ""user"":""aiden.ingram73@dashdoor.test""
     }
   }
 }","[""Address Entry & Validation""]","[""Address & delivery instructions""]","[""Instruction following"", ""UI Elements: Text Fields""]","My office building recently changed the floor number to 21. Also delivery folks are no longer allowed to go beyond the lobby, so make sure you update the drop off location and the delivery instructions accordingly",,0,Hard,
@@ -7502,334 +7492,334 @@ top-rated-history-007,"{
   }
 }","[""Ratings & Reviews""]","[""Review-based recommendations""]","[""Ratings analysis"", ""Search and filtering"", ""Decision making""]",Go through the reviews that I've given for restaurants and pick the one that I've given the highest rating and order the best rated from the Drinks menu.,,2,Hard,
 helpful-review-items-001,"{
-  ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""Somebody recommended Mediterranean Kitchen to me. Could you check the reviews and find the most helpful one that includes liked items, then add those items to my cart? If any required modifications exist, choose the cheapest options."",
-  ""task_id"": ""helpful-review-items-001"",
-  ""task_type"": ""GUI Comprehension, Action Execution, Decision Making, Element Identification"",
-  ""simulator_config"": {
-    ""bootstrap_data"": {
-      ""date"": ""2025-12-19T12:00:00-08:00"",
-      ""timezone"": ""America/Los_Angeles"",
-      ""user"": ""yuna.nguyen18@mail.test""
+  ""start_url"":""https://dashdoor-prod.rlgym.turing.com"",
+  ""task_statement"":""Somebody recommended Mediterranean Kitchen to me. Could you check the reviews and find the most helpful one that includes liked items, then add those items to my cart? If any required modifications exist, choose the cheapest options."",
+  ""task_id"":""helpful-review-items-001"",
+  ""task_type"":""GUI Comprehension, Action Execution, Decision Making, Element Identification"",
+  ""simulator_config"":{
+    ""bootstrap_data"":{
+      ""date"":""2025-12-19T12:00:00-08:00"",
+      ""timezone"":""America/Los_Angeles"",
+      ""user"":""yuna.nguyen18@mail.test""
     }
   },
-  ""grader_config"": {
-    ""state_grader_configs"": [
+  ""grader_config"":{
+    ""state_grader_configs"":[
       {
-        ""assertions"": [
+        ""assertions"":[
           {
-            ""operator"": ""JSON_PART_OF"",
-            ""path_to_actual"": ""$.items[*].itemName"",
-            ""paths_to_expected"": [
+            ""operator"":""JSON_PART_OF"",
+            ""path_to_actual"":""$[0].items[*].itemName"",
+            ""paths_to_expected"":[
               ""$[1].reviews[0].likedItems[*].itemName""
             ]
           },
           {
-            ""operator"": ""JSON_CONTAINS"",
-            ""path_to_actual"": ""$.items[*].itemName"",
-            ""paths_to_expected"": [
+            ""operator"":""JSON_CONTAINS"",
+            ""path_to_actual"":""$[0].items[*].itemName"",
+            ""paths_to_expected"":[
               ""$[1].reviews[0].likedItems[*].itemName""
             ]
           },
           {
-            ""operator"": ""STRING_EQUALS"",
-            ""path_to_actual"": ""$.storeId"",
-            ""paths_to_expected"": [
+            ""operator"":""STRING_EQUALS"",
+            ""path_to_actual"":""$[0].storeId"",
+            ""paths_to_expected"":[
               ""$[1].reviews[0].storeId""
             ]
           },
           {
-            ""operator"": ""STRING_EQUALS"",
-            ""path_to_actual"": ""$.items[0].appliedModifications[0].appliedOptions[0].optionId"",
-            ""paths_to_expected"": [
+            ""operator"":""STRING_EQUALS"",
+            ""path_to_actual"":""$[0].items[0].appliedModifications[0].appliedOptions[0].optionId"",
+            ""paths_to_expected"":[
               ""$[2].modification.options[0].id""
             ]
           }
         ],
-        ""path_to_actual"": ""$.carts[?(@.storeName == 'Mediterranean Kitchen')]""
+        ""path_to_actual"":""$.carts[?(@.storeName == 'Mediterranean Kitchen')]""
       }
     ],
-    ""extract_states_config"": {
-      ""expected_state_functions"": [
+    ""extract_states_config"":{
+      ""expected_state_functions"":[
         {
-          ""args"": {
-            ""name"": ""Mediterranean Kitchen""
+          ""args"":{
+            ""name"":""Mediterranean Kitchen""
           },
-          ""function"": ""get_restaurants""
+          ""function"":""get_restaurants""
         },
         {
-          ""args"": {
-            ""limit"": 1,
-            ""restaurant_id"": ""$[0].restaurants[0].id"",
-            ""has_liked_items"": true,
-            ""sort_type"": [
+          ""args"":{
+            ""limit"":1,
+            ""restaurant_id"":""$[0].restaurants[0].id"",
+            ""has_liked_items"":true,
+            ""sort_type"":[
               {
-                ""key"": ""helpfulCount"",
-                ""order"": ""desc""
+                ""key"":""helpfulCount"",
+                ""order"":""desc""
               }
             ]
           },
-          ""function"": ""get_reviews""
+          ""function"":""get_reviews""
         },
         {
-          ""args"": {
-            ""item_id"": ""$[1].reviews[0].likedItems[0].menuItemId"",
-            ""modification_name"": """",
-            ""is_required"": true,
-            ""sort_options_by_price"": true
+          ""args"":{
+            ""item_id"":""$[1].reviews[0].likedItems[0].menuItemId"",
+            ""modification_name"":"""",
+            ""is_required"":true,
+            ""sort_options_by_price"":true
           },
-          ""function"": ""get_modifications""
+          ""function"":""get_modifications""
         }
       ]
     }
   }
 }","[""Ratings & Reviews""]","[""Review-based recommendations""]","[""Ratings analysis"", ""Instruction following""]","Somebody recommended Mediterranean Kitchen to me. Could you check the reviews and find the most helpful one that includes liked items, then add those items to my cart? If any required modifications exist, choose the cheapest options.",,2,Hard,
 helpful-review-items-002,"{
-  ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""Somebody recommended Salads House to me. Could you check the reviews and find the most helpful one that includes liked items, then add those items to my cart? If any required modifications exist, choose the cheapest options."",
-  ""task_type"": ""GUI Comprehension, Action Execution, Decision Making, Element Identification"",
-  ""grader_config"": {
-    ""state_grader_configs"": [
+  ""start_url"":""https://dashdoor-prod.rlgym.turing.com"",
+  ""task_statement"":""Somebody recommended Salads House to me. Could you check the reviews and find the most helpful one that includes liked items, then add those items to my cart? If any required modifications exist, choose the cheapest options."",
+  ""task_type"":""GUI Comprehension, Action Execution, Decision Making, Element Identification"",
+  ""grader_config"":{
+    ""state_grader_configs"":[
       {
-        ""assertions"": [
+        ""assertions"":[
           {
-            ""operator"": ""JSON_PART_OF"",
-            ""path_to_actual"": ""$.items[*].itemName"",
-            ""paths_to_expected"": [
+            ""operator"":""JSON_PART_OF"",
+            ""path_to_actual"":""$[0].items[*].itemName"",
+            ""paths_to_expected"":[
               ""$[1].reviews[0].likedItems[*].itemName""
             ]
           },
           {
-            ""operator"": ""JSON_CONTAINS"",
-            ""path_to_actual"": ""$.items[*].itemName"",
-            ""paths_to_expected"": [
+            ""operator"":""JSON_CONTAINS"",
+            ""path_to_actual"":""$[0].items[*].itemName"",
+            ""paths_to_expected"":[
               ""$[1].reviews[0].likedItems[*].itemName""
             ]
           },
           {
-            ""operator"": ""STRING_EQUALS"",
-            ""path_to_actual"": ""$.storeId"",
-            ""paths_to_expected"": [
+            ""operator"":""STRING_EQUALS"",
+            ""path_to_actual"":""$[0].storeId"",
+            ""paths_to_expected"":[
               ""$[1].reviews[0].storeId""
             ]
           },
           {
-            ""operator"": ""STRING_EQUALS"",
-            ""path_to_actual"": ""$.items[0].appliedModifications[0].appliedOptions[0].optionId"",
-            ""paths_to_expected"": [
+            ""operator"":""STRING_EQUALS"",
+            ""path_to_actual"":""$[0].items[0].appliedModifications[0].appliedOptions[0].optionId"",
+            ""paths_to_expected"":[
               ""$[2].modification.options[0].id""
             ]
           }
         ],
-        ""path_to_actual"": ""$.carts[?(@.storeName == 'Salads House')]""
+        ""path_to_actual"":""$.carts[?(@.storeName == 'Salads House')]""
       }
     ],
-    ""extract_states_config"": {
-      ""expected_state_functions"": [
+    ""extract_states_config"":{
+      ""expected_state_functions"":[
         {
-          ""args"": {
-            ""name"": ""Salads House""
+          ""args"":{
+            ""name"":""Salads House""
           },
-          ""function"": ""get_restaurants""
+          ""function"":""get_restaurants""
         },
         {
-          ""args"": {
-            ""limit"": 1,
-            ""restaurant_id"": ""$[0].restaurants[0].id"",
-            ""has_liked_items"": true,
-            ""sort_type"": [
+          ""args"":{
+            ""limit"":1,
+            ""restaurant_id"":""$[0].restaurants[0].id"",
+            ""has_liked_items"":true,
+            ""sort_type"":[
               {
-                ""key"": ""helpfulCount"",
-                ""order"": ""desc""
+                ""key"":""helpfulCount"",
+                ""order"":""desc""
               }
             ]
           },
-          ""function"": ""get_reviews""
+          ""function"":""get_reviews""
         },
         {
-          ""args"": {
-            ""item_id"": ""$[1].reviews[0].likedItems[0].menuItemId"",
-            ""modification_name"": """",
-            ""is_required"": true,
-            ""sort_options_by_price"": true
+          ""args"":{
+            ""item_id"":""$[1].reviews[0].likedItems[0].menuItemId"",
+            ""modification_name"":"""",
+            ""is_required"":true,
+            ""sort_options_by_price"":true
           },
-          ""function"": ""get_modifications""
+          ""function"":""get_modifications""
         }
       ]
     }
   },
-  ""task_id"": ""helpful-review-items-002"",
-  ""simulator_config"": {
-    ""bootstrap_data"": {
-      ""date"": ""2025-12-19T12:00:00-08:00"",
-      ""timezone"": ""America/Los_Angeles"",
-      ""user"": ""quinn.zimmerman1700@mail.test""
+  ""task_id"":""helpful-review-items-002"",
+  ""simulator_config"":{
+    ""bootstrap_data"":{
+      ""date"":""2025-12-19T12:00:00-08:00"",
+      ""timezone"":""America/Los_Angeles"",
+      ""user"":""quinn.zimmerman1700@mail.test""
     }
   }
 }","[""Ratings & Reviews""]","[""Review-based recommendations""]","[""Ratings analysis"", ""Instruction following""]","Somebody recommended Salads House to me. Could you check the reviews and find the most helpful one that includes liked items, then add those items to my cart? If any required modifications exist, choose the cheapest options.",,2,Hard,
 helpful-review-items-003,"{
-  ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""Somebody recommended Maple Market to me. Could you check the reviews and find the most helpful one that includes liked items, then add those items to my cart? If any required modifications exist, choose the cheapest options."",
-  ""task_type"": ""GUI Comprehension, Action Execution, Decision Making, Element Identification"",
-  ""grader_config"": {
-    ""state_grader_configs"": [
+  ""start_url"":""https://dashdoor-prod.rlgym.turing.com"",
+  ""task_statement"":""Somebody recommended Maple Market to me. Could you check the reviews and find the most helpful one that includes liked items, then add those items to my cart? If any required modifications exist, choose the cheapest options."",
+  ""task_type"":""GUI Comprehension, Action Execution, Decision Making, Element Identification"",
+  ""grader_config"":{
+    ""state_grader_configs"":[
       {
-        ""assertions"": [
+        ""assertions"":[
           {
-            ""operator"": ""JSON_PART_OF"",
-            ""path_to_actual"": ""$.items[*].itemName"",
-            ""paths_to_expected"": [
+            ""operator"":""JSON_PART_OF"",
+            ""path_to_actual"":""$[0].items[*].itemName"",
+            ""paths_to_expected"":[
               ""$[1].reviews[0].likedItems[*].itemName""
             ]
           },
           {
-            ""operator"": ""JSON_CONTAINS"",
-            ""path_to_actual"": ""$.items[*].itemName"",
-            ""paths_to_expected"": [
+            ""operator"":""JSON_CONTAINS"",
+            ""path_to_actual"":""$[0].items[*].itemName"",
+            ""paths_to_expected"":[
               ""$[1].reviews[0].likedItems[*].itemName""
             ]
           },
           {
-            ""operator"": ""STRING_EQUALS"",
-            ""path_to_actual"": ""$.storeId"",
-            ""paths_to_expected"": [
+            ""operator"":""STRING_EQUALS"",
+            ""path_to_actual"":""$[0].storeId"",
+            ""paths_to_expected"":[
               ""$[1].reviews[0].storeId""
             ]
           },
           {
-            ""operator"": ""STRING_EQUALS"",
-            ""path_to_actual"": ""$.items[0].appliedModifications[0].appliedOptions[0].optionId"",
-            ""paths_to_expected"": [
+            ""operator"":""STRING_EQUALS"",
+            ""path_to_actual"":""$[0].items[0].appliedModifications[0].appliedOptions[0].optionId"",
+            ""paths_to_expected"":[
               ""$[2].modification.options[0].id""
             ]
           }
         ],
-        ""path_to_actual"": ""$.carts[?(@.storeName == 'Maple Market')]""
+        ""path_to_actual"":""$.carts[?(@.storeName == 'Maple Market')]""
       }
     ],
-    ""extract_states_config"": {
-      ""expected_state_functions"": [
+    ""extract_states_config"":{
+      ""expected_state_functions"":[
         {
-          ""args"": {
-            ""name"": ""Maple Market""
+          ""args"":{
+            ""name"":""Maple Market""
           },
-          ""function"": ""get_restaurants""
+          ""function"":""get_restaurants""
         },
         {
-          ""args"": {
-            ""limit"": 1,
-            ""restaurant_id"": ""$[0].restaurants[0].id"",
-            ""has_liked_items"": true,
-            ""sort_type"": [
+          ""args"":{
+            ""limit"":1,
+            ""restaurant_id"":""$[0].restaurants[0].id"",
+            ""has_liked_items"":true,
+            ""sort_type"":[
               {
-                ""key"": ""helpfulCount"",
-                ""order"": ""desc""
+                ""key"":""helpfulCount"",
+                ""order"":""desc""
               }
             ]
           },
-          ""function"": ""get_reviews""
+          ""function"":""get_reviews""
         },
         {
-          ""args"": {
-            ""item_id"": ""$[1].reviews[0].likedItems[0].menuItemId"",
-            ""modification_name"": """",
-            ""is_required"": true,
-            ""sort_options_by_price"": true
+          ""args"":{
+            ""item_id"":""$[1].reviews[0].likedItems[0].menuItemId"",
+            ""modification_name"":"""",
+            ""is_required"":true,
+            ""sort_options_by_price"":true
           },
-          ""function"": ""get_modifications""
+          ""function"":""get_modifications""
         }
       ]
     }
   },
-  ""task_id"": ""helpful-review-items-003"",
-  ""simulator_config"": {
-    ""bootstrap_data"": {
-      ""date"": ""2025-12-19T12:00:00-08:00"",
-      ""timezone"": ""America/Los_Angeles"",
-      ""user"": ""yuna.zimmerman28@dashdoor.test""
+  ""task_id"":""helpful-review-items-003"",
+  ""simulator_config"":{
+    ""bootstrap_data"":{
+      ""date"":""2025-12-19T12:00:00-08:00"",
+      ""timezone"":""America/Los_Angeles"",
+      ""user"":""yuna.zimmerman28@dashdoor.test""
     }
   }
 }","[""Ratings & Reviews""]","[""Review-based recommendations""]","[""Ratings analysis"", ""Instruction following""]","Somebody recommended Maple Market to me. Could you check the reviews and find the most helpful one that includes liked items, then add those items to my cart? If any required modifications exist, choose the cheapest options.",,2,Hard,
 helpful-review-items-007,"{
-  ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""Somebody recommended Gavin's Market to me. Could you check the reviews and find the most helpful one that includes liked items, then add those items to my cart? If any required modifications exist, choose the cheapest options."",
-  ""task_type"": ""GUI Comprehension, Action Execution, Decision Making, Element Identification"",
-  ""grader_config"": {
-    ""state_grader_configs"": [
+  ""start_url"":""https://dashdoor-prod.rlgym.turing.com"",
+  ""task_statement"":""Somebody recommended Gavin's Market to me. Could you check the reviews and find the most helpful one that includes liked items, then add those items to my cart? If any required modifications exist, choose the cheapest options."",
+  ""task_type"":""GUI Comprehension, Action Execution, Decision Making, Element Identification"",
+  ""grader_config"":{
+    ""state_grader_configs"":[
       {
-        ""assertions"": [
+        ""assertions"":[
           {
-            ""operator"": ""JSON_PART_OF"",
-            ""path_to_actual"": ""$.items[*].itemName"",
-            ""paths_to_expected"": [
+            ""operator"":""JSON_PART_OF"",
+            ""path_to_actual"":""$[0].items[*].itemName"",
+            ""paths_to_expected"":[
               ""$[1].reviews[0].likedItems[*].itemName""
             ]
           },
           {
-            ""operator"": ""JSON_CONTAINS"",
-            ""path_to_actual"": ""$.items[*].itemName"",
-            ""paths_to_expected"": [
+            ""operator"":""JSON_CONTAINS"",
+            ""path_to_actual"":""$[0].items[*].itemName"",
+            ""paths_to_expected"":[
               ""$[1].reviews[0].likedItems[*].itemName""
             ]
           },
           {
-            ""operator"": ""STRING_EQUALS"",
-            ""path_to_actual"": ""$.storeId"",
-            ""paths_to_expected"": [
+            ""operator"":""STRING_EQUALS"",
+            ""path_to_actual"":""$[0].storeId"",
+            ""paths_to_expected"":[
               ""$[1].reviews[0].storeId""
             ]
           },
           {
-            ""operator"": ""STRING_EQUALS"",
-            ""path_to_actual"": ""$.items[0].appliedModifications[0].appliedOptions[0].optionId"",
-            ""paths_to_expected"": [
+            ""operator"":""STRING_EQUALS"",
+            ""path_to_actual"":""$[0].items[0].appliedModifications[0].appliedOptions[0].optionId"",
+            ""paths_to_expected"":[
               ""$[2].modification.options[0].id""
             ]
           }
         ],
-        ""path_to_actual"": ""$.carts[?(@.storeName == 'Gavin\\'s Market')]""
+        ""path_to_actual"":""$.carts[?(@.storeName == 'Gavin\\'s Market')]""
       }
     ],
-    ""extract_states_config"": {
-      ""expected_state_functions"": [
+    ""extract_states_config"":{
+      ""expected_state_functions"":[
         {
-          ""args"": {
-            ""name"": ""Gavin's Market""
+          ""args"":{
+            ""name"":""Gavin's Market""
           },
-          ""function"": ""get_restaurants""
+          ""function"":""get_restaurants""
         },
         {
-          ""args"": {
-            ""limit"": 1,
-            ""restaurant_id"": ""$[0].restaurants[0].id"",
-            ""has_liked_items"": true,
-            ""sort_type"": [
+          ""args"":{
+            ""limit"":1,
+            ""restaurant_id"":""$[0].restaurants[0].id"",
+            ""has_liked_items"":true,
+            ""sort_type"":[
               {
-                ""key"": ""helpfulCount"",
-                ""order"": ""desc""
+                ""key"":""helpfulCount"",
+                ""order"":""desc""
               }
             ]
           },
-          ""function"": ""get_reviews""
+          ""function"":""get_reviews""
         },
         {
-          ""args"": {
-            ""item_id"": ""$[1].reviews[0].likedItems[0].menuItemId"",
-            ""modification_name"": """",
-            ""is_required"": true,
-            ""sort_options_by_price"": true
+          ""args"":{
+            ""item_id"":""$[1].reviews[0].likedItems[0].menuItemId"",
+            ""modification_name"":"""",
+            ""is_required"":true,
+            ""sort_options_by_price"":true
           },
-          ""function"": ""get_modifications""
+          ""function"":""get_modifications""
         }
       ]
     }
   },
-  ""task_id"": ""helpful-review-items-007"",
-  ""simulator_config"": {
-    ""bootstrap_data"": {
-      ""date"": ""2025-12-19T12:00:00-08:00"",
-      ""timezone"": ""America/Los_Angeles"",
-      ""user"": ""lena.chambers96@dashdoor.test""
+  ""task_id"":""helpful-review-items-007"",
+  ""simulator_config"":{
+    ""bootstrap_data"":{
+      ""date"":""2025-12-19T12:00:00-08:00"",
+      ""timezone"":""America/Los_Angeles"",
+      ""user"":""lena.chambers96@dashdoor.test""
     }
   }
 }","[""Ratings & Reviews""]","[""Review-based recommendations""]","[""Ratings analysis"", ""Instruction following""]","Somebody recommended Gavin’s Market to me. Could you check the reviews and find the most helpful one that includes liked items, then add those items to my cart? If any required modifications exist, choose the cheapest options.",,2,Hard,
@@ -8143,465 +8133,455 @@ cheapest-rated-slices-007,"{
   }
 }","[""Menu Viewing"", ""Cart Management""]","[""Restaurant discovery & filtering"", ""Menu exploration""]","[""Search and filtering"", ""Decision making"", ""Order Placement""]",I recently moved and want to explore Korean restaurants near my new house. Order two of the cheapest Starters available at the nearest 3 star or above Korean place.,,0,Hard,
 cheapest-liked-combo-001,"{
-  ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""I want to order from di fara pizza. Order the cheapest classic pizzas and also add a soda can."",
-  ""task_id"": ""cheapest-liked-combo-001"",
-  ""task_type"": ""GUI Comprehension, Element Identification, Action Execution"",
-  ""grader_config"": {
-    ""state_grader_configs"": [
+  ""start_url"":""https://dashdoor-prod.rlgym.turing.com"",
+  ""task_statement"":""I want to order from di fara pizza. Order the cheapest classic pizzas and also add a soda can."",
+  ""task_id"":""cheapest-liked-combo-001"",
+  ""task_type"":""GUI Comprehension, Element Identification, Action Execution"",
+  ""grader_config"":{
+    ""state_grader_configs"":[
       {
-        ""assertions"": [
+        ""assertions"":[
           {
-            ""operator"": ""JSON_CONTAINS"",
-            ""path_to_actual"": ""$.items[*].name"",
-            ""paths_to_expected"": [
-              ""$[1].items[0].name"",
-              ""$[2].items[0].name""
+            ""operator"":""JSON_CONTAINS"",
+            ""path_to_actual"":""$.items[*].name"",
+            ""paths_to_expected"":[
+              ""$[*].items[0].name""
             ]
           },
           {
-            ""operator"": ""JSON_PART_OF"",
-            ""path_to_actual"": ""$.items[*].name"",
-            ""paths_to_expected"": [
-              ""$[1].items[0].name"",
-              ""$[2].items[0].name""
+            ""operator"":""JSON_PART_OF"",
+            ""path_to_actual"":""$.items[*].name"",
+            ""paths_to_expected"":[
+              ""$[*].items[0].name""
             ]
           },
           {
-            ""expected"": [
+            ""expected"":[
               ""==2""
             ],
-            ""operator"": ""ARRAY_LENGTH_MATCH"",
-            ""path_to_actual"": ""$.items[*]""
+            ""operator"":""ARRAY_LENGTH_MATCH"",
+            ""path_to_actual"":""$.items[*]""
           }
         ],
-        ""path_to_actual"": ""$.orders[0]""
+        ""path_to_actual"":""$.orders[0]""
       }
     ],
-    ""extract_states_config"": {
-      ""expected_state_functions"": [
+    ""extract_states_config"":{
+      ""expected_state_functions"":[
         {
-          ""args"": {
-            ""name"": ""Di Fara Pizza""
+          ""args"":{
+            ""name"":""Di Fara Pizza""
           },
-          ""function"": ""get_restaurants""
+          ""function"":""get_restaurants""
         },
         {
-          ""args"": {
-            ""restaurant_id"": ""$[0].restaurants[0].id"",
-            ""filters"": {
-              ""menu_categories"": [
+          ""args"":{
+            ""restaurant_id"":""$[0].restaurants[0].id"",
+            ""filters"":{
+              ""menu_categories"":[
                 ""Classic Pizzas""
               ]
             },
-            ""sort_type"": [
+            ""sort_type"":[
               {
-                ""key"": ""price"",
-                ""order"": ""asc""
+                ""key"":""price"",
+                ""order"":""asc""
               },
               {
-                ""key"": ""rating"",
-                ""order"": ""desc""
+                ""key"":""rating"",
+                ""order"":""desc""
               }
             ],
-            ""limit"": 1
+            ""limit"":1
           },
-          ""function"": ""get_items""
+          ""function"":""get_items""
         },
         {
-          ""args"": {
-            ""restaurant_id"": ""$[0].restaurants[0].id"",
-            ""keywords"": [
+          ""args"":{
+            ""restaurant_id"":""$[0].restaurants[0].id"",
+            ""keywords"":[
               ""soda""
             ],
-            ""limit"": 1
+            ""limit"":1
           },
-          ""function"": ""get_items""
+          ""function"":""get_items""
         }
       ]
     }
   },
-  ""simulator_config"": {
-    ""bootstrap_data"": {
-      ""date"": ""2025-12-19T12:00:00-08:00"",
-      ""timezone"": ""America/Los_Angeles"",
-      ""user"": ""elias.kaufman88@dashdoor.test""
+  ""simulator_config"":{
+    ""bootstrap_data"":{
+      ""date"":""2025-12-19T12:00:00-08:00"",
+      ""timezone"":""America/Los_Angeles"",
+      ""user"":""elias.kaufman88@dashdoor.test""
     }
   }
 }","[""Menu Viewing"", ""Cart Management""]","[""Price & rating tradeoffs"", ""Item selection""]","[""Search and filtering"", ""Decision making"", ""Order Placement""]",I want to order from di fara pizza. Order the cheapest classic pizzas and also add a soda can.,,10,Easy,
 cheapest-liked-combo-002,"{
-  ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""I want to order from Willow's Cellar. Order the cheapest Starters and also add a Kimchi Slaw."",
-  ""task_type"": ""GUI Comprehension, Action Execution, Element Identification"",
-  ""grader_config"": {
-    ""state_grader_configs"": [
+  ""start_url"":""https://dashdoor-prod.rlgym.turing.com"",
+  ""task_statement"":""I want to order from Willow's Cellar. Order the cheapest Starters and also add a Kimchi Slaw."",
+  ""task_type"":""GUI Comprehension, Action Execution, Element Identification"",
+  ""grader_config"":{
+    ""state_grader_configs"":[
       {
-        ""assertions"": [
+        ""assertions"":[
           {
-            ""operator"": ""JSON_CONTAINS"",
-            ""path_to_actual"": ""$.items[*].name"",
-            ""paths_to_expected"": [
-              ""$[1].items[0].name"",
-              ""$[2].items[0].name""
+            ""operator"":""JSON_CONTAINS"",
+            ""path_to_actual"":""$.items[*].name"",
+            ""paths_to_expected"":[
+              ""$[*].items[0].name""
             ]
           },
           {
-            ""operator"": ""JSON_PART_OF"",
-            ""path_to_actual"": ""$.items[*].name"",
-            ""paths_to_expected"": [
-              ""$[1].items[0].name"",
-              ""$[2].items[0].name""
+            ""operator"":""JSON_PART_OF"",
+            ""path_to_actual"":""$.items[*].name"",
+            ""paths_to_expected"":[
+              ""$[*].items[0].name""
             ]
           },
           {
-            ""expected"": [
+            ""expected"":[
               ""==2""
             ],
-            ""operator"": ""ARRAY_LENGTH_MATCH"",
-            ""path_to_actual"": ""$.items[*]""
+            ""operator"":""ARRAY_LENGTH_MATCH"",
+            ""path_to_actual"":""$.items[*]""
           },
           {
-            ""operator"": ""STRING_EQUALS"",
-            ""path_to_actual"": ""$.restaurantId"",
-            ""paths_to_expected"": [
+            ""operator"":""STRING_EQUALS"",
+            ""path_to_actual"":""$.restaurantId"",
+            ""paths_to_expected"":[
               ""$[0].restaurants[0].id""
             ]
           }
         ],
-        ""path_to_actual"": ""$.orders[0]""
+        ""path_to_actual"":""$.orders[0]""
       }
     ],
-    ""extract_states_config"": {
-      ""expected_state_functions"": [
+    ""extract_states_config"":{
+      ""expected_state_functions"":[
         {
-          ""args"": {
-            ""name"": ""Willow's Cellar""
+          ""args"":{
+            ""name"":""Willow's Cellar""
           },
-          ""function"": ""get_restaurants""
+          ""function"":""get_restaurants""
         },
         {
-          ""args"": {
-            ""restaurant_id"": ""$[0].restaurants[0].id"",
-            ""filters"": {
-              ""menu_categories"": [
+          ""args"":{
+            ""restaurant_id"":""$[0].restaurants[0].id"",
+            ""filters"":{
+              ""menu_categories"":[
                 ""Starters""
               ]
             },
-            ""sort_type"": [
+            ""sort_type"":[
               {
-                ""key"": ""price"",
-                ""order"": ""asc""
+                ""key"":""price"",
+                ""order"":""asc""
               },
               {
-                ""key"": ""rating"",
-                ""order"": ""desc""
+                ""key"":""rating"",
+                ""order"":""desc""
               }
             ],
-            ""limit"": 1
+            ""limit"":1
           },
-          ""function"": ""get_items""
+          ""function"":""get_items""
         },
         {
-          ""args"": {
-            ""restaurant_id"": ""$[0].restaurants[0].id"",
-            ""keywords"": [
+          ""args"":{
+            ""restaurant_id"":""$[0].restaurants[0].id"",
+            ""keywords"":[
               ""Kimchi Slaw""
             ],
-            ""limit"": 1
+            ""limit"":1
           },
-          ""function"": ""get_items""
+          ""function"":""get_items""
         }
       ]
     }
   },
-  ""task_id"": ""cheapest-liked-combo-002"",
-  ""simulator_config"": {
-    ""bootstrap_data"": {
-      ""date"": ""2025-12-19T12:00:00-08:00"",
-      ""timezone"": ""America/Los_Angeles"",
-      ""user"": ""diana.vega102@inbox.local""
+  ""task_id"":""cheapest-liked-combo-002"",
+  ""simulator_config"":{
+    ""bootstrap_data"":{
+      ""date"":""2025-12-19T12:00:00-08:00"",
+      ""timezone"":""America/Los_Angeles"",
+      ""user"":""diana.vega102@inbox.local""
     }
   }
 }","[""Menu Viewing"", ""Cart Management""]","[""Price & rating tradeoffs"", ""Item selection""]","[""Search and filtering"", ""Decision making"", ""Order Placement""]",I want to order from Willow's Cellar. Order the cheapest Starters and also add a Kimchi Slaw.,,10,Easy,
 cheapest-liked-combo-003,"{
-  ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""I want to order from Quinn's Grill. Order the cheapest Sides and also add a Mango Lassi."",
-  ""task_type"": ""GUI Comprehension, Action Execution, Element Identification"",
-  ""grader_config"": {
-    ""state_grader_configs"": [
+  ""start_url"":""https://dashdoor-prod.rlgym.turing.com"",
+  ""task_statement"":""I want to order from Quinn's Grill. Order the cheapest Sides and also add a Mango Lassi."",
+  ""task_type"":""GUI Comprehension, Action Execution, Element Identification"",
+  ""grader_config"":{
+    ""state_grader_configs"":[
       {
-        ""assertions"": [
+        ""assertions"":[
           {
-            ""operator"": ""JSON_CONTAINS"",
-            ""path_to_actual"": ""$.items[*].name"",
-            ""paths_to_expected"": [
-              ""$[1].items[0].name"",
-              ""$[2].items[0].name""
+            ""operator"":""JSON_CONTAINS"",
+            ""path_to_actual"":""$.items[*].name"",
+            ""paths_to_expected"":[
+              ""$[*].items[0].name""
             ]
           },
           {
-            ""operator"": ""JSON_PART_OF"",
-            ""path_to_actual"": ""$.items[*].name"",
-            ""paths_to_expected"": [
-              ""$[1].items[0].name"",
-              ""$[2].items[0].name""
+            ""operator"":""JSON_PART_OF"",
+            ""path_to_actual"":""$.items[*].name"",
+            ""paths_to_expected"":[
+              ""$[*].items[0].name""
             ]
           },
           {
-            ""expected"": [
+            ""expected"":[
               ""==2""
             ],
-            ""operator"": ""ARRAY_LENGTH_MATCH"",
-            ""path_to_actual"": ""$.items[*]""
+            ""operator"":""ARRAY_LENGTH_MATCH"",
+            ""path_to_actual"":""$.items[*]""
           },
           {
-            ""operator"": ""STRING_EQUALS"",
-            ""path_to_actual"": ""$.restaurantId"",
-            ""paths_to_expected"": [
+            ""operator"":""STRING_EQUALS"",
+            ""path_to_actual"":""$.restaurantId"",
+            ""paths_to_expected"":[
               ""$[0].restaurants[0].id""
             ]
           }
         ],
-        ""path_to_actual"": ""$.orders[0]""
+        ""path_to_actual"":""$.orders[0]""
       }
     ],
-    ""extract_states_config"": {
-      ""expected_state_functions"": [
+    ""extract_states_config"":{
+      ""expected_state_functions"":[
         {
-          ""args"": {
-            ""name"": ""Quinn's Grill""
+          ""args"":{
+            ""name"":""Quinn's Grill""
           },
-          ""function"": ""get_restaurants""
+          ""function"":""get_restaurants""
         },
         {
-          ""args"": {
-            ""restaurant_id"": ""$[0].restaurants[0].id"",
-            ""filters"": {
-              ""menu_categories"": [
+          ""args"":{
+            ""restaurant_id"":""$[0].restaurants[0].id"",
+            ""filters"":{
+              ""menu_categories"":[
                 ""Sides""
               ]
             },
-            ""sort_type"": [
+            ""sort_type"":[
               {
-                ""key"": ""price"",
-                ""order"": ""asc""
+                ""key"":""price"",
+                ""order"":""asc""
               },
               {
-                ""key"": ""rating"",
-                ""order"": ""desc""
+                ""key"":""rating"",
+                ""order"":""desc""
               }
             ],
-            ""limit"": 1
+            ""limit"":1
           },
-          ""function"": ""get_items""
+          ""function"":""get_items""
         },
         {
-          ""args"": {
-            ""restaurant_id"": ""$[0].restaurants[0].id"",
-            ""keywords"": [
+          ""args"":{
+            ""restaurant_id"":""$[0].restaurants[0].id"",
+            ""keywords"":[
               ""Mango Lassi""
             ],
-            ""limit"": 1
+            ""limit"":1
           },
-          ""function"": ""get_items""
+          ""function"":""get_items""
         }
       ]
     }
   },
-  ""task_id"": ""cheapest-liked-combo-003"",
-  ""simulator_config"": {
-    ""bootstrap_data"": {
-      ""date"": ""2025-12-19T12:00:00-08:00"",
-      ""timezone"": ""America/Los_Angeles"",
-      ""user"": ""jasper.turner103@example.com""
+  ""task_id"":""cheapest-liked-combo-003"",
+  ""simulator_config"":{
+    ""bootstrap_data"":{
+      ""date"":""2025-12-19T12:00:00-08:00"",
+      ""timezone"":""America/Los_Angeles"",
+      ""user"":""jasper.turner103@example.com""
     }
   }
 }","[""Menu Viewing"", ""Cart Management""]","[""Price & rating tradeoffs"", ""Item selection""]","[""Search and filtering"", ""Decision making"", ""Order Placement""]",I want to order from Quinn's Grill. Order the cheapest Sides and also add a Mango Lassi.,,10,Easy,
 cheapest-liked-combo-005,"{
-  ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""I want to order from Brooklyn Smokehouse. Order the cheapest Starters and also add a Crispy Cauliflower Tacos."",
-  ""task_type"": ""GUI Comprehension, Action Execution, Element Identification"",
-  ""grader_config"": {
-    ""state_grader_configs"": [
+  ""start_url"":""https://dashdoor-prod.rlgym.turing.com"",
+  ""task_statement"":""I want to order from Brooklyn Smokehouse. Order the cheapest Starters and also add a Crispy Cauliflower Tacos."",
+  ""task_type"":""GUI Comprehension, Action Execution, Element Identification"",
+  ""grader_config"":{
+    ""state_grader_configs"":[
       {
-        ""assertions"": [
+        ""assertions"":[
           {
-            ""operator"": ""JSON_CONTAINS"",
-            ""path_to_actual"": ""$.items[*].name"",
-            ""paths_to_expected"": [
-              ""$[1].items[0].name"",
-              ""$[2].items[0].name""
+            ""operator"":""JSON_CONTAINS"",
+            ""path_to_actual"":""$.items[*].name"",
+            ""paths_to_expected"":[
+              ""$[*].items[0].name""
             ]
           },
           {
-            ""operator"": ""JSON_PART_OF"",
-            ""path_to_actual"": ""$.items[*].name"",
-            ""paths_to_expected"": [
-              ""$[1].items[0].name"",
-              ""$[2].items[0].name""
+            ""operator"":""JSON_PART_OF"",
+            ""path_to_actual"":""$.items[*].name"",
+            ""paths_to_expected"":[
+              ""$[*].items[0].name""
             ]
           },
           {
-            ""expected"": [
+            ""expected"":[
               ""==2""
             ],
-            ""operator"": ""ARRAY_LENGTH_MATCH"",
-            ""path_to_actual"": ""$.items[*]""
+            ""operator"":""ARRAY_LENGTH_MATCH"",
+            ""path_to_actual"":""$.items[*]""
           },
           {
-            ""operator"": ""STRING_EQUALS"",
-            ""path_to_actual"": ""$.restaurantId"",
-            ""paths_to_expected"": [
+            ""operator"":""STRING_EQUALS"",
+            ""path_to_actual"":""$.restaurantId"",
+            ""paths_to_expected"":[
               ""$[0].restaurants[0].id""
             ]
           }
         ],
-        ""path_to_actual"": ""$.orders[0]""
+        ""path_to_actual"":""$.orders[0]""
       }
     ],
-    ""extract_states_config"": {
-      ""expected_state_functions"": [
+    ""extract_states_config"":{
+      ""expected_state_functions"":[
         {
-          ""args"": {
-            ""name"": ""Brooklyn Smokehouse""
+          ""args"":{
+            ""name"":""Brooklyn Smokehouse""
           },
-          ""function"": ""get_restaurants""
+          ""function"":""get_restaurants""
         },
         {
-          ""args"": {
-            ""restaurant_id"": ""$[0].restaurants[0].id"",
-            ""filters"": {
-              ""menu_categories"": [
+          ""args"":{
+            ""restaurant_id"":""$[0].restaurants[0].id"",
+            ""filters"":{
+              ""menu_categories"":[
                 ""Starters""
               ]
             },
-            ""sort_type"": [
+            ""sort_type"":[
               {
-                ""key"": ""price"",
-                ""order"": ""asc""
+                ""key"":""price"",
+                ""order"":""asc""
               },
               {
-                ""key"": ""rating"",
-                ""order"": ""desc""
+                ""key"":""rating"",
+                ""order"":""desc""
               }
             ],
-            ""limit"": 1
+            ""limit"":1
           },
-          ""function"": ""get_items""
+          ""function"":""get_items""
         },
         {
-          ""args"": {
-            ""restaurant_id"": ""$[0].restaurants[0].id"",
-            ""keywords"": [
+          ""args"":{
+            ""restaurant_id"":""$[0].restaurants[0].id"",
+            ""keywords"":[
               ""Crispy""
             ],
-            ""limit"": 1
+            ""limit"":1
           },
-          ""function"": ""get_items""
+          ""function"":""get_items""
         }
       ]
     }
   },
-  ""task_id"": ""cheapest-liked-combo-005"",
-  ""simulator_config"": {
-    ""bootstrap_data"": {
-      ""date"": ""2025-12-19T12:00:00-08:00"",
-      ""timezone"": ""America/Los_Angeles"",
-      ""user"": ""bella.quintero105@mail.test""
+  ""task_id"":""cheapest-liked-combo-005"",
+  ""simulator_config"":{
+    ""bootstrap_data"":{
+      ""date"":""2025-12-19T12:00:00-08:00"",
+      ""timezone"":""America/Los_Angeles"",
+      ""user"":""bella.quintero105@mail.test""
     }
   }
 }","[""Menu Viewing"", ""Cart Management""]","[""Price & rating tradeoffs"", ""Item selection""]","[""Search and filtering"", ""Decision making"", ""Order Placement""]",I want to order from Brooklyn Smokehouse. Order the cheapest Starters and also add a Crispy Cauliflower Tacos.,,10,Easy,
 cheapest-liked-combo-007,"{
-  ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""I want to order from Chinese Pantry. Order the cheapest Sides & Shares and also add a Chocolate Lava Pots."",
-  ""task_type"": ""GUI Comprehension, Action Execution, Element Identification"",
-  ""grader_config"": {
-    ""state_grader_configs"": [
+  ""start_url"":""https://dashdoor-prod.rlgym.turing.com"",
+  ""task_statement"":""I want to order from Chinese Pantry. Order the cheapest Sides & Shares and also add a Chocolate Lava Pots."",
+  ""task_type"":""GUI Comprehension, Action Execution, Element Identification"",
+  ""grader_config"":{
+    ""state_grader_configs"":[
       {
-        ""assertions"": [
+        ""assertions"":[
           {
-            ""operator"": ""JSON_CONTAINS"",
-            ""path_to_actual"": ""$.items[*].name"",
-            ""paths_to_expected"": [
-              ""$[1].items[0].name"",
-              ""$[2].items[0].name""
+            ""operator"":""JSON_CONTAINS"",
+            ""path_to_actual"":""$.items[*].name"",
+            ""paths_to_expected"":[
+              ""$[*].items[0].name""
             ]
           },
           {
-            ""operator"": ""JSON_PART_OF"",
-            ""path_to_actual"": ""$.items[*].name"",
-            ""paths_to_expected"": [
-              ""$[1].items[0].name"",
-              ""$[2].items[0].name""
+            ""operator"":""JSON_PART_OF"",
+            ""path_to_actual"":""$.items[*].name"",
+            ""paths_to_expected"":[
+              ""$[*].items[0].name""
             ]
           },
           {
-            ""expected"": [
+            ""expected"":[
               ""==2""
             ],
-            ""operator"": ""ARRAY_LENGTH_MATCH"",
-            ""path_to_actual"": ""$.items[*]""
+            ""operator"":""ARRAY_LENGTH_MATCH"",
+            ""path_to_actual"":""$.items[*]""
           },
           {
-            ""operator"": ""STRING_EQUALS"",
-            ""path_to_actual"": ""$.restaurantId"",
-            ""paths_to_expected"": [
+            ""operator"":""STRING_EQUALS"",
+            ""path_to_actual"":""$.restaurantId"",
+            ""paths_to_expected"":[
               ""$[0].restaurants[0].id""
             ]
           }
         ],
-        ""path_to_actual"": ""$.orders[0]""
+        ""path_to_actual"":""$.orders[0]""
       }
     ],
-    ""extract_states_config"": {
-      ""expected_state_functions"": [
+    ""extract_states_config"":{
+      ""expected_state_functions"":[
         {
-          ""args"": {
-            ""name"": ""Chinese Pantry""
+          ""args"":{
+            ""name"":""Chinese Pantry""
           },
-          ""function"": ""get_restaurants""
+          ""function"":""get_restaurants""
         },
         {
-          ""args"": {
-            ""restaurant_id"": ""$[0].restaurants[0].id"",
-            ""filters"": {
-              ""menu_categories"": [
+          ""args"":{
+            ""restaurant_id"":""$[0].restaurants[0].id"",
+            ""filters"":{
+              ""menu_categories"":[
                 ""Sides & Shares""
               ]
             },
-            ""sort_type"": [
+            ""sort_type"":[
               {
-                ""key"": ""price"",
-                ""order"": ""asc""
+                ""key"":""price"",
+                ""order"":""asc""
               },
               {
-                ""key"": ""rating"",
-                ""order"": ""desc""
+                ""key"":""rating"",
+                ""order"":""desc""
               }
             ],
-            ""limit"": 1
+            ""limit"":1
           },
-          ""function"": ""get_items""
+          ""function"":""get_items""
         },
         {
-          ""args"": {
-            ""restaurant_id"": ""$[0].restaurants[0].id"",
-            ""keywords"": [
+          ""args"":{
+            ""restaurant_id"":""$[0].restaurants[0].id"",
+            ""keywords"":[
               ""Chocolate""
             ],
-            ""limit"": 1
+            ""limit"":1
           },
-          ""function"": ""get_items""
+          ""function"":""get_items""
         }
       ]
     }
   },
-  ""task_id"": ""cheapest-liked-combo-007"",
-  ""simulator_config"": {
-    ""bootstrap_data"": {
-      ""date"": ""2025-12-19T12:00:00-08:00"",
-      ""timezone"": ""America/Los_Angeles"",
-      ""user"": ""willow.turner107@inbox.local""
+  ""task_id"":""cheapest-liked-combo-007"",
+  ""simulator_config"":{
+    ""bootstrap_data"":{
+      ""date"":""2025-12-19T12:00:00-08:00"",
+      ""timezone"":""America/Los_Angeles"",
+      ""user"":""willow.turner107@inbox.local""
     }
   }
 }","[""Menu Viewing"", ""Cart Management""]","[""Price & rating tradeoffs"", ""Item selection""]","[""Search and filtering"", ""Decision making"", ""Order Placement""]",I want to order from Chinese Pantry. Order the cheapest Sides & Shares and also add a Chocolate Lava Pots.,,10,Easy,
@@ -10930,142 +10910,140 @@ hotel-cheapest-delivery-001,"{
   }
 }","[""Address Entry & Validation""]","[""Address & delivery instructions"", ""Price filtering""]","[""Instruction following"", ""Search and filtering"", ""Order Placement""]","Add the address 456 Park Avenue, New york for the hotel I am currently staying at. My room number is 304 and hotel name is heaven heights. Have an express delivery of the cheapest chocolate lava pots nearby to my hotel. I want the delivery person to meet me at the hotel lobby.",,0,Hard,
 low-calorie-order-001,"{
-  ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""Lets order desserts from Rosa's pantry. But since I am on a diet make sure you pick the two different lowest calorie options. And also add chicken bites for my nephew, keep the spice level mild. Apply the SAVE20 coupon. Use the card ending with 7957 for payment."",
-  ""task_id"": ""low-calorie-order-001"",
-  ""task_type"": ""GUI Comprehension, Action Execution, Decision Making, Element Identification, Multi-Step Task Planning"",
-  ""simulator_config"": {
-    ""bootstrap_data"": {
-      ""date"": ""2025-12-19T12:00:00-08:00"",
-      ""timezone"": ""America/Los_Angeles"",
-      ""user"": ""lena.bennett40@example.com""
+  ""start_url"":""https://dashdoor-prod.rlgym.turing.com"",
+  ""task_statement"":""Lets order desserts from Rosa's pantry. But since I am on a diet make sure you pick the two different lowest calorie options. And also add chicken bites for my nephew, keep the spice level mild. Apply the SAVE20 coupon. Use the card ending with 7957 for payment."",
+  ""task_id"":""low-calorie-order-001"",
+  ""task_type"":""GUI Comprehension, Action Execution, Decision Making, Element Identification, Multi-Step Task Planning"",
+  ""simulator_config"":{
+    ""bootstrap_data"":{
+      ""date"":""2025-12-19T12:00:00-08:00"",
+      ""timezone"":""America/Los_Angeles"",
+      ""user"":""lena.bennett40@example.com""
     }
   },
-  ""grader_config"": {
-    ""state_grader_configs"": [
+  ""grader_config"":{
+    ""state_grader_configs"":[
       {
-        ""assertions"": [
+        ""assertions"":[
           {
-            ""operator"": ""STRING_EQUALS"",
-            ""paths_to_expected"": [
+            ""operator"":""STRING_EQUALS"",
+            ""paths_to_expected"":[
               ""$.deal.id""
             ]
           }
         ],
-        ""path_to_actual"": ""$.orders[0].appliedDeal.id""
+        ""path_to_actual"":""$.orders[0].appliedDeal.id""
       },
       {
-        ""assertions"": [
+        ""assertions"":[
           {
-            ""operator"": ""STRING_EQUALS"",
-            ""paths_to_expected"": [
+            ""operator"":""STRING_EQUALS"",
+            ""paths_to_expected"":[
               ""$.paymentMethod.lastFour""
             ]
           }
         ],
-        ""path_to_actual"": ""$.orders[0].paymentCard.lastFour""
+        ""path_to_actual"":""$.orders[0].paymentCard.lastFour""
       },
       {
-        ""assertions"": [
+        ""assertions"":[
           {
-            ""operator"": ""STRING_EQUALS"",
-            ""path_to_actual"": ""$.restaurantId"",
-            ""paths_to_expected"": [
+            ""operator"":""STRING_EQUALS"",
+            ""path_to_actual"":""$.restaurantId"",
+            ""paths_to_expected"":[
               ""$[2].restaurants[0].id""
             ]
           },
           {
-            ""operator"": ""JSON_PART_OF"",
-            ""path_to_actual"": ""$.items[*].name"",
-            ""paths_to_expected"": [
-              ""$[3].items[*].name"",
-              ""$[4].items[*].name""
+            ""operator"":""JSON_PART_OF"",
+            ""path_to_actual"":""$.items[*].name"",
+            ""paths_to_expected"":[
+              ""$[*].items.name""
             ]
           },
           {
-            ""operator"": ""JSON_CONTAINS"",
-            ""path_to_actual"": ""$.items[*].name"",
-            ""paths_to_expected"": [
-              ""$[3].items[*].name"",
-              ""$[4].items[*].name""
+            ""operator"":""JSON_CONTAINS"",
+            ""path_to_actual"":""$.items[*].name"",
+            ""paths_to_expected"":[
+              ""$[*].items.name""
             ]
           },
           {
-            ""operator"": ""STRING_EQUALS"",
-            ""path_to_actual"": ""$.items[?(@.name == 'Crispy Chicken Bites')].modifications[0].options[0].optionName"",
-            ""expected"": [
+            ""operator"":""STRING_EQUALS"",
+            ""path_to_actual"":""$.items[?(@.name == 'Crispy Chicken Bites')].modifications[0].options[0].optionName"",
+            ""expected"":[
               ""Mild""
             ]
           },
           {
-            ""expected"": [
+            ""expected"":[
               ""==3""
             ],
-            ""operator"": ""ARRAY_LENGTH_MATCH"",
-            ""path_to_actual"": ""$.items[*]""
+            ""operator"":""ARRAY_LENGTH_MATCH"",
+            ""path_to_actual"":""$.items[*]""
           }
         ],
-        ""path_to_actual"": ""$.orders[0]""
+        ""path_to_actual"":""$.orders[0]""
       }
     ],
-    ""extract_states_config"": {
-      ""expected_state_functions"": [
+    ""extract_states_config"":{
+      ""expected_state_functions"":[
         {
-          ""args"": {
-            ""user"": ""lena.bennett40@example.com""
+          ""args"":{
+            ""user"":""lena.bennett40@example.com""
           },
-          ""function"": ""get_user_address""
+          ""function"":""get_user_address""
         },
         {
-          ""args"": {
-            ""promocode"": ""SAVE20""
+          ""args"":{
+            ""promocode"":""SAVE20""
           },
-          ""function"": ""get_deal""
+          ""function"":""get_deal""
         },
         {
-          ""args"": {
-            ""lat"": ""$[0].address.lat"",
-            ""lng"": ""$[0].address.lng"",
-            ""limit"": 1,
-            ""name"": ""Rosa's Pantry""
+          ""args"":{
+            ""lat"":""$[0].address.lat"",
+            ""lng"":""$[0].address.lng"",
+            ""limit"":1,
+            ""name"":""Rosa's Pantry""
           },
-          ""function"": ""get_restaurants""
+          ""function"":""get_restaurants""
         },
         {
-          ""args"": {
-            ""limit"": 2,
-            ""filters"": {
-              ""menu_categories"": [
+          ""args"":{
+            ""limit"":2,
+            ""filters"":{
+              ""menu_categories"":[
                 ""desserts""
               ]
             },
-            ""sort_type"": [
+            ""sort_type"":[
               {
-                ""key"": ""calories"",
-                ""order"": ""asc""
+                ""key"":""calories"",
+                ""order"":""asc""
               }
             ],
-            ""restaurant_id"": ""$[2].restaurants[0].id""
+            ""restaurant_id"":""$[2].restaurants[0].id""
           },
-          ""function"": ""get_items""
+          ""function"":""get_items""
         },
         {
-          ""args"": {
-            ""limit"": 1,
-            ""keywords"": [
+          ""args"":{
+            ""limit"":1,
+            ""keywords"":[
               ""chicken bites""
             ],
-            ""restaurant_id"": ""$[2].restaurants[0].id""
+            ""restaurant_id"":""$[2].restaurants[0].id""
           },
-          ""function"": ""get_items""
+          ""function"":""get_items""
         },
         {
-          ""args"": {
-            ""filters"": {
-              ""last_four_digits"": ""7957""
+          ""args"":{
+            ""filters"":{
+              ""last_four_digits"":""7957""
             }
           },
-          ""function"": ""get_user_payment_method""
+          ""function"":""get_user_payment_method""
         }
       ]
     }
@@ -11395,52 +11373,52 @@ scheduled-group-order-001,"{
   }
 }","[""Menu viewing"", ""Item selection""]","[""Order placement""]","[""Search and filtering""]","Find the restaurant 'The Mama's Mediterranean' and order chicken shwarma platter for 4 people, schedule the delivery for 7:30 PM",,7,Medium,
 update-cart-quantity-001,"{
-  ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""I created a cart from Atlanta Cellar. Could you update the quantity of the item I've added to 1?"",
-  ""task_id"": ""update-cart-quantity-001"",
-  ""task_type"": ""GUI Comprehension, Action Execution"",
-  ""simulator_config"": {
-    ""bootstrap_data"": {
-      ""date"": ""2025-12-19T12:00:00-08:00"",
-      ""timezone"": ""America/Los_Angeles"",
-      ""user"": ""omar.walsh1396@dashdoor.test""
+  ""start_url"":""https://dashdoor-prod.rlgym.turing.com"",
+  ""task_statement"":""I created a cart from Atlanta Cellar. Could you update the quantity of the item I've added to 1?"",
+  ""task_id"":""update-cart-quantity-001"",
+  ""task_type"":""GUI Comprehension, Action Execution"",
+  ""simulator_config"":{
+    ""bootstrap_data"":{
+      ""date"":""2025-12-19T12:00:00-08:00"",
+      ""timezone"":""America/Los_Angeles"",
+      ""user"":""omar.walsh1396@dashdoor.test""
     }
   },
-  ""grader_config"": {
-    ""state_grader_configs"": [
+  ""grader_config"":{
+    ""state_grader_configs"":[
       {
-        ""assertions"": [
+        ""assertions"":[
           {
-            ""operator"": ""ARRAY_LENGTH_MATCH"",
-            ""expected"": [
+            ""operator"":""ARRAY_LENGTH_MATCH"",
+            ""expected"":[
               ""==1""
             ],
-            ""path_to_actual"": ""$.items[*]""
+            ""path_to_actual"":""$[0].items[*]""
           },
           {
-            ""operator"": ""NUMERIC_MATCH"",
-            ""path_to_actual"": ""$.items[0].quantity"",
-            ""expected"": [
+            ""operator"":""NUMERIC_MATCH"",
+            ""path_to_actual"":""$[0].items[0].quantity"",
+            ""expected"":[
               ""==1""
             ]
           }
         ],
-        ""path_to_actual"": ""$.carts[?(@.storeName == 'Atlanta Cellar')]""
+        ""path_to_actual"":""$.carts[?(@.storeName == 'Atlanta Cellar')]""
       }
     ],
-    ""extract_states_config"": {
-      ""expected_state_functions"": [
+    ""extract_states_config"":{
+      ""expected_state_functions"":[
         {
-          ""args"": {
-            ""user"": ""omar.walsh1396@dashdoor.test"",
-            ""filters"": {
-              ""restaurant_names"": [
+          ""args"":{
+            ""user"":""omar.walsh1396@dashdoor.test"",
+            ""filters"":{
+              ""restaurant_names"":[
                 ""Atlanta Cellar""
               ]
             },
-            ""limit"": 1
+            ""limit"":1
           },
-          ""function"": ""get_carts""
+          ""function"":""get_carts""
         }
       ]
     }
@@ -12323,355 +12301,353 @@ best-deal-order-004,"{
   }
 }","[""Menu Viewing""]","[""Price & deal optimization"", ""Restaurant discovery & filtering""]","[""Search and filtering"", ""Decision making"", ""Order Placement""]",I need to place an order at my office address. Filter restaurants with deals and apply the lowest price filter possible and from the results pick the highest rated (for ties prefer one with more reviews). Order 2 Entrees 2 Sides and 2 Drinks. Apply the first deal listed in the Deals & Benefits section on the restaurant page while checking out.,,0,Hard,
 bulk-simple-order-003,"{
-  ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""Order 3 Kimchi Slaw from Austin Cantina, make sure no customizations are selected. Also order 1 unit of the cheapest available Beverage. Change the contact number for the order to 9385546602"",
-  ""task_type"": ""GUI Comprehension, Action Execution, Element Identification, Decision Making"",
-  ""grader_config"": {
-    ""state_grader_configs"": [
+  ""start_url"":""https://dashdoor-prod.rlgym.turing.com"",
+  ""task_statement"":""Order 3 Kimchi Slaw from Austin Cantina, make sure no customizations are selected. Also order 1 unit of the cheapest available Beverage. Change the contact number for the order to 9385546602"",
+  ""task_type"":""GUI Comprehension, Action Execution, Element Identification, Decision Making"",
+  ""grader_config"":{
+    ""state_grader_configs"":[
       {
-        ""assertions"": [
+        ""assertions"":[
           {
-            ""operator"": ""STRING_EQUALS"",
-            ""paths_to_expected"": [
+            ""operator"":""STRING_EQUALS"",
+            ""paths_to_expected"":[
               ""$[0].address.id""
             ]
           }
         ],
-        ""path_to_actual"": ""$.orders[0].deliveryAddress.id""
+        ""path_to_actual"":""$.orders[0].deliveryAddress.id""
       },
       {
-        ""assertions"": [
+        ""assertions"":[
           {
-            ""operator"": ""STRING_EQUALS"",
-            ""expected"": [
+            ""operator"":""STRING_EQUALS"",
+            ""expected"":[
               ""9385546602""
             ]
           }
         ],
-        ""path_to_actual"": ""$.orders[0].phoneNumber.number""
+        ""path_to_actual"":""$.orders[0].phoneNumber.number""
       },
       {
-        ""assertions"": [
+        ""assertions"":[
           {
-            ""operator"": ""JSON_PART_OF"",
-            ""path_to_actual"": ""$.items[*].id"",
-            ""paths_to_expected"": [
-              ""$[2].items[0].id"",
-              ""$[3].items[0].id""
+            ""operator"":""JSON_PART_OF"",
+            ""path_to_actual"":""$.items[*].id"",
+            ""paths_to_expected"":[
+              ""$[*].items[0].id""
             ]
           },
           {
-            ""operator"": ""JSON_CONTAINS"",
-            ""path_to_actual"": ""$.items[*].id"",
-            ""paths_to_expected"": [
-              ""$[2].items[0].id"",
-              ""$[3].items[0].id""
+            ""operator"":""JSON_CONTAINS"",
+            ""path_to_actual"":""$.items[*].id"",
+            ""paths_to_expected"":[
+              ""$[*].items[0].id""
             ]
           },
           {
-            ""expected"": [
+            ""expected"":[
               ""==2""
             ],
-            ""operator"": ""ARRAY_LENGTH_MATCH"",
-            ""path_to_actual"": ""$.items[*]""
+            ""operator"":""ARRAY_LENGTH_MATCH"",
+            ""path_to_actual"":""$.items[*]""
           },
           {
-            ""operator"": ""NUMERIC_MATCH"",
-            ""path_to_actual"": ""$.items[0].quantity"",
-            ""expected"": [
+            ""operator"":""NUMERIC_MATCH"",
+            ""path_to_actual"":""$.items[0].quantity"",
+            ""expected"":[
               ""==3""
             ]
           },
           {
-            ""operator"": ""NUMERIC_MATCH"",
-            ""path_to_actual"": ""$.items[1].quantity"",
-            ""expected"": [
+            ""operator"":""NUMERIC_MATCH"",
+            ""path_to_actual"":""$.items[1].quantity"",
+            ""expected"":[
               ""==1""
             ]
           },
           {
-            ""operator"": ""STRING_EQUALS"",
-            ""path_to_actual"": ""$.items[?(@.name == 'Kimchi Slaw')].modifications[*]"",
-            ""expected"": [
+            ""operator"":""STRING_EQUALS"",
+            ""path_to_actual"":""$.items[?(@.name == 'Kimchi Slaw')].modifications[*]"",
+            ""expected"":[
               """"
             ]
           }
         ],
-        ""path_to_actual"": ""$.orders[0]""
+        ""path_to_actual"":""$.orders[0]""
       }
     ],
-    ""extract_states_config"": {
-      ""expected_state_functions"": [
+    ""extract_states_config"":{
+      ""expected_state_functions"":[
         {
-          ""args"": {
-            ""user"": ""rosa.nguyen59@mail.test""
+          ""args"":{
+            ""user"":""rosa.nguyen59@mail.test""
           },
-          ""function"": ""get_user_address""
+          ""function"":""get_user_address""
         },
         {
-          ""args"": {
-            ""lat"": ""$[0].address.lat"",
-            ""lng"": ""$[0].address.lng"",
-            ""limit"": 1,
-            ""name"": ""Austin Cantina"",
-            ""sort_type"": [
+          ""args"":{
+            ""lat"":""$[0].address.lat"",
+            ""lng"":""$[0].address.lng"",
+            ""limit"":1,
+            ""name"":""Austin Cantina"",
+            ""sort_type"":[
               {
-                ""key"": ""priceRange"",
-                ""order"": ""asc""
+                ""key"":""priceRange"",
+                ""order"":""asc""
               },
               {
-                ""key"": ""rating"",
-                ""order"": ""desc""
+                ""key"":""rating"",
+                ""order"":""desc""
               }
             ]
           },
-          ""function"": ""get_restaurants""
+          ""function"":""get_restaurants""
         },
         {
-          ""args"": {
-            ""limit"": 1,
-            ""keywords"": [
+          ""args"":{
+            ""limit"":1,
+            ""keywords"":[
               ""Kimchi Slaw""
             ],
-            ""restaurant_id"": ""$[1].restaurants[0].id""
+            ""restaurant_id"":""$[1].restaurants[0].id""
           },
-          ""function"": ""get_items""
+          ""function"":""get_items""
         },
         {
-          ""args"": {
-            ""limit"": 1,
-            ""filters"": {
-              ""menu_categories"": [
+          ""args"":{
+            ""limit"":1,
+            ""filters"":{
+              ""menu_categories"":[
                 ""Beverages""
               ]
             },
-            ""sort_type"": [
+            ""sort_type"":[
               {
-                ""key"": ""price"",
-                ""order"": ""asc""
+                ""key"":""price"",
+                ""order"":""asc""
               },
               {
-                ""key"": ""rating"",
-                ""order"": ""desc""
+                ""key"":""rating"",
+                ""order"":""desc""
               }
             ],
-            ""restaurant_id"": ""$[1].restaurants[0].id""
+            ""restaurant_id"":""$[1].restaurants[0].id""
           },
-          ""function"": ""get_items""
+          ""function"":""get_items""
         }
       ]
     }
   },
-  ""task_id"": ""bulk-simple-order-003"",
-  ""simulator_config"": {
-    ""bootstrap_data"": {
-      ""date"": ""2025-12-19T12:00:00-08:00"",
-      ""timezone"": ""America/Los_Angeles"",
-      ""user"": ""rosa.nguyen59@mail.test""
+  ""task_id"":""bulk-simple-order-003"",
+  ""simulator_config"":{
+    ""bootstrap_data"":{
+      ""date"":""2025-12-19T12:00:00-08:00"",
+      ""timezone"":""America/Los_Angeles"",
+      ""user"":""rosa.nguyen59@mail.test""
     }
   }
 }","[""Cart Management""]","[""Cart editing & item swaps"", ""Price filtering"", ""Contact info management""]","[""Instruction following"", ""Search and filtering"", ""UI Elements: Text Fields""]","Order 3 Kimchi Slaw from Austin Cantina, make sure no customizations are selected. Also order 1 unit of the cheapest available Beverage. Change the contact number for the order to 9385546602",,4,Medium,
 update-delivery-instructions-003,"{
-  ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""I recently checked into room 837 of the hotel building. Also delivery folks are no longer allowed to go beyond the lobby, so make sure you update the drop off location and the delivery instructions accordingly"",
-  ""task_type"": ""GUI Comprehension, Action Execution, Element Identification"",
-  ""grader_config"": {
-    ""state_grader_configs"": [
+  ""start_url"":""https://dashdoor-prod.rlgym.turing.com"",
+  ""task_statement"":""I recently checked into room 837 of the hotel building. Also delivery folks are no longer allowed to go beyond the lobby, so make sure you update the drop off location and the delivery instructions accordingly"",
+  ""task_type"":""GUI Comprehension, Action Execution, Element Identification"",
+  ""grader_config"":{
+    ""state_grader_configs"":[
       {
-        ""assertions"": [
+        ""assertions"":[
           {
-            ""operator"": ""STRING_EQUALS"",
-            ""expected"": [
+            ""operator"":""STRING_EQUALS"",
+            ""expected"":[
               ""837""
             ],
-            ""path_to_actual"": ""$.roomSuite""
+            ""path_to_actual"":""$[0].roomSuite""
           },
           {
-            ""operator"": ""STRING_EQUALS"",
-            ""expected"": [
+            ""operator"":""STRING_EQUALS"",
+            ""expected"":[
               ""leave""
             ],
-            ""path_to_actual"": ""$.deliveryPreference""
+            ""path_to_actual"":""$[0].deliveryPreference""
           },
           {
-            ""operator"": ""STRING_EQUALS"",
-            ""expected"": [
+            ""operator"":""STRING_EQUALS"",
+            ""expected"":[
               ""lobby""
             ],
-            ""path_to_actual"": ""$.deliveryLocation""
+            ""path_to_actual"":""$[0].deliveryLocation""
           },
           {
-            ""operator"": ""STRING_CONTAINS"",
-            ""expected"": [
+            ""operator"":""STRING_CONTAINS"",
+            ""expected"":[
               ""lobby""
             ],
-            ""path_to_actual"": ""$.deliveryInstructions""
+            ""path_to_actual"":""$[0].deliveryInstructions""
           },
           {
-            ""operator"": ""STRING_NOT_CONTAINS"",
-            ""paths_to_expected"": [
+            ""operator"":""STRING_NOT_CONTAINS"",
+            ""paths_to_expected"":[
               ""$[0].address.deliveryInstructions""
             ],
-            ""path_to_actual"": ""$.deliveryInstructions""
+            ""path_to_actual"":""$[0].deliveryInstructions""
           }
         ],
-        ""path_to_actual"": ""$.user.currentUser.addresses[?(@.addressType == 'hotel')]""
+        ""path_to_actual"":""$.user.currentUser.addresses[?(@.addressType == 'hotel')]""
       }
     ],
-    ""extract_states_config"": {
-      ""expected_state_functions"": [
+    ""extract_states_config"":{
+      ""expected_state_functions"":[
         {
-          ""args"": {
-            ""type"": ""hotel"",
-            ""user"": ""diana.chambers69@mail.test""
+          ""args"":{
+            ""type"":""hotel"",
+            ""user"":""diana.chambers69@mail.test""
           },
-          ""function"": ""get_user_address""
+          ""function"":""get_user_address""
         }
       ]
     }
   },
-  ""task_id"": ""update-delivery-instructions-003"",
-  ""simulator_config"": {
-    ""bootstrap_data"": {
-      ""date"": ""2025-12-19T12:00:00-08:00"",
-      ""timezone"": ""America/Los_Angeles"",
-      ""user"": ""diana.chambers69@mail.test""
+  ""task_id"":""update-delivery-instructions-003"",
+  ""simulator_config"":{
+    ""bootstrap_data"":{
+      ""date"":""2025-12-19T12:00:00-08:00"",
+      ""timezone"":""America/Los_Angeles"",
+      ""user"":""diana.chambers69@mail.test""
     }
   }
 }","[""Address Entry & Validation""]","[""Address & delivery instructions""]","[""Instruction following"", ""UI Elements: Text Fields""]","I recently checked into room 837 of the hotel building. Also delivery folks are no longer allowed to go beyond the lobby, so make sure you update the drop off location and the delivery instructions accordingly",,0,Hard,
 update-delivery-instructions-004,"{
-  ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""My other building recently had an gate code added. The code is 2091. Also delivery folks are no longer allowed to go beyond the lobby, so make sure you update the drop off location and the delivery instructions accordingly"",
-  ""task_type"": ""GUI Comprehension, Action Execution, Element Identification"",
-  ""grader_config"": {
-    ""state_grader_configs"": [
+  ""start_url"":""https://dashdoor-prod.rlgym.turing.com"",
+  ""task_statement"":""My other building recently had an gate code added. The code is 2091. Also delivery folks are no longer allowed to go beyond the lobby, so make sure you update the drop off location and the delivery instructions accordingly"",
+  ""task_type"":""GUI Comprehension, Action Execution, Element Identification"",
+  ""grader_config"":{
+    ""state_grader_configs"":[
       {
-        ""assertions"": [
+        ""assertions"":[
           {
-            ""operator"": ""STRING_EQUALS"",
-            ""expected"": [
+            ""operator"":""STRING_EQUALS"",
+            ""expected"":[
               ""2091""
             ],
-            ""path_to_actual"": ""$.gateCode""
+            ""path_to_actual"":""$[0].gateCode""
           },
           {
-            ""operator"": ""STRING_EQUALS"",
-            ""expected"": [
+            ""operator"":""STRING_EQUALS"",
+            ""expected"":[
               ""leave""
             ],
-            ""path_to_actual"": ""$.deliveryPreference""
+            ""path_to_actual"":""$[0].deliveryPreference""
           },
           {
-            ""operator"": ""STRING_EQUALS"",
-            ""expected"": [
+            ""operator"":""STRING_EQUALS"",
+            ""expected"":[
               ""lobby""
             ],
-            ""path_to_actual"": ""$.deliveryLocation""
+            ""path_to_actual"":""$[0].deliveryLocation""
           },
           {
-            ""operator"": ""STRING_CONTAINS"",
-            ""expected"": [
+            ""operator"":""STRING_CONTAINS"",
+            ""expected"":[
               ""lobby""
             ],
-            ""path_to_actual"": ""$.deliveryInstructions""
+            ""path_to_actual"":""$[0].deliveryInstructions""
           },
           {
-            ""operator"": ""STRING_NOT_CONTAINS"",
-            ""paths_to_expected"": [
+            ""operator"":""STRING_NOT_CONTAINS"",
+            ""paths_to_expected"":[
               ""$[0].address.deliveryInstructions""
             ],
-            ""path_to_actual"": ""$.deliveryInstructions""
+            ""path_to_actual"":""$[0].deliveryInstructions""
           }
         ],
-        ""path_to_actual"": ""$.user.currentUser.addresses[?(@.addressType == 'other')]""
+        ""path_to_actual"":""$.user.currentUser.addresses[?(@.addressType == 'other')]""
       }
     ],
-    ""extract_states_config"": {
-      ""expected_state_functions"": [
+    ""extract_states_config"":{
+      ""expected_state_functions"":[
         {
-          ""args"": {
-            ""type"": ""other"",
-            ""user"": ""uma.walsh70@example.com""
+          ""args"":{
+            ""type"":""other"",
+            ""user"":""uma.walsh70@example.com""
           },
-          ""function"": ""get_user_address""
+          ""function"":""get_user_address""
         }
       ]
     }
   },
-  ""task_id"": ""update-delivery-instructions-004"",
-  ""simulator_config"": {
-    ""bootstrap_data"": {
-      ""date"": ""2025-12-19T12:00:00-08:00"",
-      ""timezone"": ""America/Los_Angeles"",
-      ""user"": ""uma.walsh70@example.com""
+  ""task_id"":""update-delivery-instructions-004"",
+  ""simulator_config"":{
+    ""bootstrap_data"":{
+      ""date"":""2025-12-19T12:00:00-08:00"",
+      ""timezone"":""America/Los_Angeles"",
+      ""user"":""uma.walsh70@example.com""
     }
   }
 }","[""Address Entry & Validation""]","[""Address & delivery instructions""]","[""Instruction following"", ""UI Elements: Text Fields""]","My other building recently had an gate code added. The code is 2091. Also delivery folks are no longer allowed to go beyond the lobby, so make sure you update the drop off location and the delivery instructions accordingly",,0,Hard,
 update-delivery-instructions-006,"{
-  ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""My other building recently had an gate code added. The code is 4954. Also delivery folks are no longer allowed to go beyond the lobby, so make sure you update the drop off location and the delivery instructions accordingly"",
-  ""task_type"": ""GUI Comprehension, Action Execution, Element Identification"",
-  ""grader_config"": {
-    ""state_grader_configs"": [
+  ""start_url"":""https://dashdoor-prod.rlgym.turing.com"",
+  ""task_statement"":""My other building recently had an gate code added. The code is 4954. Also delivery folks are no longer allowed to go beyond the lobby, so make sure you update the drop off location and the delivery instructions accordingly"",
+  ""task_type"":""GUI Comprehension, Action Execution, Element Identification"",
+  ""grader_config"":{
+    ""state_grader_configs"":[
       {
-        ""assertions"": [
+        ""assertions"":[
           {
-            ""operator"": ""STRING_EQUALS"",
-            ""expected"": [
+            ""operator"":""STRING_EQUALS"",
+            ""expected"":[
               ""4954""
             ],
-            ""path_to_actual"": ""$.gateCode""
+            ""path_to_actual"":""$[0].gateCode""
           },
           {
-            ""operator"": ""STRING_EQUALS"",
-            ""expected"": [
+            ""operator"":""STRING_EQUALS"",
+            ""expected"":[
               ""leave""
             ],
-            ""path_to_actual"": ""$.deliveryPreference""
+            ""path_to_actual"":""$[0].deliveryPreference""
           },
           {
-            ""operator"": ""STRING_EQUALS"",
-            ""expected"": [
+            ""operator"":""STRING_EQUALS"",
+            ""expected"":[
               ""lobby""
             ],
-            ""path_to_actual"": ""$.deliveryLocation""
+            ""path_to_actual"":""$[0].deliveryLocation""
           },
           {
-            ""operator"": ""STRING_CONTAINS"",
-            ""expected"": [
+            ""operator"":""STRING_CONTAINS"",
+            ""expected"":[
               ""lobby""
             ],
-            ""path_to_actual"": ""$.deliveryInstructions""
+            ""path_to_actual"":""$[0].deliveryInstructions""
           },
           {
-            ""operator"": ""STRING_NOT_CONTAINS"",
-            ""paths_to_expected"": [
+            ""operator"":""STRING_NOT_CONTAINS"",
+            ""paths_to_expected"":[
               ""$[0].address.deliveryInstructions""
             ],
-            ""path_to_actual"": ""$.deliveryInstructions""
+            ""path_to_actual"":""$[0].deliveryInstructions""
           }
         ],
-        ""path_to_actual"": ""$.user.currentUser.addresses[?(@.addressType == 'other')]""
+        ""path_to_actual"":""$.user.currentUser.addresses[?(@.addressType == 'other')]""
       }
     ],
-    ""extract_states_config"": {
-      ""expected_state_functions"": [
+    ""extract_states_config"":{
+      ""expected_state_functions"":[
         {
-          ""args"": {
-            ""type"": ""other"",
-            ""user"": ""hannah.manning72@inbox.local""
+          ""args"":{
+            ""type"":""other"",
+            ""user"":""hannah.manning72@inbox.local""
           },
-          ""function"": ""get_user_address""
+          ""function"":""get_user_address""
         }
       ]
     }
   },
-  ""task_id"": ""update-delivery-instructions-006"",
-  ""simulator_config"": {
-    ""bootstrap_data"": {
-      ""date"": ""2025-12-19T12:00:00-08:00"",
-      ""timezone"": ""America/Los_Angeles"",
-      ""user"": ""hannah.manning72@inbox.local""
+  ""task_id"":""update-delivery-instructions-006"",
+  ""simulator_config"":{
+    ""bootstrap_data"":{
+      ""date"":""2025-12-19T12:00:00-08:00"",
+      ""timezone"":""America/Los_Angeles"",
+      ""user"":""hannah.manning72@inbox.local""
     }
   }
 }","[""Address Entry & Validation""]","[""Address & delivery instructions""]","[""Instruction following"", ""UI Elements: Text Fields""]","My other building recently had an gate code added. The code is 4954. Also delivery folks are no longer allowed to go beyond the lobby, so make sure you update the drop off location and the delivery instructions accordingly",,0,Hard,
@@ -12782,273 +12758,269 @@ lowest-calorie-dessert-003,"{
   }
 }","[""Cart Management""]","[""Diet & calorie filtering"", ""Item customization""]","[""Search and filtering"", ""Decision making"", ""Order Placement""]",Find the highest rated Fast Food restaurant near my address labelled other and order 2 servings of the lowest calorie Drinks.,,1,Hard,
 helpful-review-items-006,"{
-  ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""Somebody recommended Willow's Table to me. Could you check the reviews and find the most helpful one that includes liked items, then add those items to my cart? If any required modifications exist, choose the cheapest options."",
-  ""task_type"": ""GUI Comprehension, Action Execution, Decision Making, Element Identification"",
-  ""grader_config"": {
-    ""state_grader_configs"": [
+  ""start_url"":""https://dashdoor-prod.rlgym.turing.com"",
+  ""task_statement"":""Somebody recommended Willow's Table to me. Could you check the reviews and find the most helpful one that includes liked items, then add those items to my cart? If any required modifications exist, choose the cheapest options."",
+  ""task_type"":""GUI Comprehension, Action Execution, Decision Making, Element Identification"",
+  ""grader_config"":{
+    ""state_grader_configs"":[
       {
-        ""assertions"": [
+        ""assertions"":[
           {
-            ""operator"": ""JSON_PART_OF"",
-            ""path_to_actual"": ""$.items[*].itemName"",
-            ""paths_to_expected"": [
+            ""operator"":""JSON_PART_OF"",
+            ""path_to_actual"":""$[0].items[*].itemName"",
+            ""paths_to_expected"":[
               ""$[1].reviews[0].likedItems[*].itemName""
             ]
           },
           {
-            ""operator"": ""JSON_CONTAINS"",
-            ""path_to_actual"": ""$.items[*].itemName"",
-            ""paths_to_expected"": [
+            ""operator"":""JSON_CONTAINS"",
+            ""path_to_actual"":""$[0].items[*].itemName"",
+            ""paths_to_expected"":[
               ""$[1].reviews[0].likedItems[*].itemName""
             ]
           },
           {
-            ""operator"": ""STRING_EQUALS"",
-            ""path_to_actual"": ""$.storeId"",
-            ""paths_to_expected"": [
+            ""operator"":""STRING_EQUALS"",
+            ""path_to_actual"":""$[0].storeId"",
+            ""paths_to_expected"":[
               ""$[1].reviews[0].storeId""
             ]
           },
           {
-            ""operator"": ""STRING_EQUALS"",
-            ""path_to_actual"": ""$.items[0].appliedModifications[0].appliedOptions[0].optionId"",
-            ""paths_to_expected"": [
+            ""operator"":""STRING_EQUALS"",
+            ""path_to_actual"":""$[0].items[0].appliedModifications[0].appliedOptions[0].optionId"",
+            ""paths_to_expected"":[
               ""$[2].modification.options[0].id""
             ]
           }
         ],
-        ""path_to_actual"": ""$.carts[?(@.storeName == 'Willow\\'s Table')]""
+        ""path_to_actual"":""$.carts[?(@.storeName == 'Willow\\'s Table')]""
       }
     ],
-    ""extract_states_config"": {
-      ""expected_state_functions"": [
+    ""extract_states_config"":{
+      ""expected_state_functions"":[
         {
-          ""args"": {
-            ""name"": ""Willow's Table""
+          ""args"":{
+            ""name"":""Willow's Table""
           },
-          ""function"": ""get_restaurants""
+          ""function"":""get_restaurants""
         },
         {
-          ""args"": {
-            ""limit"": 1,
-            ""restaurant_id"": ""$[0].restaurants[0].id"",
-            ""has_liked_items"": true,
-            ""sort_type"": [
+          ""args"":{
+            ""limit"":1,
+            ""restaurant_id"":""$[0].restaurants[0].id"",
+            ""has_liked_items"":true,
+            ""sort_type"":[
               {
-                ""key"": ""helpfulCount"",
-                ""order"": ""desc""
+                ""key"":""helpfulCount"",
+                ""order"":""desc""
               }
             ]
           },
-          ""function"": ""get_reviews""
+          ""function"":""get_reviews""
         },
         {
-          ""args"": {
-            ""item_id"": ""$[1].reviews[0].likedItems[0].menuItemId"",
-            ""modification_name"": """",
-            ""is_required"": true,
-            ""sort_options_by_price"": true
+          ""args"":{
+            ""item_id"":""$[1].reviews[0].likedItems[0].menuItemId"",
+            ""modification_name"":"""",
+            ""is_required"":true,
+            ""sort_options_by_price"":true
           },
-          ""function"": ""get_modifications""
+          ""function"":""get_modifications""
         }
       ]
     }
   },
-  ""task_id"": ""helpful-review-items-006"",
-  ""simulator_config"": {
-    ""bootstrap_data"": {
-      ""date"": ""2025-12-19T12:00:00-08:00"",
-      ""timezone"": ""America/Los_Angeles"",
-      ""user"": ""isla.lopez94@dashdoor.test""
+  ""task_id"":""helpful-review-items-006"",
+  ""simulator_config"":{
+    ""bootstrap_data"":{
+      ""date"":""2025-12-19T12:00:00-08:00"",
+      ""timezone"":""America/Los_Angeles"",
+      ""user"":""isla.lopez94@dashdoor.test""
     }
   }
 }","[""Ratings & Reviews""]","[""Review-based recommendations""]","[""Ratings analysis"", ""Instruction following""]","Somebody recommended Willow's Table to me. Could you check the reviews and find the most helpful one that includes liked items, then add those items to my cart? If any required modifications exist, choose the cheapest options.",,2,Hard,
 cheapest-liked-combo-004,"{
-  ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""I want to order from Panera Bread. Order the cheapest Bakery & Drinks in Lemon flavour and also add a Creamy Tomato Soup."",
-  ""task_type"": ""GUI Comprehension, Action Execution, Element Identification"",
-  ""grader_config"": {
-    ""state_grader_configs"": [
+  ""start_url"":""https://dashdoor-prod.rlgym.turing.com"",
+  ""task_statement"":""I want to order from Panera Bread. Order the cheapest Bakery & Drinks in Lemon flavour and also add a Creamy Tomato Soup."",
+  ""task_type"":""GUI Comprehension, Action Execution, Element Identification"",
+  ""grader_config"":{
+    ""state_grader_configs"":[
       {
-        ""assertions"": [
+        ""assertions"":[
           {
-            ""operator"": ""JSON_CONTAINS"",
-            ""path_to_actual"": ""$.items[*].name"",
-            ""paths_to_expected"": [
-              ""$[1].items[0].name"",
-              ""$[2].items[0].name""
+            ""operator"":""JSON_CONTAINS"",
+            ""path_to_actual"":""$.items[*].name"",
+            ""paths_to_expected"":[
+              ""$[*].items[0].name""
             ]
           },
           {
-            ""operator"": ""JSON_PART_OF"",
-            ""path_to_actual"": ""$.items[*].name"",
-            ""paths_to_expected"": [
-              ""$[1].items[0].name"",
-              ""$[2].items[0].name""
+            ""operator"":""JSON_PART_OF"",
+            ""path_to_actual"":""$.items[*].name"",
+            ""paths_to_expected"":[
+              ""$[*].items[0].name""
             ]
           },
           {
-            ""expected"": [
+            ""expected"":[
               ""==2""
             ],
-            ""operator"": ""ARRAY_LENGTH_MATCH"",
-            ""path_to_actual"": ""$.items[*]""
+            ""operator"":""ARRAY_LENGTH_MATCH"",
+            ""path_to_actual"":""$.items[*]""
           },
           {
-            ""operator"": ""STRING_EQUALS"",
-            ""path_to_actual"": ""$.restaurantId"",
-            ""paths_to_expected"": [
+            ""operator"":""STRING_EQUALS"",
+            ""path_to_actual"":""$.restaurantId"",
+            ""paths_to_expected"":[
               ""$[0].restaurants[0].id""
             ]
           }
         ],
-        ""path_to_actual"": ""$.orders[0]""
+        ""path_to_actual"":""$.orders[0]""
       }
     ],
-    ""extract_states_config"": {
-      ""expected_state_functions"": [
+    ""extract_states_config"":{
+      ""expected_state_functions"":[
         {
-          ""args"": {
-            ""name"": ""Panera Bread""
+          ""args"":{
+            ""name"":""Panera Bread""
           },
-          ""function"": ""get_restaurants""
+          ""function"":""get_restaurants""
         },
         {
-          ""args"": {
-            ""restaurant_id"": ""$[0].restaurants[0].id"",
-            ""filters"": {
-              ""menu_categories"": [
+          ""args"":{
+            ""restaurant_id"":""$[0].restaurants[0].id"",
+            ""filters"":{
+              ""menu_categories"":[
                 ""Bakery & Drinks""
               ]
             },
-            ""sort_type"": [
+            ""sort_type"":[
               {
-                ""key"": ""price"",
-                ""order"": ""asc""
+                ""key"":""price"",
+                ""order"":""asc""
               },
               {
-                ""key"": ""rating"",
-                ""order"": ""desc""
+                ""key"":""rating"",
+                ""order"":""desc""
               }
             ],
-            ""limit"": 1
+            ""limit"":1
           },
-          ""function"": ""get_items""
+          ""function"":""get_items""
         },
         {
-          ""args"": {
-            ""restaurant_id"": ""$[0].restaurants[0].id"",
-            ""keywords"": [
+          ""args"":{
+            ""restaurant_id"":""$[0].restaurants[0].id"",
+            ""keywords"":[
               ""Creamy""
             ],
-            ""limit"": 1
+            ""limit"":1
           },
-          ""function"": ""get_items""
+          ""function"":""get_items""
         }
       ]
     }
   },
-  ""task_id"": ""cheapest-liked-combo-004"",
-  ""simulator_config"": {
-    ""bootstrap_data"": {
-      ""date"": ""2025-12-19T12:00:00-08:00"",
-      ""timezone"": ""America/Los_Angeles"",
-      ""user"": ""yuna.bennett104@example.com""
+  ""task_id"":""cheapest-liked-combo-004"",
+  ""simulator_config"":{
+    ""bootstrap_data"":{
+      ""date"":""2025-12-19T12:00:00-08:00"",
+      ""timezone"":""America/Los_Angeles"",
+      ""user"":""yuna.bennett104@example.com""
     }
   }
 }","[""Menu Viewing"", ""Cart Management""]","[""Price & rating tradeoffs"", ""Item selection""]","[""Search and filtering"", ""Decision making"", ""Order Placement""]",I want to order from Panera Bread. Order the cheapest Bakery & Drinks in Lemon flavour and also add a Creamy Tomato Soup.,,10,Easy,
 cheapest-liked-combo-006,"{
-  ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""I want to order from Miami Market. Order the cheapest Sides & Shares and also add a Citrus Ginger Salmon Bowl."",
-  ""task_type"": ""GUI Comprehension, Action Execution, Element Identification"",
-  ""grader_config"": {
-    ""state_grader_configs"": [
+  ""start_url"":""https://dashdoor-prod.rlgym.turing.com"",
+  ""task_statement"":""I want to order from Miami Market. Order the cheapest Sides & Shares and also add a Citrus Ginger Salmon Bowl."",
+  ""task_type"":""GUI Comprehension, Action Execution, Element Identification"",
+  ""grader_config"":{
+    ""state_grader_configs"":[
       {
-        ""assertions"": [
+        ""assertions"":[
           {
-            ""operator"": ""JSON_CONTAINS"",
-            ""path_to_actual"": ""$.items[*].name"",
-            ""paths_to_expected"": [
-              ""$[1].items[0].name"",
-              ""$[2].items[0].name""
+            ""operator"":""JSON_CONTAINS"",
+            ""path_to_actual"":""$.items[*].name"",
+            ""paths_to_expected"":[
+              ""$[*].items[0].name""
             ]
           },
           {
-            ""operator"": ""JSON_PART_OF"",
-            ""path_to_actual"": ""$.items[*].name"",
-            ""paths_to_expected"": [
-              ""$[1].items[0].name"",
-              ""$[2].items[0].name""
+            ""operator"":""JSON_PART_OF"",
+            ""path_to_actual"":""$.items[*].name"",
+            ""paths_to_expected"":[
+              ""$[*].items[0].name""
             ]
           },
           {
-            ""expected"": [
+            ""expected"":[
               ""==2""
             ],
-            ""operator"": ""ARRAY_LENGTH_MATCH"",
-            ""path_to_actual"": ""$.items[*]""
+            ""operator"":""ARRAY_LENGTH_MATCH"",
+            ""path_to_actual"":""$.items[*]""
           },
           {
-            ""operator"": ""STRING_EQUALS"",
-            ""path_to_actual"": ""$.restaurantId"",
-            ""paths_to_expected"": [
+            ""operator"":""STRING_EQUALS"",
+            ""path_to_actual"":""$.restaurantId"",
+            ""paths_to_expected"":[
               ""$[0].restaurants[0].id""
             ]
           }
         ],
-        ""path_to_actual"": ""$.orders[0]""
+        ""path_to_actual"":""$.orders[0]""
       }
     ],
-    ""extract_states_config"": {
-      ""expected_state_functions"": [
+    ""extract_states_config"":{
+      ""expected_state_functions"":[
         {
-          ""args"": {
-            ""name"": ""Miami Market""
+          ""args"":{
+            ""name"":""Miami Market""
           },
-          ""function"": ""get_restaurants""
+          ""function"":""get_restaurants""
         },
         {
-          ""args"": {
-            ""restaurant_id"": ""$[0].restaurants[0].id"",
-            ""filters"": {
-              ""menu_categories"": [
+          ""args"":{
+            ""restaurant_id"":""$[0].restaurants[0].id"",
+            ""filters"":{
+              ""menu_categories"":[
                 ""Sides & Shares""
               ]
             },
-            ""sort_type"": [
+            ""sort_type"":[
               {
-                ""key"": ""price"",
-                ""order"": ""asc""
+                ""key"":""price"",
+                ""order"":""asc""
               },
               {
-                ""key"": ""rating"",
-                ""order"": ""desc""
+                ""key"":""rating"",
+                ""order"":""desc""
               }
             ],
-            ""limit"": 1
+            ""limit"":1
           },
-          ""function"": ""get_items""
+          ""function"":""get_items""
         },
         {
-          ""args"": {
-            ""restaurant_id"": ""$[0].restaurants[0].id"",
-            ""keywords"": [
+          ""args"":{
+            ""restaurant_id"":""$[0].restaurants[0].id"",
+            ""keywords"":[
               ""Citrus""
             ],
-            ""limit"": 1
+            ""limit"":1
           },
-          ""function"": ""get_items""
+          ""function"":""get_items""
         }
       ]
     }
   },
-  ""task_id"": ""cheapest-liked-combo-006"",
-  ""simulator_config"": {
-    ""bootstrap_data"": {
-      ""date"": ""2025-12-19T12:00:00-08:00"",
-      ""timezone"": ""America/Los_Angeles"",
-      ""user"": ""zane.vega106@mail.test""
+  ""task_id"":""cheapest-liked-combo-006"",
+  ""simulator_config"":{
+    ""bootstrap_data"":{
+      ""date"":""2025-12-19T12:00:00-08:00"",
+      ""timezone"":""America/Los_Angeles"",
+      ""user"":""zane.vega106@mail.test""
     }
   }
 }","[""Menu Viewing"", ""Cart Management""]","[""Price & rating tradeoffs"", ""Item selection""]","[""Search and filtering"", ""Decision making"", ""Order Placement""]",I want to order from Miami Market. Order the cheapest Sides & Shares and also add a Citrus Ginger Salmon Bowl.,,10,Easy,
@@ -14877,151 +14849,149 @@ best-deal-order-008,"{
   }
 }","[""Menu Viewing""]","[""Price & deal optimization"", ""Restaurant discovery & filtering""]","[""Search and filtering"", ""Decision making"", ""Order Placement""]",I need to place an order at my house address. Look for cheapest restaurants with deals and pick the best one. Order enough Drinks to meet the spending limit for the deal.,,0,Hard,
 bulk-simple-order-004,"{
-  ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""Order 2 Chips & Queso from Chipotle Mexican Grill, make sure no customizations are selected. Also order 1 unit of the cheapest available Sides & Drinks. Change the contact number for the order to 5477527254"",
-  ""task_type"": ""GUI Comprehension, Action Execution, Element Identification, Decision Making"",
-  ""grader_config"": {
-    ""state_grader_configs"": [
+  ""start_url"":""https://dashdoor-prod.rlgym.turing.com"",
+  ""task_statement"":""Order 2 Chips & Queso from Chipotle Mexican Grill, make sure no customizations are selected. Also order 1 unit of the cheapest available Sides & Drinks. Change the contact number for the order to 5477527254"",
+  ""task_type"":""GUI Comprehension, Action Execution, Element Identification, Decision Making"",
+  ""grader_config"":{
+    ""state_grader_configs"":[
       {
-        ""assertions"": [
+        ""assertions"":[
           {
-            ""operator"": ""STRING_EQUALS"",
-            ""paths_to_expected"": [
+            ""operator"":""STRING_EQUALS"",
+            ""paths_to_expected"":[
               ""$[0].address.id""
             ]
           }
         ],
-        ""path_to_actual"": ""$.orders[0].deliveryAddress.id""
+        ""path_to_actual"":""$.orders[0].deliveryAddress.id""
       },
       {
-        ""assertions"": [
+        ""assertions"":[
           {
-            ""operator"": ""STRING_EQUALS"",
-            ""expected"": [
+            ""operator"":""STRING_EQUALS"",
+            ""expected"":[
               ""5477527254""
             ]
           }
         ],
-        ""path_to_actual"": ""$.orders[0].phoneNumber.number""
+        ""path_to_actual"":""$.orders[0].phoneNumber.number""
       },
       {
-        ""assertions"": [
+        ""assertions"":[
           {
-            ""operator"": ""JSON_PART_OF"",
-            ""path_to_actual"": ""$.items[*].id"",
-            ""paths_to_expected"": [
-              ""$[2].items[0].id"",
-              ""$[3].items[0].id""
+            ""operator"":""JSON_PART_OF"",
+            ""path_to_actual"":""$.items[*].id"",
+            ""paths_to_expected"":[
+              ""$[*].items[0].id""
             ]
           },
           {
-            ""operator"": ""JSON_CONTAINS"",
-            ""path_to_actual"": ""$.items[*].id"",
-            ""paths_to_expected"": [
-              ""$[2].items[0].id"",
-              ""$[3].items[0].id""
+            ""operator"":""JSON_CONTAINS"",
+            ""path_to_actual"":""$.items[*].id"",
+            ""paths_to_expected"":[
+              ""$[*].items[0].id""
             ]
           },
           {
-            ""expected"": [
+            ""expected"":[
               ""==2""
             ],
-            ""operator"": ""ARRAY_LENGTH_MATCH"",
-            ""path_to_actual"": ""$.items[*]""
+            ""operator"":""ARRAY_LENGTH_MATCH"",
+            ""path_to_actual"":""$.items[*]""
           },
           {
-            ""operator"": ""NUMERIC_MATCH"",
-            ""path_to_actual"": ""$.items[0].quantity"",
-            ""expected"": [
+            ""operator"":""NUMERIC_MATCH"",
+            ""path_to_actual"":""$.items[0].quantity"",
+            ""expected"":[
               ""==2""
             ]
           },
           {
-            ""operator"": ""NUMERIC_MATCH"",
-            ""path_to_actual"": ""$.items[1].quantity"",
-            ""expected"": [
+            ""operator"":""NUMERIC_MATCH"",
+            ""path_to_actual"":""$.items[1].quantity"",
+            ""expected"":[
               ""==1""
             ]
           },
           {
-            ""operator"": ""STRING_EQUALS"",
-            ""path_to_actual"": ""$.items[?(@.name == 'Chips & Queso')].modifications[*]"",
-            ""expected"": [
+            ""operator"":""STRING_EQUALS"",
+            ""path_to_actual"":""$.items[?(@.name == 'Chips & Queso')].modifications[*]"",
+            ""expected"":[
               """"
             ]
           }
         ],
-        ""path_to_actual"": ""$.orders[0]""
+        ""path_to_actual"":""$.orders[0]""
       }
     ],
-    ""extract_states_config"": {
-      ""expected_state_functions"": [
+    ""extract_states_config"":{
+      ""expected_state_functions"":[
         {
-          ""args"": {
-            ""user"": ""rosa.ingram43@inbox.local""
+          ""args"":{
+            ""user"":""rosa.ingram43@inbox.local""
           },
-          ""function"": ""get_user_address""
+          ""function"":""get_user_address""
         },
         {
-          ""args"": {
-            ""lat"": ""$[0].address.lat"",
-            ""lng"": ""$[0].address.lng"",
-            ""limit"": 1,
-            ""name"": ""Chipotle Mexican Grill"",
-            ""sort_type"": [
+          ""args"":{
+            ""lat"":""$[0].address.lat"",
+            ""lng"":""$[0].address.lng"",
+            ""limit"":1,
+            ""name"":""Chipotle Mexican Grill"",
+            ""sort_type"":[
               {
-                ""key"": ""priceRange"",
-                ""order"": ""asc""
+                ""key"":""priceRange"",
+                ""order"":""asc""
               },
               {
-                ""key"": ""rating"",
-                ""order"": ""desc""
+                ""key"":""rating"",
+                ""order"":""desc""
               }
             ]
           },
-          ""function"": ""get_restaurants""
+          ""function"":""get_restaurants""
         },
         {
-          ""args"": {
-            ""limit"": 1,
-            ""keywords"": [
+          ""args"":{
+            ""limit"":1,
+            ""keywords"":[
               ""Chips & Queso""
             ],
-            ""restaurant_id"": ""$[1].restaurants[0].id""
+            ""restaurant_id"":""$[1].restaurants[0].id""
           },
-          ""function"": ""get_items""
+          ""function"":""get_items""
         },
         {
-          ""args"": {
-            ""limit"": 1,
-            ""filters"": {
-              ""menu_categories"": [
+          ""args"":{
+            ""limit"":1,
+            ""filters"":{
+              ""menu_categories"":[
                 ""Sides & Drinks""
               ]
             },
-            ""sort_type"": [
+            ""sort_type"":[
               {
-                ""key"": ""price"",
-                ""order"": ""asc""
+                ""key"":""price"",
+                ""order"":""asc""
               },
               {
-                ""key"": ""rating"",
-                ""order"": ""desc""
+                ""key"":""rating"",
+                ""order"":""desc""
               }
             ],
-            ""restaurant_id"": ""$[1].restaurants[0].id""
+            ""restaurant_id"":""$[1].restaurants[0].id""
           },
-          ""function"": ""get_items""
+          ""function"":""get_items""
         }
       ]
     }
   },
-  ""task_id"": ""bulk-simple-order-004"",
-  ""simulator_config"": {
-    ""bootstrap_data"": {
-      ""date"": ""2025-12-19T12:00:00-08:00"",
-      ""timezone"": ""America/Los_Angeles"",
-      ""user"": ""rosa.ingram43@inbox.local""
+  ""task_id"":""bulk-simple-order-004"",
+  ""simulator_config"":{
+    ""bootstrap_data"":{
+      ""date"":""2025-12-19T12:00:00-08:00"",
+      ""timezone"":""America/Los_Angeles"",
+      ""user"":""rosa.ingram43@inbox.local""
     }
   }
 }","[""Cart Management""]","[""Cart editing & item swaps"", ""Price filtering"", ""Contact info management""]","[""Instruction following"", ""Search and filtering"", ""UI Elements: Text Fields""]","Order 2 Chips & Queso from Chipotle Mexican Grill, make sure no customizations are selected. Also order 1 unit of the cheapest available Sides & Drinks. Change the contact number for the order to 5477527254",,4,Medium,
@@ -15139,85 +15109,85 @@ lowest-calorie-dessert-008,"{
   }
 }","[""Cart Management""]","[""Diet & calorie filtering"", ""Item customization""]","[""Search and filtering"", ""Decision making"", ""Order Placement""]",Find the highest rated American restaurant near my office and order 2 servings of the lowest calorie Desserts. If there is an option for Ice Cream add it with one of the servings.,,1,Hard,
 helpful-review-items-004,"{
-  ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""Somebody recommended Copper Grill to me. Could you check the reviews and find the most helpful one that includes liked items, then add those items to my cart? If any required modifications exist, choose the cheapest options."",
-  ""task_type"": ""GUI Comprehension, Action Execution, Decision Making, Element Identification"",
-  ""grader_config"": {
-    ""state_grader_configs"": [
+  ""start_url"":""https://dashdoor-prod.rlgym.turing.com"",
+  ""task_statement"":""Somebody recommended Copper Grill to me. Could you check the reviews and find the most helpful one that includes liked items, then add those items to my cart? If any required modifications exist, choose the cheapest options."",
+  ""task_type"":""GUI Comprehension, Action Execution, Decision Making, Element Identification"",
+  ""grader_config"":{
+    ""state_grader_configs"":[
       {
-        ""assertions"": [
+        ""assertions"":[
           {
-            ""operator"": ""JSON_PART_OF"",
-            ""path_to_actual"": ""$.items[*].itemName"",
-            ""paths_to_expected"": [
+            ""operator"":""JSON_PART_OF"",
+            ""path_to_actual"":""$[0].items[*].itemName"",
+            ""paths_to_expected"":[
               ""$[1].reviews[0].likedItems[*].itemName""
             ]
           },
           {
-            ""operator"": ""JSON_CONTAINS"",
-            ""path_to_actual"": ""$.items[*].itemName"",
-            ""paths_to_expected"": [
+            ""operator"":""JSON_CONTAINS"",
+            ""path_to_actual"":""$[0].items[*].itemName"",
+            ""paths_to_expected"":[
               ""$[1].reviews[0].likedItems[*].itemName""
             ]
           },
           {
-            ""operator"": ""STRING_EQUALS"",
-            ""path_to_actual"": ""$.storeId"",
-            ""paths_to_expected"": [
+            ""operator"":""STRING_EQUALS"",
+            ""path_to_actual"":""$[0].storeId"",
+            ""paths_to_expected"":[
               ""$[1].reviews[0].storeId""
             ]
           },
           {
-            ""operator"": ""STRING_EQUALS"",
-            ""path_to_actual"": ""$.items[0].appliedModifications[0].appliedOptions[0].optionId"",
-            ""paths_to_expected"": [
+            ""operator"":""STRING_EQUALS"",
+            ""path_to_actual"":""$[0].items[0].appliedModifications[0].appliedOptions[0].optionId"",
+            ""paths_to_expected"":[
               ""$[2].modification.options[0].id""
             ]
           }
         ],
-        ""path_to_actual"": ""$.carts[?(@.storeName == 'Copper Grill')]""
+        ""path_to_actual"":""$.carts[?(@.storeName == 'Copper Grill')]""
       }
     ],
-    ""extract_states_config"": {
-      ""expected_state_functions"": [
+    ""extract_states_config"":{
+      ""expected_state_functions"":[
         {
-          ""args"": {
-            ""name"": ""Copper Grill""
+          ""args"":{
+            ""name"":""Copper Grill""
           },
-          ""function"": ""get_restaurants""
+          ""function"":""get_restaurants""
         },
         {
-          ""args"": {
-            ""limit"": 1,
-            ""restaurant_id"": ""$[0].restaurants[0].id"",
-            ""has_liked_items"": true,
-            ""sort_type"": [
+          ""args"":{
+            ""limit"":1,
+            ""restaurant_id"":""$[0].restaurants[0].id"",
+            ""has_liked_items"":true,
+            ""sort_type"":[
               {
-                ""key"": ""helpfulCount"",
-                ""order"": ""desc""
+                ""key"":""helpfulCount"",
+                ""order"":""desc""
               }
             ]
           },
-          ""function"": ""get_reviews""
+          ""function"":""get_reviews""
         },
         {
-          ""args"": {
-            ""item_id"": ""$[1].reviews[0].likedItems[0].menuItemId"",
-            ""modification_name"": """",
-            ""is_required"": true,
-            ""sort_options_by_price"": true
+          ""args"":{
+            ""item_id"":""$[1].reviews[0].likedItems[0].menuItemId"",
+            ""modification_name"":"""",
+            ""is_required"":true,
+            ""sort_options_by_price"":true
           },
-          ""function"": ""get_modifications""
+          ""function"":""get_modifications""
         }
       ]
     }
   },
-  ""task_id"": ""helpful-review-items-004"",
-  ""simulator_config"": {
-    ""bootstrap_data"": {
-      ""date"": ""2025-12-19T12:00:00-08:00"",
-      ""timezone"": ""America/Los_Angeles"",
-      ""user"": ""jasper.bennett60@example.com""
+  ""task_id"":""helpful-review-items-004"",
+  ""simulator_config"":{
+    ""bootstrap_data"":{
+      ""date"":""2025-12-19T12:00:00-08:00"",
+      ""timezone"":""America/Los_Angeles"",
+      ""user"":""jasper.bennett60@example.com""
     }
   }
 }","[""Ratings & Reviews""]","[""Review-based recommendations""]","[""Ratings analysis"", ""Instruction following""]","Somebody recommended Copper Grill to me. Could you check the reviews and find the most helpful one that includes liked items, then add those items to my cart? If any required modifications exist, choose the cheapest options.",,2,Hard,
@@ -15325,96 +15295,94 @@ cheapest-rated-slices-004,"{
   }
 }","[""Menu Viewing"", ""Cart Management""]","[""Restaurant discovery & filtering"", ""Menu exploration""]","[""Search and filtering"", ""Decision making"", ""Order Placement""]",I recently checked in and want to explore Italian restaurants near my hotel. Order two different classic pastas with the lowest prices from the nearest 3.5 star or above Italian place.,,0,Hard,
 cheapest-liked-combo-008,"{
-  ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""I want to order from Diana's Market. Order the cheapest of the Beverages and also add a Mediterranean Mezze Spread."",
-  ""task_type"": ""GUI Comprehension, Action Execution, Element Identification"",
-  ""grader_config"": {
-    ""state_grader_configs"": [
+  ""start_url"":""https://dashdoor-prod.rlgym.turing.com"",
+  ""task_statement"":""I want to order from Diana's Market. Order the cheapest of the Beverages and also add a Mediterranean Mezze Spread."",
+  ""task_type"":""GUI Comprehension, Action Execution, Element Identification"",
+  ""grader_config"":{
+    ""state_grader_configs"":[
       {
-        ""assertions"": [
+        ""assertions"":[
           {
-            ""operator"": ""JSON_CONTAINS"",
-            ""path_to_actual"": ""$.items[*].name"",
-            ""paths_to_expected"": [
-              ""$[1].items[0].name"",
-              ""$[2].items[0].name""
+            ""operator"":""JSON_CONTAINS"",
+            ""path_to_actual"":""$.items[*].name"",
+            ""paths_to_expected"":[
+              ""$[*].items[0].name""
             ]
           },
           {
-            ""operator"": ""JSON_PART_OF"",
-            ""path_to_actual"": ""$.items[*].name"",
-            ""paths_to_expected"": [
-              ""$[1].items[0].name"",
-              ""$[2].items[0].name""
+            ""operator"":""JSON_PART_OF"",
+            ""path_to_actual"":""$.items[*].name"",
+            ""paths_to_expected"":[
+              ""$[*].items[0].name""
             ]
           },
           {
-            ""expected"": [
+            ""expected"":[
               ""==2""
             ],
-            ""operator"": ""ARRAY_LENGTH_MATCH"",
-            ""path_to_actual"": ""$.items[*]""
+            ""operator"":""ARRAY_LENGTH_MATCH"",
+            ""path_to_actual"":""$.items[*]""
           },
           {
-            ""operator"": ""STRING_EQUALS"",
-            ""path_to_actual"": ""$.restaurantId"",
-            ""paths_to_expected"": [
+            ""operator"":""STRING_EQUALS"",
+            ""path_to_actual"":""$.restaurantId"",
+            ""paths_to_expected"":[
               ""$[0].restaurants[0].id""
             ]
           }
         ],
-        ""path_to_actual"": ""$.orders[0]""
+        ""path_to_actual"":""$.orders[0]""
       }
     ],
-    ""extract_states_config"": {
-      ""expected_state_functions"": [
+    ""extract_states_config"":{
+      ""expected_state_functions"":[
         {
-          ""args"": {
-            ""name"": ""Diana's Market""
+          ""args"":{
+            ""name"":""Diana's Market""
           },
-          ""function"": ""get_restaurants""
+          ""function"":""get_restaurants""
         },
         {
-          ""args"": {
-            ""restaurant_id"": ""$[0].restaurants[0].id"",
-            ""filters"": {
-              ""menu_categories"": [
+          ""args"":{
+            ""restaurant_id"":""$[0].restaurants[0].id"",
+            ""filters"":{
+              ""menu_categories"":[
                 ""Beverages""
               ]
             },
-            ""sort_type"": [
+            ""sort_type"":[
               {
-                ""key"": ""price"",
-                ""order"": ""asc""
+                ""key"":""price"",
+                ""order"":""asc""
               },
               {
-                ""key"": ""rating"",
-                ""order"": ""desc""
+                ""key"":""rating"",
+                ""order"":""desc""
               }
             ],
-            ""limit"": 1
+            ""limit"":1
           },
-          ""function"": ""get_items""
+          ""function"":""get_items""
         },
         {
-          ""args"": {
-            ""restaurant_id"": ""$[0].restaurants[0].id"",
-            ""keywords"": [
+          ""args"":{
+            ""restaurant_id"":""$[0].restaurants[0].id"",
+            ""keywords"":[
               ""Mediterranean""
             ],
-            ""limit"": 1
+            ""limit"":1
           },
-          ""function"": ""get_items""
+          ""function"":""get_items""
         }
       ]
     }
   },
-  ""task_id"": ""cheapest-liked-combo-008"",
-  ""simulator_config"": {
-    ""bootstrap_data"": {
-      ""date"": ""2025-12-19T12:00:00-08:00"",
-      ""timezone"": ""America/Los_Angeles"",
-      ""user"": ""uma.walsh70@example.com""
+  ""task_id"":""cheapest-liked-combo-008"",
+  ""simulator_config"":{
+    ""bootstrap_data"":{
+      ""date"":""2025-12-19T12:00:00-08:00"",
+      ""timezone"":""America/Los_Angeles"",
+      ""user"":""uma.walsh70@example.com""
     }
   }
 }","[""Menu Viewing"", ""Cart Management""]","[""Price & rating tradeoffs"", ""Item selection""]","[""Search and filtering"", ""Decision making"", ""Order Placement""]",I want to order from Diana's Market. Order the cheapest and most liked one of the Beverages and also add a Mediterranean Mezze Spread.,,10,Easy,
@@ -17179,87 +17147,87 @@ healthy-fixed-order-002,"{
   ""task_id"": ""healthy-fixed-order-002""
 }","[""Menu viewing"", ""Item selection""]","[""Order placement""]","[""Search and filtering""]","Go to other section and find restaurant Papa's Indian Grill and order 1 Lamb Rogan Josh, 1 Chana Masala, 2 Mango Lassi.",,,,
 helpful-review-items-008,"{
-  ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""Somebody recommended Fast Food Table to me, could you go through the reviews and find the review that people found the most helpful that has a liked item and add the liked items from it to my cart. If there are required modifications, then apply the cheapest"",
-  ""task_type"": ""GUI Comprehension, Action Execution, Decision Making, Element Identification"",
-  ""grader_config"": {
-    ""state_grader_configs"": [
+  ""start_url"":""https://dashdoor-prod.rlgym.turing.com"",
+  ""task_statement"":""Somebody recommended Fast Food Table to me, could you go through the reviews and find the review that people found the most helpful that has a liked item and add the liked items from it to my cart. If there are required modifications, then apply the cheapest"",
+  ""task_type"":""GUI Comprehension, Action Execution, Decision Making, Element Identification"",
+  ""grader_config"":{
+    ""state_grader_configs"":[
       {
-        ""assertions"": [
+        ""assertions"":[
           {
-            ""operator"": ""JSON_PART_OF"",
-            ""path_to_actual"": ""$.items[*].itemName"",
-            ""paths_to_expected"": [
+            ""operator"":""JSON_PART_OF"",
+            ""path_to_actual"":""$[0].items[*].itemName"",
+            ""paths_to_expected"":[
               ""$[1].reviews[0].likedItems[*].itemName""
             ]
           },
           {
-            ""operator"": ""JSON_CONTAINS"",
-            ""path_to_actual"": ""$.items[*].itemName"",
-            ""paths_to_expected"": [
+            ""operator"":""JSON_CONTAINS"",
+            ""path_to_actual"":""$[0].items[*].itemName"",
+            ""paths_to_expected"":[
               ""$[1].reviews[0].likedItems[*].itemName""
             ]
           },
           {
-            ""operator"": ""STRING_EQUALS"",
-            ""path_to_actual"": ""$.storeId"",
-            ""paths_to_expected"": [
+            ""operator"":""STRING_EQUALS"",
+            ""path_to_actual"":""$[0].storeId"",
+            ""paths_to_expected"":[
               ""$[1].reviews[0].storeId""
             ]
           },
           {
-            ""operator"": ""STRING_EQUALS"",
-            ""path_to_actual"": ""$.items[0].appliedModifications[0].appliedOptions[0].optionId"",
-            ""paths_to_expected"": [
+            ""operator"":""STRING_EQUALS"",
+            ""path_to_actual"":""$[0].items[0].appliedModifications[0].appliedOptions[0].optionId"",
+            ""paths_to_expected"":[
               ""$[2].modification.options[0].id""
             ]
           }
         ],
-        ""path_to_actual"": ""$.carts[?(@.storeName == 'Fast Food Table')]""
+        ""path_to_actual"":""$.carts[?(@.storeName == 'Fast Food Table')]""
       }
     ],
-    ""extract_states_config"": {
-      ""expected_state_functions"": [
+    ""extract_states_config"":{
+      ""expected_state_functions"":[
         {
-          ""args"": {
-            ""name"": ""Fast Food Table""
+          ""args"":{
+            ""name"":""Fast Food Table""
           },
-          ""function"": ""get_restaurants""
+          ""function"":""get_restaurants""
         },
         {
-          ""args"": {
-            ""limit"": 1,
-            ""restaurant_id"": ""$[0].restaurants[0].id"",
-            ""has_liked_items"": true,
-            ""sort_type"": [
+          ""args"":{
+            ""limit"":1,
+            ""restaurant_id"":""$[0].restaurants[0].id"",
+            ""has_liked_items"":true,
+            ""sort_type"":[
               {
-                ""key"": ""helpfulCount"",
-                ""order"": ""desc""
+                ""key"":""helpfulCount"",
+                ""order"":""desc""
               }
             ]
           },
-          ""function"": ""get_reviews""
+          ""function"":""get_reviews""
         },
         {
-          ""args"": {
-            ""item_id"": ""$[1].reviews[0].likedItems[0].menuItemId"",
-            ""modification_name"": """",
-            ""is_required"": true,
-            ""sort_options_by_price"": true
+          ""args"":{
+            ""item_id"":""$[1].reviews[0].likedItems[0].menuItemId"",
+            ""modification_name"":"""",
+            ""is_required"":true,
+            ""sort_options_by_price"":true
           },
-          ""function"": ""get_modifications""
+          ""function"":""get_modifications""
         }
       ]
     }
   },
-  ""simulator_config"": {
-    ""bootstrap_data"": {
-      ""date"": ""2025-12-19T12:00:00-08:00"",
-      ""timezone"": ""America/Los_Angeles"",
-      ""user"": ""nora.chambers2@mail.test""
+  ""simulator_config"":{
+    ""bootstrap_data"":{
+      ""date"":""2025-12-19T12:00:00-08:00"",
+      ""timezone"":""America/Los_Angeles"",
+      ""user"":""nora.chambers2@mail.test""
     }
   },
-  ""task_id"": ""helpful-review-items-008""
+  ""task_id"":""helpful-review-items-008""
 }","[""Ratings & Reviews""]","[""Review-based recommendations""]","[""Ratings analysis"", ""Instruction following""]","Somebody recommended Fast Food Table to me, could you go through the reviews and find the review that people found the most helpful that has a liked item and add the liked items from it to my cart. If there are required modifications, then apply the cheapest",,,,
 login-password-001,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
