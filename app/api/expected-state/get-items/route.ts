@@ -13,6 +13,7 @@ interface SortSpec {
  * Query Parameters:
  * - userId: User ID (required)
  * - restaurant_id: Filter by restaurant ID (optional, searches all restaurants if not provided)
+ * - item_ids: JSON array of item IDs to fetch first, then apply filters (optional)
  * - lat: Latitude (optional, used for distance filtering when restaurant_id not provided)
  * - lng: Longitude (optional, used for distance filtering when restaurant_id not provided)
  * - keywords: JSON array of keywords to match against item name (optional)
@@ -27,19 +28,21 @@ interface SortSpec {
  * - limit: Number of items to return (optional, returns all if not provided)
  *
  * Finds menu items with optional filtering and sorting:
- * 1. Fetches menu items from database (all or from specific restaurant)
- * 2. If restaurant_id not provided: filters restaurants by 10 mile radius using lat/lng
- * 3. Filters by menu categories if provided (matches against category name)
- * 4. Filters by keywords if provided (matches against item name only)
- * 5. Excludes items from specific restaurants if restaurant_ids_not_in provided
- * 6. Applies multi-level sorting based on sort_type array
- * 7. Returns top N items based on limit
+ * 1. If item_ids provided: fetches those specific items first, then applies other filters
+ * 2. Fetches menu items from database (all or from specific restaurant)
+ * 3. If restaurant_id and item_ids not provided: filters restaurants by 10 mile radius using lat/lng
+ * 4. Filters by menu categories if provided (matches against category name)
+ * 5. Filters by keywords if provided (matches against item name only)
+ * 6. Excludes items from specific restaurants if restaurant_ids_not_in provided
+ * 7. Applies multi-level sorting based on sort_type array
+ * 8. Returns top N items based on limit
  */
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
     const userId = searchParams.get('userId');
     const restaurantId = searchParams.get('restaurant_id');
+    const itemIdsParam = searchParams.get('item_ids');
     const lat = searchParams.get('lat');
     const lng = searchParams.get('lng');
     const keywordsParam = searchParams.get('keywords');
@@ -60,15 +63,42 @@ export async function GET(request: NextRequest) {
       );
     }
     
-    // If restaurant_id is not provided, lat and lng are required for distance filtering
-    if (!restaurantId && (!lat || !lng)) {
+    // If restaurant_id and item_ids are not provided, lat and lng are required for distance filtering
+    if (!restaurantId && !itemIdsParam && (!lat || !lng)) {
       return NextResponse.json(
         { 
           success: false, 
-          error: 'lat and lng are required when restaurant_id is not provided' 
+          error: 'lat and lng are required when restaurant_id or item_ids is not provided' 
         },
         { status: 400 }
       );
+    }
+
+    // Parse item_ids if provided (may contain nested arrays from JSONPath wildcards)
+    let itemIds: string[] = [];
+    if (itemIdsParam) {
+      try {
+        const parsedItemIds = JSON.parse(itemIdsParam);
+        if (!Array.isArray(parsedItemIds)) {
+          return NextResponse.json(
+            {
+              success: false,
+              error: 'item_ids must be an array',
+            },
+            { status: 400 }
+          );
+        }
+        // Flatten in case JSONPath wildcards resolved to nested arrays
+        itemIds = parsedItemIds.flat().filter((id: any): id is string => typeof id === 'string');
+      } catch (_error) {
+        return NextResponse.json(
+          {
+            success: false,
+            error: 'Invalid item_ids format',
+          },
+          { status: 400 }
+        );
+      }
     }
 
     // Parse keywords if provided
@@ -199,10 +229,10 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // If restaurant_id is not provided, we need to filter by distance
+    // If restaurant_id and item_ids are not provided, we need to filter by distance
     let restaurantIdsInRadius: string[] | null = null;
     
-    if (!restaurantId && lat && lng) {
+    if (!restaurantId && itemIds.length === 0 && lat && lng) {
       const userLat = parseFloat(lat);
       const userLng = parseFloat(lng);
       const maxRadius = 10; // 10 mile radius
@@ -262,6 +292,13 @@ export async function GET(request: NextRequest) {
     query += ' WHERE mi.is_available=1';
     
     const queryParams: any[] = [];
+
+    // Filter by item_ids first if provided (then other filters apply on top)
+    if (itemIds.length > 0) {
+      const itemIdPlaceholders = itemIds.map(() => '?').join(',');
+      query += ` AND mi.id IN (${itemIdPlaceholders})`;
+      queryParams.push(...itemIds);
+    }
 
     // Filter by restaurant if provided
     if (restaurantId) {
