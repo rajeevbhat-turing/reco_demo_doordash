@@ -1535,6 +1535,15 @@ Gets user reviews with optional filtering and sorting.
     order?: "asc" | "desc";          // Sort order, defaults to "asc"
   }>;
   limit?: number;                    // Optional: Number of reviews to return
+  filters?: {
+    delivery_address?: {             // Optional: Filter reviews to only include restaurants within 10 mile delivery radius
+      lat: number;                   // Required: Latitude of delivery address
+      lng: number;                   // Required: Longitude of delivery address
+      // Other address fields are optional (id, street, city, state, zipCode, etc.)
+    };
+    menu_categories?: string[];      // Optional: Filter reviews to only include restaurants that have these menu categories
+    menu_keywords?: string[];        // Optional: Filter reviews to only include restaurants with menu items matching these keywords (case-insensitive name match)
+  };
 }
 ```
 
@@ -1707,6 +1716,95 @@ Gets user reviews with optional filtering and sorting.
 }
 ```
 
+**Filter reviews by delivery address (10 mile radius):**
+```json
+{
+  "function": "get_reviews",
+  "args": {
+    "filters": {
+      "delivery_address": {
+        "lat": 41.9675824,
+        "lng": -87.7747009
+      }
+    }
+  }
+}
+```
+Returns reviews only from restaurants that deliver within 10 miles of the given coordinates.
+
+**Filter reviews by menu categories:**
+```json
+{
+  "function": "get_reviews",
+  "args": {
+    "filters": {
+      "menu_categories": ["Pastas", "Salads"]
+    }
+  }
+}
+```
+Returns reviews only from restaurants that have "Pastas" or "Salads" menu categories.
+
+**Filter reviews by menu item keywords:**
+```json
+{
+  "function": "get_reviews",
+  "args": {
+    "filters": {
+      "menu_keywords": ["Cobb Salad", "Caesar"]
+    }
+  }
+}
+```
+Returns reviews only from restaurants that have menu items containing "Cobb Salad" or "Caesar" in the name (case-insensitive).
+
+**Combine multiple filters:**
+```json
+{
+  "function": "get_reviews",
+  "args": {
+    "email": "user@example.com",
+    "filters": {
+      "delivery_address": {
+        "lat": 41.9675824,
+        "lng": -87.7747009
+      },
+      "menu_categories": ["Pastas"],
+      "menu_keywords": ["Carbonara"]
+    },
+    "sort_type": [
+      { "key": "rating", "order": "desc" }
+    ],
+    "limit": 5
+  }
+}
+```
+Returns up to 5 reviews from user@example.com, filtered to only include restaurants that:
+1. Deliver within 10 miles of the given address
+2. Have a "Pastas" menu category
+3. Have a menu item with "Carbonara" in the name
+
+**Using JSONPath for delivery_address from previous result:**
+```json
+[
+  {
+    "function": "get_user_address",
+    "args": {
+      "type": "apartment"
+    }
+  },
+  {
+    "function": "get_reviews",
+    "args": {
+      "filters": {
+        "delivery_address": "$[0].address"
+      }
+    }
+  }
+]
+```
+Gets reviews filtered by the user's apartment address delivery radius.
+
 ### Notes
 - Either `email` or `restaurant_id` must be provided (or both)
 - If neither is provided, uses logged-in user's email
@@ -1717,6 +1815,13 @@ Gets user reviews with optional filtering and sorting.
 - `helpfulCount` can be used in sorting to find the most helpful reviews
 - Multi-level sorting applies specs in order (first spec as primary sort, subsequent specs as tiebreakers)
 - Returns `null` if no logged-in user and neither `email` nor `restaurant_id` is provided
+
+**Filter Notes:**
+- `filters.delivery_address`: Requires `lat` and `lng` fields. Filters reviews to only include restaurants within 10 mile delivery radius using haversine distance calculation.
+- `filters.menu_categories`: Matches against the restaurant's menu category names (e.g., "Appetizers", "Pastas", "Beverages"). Case-insensitive matching.
+- `filters.menu_keywords`: Matches against menu item names (partial match, case-insensitive). Returns reviews from restaurants that have at least one menu item containing any of the keywords.
+- When multiple filters are provided, they are applied in order (delivery_address → menu_categories → menu_keywords), and all must pass for a review to be included.
+- If no filters are provided, the function works as before (backward compatible).
 
 ---
 

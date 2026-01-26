@@ -23,6 +23,7 @@ export interface SortSpec {
 
 export interface GetItemsArgs {
   restaurant_id?: string; // Optional: search specific restaurant or all
+  item_ids?: (string | string[])[]; // Optional: get specific items by ID first, then apply filters (supports JSONPath-resolved arrays)
   keywords?: string[]; // Keywords to match against item name
   sort_type?: SortSpec[]; // Array of sort specifications for multi-level sorting
   limit?: number; // Number of items to return
@@ -64,15 +65,18 @@ export async function get_items(args: GetItemsArgs): Promise<GetItemsResult | nu
     return null;
   }
 
-  const { restaurant_id, keywords, sort_type, limit, lat, lng, filters = {} } = args;
+  const { restaurant_id, item_ids: rawItemIds, keywords, sort_type, limit, lat, lng, filters = {} } = args;
+  
+  // Flatten item_ids in case JSONPath wildcards resolved to nested arrays
+  const item_ids = rawItemIds ? rawItemIds.flat().filter((id): id is string => typeof id === 'string') : undefined;
   
   try {
     // Determine lat/lng to use: prefer explicit args, fallback to selected address
     let userLat: number | undefined = lat;
     let userLng: number | undefined = lng;
     
-    // Only need lat/lng if restaurant_id is not provided (for distance filtering)
-    if (!restaurant_id) {
+    // Only need lat/lng if restaurant_id and item_ids are not provided (for distance filtering)
+    if (!restaurant_id && (!item_ids || item_ids.length === 0)) {
       if (userLat === undefined || userLng === undefined) {
         const selectedAddress = userStore.getTempAddress() || 
           (currentUser.addresses && currentUser.addresses.find(addr => addr.default));
@@ -93,6 +97,10 @@ export async function get_items(args: GetItemsArgs): Promise<GetItemsResult | nu
 
     if (restaurant_id) {
       params.append('restaurant_id', restaurant_id);
+    }
+    
+    if (item_ids && item_ids.length > 0) {
+      params.append('item_ids', JSON.stringify(item_ids));
     }
     
     // Pass lat/lng if we have them (only used when restaurant_id is not provided)
