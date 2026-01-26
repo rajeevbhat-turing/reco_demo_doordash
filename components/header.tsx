@@ -428,7 +428,7 @@ export default function Header() {
               >
                 <div className="flex items-center">
                   <DashDoorLogoMark />
-                  <div className="ml-1">
+                  <div className="ml-1 hidden md:block">
                     <DashDoorWordMark />
                   </div>
                   <span className="sr-only">DashDoor</span>
@@ -446,7 +446,7 @@ export default function Header() {
                 <Link href={isAuthenticated ? '/home' : '/'} className="flex-shrink-0">
                   <div className="flex items-center">
                     <DashDoorLogoMark />
-                    <div className="ml-1">
+                    <div className="ml-1 hidden md:block">
                       <DashDoorWordMark />
                     </div>
                     <span className="sr-only">DashDoor</span>
@@ -476,8 +476,8 @@ export default function Header() {
                       className="flex items-center mr-4 bg-[#f1f1f1] rounded-full px-5 h-8 hover:bg-gray-200 transition-colors cursor-pointer"
                       data-testid="address-button"
                     >
-                      {displayAddress && <MapPin className="h-5 w-5 text-gray-700 mr-1" />}
-                      <span className="text-sm font-medium mr-1">
+                      {displayAddress && <MapPin className="h-5 w-5 text-gray-700 md:mr-1" />}
+                      <span className="text-sm font-medium mr-1 hidden md:inline">
                         {displayAddress ? (
                           displayAddress
                         ) : (
@@ -487,7 +487,7 @@ export default function Header() {
                           </>
                         )}
                       </span>
-                      {displayAddress && <ChevronDown className="h-4 w-4 text-gray-700" />}
+                      {displayAddress && <ChevronDown className="h-4 w-4 text-gray-700 hidden md:block" />}
                     </button>
 
                     {/* Address Popover for non-authenticated users */}
