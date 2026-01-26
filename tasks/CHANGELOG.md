@@ -5,6 +5,7 @@ This changelog tracks changes made to `tasks/dashdoor.csv`.
 ## Table of Contents
 
 1. [January 26, 2026](#january-26-2026)
+1. [January 21, 2026](#january-21-2026)
 2. [January 16-20, 2026](#january-16-20-2026)
 3. [December 28, 2025](#december-28-2025)
 4. [December 23, 2025](#december-23-2025)
@@ -798,6 +799,13 @@ This release addresses user profile mismatches, operator corrections, path conso
 **Rationale:** Fixed path indexing and expected value format for array comparison.
 
 ---
+
+## January 21, 2026
+
+#### `cheapest-liked-combo-005`
+
+**Changes:**
+- Fixed a malformed JSON entry in the task definition
 
 ## January 16-20, 2026
 
