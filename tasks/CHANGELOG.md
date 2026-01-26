@@ -4,10 +4,798 @@ This changelog tracks changes made to `tasks/dashdoor.csv`.
 
 ## Table of Contents
 
-1. [January 16-20, 2026](#january-16-20-2026)
-2. [December 28, 2025](#december-28-2025)
-3. [December 23, 2025](#december-23-2025)
-4. [Initial Release](#initial-release)
+1. [January 26, 2026](#january-26-2026)
+2. [January 16-20, 2026](#january-16-20-2026)
+3. [December 28, 2025](#december-28-2025)
+4. [December 23, 2025](#december-23-2025)
+5. [Initial Release](#initial-release)
+
+---
+
+## January 26, 2026
+
+This release addresses user profile mismatches, operator corrections, path consolidation, task statement clarifications, restaurant/item updates, and grader configuration enhancements across multiple task templates.
+
+### Summary of Changes
+
+| Category | Description |
+|----------|-------------|
+| **User Profile Updates** | Updated user emails to match profiles with correct address types and restaurant availability |
+| **Operator Updates** | Changed `NUMERIC_MATCH` → `ARRAY_NUMERIC_MATCH`, `STRING_EQUALS` → `JSON_EQUALS`/`ARRAY_STRING_EQUALS` for proper array handling |
+| **Path Consolidation** | Consolidated multiple `paths_to_expected` entries to use wildcard patterns (`$[*].items[0].id`) |
+| **Added `get_items` Functions** | Added new `get_items` functions with `item_ids` parameter to merge expected item references |
+| **Tie-breaker Logic** | Added `timestamp` and `ratingCount` sorting for deterministic results in review-based tasks |
+| **Restaurant/Item Fixes** | Updated restaurant names and items to match available data |
+| **Task Statement Clarifications** | Improved prompt clarity with explicit criteria and removed ambiguity |
+| **Grader Path Fixes** | Updated `path_to_actual` with proper array indexing (e.g., `$.entryCode` → `$[0].entryCode`) |
+| **Grammar Fixes** | Fixed typos (e.g., "an gate" → "a gate", removed duplicate periods) |
+| **Cuisine Updates** | Changed unavailable cuisines to available alternatives |
+
+---
+
+### Individual Task Changes
+
+#### `item-addon-order-001`
+
+**Changes:**
+- Changed user from `lena.bennett71@example.com` to `xavier.ingram898@mail.test`
+
+**Rationale:** Updated to a user profile with the correct address type and restaurant availability.
+
+---
+
+#### `item-addon-order-004`
+
+**Changes:**
+- Changed user from `hannah.young3@example.com` to `rosa.turner244@dashdoor.test`
+
+**Rationale:** User profile update for correct data matching.
+
+---
+
+#### `new-cheapest-restaurant-001`
+
+**Changes:**
+- Changed user from `kai.bennett420@mail.test` to `xavier.fischer560@mail.test`
+- Consolidated cuisines from `["vegetarian", "vegan"]` to `["Vegan"]`
+- Removed extra period from task statement
+
+**Rationale:** Fixed user profile and simplified cuisine filter for deterministic results.
+
+---
+
+#### `new-cheapest-restaurant-006`
+
+**Changes:**
+- Changed user from `victor.bennett17@example.com` to `zane.xu2160@example.com`
+- Added "Reply with ONLY the restaurant name." to task statement
+
+**Rationale:** Updated user and added explicit response format instruction.
+
+---
+
+#### `new-cheapest-restaurant-008`
+
+**Changes:**
+- Changed task statement from "Chinese or Breakfast & Brunch" to "Chinese" only
+- Removed "Breakfast & Brunch" from cuisine filters
+
+**Rationale:** "Breakfast & Brunch" cuisine has no matching restaurants with required filters.
+
+---
+
+#### `new-cheapest-restaurant-009`
+
+**Changes:**
+- Changed task statement from "Korean or Wings" to "Korean" only
+- Removed "Wings" from cuisine filters
+
+**Rationale:** "Wings" cuisine has no matching restaurants with required filters.
+
+---
+
+#### `rate-last-order-005`
+
+**Changes:**
+- Changed task statement from "wrong and missing" to just "missing"
+- Removed "wrong" from expected keywords in grader
+
+**Rationale:** Simplified to single complaint type for consistent verification.
+
+---
+
+#### `rate-last-order-007`
+
+**Changes:**
+- Changed task statement from "late and bland" to "missing"
+- Updated expected keywords from `["late", "bland"]` to `["missing"]`
+
+**Rationale:** Updated to single complaint type for consistent verification.
+
+---
+
+#### `replace-cart-item-001` through `replace-cart-item-007`
+
+**Changes:**
+- Changed `paths_to_expected` from `["$[0].carts[0].items[*].id", "$[1].items[0].id"]` to `["$[4].items[*].id"]`
+- Changed operator from `NUMERIC_MATCH` to `ARRAY_NUMERIC_MATCH`
+- Added new `get_items` function with `item_ids` parameter to merge expected items
+
+**Rationale:** Consolidated expected item paths using a new get_items function that merges both cart items and replacement items.
+
+---
+
+#### `replace-cart-item-005`
+
+**Changes:**
+- Changed restaurant from "Cedar Kitchen" to "Urban Habesha Kitchen"
+- Changed item from "Roasted Mushroom Umami Pasta" to "Chef's Taco Party Pack"
+- Changed user from `nora.ingram110@dashdoor.test` to `aiden.ellison135@mail.test`
+- Updated quantity from `==1` to `==2`
+
+**Rationale:** Updated to restaurant and items available in user's profile.
+
+---
+
+#### `replace-cart-item-006`
+
+**Changes:**
+- Changed restaurant from "Greek Bistro" to "Craft Burger Bistro"
+
+**Rationale:** Updated to match available restaurant in user's area.
+
+---
+
+#### `reorder-with-addons-002` through `reorder-with-addons-007`
+
+**Changes:**
+- Consolidated `paths_to_expected` from `["$[2].orders[0].items[*].name", "$[3].items[*].name"]` to `["$[4].items[*].name"]`
+- Changed operator from `NUMERIC_MATCH` to `ARRAY_NUMERIC_MATCH`
+- Added new `get_items` function with `item_ids` parameter
+
+**Rationale:** Consolidated item references using new merged get_items function.
+
+---
+
+#### `reorder-with-addons-003`
+
+**Changes:**
+- Changed restaurant from "Talia's Kitchen" to "The Cheesecake Factory"
+- Changed item from "Sparkling Hibiscus Tea" to "Glamburger"
+- Changed coupon from "MG5OFF" to "SAVE15"
+- Changed quantity from `==3` to `==2`
+
+**Rationale:** Updated to restaurant and items that exist and match user's order history.
+
+---
+
+#### `reorder-with-addons-005`
+
+**Changes:**
+- Changed user from `nora.reed246@dashdoor.test` to `uma.bennett177@dashdoor.test`
+
+**Rationale:** User profile update for correct data matching.
+
+---
+
+#### `express-nearest-order-004`
+
+**Changes:**
+- Added assertion for modification verification: `$.items[?(@.name == 'Kimchi Slaw')].modifications[*].options[*].optionName` with expected `["Hot Sauce"]`
+- Added `get_modifications` function for spice level verification
+
+**Rationale:** Added verification that Kimchi Slaw has the Hot Sauce modification applied.
+
+---
+
+#### `express-nearest-order-006`
+
+**Changes:**
+- Changed operator from `NUMERIC_MATCH` to `ARRAY_NUMERIC_MATCH`
+
+**Rationale:** Operator update for proper array value matching.
+
+---
+
+#### `top-rated-category-002`
+
+**Changes:**
+- Changed user from `quinn.reed44@mail.test` to `jasper.young50@inbox.local`
+
+**Rationale:** User profile update for restaurant availability.
+
+---
+
+#### `top-rated-category-004`
+
+**Changes:**
+- Changed user from `quinn.manning46@mail.test` to `quinn.reed44@mail.test`
+
+**Rationale:** User profile correction.
+
+---
+
+#### `best-deal-order-002`
+
+**Changes:**
+- Changed `paths_to_expected` from `$[2].categories[0].id`, `$[3].categories[0].id`, `$[4].categories[0].id` to use `$[*].categories[*].id` wildcards
+- Added commas to task statement: "Order 2 Entrees, 2 Sides, and 2 Drinks"
+
+**Rationale:** Fixed path expressions and improved task statement formatting.
+
+---
+
+#### `best-deal-order-004`
+
+**Changes:**
+- Changed task statement to add "Chinese restaurants" filter and "prefer the nearest restaurant" tie-breaker
+- Changed order quantities from "2 Entrees, 2 Sides, and 2 Drinks" to "3 Entrees, 3 Sides, and 3 Drinks"
+- Added `"cuisines": ["Chinese"]` to restaurant filter
+- Added distance ascending to sort_type
+
+**Rationale:** Added cuisine filter and tie-breaker logic for deterministic results.
+
+---
+
+#### `best-deal-order-005`
+
+**Changes:**
+- Changed task statement from "Apply the deal" to "Apply the first deal"
+- Changed from hardcoded deal ID to dynamic `$[1].restaurants[0].deals[0].id`
+- Changed operators from `NUMERIC_MATCH` to `ARRAY_NUMERIC_MATCH`
+- Added `get_restaurants` function with `has_deals` filter
+
+**Rationale:** Made deal selection deterministic and added restaurant lookup for dynamic deal ID.
+
+---
+
+#### `best-deal-order-006`
+
+**Changes:**
+- Changed task statement from "Order enough Entrees" to "Order enough starters"
+- Changed menu category keyword from "Entrees" to "Starters"
+- Changed operator from `JSON_CONTAINS` on `$.items[*].menuCategoryId` to `STRING_EQUALS` on `$.items[0].menuCategoryId`
+- Added `ratingCount` to sort_type for tie-breaking
+
+**Rationale:** Changed category and added tie-breaker for deterministic results.
+
+---
+
+#### `best-deal-order-007`
+
+**Changes:**
+- Changed operator from `JSON_CONTAINS` on `$.items[*].menuCategoryId` to `STRING_EQUALS` on `$.items[0].menuCategoryId`
+- Added `ratingCount` to sort_type for tie-breaking
+
+**Rationale:** Added tie-breaker logic for deterministic restaurant selection.
+
+---
+
+#### `best-deal-order-008`
+
+**Changes:**
+- Changed task statement from "Order enough Drinks" to "Order enough Beverages"
+- Changed menu category keyword from "Drinks" to "Beverages"
+- Changed operator to `STRING_EQUALS` on `$.items[0].menuCategoryId`
+- Added `ratingCount` to sort_type for tie-breaking
+
+**Rationale:** Category name correction and tie-breaker addition.
+
+---
+
+#### `bulk-simple-order-001` through `bulk-simple-order-007`
+
+**Changes:**
+- Changed `paths_to_expected` from `["$[2].items[0].id", "$[3].items[0].id"]` to `["$[*].items[0].id"]`
+- Changed modification assertion operator from `STRING_EQUALS` with empty string to `JSON_EQUALS` with empty array `[]`
+
+**Rationale:** Consolidated paths and fixed modification check to properly verify no customizations.
+
+---
+
+#### `bulk-simple-order-003`
+
+**Changes:**
+- Changed modification assertion from `STRING_EQUALS` with empty string to `ARRAY_LENGTH_MATCH` with `==0`
+
+**Rationale:** Fixed assertion to properly verify no modifications applied.
+
+---
+
+#### `update-delivery-instructions-001` through `update-delivery-instructions-007`
+
+**Changes:**
+- Updated `path_to_actual` expressions from `$.entryCode`, `$.deliveryPreference`, etc. to `$[0].entryCode`, `$[0].deliveryPreference`, etc.
+
+**Rationale:** Added array indexing to path expressions for proper value extraction.
+
+---
+
+#### `update-delivery-instructions-003`
+
+**Changes:**
+- Changed user from `diana.chambers69@mail.test` to `jasper.owens57@dashdoor.test`
+
+**Rationale:** User profile update.
+
+---
+
+#### `update-delivery-instructions-004`
+
+**Changes:**
+- Changed user from `uma.walsh70@example.com` to `milo.quintero42@example.com`
+- Fixed typo: "an gate" → "a gate"
+
+**Rationale:** User profile update and grammar fix.
+
+---
+
+#### `update-delivery-instructions-005`
+
+**Changes:**
+- Changed user from `lena.bennett71@example.com` to `willow.sawyer437@dashdoor.test`
+- Changed task statement from "entry code added" to "entry code updated"
+
+**Rationale:** User profile update and wording clarification.
+
+---
+
+#### `update-delivery-instructions-006`
+
+**Changes:**
+- Fixed typo: "an gate" → "a gate"
+
+**Rationale:** Grammar correction.
+
+---
+
+#### `update-delivery-instructions-007`
+
+**Changes:**
+- Removed `STRING_NOT_CONTAINS` assertion for delivery instructions
+
+**Rationale:** Simplified assertion set.
+
+---
+
+#### `lowest-calorie-dessert-002`, `lowest-calorie-dessert-003`, `lowest-calorie-dessert-007`
+
+**Changes:**
+- Changed `path_to_actual` from `$.items[*].name` to `$.items[0].name`
+- Changed `paths_to_expected` from `$[2].items[*].name` to `$[2].items[0].name`
+
+**Rationale:** Fixed to verify single item name instead of array.
+
+---
+
+#### `lowest-calorie-dessert-005`
+
+**Changes:**
+- Changed modification option from "Chicken" to "Sweet Sauce"
+- Updated paths from `$.items[*].name` to `$.items[0].name`
+
+**Rationale:** Updated to available modification option.
+
+---
+
+#### `lowest-calorie-dessert-008`
+
+**Changes:**
+- Changed cuisine from "American" to "Mexican"
+- Changed task statement from "2 servings" with Ice Cream option to "2 units" without modification
+- Removed Ice Cream modification assertion
+
+**Rationale:** Simplified task and changed to available cuisine/item.
+
+---
+
+#### `top-rated-history-002`
+
+**Changes:**
+- Rewrote task statement to include explicit criteria: "delivers to my address", "offers a Cobb Salad on the menu", "highest rated and most recently reviewed"
+- Added `timestamp` descending to sort_type
+- Added `limit: 1` and `filters` with `delivery_address` and `menu_keywords`
+
+**Rationale:** Added explicit filtering and tie-breaker criteria for deterministic results.
+
+---
+
+#### `top-rated-history-005`
+
+**Changes:**
+- Added `timestamp` descending to sort_type for tie-breaking
+- Added `limit: 1` and `filters` with `menu_categories` and `delivery_address`
+
+**Rationale:** Added tie-breaker and filtering for deterministic results.
+
+---
+
+#### `top-rated-history-007`
+
+**Changes:**
+- Rewrote task statement with explicit criteria: "delivers to my address", "offers items from the Drinks menu", "highest rated and most recently reviewed"
+- Added `timestamp` descending to sort_type
+- Added `limit: 1` and `filters` with `menu_categories` and `delivery_address`
+- Changed paths from `$.items[*].name` to `$.items[0].name`
+
+**Rationale:** Added explicit criteria and tie-breaker for deterministic results.
+
+---
+
+#### `helpful-review-items-001`
+
+**Changes:**
+- Changed restaurant from "Mediterranean Kitchen" to "The Grill Kitchen"
+- Changed cart storeName filter from "Mediterranean Kitchen" to "The Grill Kitchen"
+- Changed operator from `STRING_EQUALS` to `JSON_EQUALS` for modification verification
+- Updated paths from `$.items[*].itemName` to `$[0].items[*].itemName`
+
+**Rationale:** Restaurant change and grader path fixes.
+
+---
+
+#### `helpful-review-items-002`, `helpful-review-items-003`, `helpful-review-items-006`
+
+**Changes:**
+- Updated paths from `$.items[*].itemName` to `$[0].items[*].itemName`
+- Updated paths from `$.storeId` to `$[0].storeId`
+- Updated modification path from `$.items[0].appliedModifications...` to `$[0].items[0].appliedModifications...`
+
+**Rationale:** Fixed grader path expressions for proper array indexing.
+
+---
+
+#### `helpful-review-items-007`
+
+**Changes:**
+- Fixed apostrophe encoding in task statement (changed special character to standard apostrophe)
+- Changed operator from `STRING_EQUALS` to `JSON_EQUALS` for modification verification
+
+**Rationale:** Character encoding fix and operator correction.
+
+---
+
+#### `cheapest-rated-slices-002`, `cheapest-rated-slices-005`, `cheapest-rated-slices-007`
+
+**Changes:**
+- Fixed task_category_L1 JSON formatting (changed from `["Menu Viewing", "Cart Management"]` to `["Menu Viewing" "Cart Management"] `)
+
+**Rationale:** Minor formatting adjustment.
+
+---
+
+#### `cheapest-liked-combo-001` through `cheapest-liked-combo-008`
+
+**Changes:**
+- Changed `paths_to_expected` from `["$[1].items[0].name", "$[2].items[0].name"]` to `["$[*].items[0].name"]`
+
+**Rationale:** Consolidated expected paths using wildcard.
+
+---
+
+#### `cheapest-liked-combo-003`
+
+**Changes:**
+- Changed task statement from "cheapest Sides" to "cheapest Sides & Shares"
+- Changed user from `jasper.turner103@example.com` to `priya.reed1416@dashdoor.test`
+- Changed menu category from "Sides" to "Sides & Shares"
+
+**Rationale:** Category name correction and user profile update.
+
+---
+
+#### `cheapest-liked-combo-005`
+
+**Changes:**
+- Changed user from `bella.quintero105@mail.test` to `quinn.fischer1178@mail.test`
+- Fixed syntax error (removed duplicate comma `},,`)
+
+**Rationale:** User profile update and syntax fix.
+
+---
+
+#### `cheapest-liked-combo-007`
+
+**Changes:**
+- Changed restaurant from "Chinese Pantry" to "Sweet & Savory Pantry"
+- Changed keyword from "Chocolate" to "Chocolate Lava"
+
+**Rationale:** Restaurant update and keyword specificity.
+
+---
+
+#### `cheapest-nearby-item-001`
+
+**Changes:**
+- Changed address type from "apartment" to "house" in task statement and grader
+
+**Rationale:** Address type correction.
+
+---
+
+#### `cheapest-nearby-item-002`
+
+**Changes:**
+- Changed address type from "other" to "apartment"
+- Changed user from `gavin.underwood108@mail.test` to `yuna.ingram233@mail.test`
+
+**Rationale:** Address type and user profile corrections.
+
+---
+
+#### `multi-express-orders-001`
+
+**Changes:**
+- Changed restaurant from "Tokyo Japanese Kitchen" to "Royal Kitchen"
+
+**Rationale:** Restaurant availability update.
+
+---
+
+#### `multi-express-orders-005`
+
+**Changes:**
+- Changed task statement from "best rated" to "highest rated"
+
+**Rationale:** Terminology consistency.
+
+---
+
+#### `multi-express-orders-006`
+
+**Changes:**
+- Changed cuisine from "Pizza" to "Mexican"
+- Changed item from "Cannoli" to "Fish tacos"
+
+**Rationale:** Updated to available cuisine and item.
+
+---
+
+#### `gift-coffee-order-001`
+
+**Changes:**
+- Fixed double period in task statement ("order two.." → "order two.")
+
+**Rationale:** Punctuation fix.
+
+---
+
+#### `gift-coffee-order-003`
+
+**Changes:**
+- Fixed double period in task statement
+
+**Rationale:** Punctuation fix.
+
+---
+
+#### `list-affordable-cuisine-001`
+
+**Changes:**
+- Changed from "3 restaurant names" to "2 restaurant names"
+- Changed limit from 3 to 2
+- Changed paths_to_expected to use explicit indices: `["$[0].restaurants[0].name", "$[0].restaurants[1].name"]`
+
+**Rationale:** Reduced count and made expected paths explicit.
+
+---
+
+#### `list-affordable-cuisine-002`, `list-affordable-cuisine-003`, `list-affordable-cuisine-005`, `list-affordable-cuisine-007`
+
+**Changes:**
+- Changed task statement to use "sorted by distance (closest first)" instead of price filters
+- Changed from 5 to 3 restaurants
+- Removed `priceRange` from sort_type, keeping only `distance`
+- Added `get_user_address` function for lat/lng coordinates
+- Changed paths_to_expected to use explicit indices
+
+**Rationale:** Simplified to distance-only sorting for deterministic results.
+
+---
+
+#### `list-affordable-cuisine-003`
+
+**Changes:**
+- Changed user from `xavier.ellison128@inbox.local` to `milo.walsh13@dashdoor.test`
+
+**Rationale:** User profile update.
+
+---
+
+#### `list-affordable-cuisine-004`
+
+**Changes:**
+- Changed from 5 to 3 restaurants
+- Changed paths_to_expected to use explicit indices
+
+**Rationale:** Reduced count and made paths explicit.
+
+---
+
+#### `list-affordable-cuisine-005`
+
+**Changes:**
+- Fixed task statement: "Burgers cuisine" → "Thai cuisine"
+- Changed cuisine filter to "Thai"
+
+**Rationale:** Fixed task statement to match intended cuisine.
+
+---
+
+#### `list-affordable-cuisine-007`
+
+**Changes:**
+- Fixed task statement: "Burgers cuisine" → "Mexican cuisine"
+
+**Rationale:** Fixed task statement to match intended cuisine.
+
+---
+
+#### `positive-order-review-001`
+
+**Changes:**
+- Added order ID to task statement: "order id 3827"
+- Changed rating expected format from `5` to `"==5"`
+
+**Rationale:** Added explicit order ID reference and fixed numeric comparison.
+
+---
+
+#### `positive-order-review-003`
+
+**Changes:**
+- Changed rating expected format from `"4"` to `"==4"`
+
+**Rationale:** Fixed numeric comparison format.
+
+---
+
+#### `positive-order-review-006`
+
+**Changes:**
+- Changed rating expected format from `"5"` to `"==5"`
+
+**Rationale:** Fixed numeric comparison format.
+
+---
+
+#### `search-express-order-001`
+
+**Changes:**
+- Changed user from `lena.bennett71@example.com` to `bella.diaz146@dashdoor.test`
+- Capitalized item name in task statement and keywords: "blueberry pancakes" → "Blueberry Pancakes"
+
+**Rationale:** User profile update and item name standardization.
+
+---
+
+#### `list-cheapest-items-005`, `list-cheapest-items-006`, `list-cheapest-items-007`
+
+**Changes:**
+- Changed paths_to_expected from `$[1].items[*].restaurantName` to explicit indices (e.g., `$[1].items[0].restaurantName`, `$[1].items[1].restaurantName`, etc.)
+- Changed limit from string `"3"` or `"4"` to integer `3` or `4`
+
+**Rationale:** Made expected paths explicit and fixed limit data type.
+
+---
+
+#### `top-liked-entrees-001`
+
+**Changes:**
+- Changed operator from `ARRAY_STRING_CONTAINS` to `JSON_PART_OF`
+- Restructured assertions with explicit path_to_actual
+
+**Rationale:** Operator update for proper array matching.
+
+---
+
+#### `top-liked-entrees-003`
+
+**Changes:**
+- Changed path_to_actual structure to use explicit paths
+- Changed operator from `ARRAY_STRING_CONTAINS` to `JSON_CONTAINS`
+- Changed limit from string `"2"` to integer `2`
+- Added `limit: 1` to get_restaurants
+
+**Rationale:** Fixed operators and data types.
+
+---
+
+#### `top-liked-entrees-004`
+
+**Changes:**
+- Changed restaurant from "Indian Kitchen" to "Harvest Tavern"
+- Changed operator from `ARRAY_STRING_CONTAINS` to `JSON_CONTAINS`
+
+**Rationale:** Restaurant update and operator fix.
+
+---
+
+#### `top-rated-category-001`
+
+**Changes:**
+- Changed restaurant from "Greek House" to "Golden Smokehouse"
+- Changed menu category from "Family Meals" to "Burgers & Sandos"
+
+**Rationale:** Restaurant and category update for availability.
+
+---
+
+#### `cheapest-item-filter-001`
+
+**Changes:**
+- Changed excluded restaurant from "burgers pantry" to "spice tavern"
+
+**Rationale:** Updated excluded restaurant for deterministic results.
+
+---
+
+#### `cheapest-item-filter-009`
+
+**Changes:**
+- Changed excluded restaurant from "Joe's Golden Palace" to "King's Curry House"
+
+**Rationale:** Updated excluded restaurant for deterministic results.
+
+---
+
+#### `healthy-fixed-order-001`
+
+**Changes:**
+- Changed operators from `ARRAY_STRING_CONTAINS` to `JSON_PART_OF` and `JSON_CONTAINS`
+- Changed operators from `NUMERIC_MATCH` to `ARRAY_NUMERIC_MATCH`
+- Added new `get_items` function with `item_ids` parameter to consolidate expected items
+
+**Rationale:** Operator updates and path consolidation.
+
+---
+
+#### `scheduled-group-order-001`
+
+**Changes:**
+- Fixed typo in keyword: "chicken shwarma platter" → "chicken shawarma platter"
+
+**Rationale:** Spelling correction.
+
+---
+
+#### `update-cart-quantity-001`
+
+**Changes:**
+- Updated path_to_actual from `$.items[*]` to `$[0].items[*]`
+- Updated paths from `$.items[0].quantity` to `$[0].items[0].quantity`
+
+**Rationale:** Added array indexing for proper value extraction.
+
+---
+
+#### `list-menu-options-001`
+
+**Changes:**
+- Changed paths_to_expected from `$[2].items[*].name` to `$[2].items[0].name`
+
+**Rationale:** Fixed to single item reference.
+
+---
+
+#### `item-with-sauce-001`
+
+**Changes:**
+- Changed paths_to_expected from `$.items[0].name` to `$[1].items[0].name`
+
+**Rationale:** Added proper array indexing.
+
+---
+
+#### `low-calorie-order-001`
+
+**Changes:**
+- Updated paths_to_expected from `$.deal.id` to `$[1].deal.id` and `$.paymentMethod.lastFour` to `$[5].paymentMethod.lastFour`
+- Changed paths_to_expected from `["$[3].items[*].name", "$[4].items[*].name"]` to `["$[*].items[*].name"]`
+- Changed operator from `STRING_EQUALS` to `JSON_EQUALS` for modification verification
+- Changed expected format from `["Mild"]` to `[["Mild"]]`
+
+**Rationale:** Fixed path indexing and expected value format for array comparison.
 
 ---
 
