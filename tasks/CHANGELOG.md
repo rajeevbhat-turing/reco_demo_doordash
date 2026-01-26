@@ -21,16 +21,10 @@ This release addresses user profile mismatches, operator corrections, path conso
 
 | Category | Description |
 |----------|-------------|
-| **User Profile Updates** | Updated user emails to match profiles with correct address types and restaurant availability |
-| **Operator Updates** | Changed `NUMERIC_MATCH` → `ARRAY_NUMERIC_MATCH`, `STRING_EQUALS` → `JSON_EQUALS`/`ARRAY_STRING_EQUALS` for proper array handling |
-| **Path Consolidation** | Consolidated multiple `paths_to_expected` entries to use wildcard patterns (`$[*].items[0].id`) |
-| **Added `get_items` Functions** | Added new `get_items` functions with `item_ids` parameter to merge expected item references |
-| **Tie-breaker Logic** | Added `timestamp` and `ratingCount` sorting for deterministic results in review-based tasks |
-| **Restaurant/Item Fixes** | Updated restaurant names and items to match available data |
-| **Task Statement Clarifications** | Improved prompt clarity with explicit criteria and removed ambiguity |
-| **Grader Path Fixes** | Updated `path_to_actual` with proper array indexing (e.g., `$.entryCode` → `$[0].entryCode`) |
-| **Grammar Fixes** | Fixed typos (e.g., "an gate" → "a gate", removed duplicate periods) |
-| **Cuisine Updates** | Changed unavailable cuisines to available alternatives |
+| **Operator Updates** | Updated assertion operators for proper array and object handling: `NUMERIC_MATCH` → `ARRAY_NUMERIC_MATCH` for quantity checks on array items, `STRING_EQUALS` → `JSON_EQUALS` for verification of numbers or empty arrays, `STRING_EQUALS` → `ARRAY_STRING_EQUALS` for matching modification option names, `JSON_CONTAINS` → `STRING_EQUALS` when asserting single category IDs instead of arrays |
+| **Path Consolidation for `JSON_*` usage** | Consolidated multiple `paths_to_expected` entries into single wildcard patterns (e.g., `"$[*].items[0].id"]`) for proper usage of `JSON_CONTAINS` and `JSON_PART_OF`. To support this, new `get_items` expected state function calls were added with an `item_ids` parameter that merge item references from multiple sources (carts, orders, item lookups) into a single expected state array (e.g., `["$[0].carts[0].items[*].id", "$[1].items[0].id"]` → `["$[4].items[*].id"]`) |
+| **Grader `path_to_actual` Fixes** | Added missing array indexing to `path_to_actual` expressions in assertions where the state grader config has a `path_to_actual` at the root level that contains `[?`. (e.g., `$.entryCode` → `$[0].entryCode`) |
+| **Other Changes** | • User email updates to match profiles with correct address types<br>• Restaurant and item name fixes to match available data<br>• Task statement clarifications with explicit criteria<br>• Tie-breaker logic additions (`timestamp`, `ratingCount` sorting)<br>• Cuisine filter updates<br>• Grammar and typo fixes |
 
 ---
 

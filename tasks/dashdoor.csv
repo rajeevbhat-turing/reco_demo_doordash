@@ -13969,7 +13969,7 @@ nearest-cheapest-choice-009,"{
 }","[""Menu Viewing""]","[""Restaurant discovery & filtering"", ""Price & rating tradeoffs""]","[""Search and filtering"", ""Decision making"", ""Instruction following""]","Order from the nearest Indian restaurant. Get either a Samosas or a Masala Chai, choosing the cheaper option, and if they cost the same, pick the one with the higher rating. Have it delivered to my other address.",,3,Medium,,2025-12-19
 new-cheapest-restaurant-008,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""Help me find the best cheapest Chinese restaurant option that I have not ordered from in the past."",
+  ""task_statement"": ""Help me find Chinese restaurants. Apply the lowest price filter possible and find the highest rated restaurant that I've not ordered from before."",
   ""task_type"": ""Multi-Step Task Planning, GUI Comprehension, Decision Making"",
   ""simulator_config"": {
     ""bootstrap_data"": {
@@ -14021,10 +14021,10 @@ new-cheapest-restaurant-008,"{
     }
   },
   ""task_id"": ""new-cheapest-restaurant-008""
-}","[""Order History""]","[""Restaurant discovery & filtering"", ""Reorder & past orders""]","[""Order history analysis"", ""Search and filtering"", ""Decision making""]",Help me find the best cheapest Chinese restaurant option that I have not ordered from in the past.,,6,Medium,,2026-01-26
+}","[""Order History""]","[""Restaurant discovery & filtering"", ""Reorder & past orders""]","[""Order history analysis"", ""Search and filtering"", ""Decision making""]",Help me find Chinese restaurants. Apply the lowest price filter possible and find the highest rated restaurant that I've not ordered from before.,,6,Medium,,2026-01-26
 new-cheapest-restaurant-009,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"": ""Help me find the best cheapest Korean restaurant option that I have not ordered from in the past."",
+  ""task_statement"": ""Help me find Korean restaurants. Apply the lowest price filter possible and find the highest rated restaurant that I've not ordered from before."",
   ""task_type"": ""Multi-Step Task Planning, GUI Comprehension, Decision Making"",
   ""simulator_config"": {
     ""bootstrap_data"": {
@@ -14076,7 +14076,7 @@ new-cheapest-restaurant-009,"{
     }
   },
   ""task_id"": ""new-cheapest-restaurant-009""
-}","[""Order History""]","[""Restaurant discovery & filtering"", ""Reorder & past orders""]","[""Order history analysis"", ""Search and filtering"", ""Decision making""]",Help me find the best cheapest Korean restaurant option that I have not ordered from in the past.,,6,Medium,,2026-01-26
+}","[""Order History""]","[""Restaurant discovery & filtering"", ""Reorder & past orders""]","[""Order history analysis"", ""Search and filtering"", ""Decision making""]",Help me find Korean restaurants. Apply the lowest price filter possible and find the highest rated restaurant that I've not ordered from before.,,6,Medium,,2026-01-26
 replace-payment-card-008,"{
   ""start_url"": ""https://dashdoor-prod.rlgym.turing.com"",
   ""task_statement"": ""Delete my current card details and add a new card 8240269670284190 with CVV 070 and expiry date June 2029. Use the zipcode of my current house address."",
@@ -14795,7 +14795,7 @@ top-rated-category-008,"{
 }","[""Ratings & Reviews""]","[""Review-based recommendations""]","[""Ratings analysis"", ""Decision making"", ""Order Placement""]","I wanted to try Copper Kitchen, can you order the best rated item from the Street Tacos?",,1,Hard,,2025-12-19
 best-deal-order-008,"{
   ""start_url"":""https://dashdoor-prod.rlgym.turing.com"",
-  ""task_statement"":""I need to place an order at my house address. Look for cheapest restaurants with deals and pick the best one. Order enough Beverages to meet the spending limit for the deal."",
+  ""task_statement"":""I need to place an order at my house address. Look for cheapest restaurants with deals and pick the highest rated one. Order enough Beverages to meet the spending limit for the deal."",
   ""task_type"":""GUI Comprehension, Action Execution, Multi-Step Task Planning, Decision Making"",
   ""grader_config"":{
     ""state_grader_configs"":[
@@ -14894,7 +14894,7 @@ best-deal-order-008,"{
       ""user"":""elias.fischer36@mail.test""
     }
   }
-}","[""Menu Viewing""]","[""Price & deal optimization"", ""Restaurant discovery & filtering""]","[""Search and filtering"", ""Decision making"", ""Order Placement""]",I need to place an order at my house address. Look for cheapest restaurants with deals and pick the best one. Order enough Beverages to meet the spending limit for the deal.,,0,Hard,,2026-01-26
+}","[""Menu Viewing""]","[""Price & deal optimization"", ""Restaurant discovery & filtering""]","[""Search and filtering"", ""Decision making"", ""Order Placement""]",I need to place an order at my house address. Look for cheapest restaurants with deals and pick the highest rated. Order enough Beverages to meet the spending limit for the deal.,,0,Hard,,2026-01-26
 bulk-simple-order-004,"{
   ""start_url"":""https://dashdoor-prod.rlgym.turing.com"",
   ""task_statement"":""Order 2 Chips & Queso from Chipotle Mexican Grill, make sure no customizations are selected. Also order 1 unit of the cheapest available Sides & Drinks. Change the contact number for the order to 5477527254"",
