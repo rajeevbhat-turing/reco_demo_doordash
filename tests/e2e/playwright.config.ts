@@ -24,7 +24,7 @@ export default defineConfig({
     ['junit', { 
       outputFile: './test-results/junit.xml' 
     }],
-    ...(process.env.CI ? [['github' as const]] : []),
+    ...(process.env.CI ? ([['github']] as const) : []),
   ],
   
   outputDir: './test-results',

@@ -102,7 +102,7 @@ describe('DealsModal', () => {
     const Wrapper = createWrapper();
     const { container } = render(
       <Wrapper>
-        <DealsModal isOpen={false} onClose={mockOnClose} restaurantId="restaurant1" />
+        <DealsModal isOpen={false} onClose={mockOnClose} restaurantId="restaurant1" isRestaurantOpen={true} />
       </Wrapper>
     );
 
@@ -113,7 +113,7 @@ describe('DealsModal', () => {
     const Wrapper = createWrapper();
     render(
       <Wrapper>
-        <DealsModal isOpen={true} onClose={mockOnClose} restaurantId="restaurant1" />
+        <DealsModal isOpen={true} onClose={mockOnClose} restaurantId="restaurant1" isRestaurantOpen={true} />
       </Wrapper>
     );
 
@@ -125,7 +125,7 @@ describe('DealsModal', () => {
     const Wrapper = createWrapper();
     render(
       <Wrapper>
-        <DealsModal isOpen={true} onClose={mockOnClose} restaurantId="restaurant1" />
+        <DealsModal isOpen={true} onClose={mockOnClose} restaurantId="restaurant1" isRestaurantOpen={true} />
       </Wrapper>
     );
 
@@ -138,7 +138,7 @@ describe('DealsModal', () => {
     const Wrapper = createWrapper();
     render(
       <Wrapper>
-        <DealsModal isOpen={true} onClose={mockOnClose} restaurantId="restaurant1" />
+        <DealsModal isOpen={true} onClose={mockOnClose} restaurantId="restaurant1" isRestaurantOpen={true} />
       </Wrapper>
     );
 
@@ -152,7 +152,7 @@ describe('DealsModal', () => {
     const Wrapper = createWrapper();
     render(
       <Wrapper>
-        <DealsModal isOpen={true} onClose={mockOnClose} restaurantId="restaurant1" />
+        <DealsModal isOpen={true} onClose={mockOnClose} restaurantId="restaurant1" isRestaurantOpen={true} />
       </Wrapper>
     );
 
@@ -166,7 +166,7 @@ describe('DealsModal', () => {
     const Wrapper = createWrapper();
     render(
       <Wrapper>
-        <DealsModal isOpen={true} onClose={mockOnClose} restaurantId="restaurant1" />
+        <DealsModal isOpen={true} onClose={mockOnClose} restaurantId="restaurant1" isRestaurantOpen={true} />
       </Wrapper>
     );
 
@@ -180,7 +180,7 @@ describe('DealsModal', () => {
     const Wrapper = createWrapper();
     render(
       <Wrapper>
-        <DealsModal isOpen={true} onClose={mockOnClose} restaurantId="restaurant1" />
+        <DealsModal isOpen={true} onClose={mockOnClose} restaurantId="restaurant1" isRestaurantOpen={true} />
       </Wrapper>
     );
 
@@ -204,7 +204,7 @@ describe('DealsModal', () => {
     const Wrapper = createWrapper();
     render(
       <Wrapper>
-        <DealsModal isOpen={true} onClose={mockOnClose} restaurantId="restaurant1" />
+        <DealsModal isOpen={true} onClose={mockOnClose} restaurantId="restaurant1" isRestaurantOpen={true} />
       </Wrapper>
     );
 
@@ -218,7 +218,7 @@ describe('DealsModal', () => {
     const Wrapper = createWrapper();
     render(
       <Wrapper>
-        <DealsModal isOpen={true} onClose={mockOnClose} restaurantId="restaurant1" />
+        <DealsModal isOpen={true} onClose={mockOnClose} restaurantId="restaurant1" isRestaurantOpen={true} />
       </Wrapper>
     );
 
@@ -231,7 +231,7 @@ describe('DealsModal', () => {
     const Wrapper = createWrapper();
     render(
       <Wrapper>
-        <DealsModal isOpen={true} onClose={mockOnClose} restaurantId="restaurant1" />
+        <DealsModal isOpen={true} onClose={mockOnClose} restaurantId="restaurant1" isRestaurantOpen={true} />
       </Wrapper>
     );
 
@@ -245,7 +245,7 @@ describe('DealsModal', () => {
     const Wrapper = createWrapper();
     render(
       <Wrapper>
-        <DealsModal isOpen={true} onClose={mockOnClose} restaurantId="restaurant1" />
+        <DealsModal isOpen={true} onClose={mockOnClose} restaurantId="restaurant1" isRestaurantOpen={true} />
       </Wrapper>
     );
 

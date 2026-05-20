@@ -1,0 +1,1389 @@
+{
+  "runId": "run_mpegc0yr",
+  "startedAt": "2026-05-20T19:25:29.955Z",
+  "finishedAt": "2026-05-20T19:27:16.827Z",
+  "k": 5,
+  "taskSet": "history",
+  "engines": [
+    {
+      "name": "random",
+      "version": "1.0.0",
+      "description": "Uniform random over the candidate pool. Sanity floor."
+    },
+    {
+      "name": "popularity",
+      "version": "1.0.0",
+      "description": "Featured + rating × log(1+count). Same formula as the production feed."
+    }
+  ],
+  "perTask": [
+    {
+      "taskId": "history-2227",
+      "statement": "Leave-one-out: user has 90 orders; predict the most recent store.",
+      "expectedItemIds": [
+        "558"
+      ],
+      "perEngine": {
+        "random": {
+          "predicted": [
+            "39",
+            "19",
+            "47",
+            "4",
+            "132"
+          ],
+          "latencyMs": 0.7824580000014976,
+          "metrics": {
+            "hitAtK": 0,
+            "recallAtK": 0,
+            "ndcgAtK": 0,
+            "mrr": 0,
+            "hitsCount": 0,
+            "anyHit": false
+          }
+        },
+        "popularity": {
+          "predicted": [
+            "96",
+            "52",
+            "19",
+            "31",
+            "39"
+          ],
+          "latencyMs": 3456.46033300001,
+          "metrics": {
+            "hitAtK": 0,
+            "recallAtK": 0,
+            "ndcgAtK": 0,
+            "mrr": 0,
+            "hitsCount": 0,
+            "anyHit": false
+          }
+        }
+      }
+    },
+    {
+      "taskId": "history-71",
+      "statement": "Leave-one-out: user has 78 orders; predict the most recent store.",
+      "expectedItemIds": [
+        "142"
+      ],
+      "perEngine": {
+        "random": {
+          "predicted": [
+            "447",
+            "10",
+            "371",
+            "402",
+            "589"
+          ],
+          "latencyMs": 1.082250000006752,
+          "metrics": {
+            "hitAtK": 0,
+            "recallAtK": 0,
+            "ndcgAtK": 0,
+            "mrr": 0,
+            "hitsCount": 0,
+            "anyHit": false
+          }
+        },
+        "popularity": {
+          "predicted": [
+            "478",
+            "542",
+            "466",
+            "529",
+            "364"
+          ],
+          "latencyMs": 3480.335957999996,
+          "metrics": {
+            "hitAtK": 0,
+            "recallAtK": 0,
+            "ndcgAtK": 0,
+            "mrr": 0,
+            "hitsCount": 0,
+            "anyHit": false
+          }
+        }
+      }
+    },
+    {
+      "taskId": "history-2904",
+      "statement": "Leave-one-out: user has 76 orders; predict the most recent store.",
+      "expectedItemIds": [
+        "100"
+      ],
+      "perEngine": {
+        "random": {
+          "predicted": [
+            "18",
+            "20",
+            "125",
+            "120",
+            "145"
+          ],
+          "latencyMs": 0.817416999998386,
+          "metrics": {
+            "hitAtK": 0,
+            "recallAtK": 0,
+            "ndcgAtK": 0,
+            "mrr": 0,
+            "hitsCount": 0,
+            "anyHit": false
+          }
+        },
+        "popularity": {
+          "predicted": [
+            "86",
+            "125",
+            "20",
+            "18",
+            "145"
+          ],
+          "latencyMs": 3520.537375,
+          "metrics": {
+            "hitAtK": 0,
+            "recallAtK": 0,
+            "ndcgAtK": 0,
+            "mrr": 0,
+            "hitsCount": 0,
+            "anyHit": false
+          }
+        }
+      }
+    },
+    {
+      "taskId": "history-2119",
+      "statement": "Leave-one-out: user has 73 orders; predict the most recent store.",
+      "expectedItemIds": [
+        "406"
+      ],
+      "perEngine": {
+        "random": {
+          "predicted": [
+            "45",
+            "34",
+            "110",
+            "51",
+            "159"
+          ],
+          "latencyMs": 1.039916000008816,
+          "metrics": {
+            "hitAtK": 0,
+            "recallAtK": 0,
+            "ndcgAtK": 0,
+            "mrr": 0,
+            "hitsCount": 0,
+            "anyHit": false
+          }
+        },
+        "popularity": {
+          "predicted": [
+            "94",
+            "28",
+            "62",
+            "45",
+            "125"
+          ],
+          "latencyMs": 3500.899792000011,
+          "metrics": {
+            "hitAtK": 0,
+            "recallAtK": 0,
+            "ndcgAtK": 0,
+            "mrr": 0,
+            "hitsCount": 0,
+            "anyHit": false
+          }
+        }
+      }
+    },
+    {
+      "taskId": "history-1396",
+      "statement": "Leave-one-out: user has 72 orders; predict the most recent store.",
+      "expectedItemIds": [
+        "19"
+      ],
+      "perEngine": {
+        "random": {
+          "predicted": [
+            "248",
+            "23",
+            "67",
+            "128",
+            "179"
+          ],
+          "latencyMs": 0.9776669999992009,
+          "metrics": {
+            "hitAtK": 0,
+            "recallAtK": 0,
+            "ndcgAtK": 0,
+            "mrr": 0,
+            "hitsCount": 0,
+            "anyHit": false
+          }
+        },
+        "popularity": {
+          "predicted": [
+            "227",
+            "223",
+            "243",
+            "180",
+            "191"
+          ],
+          "latencyMs": 3548.247625000018,
+          "metrics": {
+            "hitAtK": 0,
+            "recallAtK": 0,
+            "ndcgAtK": 0,
+            "mrr": 0,
+            "hitsCount": 0,
+            "anyHit": false
+          }
+        }
+      }
+    },
+    {
+      "taskId": "history-40",
+      "statement": "Leave-one-out: user has 70 orders; predict the most recent store.",
+      "expectedItemIds": [
+        "188"
+      ],
+      "perEngine": {
+        "random": {
+          "predicted": [
+            "223",
+            "189",
+            "170",
+            "308",
+            "305"
+          ],
+          "latencyMs": 1.2974579999863636,
+          "metrics": {
+            "hitAtK": 0,
+            "recallAtK": 0,
+            "ndcgAtK": 0,
+            "mrr": 0,
+            "hitsCount": 0,
+            "anyHit": false
+          }
+        },
+        "popularity": {
+          "predicted": [
+            "227",
+            "223",
+            "243",
+            "180",
+            "191"
+          ],
+          "latencyMs": 3524.766917000001,
+          "metrics": {
+            "hitAtK": 0,
+            "recallAtK": 0,
+            "ndcgAtK": 0,
+            "mrr": 0,
+            "hitsCount": 0,
+            "anyHit": false
+          }
+        }
+      }
+    },
+    {
+      "taskId": "history-88",
+      "statement": "Leave-one-out: user has 65 orders; predict the most recent store.",
+      "expectedItemIds": [
+        "538"
+      ],
+      "perEngine": {
+        "random": {
+          "predicted": [
+            "177",
+            "179",
+            "13",
+            "335",
+            "316"
+          ],
+          "latencyMs": 1.0652079999854323,
+          "metrics": {
+            "hitAtK": 0,
+            "recallAtK": 0,
+            "ndcgAtK": 0,
+            "mrr": 0,
+            "hitsCount": 0,
+            "anyHit": false
+          }
+        },
+        "popularity": {
+          "predicted": [
+            "227",
+            "223",
+            "243",
+            "180",
+            "191"
+          ],
+          "latencyMs": 3539.158624999982,
+          "metrics": {
+            "hitAtK": 0,
+            "recallAtK": 0,
+            "ndcgAtK": 0,
+            "mrr": 0,
+            "hitsCount": 0,
+            "anyHit": false
+          }
+        }
+      }
+    },
+    {
+      "taskId": "history-980",
+      "statement": "Leave-one-out: user has 65 orders; predict the most recent store.",
+      "expectedItemIds": [
+        "72"
+      ],
+      "perEngine": {
+        "random": {
+          "predicted": [
+            "1",
+            "64",
+            "2",
+            "19",
+            "122"
+          ],
+          "latencyMs": 0.7616670000134036,
+          "metrics": {
+            "hitAtK": 0,
+            "recallAtK": 0,
+            "ndcgAtK": 0,
+            "mrr": 0,
+            "hitsCount": 0,
+            "anyHit": false
+          }
+        },
+        "popularity": {
+          "predicted": [
+            "96",
+            "52",
+            "19",
+            "31",
+            "39"
+          ],
+          "latencyMs": 3546.434790999978,
+          "metrics": {
+            "hitAtK": 0,
+            "recallAtK": 0,
+            "ndcgAtK": 0,
+            "mrr": 0,
+            "hitsCount": 0,
+            "anyHit": false
+          }
+        }
+      }
+    },
+    {
+      "taskId": "history-1959",
+      "statement": "Leave-one-out: user has 63 orders; predict the most recent store.",
+      "expectedItemIds": [
+        "340"
+      ],
+      "perEngine": {
+        "random": {
+          "predicted": [
+            "260",
+            "63",
+            "95",
+            "92",
+            "209"
+          ],
+          "latencyMs": 1.0402919999905862,
+          "metrics": {
+            "hitAtK": 0,
+            "recallAtK": 0,
+            "ndcgAtK": 0,
+            "mrr": 0,
+            "hitsCount": 0,
+            "anyHit": false
+          }
+        },
+        "popularity": {
+          "predicted": [
+            "227",
+            "223",
+            "243",
+            "180",
+            "191"
+          ],
+          "latencyMs": 3547.5454170000157,
+          "metrics": {
+            "hitAtK": 0,
+            "recallAtK": 0,
+            "ndcgAtK": 0,
+            "mrr": 0,
+            "hitsCount": 0,
+            "anyHit": false
+          }
+        }
+      }
+    },
+    {
+      "taskId": "history-128",
+      "statement": "Leave-one-out: user has 60 orders; predict the most recent store.",
+      "expectedItemIds": [
+        "86"
+      ],
+      "perEngine": {
+        "random": {
+          "predicted": [
+            "202",
+            "263",
+            "295",
+            "314",
+            "262"
+          ],
+          "latencyMs": 0.8396660000144038,
+          "metrics": {
+            "hitAtK": 0,
+            "recallAtK": 0,
+            "ndcgAtK": 0,
+            "mrr": 0,
+            "hitsCount": 0,
+            "anyHit": false
+          }
+        },
+        "popularity": {
+          "predicted": [
+            "227",
+            "223",
+            "243",
+            "180",
+            "191"
+          ],
+          "latencyMs": 3563.937917000003,
+          "metrics": {
+            "hitAtK": 0,
+            "recallAtK": 0,
+            "ndcgAtK": 0,
+            "mrr": 0,
+            "hitsCount": 0,
+            "anyHit": false
+          }
+        }
+      }
+    },
+    {
+      "taskId": "history-118",
+      "statement": "Leave-one-out: user has 58 orders; predict the most recent store.",
+      "expectedItemIds": [
+        "442"
+      ],
+      "perEngine": {
+        "random": {
+          "predicted": [
+            "530",
+            "384",
+            "391",
+            "389",
+            "53"
+          ],
+          "latencyMs": 1.0471250000118744,
+          "metrics": {
+            "hitAtK": 0,
+            "recallAtK": 0,
+            "ndcgAtK": 0,
+            "mrr": 0,
+            "hitsCount": 0,
+            "anyHit": false
+          }
+        },
+        "popularity": {
+          "predicted": [
+            "478",
+            "542",
+            "466",
+            "368",
+            "529"
+          ],
+          "latencyMs": 3568.3770409999997,
+          "metrics": {
+            "hitAtK": 0,
+            "recallAtK": 0,
+            "ndcgAtK": 0,
+            "mrr": 0,
+            "hitsCount": 0,
+            "anyHit": false
+          }
+        }
+      }
+    },
+    {
+      "taskId": "history-85",
+      "statement": "Leave-one-out: user has 56 orders; predict the most recent store.",
+      "expectedItemIds": [
+        "118"
+      ],
+      "perEngine": {
+        "random": {
+          "predicted": [
+            "174",
+            "23",
+            "63",
+            "288",
+            "251"
+          ],
+          "latencyMs": 0.7915000000211876,
+          "metrics": {
+            "hitAtK": 0,
+            "recallAtK": 0,
+            "ndcgAtK": 0,
+            "mrr": 0,
+            "hitsCount": 0,
+            "anyHit": false
+          }
+        },
+        "popularity": {
+          "predicted": [
+            "227",
+            "223",
+            "243",
+            "180",
+            "191"
+          ],
+          "latencyMs": 3572.3111250000075,
+          "metrics": {
+            "hitAtK": 0,
+            "recallAtK": 0,
+            "ndcgAtK": 0,
+            "mrr": 0,
+            "hitsCount": 0,
+            "anyHit": false
+          }
+        }
+      }
+    },
+    {
+      "taskId": "history-110",
+      "statement": "Leave-one-out: user has 53 orders; predict the most recent store.",
+      "expectedItemIds": [
+        "124"
+      ],
+      "perEngine": {
+        "random": {
+          "predicted": [
+            "376",
+            "474",
+            "488",
+            "549",
+            "489"
+          ],
+          "latencyMs": 1.0307920000050217,
+          "metrics": {
+            "hitAtK": 0,
+            "recallAtK": 0,
+            "ndcgAtK": 0,
+            "mrr": 0,
+            "hitsCount": 0,
+            "anyHit": false
+          }
+        },
+        "popularity": {
+          "predicted": [
+            "478",
+            "542",
+            "466",
+            "368",
+            "529"
+          ],
+          "latencyMs": 3574.5421659999993,
+          "metrics": {
+            "hitAtK": 0,
+            "recallAtK": 0,
+            "ndcgAtK": 0,
+            "mrr": 0,
+            "hitsCount": 0,
+            "anyHit": false
+          }
+        }
+      }
+    },
+    {
+      "taskId": "history-384",
+      "statement": "Leave-one-out: user has 52 orders; predict the most recent store.",
+      "expectedItemIds": [
+        "587"
+      ],
+      "perEngine": {
+        "random": {
+          "predicted": [
+            "462",
+            "25",
+            "554",
+            "55",
+            "157"
+          ],
+          "latencyMs": 0.8049579999933485,
+          "metrics": {
+            "hitAtK": 0,
+            "recallAtK": 0,
+            "ndcgAtK": 0,
+            "mrr": 0,
+            "hitsCount": 0,
+            "anyHit": false
+          }
+        },
+        "popularity": {
+          "predicted": [
+            "478",
+            "542",
+            "466",
+            "529",
+            "364"
+          ],
+          "latencyMs": 3574.9981670000125,
+          "metrics": {
+            "hitAtK": 0,
+            "recallAtK": 0,
+            "ndcgAtK": 0,
+            "mrr": 0,
+            "hitsCount": 0,
+            "anyHit": false
+          }
+        }
+      }
+    },
+    {
+      "taskId": "history-59",
+      "statement": "Leave-one-out: user has 51 orders; predict the most recent store.",
+      "expectedItemIds": [
+        "363"
+      ],
+      "perEngine": {
+        "random": {
+          "predicted": [
+            "464",
+            "380",
+            "552",
+            "477",
+            "160"
+          ],
+          "latencyMs": 1.065082999994047,
+          "metrics": {
+            "hitAtK": 0,
+            "recallAtK": 0,
+            "ndcgAtK": 0,
+            "mrr": 0,
+            "hitsCount": 0,
+            "anyHit": false
+          }
+        },
+        "popularity": {
+          "predicted": [
+            "469",
+            "491",
+            "403",
+            "541",
+            "433"
+          ],
+          "latencyMs": 3579.7969589999993,
+          "metrics": {
+            "hitAtK": 0,
+            "recallAtK": 0,
+            "ndcgAtK": 0,
+            "mrr": 0,
+            "hitsCount": 0,
+            "anyHit": false
+          }
+        }
+      }
+    },
+    {
+      "taskId": "history-156",
+      "statement": "Leave-one-out: user has 51 orders; predict the most recent store.",
+      "expectedItemIds": [
+        "498"
+      ],
+      "perEngine": {
+        "random": {
+          "predicted": [
+            "186",
+            "189",
+            "42",
+            "253",
+            "209"
+          ],
+          "latencyMs": 0.838541000004625,
+          "metrics": {
+            "hitAtK": 0,
+            "recallAtK": 0,
+            "ndcgAtK": 0,
+            "mrr": 0,
+            "hitsCount": 0,
+            "anyHit": false
+          }
+        },
+        "popularity": {
+          "predicted": [
+            "227",
+            "223",
+            "243",
+            "180",
+            "191"
+          ],
+          "latencyMs": 3576.630750000011,
+          "metrics": {
+            "hitAtK": 0,
+            "recallAtK": 0,
+            "ndcgAtK": 0,
+            "mrr": 0,
+            "hitsCount": 0,
+            "anyHit": false
+          }
+        }
+      }
+    },
+    {
+      "taskId": "history-428",
+      "statement": "Leave-one-out: user has 51 orders; predict the most recent store.",
+      "expectedItemIds": [
+        "232"
+      ],
+      "perEngine": {
+        "random": {
+          "predicted": [
+            "399",
+            "476",
+            "536",
+            "543",
+            "589"
+          ],
+          "latencyMs": 1.025999999983469,
+          "metrics": {
+            "hitAtK": 0,
+            "recallAtK": 0,
+            "ndcgAtK": 0,
+            "mrr": 0,
+            "hitsCount": 0,
+            "anyHit": false
+          }
+        },
+        "popularity": {
+          "predicted": [
+            "478",
+            "542",
+            "466",
+            "368",
+            "529"
+          ],
+          "latencyMs": 3577.4502499999944,
+          "metrics": {
+            "hitAtK": 0,
+            "recallAtK": 0,
+            "ndcgAtK": 0,
+            "mrr": 0,
+            "hitsCount": 0,
+            "anyHit": false
+          }
+        }
+      }
+    },
+    {
+      "taskId": "history-97",
+      "statement": "Leave-one-out: user has 50 orders; predict the most recent store.",
+      "expectedItemIds": [
+        "375"
+      ],
+      "perEngine": {
+        "random": {
+          "predicted": [
+            "497",
+            "38",
+            "83",
+            "151",
+            "141"
+          ],
+          "latencyMs": 0.7917080000042915,
+          "metrics": {
+            "hitAtK": 0,
+            "recallAtK": 0,
+            "ndcgAtK": 0,
+            "mrr": 0,
+            "hitsCount": 0,
+            "anyHit": false
+          }
+        },
+        "popularity": {
+          "predicted": [
+            "469",
+            "491",
+            "403",
+            "541",
+            "433"
+          ],
+          "latencyMs": 3596.771875000006,
+          "metrics": {
+            "hitAtK": 0,
+            "recallAtK": 0,
+            "ndcgAtK": 0,
+            "mrr": 0,
+            "hitsCount": 0,
+            "anyHit": false
+          }
+        }
+      }
+    },
+    {
+      "taskId": "history-280",
+      "statement": "Leave-one-out: user has 50 orders; predict the most recent store.",
+      "expectedItemIds": [
+        "130"
+      ],
+      "perEngine": {
+        "random": {
+          "predicted": [
+            "1",
+            "22",
+            "137",
+            "84",
+            "2"
+          ],
+          "latencyMs": 1.0163330000068527,
+          "metrics": {
+            "hitAtK": 0,
+            "recallAtK": 0,
+            "ndcgAtK": 0,
+            "mrr": 0,
+            "hitsCount": 0,
+            "anyHit": false
+          }
+        },
+        "popularity": {
+          "predicted": [
+            "96",
+            "52",
+            "19",
+            "31",
+            "39"
+          ],
+          "latencyMs": 3553.5549170000013,
+          "metrics": {
+            "hitAtK": 0,
+            "recallAtK": 0,
+            "ndcgAtK": 0,
+            "mrr": 0,
+            "hitsCount": 0,
+            "anyHit": false
+          }
+        }
+      }
+    },
+    {
+      "taskId": "history-67",
+      "statement": "Leave-one-out: user has 49 orders; predict the most recent store.",
+      "expectedItemIds": [
+        "376"
+      ],
+      "perEngine": {
+        "random": {
+          "predicted": [
+            "315",
+            "241",
+            "249",
+            "282",
+            "250"
+          ],
+          "latencyMs": 0.822874999983469,
+          "metrics": {
+            "hitAtK": 0,
+            "recallAtK": 0,
+            "ndcgAtK": 0,
+            "mrr": 0,
+            "hitsCount": 0,
+            "anyHit": false
+          }
+        },
+        "popularity": {
+          "predicted": [
+            "227",
+            "223",
+            "243",
+            "180",
+            "191"
+          ],
+          "latencyMs": 3590.4685410000093,
+          "metrics": {
+            "hitAtK": 0,
+            "recallAtK": 0,
+            "ndcgAtK": 0,
+            "mrr": 0,
+            "hitsCount": 0,
+            "anyHit": false
+          }
+        }
+      }
+    },
+    {
+      "taskId": "history-1",
+      "statement": "Leave-one-out: user has 48 orders; predict the most recent store.",
+      "expectedItemIds": [
+        "93"
+      ],
+      "perEngine": {
+        "random": {
+          "predicted": [
+            "41",
+            "136",
+            "111",
+            "415",
+            "514"
+          ],
+          "latencyMs": 1.0120420000166632,
+          "metrics": {
+            "hitAtK": 0,
+            "recallAtK": 0,
+            "ndcgAtK": 0,
+            "mrr": 0,
+            "hitsCount": 0,
+            "anyHit": false
+          }
+        },
+        "popularity": {
+          "predicted": [
+            "469",
+            "491",
+            "403",
+            "541",
+            "433"
+          ],
+          "latencyMs": 3620.2212080000027,
+          "metrics": {
+            "hitAtK": 0,
+            "recallAtK": 0,
+            "ndcgAtK": 0,
+            "mrr": 0,
+            "hitsCount": 0,
+            "anyHit": false
+          }
+        }
+      }
+    },
+    {
+      "taskId": "history-56",
+      "statement": "Leave-one-out: user has 48 orders; predict the most recent store.",
+      "expectedItemIds": [
+        "417"
+      ],
+      "perEngine": {
+        "random": {
+          "predicted": [
+            "27",
+            "99",
+            "200",
+            "308",
+            "277"
+          ],
+          "latencyMs": 0.8410420000145677,
+          "metrics": {
+            "hitAtK": 0,
+            "recallAtK": 0,
+            "ndcgAtK": 0,
+            "mrr": 0,
+            "hitsCount": 0,
+            "anyHit": false
+          }
+        },
+        "popularity": {
+          "predicted": [
+            "227",
+            "223",
+            "243",
+            "180",
+            "191"
+          ],
+          "latencyMs": 3562.1053750000137,
+          "metrics": {
+            "hitAtK": 0,
+            "recallAtK": 0,
+            "ndcgAtK": 0,
+            "mrr": 0,
+            "hitsCount": 0,
+            "anyHit": false
+          }
+        }
+      }
+    },
+    {
+      "taskId": "history-209",
+      "statement": "Leave-one-out: user has 48 orders; predict the most recent store.",
+      "expectedItemIds": [
+        "572"
+      ],
+      "perEngine": {
+        "random": {
+          "predicted": [
+            "142",
+            "5",
+            "1",
+            "47",
+            "153"
+          ],
+          "latencyMs": 1.0438750000030268,
+          "metrics": {
+            "hitAtK": 0,
+            "recallAtK": 0,
+            "ndcgAtK": 0,
+            "mrr": 0,
+            "hitsCount": 0,
+            "anyHit": false
+          }
+        },
+        "popularity": {
+          "predicted": [
+            "96",
+            "52",
+            "19",
+            "31",
+            "39"
+          ],
+          "latencyMs": 3552.4840829999885,
+          "metrics": {
+            "hitAtK": 0,
+            "recallAtK": 0,
+            "ndcgAtK": 0,
+            "mrr": 0,
+            "hitsCount": 0,
+            "anyHit": false
+          }
+        }
+      }
+    },
+    {
+      "taskId": "history-249",
+      "statement": "Leave-one-out: user has 48 orders; predict the most recent store.",
+      "expectedItemIds": [
+        "402"
+      ],
+      "perEngine": {
+        "random": {
+          "predicted": [
+            "556",
+            "394",
+            "564",
+            "501",
+            "518"
+          ],
+          "latencyMs": 0.7693330000038259,
+          "metrics": {
+            "hitAtK": 0,
+            "recallAtK": 0,
+            "ndcgAtK": 0,
+            "mrr": 0,
+            "hitsCount": 0,
+            "anyHit": false
+          }
+        },
+        "popularity": {
+          "predicted": [
+            "394",
+            "425",
+            "564",
+            "556",
+            "422"
+          ],
+          "latencyMs": 3557.237999999983,
+          "metrics": {
+            "hitAtK": 0,
+            "recallAtK": 0,
+            "ndcgAtK": 0,
+            "mrr": 0,
+            "hitsCount": 0,
+            "anyHit": false
+          }
+        }
+      }
+    },
+    {
+      "taskId": "history-1213",
+      "statement": "Leave-one-out: user has 48 orders; predict the most recent store.",
+      "expectedItemIds": [
+        "184"
+      ],
+      "perEngine": {
+        "random": {
+          "predicted": [
+            "90",
+            "374",
+            "428",
+            "550",
+            "522"
+          ],
+          "latencyMs": 1.0173329999961425,
+          "metrics": {
+            "hitAtK": 0,
+            "recallAtK": 0,
+            "ndcgAtK": 0,
+            "mrr": 0,
+            "hitsCount": 0,
+            "anyHit": false
+          }
+        },
+        "popularity": {
+          "predicted": [
+            "368",
+            "391",
+            "455",
+            "450",
+            "475"
+          ],
+          "latencyMs": 3610.0202500000014,
+          "metrics": {
+            "hitAtK": 0,
+            "recallAtK": 0,
+            "ndcgAtK": 0,
+            "mrr": 0,
+            "hitsCount": 0,
+            "anyHit": false
+          }
+        }
+      }
+    },
+    {
+      "taskId": "history-377",
+      "statement": "Leave-one-out: user has 47 orders; predict the most recent store.",
+      "expectedItemIds": [
+        "226"
+      ],
+      "perEngine": {
+        "random": {
+          "predicted": [
+            "281",
+            "296",
+            "275",
+            "283",
+            "272"
+          ],
+          "latencyMs": 0.7977920000266749,
+          "metrics": {
+            "hitAtK": 0,
+            "recallAtK": 0,
+            "ndcgAtK": 0,
+            "mrr": 0,
+            "hitsCount": 0,
+            "anyHit": false
+          }
+        },
+        "popularity": {
+          "predicted": [
+            "227",
+            "223",
+            "243",
+            "180",
+            "191"
+          ],
+          "latencyMs": 3566.559957999998,
+          "metrics": {
+            "hitAtK": 0,
+            "recallAtK": 0,
+            "ndcgAtK": 0,
+            "mrr": 0,
+            "hitsCount": 0,
+            "anyHit": false
+          }
+        }
+      }
+    },
+    {
+      "taskId": "history-83",
+      "statement": "Leave-one-out: user has 46 orders; predict the most recent store.",
+      "expectedItemIds": [
+        "561"
+      ],
+      "perEngine": {
+        "random": {
+          "predicted": [
+            "426",
+            "481",
+            "474",
+            "446",
+            "478"
+          ],
+          "latencyMs": 1.1776670000108425,
+          "metrics": {
+            "hitAtK": 0,
+            "recallAtK": 0,
+            "ndcgAtK": 0,
+            "mrr": 0,
+            "hitsCount": 0,
+            "anyHit": false
+          }
+        },
+        "popularity": {
+          "predicted": [
+            "478",
+            "542",
+            "466",
+            "529",
+            "364"
+          ],
+          "latencyMs": 3593.5889170000155,
+          "metrics": {
+            "hitAtK": 0,
+            "recallAtK": 0,
+            "ndcgAtK": 0,
+            "mrr": 0,
+            "hitsCount": 0,
+            "anyHit": false
+          }
+        }
+      }
+    },
+    {
+      "taskId": "history-332",
+      "statement": "Leave-one-out: user has 46 orders; predict the most recent store.",
+      "expectedItemIds": [
+        "74"
+      ],
+      "perEngine": {
+        "random": {
+          "predicted": [
+            "159",
+            "40",
+            "115",
+            "130",
+            "145"
+          ],
+          "latencyMs": 1.0058750000025611,
+          "metrics": {
+            "hitAtK": 0,
+            "recallAtK": 0,
+            "ndcgAtK": 0,
+            "mrr": 0,
+            "hitsCount": 0,
+            "anyHit": false
+          }
+        },
+        "popularity": {
+          "predicted": [
+            "94",
+            "28",
+            "62",
+            "45",
+            "125"
+          ],
+          "latencyMs": 3604.957624999981,
+          "metrics": {
+            "hitAtK": 0,
+            "recallAtK": 0,
+            "ndcgAtK": 0,
+            "mrr": 0,
+            "hitsCount": 0,
+            "anyHit": false
+          }
+        }
+      }
+    },
+    {
+      "taskId": "history-525",
+      "statement": "Leave-one-out: user has 46 orders; predict the most recent store.",
+      "expectedItemIds": [
+        "19"
+      ],
+      "perEngine": {
+        "random": {
+          "predicted": [
+            "391",
+            "562",
+            "365",
+            "25",
+            "36"
+          ],
+          "latencyMs": 0.8291669999889564,
+          "metrics": {
+            "hitAtK": 0,
+            "recallAtK": 0,
+            "ndcgAtK": 0,
+            "mrr": 0,
+            "hitsCount": 0,
+            "anyHit": false
+          }
+        },
+        "popularity": {
+          "predicted": [
+            "478",
+            "542",
+            "466",
+            "368",
+            "529"
+          ],
+          "latencyMs": 3613.706959000003,
+          "metrics": {
+            "hitAtK": 0,
+            "recallAtK": 0,
+            "ndcgAtK": 0,
+            "mrr": 0,
+            "hitsCount": 0,
+            "anyHit": false
+          }
+        }
+      }
+    },
+    {
+      "taskId": "history-1194",
+      "statement": "Leave-one-out: user has 46 orders; predict the most recent store.",
+      "expectedItemIds": [
+        "334"
+      ],
+      "perEngine": {
+        "random": {
+          "predicted": [
+            "549",
+            "429",
+            "21",
+            "364",
+            "49"
+          ],
+          "latencyMs": 1.0328330000047572,
+          "metrics": {
+            "hitAtK": 0,
+            "recallAtK": 0,
+            "ndcgAtK": 0,
+            "mrr": 0,
+            "hitsCount": 0,
+            "anyHit": false
+          }
+        },
+        "popularity": {
+          "predicted": [
+            "478",
+            "542",
+            "466",
+            "368",
+            "529"
+          ],
+          "latencyMs": 3483.746207999997,
+          "metrics": {
+            "hitAtK": 0,
+            "recallAtK": 0,
+            "ndcgAtK": 0,
+            "mrr": 0,
+            "hitsCount": 0,
+            "anyHit": false
+          }
+        }
+      }
+    }
+  ],
+  "aggregate": {
+    "random": {
+      "hitAtK": 0,
+      "recallAtK": 0,
+      "ndcgAtK": 0,
+      "mrr": 0,
+      "coverage": 0.2222222222222222,
+      "n": 30
+    },
+    "popularity": {
+      "hitAtK": 0,
+      "recallAtK": 0,
+      "ndcgAtK": 0,
+      "mrr": 0,
+      "coverage": 0.06565656565656566,
+      "n": 30
+    }
+  }
+}

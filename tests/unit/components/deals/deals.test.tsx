@@ -118,7 +118,7 @@ describe('Deals', () => {
       const Wrapper = createWrapper();
       render(
         <Wrapper>
-          <Deals restaurantId="restaurant1" />
+          <Deals restaurantId="restaurant1" isRestaurantOpen={true} />
         </Wrapper>
       );
 
@@ -130,7 +130,7 @@ describe('Deals', () => {
       const Wrapper = createWrapper();
       render(
         <Wrapper>
-          <Deals restaurantId="restaurant1" />
+          <Deals restaurantId="restaurant1" isRestaurantOpen={true} />
         </Wrapper>
       );
 
@@ -144,7 +144,7 @@ describe('Deals', () => {
       const Wrapper = createWrapper();
       render(
         <Wrapper>
-          <Deals restaurantId="restaurant1" />
+          <Deals restaurantId="restaurant1" isRestaurantOpen={true} />
         </Wrapper>
       );
 
@@ -156,7 +156,7 @@ describe('Deals', () => {
       const Wrapper = createWrapper();
       render(
         <Wrapper>
-          <Deals restaurantId="restaurant1" />
+          <Deals restaurantId="restaurant1" isRestaurantOpen={true} />
         </Wrapper>
       );
 
@@ -175,7 +175,7 @@ describe('Deals', () => {
       const Wrapper = createWrapper();
       const { container } = render(
         <Wrapper>
-          <Deals restaurantId="restaurant1" />
+          <Deals restaurantId="restaurant1" isRestaurantOpen={true} />
         </Wrapper>
       );
 
@@ -191,7 +191,7 @@ describe('Deals', () => {
       const Wrapper = createWrapper();
       const { container } = render(
         <Wrapper>
-          <Deals restaurantId="restaurant1" />
+          <Deals restaurantId="restaurant1" isRestaurantOpen={true} />
         </Wrapper>
       );
 
@@ -204,7 +204,7 @@ describe('Deals', () => {
       const Wrapper = createWrapper();
       render(
         <Wrapper>
-          <Deals restaurantId="restaurant1" />
+          <Deals restaurantId="restaurant1" isRestaurantOpen={true} />
         </Wrapper>
       );
 
@@ -215,7 +215,7 @@ describe('Deals', () => {
       const Wrapper = createWrapper();
       render(
         <Wrapper>
-          <Deals restaurantId="restaurant1" />
+          <Deals restaurantId="restaurant1" isRestaurantOpen={true} />
         </Wrapper>
       );
 
@@ -229,7 +229,7 @@ describe('Deals', () => {
       const Wrapper = createWrapper();
       render(
         <Wrapper>
-          <Deals restaurantId="restaurant1" />
+          <Deals restaurantId="restaurant1" isRestaurantOpen={true} />
         </Wrapper>
       );
 
@@ -241,7 +241,7 @@ describe('Deals', () => {
       const Wrapper = createWrapper();
       render(
         <Wrapper>
-          <Deals restaurantId="restaurant1" />
+          <Deals restaurantId="restaurant1" isRestaurantOpen={true} />
         </Wrapper>
       );
 
@@ -253,7 +253,7 @@ describe('Deals', () => {
       const Wrapper = createWrapper();
       render(
         <Wrapper>
-          <Deals restaurantId="restaurant1" />
+          <Deals restaurantId="restaurant1" isRestaurantOpen={true} />
         </Wrapper>
       );
 
@@ -265,7 +265,7 @@ describe('Deals', () => {
       const Wrapper = createWrapper();
       render(
         <Wrapper>
-          <Deals restaurantId="restaurant1" />
+          <Deals restaurantId="restaurant1" isRestaurantOpen={true} />
         </Wrapper>
       );
 
@@ -278,7 +278,7 @@ describe('Deals', () => {
       const Wrapper = createWrapper();
       render(
         <Wrapper>
-          <Deals restaurantId="restaurant1" />
+          <Deals restaurantId="restaurant1" isRestaurantOpen={true} />
         </Wrapper>
       );
 
@@ -292,7 +292,7 @@ describe('Deals', () => {
       const Wrapper = createWrapper();
       render(
         <Wrapper>
-          <Deals restaurantId="restaurant1" />
+          <Deals restaurantId="restaurant1" isRestaurantOpen={true} />
         </Wrapper>
       );
 
@@ -311,7 +311,7 @@ describe('Deals', () => {
       const Wrapper = createWrapper();
       render(
         <Wrapper>
-          <Deals restaurantId="restaurant1" />
+          <Deals restaurantId="restaurant1" isRestaurantOpen={true} />
         </Wrapper>
       );
 
@@ -327,7 +327,7 @@ describe('Deals', () => {
       const Wrapper = createWrapper();
       render(
         <Wrapper>
-          <Deals restaurantId="restaurant1" />
+          <Deals restaurantId="restaurant1" isRestaurantOpen={true} />
         </Wrapper>
       );
 
@@ -344,7 +344,7 @@ describe('Deals', () => {
       const Wrapper = createWrapper();
       render(
         <Wrapper>
-          <Deals restaurantId="restaurant1" />
+          <Deals restaurantId="restaurant1" isRestaurantOpen={true} />
         </Wrapper>
       );
 
@@ -371,7 +371,7 @@ describe('Deals', () => {
       const Wrapper = createWrapper();
       render(
         <Wrapper>
-          <Deals restaurantId="restaurant1" />
+          <Deals restaurantId="restaurant1" isRestaurantOpen={true} />
         </Wrapper>
       );
 
@@ -388,7 +388,7 @@ describe('Deals', () => {
       const Wrapper = createWrapper();
       render(
         <Wrapper>
-          <Deals restaurantId="restaurant1" />
+          <Deals restaurantId="restaurant1" isRestaurantOpen={true} />
         </Wrapper>
       );
 
@@ -413,7 +413,7 @@ describe('Deals', () => {
       const Wrapper = createWrapper();
       render(
         <Wrapper>
-          <Deals restaurantId="restaurant1" />
+          <Deals restaurantId="restaurant1" isRestaurantOpen={true} />
         </Wrapper>
       );
 
@@ -426,7 +426,7 @@ describe('Deals', () => {
       const Wrapper = createWrapper();
       render(
         <Wrapper>
-          <Deals restaurantId="restaurant1" />
+          <Deals restaurantId="restaurant1" isRestaurantOpen={true} />
         </Wrapper>
       );
 
@@ -457,7 +457,7 @@ describe('Deals', () => {
       const Wrapper = createWrapper();
       render(
         <Wrapper>
-          <Deals restaurantId="restaurant1" />
+          <Deals restaurantId="restaurant1" isRestaurantOpen={true} />
         </Wrapper>
       );
 
@@ -482,7 +482,7 @@ describe('Deals', () => {
       const Wrapper = createWrapper();
       render(
         <Wrapper>
-          <Deals restaurantId="restaurant1" />
+          <Deals restaurantId="restaurant1" isRestaurantOpen={true} />
         </Wrapper>
       );
 
@@ -531,7 +531,7 @@ describe('Deals', () => {
       const Wrapper = createWrapper();
       render(
         <Wrapper>
-          <Deals restaurantId="restaurant1" />
+          <Deals restaurantId="restaurant1" isRestaurantOpen={true} />
         </Wrapper>
       );
 
@@ -557,7 +557,7 @@ describe('Deals', () => {
       const Wrapper = createWrapper();
       render(
         <Wrapper>
-          <Deals restaurantId="restaurant1" />
+          <Deals restaurantId="restaurant1" isRestaurantOpen={true} />
         </Wrapper>
       );
 
@@ -585,7 +585,7 @@ describe('Deals', () => {
       const Wrapper = createWrapper();
       render(
         <Wrapper>
-          <Deals restaurantId="restaurant1" />
+          <Deals restaurantId="restaurant1" isRestaurantOpen={true} />
         </Wrapper>
       );
 
@@ -615,7 +615,7 @@ describe('Deals', () => {
       const Wrapper = createWrapper();
       render(
         <Wrapper>
-          <Deals restaurantId="restaurant1" />
+          <Deals restaurantId="restaurant1" isRestaurantOpen={true} />
         </Wrapper>
       );
 
@@ -638,7 +638,7 @@ describe('Deals', () => {
       const Wrapper = createWrapper();
       render(
         <Wrapper>
-          <Deals restaurantId="restaurant1" />
+          <Deals restaurantId="restaurant1" isRestaurantOpen={true} />
         </Wrapper>
       );
 

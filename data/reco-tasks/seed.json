@@ -1,0 +1,152 @@
+[
+  {
+    "taskId": "item-addon-order-001",
+    "statement": "Order mac & cheese from West diner, select the extra cheese add on",
+    "surface": "home_feed",
+    "user": "xavier.ingram898@mail.test",
+    "userLat": 40.7038273,
+    "userLng": -73.9581212,
+    "expectedKind": "restaurant",
+    "expectedItemIds": [
+      "202"
+    ],
+    "expectedNames": [
+      "West Diner"
+    ]
+  },
+  {
+    "taskId": "item-addon-order-002",
+    "statement": "Order Bruschetta from Cafe by Frank's, select the Medium add on",
+    "surface": "home_feed",
+    "user": "kai.hayes1@example.com",
+    "userLat": 33.8402032,
+    "userLng": -117.9587196,
+    "expectedKind": "restaurant",
+    "expectedItemIds": [
+      "398"
+    ],
+    "expectedNames": [
+      "Cafe by Frank's"
+    ]
+  },
+  {
+    "taskId": "item-addon-order-003",
+    "statement": "Order BBQ Burger from Golden Burger, select the Small add on",
+    "surface": "home_feed",
+    "user": "nora.chambers2@mail.test",
+    "userLat": 40.6744186,
+    "userLng": -73.9821765,
+    "expectedKind": "restaurant",
+    "expectedItemIds": [
+      "277"
+    ],
+    "expectedNames": [
+      "Golden Burger"
+    ]
+  },
+  {
+    "taskId": "item-addon-order-004",
+    "statement": "Order Mango Sticky Rice from Coastal Smokehouse, select the Berry Compote add on",
+    "surface": "home_feed",
+    "user": "rosa.turner244@dashdoor.test",
+    "userLat": 42.4817845,
+    "userLng": -71.0663338,
+    "expectedKind": "restaurant",
+    "expectedItemIds": [
+      "84"
+    ],
+    "expectedNames": [
+      "Coastal Smokehouse"
+    ]
+  },
+  {
+    "taskId": "item-addon-order-005",
+    "statement": "Order Lo Mein from The South Palace, select the Large add on",
+    "surface": "home_feed",
+    "user": "elias.fischer4@example.com",
+    "userLat": 40.6520059,
+    "userLng": -73.9495365,
+    "expectedKind": "restaurant",
+    "expectedItemIds": [
+      "169"
+    ],
+    "expectedNames": [
+      "The South Palace"
+    ]
+  },
+  {
+    "taskId": "item-addon-order-006",
+    "statement": "Order Fettuccine Alfredo from West Village Cucina, select the Large add on",
+    "surface": "home_feed",
+    "user": "quinn.chambers5@inbox.local",
+    "userLat": 40.6735741,
+    "userLng": -73.9567583,
+    "expectedKind": "restaurant",
+    "expectedItemIds": [
+      "329"
+    ],
+    "expectedNames": [
+      "West Village Cucina"
+    ]
+  },
+  {
+    "taskId": "item-addon-order-007",
+    "statement": "Order Lamb Rogan Josh from Tandoor by West, select the Large add on",
+    "surface": "home_feed",
+    "user": "lena.owens6@mail.test",
+    "userLat": 33.9021544,
+    "userLng": -118.3854101,
+    "expectedKind": "restaurant",
+    "expectedItemIds": [
+      "468"
+    ],
+    "expectedNames": [
+      "Tandoor by West"
+    ]
+  },
+  {
+    "taskId": "express-nearest-order-004",
+    "statement": "Order express delivery of a Bourbon Glazed Pork Tenderloin and Kimchi Slaw with Hot Sauce from Talia's Pantry restaurant from my apartment address. Apply TALIAPANTRYSIDE",
+    "surface": "home_feed",
+    "user": "elias.young12@dashdoor.test",
+    "userLat": 40.6788705,
+    "userLng": -73.9511887,
+    "expectedKind": "restaurant",
+    "expectedItemIds": [
+      "30"
+    ],
+    "expectedNames": [
+      "Talia's Pantry"
+    ]
+  },
+  {
+    "taskId": "cheapest-item-filter-002",
+    "statement": "Order the cheapest Yuzu Lime Soda you can find, just don't order from Seafood Market, they were terrible last time",
+    "surface": "home_feed",
+    "user": "diana.vega38@mail.test",
+    "userLat": 42.351992,
+    "userLng": -71.067134,
+    "expectedKind": "restaurant",
+    "expectedItemIds": [
+      "4"
+    ],
+    "expectedNames": [
+      "Seafood Market"
+    ]
+  },
+  {
+    "taskId": "cheapest-item-filter-004",
+    "statement": "Order the cheapest green chile turkey burger you can find, just don't order from Urban Habesha Kitchen, they were terrible last time",
+    "surface": "home_feed",
+    "user": "lena.bennett40@example.com",
+    "userLat": 40.6719754,
+    "userLng": -73.9334909,
+    "expectedKind": "restaurant",
+    "expectedItemIds": [
+      "72"
+    ],
+    "expectedNames": [
+      "Urban Habesha Kitchen"
+    ]
+  }
+]

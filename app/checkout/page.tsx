@@ -1627,14 +1627,14 @@ export default function CheckoutPage() {
               )}
             <button
               onClick={handlePlaceOrder}
-              disabled={
+              disabled={Boolean(
                 !selectedPaymentMethodObj ||
                 isOutsideDeliveryArea ||
                 (currentCategory === 'restaurant' &&
                   currentRestaurant &&
                   !isRestaurantOpen &&
                   !(selectedDeliveryOption === 'schedule' && scheduledDate))
-              }
+              )}
               className={`w-full font-medium py-4 rounded-lg text-lg ${
                 selectedPaymentMethodObj &&
                 !isOutsideDeliveryArea &&
@@ -1739,14 +1739,14 @@ export default function CheckoutPage() {
                   )}
                 <button
                   onClick={handlePlaceOrder}
-                  disabled={
+                  disabled={Boolean(
                     !selectedPaymentMethodObj ||
                     isOutsideDeliveryArea ||
                     (currentCategory === 'restaurant' &&
                       currentRestaurant &&
                       !isRestaurantOpen &&
                       !(selectedDeliveryOption === 'schedule' && scheduledDate))
-                  }
+                  )}
                   className={`w-full font-semibold py-3 rounded-full transition-colors ${
                     selectedPaymentMethodObj &&
                     !isOutsideDeliveryArea &&

@@ -22,6 +22,7 @@ export interface Restaurant {
   city: string;
   state: string;
   zipCode: string;
+  country?: string;
   lat: number;
   lng: number;
   phone: string;

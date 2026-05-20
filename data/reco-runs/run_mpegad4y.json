@@ -1,0 +1,519 @@
+{
+  "runId": "run_mpegad4y",
+  "startedAt": "2026-05-20T19:24:12.418Z",
+  "finishedAt": "2026-05-20T19:24:47.578Z",
+  "k": 5,
+  "taskSet": "seed",
+  "engines": [
+    {
+      "name": "random",
+      "version": "1.0.0",
+      "description": "Uniform random over the candidate pool. Sanity floor."
+    },
+    {
+      "name": "popularity",
+      "version": "1.0.0",
+      "description": "Featured + rating × log(1+count). Same formula as the production feed."
+    }
+  ],
+  "perTask": [
+    {
+      "taskId": "item-addon-order-001",
+      "statement": "Order mac & cheese from West diner, select the extra cheese add on",
+      "expectedItemIds": [
+        "202"
+      ],
+      "expectedNames": [
+        "West Diner"
+      ],
+      "perEngine": {
+        "random": {
+          "predicted": [
+            "248",
+            "8",
+            "33",
+            "154",
+            "138"
+          ],
+          "latencyMs": 1.207125000000815,
+          "metrics": {
+            "hitAtK": 0,
+            "recallAtK": 0,
+            "ndcgAtK": 0,
+            "mrr": 0,
+            "hitsCount": 0,
+            "anyHit": false
+          }
+        },
+        "popularity": {
+          "predicted": [
+            "227",
+            "223",
+            "243",
+            "180",
+            "191"
+          ],
+          "latencyMs": 3472.484792000003,
+          "metrics": {
+            "hitAtK": 0,
+            "recallAtK": 0,
+            "ndcgAtK": 0,
+            "mrr": 0,
+            "hitsCount": 0,
+            "anyHit": false
+          }
+        }
+      }
+    },
+    {
+      "taskId": "item-addon-order-002",
+      "statement": "Order Bruschetta from Cafe by Frank's, select the Medium add on",
+      "expectedItemIds": [
+        "398"
+      ],
+      "expectedNames": [
+        "Cafe by Frank's"
+      ],
+      "perEngine": {
+        "random": {
+          "predicted": [
+            "41",
+            "136",
+            "111",
+            "415",
+            "514"
+          ],
+          "latencyMs": 0.8960000000006403,
+          "metrics": {
+            "hitAtK": 0,
+            "recallAtK": 0,
+            "ndcgAtK": 0,
+            "mrr": 0,
+            "hitsCount": 0,
+            "anyHit": false
+          }
+        },
+        "popularity": {
+          "predicted": [
+            "469",
+            "491",
+            "403",
+            "541",
+            "433"
+          ],
+          "latencyMs": 3450.4611250000016,
+          "metrics": {
+            "hitAtK": 0,
+            "recallAtK": 0,
+            "ndcgAtK": 0,
+            "mrr": 0,
+            "hitsCount": 0,
+            "anyHit": false
+          }
+        }
+      }
+    },
+    {
+      "taskId": "item-addon-order-003",
+      "statement": "Order BBQ Burger from Golden Burger, select the Small add on",
+      "expectedItemIds": [
+        "277"
+      ],
+      "expectedNames": [
+        "Golden Burger"
+      ],
+      "perEngine": {
+        "random": {
+          "predicted": [
+            "357",
+            "155",
+            "177",
+            "353",
+            "349"
+          ],
+          "latencyMs": 1.0635830000028363,
+          "metrics": {
+            "hitAtK": 0,
+            "recallAtK": 0,
+            "ndcgAtK": 0,
+            "mrr": 0,
+            "hitsCount": 0,
+            "anyHit": false
+          }
+        },
+        "popularity": {
+          "predicted": [
+            "227",
+            "223",
+            "243",
+            "180",
+            "191"
+          ],
+          "latencyMs": 3430.835500000001,
+          "metrics": {
+            "hitAtK": 0,
+            "recallAtK": 0,
+            "ndcgAtK": 0,
+            "mrr": 0,
+            "hitsCount": 0,
+            "anyHit": false
+          }
+        }
+      }
+    },
+    {
+      "taskId": "item-addon-order-004",
+      "statement": "Order Mango Sticky Rice from Coastal Smokehouse, select the Berry Compote add on",
+      "expectedItemIds": [
+        "84"
+      ],
+      "expectedNames": [
+        "Coastal Smokehouse"
+      ],
+      "perEngine": {
+        "random": {
+          "predicted": [
+            "19",
+            "17",
+            "84",
+            "117",
+            "31"
+          ],
+          "latencyMs": 0.800667000003159,
+          "metrics": {
+            "hitAtK": 1,
+            "recallAtK": 1,
+            "ndcgAtK": 0.5,
+            "mrr": 0.3333333333333333,
+            "hitsCount": 1,
+            "anyHit": true
+          }
+        },
+        "popularity": {
+          "predicted": [
+            "96",
+            "52",
+            "19",
+            "31",
+            "39"
+          ],
+          "latencyMs": 3459.316209000004,
+          "metrics": {
+            "hitAtK": 0,
+            "recallAtK": 0,
+            "ndcgAtK": 0,
+            "mrr": 0,
+            "hitsCount": 0,
+            "anyHit": false
+          }
+        }
+      }
+    },
+    {
+      "taskId": "item-addon-order-005",
+      "statement": "Order Lo Mein from The South Palace, select the Large add on",
+      "expectedItemIds": [
+        "169"
+      ],
+      "expectedNames": [
+        "The South Palace"
+      ],
+      "perEngine": {
+        "random": {
+          "predicted": [
+            "240",
+            "333",
+            "349",
+            "313",
+            "215"
+          ],
+          "latencyMs": 0.8705829999962589,
+          "metrics": {
+            "hitAtK": 0,
+            "recallAtK": 0,
+            "ndcgAtK": 0,
+            "mrr": 0,
+            "hitsCount": 0,
+            "anyHit": false
+          }
+        },
+        "popularity": {
+          "predicted": [
+            "227",
+            "223",
+            "243",
+            "180",
+            "191"
+          ],
+          "latencyMs": 3465.4101669999945,
+          "metrics": {
+            "hitAtK": 0,
+            "recallAtK": 0,
+            "ndcgAtK": 0,
+            "mrr": 0,
+            "hitsCount": 0,
+            "anyHit": false
+          }
+        }
+      }
+    },
+    {
+      "taskId": "item-addon-order-006",
+      "statement": "Order Fettuccine Alfredo from West Village Cucina, select the Large add on",
+      "expectedItemIds": [
+        "329"
+      ],
+      "expectedNames": [
+        "West Village Cucina"
+      ],
+      "perEngine": {
+        "random": {
+          "predicted": [
+            "277",
+            "237",
+            "254",
+            "292",
+            "297"
+          ],
+          "latencyMs": 0.8914999999979045,
+          "metrics": {
+            "hitAtK": 0,
+            "recallAtK": 0,
+            "ndcgAtK": 0,
+            "mrr": 0,
+            "hitsCount": 0,
+            "anyHit": false
+          }
+        },
+        "popularity": {
+          "predicted": [
+            "227",
+            "223",
+            "243",
+            "180",
+            "191"
+          ],
+          "latencyMs": 3460.2410420000015,
+          "metrics": {
+            "hitAtK": 0,
+            "recallAtK": 0,
+            "ndcgAtK": 0,
+            "mrr": 0,
+            "hitsCount": 0,
+            "anyHit": false
+          }
+        }
+      }
+    },
+    {
+      "taskId": "item-addon-order-007",
+      "statement": "Order Lamb Rogan Josh from Tandoor by West, select the Large add on",
+      "expectedItemIds": [
+        "468"
+      ],
+      "expectedNames": [
+        "Tandoor by West"
+      ],
+      "perEngine": {
+        "random": {
+          "predicted": [
+            "382",
+            "593",
+            "376",
+            "540",
+            "512"
+          ],
+          "latencyMs": 0.8610830000034184,
+          "metrics": {
+            "hitAtK": 0,
+            "recallAtK": 0,
+            "ndcgAtK": 0,
+            "mrr": 0,
+            "hitsCount": 0,
+            "anyHit": false
+          }
+        },
+        "popularity": {
+          "predicted": [
+            "368",
+            "391",
+            "455",
+            "450",
+            "475"
+          ],
+          "latencyMs": 3502.7213339999944,
+          "metrics": {
+            "hitAtK": 0,
+            "recallAtK": 0,
+            "ndcgAtK": 0,
+            "mrr": 0,
+            "hitsCount": 0,
+            "anyHit": false
+          }
+        }
+      }
+    },
+    {
+      "taskId": "express-nearest-order-004",
+      "statement": "Order express delivery of a Bourbon Glazed Pork Tenderloin and Kimchi Slaw with Hot Sauce from Talia's Pantry restaurant from my apartment address. Apply TALIAPANTRYSIDE",
+      "expectedItemIds": [
+        "30"
+      ],
+      "expectedNames": [
+        "Talia's Pantry"
+      ],
+      "perEngine": {
+        "random": {
+          "predicted": [
+            "46",
+            "27",
+            "245",
+            "359",
+            "295"
+          ],
+          "latencyMs": 0.8735840000008466,
+          "metrics": {
+            "hitAtK": 0,
+            "recallAtK": 0,
+            "ndcgAtK": 0,
+            "mrr": 0,
+            "hitsCount": 0,
+            "anyHit": false
+          }
+        },
+        "popularity": {
+          "predicted": [
+            "227",
+            "223",
+            "243",
+            "180",
+            "191"
+          ],
+          "latencyMs": 3557.579874999996,
+          "metrics": {
+            "hitAtK": 0,
+            "recallAtK": 0,
+            "ndcgAtK": 0,
+            "mrr": 0,
+            "hitsCount": 0,
+            "anyHit": false
+          }
+        }
+      }
+    },
+    {
+      "taskId": "cheapest-item-filter-002",
+      "statement": "Order the cheapest Yuzu Lime Soda you can find, just don't order from Seafood Market, they were terrible last time",
+      "expectedItemIds": [
+        "4"
+      ],
+      "expectedNames": [
+        "Seafood Market"
+      ],
+      "perEngine": {
+        "random": {
+          "predicted": [
+            "68",
+            "39",
+            "112",
+            "132",
+            "84"
+          ],
+          "latencyMs": 1.6955830000079004,
+          "metrics": {
+            "hitAtK": 0,
+            "recallAtK": 0,
+            "ndcgAtK": 0,
+            "mrr": 0,
+            "hitsCount": 0,
+            "anyHit": false
+          }
+        },
+        "popularity": {
+          "predicted": [
+            "96",
+            "52",
+            "19",
+            "31",
+            "39"
+          ],
+          "latencyMs": 3702.3665420000034,
+          "metrics": {
+            "hitAtK": 0,
+            "recallAtK": 0,
+            "ndcgAtK": 0,
+            "mrr": 0,
+            "hitsCount": 0,
+            "anyHit": false
+          }
+        }
+      }
+    },
+    {
+      "taskId": "cheapest-item-filter-004",
+      "statement": "Order the cheapest green chile turkey burger you can find, just don't order from Urban Habesha Kitchen, they were terrible last time",
+      "expectedItemIds": [
+        "72"
+      ],
+      "expectedNames": [
+        "Urban Habesha Kitchen"
+      ],
+      "perEngine": {
+        "random": {
+          "predicted": [
+            "223",
+            "189",
+            "170",
+            "308",
+            "305"
+          ],
+          "latencyMs": 0.9003329999977723,
+          "metrics": {
+            "hitAtK": 0,
+            "recallAtK": 0,
+            "ndcgAtK": 0,
+            "mrr": 0,
+            "hitsCount": 0,
+            "anyHit": false
+          }
+        },
+        "popularity": {
+          "predicted": [
+            "227",
+            "223",
+            "243",
+            "180",
+            "191"
+          ],
+          "latencyMs": 3644.433541999999,
+          "metrics": {
+            "hitAtK": 0,
+            "recallAtK": 0,
+            "ndcgAtK": 0,
+            "mrr": 0,
+            "hitsCount": 0,
+            "anyHit": false
+          }
+        }
+      }
+    }
+  ],
+  "aggregate": {
+    "random": {
+      "hitAtK": 0.1,
+      "recallAtK": 0.1,
+      "ndcgAtK": 0.05,
+      "mrr": 0.03333333333333333,
+      "coverage": 0.08080808080808081,
+      "n": 10
+    },
+    "popularity": {
+      "hitAtK": 0,
+      "recallAtK": 0,
+      "ndcgAtK": 0,
+      "mrr": 0,
+      "coverage": 0.03367003367003367,
+      "n": 10
+    }
+  }
+}

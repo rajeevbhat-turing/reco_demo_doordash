@@ -52,6 +52,13 @@ function InsightCard({
   );
 }
 
+type MerchantStoreReview = {
+  id: string;
+  timestamp: string;
+  rating: number;
+  userName: string;
+};
+
 function OperationsReviewCard() {
   const [mounted, setMounted] = useState(false);
   const { currentStoreId } = useCurrentStore();
@@ -97,8 +104,8 @@ function OperationsReviewCard() {
   });
 
   // Get all reviews from the current store
-  const allReviews = useMemo(() => {
-    return storeReviewsData || [];
+  const allReviews = useMemo((): MerchantStoreReview[] => {
+    return (storeReviewsData as MerchantStoreReview[] | undefined) || [];
   }, [storeReviewsData]);
 
   // Get recent reviews that need responses (within 7 days, or show recent ones if none are that recent)
@@ -107,14 +114,17 @@ function OperationsReviewCard() {
 
     // First try to get reviews within 7 days
     const reviewsWithin7Days = allReviews
-      .filter(review => {
+      .filter((review: MerchantStoreReview) => {
         const reviewDate = new Date(review.timestamp);
         const daysSinceReview = Math.floor(
           (now.getTime() - reviewDate.getTime()) / (1000 * 60 * 60 * 24)
         );
         return daysSinceReview <= 7 && review.rating >= 4;
       })
-      .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+      .sort(
+        (a: MerchantStoreReview, b: MerchantStoreReview) =>
+          new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+      )
       .slice(0, 3);
 
     // If we have reviews within 7 days, use those
@@ -124,8 +134,11 @@ function OperationsReviewCard() {
 
     // Otherwise, show the 3 most recent 4+ star reviews (even if older)
     return allReviews
-      .filter(review => review.rating >= 4)
-      .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+      .filter((review: MerchantStoreReview) => review.rating >= 4)
+      .sort(
+        (a: MerchantStoreReview, b: MerchantStoreReview) =>
+          new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+      )
       .slice(0, 3);
   }, [allReviews]);
 
@@ -167,7 +180,7 @@ function OperationsReviewCard() {
         </div>
       </div>
       <div className="space-y-3">
-        {recentReviews.map(review => {
+        {recentReviews.map((review: MerchantStoreReview) => {
           const daysLeft = getDaysToRespond(review.timestamp);
           return (
             <div

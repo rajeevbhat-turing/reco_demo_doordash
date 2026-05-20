@@ -1,5 +1,5 @@
 import { test, expect } from '../../../fixtures/auth.fixtures';
-import { testCredentials } from '../../test-credentials';
+import { testCredentials } from '../../../test-credentials.example';
 
 test.describe('Customer Login', () => {
   test.beforeEach(async ({ authPage }) => {

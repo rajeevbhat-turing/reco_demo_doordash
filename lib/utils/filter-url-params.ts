@@ -171,8 +171,8 @@ export function hasActiveFilters(filters: FilterState, category: string | null):
     filters.dashPass ||
     filters.overRating !== null ||
     (filters.price !== null && filters.price.length > 0) ||
-    (filters.cuisine !== null && filters.cuisine.length > 0) ||
-    (filters.dietaryPreferences !== null && filters.dietaryPreferences.length > 0)
+    ((filters.cuisine?.length ?? 0) > 0) ||
+    ((filters.dietaryPreferences?.length ?? 0) > 0)
   );
 }
 
