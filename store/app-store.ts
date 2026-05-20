@@ -26,6 +26,8 @@ interface AppStore {
   currentCategory: CartCategory | null;
   visitedStores: string[];
   routeBeforeAuth: string | null;
+  /** Phase 3 demo: which reco engine, if any, is re-ranking /home. */
+  activeRecoEngine: string | null;
 
   // Search methods
   updateSearchResults: (results: SearchResult[]) => void;
@@ -37,6 +39,9 @@ interface AppStore {
 
   // Route management methods
   setRouteBeforeAuth: (path: string | null) => void;
+
+  // Reco demo
+  setActiveRecoEngine: (name: string | null) => void;
 }
 
 export const useAppStore = create<AppStore>()(
@@ -49,6 +54,7 @@ export const useAppStore = create<AppStore>()(
         currentCategory: null,
         visitedStores: [],
         routeBeforeAuth: null,
+        activeRecoEngine: null,
 
         // Update search results
         updateSearchResults: (results: SearchResult[]) => {
@@ -115,6 +121,11 @@ export const useAppStore = create<AppStore>()(
         setRouteBeforeAuth: (path: string | null) => {
           set({ routeBeforeAuth: path });
         },
+
+        // Reco demo: pick which engine re-ranks /home (null = production behaviour)
+        setActiveRecoEngine: (name: string | null) => {
+          set({ activeRecoEngine: name });
+        },
       }),
       {
         name: 'app-state',
@@ -124,6 +135,7 @@ export const useAppStore = create<AppStore>()(
           currentCategory: state.currentCategory,
           visitedStores: state.visitedStores,
           routeBeforeAuth: state.routeBeforeAuth,
+          activeRecoEngine: state.activeRecoEngine,
         }),
       }
     ),

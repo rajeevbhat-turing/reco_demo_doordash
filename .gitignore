@@ -56,3 +56,6 @@ puppeteer-login.js
 coverage/
 
 internal-scripts
+
+# Claude Code per-machine permission cache (auto-grows each session)
+.claude/settings.local.json

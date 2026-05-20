@@ -47,6 +47,7 @@ services:
       - "8088:8088"   # server / data REST API
     volumes:
       - gorse-data:/var/lib/gorse
+      - ./gorse-config.toml:/etc/gorse/config.toml:ro
     environment:
       - GORSE_CACHE_STORE=sqlite:///var/lib/gorse/cache.db
       - GORSE_DATA_STORE=sqlite:///var/lib/gorse/data.db

@@ -67,7 +67,7 @@ async function main() {
     }))
   );
 
-  // Users + order feedback (each order = one 'order' feedback).
+  // Users + order feedback as 'star' (Gorse default positive_feedback_types).
   const users = (await db.execute('SELECT id FROM users')).rows as unknown as { id: number }[];
   console.log(`  users: ${users.length}`);
   await gorse('/api/users', 'POST',
@@ -80,7 +80,7 @@ async function main() {
   console.log(`  feedback: ${orders.length}`);
   await gorse('/api/feedback', 'POST',
     orders.map(o => ({
-      FeedbackType: 'order',
+      FeedbackType: 'star',
       UserId: String(o.user_id),
       ItemId: String(o.store_id),
       Timestamp: o.order_date,

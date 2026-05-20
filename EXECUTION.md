@@ -1,199 +1,184 @@
-# Execution — Finish the engines
+# Execution — Phase 4: LLM-agent track
 
-Current in-flight scope: close out the engine track end-to-end so we
-can move on to the LLM-agent goal cleanly. Two halves:
+The gym's second product goal: an LLM drives the real Dashdoor UI,
+and its trajectory is scored against the same ground truth the engine
+track uses. The engine track ships as-is; nothing here changes
+`/home`, `/store`, or `/reco-eval` for non-agent runs.
 
-| Half | Phase | What it gets you |
-|------|-------|------------------|
-| A — Verify Phase 2 sidecars | RECO_PLAN.md Phase 2 §§2.5–exit | LightFM + Implicit actually train, serve, and beat random side-by-side with Gorse on `/reco-eval`. |
-| B — Phase 3 live re-rank | RECO_PLAN.md Phase 3 | The real `/home` feed visibly re-orders when the user picks an engine. Demo "wow" moment. |
+> Previous EXECUTION.md content is archived in
+> `docs/execution-phase-0.md`, `docs/execution-phase-2-code.md`, and
+> `docs/execution-phase-3.md`. Phase 3 verification artifacts (e2e +
+> screenshots) moved to `parallel_work.md` Track A.
 
-> Previously-completed checklists are archived at
-> `docs/execution-phase-0.md` (Phase 0 build) and
-> `docs/execution-phase-2-code.md` (Phase 2 code work).
-
-Tick checkboxes the moment a step is done, per the rules in `CLAUDE.md`.
+Tick checkboxes the moment a step is done, per `CLAUDE.md`.
 
 ---
 
-## A. Verify Phase 2 sidecars
+## 0. Pre-flight
 
-Code (`tools/reco-engines/{lightfm,implicit}/`, adapters in
-`lib/reco/engines/{lightfm,implicit}.ts`, compose file) is all done.
-This half is the bring-up + smoke.
-
-### A.0 Pre-flight
-
-- [ ] Docker Desktop / OrbStack / Colima running. `docker info` ok.
-- [ ] On branch `reco`.
-- [ ] Ports 3000, 8001, 8002, 8087, 8088 free.
-      ```sh
-      lsof -iTCP -sTCP:LISTEN -nP | grep -E ':3000|:800[12]|:808[78]' || echo "ports free"
-      ```
-- [ ] Reco unit tests green:
-      `scripts/n.sh npm run test:unit -- tests/unit/reco/` → 19/19.
-
-### A.1 Build + boot the 5-engine stack
-
-- [ ] `docker compose -f config/docker-compose.reco.yaml up --build`
-      in its own terminal. First build is slow (LightFM compiles
-      against numpy 1.x); subsequent boots take ~30–60 s for LightFM
-      training to finish.
-- [ ] In a second terminal, watch for each service to be healthy:
-      ```sh
-      for svc in 3000:dashdoor 8001:lightfm 8002:implicit 8088:gorse; do
-        port=${svc%%:*}; name=${svc##*:}
-        if [ "$name" = "gorse" ]; then path="api/health/live"; else path="health"; fi
-        echo -n "$name ($port): "
-        curl -s -o /dev/null -w "%{http_code}\n" "http://localhost:$port/$path"
-      done
-      ```
-      Expect `200` from each. `lightfm`/`implicit` may return `503`
-      until training finishes — retry after 60 s.
-
-### A.2 Seed Gorse (skip if already seeded from `gorse_work.md`)
-
-- [ ] `RECO_GORSE_URL=http://localhost:8088 scripts/n.sh npx tsx scripts/seed-gorse.ts`
-- [ ] Confirm row counts in the Gorse dashboard at
-      http://localhost:8087.
-
-### A.3 Five-engine eval
-
-- [ ] Hit the API with all 5 engines on the history split:
-      ```sh
-      curl -s -X POST http://localhost:3000/api/reco/eval \
-        -H 'content-type: application/json' \
-        -d '{"engineNames":["random","popularity","gorse","lightfm","implicit"],
-             "taskSetId":"history","k":5,"historyLimit":50}' \
-        | python3 -c "
-      import sys,json
-      d=json.load(sys.stdin)
-      print('runId',d['runId'],'n=',len(d['report']['perTask']))
-      for n,a in d['report']['aggregate'].items():
-          print(f'  {n:10}  hit@5={a[\"hitAtK\"]:.3f}  ndcg@5={a[\"ndcgAtK\"]:.3f}  mrr={a[\"mrr\"]:.3f}')
-      "
-      ```
-- [ ] Bar: each engine returns metrics; no `error: …` in per-task
-      rows on the happy path; at least one of {lightfm, implicit}
-      beats `popularity` on Hit@5. If popularity wins everywhere,
-      that's *useful* signal — but probably means the catalog is too
-      small for personalization to shine; expand seed tasks (see
-      `PARALLEL_WORK.md` Track 5).
-- [ ] Save the report to `docs/samples/reco-report-5engines.json`:
-      ```sh
-      LAST=$(ls -t data/reco-runs/ | head -1)
-      cp data/reco-runs/$LAST docs/samples/reco-report-5engines.json
-      ```
-
-### A.4 Visual check in the demo UI
-
-- [ ] Open `http://localhost:3000/reco-eval`.
-- [ ] All 5 engines appear; tick them all, run on history.
-- [ ] Aggregate table renders 5 rows cleanly. Per-task drilldowns
-      expand without overflow.
-- [ ] Screenshot to `docs/screenshots/phase2-reco-eval.png`.
-
-### A.5 Wrap-up
-
-- [ ] Tick Phase 2 exit boxes in `RECO_PLAN.md` Phase 2 (the §2.5
-      "five engines compared in /reco-eval" line).
-- [ ] If LightFM or Implicit beat popularity, note the numbers in
-      RECO_PLAN.md Phase 2 exit block.
-- [ ] Stop the stack:
-      `docker compose -f config/docker-compose.reco.yaml down`.
+- [ ] Branch off `main` as `phase4-agent` (or continue on `reco`).
+- [ ] `npm run dev` clean; `/reco-eval` works; at least one of
+      `lightfm` or `implicit` healthy so the agent has a non-trivial
+      engine row to be compared against.
+- [ ] LLM provider chosen for v1: **Claude** (Anthropic). Env:
+      `RECO_AGENT_PROVIDER=claude`, `ANTHROPIC_API_KEY`. OpenAI
+      adapter can land as a follow-up; keep the LLM call behind a
+      thin interface from day one.
 
 ---
 
-## B. Phase 3 — live re-rank of `/home`
+## 1. Decisions (lock before coding)
 
-Engines stop being "demo-page only." The user picks an engine in the
-header; the actual restaurant grid on `/home` re-orders to match.
+- [ ] **Driver tech:** Playwright (headed in dev, headless in CI),
+      reusing the e2e harness's browser context where possible.
+- [ ] **Agent run input:** `{ taskId, startUrl, model, maxSteps }`.
+- [ ] **Agent run output:** `{ actions, verifierEvents, recommendation }`
+      where `recommendation` is the same `RecommendationResponse` shape
+      engines emit — so the scorer doesn't care which track produced it.
+- [ ] **Action vocabulary v1:** `goto`, `clickByTestId`, `clickBySelector`,
+      `type`, `scroll`, `read`, `addToCart`, `finish`. Higher-level than
+      raw CDP so the LLM prompt stays readable.
+- [ ] **Trajectory → recommendation mapping:**
+  - `home_feed` surface: first N distinct `restaurant_id`s the agent
+    navigated into via a card click → ranked list.
+  - `store_items` surface: items added to cart in click order → top-1;
+    fall back to items the agent expanded if cart is empty.
+  - Final ordered restaurant/items (verifier-store `orderPlaced`) →
+    top-1 hard target overlay.
+- [ ] **Step budget:** `maxSteps` default 25; reaching it forces a
+      `finish`. Per-task wall-clock timeout default 120s.
+- [ ] **Scoring path:** the agent is exposed as a pseudo-engine
+      (`lib/reco/engines/agent.ts`) so `runner.ts` and `metrics.ts`
+      stay unchanged.
 
-### B.0 Decide what re-rank means here
+---
 
-- [ ] Decision: re-rank only the **"All stores"** fallback row and
-      the **first** named section (e.g. "Trending now"). Keep
-      database-driven sections (`section` column) untouched — they're
-      editorial, not algorithmic.
-- [ ] Decision: re-rank applies only when `RECO_DEMO=1`. Production
-      flow is never altered.
+## 2. Agent contract + scaffolding (4.1)
 
-### B.1 Engine picker in the header
+- [ ] `lib/reco/agent/types.ts` — `AgentAction`, `AgentInput`,
+      `AgentOutput`, `AgentStepRecord`.
+- [ ] `tools/reco-agent/` directory:
+  - [ ] `package.json` (TypeScript, so types are shared with the rest
+        of the repo via a path mapping or workspace).
+  - [ ] `src/driver.ts` — Playwright launch + page lifecycle.
+  - [ ] `src/actions.ts` — vocabulary dispatcher.
+  - [ ] `src/llm/index.ts` + `src/llm/claude.ts` — provider interface
+        and first adapter. `openai.ts` stub left empty for now.
+  - [ ] `src/observe.ts` — DOM serialization for the prompt (selector
+        tree + text excerpts, capped in size).
+  - [ ] `src/run.ts` — entry: `(AgentInput) → Promise<AgentOutput>`.
+  - [ ] `src/server.ts` — FastAPI-equivalent (`fastify`/`hono`) exposing
+        `POST /recommend` that matches `docs/reco-http-contract.md`, so
+        the agent can register as an engine via `http.ts`.
 
-- [ ] `store/app-store.ts` — add `activeRecoEngine: string | null`
-      with `setActiveRecoEngine(name)` action. Persisted to
-      localStorage so it survives reloads.
-- [ ] `components/header.tsx` — when `process.env.NEXT_PUBLIC_RECO_DEMO
-      === '1'`, render a small `<select>` listing engines fetched
-      from `/api/reco/engines`. Default to `"none"` (production
-      behavior).
-- [ ] `next.config.mjs` — expose `NEXT_PUBLIC_RECO_DEMO` mirrored from
-      `RECO_DEMO` (server env can't be read from the client).
+---
 
-### B.2 Reco fetch hook
+## 3. Driver + action loop (4.2)
 
-- [ ] `lib/reco/hooks/use-reco.ts` (new) —
-      `useReco({ surface, candidatePool, k })` calls a new
-      `POST /api/reco/predict` endpoint, returns ranked ids. Uses
-      `@tanstack/react-query` (already in deps) for caching.
-- [ ] `app/api/reco/predict/route.ts` (new) — minimal wrapper around
-      `getEngine(name).recommend(ctx)`. Body: `{ engine, ctx }`.
-      Returns the engine's `RecommendationResponse` directly.
+- [ ] `driver.ts` exports `launch({ startUrl, headless }) → { page,
+      close, screenshot, domSnapshot }`.
+- [ ] Action loop tick:
+  1. Serialize current DOM via `observe.ts` (selector tree + visible
+     text, truncated to ~8 KB).
+  2. Call the LLM with: task statement, action vocabulary, current DOM
+     digest, last K actions (default K=5).
+  3. Parse the response into an `AgentAction`; dispatch via
+     `actions.ts`. On `finish` exit.
+  4. Mirror `verifier-store` events for the step. Cheapest path: add a
+     read-only `GET /api/verifier-state` route the agent polls
+     between actions, or expose `window.__verifier` if same-origin
+     is fine.
+- [ ] Resilience: catch action failures, surface as `actionError`
+      records, let the LLM retry up to 2x per logical step before the
+      loop counts a forced `finish`.
+- [ ] `tools/reco-agent/` runs both as a one-shot CLI and an HTTP
+      server (`src/server.ts`), so it can be invoked from the runner
+      *and* from `/reco-eval/agent`.
 
-### B.3 Wire `/home`
+---
 
-- [ ] `app/home/page.tsx`
-  - [ ] When `activeRecoEngine` is set, call `useReco({surface:
-        'home_feed', candidatePool: actualRestaurants.map(r=>r.id),
-        k: 8})`.
-  - [ ] Re-order `allStores` (or the chosen section) so the engine's
-        ranked ids come first, in order.
-  - [ ] Restaurants not returned by the engine append in their
-        original order at the end — never *drop* items.
-- [ ] Skeleton/loading: while the reco call is in flight, show the
-      unsorted list (don't blank the page).
-- [ ] Error: on engine failure, log to console and silently fall back
-      to the unsorted list. Never break `/home`.
+## 4. Trajectory → recommendation mapping (4.3)
 
-### B.4 Per-card badge
+- [ ] `lib/reco/agent/extract.ts` —
+      `extractRecommendation(actions, verifierEvents, surface, k):
+      RecommendationResponse`.
+  - `home_feed`: first `k` distinct restaurant_ids visited via card click.
+  - `store_items`: items added to cart in click order; fall back to
+    items whose description was expanded.
+  - Always emit `k` items; pad short trajectories with `null` rank.
+- [ ] `lib/reco/engines/agent.ts` — HTTP adapter pointing at the agent
+      sidecar's `POST /recommend`. Registry entry name: `agent`.
+- [ ] `lib/reco/eval/runner.ts` — per-task timeout knob (default 120s)
+      so a slow agent never wedges the whole run.
+- [ ] Unit tests for `extract.ts` covering each surface + the
+      short-trajectory padding case.
 
-- [ ] When `activeRecoEngine` is set, restaurant cards show a tiny
-      `<Badge variant="secondary">via {engine}</Badge>` in the corner.
-      Hover tooltip shows the engine's score for that card from
-      `RecommendationResponse.items[i].meta` if present.
+---
 
-### B.5 Regression check
+## 5. Persisted traces (4.4)
 
-- [ ] With `RECO_DEMO` unset, `/home` looks bit-identical to before:
-      no badge, no select, no extra network calls.
-- [ ] Existing Playwright tests still pass:
-      `scripts/n.sh npm run test:e2e:chromium -- tests/e2e/tests/development`.
-- [ ] Type-check unchanged at 58 (the pre-existing baseline).
+- [ ] `data/reco-agent-runs/<runId>/` layout:
+  - `actions.json` — ordered `AgentStepRecord[]`.
+  - `step-N.dom.html`, `step-N.png` — per-step DOM + screenshot.
+  - `verifier-events.json` — full verifier-store event log.
+  - `result.json` — final `AgentOutput` + scored `RecommendationResponse`.
+- [ ] `lib/reco/agent/storage.ts` — `saveTrace(runId, trace)` /
+      `loadTrace(runId)`, mirroring `lib/reco/eval/storage.ts`'s style.
+- [ ] Trace size budget: cap screenshots at 5 per run by default; raise
+      via `RECO_AGENT_MAX_SCREENSHOTS` env if a longer trace is needed.
 
-### B.6 Demo polish
+---
 
-- [ ] Screenshot `/home` re-ranked by each non-baseline engine
-      (gorse / lightfm / implicit) to
-      `docs/screenshots/phase3-rerank-<engine>.png`.
-- [ ] Update `RECO_PLAN.md` Phase 3 exit block with the screenshots.
+## 6. Demo page (4.5)
+
+- [ ] `app/api/reco/agent/route.ts` — `POST { taskId, model, maxSteps }`
+      kicks off an agent run; returns `{ runId }`. Background work is
+      driven by the agent sidecar; the API just enqueues and returns.
+- [ ] `app/api/reco/agent/[id]/route.ts` — `GET` returns the persisted
+      trace + score (or in-progress status).
+- [ ] `app/reco-eval/agent/page.tsx` — pick task + model + maxSteps, hit
+      Run, jump to the replay page.
+- [ ] `app/reco-eval/agent/[id]/page.tsx` — replay UI: action list
+      (left) + current DOM/screenshot (right) + score footer.
+- [ ] Both pages gated by `RECO_DEMO=1` server-side (`notFound()`
+      otherwise), same as `/reco-eval`.
+
+---
+
+## 7. Tests
+
+- [ ] Unit: `extract.test.ts` (each surface, padding, no-verifier-events).
+- [ ] Unit: `actions.test.ts` (dispatcher, failure paths, retry limit).
+- [ ] Unit: `storage.test.ts` (round-trip a trace).
+- [ ] E2E (slow lane, tag `@agent`, skipped by default): one seed task
+      end-to-end with a **stub LLM** that picks the first card every
+      step — proves the wiring without burning real API tokens in CI.
+
+---
+
+## 8. Regression
+
+- [ ] Engine track unchanged: `/reco-eval` runs the same five engines,
+      same metrics, same numbers (within noise) before and after.
+- [ ] `RECO_DEMO` unset: `/reco-eval/agent` returns 404; no agent code
+      is loaded on `/home` or `/store`.
+- [ ] `npx tsc --noEmit` → 0 errors.
+- [ ] Full unit suite still green (currently 1677 passing / 3 skipped).
 
 ---
 
 ## Definition of done
 
-All true at once:
+| Criterion | Status |
+|-----------|:------:|
+| One seed task runs end-to-end with Claude as the agent and produces an `AgentOutput` | TODO |
+| Agent shows up next to the five engines in `/reco-eval` with a Hit@K metric | TODO |
+| Trace is persisted and replayable at `/reco-eval/agent/<runId>` | TODO |
+| Engine-track regression — existing `/reco-eval` flow unchanged | TODO |
+| Unit suite + tsc green; new tests for `extract`, `actions`, `storage` | TODO |
+| `RECO_PLAN.md` Phase 4 exit block updated | TODO |
 
-1. `docker compose -f config/docker-compose.reco.yaml up --build`
-   brings up all 4 sidecars cleanly; `/reco-eval` shows 5-engine
-   metrics. (A.1–A.4)
-2. `docs/samples/reco-report-5engines.json` committed.
-3. `/home` visibly re-orders when the header engine picker changes.
-   The unset engine ("none") reproduces production behaviour
-   bit-identically. (B.3, B.5)
-4. `scripts/n.sh npm run test:unit -- tests/unit/reco/` still
-   green; e2e suite green.
-5. RECO_PLAN.md Phase 2 + Phase 3 exit blocks updated with real
-   numbers/screenshots.
-
-Once this is done, **the engines goal is closed** and the next
-EXECUTION.md becomes Phase 4 (LLM-agent track).
+After this ships, the next `EXECUTION.md` becomes **Phase 5 — Demo
+polish & VM deployment** per `RECO_PLAN.md`. Parallel hygiene tracks
+(`parallel_work.md` A/B/C) can be pulled in whenever someone has
+bandwidth.
