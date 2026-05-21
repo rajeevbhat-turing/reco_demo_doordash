@@ -57,7 +57,8 @@ verified). What remains is user-side proof.
 - [ ] Run the full e2e suite: `scripts/n.sh npm run test:e2e:chromium`.
       Must stay green; production flow (no `RECO_DEMO`) is the
       must-not-break surface. Ticks `EXECUTION.md` (archived) §5 e2e
-      box.
+      box. **Not done in Track A** — needs a **separate triage pass**
+      (see below).
 - [ ] Manual visual smoke: `RECO_DEMO=1 npm run dev`, open `/home`,
       cycle the header picker through `random`, `popularity`, `gorse`,
       `lightfm`, `implicit`. Confirm the grid visibly reorders and the
@@ -70,6 +71,32 @@ verified). What remains is user-side proof.
 
 **Touches:** `tests/e2e/`, `docs/screenshots/`, `RECO_PLAN.md`.
 Zero code overlap with Phase 4.
+
+### E2E gate — separate triage pass (why Track A does not close it)
+
+A full run was attempted (`test:e2e:chromium`, May 2026): **32 passed,
+118 failed**, exit code 1. That outcome does **not** indicate a Phase 3
+reco regression — there is no `/reco-eval` or engine-picker coverage in
+the suite yet, and failures cluster in unrelated areas:
+
+- **Address** specs — immediate failures; many hits
+  `SecurityError: Failed to read the 'localStorage' property` (wrong
+  document/origin or redirect before the app shell loads).
+- **Auth** (login/signup OTP) — ~6s timeouts on modal/OTP steps.
+- **Checkout** — broad failures across the checkout spec file.
+- **Store** — mixed (many passed; some food-category clicks timed out).
+- **Orders** (confirmed e2e) — end-to-end order flow failed.
+
+Playwright uses its **own** production server (`npm run build &&
+npm run start` on port 3000 per `tests/e2e/playwright.config.ts`), not
+the `RECO_DEMO=1` dev server. Phase 3 sign-off for reco instead rests on
+unit tests (1677 passing), `tsc` clean, manual `/home` picker smoke, and
+`docs/screenshots/phase3-rerank-{gorse,lightfm,implicit}.png`.
+
+**Follow-up for the e2e gate:** dedicated triage (likely auth credentials,
+address/localStorage setup, and baseline flake inventory on `main`) before
+ticking the §5 e2e box or claiming “full suite green.” Artifacts:
+`tests/e2e/test-results/`, `tests/e2e/playwright-report`.
 
 ---
 

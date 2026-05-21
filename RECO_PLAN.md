@@ -221,8 +221,11 @@ user changes it. Currently active — full checklist in `EXECUTION.md`.
   is active.
 - Production flow (no `RECO_DEMO`) bit-identical to before; full unit
   suite **1677 passing / 3 skipped / 0 failed**, `tsc` clean.
-- Visual screenshots per engine deferred to user-side run (browser
-  needed). E2E suite full run also user-side.
+- Visual screenshots: `docs/screenshots/phase3-rerank-{gorse,lightfm,implicit}.png`
+  (local; commit when ready).
+- **Full e2e suite green:** deferred to a **separate triage pass** — May
+  2026 `test:e2e:chromium` was 32 passed / 118 failed (address/auth/checkout
+  dominated; not reco-related). See `PARALLEL_WORK.md` §A.
 
 Detailed regression matrix lives in `EXECUTION.md` §5.
 
