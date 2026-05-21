@@ -1,12 +1,9 @@
 import { test, expect } from '../../../fixtures/auth.fixtures';
+import { clearBrowserStorage } from '../../../utils/test-helpers';
 
 test.describe('Customer Signup via Authentication Modal', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/');
-    await page.evaluate(() => {
-      localStorage.clear();
-      sessionStorage.clear();
-    });
+    await clearBrowserStorage(page);
   });
 
   test('should successfully sign up a new user via modal', async ({ authModalPage, page }) => {

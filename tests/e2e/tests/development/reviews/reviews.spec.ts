@@ -1,4 +1,5 @@
 import { test, expect } from '../../../fixtures/test.fixtures';
+import { clearBrowserStorage } from '../../../utils/test-helpers';
 
 /**
  * Reviews E2E Tests
@@ -14,11 +15,7 @@ import { test, expect } from '../../../fixtures/test.fixtures';
  */
 test.describe('Store Reviews', () => {
   test.beforeEach(async ({ page }) => {
-    // Clear storage before each test
-    await page.evaluate(() => {
-      localStorage.clear();
-      sessionStorage.clear();
-    });
+    await clearBrowserStorage(page);
   });
 
   test.describe('Reviews Page Display', () => {

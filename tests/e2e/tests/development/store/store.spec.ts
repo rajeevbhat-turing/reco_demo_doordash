@@ -1,4 +1,5 @@
 import { test, expect } from '../../../fixtures/test.fixtures';
+import { clearBrowserStorage } from '../../../utils/test-helpers';
 
 /**
  * Store/Restaurant E2E Tests
@@ -15,11 +16,7 @@ import { test, expect } from '../../../fixtures/test.fixtures';
  */
 test.describe('Store Browsing', () => {
   test.beforeEach(async ({ page }) => {
-    // Clear storage before each test
-    await page.evaluate(() => {
-      localStorage.clear();
-      sessionStorage.clear();
-    });
+    await clearBrowserStorage(page);
   });
 
   test.describe('Home Page Store Listing', () => {

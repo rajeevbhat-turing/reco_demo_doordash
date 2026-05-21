@@ -7,10 +7,12 @@
  * IMPORTANT: Never commit actual credentials to version control!
  */
 
+import { E2E_LOGIN_EMAIL } from './constants';
+
 export const testCredentials = {
-  // Valid test user for login tests
+  // Valid test user for login tests (seeded in dashdoor.db)
   validUser: {
-    email: 'test@example.com',
+    email: E2E_LOGIN_EMAIL,
     password: 'testpassword123',
   },
   

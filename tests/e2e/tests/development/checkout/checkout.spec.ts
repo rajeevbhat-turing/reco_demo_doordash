@@ -1,4 +1,5 @@
 import { test, expect, testDataGenerators } from '../../../fixtures/test.fixtures';
+import { clearBrowserStorage } from '../../../utils/test-helpers';
 
 /**
  * Checkout E2E Tests
@@ -16,11 +17,7 @@ import { test, expect, testDataGenerators } from '../../../fixtures/test.fixture
  */
 test.describe('Checkout Flow', () => {
   test.beforeEach(async ({ page }) => {
-    // Clear storage before each test
-    await page.evaluate(() => {
-      localStorage.clear();
-      sessionStorage.clear();
-    });
+    await clearBrowserStorage(page);
   });
 
   test.describe('Checkout Page Access', () => {

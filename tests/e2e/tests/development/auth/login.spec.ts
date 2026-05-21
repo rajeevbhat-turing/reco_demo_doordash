@@ -1,5 +1,6 @@
 import { test, expect } from '../../../fixtures/auth.fixtures';
 import { testCredentials } from '../../../test-credentials.example';
+import { clearBrowserStorage } from '../../../utils/test-helpers';
 
 test.describe('Customer Login', () => {
   test.beforeEach(async ({ authPage }) => {
@@ -43,11 +44,13 @@ test.describe('Customer Login', () => {
     expect(otpCount).toBe(6);
   });
 
-  test('should allow switching between Sign In and Sign Up tabs', async ({ authPage }) => {
+  test('should allow switching between Sign In and Sign Up tabs', async ({ authPage, page }) => {
     await expect(authPage.emailInput).toBeVisible();
     await authPage.signUpTab.click();
-    await authPage.page.waitForTimeout(500);
-    await expect(authPage.signInTab).toBeVisible();
+    await expect(page).toHaveURL(/\/auth\/user\/signup/, { timeout: 10000 });
+    await page.getByRole('link', { name: /^sign in$/i }).click();
+    await expect(page).toHaveURL(/\/auth/, { timeout: 10000 });
+    await expect(authPage.emailInput).toBeVisible();
   });
 
   test('should persist login session across page refresh', async ({ authPage, page }) => {
@@ -80,15 +83,21 @@ test.describe('Customer Login', () => {
   });
 
   test('should handle login with different valid users', async ({ authPage, page }) => {
-    const alternateEmail = `test.user+${Date.now()}@example.com`;
-    await authPage.emailInput.fill(alternateEmail);
-    await authPage.continueButton.click();
-    await authPage.waitForOTPForm();
-    for (let i = 0; i < 6; i++) {
-      await authPage.otpInputs.nth(i).fill(String(i + 1));
-    }
-    await authPage.signInButton.click();
-    await expect(page).toHaveURL(/\/home/, { timeout: 10000 });
+    const { email: testEmail } = testCredentials.validUser;
+    const loginWithOtp = async () => {
+      await authPage.emailInput.fill(testEmail);
+      await authPage.continueButton.click();
+      await authPage.waitForOTPForm();
+      for (let i = 0; i < 6; i++) {
+        await authPage.otpInputs.nth(i).fill(String(i + 1));
+      }
+      await authPage.signInButton.click();
+      await expect(page).toHaveURL(/\/home/, { timeout: 10000 });
+    };
+    await loginWithOtp();
+    await clearBrowserStorage(page);
+    await authPage.goto();
+    await loginWithOtp();
   });
 
   test('should accept OTP with all same digits', async ({ authPage, page }) => {

@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { E2E_LOGIN_EMAIL } from '../../../constants';
 
 /**
  * FUNDAMENTALS: Reorder Flow
@@ -12,7 +13,7 @@ test.describe('Fundamentals: Reorder', () => {
     
     // Quick login
     await page.goto('http://localhost:3000/auth');
-    await page.locator('#email').fill('kai.hayes1@example.com');
+    await page.locator('#email').fill(E2E_LOGIN_EMAIL);
     await page.getByRole('button', { name: /continue/i }).click();
     await page.waitForTimeout(1000);
     
@@ -38,7 +39,7 @@ test.describe('Fundamentals: Reorder', () => {
     
     // Login
     await page.goto('http://localhost:3000/auth');
-    await page.locator('#email').fill('kai.hayes1@example.com');
+    await page.locator('#email').fill(E2E_LOGIN_EMAIL);
     await page.getByRole('button', { name: /continue/i }).click();
     await page.waitForTimeout(1000);
     

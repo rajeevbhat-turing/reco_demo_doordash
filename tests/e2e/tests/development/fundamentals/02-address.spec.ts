@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { E2E_LOGIN_EMAIL } from '../../../constants';
 
 /**
  * FUNDAMENTALS: Address Modal Tests
@@ -31,7 +32,7 @@ test.describe('Fundamentals: Address', () => {
   test('logged in user can access address settings', async ({ page }) => {
     // Quick login
     await page.goto('http://localhost:3000/auth');
-    await page.locator('#email').fill('kai.hayes1@example.com');
+    await page.locator('#email').fill(E2E_LOGIN_EMAIL);
     await page.getByRole('button', { name: /continue/i }).click();
     await page.waitForTimeout(1000);
     

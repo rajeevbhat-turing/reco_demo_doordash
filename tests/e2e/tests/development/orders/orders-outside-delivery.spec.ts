@@ -1,4 +1,5 @@
 import { test, expect } from '../../../fixtures/test.fixtures';
+import { clearBrowserStorage } from '../../../utils/test-helpers';
 
 /**
  * Orders E2E Tests - Store Outside Delivery Area
@@ -8,14 +9,8 @@ import { test, expect } from '../../../fixtures/test.fixtures';
  * @status: IN DEVELOPMENT
  */
 test.describe('Orders - Outside Delivery Area', () => {
-  test.beforeEach(async ({ page, context }) => {
-    // Clear storage before each test
-    await page.goto('http://localhost:3000');
-    await page.evaluate(() => {
-      localStorage.clear();
-      sessionStorage.clear();
-    });
-    await context.clearCookies();
+  test.beforeEach(async ({ page }) => {
+    await clearBrowserStorage(page);
   });
 
   test('can order from store outside delivery area and reach checkout', async ({ 

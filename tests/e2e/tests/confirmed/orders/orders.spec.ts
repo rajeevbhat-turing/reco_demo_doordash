@@ -1,5 +1,6 @@
 import { test, expect } from '../../../fixtures/test.fixtures';
 import { testDataGenerators } from '../../../fixtures/test.fixtures';
+import { clearBrowserStorage } from '../../../utils/test-helpers';
 
 /**
  * Orders E2E Tests
@@ -13,15 +14,9 @@ import { testDataGenerators } from '../../../fixtures/test.fixtures';
  * @playwright-report
  */
 test.describe('Orders', () => {
-  test.beforeEach(async ({ page, context }) => {
-    // Clear storage before each test
+  test.beforeEach(async ({ page }) => {
     await page.clock.setFixedTime(new Date("Wed Dec 10 2025 15:00:00 GMT+0300"));
-    await page.goto('http://localhost:3000');
-    await page.evaluate(() => {
-      localStorage.clear();
-      sessionStorage.clear();
-    });
-    await context.clearCookies();
+    await clearBrowserStorage(page);
   });
 
   test('can place an order end-to-end as logged in user', async ({ 

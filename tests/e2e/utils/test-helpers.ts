@@ -13,14 +13,17 @@ export async function waitForPageReady(page: Page) {
 }
 
 /**
- * Clear browser storage (localStorage, sessionStorage, cookies)
+ * Clear browser storage (localStorage, sessionStorage, cookies).
+ * Navigates to the app origin first — clearing on about:blank throws SecurityError.
  */
 export async function clearBrowserStorage(page: Page) {
+  const baseURL = process.env.PLAYWRIGHT_TEST_BASE_URL || 'http://localhost:3000';
+  await page.context().clearCookies();
+  await page.goto(baseURL);
   await page.evaluate(() => {
     localStorage.clear();
     sessionStorage.clear();
   });
-  await page.context().clearCookies();
 }
 
 /**

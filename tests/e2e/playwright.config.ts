@@ -1,4 +1,8 @@
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { defineConfig, devices } from '@playwright/test';
+
+const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 
 export default defineConfig({
   testDir: './tests',
@@ -69,10 +73,17 @@ export default defineConfig({
 
   webServer: {
     command: 'npm run build && npm run start',
+    cwd: repoRoot,
     url: 'http://localhost:3000',
-    reuseExistingServer: true,
+    reuseExistingServer: !process.env.CI,
     timeout: 120 * 1000,
     stdout: 'pipe',
     stderr: 'pipe',
+    env: {
+      ...process.env,
+      LIBSQL_URL: process.env.LIBSQL_URL ?? 'file:./data/db/dashdoor.db',
+      DELIVERY_LIBSQL_URL: process.env.DELIVERY_LIBSQL_URL ?? 'file:./data/db/delivery.db',
+      MERCHANT_LIBSQL_URL: process.env.MERCHANT_LIBSQL_URL ?? 'file:./data/db/merchant.db',
+    },
   },
 });

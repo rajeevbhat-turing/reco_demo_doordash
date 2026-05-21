@@ -26,8 +26,9 @@ export class AuthPage {
     this.resetPasswordLink = page.getByRole('button', { name: /reset password/i });
     this.otpInputs = page.locator('input[id^="otp-"]');
     this.usePasswordInsteadButton = page.getByRole('button', { name: /use password instead/i });
-    this.signInTab = page.locator('button:has-text("Sign In")').filter({ hasText: /^sign in$/i }).first();
-    this.signUpTab = page.getByRole('button', { name: /^sign up$/i });
+    const authTabs = page.locator('div.flex.bg-gray-100.rounded-2xl');
+    this.signInTab = authTabs.getByRole('button', { name: /^sign in$/i });
+    this.signUpTab = authTabs.getByRole('button', { name: /^sign up$/i });
     this.emailError = page.locator('text=/email/i').filter({ hasText: /required|invalid|incorrect/i });
     this.passwordError = page.locator('text=/password/i').filter({ hasText: /required|invalid/i });
     this.generalError = page.locator('text=/incorrect email|invalid email or password/i');

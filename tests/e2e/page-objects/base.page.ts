@@ -1,4 +1,5 @@
 import { Page, Locator, expect } from '@playwright/test';
+import { clearBrowserStorage as clearBrowserStorageHelper } from '../utils/test-helpers';
 
 /**
  * Base Page Object with common functionality shared across all pages
@@ -102,11 +103,7 @@ export class BasePage {
    * Clear browser storage (localStorage, sessionStorage, cookies)
    */
   async clearBrowserStorage() {
-    await this.page.evaluate(() => {
-      localStorage.clear();
-      sessionStorage.clear();
-    });
-    await this.page.context().clearCookies();
+    await clearBrowserStorageHelper(this.page);
   }
 
   /**

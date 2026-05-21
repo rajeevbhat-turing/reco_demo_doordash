@@ -1,4 +1,5 @@
 import { test, expect, testDataGenerators, testHelpers } from '../../../fixtures/test.fixtures';
+import { clearBrowserStorage } from '../../../utils/test-helpers';
 
 /**
  * Address Management E2E Tests
@@ -14,11 +15,7 @@ import { test, expect, testDataGenerators, testHelpers } from '../../../fixtures
  */
 test.describe('Address Management', () => {
   test.beforeEach(async ({ page }) => {
-    // Clear storage before each test
-    await page.evaluate(() => {
-      localStorage.clear();
-      sessionStorage.clear();
-    });
+    await clearBrowserStorage(page);
   });
 
   test.describe('Guest User Address Entry', () => {

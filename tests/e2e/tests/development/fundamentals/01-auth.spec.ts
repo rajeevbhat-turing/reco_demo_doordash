@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { E2E_LOGIN_EMAIL } from '../../../constants';
 
 /**
  * FUNDAMENTALS: Authentication Tests
@@ -119,7 +120,7 @@ test.describe('Fundamentals: Authentication', () => {
     await expect(emailInput).toBeVisible({ timeout: 3000 });
     
     // Enter correct email
-    await emailInput.fill('kai.hayes1@example.com');
+    await emailInput.fill(E2E_LOGIN_EMAIL);
     const continueButton = page.getByRole('button', { name: /continue to sign in/i });
     await continueButton.click();
     await page.waitForTimeout(1000);
@@ -149,7 +150,7 @@ test.describe('Fundamentals: Authentication', () => {
     await page.waitForLoadState('networkidle');
     
     // Enter email
-    await page.locator('#email').fill('kai.hayes1@example.com');
+    await page.locator('#email').fill(E2E_LOGIN_EMAIL);
     await page.getByRole('button', { name: /continue/i }).click();
     await page.waitForTimeout(1000);
     
@@ -170,7 +171,7 @@ test.describe('Fundamentals: Authentication', () => {
   test('auth page redirects logged-in users to home', async ({ page }) => {
     // First login
     await page.goto('http://localhost:3000/auth');
-    await page.locator('#email').fill('kai.hayes1@example.com');
+    await page.locator('#email').fill(E2E_LOGIN_EMAIL);
     await page.getByRole('button', { name: /continue/i }).click();
     await page.waitForTimeout(1000);
     
