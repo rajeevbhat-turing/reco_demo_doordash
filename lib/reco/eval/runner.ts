@@ -1,6 +1,7 @@
 import { db } from '@/lib/db';
-import { RecoEngineError, type RecoContext } from '@/lib/reco/types';
+import { RecoEngineError, type RecoContext, type RecommendationEngine } from '@/lib/reco/types';
 import { getEngine, listEngines } from '@/lib/reco/engines';
+import { makeHttpEngine } from '@/lib/reco/engines/http';
 import {
   scoreTask,
   aggregate,
@@ -24,6 +25,7 @@ export interface PerTaskRow {
       latencyMs: number;
       metrics?: PerTaskMetrics;
       error?: string;
+      debug?: Record<string, unknown>;
     }
   >;
 }
@@ -46,6 +48,18 @@ export interface RunEvalOptions {
   k?: number;
   /** Cap on history tasks (history can be huge). */
   historyLimit?: number;
+  /**
+   * Phase 5 BYO — forwarded to the agent engine via the `RecoContext`
+   * the runner builds per task. Library engines drop them. The key
+   * never persists; it's request-scoped.
+   */
+  agentLlmUrl?: string;
+  agentLlmApiKey?: string;
+  /**
+   * Phase 5 BYO — when set, adds a transient `custom` engine for this
+   * run only. Same HTTP wire contract as LightFM / Implicit.
+   */
+  customEngineUrl?: string;
 }
 
 /**
@@ -58,9 +72,22 @@ export async function runEval(opts: RunEvalOptions): Promise<EvalReport> {
   const startedAt = new Date().toISOString();
   const runId = `run_${Date.now().toString(36)}`;
 
-  const engines = opts.engineNames
+  const registeredEngines = opts.engineNames
     .map(n => getEngine(n))
     .filter((e): e is NonNullable<ReturnType<typeof getEngine>> => !!e);
+  const transientEngines: RecommendationEngine[] = [];
+  if (opts.customEngineUrl) {
+    transientEngines.push(
+      makeHttpEngine({
+        name: 'custom',
+        version: 'byo',
+        description: `Client-hosted engine at ${opts.customEngineUrl}`,
+        endpoint: opts.customEngineUrl,
+        timeoutMs: 30_000,
+      })
+    );
+  }
+  const engines: RecommendationEngine[] = [...registeredEngines, ...transientEngines];
   if (engines.length === 0) {
     throw new Error('no valid engines selected');
   }
@@ -86,6 +113,11 @@ export async function runEval(opts: RunEvalOptions): Promise<EvalReport> {
       lng: task.userLng,
       surface: task.surface,
       k,
+      // Forwarded for the agent engine; plain engines ignore them.
+      taskId: task.taskId,
+      // BYO LLM passthrough — request-scoped, never persisted.
+      ...(opts.agentLlmUrl ? { agentLlmUrl: opts.agentLlmUrl } : {}),
+      ...(opts.agentLlmApiKey ? { agentLlmApiKey: opts.agentLlmApiKey } : {}),
     };
 
     const row: PerTaskRow = {
@@ -105,6 +137,7 @@ export async function runEval(opts: RunEvalOptions): Promise<EvalReport> {
           predicted,
           latencyMs: res.latencyMs,
           metrics,
+          ...(res.debug ? { debug: res.debug } : {}),
         };
         allPredictedByEngine[engine.name].push(...predicted);
         perTaskMetricsByEngine[engine.name].push(metrics);
