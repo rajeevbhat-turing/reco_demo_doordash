@@ -10,7 +10,7 @@ hands. Finer-grained work lives in the track's own section below.
 
 | # | Track | Status | Owner | Doc / location |
 |---|---|---|---|---|
-| A | Phase 3 verification artifacts (e2e + screenshots) | Open | unassigned | this doc §A |
+| A | Phase 3 verification artifacts (e2e + screenshots) | Open (e2e triage in flight) | unassigned | this doc §A |
 | B | Demo polish (run history, latency col, e2e spec, Dockerfile flag) | Open | unassigned | this doc §B |
 | C | Ground-truth expansion | Open | unassigned | this doc §C |
 
@@ -57,15 +57,20 @@ verified). What remains is user-side proof.
 - [ ] Run the full e2e suite: `scripts/n.sh npm run test:e2e:chromium`.
       Must stay green; production flow (no `RECO_DEMO`) is the
       must-not-break surface. Ticks `EXECUTION.md` (archived) §5 e2e
-      box. **Not done in Track A** — needs a **separate triage pass**
-      (see below).
+      box. **Not green yet** — triage started on branch
+      `fix/e2e-storage-and-login` (see §A e2e triage).
+- [x] E2e triage pass 1 — storage clearing + login user + Playwright
+      `webServer` (branch `fix/e2e-storage-and-login`, commits
+      `9e43af5`, `cb4f8ce`). Details in §A e2e triage.
 - [ ] Manual visual smoke: `RECO_DEMO=1 npm run dev`, open `/home`,
       cycle the header picker through `random`, `popularity`, `gorse`,
       `lightfm`, `implicit`. Confirm the grid visibly reorders and the
       "re-ranked by {engine}" pill updates.
 - [ ] Screenshots per non-baseline engine, saved as
       `docs/screenshots/phase3-rerank-<engine>.png` (one for each of
-      `gorse`, `lightfm`, `implicit`; baselines optional).
+      `gorse`, `lightfm`, `implicit`; baselines optional). **Captured
+      locally** (`phase3-rerank-{gorse,lightfm,implicit}.png`); not yet
+      committed to the repo.
 - [ ] Update `RECO_PLAN.md` Phase 3 exit block — drop the "screenshots
       deferred" qualifier once the PNGs land.
 
@@ -74,29 +79,51 @@ Zero code overlap with Phase 4.
 
 ### E2E gate — separate triage pass (why Track A does not close it)
 
-A full run was attempted (`test:e2e:chromium`, May 2026): **32 passed,
-118 failed**, exit code 1. That outcome does **not** indicate a Phase 3
-reco regression — there is no `/reco-eval` or engine-picker coverage in
-the suite yet, and failures cluster in unrelated areas:
+**Baseline (pre-triage, May 2026):** `test:e2e:chromium` → **32 passed,
+~118 failed**, exit code 1. That outcome does **not** indicate a Phase 3
+reco regression — no `/reco-eval` or engine-picker coverage in the suite;
+failures were test-harness and fixture drift, not reco code.
 
-- **Address** specs — immediate failures; many hits
-  `SecurityError: Failed to read the 'localStorage' property` (wrong
-  document/origin or redirect before the app shell loads).
-- **Auth** (login/signup OTP) — ~6s timeouts on modal/OTP steps.
-- **Checkout** — broad failures across the checkout spec file.
-- **Store** — mixed (many passed; some food-category clicks timed out).
-- **Orders** (confirmed e2e) — end-to-end order flow failed.
+**Triage pass 1 (done on `fix/e2e-storage-and-login`, pushed):**
+
+| Change | Files / notes |
+|--------|----------------|
+| Document deferral | `PARALLEL_WORK.md`, `docs/execution-phase-3.md`, `RECO_PLAN.md` (`9e43af5`) |
+| `clearBrowserStorage(page)` navigates to app origin before touching `localStorage` | `tests/e2e/utils/test-helpers.ts`; all specs that cleared storage in `beforeEach` |
+| Login user `john.doe@example.com` | `tests/e2e/constants.ts`, `test-credentials.example.ts`, fundamentals specs |
+| DB seed for login user | `data/db/schema/e2e_user_seed.sql`, `data/db/dashdoor.db` (id 3001) |
+| Playwright `webServer` from repo root + default `LIBSQL_*` env | `tests/e2e/playwright.config.ts` |
+| `/auth` login suite fixes (tab navigation, repeat login after storage clear) | `tests/e2e/page-objects/auth.page.ts`, `tests/development/auth/login.spec.ts` |
+
+**Verified after pass 1** (prod server on port 3000, `reuseExistingServer`):
+
+| Suite | Result |
+|-------|--------|
+| `test:e2e:address` | **16/16** (was 0/16 — `SecurityError` on `about:blank`) |
+| `test:e2e:auth:signin` | **10/10** (was failing on `test@example.com` / missing OTP) |
+| `test:e2e:fundamentals` | **11 passed / 10 failed** (modal signup/login, reorder, checkout) |
+| Full `test:e2e:chromium` | **Not re-green** — checkout, reorder, reviews, store, orders still red |
+
+**Still failing (pass 2+):**
+
+- **Fundamentals** — landing-modal auth (signup tab, validation copy, modal OTP flow).
+- **Checkout / reorder / reviews / store** — cart/dialog selectors, food-category clicks, order e2e.
+- **Orders** (confirmed) — add-to-cart modal timeout on full flow.
 
 Playwright uses its **own** production server (`npm run build &&
 npm run start` on port 3000 per `tests/e2e/playwright.config.ts`), not
-the `RECO_DEMO=1` dev server. Phase 3 sign-off for reco instead rests on
+the `RECO_DEMO=1` dev server. Phase 3 sign-off for reco still rests on
 unit tests (1677 passing), `tsc` clean, manual `/home` picker smoke, and
 `docs/screenshots/phase3-rerank-{gorse,lightfm,implicit}.png`.
 
-**Follow-up for the e2e gate:** dedicated triage (likely auth credentials,
-address/localStorage setup, and baseline flake inventory on `main`) before
-ticking the §5 e2e box or claiming “full suite green.” Artifacts:
-`tests/e2e/test-results/`, `tests/e2e/playwright-report`.
+**Apply seed on a fresh clone:**
+
+```bash
+sqlite3 data/db/dashdoor.db < data/db/schema/e2e_user_seed.sql
+```
+
+Artifacts: `tests/e2e/test-results/`, `tests/e2e/playwright-report`.
+PR branch: `fix/e2e-storage-and-login` → https://github.com/rajeevbhat-turing/reco_demo_doordash/tree/fix/e2e-storage-and-login
 
 ---
 
@@ -161,6 +188,8 @@ coordinate via this doc.
 
 ## See also
 
+- `docs/overview-flowchart.md` — what the reco gym does (product flow, no
+  parallel-track detail).
 - `RECO_PLAN.md` — phased plan with phase-level checkboxes.
 - `EXECUTION.md` — detailed checklist for the *current* phase.
 - `CLAUDE.md` — orientation + checkbox discipline rules.

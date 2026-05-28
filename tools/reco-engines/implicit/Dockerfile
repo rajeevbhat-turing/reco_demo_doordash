@@ -13,6 +13,11 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY tools/reco-engines/common /app/common
 COPY tools/reco-engines/implicit/app.py /app/app.py
 
+# Bake the SQLite catalog into the image so the engine doesn't depend
+# on a host volume mount. Kept late so a DB swap doesn't invalidate the
+# pip-install layer above.
+COPY data/db/dashdoor.db /data/dashdoor.db
+
 ENV PYTHONUNBUFFERED=1 \
     LIBSQL_URL=file:/data/dashdoor.db \
     IMPLICIT_MODEL=als \

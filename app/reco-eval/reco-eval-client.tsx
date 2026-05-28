@@ -78,12 +78,121 @@ function formatAgentLlm(debug?: AgentLlmDebug): string | null {
   return `${debug.provider} · ${debug.model} · ${where}`;
 }
 
+function displayEngineName(name: string): string {
+  switch (name) {
+    case 'agent':
+      return 'default agent';
+    case 'byo-agent':
+      return 'BYO agent';
+    case 'byo-engine':
+      return 'BYO engine';
+    default:
+      return name;
+  }
+}
+
+function isValidHttpUrl(s: string): boolean {
+  try {
+    const u = new URL(s);
+    return u.protocol === 'http:' || u.protocol === 'https:';
+  } catch {
+    return false;
+  }
+}
+
 function agentLlmFromReport(report: Report): AgentLlmDebug | null {
   for (const row of report.perTask) {
-    const llm = row.perEngine.agent?.debug?.llm;
+    const llm = row.perEngine.agent?.debug?.llm ?? row.perEngine['byo-agent']?.debug?.llm;
     if (llm?.provider) return llm;
   }
   return null;
+}
+
+type EvalEvent =
+  | { type: 'run-start'; engines: string[]; taskCount: number; k: number; taskSet: 'seed' | 'history' }
+  | { type: 'task-start'; taskId: string; statement: string; index: number; total: number }
+  | { type: 'engine-start'; taskId: string; engine: string }
+  | { type: 'engine-ok'; taskId: string; engine: string; latencyMs: number; itemCount: number; hit: boolean }
+  | { type: 'engine-error'; taskId: string; engine: string; latencyMs: number; error: string }
+  | { type: 'run-end'; durationMs: number }
+  | { type: 'report'; runId: string; report: Report }
+  | { type: 'error'; error: string };
+
+function formatLine(evt: EvalEvent): string | null {
+  const ts = new Date().toLocaleTimeString(undefined, { hour12: false });
+  switch (evt.type) {
+    case 'run-start':
+      return `[${ts}] ▶ run-start: ${evt.engines.join(', ')} on ${evt.taskSet} (${evt.taskCount} tasks, k=${evt.k})`;
+    case 'task-start': {
+      const stmt =
+        evt.statement.length > 80
+          ? evt.statement.slice(0, 80) + '…'
+          : evt.statement;
+      return `[${ts}] ── [${evt.index + 1}/${evt.total}] ${evt.taskId} — ${stmt}`;
+    }
+    case 'engine-start':
+      // Skip the start event — it's superseded by the ok/error line.
+      return null;
+    case 'engine-ok':
+      return `[${ts}]      ${evt.engine}: ${evt.itemCount} items in ${formatDuration(evt.latencyMs)} ${evt.hit ? '✓ hit' : '✗ miss'}`;
+    case 'engine-error':
+      return `[${ts}]      ${evt.engine}: error after ${formatDuration(evt.latencyMs)} — ${evt.error}`;
+    case 'run-end':
+      return `[${ts}] ✔ run-end (${formatDuration(evt.durationMs)})`;
+    case 'error':
+      return `[${ts}] ✗ ${evt.error}`;
+    case 'report':
+      return null;
+  }
+}
+
+/**
+ * Consume an NDJSON stream from `/api/reco/eval/stream`. Parses each
+ * line as a `EvalEvent`, calls `onLine` with a human-readable formatted
+ * line per event, and returns the final report (or `null` if the stream
+ * closed without one — caller surfaces this as an error).
+ */
+async function consumeEvalStream(
+  body: ReadableStream<Uint8Array>,
+  onLine: (line: string) => void
+): Promise<Report | null> {
+  const reader = body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = '';
+  let report: Report | null = null;
+  let errorMsg: string | null = null;
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    buffer += decoder.decode(value, { stream: true });
+    const parts = buffer.split('\n');
+    buffer = parts.pop() ?? '';
+    for (const part of parts) {
+      const trimmed = part.trim();
+      if (!trimmed) continue;
+      let evt: EvalEvent;
+      try {
+        evt = JSON.parse(trimmed) as EvalEvent;
+      } catch {
+        onLine(`[parse-error] ${trimmed.slice(0, 200)}`);
+        continue;
+      }
+      if (evt.type === 'report') {
+        report = evt.report;
+      } else if (evt.type === 'error') {
+        errorMsg = evt.error;
+        const line = formatLine(evt);
+        if (line) onLine(line);
+      } else {
+        const line = formatLine(evt);
+        if (line) onLine(line);
+      }
+    }
+  }
+
+  if (errorMsg) throw new Error(errorMsg);
+  return report;
 }
 type Report = {
   runId: string;
@@ -108,7 +217,10 @@ const ENGINE_MS: Record<string, number> = {
   lightfm: 350,
   implicit: 350,
   agent: 45_000,
-  custom: 500, // BYO HTTP engine — unknown latency; assume 500 ms
+  // BYO rows: the agent track is LLM-bounded so use the same ~45 s
+  // budget; the BYO engine row is an opaque HTTP call — assume 500 ms.
+  'byo-agent': 45_000,
+  'byo-engine': 500,
 };
 const DEFAULT_ENGINE_MS = 500;
 
@@ -128,7 +240,8 @@ function estimateMs(engineNames: string[], taskSet: 'seed' | 'history'): number 
 }
 
 function formatDuration(ms: number): string {
-  if (ms < 1000) return `${ms} ms`;
+  if (ms < 1) return `<1 ms`;
+  if (ms < 1000) return `${Math.round(ms)} ms`;
   const totalSec = Math.round(ms / 1000);
   if (totalSec < 60) return `${totalSec}s`;
   const m = Math.floor(totalSec / 60);
@@ -149,6 +262,15 @@ export default function RecoEvalPage() {
   const [startTs, setStartTs] = useState<number | null>(null);
   const [estimatedMs, setEstimatedMs] = useState<number>(0);
   const [elapsedMs, setElapsedMs] = useState<number>(0);
+  // Live log lines streamed from /api/reco/eval/stream while a run is
+  // in flight. Each line is one formatted progress event.
+  const [logLines, setLogLines] = useState<string[]>([]);
+
+  // Seed task list shown under the task-set picker so the user can see
+  // exactly what's being scored without grepping the seed file.
+  const [seedTasks, setSeedTasks] = useState<
+    Array<{ taskId: string; surface: string; statement: string; expectedNames: string[] }>
+  >([]);
 
   // What was actually sent on the most recent run (shown next to the
   // report header so the operator can see whether BYO took effect).
@@ -161,6 +283,9 @@ export default function RecoEvalPage() {
   } | null>(null);
 
   // BYO panel state — see prompts/agent.md + BYO_LLM.md.
+  // BYO rows (`byo-agent`, `byo-engine`) are checkbox entries in the
+  // engine list. Their URL/key inputs below are required iff the row
+  // is selected; otherwise inputs are inert.
   // The API key is *not* persisted to localStorage unless the user
   // opts in via the "Remember this key" checkbox.
   const [agentLlmUrl, setAgentLlmUrl] = useState('');
@@ -207,23 +332,84 @@ export default function RecoEvalPage() {
   }, [loading, startTs]);
 
   const selectedEngines = [...selected];
-  const effectiveEngines = customEngineUrl.trim()
-    ? [...selectedEngines, 'custom']
-    : selectedEngines;
-  const upcomingEstimateMs = estimateMs(effectiveEngines, taskSet);
+  const trimmedLlmUrl = agentLlmUrl.trim();
+  const trimmedLlmKey = agentLlmApiKey.trim();
+  const trimmedCustomUrl = customEngineUrl.trim();
+
+  // Selection-driven BYO: ticking the byo-* row means "this runs".
+  // Run is blocked until the required fields are present.
+  const byoAgentSelected = selected.has('byo-agent');
+  const byoEngineSelected = selected.has('byo-engine');
+
+  const upcomingEstimateMs = estimateMs(selectedEngines, taskSet);
   const progressFraction = loading && estimatedMs > 0
     ? Math.min(0.99, elapsedMs / estimatedMs)
     : 0;
+
+  // Validation derived from selection + fields. Inline-rendered beside
+  // the offending input, plus disables the Run button until cleared.
+  const byoAgentUrlError = byoAgentSelected
+    ? !trimmedLlmUrl
+      ? 'BYO agent is selected — LLM gateway URL is required'
+      : !isValidHttpUrl(trimmedLlmUrl)
+        ? 'URL must be http:// or https://'
+        : null
+    : null;
+  const byoAgentKeyError =
+    byoAgentSelected && !trimmedLlmKey
+      ? 'BYO agent is selected — gateway bearer token is required'
+      : null;
+  const byoEngineUrlError = byoEngineSelected
+    ? !trimmedCustomUrl
+      ? 'BYO engine is selected — endpoint URL is required'
+      : !isValidHttpUrl(trimmedCustomUrl)
+        ? 'URL must be http:// or https://'
+        : null
+    : null;
+  const byoHasError = !!(byoAgentUrlError || byoAgentKeyError || byoEngineUrlError);
 
   useEffect(() => {
     fetch('/api/reco/engines')
       .then(r => r.json())
       .then((d: { engines: Engine[] }) => {
-        setEngines(d.engines);
-        // Default to random + popularity (Gorse may be unhealthy locally).
-        setSelected(new Set(d.engines.filter(e => e.name !== 'gorse').map(e => e.name)));
+        // BYO rows are client-side pseudo-engines — they aren't
+        // registered server-side because they need request-scoped
+        // config (URL/key). `byo-agent` is only meaningful when the
+        // sidecar (the registered `agent` row) is also reachable.
+        const hasAgent = d.engines.some(e => e.name === 'agent');
+        const byoRows: Engine[] = [];
+        if (hasAgent) {
+          byoRows.push({
+            name: 'byo-agent',
+            version: 'byo',
+            description:
+              'Same agent sidecar as default agent, but driven by your BYO LLM gateway.',
+          });
+        }
+        byoRows.push({
+          name: 'byo-engine',
+          version: 'byo',
+          description:
+            'Your HTTP engine endpoint — same wire contract LightFM and Implicit use.',
+        });
+        setEngines([...d.engines, ...byoRows]);
+        // Default to library engines only; BYO rows stay off until
+        // the user fills in their endpoints. Gorse stays off because
+        // it may be unhealthy locally.
+        setSelected(
+          new Set(
+            d.engines
+              .filter(e => e.name !== 'gorse')
+              .map(e => e.name)
+          )
+        );
       })
       .catch((e: Error) => setError(e.message));
+
+    fetch('/api/reco/tasks')
+      .then(r => r.json())
+      .then((d: { tasks: typeof seedTasks }) => setSeedTasks(d.tasks))
+      .catch(() => undefined); // task list is purely informational — failure is silent
   }, []);
 
   const toggle = (name: string) => {
@@ -236,17 +422,34 @@ export default function RecoEvalPage() {
   };
 
   const runEval = async () => {
+    // Belt-and-suspenders: button is already disabled when this is
+    // true, but re-check here so direct callers (keyboard, paste-and-go)
+    // can't bypass the BYO contract.
+    if (byoHasError) {
+      setError(
+        [byoAgentUrlError, byoAgentKeyError, byoEngineUrlError]
+          .filter((s): s is string => !!s)
+          .join('\n')
+      );
+      return;
+    }
+
     setLoading(true);
     setError(null);
     setReport(null);
+    setLogLines([]);
     const now = Date.now();
     const runEstimateMs = upcomingEstimateMs;
     setStartTs(now);
     setElapsedMs(0);
     setEstimatedMs(runEstimateMs);
     const enginesForRun = [...selected];
-    const llmUrlSent = agentLlmUrl.trim() || null;
-    const customUrlSent = customEngineUrl.trim() || null;
+    // Each BYO row's required fields are only attached when that row
+    // is selected. Leftover values for an unselected row never reach
+    // the server.
+    const llmUrlSent = byoAgentSelected ? trimmedLlmUrl || null : null;
+    const llmKeySent = byoAgentSelected ? trimmedLlmKey || null : null;
+    const customUrlSent = byoEngineSelected ? trimmedCustomUrl || null : null;
     setLastRunConfig({
       agentLlmUrl: llmUrlSent,
       customEngineUrl: customUrlSent,
@@ -255,22 +458,25 @@ export default function RecoEvalPage() {
       actualMs: 0,
     });
     try {
-      const res = await fetch('/api/reco/eval', {
+      const res = await fetch('/api/reco/eval/stream', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({
           engineNames: enginesForRun,
           taskSetId: taskSet,
           k,
-          // BYO fields — only sent when the user filled them.
+          // BYO fields — only sent when the user opted into BYO via
+          // the dedicated checkbox AND supplied a valid value.
           ...(llmUrlSent ? { agentLlmUrl: llmUrlSent } : {}),
-          ...(agentLlmApiKey ? { agentLlmApiKey } : {}),
+          ...(llmKeySent ? { agentLlmApiKey: llmKeySent } : {}),
           ...(customUrlSent ? { customEngineUrl: customUrlSent } : {}),
         }),
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'eval failed');
-      const finishedReport = data.report as Report;
+      if (!res.body) throw new Error('eval stream: response has no body');
+      const finishedReport = await consumeEvalStream(res.body, line =>
+        setLogLines(prev => [...prev, line])
+      );
+      if (!finishedReport) throw new Error('eval stream ended without a report');
       setReport(finishedReport);
       const actualMs = Date.now() - now;
       setLastRunConfig(prev =>
@@ -309,12 +515,22 @@ export default function RecoEvalPage() {
           <strong className="text-gray-900">Run</strong> — the table below
           shows how each one compares.
         </p>
+        <p className="text-sm mt-3">
+          <a
+            href="/docs/overview"
+            target="_blank"
+            rel="noopener"
+            className="font-medium text-red-600 hover:text-red-700 underline"
+          >
+            What is this? — one-page explainer (for clients &amp; 3rd-party teams) →
+          </a>
+        </p>
       </header>
 
       <section className="mb-8 rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm">
           <div>
-            <h3 className="font-semibold text-gray-900 mb-2">What this is</h3>
+            <h3 className="font-semibold text-gray-900 mb-2">How it works</h3>
             <p className="text-gray-600 leading-relaxed">
               An offline scoreboard. Each engine receives the same{' '}
               <code className="rounded bg-gray-100 px-1 py-0.5 text-xs">
@@ -393,9 +609,19 @@ export default function RecoEvalPage() {
                     onCheckedChange={() => toggle(e.name)}
                   />
                   <label htmlFor={`eng-${e.name}`} className="text-sm cursor-pointer">
-                    <span className="font-medium">{e.name}</span>{' '}
+                    <span className="font-medium">{displayEngineName(e.name)}</span>{' '}
                     <Badge variant="secondary">{e.version}</Badge>
                     <p className="text-xs text-gray-500">{e.description}</p>
+                    {e.name === 'byo-agent' && selected.has('byo-agent') && (byoAgentUrlError || byoAgentKeyError) && (
+                      <p className="text-xs text-red-600 mt-0.5">
+                        {byoAgentUrlError || byoAgentKeyError} — fill in the BYO panel below.
+                      </p>
+                    )}
+                    {e.name === 'byo-engine' && selected.has('byo-engine') && byoEngineUrlError && (
+                      <p className="text-xs text-red-600 mt-0.5">
+                        {byoEngineUrlError} — fill in the BYO panel below.
+                      </p>
+                    )}
                   </label>
                 </li>
               ))}
@@ -414,6 +640,26 @@ export default function RecoEvalPage() {
               <SelectItem value="history">history (leave-one-out, ≤50 users)</SelectItem>
             </SelectContent>
           </Select>
+          {taskSet === 'seed' && seedTasks.length > 0 && (
+            <details className="mt-2 rounded border border-gray-200 bg-gray-50">
+              <summary className="cursor-pointer px-2 py-1.5 text-xs font-medium text-gray-700">
+                View {seedTasks.length} seed tasks
+              </summary>
+              <ol className="list-decimal pl-6 pr-2 py-2 space-y-1 text-xs text-gray-700">
+                {seedTasks.map(t => (
+                  <li key={t.taskId}>
+                    <code className="rounded bg-white px-1 text-[10px]">{t.taskId}</code>{' '}
+                    <span className="text-gray-600">{t.statement}</span>
+                    {t.expectedNames.length > 0 && (
+                      <span className="ml-1 text-gray-400">
+                        → {t.expectedNames.join(', ')}
+                      </span>
+                    )}
+                  </li>
+                ))}
+              </ol>
+            </details>
+          )}
           <div className="mt-4">
             <label className="text-sm font-medium">k</label>
             <Select value={String(k)} onValueChange={v => setK(Number(v))}>
@@ -444,7 +690,7 @@ export default function RecoEvalPage() {
                 <span className="font-medium text-gray-600">
                   ~{formatDuration(upcomingEstimateMs)}
                 </span>
-                {selected.has('agent') && (
+                {(selected.has('agent') || selected.has('byo-agent')) && (
                   <span className="ml-1 text-amber-600">
                     (LLM agent is slow)
                   </span>
@@ -465,27 +711,54 @@ export default function RecoEvalPage() {
             )}
           </div>
           <Button
-            disabled={loading || selected.size === 0}
+            disabled={loading || selected.size === 0 || byoHasError}
             onClick={runEval}
             className="mt-3"
           >
             {loading ? 'Running…' : `Run eval (~${formatDuration(upcomingEstimateMs)})`}
           </Button>
+          {byoHasError && (
+            <p className="mt-2 text-xs text-amber-700">
+              Run is blocked — a selected BYO row is missing required inputs
+              (see red errors in the BYO panel below).
+            </p>
+          )}
         </div>
       </section>
 
-      <details className="mb-6 rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
+      <details
+        className="mb-6 rounded-lg border border-gray-200 bg-white p-4 shadow-sm"
+        open={byoAgentSelected || byoEngineSelected || byoHasError}
+      >
         <summary className="cursor-pointer text-sm font-semibold text-gray-900">
-          Bring your own (BYO LLM + BYO engine)
+          BYO inputs (URLs &amp; key for the BYO rows above)
+          {(byoAgentSelected || byoEngineSelected) && (
+            <span className="ml-2 text-xs font-normal text-gray-500">
+              {[
+                byoAgentSelected ? 'BYO agent selected' : null,
+                byoEngineSelected ? 'BYO engine selected' : null,
+              ]
+                .filter(Boolean)
+                .join(' · ')}
+            </span>
+          )}
         </summary>
         <form
           className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-6 text-sm"
           autoComplete="off"
           onSubmit={e => e.preventDefault()}
         >
-          <div>
+          <div className={byoAgentSelected ? '' : 'opacity-60'}>
+            <p className="mb-2 text-xs text-gray-500">
+              Inputs are required when{' '}
+              <strong className="text-gray-700">BYO agent</strong> is selected
+              in the engines list above.
+            </p>
+            <div className="mb-3 rounded border border-amber-300 bg-amber-50 px-3 py-2 text-xs text-amber-900">
+              <strong>Gateway must be OpenAI-compatible.</strong>
+            </div>
             <label className="block font-medium text-gray-800 mb-1" htmlFor="reco-llm-gateway-endpoint">
-              LLM gateway endpoint <span className="text-gray-400 font-normal">(agent only)</span>
+              LLM gateway endpoint
             </label>
             <input
               id="reco-llm-gateway-endpoint"
@@ -500,15 +773,22 @@ export default function RecoEvalPage() {
               placeholder="https://your-llm-gateway.example.com/v1"
               value={agentLlmUrl}
               onChange={e => setAgentLlmUrl(e.target.value)}
-              className="w-full rounded border border-gray-300 px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-red-500"
+              disabled={!byoAgentSelected}
+              aria-invalid={!!byoAgentUrlError}
+              className={`w-full rounded border px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-red-500 ${
+                byoAgentUrlError ? 'border-red-400' : 'border-gray-300'
+              } disabled:bg-gray-50 disabled:text-gray-400`}
             />
+            {byoAgentUrlError && (
+              <p className="mt-1 text-xs text-red-600">{byoAgentUrlError}</p>
+            )}
             <p className="mt-1 text-xs text-gray-500">
-              OpenAI-compatible chat-completions endpoint. When the{' '}
-              <code className="rounded bg-gray-100 px-1 text-xs">agent</code>{' '}
-              row runs, its tick-by-tick LLM calls hit this URL instead of
-              Anthropic / OpenAI. Leave blank to use the server-side
-              defaults configured in the agent sidecar. Your key stays on
-              your gateway.{' '}
+              The{' '}
+              <code className="rounded bg-gray-100 px-1 text-xs">BYO agent</code>{' '}
+              row drives the same headless-browser sidecar as{' '}
+              <code className="rounded bg-gray-100 px-1 text-xs">default agent</code>,
+              but each tick's LLM call goes to this URL instead. Your key
+              stays on your gateway.{' '}
               <a
                 href="/docs/byo-llm"
                 target="_blank"
@@ -520,7 +800,7 @@ export default function RecoEvalPage() {
             </p>
             <div className="mt-3">
               <label className="block font-medium text-gray-800 mb-1" htmlFor="reco-llm-gateway-token">
-                Gateway bearer token <span className="text-gray-400 font-normal">(optional)</span>
+                Gateway bearer token
               </label>
               <div className="flex gap-2">
                 <input
@@ -532,12 +812,14 @@ export default function RecoEvalPage() {
                   data-1p-ignore="true"
                   data-lpignore="true"
                   data-form-type="other"
-                  placeholder="Bearer token for the gateway above, if needed"
+                  placeholder="Bearer token for the gateway above"
                   value={agentLlmApiKey}
                   onChange={e => setAgentLlmApiKey(e.target.value)}
-                  className={`flex-1 rounded border border-gray-300 px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-red-500 ${
-                    showKey ? '' : '[-webkit-text-security:disc]'
-                  }`}
+                  disabled={!byoAgentSelected}
+                  aria-invalid={!!byoAgentKeyError}
+                  className={`flex-1 rounded border px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-red-500 disabled:bg-gray-50 disabled:text-gray-400 ${
+                    byoAgentKeyError ? 'border-red-400' : 'border-gray-300'
+                  } ${showKey ? '' : '[-webkit-text-security:disc]'}`}
                 />
                 <button
                   type="button"
@@ -547,6 +829,9 @@ export default function RecoEvalPage() {
                   {showKey ? 'Hide' : 'Show'}
                 </button>
               </div>
+              {byoAgentKeyError && (
+                <p className="mt-1 text-xs text-red-600">{byoAgentKeyError}</p>
+              )}
               <label className="mt-2 flex items-center gap-2 text-xs text-gray-500">
                 <input
                   type="checkbox"
@@ -557,9 +842,14 @@ export default function RecoEvalPage() {
               </label>
             </div>
           </div>
-          <div>
+          <div className={byoEngineSelected ? '' : 'opacity-60'}>
+            <p className="mb-2 text-xs text-gray-500">
+              Inputs are required when{' '}
+              <strong className="text-gray-700">BYO engine</strong> is selected
+              in the engines list above.
+            </p>
             <label className="block font-medium text-gray-800 mb-1" htmlFor="reco-custom-engine-endpoint">
-              Custom engine endpoint <span className="text-gray-400 font-normal">(adds a <code className="rounded bg-gray-100 px-1 text-xs">custom</code> row)</span>
+              BYO engine endpoint
             </label>
             <input
               id="reco-custom-engine-endpoint"
@@ -574,8 +864,15 @@ export default function RecoEvalPage() {
               placeholder="https://your-engine.example.com/recommend"
               value={customEngineUrl}
               onChange={e => setCustomEngineUrl(e.target.value)}
-              className="w-full rounded border border-gray-300 px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-red-500"
+              disabled={!byoEngineSelected}
+              aria-invalid={!!byoEngineUrlError}
+              className={`w-full rounded border px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-red-500 ${
+                byoEngineUrlError ? 'border-red-400' : 'border-gray-300'
+              } disabled:bg-gray-50 disabled:text-gray-400`}
             />
+            {byoEngineUrlError && (
+              <p className="mt-1 text-xs text-red-600">{byoEngineUrlError}</p>
+            )}
             <p className="mt-1 text-xs text-gray-500">
               Any HTTP service that accepts <code className="rounded bg-gray-100 px-1 text-xs">POST</code>{' '}
               with a{' '}
@@ -661,6 +958,28 @@ export default function RecoEvalPage() {
               time depends on LLM latency and per-task complexity.
             </p>
           )}
+          {logLines.length > 0 && (
+            <details className="mt-4 rounded border border-gray-200 bg-gray-50">
+              <summary className="cursor-pointer px-3 py-2 text-xs font-medium text-gray-700">
+                Live log ({logLines.length} {logLines.length === 1 ? 'event' : 'events'}) — click to expand
+              </summary>
+              <pre className="max-h-72 overflow-auto px-3 py-2 font-mono text-[11px] leading-relaxed text-gray-700 whitespace-pre-wrap">
+                {logLines.join('\n')}
+              </pre>
+            </details>
+          )}
+        </section>
+      )}
+      {!loading && logLines.length > 0 && (
+        <section className="mb-8 rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
+          <details className="rounded border border-gray-200 bg-gray-50">
+            <summary className="cursor-pointer px-3 py-2 text-xs font-medium text-gray-700">
+              Last run log ({logLines.length} events)
+            </summary>
+            <pre className="max-h-72 overflow-auto px-3 py-2 font-mono text-[11px] leading-relaxed text-gray-700 whitespace-pre-wrap">
+              {logLines.join('\n')}
+            </pre>
+          </details>
         </section>
       )}
 
@@ -699,12 +1018,14 @@ export default function RecoEvalPage() {
                 <span>{formatAgentLlm(reportAgentLlm)}</span>
               </p>
             )}
-            {lastRunConfig?.engines.includes('agent') && !reportAgentLlm && (
-              <p className="mt-2 text-xs text-amber-700">
-                Agent was selected but no LLM metadata came back — check the sidecar is
-                running and reachable.
-              </p>
-            )}
+            {(lastRunConfig?.engines.includes('agent') ||
+              lastRunConfig?.engines.includes('byo-agent')) &&
+              !reportAgentLlm && (
+                <p className="mt-2 text-xs text-amber-700">
+                  An agent row was selected but no LLM metadata came back —
+                  check the sidecar is running and reachable.
+                </p>
+              )}
           </section>
 
           <section className="mb-8">
@@ -727,8 +1048,8 @@ export default function RecoEvalPage() {
                   <TableRow key={name}>
                     <TableCell className="font-medium">
                       <span className="inline-flex flex-wrap items-center gap-2">
-                        {name}
-                        {name === 'agent' && reportAgentLlm && (
+                        {displayEngineName(name)}
+                        {(name === 'agent' || name === 'byo-agent') && reportAgentLlm && (
                           <Badge
                             variant="secondary"
                             className="bg-violet-100 text-violet-900 hover:bg-violet-100 text-xs font-normal"
@@ -737,7 +1058,7 @@ export default function RecoEvalPage() {
                           </Badge>
                         )}
                       </span>
-                      {name === 'agent' && reportAgentLlm && (
+                      {(name === 'agent' || name === 'byo-agent') && reportAgentLlm && (
                         <p className="text-xs font-normal text-gray-500 mt-0.5">
                           {formatAgentLlm(reportAgentLlm)}
                         </p>
@@ -767,7 +1088,7 @@ export default function RecoEvalPage() {
                     </code>
                     <span className="ml-2 text-xs text-gray-400">
                       {Object.entries(row.perEngine)
-                        .map(([n, r]) => `${n}:${r.metrics?.anyHit ? '✓' : '✗'}`)
+                        .map(([n, r]) => `${displayEngineName(n)}:${r.metrics?.anyHit ? '✓' : '✗'}`)
                         .join('  ')}
                     </span>
                   </summary>
@@ -786,8 +1107,8 @@ export default function RecoEvalPage() {
                       {Object.entries(row.perEngine).map(([name, r]) => (
                         <TableRow key={name}>
                           <TableCell className="font-medium">
-                            {name}
-                            {name === 'agent' && r.debug?.llm && (
+                            {displayEngineName(name)}
+                            {(name === 'agent' || name === 'byo-agent') && r.debug?.llm && (
                               <p className="text-xs font-normal text-violet-700 mt-0.5">
                                 LLM: {formatAgentLlm(r.debug.llm)}
                                 {typeof r.debug.steps === 'number'

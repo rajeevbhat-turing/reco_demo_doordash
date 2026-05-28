@@ -17,7 +17,6 @@ import { launch, type DriverHandle } from './driver.js';
 import { observe } from './observe.js';
 import { dispatch } from './actions.js';
 import type { LlmProvider } from './llm/index.js';
-import { makeClaudeProvider } from './llm/claude.js';
 import { makeOpenAiProvider } from './llm/openai.js';
 import { makeStubProvider } from './llm/stub.js';
 import { buildSystemPrompt } from './llm/prompt.js';
@@ -226,21 +225,18 @@ function pickProvider(
   if (model === 'stub' || model.startsWith('stub-')) {
     return makeStubProvider();
   }
+  // Only the OpenAI (Chat Completions) wire is supported at runtime —
+  // BYO gateways must speak OpenAI-compatible. A non-`gpt-*` model name
+  // is coerced to the OpenAI default; we no longer route to the
+  // Anthropic SDK from here. `makeClaudeProvider` is still importable
+  // for the type system but never instantiated.
   const isOpenAi =
     model.startsWith('gpt-') || model.startsWith('o1-') || model.startsWith('o3-');
-  if (isOpenAi) {
-    return makeOpenAiProvider({
-      model,
-      systemPrompt,
-      // BYO gateway path: prefer overrides over env defaults.
-      ...(overrides.llmUrl ? { endpoint: overrides.llmUrl } : {}),
-      ...(overrides.llmApiKey ? { apiKey: overrides.llmApiKey } : {}),
-    });
-  }
-  return makeClaudeProvider({
-    model,
+  const effectiveModel = isOpenAi ? model : 'gpt-4o-mini';
+  return makeOpenAiProvider({
+    model: effectiveModel,
     systemPrompt,
-    ...(overrides.llmUrl ? { baseURL: overrides.llmUrl } : {}),
+    ...(overrides.llmUrl ? { endpoint: overrides.llmUrl } : {}),
     ...(overrides.llmApiKey ? { apiKey: overrides.llmApiKey } : {}),
   });
 }

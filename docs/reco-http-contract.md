@@ -135,6 +135,30 @@ they're ready to serve `/recommend`. Compose `depends_on` uses this to
 gate startup ordering. Engines that need long warmup (LightFM training,
 Implicit ALS) should return `503` until the first model is loaded.
 
+## BYO engine via `/reco-eval` (Phase 5)
+
+Clients can plug in their own engine **without** us editing the
+registry: paste its URL into the **Bring your own → Custom engine URL**
+field on `/reco-eval`. The eval runner wraps it with the same
+`makeHttpEngine` adapter library engines use (`lib/reco/engines/http.ts`)
+and runs it for that request only as a row labelled `custom`. Same
+wire contract as the rest of this doc — your service just needs to
+accept `RecoContext` and return `RecommendationResponse`. The URL is
+not persisted server-side.
+
+Additional optional fields on `RecoContext` are forwarded but
+*agent-only* — library and BYO engines should drop them:
+
+| Field | Purpose |
+|---|---|
+| `taskId` | Lookup key for the agent sidecar to fetch the task statement. |
+| `startUrl` | Browser entry URL for the agent's Playwright session. |
+| `agentLlmUrl` | OpenAI-compatible gateway URL the agent's LLM ticks against. |
+| `agentLlmApiKey` | Bearer for the gateway above, if it requires one. |
+
+See `BYO_LLM.md` for the LLM-side counterpart (point our agent at
+your gateway).
+
 ## See also
 
 - `lib/reco/types.ts` — TypeScript definitions.
@@ -143,3 +167,4 @@ Implicit ALS) should return `503` until the first model is loaded.
   engine talks to from the Next.js side.
 - `lib/reco/engines/gorse.ts` — example of a non-contract engine
   whose adapter does the shape translation locally.
+- `BYO_LLM.md` — Phase 5 BYO LLM gateway pattern + plug-in flow.

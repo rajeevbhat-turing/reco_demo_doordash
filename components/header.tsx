@@ -9,6 +9,7 @@ import { useUserStore } from '@/store/user-store';
 import { Address } from '@/lib/types/user-types';
 import SearchBar from '@/components/search-bar';
 import RecoEnginePicker from '@/components/reco-engine-picker';
+import RecoDemoNavLink from '@/components/reco-demo-nav-link';
 import CartSidebar from '@/components/cart-sidebar';
 import { Button } from '@/components/ui/button';
 import {
@@ -459,6 +460,7 @@ export default function Header() {
                   <div className="flex-grow flex items-center gap-2">
                     <SearchBar />
                     <RecoEnginePicker />
+                    {pathname === '/home' && <RecoDemoNavLink />}
                   </div>
                 )}
               </div>

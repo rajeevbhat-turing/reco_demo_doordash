@@ -257,23 +257,44 @@ track.
 
 ---
 
-## Phase 5 — Demo polish & VM deployment
+## Phase 5 — Demo polish, VM deployment & BYO
 
-- [ ] **5.1** Single `docker run` brings up everything (Next.js + DBs + demo
-      UI). No external services required for the popularity-baseline demo.
-- [ ] **5.2** Compose file (`config/docker-compose.yaml`) for the cases where
-      an external recommendation engine or LLM provider is needed.
-- [ ] **5.3** Landing page at `/` (or `/demo`) that explains the two tracks
-      and links to the eval pages.
-- [ ] **5.4** Lock down: no auth required for demo, but rate-limit eval kickoff
-      and log API keys only from env.
-- [ ] **5.5** Deploy doc (`docs/deploy.md`) — VM setup, ports, env vars,
-      seeding the DB, smoke test.
-- [ ] **5.6** Pre-canned demo scripts (`scripts/demo-*.sh`) for the most-likely
-      live demos.
+- [x] **5.1** Compose stack brings up everything (dashdoor + gorse +
+      lightfm + implicit + reco-agent) via
+      `config/docker-compose.demo.yaml`. Same compose works locally
+      (`deploy/env.demo.local.example` + `scripts/demo-up.sh`) and on
+      the VM (`/etc/reco-demo/env`).
+- [x] **5.2** Engine + agent sidecars wired via env (`RECO_GORSE_URL`,
+      `RECO_LIGHTFM_URL`, `RECO_IMPLICIT_URL`, `RECO_AGENT_URL`).
+- [x] **5.3** Landing page at `/demo` (linked from `/home` header when
+      `RECO_DEMO=1`) explaining the three modes; in `app/demo/page.tsx`.
+- [ ] **5.4** Lock down — `127.0.0.1:3000` binding + Caddy TLS only.
+      `deploy_plan.md` §5.1 + `how_to_use.md` §4. Pending DNS for
+      `reco-demo.turing.com`.
+- [x] **5.5** Deploy doc — `deploy_plan.md` (GCP VM, external IP
+      `34.134.213.241`, Caddy, compose stack, one-shot
+      `scripts/deploy.sh`).
+- [x] **5.6** Demo scripts — `scripts/demo-up.sh`,
+      `scripts/demo-down.sh`, `scripts/deploy.sh`,
+      `scripts/deploy-seed-gorse.sh`.
+- [x] **5.7 BYO LLM + BYO engine** (promoted from `future_ideas.md`):
+  - [x] `RecoContext` gains optional `agentLlmUrl` / `agentLlmApiKey`;
+        library engines drop them.
+  - [x] Agent providers accept `endpoint` / `baseURL` overrides;
+        `pickProvider` threads BYO from `RecoContext`.
+  - [x] `/api/reco/eval` accepts `agentLlmUrl` / `agentLlmApiKey` /
+        `customEngineUrl`; runner builds a transient `custom` HTTP
+        engine when the URL is set.
+  - [x] `/reco-eval` UI: collapsible "Bring your own" panel with
+        URL/key/engine-URL inputs, localStorage persistence, optional
+        Remember-key checkbox.
+  - [x] `BYO_LLM.md` documents the gateway pattern + privacy boundary;
+        `docs/reco-http-contract.md` notes the custom-engine path.
 
-**Exit:** stakeholder can open a URL, pick a task + engines (and optionally an
-LLM agent), hit "Run", and see a live evaluation with metrics and traces.
+**Exit:** stakeholder opens the demo URL, picks a task + engines (and
+optionally an LLM agent — ours or a BYO gateway), hits "Run", and sees
+metrics. **Achieved** for the IP-direct surface
+(`http://34.134.213.241:3000/demo`); TLS step (5.4) pending DNS.
 
 ---
 

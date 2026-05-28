@@ -21,10 +21,13 @@ tracks:
 2. **LLM-agent track** — an LLM drives the real Dashdoor UI and the agent's
    choices are scored with the same metrics.
 
-Deployable as a single Docker container to a VM for demos.
+Deployable to a VM for demos (compose stack + TLS; see deploy plan).
 
 - **Plan (phased, checkboxes):** `RECO_PLAN.md`
 - **Current phase, step-by-step:** `EXECUTION.md`
+- **Big-picture flowcharts:** `docs/overview-flowchart.md`
+- **Client demo / BYO LLM setup (ideas):** `demo_setup.md`
+- **GCP deploy + TLS (`reco-demo.turing.com`, VM `10.128.0.51`):** `deploy_plan.md`
 - Always read both before starting work.
 
 ### Checkbox discipline (required)
@@ -83,6 +86,11 @@ npm run test:e2e:chromium
 
 docker build -f ./Dockerfile.prod -t dashdoor . --load
 docker run -p 3000:3000 -e RECO_DEMO=1 dashdoor
+
+# Full reco demo stack (VM or local):
+#   ENV_FILE=deploy/env.demo.example ./scripts/demo-up.sh
+#   ./scripts/deploy-seed-gorse.sh
+# GCP + TLS: deploy_plan.md — https://reco-demo.turing.com
 ```
 
 Env knobs that matter:
@@ -90,6 +98,36 @@ Env knobs that matter:
 - `PREFIX_URL` — image CDN prefix
 - `RECO_DEMO=1` — exposes the recommendation eval demo at `/reco-eval`
   (added in Phase 1)
+- `ANTHROPIC_API_KEY` / `OPENAI_API_KEY` — Phase 4 agent track. The
+  sidecar auto-loads `.env` (`tools/reco-agent/src/load-env.ts`), so no
+  shell sourcing is needed.
+
+## Phase 4 agent — invoking the sidecar
+
+The sidecar lives in `tools/reco-agent/` with its own `package.json` and
+`node_modules`. Two ways to run it:
+
+```
+# directly, no env juggling — load-env.ts pulls keys from ../../.env
+cd tools/reco-agent
+./node_modules/.bin/tsx src/run.ts '<AgentInput JSON>'      # one-shot CLI
+./node_modules/.bin/tsx src/server.ts                        # HTTP server :8003
+./node_modules/.bin/tsc --noEmit                             # sidecar typecheck
+./node_modules/.bin/vitest run                               # sidecar tests
+```
+
+These patterns are pre-allowed in `.claude/settings.local.json`, so
+future sessions won't need permission prompts. Use them instead of
+`set -a; source .env; set +a; …` prefixes.
+
+Useful sidecar env knobs:
+- `RECO_AGENT_HEADLESS=0` — show the browser window (default: headless)
+- `RECO_AGENT_MAX_STEPS` — override the default step cap
+- `RECO_AGENT_TARGET_URL` — base URL of the parent app from inside the
+  sidecar (default `http://localhost:3000`; use
+  `http://host.docker.internal:3000` from a container)
+- `RECO_AGENT_MODEL` — override the default model (auto-detects Claude
+  vs OpenAI based on which API key is present)
 
 ## Working agreements
 

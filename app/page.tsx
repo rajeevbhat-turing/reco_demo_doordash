@@ -220,6 +220,42 @@ export default function LandingPage() {
       {/* App Banner - Mobile Only */}
       {/* <AppBanner /> */}
 
+      {/* Reco demo orientation strip — shown only when RECO_DEMO=1.
+          Tells anonymous visitors this is an eval harness, points
+          them at the OVERVIEW.md explainer, and tells them what
+          happens after they sign in. */}
+      {process.env.NEXT_PUBLIC_RECO_DEMO === '1' && (
+        <div className="fixed inset-x-0 top-0 z-30 bg-[#191919ff] text-white">
+          <div className="mx-auto flex max-w-6xl flex-col items-start gap-1 px-4 py-2 text-sm sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+            <p className="leading-snug">
+              <span className="font-bold">Recommendation engine evaluation demo.</span>{' '}
+              <span className="hidden text-gray-300 sm:inline">
+                Dashdoor is the consumer surface; the real product here is the
+                reco scoreboard. Sign in below and you&apos;ll land on the demo
+                page.
+              </span>
+              <span className="text-gray-300 sm:hidden">
+                Sign in below to land on the demo.
+              </span>
+            </p>
+            <div className="flex shrink-0 items-center gap-3">
+              <a
+                href="/docs/overview"
+                className="font-semibold text-white underline decoration-red-500 underline-offset-4 hover:text-red-300"
+              >
+                Read the overview →
+              </a>
+              <a
+                href="/demo"
+                className="rounded-full bg-[#eb1700ff] px-3 py-1 text-xs font-bold text-white hover:bg-red-700"
+              >
+                Skip to /demo
+              </a>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Transparent Header (at top) */}
       <div
         className={`w-full bg-transparent relative top-0 left-0 right-0 z-20 px-6 flex items-center justify-center h-16 

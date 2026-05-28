@@ -13,7 +13,7 @@ export const testCredentials = {
   // Valid test user for login tests (seeded in dashdoor.db)
   validUser: {
     email: E2E_LOGIN_EMAIL,
-    password: 'testpassword123',
+    password: 'password',
   },
   
   // Invalid credentials for negative tests

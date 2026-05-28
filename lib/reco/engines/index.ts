@@ -7,6 +7,7 @@ import { gorseEngine } from './gorse';
 import { makeGorseEngine } from './gorse';
 import { lightfmEngine } from './lightfm';
 import { implicitEngine } from './implicit';
+import { getAgentEngine } from './agent';
 import { makeHttpEngine } from './http';
 
 interface EngineConfigEntry {
@@ -27,12 +28,15 @@ interface EngineConfig {
  * If the config file is missing or unparseable, all built-ins register
  * with their defaults — the registry never goes empty.
  */
+const agentEngine = getAgentEngine();
+
 const builtin: RecommendationEngine[] = [
   randomEngine,
   popularityEngine,
   gorseEngine,
   lightfmEngine,
   implicitEngine,
+  ...(agentEngine ? [agentEngine] : []),
 ];
 
 function loadConfig(): EngineConfig {

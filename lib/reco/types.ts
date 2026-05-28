@@ -52,6 +52,23 @@ export interface RecoContext {
   now?: string; // ISO-8601
   /** Recent order ids for this user, newest first. Optional sequence signal. */
   recentOrderIds?: string[];
+  /**
+   * Eval-only fields. Forwarded by the eval runner so the agent sidecar
+   * can look up the task statement and target the right UI surface.
+   * Plain engines ignore these.
+   */
+  taskId?: string;
+  startUrl?: string;
+  /**
+   * BYO-LLM fields (Phase 5). When the eval-runner caller provides a
+   * custom OpenAI-compatible (or Anthropic-compatible) gateway URL,
+   * the agent sidecar routes its tick-by-tick LLM calls there instead
+   * of the configured Anthropic/OpenAI endpoint. Library engines drop
+   * these fields. The key never reaches our backend storage — it's
+   * passed through per request to the gateway.
+   */
+  agentLlmUrl?: string;
+  agentLlmApiKey?: string;
 }
 
 /** What every `recommend()` call returns, and what HTTP engines must respond with. */

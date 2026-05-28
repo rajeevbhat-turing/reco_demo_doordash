@@ -214,3 +214,21 @@ html {
 .search-dropdown {
   animation: slideDown 0.2s ease-out;
 }
+/* Minimal markdown styling for /docs/[slug] (no @tailwindcss/typography). */
+.markdown-doc h1 { font-size: 1.5rem; font-weight: 600; color: #111827; margin: 0 0 0.5rem; }
+.markdown-doc h2 { font-size: 1.125rem; font-weight: 600; color: #111827; margin: 1.75rem 0 0.5rem; padding-top: 0.25rem; border-top: 1px solid #f3f4f6; }
+.markdown-doc h3 { font-size: 1rem; font-weight: 600; color: #111827; margin: 1.25rem 0 0.25rem; }
+.markdown-doc h4 { font-size: 0.875rem; font-weight: 600; color: #374151; margin: 1rem 0 0.25rem; }
+.markdown-doc p  { margin: 0.5rem 0; }
+.markdown-doc ul, .markdown-doc ol { padding-left: 1.25rem; margin: 0.5rem 0; }
+.markdown-doc li { margin: 0.25rem 0; }
+.markdown-doc a  { color: #dc2626; text-decoration: underline; }
+.markdown-doc a:hover { color: #b91c1c; }
+.markdown-doc code { background: #f3f4f6; border-radius: 3px; padding: 0.1em 0.35em; font-size: 0.85em; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+.markdown-doc pre { background: #111827; color: #f9fafb; border-radius: 6px; padding: 1rem; overflow-x: auto; font-size: 0.8rem; margin: 0.75rem 0; }
+.markdown-doc pre code { background: transparent; padding: 0; color: inherit; font-size: 0.8rem; }
+.markdown-doc table { width: 100%; border-collapse: collapse; margin: 0.75rem 0; font-size: 0.85rem; }
+.markdown-doc th, .markdown-doc td { border: 1px solid #e5e7eb; padding: 0.4rem 0.6rem; text-align: left; vertical-align: top; }
+.markdown-doc th { background: #f9fafb; font-weight: 600; }
+.markdown-doc blockquote { border-left: 3px solid #e5e7eb; padding-left: 0.75rem; color: #6b7280; margin: 0.75rem 0; }
+.markdown-doc hr { border: 0; border-top: 1px solid #e5e7eb; margin: 1.5rem 0; }

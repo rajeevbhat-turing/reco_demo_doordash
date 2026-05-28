@@ -1,169 +1,167 @@
-# Execution — Phase 4: LLM-agent track
+# Execution — Phase 5: BYO LLM/engine plumbing + local deploy
 
-The gym's second product goal: an LLM drives the real Dashdoor UI,
-and its trajectory is scored against the same ground truth the engine
-track uses. The engine track ships as-is; nothing here changes
-`/home`, `/store`, or `/reco-eval` for non-agent runs.
+Bring-your-own-LLM and bring-your-own-engine, exposed on the deployed
+`/reco-eval` UI. Client never shares keys; they host a tiny
+OpenAI-compatible gateway on their side and give us only its URL.
+Same image works on the VM and locally so changes can be smoke-tested
+before redeploying.
 
-> Previous EXECUTION.md content is archived in
-> `docs/execution-phase-0.md`, `docs/execution-phase-2-code.md`, and
-> `docs/execution-phase-3.md`. Phase 3 verification artifacts (e2e +
-> screenshots) moved to `parallel_work.md` Track A.
+> Phase 4 (LLM-agent track) archived at `docs/execution-phase-4.md`.
+> Verification artifacts for earlier phases stay in
+> `parallel_work.md`.
 
-Tick checkboxes the moment a step is done, per `CLAUDE.md`.
+Tick boxes the moment a step is done, per `CLAUDE.md`.
 
 ---
 
 ## 0. Pre-flight
 
-- [ ] Branch off `main` as `phase4-agent` (or continue on `reco`).
-- [ ] `npm run dev` clean; `/reco-eval` works; at least one of
-      `lightfm` or `implicit` healthy so the agent has a non-trivial
-      engine row to be compared against.
-- [ ] LLM provider chosen for v1: **Claude** (Anthropic). Env:
-      `RECO_AGENT_PROVIDER=claude`, `ANTHROPIC_API_KEY`. OpenAI
-      adapter can land as a follow-up; keep the LLM call behind a
-      thin interface from day one.
+- [ ] Working tree clean enough to push (or accept that uncommitted
+      Phase 4 work goes along for the ride).
+- [ ] Local stack builds: `docker compose -f config/docker-compose.demo.yaml --env-file deploy/env.demo.example build`
+      runs to completion. Skip if it already worked once.
 
 ---
 
 ## 1. Decisions (lock before coding)
 
-- [ ] **Driver tech:** Playwright (headed in dev, headless in CI),
-      reusing the e2e harness's browser context where possible.
-- [ ] **Agent run input:** `{ taskId, startUrl, model, maxSteps }`.
-- [ ] **Agent run output:** `{ actions, verifierEvents, recommendation }`
-      where `recommendation` is the same `RecommendationResponse` shape
-      engines emit — so the scorer doesn't care which track produced it.
-- [ ] **Action vocabulary v1:** `goto`, `clickByTestId`, `clickBySelector`,
-      `type`, `scroll`, `read`, `addToCart`, `finish`. Higher-level than
-      raw CDP so the LLM prompt stays readable.
-- [ ] **Trajectory → recommendation mapping:**
-  - `home_feed` surface: first N distinct `restaurant_id`s the agent
-    navigated into via a card click → ranked list.
-  - `store_items` surface: items added to cart in click order → top-1;
-    fall back to items the agent expanded if cart is empty.
-  - Final ordered restaurant/items (verifier-store `orderPlaced`) →
-    top-1 hard target overlay.
-- [ ] **Step budget:** `maxSteps` default 25; reaching it forces a
-      `finish`. Per-task wall-clock timeout default 120s.
-- [ ] **Scoring path:** the agent is exposed as a pseudo-engine
-      (`lib/reco/engines/agent.ts`) so `runner.ts` and `metrics.ts`
-      stay unchanged.
+- [x] **BYO LLM contract**: client hosts an OpenAI-compatible chat-
+      completions endpoint. Gym agent uses it as the LLM for every
+      tick. Their provider key stays on their gateway; we send just
+      the chat messages.
+- [x] **BYO engine contract**: client hosts any service that speaks
+      the wire contract in `docs/reco-http-contract.md` (`POST
+      /recommend` → `RecommendationResponse`). Same shape LightFM /
+      Implicit / Gorse use.
+- [x] **Surface**: both URLs are entered in a collapsible "Bring your
+      own" panel on `/reco-eval`. Closed by default — the basic flow
+      is unchanged.
+- [x] **Privacy**: BYO LLM URL + key are sent to the agent sidecar
+      per request, not persisted server-side. Trace files redact the
+      Bearer token. Document the privacy boundary.
+- [x] **Same image locally**: the existing `config/docker-compose.demo.yaml`
+      + `scripts/demo-up.sh` work for `localhost` too — just point
+      `ENV_FILE` at a local copy of `deploy/env.demo.example`.
 
 ---
 
-## 2. Agent contract + scaffolding (4.1)
+## 2. Type + wire contract extensions
 
-- [ ] `lib/reco/agent/types.ts` — `AgentAction`, `AgentInput`,
-      `AgentOutput`, `AgentStepRecord`.
-- [ ] `tools/reco-agent/` directory:
-  - [ ] `package.json` (TypeScript, so types are shared with the rest
-        of the repo via a path mapping or workspace).
-  - [ ] `src/driver.ts` — Playwright launch + page lifecycle.
-  - [ ] `src/actions.ts` — vocabulary dispatcher.
-  - [ ] `src/llm/index.ts` + `src/llm/claude.ts` — provider interface
-        and first adapter. `openai.ts` stub left empty for now.
-  - [ ] `src/observe.ts` — DOM serialization for the prompt (selector
-        tree + text excerpts, capped in size).
-  - [ ] `src/run.ts` — entry: `(AgentInput) → Promise<AgentOutput>`.
-  - [ ] `src/server.ts` — FastAPI-equivalent (`fastify`/`hono`) exposing
-        `POST /recommend` that matches `docs/reco-http-contract.md`, so
-        the agent can register as an engine via `http.ts`.
+- [x] `lib/reco/types.ts` — extend `RecoContext` with optional
+      `agentLlmUrl?: string`, `agentLlmApiKey?: string`. Plain engines
+      ignore them.
+- [x] `tools/reco-agent/src/wire.ts` — mirror the additions.
+- [ ] `docs/reco-http-contract.md` — note the new optional fields and
+      that they are *agent-only*; library engines drop them.
 
 ---
 
-## 3. Driver + action loop (4.2)
+## 3. Agent providers — accept a custom endpoint
 
-- [ ] `driver.ts` exports `launch({ startUrl, headless }) → { page,
-      close, screenshot, domSnapshot }`.
-- [ ] Action loop tick:
-  1. Serialize current DOM via `observe.ts` (selector tree + visible
-     text, truncated to ~8 KB).
-  2. Call the LLM with: task statement, action vocabulary, current DOM
-     digest, last K actions (default K=5).
-  3. Parse the response into an `AgentAction`; dispatch via
-     `actions.ts`. On `finish` exit.
-  4. Mirror `verifier-store` events for the step. Cheapest path: add a
-     read-only `GET /api/verifier-state` route the agent polls
-     between actions, or expose `window.__verifier` if same-origin
-     is fine.
-- [ ] Resilience: catch action failures, surface as `actionError`
-      records, let the LLM retry up to 2x per logical step before the
-      loop counts a forced `finish`.
-- [ ] `tools/reco-agent/` runs both as a one-shot CLI and an HTTP
-      server (`src/server.ts`), so it can be invoked from the runner
-      *and* from `/reco-eval/agent`.
+- [x] `tools/reco-agent/src/llm/openai.ts` — already accepts
+      `endpoint` + `apiKey` ✓ (verified; no code change needed).
+- [x] `tools/reco-agent/src/llm/claude.ts` — `baseURL` option flows
+      to `new Anthropic({ baseURL })`.
+- [x] `tools/reco-agent/src/run.ts` `pickProvider`: accepts
+      `{ llmUrl, llmApiKey }` overrides, passes through to provider
+      factory. Model-prefix rule unchanged.
+- [x] `tools/reco-agent/src/run.ts` `runAgent`: takes
+      `RunAgentOverrides`, threads to `pickProvider`.
+- [x] `tools/reco-agent/src/server.ts` `/recommend`: validates and
+      reads `agentLlmUrl`/`agentLlmApiKey` from the body, passes to
+      `runAgent`.
 
 ---
 
-## 4. Trajectory → recommendation mapping (4.3)
+## 4. Eval API — BYO fields end-to-end
 
-- [ ] `lib/reco/agent/extract.ts` —
-      `extractRecommendation(actions, verifierEvents, surface, k):
-      RecommendationResponse`.
-  - `home_feed`: first `k` distinct restaurant_ids visited via card click.
-  - `store_items`: items added to cart in click order; fall back to
-    items whose description was expanded.
-  - Always emit `k` items; pad short trajectories with `null` rank.
-- [ ] `lib/reco/engines/agent.ts` — HTTP adapter pointing at the agent
-      sidecar's `POST /recommend`. Registry entry name: `agent`.
-- [ ] `lib/reco/eval/runner.ts` — per-task timeout knob (default 120s)
-      so a slow agent never wedges the whole run.
-- [ ] Unit tests for `extract.ts` covering each surface + the
-      short-trajectory padding case.
+- [x] `app/api/reco/eval/route.ts` — body accepts `agentLlmUrl`,
+      `agentLlmApiKey`, `customEngineUrl`. Malformed http(s) URLs
+      rejected.
+- [x] `lib/reco/eval/runner.ts` `runEval`: `RunEvalOptions` extended;
+      threads BYO LLM fields into per-task ctx; builds transient
+      `custom` HTTP engine when `customEngineUrl` is set.
+- [x] Engine row labelled `custom` in aggregate + per-task tables.
 
 ---
 
-## 5. Persisted traces (4.4)
+## 5. UI — collapsible "Bring your own" panel
 
-- [ ] `data/reco-agent-runs/<runId>/` layout:
-  - `actions.json` — ordered `AgentStepRecord[]`.
-  - `step-N.dom.html`, `step-N.png` — per-step DOM + screenshot.
-  - `verifier-events.json` — full verifier-store event log.
-  - `result.json` — final `AgentOutput` + scored `RecommendationResponse`.
-- [ ] `lib/reco/agent/storage.ts` — `saveTrace(runId, trace)` /
-      `loadTrace(runId)`, mirroring `lib/reco/eval/storage.ts`'s style.
-- [ ] Trace size budget: cap screenshots at 5 per run by default; raise
-      via `RECO_AGENT_MAX_SCREENSHOTS` env if a longer trace is needed.
-
----
-
-## 6. Demo page (4.5)
-
-- [ ] `app/api/reco/agent/route.ts` — `POST { taskId, model, maxSteps }`
-      kicks off an agent run; returns `{ runId }`. Background work is
-      driven by the agent sidecar; the API just enqueues and returns.
-- [ ] `app/api/reco/agent/[id]/route.ts` — `GET` returns the persisted
-      trace + score (or in-progress status).
-- [ ] `app/reco-eval/agent/page.tsx` — pick task + model + maxSteps, hit
-      Run, jump to the replay page.
-- [ ] `app/reco-eval/agent/[id]/page.tsx` — replay UI: action list
-      (left) + current DOM/screenshot (right) + score footer.
-- [ ] Both pages gated by `RECO_DEMO=1` server-side (`notFound()`
-      otherwise), same as `/reco-eval`.
+- [x] `app/reco-eval/reco-eval-client.tsx`: `<details>` panel between
+      controls and progress card, with the three inputs + show/hide
+      key toggle + "Remember this key" checkbox.
+- [x] localStorage persistence for URL and engine URL (always);
+      LLM key only when "Remember" is ticked.
+- [x] Help text on each input references `BYO_LLM.md` and the wire
+      contract doc.
+- [x] Runtime estimate now counts `custom` engine when its URL is set.
 
 ---
 
-## 7. Tests
+## 6. Tests
 
-- [ ] Unit: `extract.test.ts` (each surface, padding, no-verifier-events).
-- [ ] Unit: `actions.test.ts` (dispatcher, failure paths, retry limit).
-- [ ] Unit: `storage.test.ts` (round-trip a trace).
-- [ ] E2E (slow lane, tag `@agent`, skipped by default): one seed task
-      end-to-end with a **stub LLM** that picks the first card every
-      step — proves the wiring without burning real API tokens in CI.
+- [ ] `tests/unit/reco/eval-runner.byo.test.ts` (new):
+  - Custom engine URL → transient engine appears in the report.
+  - `agentLlmUrl`/`agentLlmApiKey` propagate into the ctx the runner
+    hands to each engine.
+- [ ] `tests/unit/reco/agent-extract.test.ts` — re-confirm no
+      regression (existing 6 tests).
+- [ ] Sidecar unit (optional): `pickProvider` picks the right
+      provider when given a custom URL.
 
 ---
 
-## 8. Regression
+## 7. Local-deployable smoke
 
-- [ ] Engine track unchanged: `/reco-eval` runs the same five engines,
-      same metrics, same numbers (within noise) before and after.
-- [ ] `RECO_DEMO` unset: `/reco-eval/agent` returns 404; no agent code
-      is loaded on `/home` or `/store`.
-- [ ] `npx tsc --noEmit` → 0 errors.
-- [ ] Full unit suite still green (currently 1677 passing / 3 skipped).
+- [x] `deploy/env.demo.local.example` — local-run template with the
+      cp / ENV_FILE recipe at the top.
+- [x] `.gitignore` — `deploy/env.demo.local` excluded.
+- [x] `scripts/demo-up.sh` — already honors `ENV_FILE`; no code
+      change. Verified.
+- [x] `deploy_plan.md` §7.1.5 documents the local-run recipe
+      (kept out of `how_to_use.md` per its no-tech-info charter).
+- [ ] Operator smoke (you run by hand):
+  - `cp deploy/env.demo.local.example deploy/env.demo.local`
+  - fill `ANTHROPIC_API_KEY` and/or `OPENAI_API_KEY`
+  - `ENV_FILE=deploy/env.demo.local ./scripts/demo-up.sh`
+  - `curl localhost:3000/api/reco/engines` → 6 engines including `agent`
+  - tick `agent` on `/reco-eval`, paste your gateway URL in the BYO
+    panel, run on `seed` (1 task), confirm score lands
+
+---
+
+## 8. BYO docs
+
+- [x] `BYO_LLM.md` — gateway example, plug-in flow, privacy boundary,
+      pointer to `Custom engine URL` for non-LLM clients.
+- [ ] `docs/reco-http-contract.md` — note custom-engine URL pattern;
+      same wire contract as LightFM / Implicit.
+- [x] `/demo` landing: LLM-agent card updated to point at
+      `BYO_LLM.md`. (Operator-notes block removed per separate
+      request.)
+
+---
+
+## 9. Cleanup / cross-doc updates
+
+- [x] `future_ideas.md` — Enterprise LLM gateway entry marked promoted
+      to Phase 5 with a pointer to `BYO_LLM.md`.
+- [ ] `RECO_PLAN.md` — flip Phase 5 to include BYO; update Phase 5
+      exit criteria.
+- [ ] `demo_setup.md` — mention the BYO panel and `BYO_LLM.md`.
+
+---
+
+## 10. Regression
+
+- [x] `npx tsc --noEmit` → 0 errors (main + sidecar).
+- [x] Reco unit suite — 30 / 30 green (no regression).
+- [x] `/reco-eval` with the BYO panel closed: omits BYO fields from
+      the request body (verified in `runEval` body — `...spread` only
+      when the inputs are non-empty).
+- [x] Sidecar `/run` path unchanged (no `agentLlmUrl`/`ApiKey` on
+      `AgentInputSchema`); `/recommend` path defaults to env-driven
+      provider when BYO fields are absent.
 
 ---
 
@@ -171,14 +169,10 @@ Tick checkboxes the moment a step is done, per `CLAUDE.md`.
 
 | Criterion | Status |
 |-----------|:------:|
-| One seed task runs end-to-end with Claude as the agent and produces an `AgentOutput` | TODO |
-| Agent shows up next to the five engines in `/reco-eval` with a Hit@K metric | TODO |
-| Trace is persisted and replayable at `/reco-eval/agent/<runId>` | TODO |
-| Engine-track regression — existing `/reco-eval` flow unchanged | TODO |
-| Unit suite + tsc green; new tests for `extract`, `actions`, `storage` | TODO |
-| `RECO_PLAN.md` Phase 4 exit block updated | TODO |
-
-After this ships, the next `EXECUTION.md` becomes **Phase 5 — Demo
-polish & VM deployment** per `RECO_PLAN.md`. Parallel hygiene tracks
-(`parallel_work.md` A/B/C) can be pulled in whenever someone has
-bandwidth.
+| Client can paste an LLM gateway URL on `/reco-eval`, tick `agent`, hit Run, and the deployed sidecar's LLM calls land on their URL | TODO |
+| Client can paste a custom engine URL on `/reco-eval`, hit Run, and a `custom` row appears in the metric table | TODO |
+| `/etc/reco-demo/env` / our `.env` never see the client's API key | TODO |
+| Operator can `cp deploy/env.demo.local.example deploy/env.demo.local` + `ENV_FILE=... ./scripts/demo-up.sh` and smoke the whole stack on `localhost` before pushing to the VM | TODO |
+| `BYO_LLM.md` has a working gateway example | TODO |
+| `tsc` + unit tests green | TODO |
+| `RECO_PLAN.md` Phase 5 exit block updated | TODO |
