@@ -27,6 +27,13 @@ import {
   buildUrlWithFilters,
   getDefaultFilterState,
 } from '@/lib/utils/filter-url-params';
+import CuisineSection from '@/components/cuisine-section';
+import type { ExpectedSection } from '@/lib/reco/types';
+
+const RECO_DEMO = process.env.NEXT_PUBLIC_RECO_DEMO === '1';
+const PERSONA_ID_MIN = 3101;
+const PERSONA_ID_MAX = 3110;
+
 // Inner component that uses useSearchParams (needs Suspense boundary)
 function HomeContent() {
   const searchParams = useSearchParams();
@@ -41,6 +48,8 @@ function HomeContent() {
   const [allFilteredRestaurants, setAllFilteredRestaurants] = useState<Restaurant[]>([]);
   const filterOptionsRef = useRef<FilterOptionsRef>(null);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(initialCategory);
+  const [personaSections, setPersonaSections] = useState<ExpectedSection[]>([]);
+  const [blockedRestaurantIds, setBlockedRestaurantIds] = useState<Set<number>>(new Set());
   const { updateSearchResults, clearSearchResults } = useAppStore();
 
   // Track if URL update is needed (to avoid infinite loops)
@@ -85,6 +94,21 @@ function HomeContent() {
   useEffect(() => {
     cartStore.setCategory('restaurant');
   }, []);
+
+  // Fetch persona-aware sections when RECO_DEMO is on and user is a persona
+  useEffect(() => {
+    if (!RECO_DEMO || !currentUser) return;
+    const uid = parseInt(currentUser.id, 10);
+    if (uid < PERSONA_ID_MIN || uid > PERSONA_ID_MAX) return;
+
+    fetch(`/api/reco/persona-home?userId=${uid}`)
+      .then(r => r.json())
+      .then((data: { sections: ExpectedSection[]; blocked_restaurant_ids: number[] }) => {
+        setPersonaSections(data.sections ?? []);
+        setBlockedRestaurantIds(new Set(data.blocked_restaurant_ids ?? []));
+      })
+      .catch(() => {});
+  }, [currentUser]);
 
   // Get address from user store for location filtering
   const { getAddresses, getTempAddress } = useUserStore();
@@ -557,6 +581,24 @@ function HomeContent() {
       )}
       <div className="mt-4">
         {!showStayTuned && !hasActiveFilters() && <PromoBanners restaurants={actualRestaurants} />}
+
+        {/* Persona-aware cuisine sections (RECO_DEMO only) */}
+        {personaSections.length > 0 && !hasActiveFilters() && (
+          <div className="flex flex-col gap-3 mb-6">
+            {personaSections.map(section => {
+              const sectionRestaurants = section.ranked_restaurant_ids
+                .map(id => baseRestaurants.find(r => Number(r.id) === id || r.id === String(id)))
+                .filter((r): r is Restaurant => r != null);
+              return (
+                <CuisineSection
+                  key={section.cuisine}
+                  section={section}
+                  restaurants={sectionRestaurants}
+                />
+              );
+            })}
+          </div>
+        )}
 
         {/* Show filtered results when filters are active */}
         {hasActiveFilters() ? (

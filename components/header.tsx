@@ -938,6 +938,18 @@ export default function Header() {
                     )}
                   </div>
 
+                  {/* Reco Eval link (visible only when NEXT_PUBLIC_RECO_DEMO=1) */}
+                  {process.env.NEXT_PUBLIC_RECO_DEMO === '1' && (
+                    <div className="ml-4">
+                      <Link
+                        href="/reco-eval"
+                        className="text-xs font-semibold text-gray-600 hover:text-gray-900 bg-gray-100 hover:bg-gray-200 rounded-full px-3 h-8 flex items-center transition-colors"
+                      >
+                        Reco Eval
+                      </Link>
+                    </div>
+                  )}
+
                   {/* Cart */}
                   <div className="ml-4">
                     <button

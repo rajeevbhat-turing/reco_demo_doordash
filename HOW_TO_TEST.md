@@ -138,6 +138,39 @@ npm run test:e2e:chromium
 Boots its own server. Suite is independent of the persona work —
 use it to make sure base Dashdoor flows still pass after a change.
 
+## 6. Reco Eval UI (Phase 4)
+
+Setting `NEXT_PUBLIC_RECO_DEMO=1` enables two features:
+- A **"Reco Eval"** link in the header → `/reco-eval`
+- **Persona-aware cuisine sections** on `/home` for signed-in persona users (IDs 3101–3110)
+
+```bash
+# Make sure OpenSearch is running and seeded (see §4 above), then:
+NEXT_PUBLIC_RECO_DEMO=1 npm run dev
+```
+
+**Test `/reco-eval`:**
+1. Open `http://localhost:3000/reco-eval`
+2. OpenSearch is pre-selected with a "baseline" badge — it cannot be unchecked.
+3. Select a persona (default: alice-tran) and click **Run**.
+4. A ranked results table appears with restaurant names and cuisine.
+
+**Test persona sections on `/home`:**
+1. Sign in as `alice.tran@personas.demo` / `password`
+2. Open `http://localhost:3000/home`
+3. Cuisine sections (e.g. "More Thai for you") appear above the regular feed.
+
+**Test non-persona user:**
+1. Sign in as `john.doe@example.com`
+2. Open `/home` — no cuisine sections, normal feed only.
+
+**Test flag off:**
+```bash
+npm run dev   # no NEXT_PUBLIC_RECO_DEMO
+```
+- No "Reco Eval" link in header.
+- `/home` shows no cuisine sections regardless of who is signed in.
+
 ## Re-running the persona seed
 
 The seed is **idempotent**: it deletes the persona slice (users
