@@ -1,0 +1,341 @@
+[
+  {
+    "personaId": "alice-tran",
+    "surface": "home_feed",
+    "sections": [
+      {
+        "label": "More Thai for you",
+        "cuisine": "Thai",
+        "ranked_restaurant_ids": [
+          289,
+          206,
+          319,
+          218
+        ],
+        "novelty_index": 2
+      }
+    ],
+    "blocked_restaurant_ids": [
+      203,
+      291
+    ],
+    "flat_ranked_ids": [
+      289,
+      206,
+      319,
+      218
+    ]
+  },
+  {
+    "personaId": "ben-kowalski",
+    "surface": "home_feed",
+    "sections": [
+      {
+        "label": "More Italian for you",
+        "cuisine": "Italian",
+        "ranked_restaurant_ids": [
+          430,
+          440,
+          366,
+          448
+        ],
+        "novelty_index": 2
+      }
+    ],
+    "blocked_restaurant_ids": [
+      368,
+      478
+    ],
+    "flat_ranked_ids": [
+      430,
+      440,
+      366,
+      448
+    ]
+  },
+  {
+    "personaId": "chloe-okafor",
+    "surface": "home_feed",
+    "sections": [
+      {
+        "label": "More Indian for you",
+        "cuisine": "Indian",
+        "ranked_restaurant_ids": [
+          468,
+          458,
+          429
+        ],
+        "novelty_index": 2
+      }
+    ],
+    "blocked_restaurant_ids": [
+      509,
+      513
+    ],
+    "flat_ranked_ids": [
+      468,
+      458,
+      429
+    ]
+  },
+  {
+    "personaId": "diego-mendoza",
+    "surface": "home_feed",
+    "sections": [
+      {
+        "label": "More Mexican for you",
+        "cuisine": "Mexican",
+        "ranked_restaurant_ids": [
+          495,
+          104,
+          496,
+          379
+        ],
+        "novelty_index": 2
+      },
+      {
+        "label": "More American for you",
+        "cuisine": "American",
+        "ranked_restaurant_ids": [
+          161,
+          447,
+          369,
+          427
+        ],
+        "novelty_index": 1
+      }
+    ],
+    "blocked_restaurant_ids": [
+      404,
+      441
+    ],
+    "flat_ranked_ids": [
+      495,
+      104,
+      496,
+      379,
+      161,
+      447,
+      369,
+      427
+    ]
+  },
+  {
+    "personaId": "eli-nakamura",
+    "surface": "home_feed",
+    "sections": [
+      {
+        "label": "More Japanese for you",
+        "cuisine": "Japanese",
+        "ranked_restaurant_ids": [
+          312,
+          303,
+          223,
+          174
+        ],
+        "novelty_index": 2
+      },
+      {
+        "label": "More Korean for you",
+        "cuisine": "Korean",
+        "ranked_restaurant_ids": [
+          333,
+          190,
+          212
+        ],
+        "novelty_index": 1
+      }
+    ],
+    "blocked_restaurant_ids": [
+      163,
+      197
+    ],
+    "flat_ranked_ids": [
+      312,
+      303,
+      223,
+      174,
+      333,
+      190,
+      212
+    ]
+  },
+  {
+    "personaId": "fatima-rashid",
+    "surface": "home_feed",
+    "sections": [
+      {
+        "label": "More Mediterranean for you",
+        "cuisine": "Mediterranean",
+        "ranked_restaurant_ids": [
+          88,
+          263,
+          176,
+          309
+        ],
+        "novelty_index": 2
+      },
+      {
+        "label": "More Mexican for you",
+        "cuisine": "Mexican",
+        "ranked_restaurant_ids": [
+          103,
+          171,
+          330,
+          258
+        ],
+        "novelty_index": 2
+      }
+    ],
+    "blocked_restaurant_ids": [
+      234,
+      299
+    ],
+    "flat_ranked_ids": [
+      88,
+      263,
+      176,
+      309,
+      103,
+      171,
+      330,
+      258
+    ]
+  },
+  {
+    "personaId": "gabe-jensen",
+    "surface": "home_feed",
+    "sections": [
+      {
+        "label": "More American for you",
+        "cuisine": "American",
+        "ranked_restaurant_ids": [
+          73,
+          187,
+          350,
+          313
+        ],
+        "novelty_index": 2
+      },
+      {
+        "label": "More Italian for you",
+        "cuisine": "Italian",
+        "ranked_restaurant_ids": [
+          328,
+          272,
+          143,
+          361
+        ],
+        "novelty_index": 3
+      }
+    ],
+    "blocked_restaurant_ids": [
+      178,
+      345
+    ],
+    "flat_ranked_ids": [
+      73,
+      187,
+      350,
+      313,
+      328,
+      272,
+      143,
+      361
+    ]
+  },
+  {
+    "personaId": "hana-park",
+    "surface": "home_feed",
+    "sections": [
+      {
+        "label": "More Chinese for you",
+        "cuisine": "Chinese",
+        "ranked_restaurant_ids": [
+          492,
+          475,
+          432,
+          439
+        ],
+        "novelty_index": 2
+      }
+    ],
+    "blocked_restaurant_ids": [
+      381,
+      444
+    ],
+    "flat_ranked_ids": [
+      492,
+      475,
+      432,
+      439
+    ]
+  },
+  {
+    "personaId": "idris-mensah",
+    "surface": "home_feed",
+    "sections": [
+      {
+        "label": "More Chinese for you",
+        "cuisine": "Chinese",
+        "ranked_restaurant_ids": [
+          208,
+          252,
+          108,
+          355
+        ],
+        "novelty_index": 2
+      },
+      {
+        "label": "More American for you",
+        "cuisine": "American",
+        "ranked_restaurant_ids": [
+          24,
+          95,
+          202,
+          70
+        ],
+        "novelty_index": 3
+      }
+    ],
+    "blocked_restaurant_ids": [
+      222,
+      292
+    ],
+    "flat_ranked_ids": [
+      208,
+      252,
+      108,
+      355,
+      24,
+      95,
+      202,
+      70
+    ]
+  },
+  {
+    "personaId": "julia-volkov",
+    "surface": "home_feed",
+    "sections": [
+      {
+        "label": "More Thai for you",
+        "cuisine": "Thai",
+        "ranked_restaurant_ids": [
+          71,
+          216,
+          273
+        ],
+        "novelty_index": 2
+      }
+    ],
+    "blocked_restaurant_ids": [
+      287,
+      357
+    ],
+    "flat_ranked_ids": [
+      71,
+      216,
+      273
+    ]
+  }
+]

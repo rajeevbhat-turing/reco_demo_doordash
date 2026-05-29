@@ -1,0 +1,307 @@
+[
+  {
+    "id": "alice-tran",
+    "user_id": 3101,
+    "display_name": "Alice Tran",
+    "email": "alice.tran@personas.demo",
+    "address": {
+      "label": "Home",
+      "line1": "750 Nostrand Ave",
+      "city": "Brooklyn",
+      "state": "NY",
+      "zip": "11216",
+      "lat": 40.6782,
+      "lng": -73.9442,
+      "default": true
+    },
+    "story": "Brooklyn solo, orders Thai 3x/week, picky about pad see ew.",
+    "preferences": {
+      "cuisine_affinity": { "Thai": 0.9, "Vietnamese": 0.6, "Japanese": 0.4 },
+      "price_tier": "mid",
+      "dietary": ["no-pork"],
+      "spice_tolerance": "hot",
+      "novelty_appetite": 0.7,
+      "delivery_time_tolerance": "quick",
+      "promo_sensitivity": "mid"
+    },
+    "family": null
+  },
+  {
+    "id": "ben-kowalski",
+    "user_id": 3102,
+    "display_name": "Ben Kowalski",
+    "email": "ben.kowalski@personas.demo",
+    "address": {
+      "label": "Home",
+      "line1": "401 Manhattan Beach Blvd",
+      "city": "Manhattan Beach",
+      "state": "CA",
+      "zip": "90266",
+      "lat": 33.8847,
+      "lng": -118.4109,
+      "default": true
+    },
+    "story": "Manhattan Beach homebody, sticks to the same four trattorias, hates surprises.",
+    "preferences": {
+      "cuisine_affinity": { "Italian": 0.8, "Mediterranean": 0.5, "American": 0.4 },
+      "price_tier": "premium",
+      "dietary": [],
+      "spice_tolerance": "mild",
+      "novelty_appetite": 0.2,
+      "delivery_time_tolerance": "flexible",
+      "promo_sensitivity": "low"
+    },
+    "family": null
+  },
+  {
+    "id": "chloe-okafor",
+    "user_id": 3103,
+    "display_name": "Chloe Okafor",
+    "email": "chloe.okafor@personas.demo",
+    "address": {
+      "label": "Home",
+      "line1": "1645 Sunset Blvd",
+      "city": "Los Angeles",
+      "state": "CA",
+      "zip": "90026",
+      "lat": 34.0768,
+      "lng": -118.2606,
+      "default": true
+    },
+    "story": "LA grad student, vegetarian, lives on Indian thalis and deals.",
+    "preferences": {
+      "cuisine_affinity": { "Indian": 0.9, "Mediterranean": 0.6, "Mexican": 0.3 },
+      "price_tier": "budget",
+      "dietary": ["vegetarian"],
+      "spice_tolerance": "hot",
+      "novelty_appetite": 0.5,
+      "delivery_time_tolerance": "quick",
+      "promo_sensitivity": "high"
+    },
+    "family": null
+  },
+  {
+    "id": "diego-mendoza",
+    "user_id": 3104,
+    "display_name": "Diego Mendoza",
+    "email": "diego.mendoza@personas.demo",
+    "address": {
+      "label": "Home",
+      "line1": "1500 Pico Blvd",
+      "city": "Los Angeles",
+      "state": "CA",
+      "zip": "90015",
+      "lat": 34.0418,
+      "lng": -118.2752,
+      "default": true
+    },
+    "story": "LA plumber, weeknight tacos and Wednesday wings, quick delivery only.",
+    "preferences": {
+      "cuisine_affinity": { "Mexican": 0.9, "American": 0.5 },
+      "price_tier": "mid",
+      "dietary": [],
+      "spice_tolerance": "medium",
+      "novelty_appetite": 0.3,
+      "delivery_time_tolerance": "quick",
+      "promo_sensitivity": "mid"
+    },
+    "family": null
+  },
+  {
+    "id": "eli-nakamura",
+    "user_id": 3105,
+    "display_name": "Eli Nakamura",
+    "email": "eli.nakamura@personas.demo",
+    "address": {
+      "label": "Home",
+      "line1": "65 N 6th St",
+      "city": "Brooklyn",
+      "state": "NY",
+      "zip": "11249",
+      "lat": 40.7173,
+      "lng": -73.9606,
+      "default": true
+    },
+    "story": "Williamsburg food explorer, will try anything if the rating is above 4.3.",
+    "preferences": {
+      "cuisine_affinity": { "Japanese": 0.9, "Korean": 0.7, "Chinese": 0.4 },
+      "price_tier": "premium",
+      "dietary": [],
+      "spice_tolerance": "medium",
+      "novelty_appetite": 0.9,
+      "delivery_time_tolerance": "flexible",
+      "promo_sensitivity": "low"
+    },
+    "family": null
+  },
+  {
+    "id": "fatima-rashid",
+    "user_id": 3106,
+    "display_name": "Fatima Rashid",
+    "email": "fatima.rashid@personas.demo",
+    "address": {
+      "label": "Home",
+      "line1": "2055 Coney Island Ave",
+      "city": "Brooklyn",
+      "state": "NY",
+      "zip": "11223",
+      "lat": 40.6035,
+      "lng": -73.9618,
+      "default": true
+    },
+    "story": "Brooklyn family of four, halal-only, big Sunday orders for the household.",
+    "preferences": {
+      "cuisine_affinity": { "Mediterranean": 0.85, "Mexican": 0.5, "American": 0.4 },
+      "price_tier": "mid",
+      "dietary": ["halal"],
+      "spice_tolerance": "medium",
+      "novelty_appetite": 0.4,
+      "delivery_time_tolerance": "flexible",
+      "promo_sensitivity": "high"
+    },
+    "family": {
+      "adults": 2,
+      "kids": 2,
+      "kid_ages": [5, 9],
+      "shared_dietary": ["halal"],
+      "kid_friendly_required": true,
+      "notes": "Sunday family-night is the big order; weekdays are usually solo lunches."
+    }
+  },
+  {
+    "id": "gabe-jensen",
+    "user_id": 3107,
+    "display_name": "Gabe Jensen",
+    "email": "gabe.jensen@personas.demo",
+    "address": {
+      "label": "Home",
+      "line1": "560 7th Ave",
+      "city": "Brooklyn",
+      "state": "NY",
+      "zip": "11215",
+      "lat": 40.6651,
+      "lng": -73.9823,
+      "default": true
+    },
+    "story": "Park Slope couple with a toddler, nut-free everything, kid-friendly menus only.",
+    "preferences": {
+      "cuisine_affinity": { "American": 0.85, "Italian": 0.6, "Mexican": 0.4 },
+      "price_tier": "mid",
+      "dietary": ["nut-free"],
+      "spice_tolerance": "mild",
+      "novelty_appetite": 0.3,
+      "delivery_time_tolerance": "flexible",
+      "promo_sensitivity": "high"
+    },
+    "family": {
+      "adults": 2,
+      "kids": 1,
+      "kid_ages": [3],
+      "shared_dietary": ["nut-free"],
+      "kid_friendly_required": true,
+      "notes": "Toddler with a real nut allergy — nut-free is a hard block, not guidance."
+    }
+  },
+  {
+    "id": "hana-park",
+    "user_id": 3108,
+    "display_name": "Hana Park",
+    "email": "hana.park@personas.demo",
+    "address": {
+      "label": "Home",
+      "line1": "3450 W 6th St",
+      "city": "Los Angeles",
+      "state": "CA",
+      "zip": "90020",
+      "lat": 34.0625,
+      "lng": -118.3007,
+      "default": true
+    },
+    "story": "Koreatown LA family of four with older kids, Korean BBQ and dumpling nights.",
+    "preferences": {
+      "cuisine_affinity": { "Korean": 0.85, "Chinese": 0.6, "Japanese": 0.4 },
+      "price_tier": "mid",
+      "dietary": [],
+      "spice_tolerance": "medium",
+      "novelty_appetite": 0.5,
+      "delivery_time_tolerance": "quick",
+      "promo_sensitivity": "mid"
+    },
+    "family": {
+      "adults": 2,
+      "kids": 2,
+      "kid_ages": [8, 11],
+      "shared_dietary": [],
+      "kid_friendly_required": false,
+      "notes": "Kids are old enough that kid-friendly menus aren't required."
+    }
+  },
+  {
+    "id": "idris-mensah",
+    "user_id": 3109,
+    "display_name": "Idris Mensah",
+    "email": "idris.mensah@personas.demo",
+    "address": {
+      "label": "Home",
+      "line1": "1825 Pitkin Ave",
+      "city": "Brooklyn",
+      "state": "NY",
+      "zip": "11212",
+      "lat": 40.6644,
+      "lng": -73.9128,
+      "default": true
+    },
+    "story": "Brooklyn family of five, three kids under 13, value-conscious bulk orders.",
+    "preferences": {
+      "cuisine_affinity": { "Chinese": 0.8, "American": 0.6, "Italian": 0.4 },
+      "price_tier": "budget",
+      "dietary": [],
+      "spice_tolerance": "mild",
+      "novelty_appetite": 0.2,
+      "delivery_time_tolerance": "flexible",
+      "promo_sensitivity": "high"
+    },
+    "family": {
+      "adults": 2,
+      "kids": 3,
+      "kid_ages": [4, 7, 12],
+      "shared_dietary": [],
+      "kid_friendly_required": true,
+      "notes": "Big orders, two-and-three-entree share plates dominate the cart."
+    }
+  },
+  {
+    "id": "julia-volkov",
+    "user_id": 3110,
+    "display_name": "Julia Volkov",
+    "email": "julia.volkov@personas.demo",
+    "address": {
+      "label": "Home",
+      "line1": "110 Henry St",
+      "city": "Brooklyn",
+      "state": "NY",
+      "zip": "11201",
+      "lat": 40.6957,
+      "lng": -73.9938,
+      "default": true
+    },
+    "story": "Brooklyn Heights couple with one child, gluten-free, weekend pho ritual.",
+    "preferences": {
+      "cuisine_affinity": { "Vietnamese": 0.85, "Thai": 0.6, "Chinese": 0.4 },
+      "price_tier": "premium",
+      "dietary": ["gluten-free"],
+      "spice_tolerance": "hot",
+      "novelty_appetite": 0.6,
+      "delivery_time_tolerance": "quick",
+      "promo_sensitivity": "low"
+    },
+    "family": {
+      "adults": 2,
+      "kids": 1,
+      "kid_ages": [6],
+      "shared_dietary": ["gluten-free"],
+      "kid_friendly_required": true,
+      "notes": "Celiac household — gluten-free is non-negotiable on every order."
+    }
+  }
+]

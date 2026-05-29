@@ -37,7 +37,9 @@
     "test:unit:coverage": "vitest run --coverage",
     "test:unit:ci": "vitest run --coverage --reporter=verbose --no-color",
     "typecheck": "tsc --noEmit",
-    "typecheck:ci": "node scripts/check-tsc.mjs"
+    "typecheck:ci": "node scripts/check-tsc.mjs",
+    "seed:opensearch": "npx tsx scripts/seed-opensearch.ts",
+    "reco:opensearch": "npx tsx tools/reco-engines/opensearch/server.ts"
   },
   "dependencies": {
     "@date-fns/utc": "^2.1.1",
@@ -100,6 +102,7 @@
     "@testing-library/react": "^16.3.0",
     "@testing-library/user-event": "^14.6.1",
     "@types/diff": "^7.0.2",
+    "@types/express": "^5.0.6",
     "@types/jsonpath-plus": "^5.0.5",
     "@types/node": "^22",
     "@types/react": "^19.1.4",

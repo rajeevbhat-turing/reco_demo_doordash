@@ -1,139 +1,30 @@
-# Production reco demo stack for VM deploy (see deploy_plan.md).
-#
-#   docker compose -f config/docker-compose.demo.yaml --env-file deploy/env.demo.example up -d --build
-#   ./scripts/deploy-seed-gorse.sh
-#
-# Dashdoor binds to 127.0.0.1:3000 only — Caddy on the VM host fronts
-# it on :443 (see deploy/caddy/Caddyfile and scripts/deploy.sh §5).
-# For local-laptop runs the same loopback binding is fine — you hit
-# http://localhost:3000 directly from the host browser.
-# Sidecar ports also stay on loopback only — they're not meant to be
-# reachable outside the compose network.
-
-name: reco-demo
+version: "3.8"
 
 services:
-  dashdoor:
-    container_name: reco_demo_dashdoor
-    build:
-      context: ..
-      dockerfile: Dockerfile.prod
-      args:
-        RECO_DEMO: "1"
+  opensearch:
+    image: opensearchproject/opensearch:2
+    container_name: dashdoor-opensearch
+    environment:
+      - discovery.type=single-node
+      - DISABLE_SECURITY_PLUGIN=true
+      - DISABLE_INSTALL_DEMO_CONFIG=true
     ports:
-      - "127.0.0.1:3000:3000"
-    environment:
-      NODE_ENV: production
-      RECO_DEMO: "1"
-      RECO_GORSE_URL: http://gorse:8088
-      RECO_LIGHTFM_URL: http://lightfm:8001/recommend
-      RECO_IMPLICIT_URL: http://implicit:8002/recommend
-      RECO_AGENT_URL: http://reco-agent:8003/recommend
-    depends_on:
-      gorse:
-        condition: service_started
-      lightfm:
-        condition: service_started
-      implicit:
-        condition: service_started
-      reco-agent:
-        condition: service_started
+      - "9200:9200"
     healthcheck:
-      test:
-        [
-          "CMD-SHELL",
-          "node -e \"fetch('http://127.0.0.1:3000/api/reco/engines').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))\"",
-        ]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-      start_period: 60s
-    restart: unless-stopped
-
-  gorse:
-    container_name: reco_demo_gorse
-    # Pre-seeded image — built from deploy/Dockerfile.gorse-seeded after
-    # scripts/preseed-gorse.sh writes deploy/gorse-seed/{cache,data}.db.
-    # No host volume mount: the seed IS the state for this demo, so
-    # baking it into the image keeps the deploy as one shipped artifact.
-    build:
-      context: ..
-      dockerfile: deploy/Dockerfile.gorse-seeded
-    image: reco-demo-gorse
-    ports:
-      - "127.0.0.1:8087:8087"
-      - "127.0.0.1:8088:8088"
-    volumes:
-      - ./gorse-config.toml:/etc/gorse/config.toml:ro
-    environment:
-      GORSE_CACHE_STORE: sqlite:///var/lib/gorse/cache.db
-      GORSE_DATA_STORE: sqlite:///var/lib/gorse/data.db
-    restart: unless-stopped
-
-  lightfm:
-    container_name: reco_demo_lightfm
-    build:
-      context: ..
-      dockerfile: tools/reco-engines/lightfm/Dockerfile
-    environment:
-      LIBSQL_URL: file:/data/dashdoor.db
-      LIGHTFM_LOSS: warp
-      LIGHTFM_EPOCHS: 30
-    # dashdoor.db is baked into the image (Dockerfile COPY) — no host
-    # volume needed. Keeps the deploy as one shipped artifact per engine.
-    restart: unless-stopped
-
-  implicit:
-    container_name: reco_demo_implicit
-    build:
-      context: ..
-      dockerfile: tools/reco-engines/implicit/Dockerfile
-    environment:
-      LIBSQL_URL: file:/data/dashdoor.db
-      IMPLICIT_MODEL: als
-      IMPLICIT_FACTORS: 64
-      IMPLICIT_ITERATIONS: 15
-    # dashdoor.db is baked into the image (Dockerfile COPY) — no host
-    # volume needed. Keeps the deploy as one shipped artifact per engine.
-    restart: unless-stopped
-
-  reco-agent:
-    container_name: reco_demo_agent
-    build:
-      context: ..
-      dockerfile: tools/reco-agent/Dockerfile
-    environment:
-      PORT: "8003"
-      RECO_AGENT_TARGET_URL: http://dashdoor:3000
-      RECO_TASKS_PATH: /app/data/reco-tasks/seed.json
-      RECO_AGENT_HEADLESS: ${RECO_AGENT_HEADLESS:-1}
-      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
-      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
-      RECO_AGENT_MODEL: ${RECO_AGENT_MODEL:-claude-sonnet-4-6}
-      RECO_AGENT_MAX_STEPS: ${RECO_AGENT_MAX_STEPS:-25}
-    volumes:
-      - ../data/reco-tasks:/app/data/reco-tasks:ro
-    healthcheck:
-      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8003/health"]
-      interval: 15s
+      test: ["CMD-SHELL", "curl -sf http://localhost:9200 || exit 1"]
+      interval: 10s
       timeout: 5s
-      retries: 5
+      retries: 15
       start_period: 30s
-    restart: unless-stopped
 
-  # Kept for manual reseed scenarios (e.g., DB updated after deploy).
-  # Normal deploys no longer need this — the runtime gorse service is
-  # baked with the seed.
-  gorse-seed:
-    profiles: ["seed"]
-    build:
-      context: ..
-      dockerfile: deploy/Dockerfile.gorse-seed
+  opensearch-dashboards:
+    image: opensearchproject/opensearch-dashboards:2
+    container_name: dashdoor-opensearch-dashboards
+    ports:
+      - "5601:5601"
     environment:
-      RECO_GORSE_URL: http://gorse:8088
-      LIBSQL_URL: file:/app/data/db/dashdoor.db
+      - OPENSEARCH_HOSTS=http://opensearch:9200
+      - DISABLE_SECURITY_DASHBOARDS_PLUGIN=true
     depends_on:
-      gorse:
-        condition: service_started
-    networks:
-      - default
+      opensearch:
+        condition: service_healthy

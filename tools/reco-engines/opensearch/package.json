@@ -1,0 +1,10 @@
+{
+  "name": "@dashdoor/reco-engine-opensearch",
+  "version": "1.0.0",
+  "description": "OpenSearch-backed recommendation engine for Dashdoor reco eval",
+  "private": true,
+  "scripts": {
+    "start": "npx tsx server.ts",
+    "dev": "npx tsx --watch server.ts"
+  }
+}

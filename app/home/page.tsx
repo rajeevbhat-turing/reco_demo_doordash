@@ -27,9 +27,6 @@ import {
   buildUrlWithFilters,
   getDefaultFilterState,
 } from '@/lib/utils/filter-url-params';
-import { useReco } from '@/lib/reco/hooks/use-reco';
-import { applyRanking } from '@/lib/reco/utils/apply-ranking';
-
 // Inner component that uses useSearchParams (needs Suspense boundary)
 function HomeContent() {
   const searchParams = useSearchParams();
@@ -184,29 +181,7 @@ function HomeContent() {
     return withDefaultRatings(filterOnlyRestaurants(restaurants));
   }, [restaurants]);
 
-  // Phase 3 demo: re-rank using the selected reco engine when picker is set.
-  // When activeRecoEngine is null (production) the hook short-circuits — no
-  // network call, no behaviour change.
-  const activeRecoEngine = useAppStore(s => s.activeRecoEngine);
-  const candidatePool = useMemo(
-    () => baseRestaurants.map(r => r.id),
-    [baseRestaurants]
-  );
-  const { ids: recoRankedIds } = useReco({
-    engine: activeRecoEngine,
-    ctx: {
-      lat: activeAddress?.lat ?? 0,
-      lng: activeAddress?.lng ?? 0,
-      surface: 'home_feed',
-      candidatePool,
-      k: 20,
-      userId: currentUser?.id,
-    },
-  });
-  const actualRestaurants = useMemo(
-    () => applyRanking(baseRestaurants, recoRankedIds),
-    [baseRestaurants, recoRankedIds]
-  );
+  const actualRestaurants = baseRestaurants;
 
   // Helper function to extract delivery time in minutes
   const getDeliveryTimeMinutes = (timeStr: string): number => {

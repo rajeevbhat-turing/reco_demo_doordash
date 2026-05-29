@@ -1,11 +1,8 @@
-{
-  "$schema": "./reco-engines.schema.json",
-  "_comment": "Runtime engine enable/disable + endpoint overrides. Read by lib/reco/engines/index.ts on server boot. Missing file → all built-ins registered with default URLs.",
-  "engines": {
-    "random":     { "enabled": true },
-    "popularity": { "enabled": true },
-    "gorse":      { "enabled": true, "url": "http://gorse:8088" },
-    "lightfm":    { "enabled": true, "url": "http://lightfm:8001/recommend" },
-    "implicit":   { "enabled": true, "url": "http://implicit:8002/recommend" }
+[
+  {
+    "id": "opensearch",
+    "label": "OpenSearch",
+    "url": "http://localhost:4001",
+    "baseline": true
   }
-}
+]

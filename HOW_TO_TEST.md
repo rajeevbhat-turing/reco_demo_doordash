@@ -1,259 +1,160 @@
-# How to test the recommendation gym
+# How to test
 
-Two product goals, each with its own end-to-end test loop. Run through
-the checkboxes for whichever goal you're validating. Both loops assume
-you've completed `GORSE_VERIFY.md` (or are running with just the
-built-in `random` + `popularity` engines for the offline path).
+Three flavors, fastest first.
 
-| Goal | Status | Section |
-|------|--------|---------|
-| 1. Plug in recommendation engines and measure performance | **Built (Phase 0)** — random, popularity, Gorse wired up | [§1](#goal-1-engine-plug-in-track) |
-| 2. LLM-based agent uses the UI; we measure its performance | **Not yet built** — designed in Phase 4 of `RECO_PLAN.md`. Manual fallback works today. | [§2](#goal-2-llm-agent-track) |
+## 1. Type check
 
----
+```
+npx tsc --noEmit
+```
 
-## Goal 1: engine plug-in track
+Zero errors expected. If you touched `scripts/gen-personas-seed.ts`,
+the `better-sqlite3` import has an `// @ts-expect-error` on it — the
+package ships without types and the script is a one-shot generator.
 
-Verify that any recommendation engine can be plugged in and scored
-against ground truth.
+## 2. Unit tests
 
-### 1.1 Pre-flight
+```
+npm run test:unit
+```
 
-- [ ] On branch `reco`, working dir is the repo root.
-- [ ] Node 20 active: `scripts/n.sh node -v` → `v20.x`.
-- [ ] `data/db/dashdoor.db` exists (ships with the repo).
-- [ ] `data/reco-tasks/seed.json` exists and has ≥ 5 entries:
-      ```sh
-      python3 -c "import json; print(len(json.load(open('data/reco-tasks/seed.json'))))"
-      ```
+Vitest. Watch mode: `npm run test:unit -- --watch`.
 
-### 1.2 Unit-test layer (offline, fastest)
+## 3. Persona smoke (Phase 1 §6)
 
-- [ ] All 19 reco unit tests pass:
-      ```sh
-      scripts/n.sh npm run test:unit -- tests/unit/reco/
-      ```
-      Expected: `Test Files 2 passed (2)`, `Tests 19 passed (19)`.
-- [ ] If one fails, the failure is the regression. Don't move on until it's green.
+The persona slice (users 3101–3110) is seeded in `data/db/dashdoor.db`.
+Verify it loads end-to-end:
 
-### 1.3 In-repo engines end-to-end
+```
+# (one tab) boot dev
+npm run dev
 
-The two engines that need zero external infra: `random` and
-`popularity`. They're the smoke test for the harness itself.
+# (another tab) checks
+curl -s -o /dev/null -w "/home  HTTP %{http_code}\n" http://localhost:3000/home
+curl -s http://localhost:3000/api/users/email/alice.tran@personas.demo | jq '.data.name, .data.addresses[0].street'
+curl -s http://localhost:3000/api/users/3107 | jq '.data.name, .data.id'
 
-- [ ] Start the gym:
-      ```sh
-      RECO_DEMO=1 scripts/n.sh npm run dev
-      ```
-- [ ] In another shell, list engines:
-      ```sh
-      curl -s http://localhost:3000/api/reco/engines | python3 -m json.tool
-      ```
-      Expected: 3 entries (`random`, `popularity`, `gorse`). Gorse may
-      respond but error on actual `/recommend` calls if its sidecar
-      isn't up — that's fine for this test.
-- [ ] Run an eval on the curated seed:
-      ```sh
-      curl -s -X POST http://localhost:3000/api/reco/eval \
-        -H 'content-type: application/json' \
-        -d '{"engineNames":["random","popularity"],"taskSetId":"seed","k":5}'
-      ```
-      Expected: `random` Hit@5 ≈ 0.1, `popularity` Hit@5 ≈ 0.0
-      (the seed favors needle-in-haystack named lookups).
-- [ ] Run an eval on history:
-      ```sh
-      curl -s -X POST http://localhost:3000/api/reco/eval \
-        -H 'content-type: application/json' \
-        -d '{"engineNames":["random","popularity"],"taskSetId":"history","k":5,"historyLimit":30}'
-      ```
-      Expected: `popularity` Hit@5 ≥ `random` Hit@5. If not, the
-      catalog or history splitter changed — investigate before moving on.
-- [ ] Persistence check — fetch the saved report:
-      ```sh
-      LAST=$(ls -t data/reco-runs/ | head -1 | sed 's/.json//')
-      curl -s "http://localhost:3000/api/reco/runs/$LAST" | head -c 400
-      ```
-      Expected: same JSON shape as the in-memory response.
+curl -s -X POST -H 'content-type: application/json' \
+  -d '{"email":"alice.tran@personas.demo","password":"password"}' \
+  http://localhost:3000/api/auth/login | jq '.success, .data.name, .data.addresses[0].street'
+```
 
-### 1.4 External engine (Gorse) end-to-end
+Both user endpoints wrap the payload as `{ success, data: { ... } }`,
+so use `.data.<field>` in jq (not `.<field>`).
 
-- [ ] Follow `GORSE_VERIFY.md` end-to-end first.
-- [ ] At its §4 step, you've already done this test.
-- [ ] Success bar: `gorse` Hit@5 ≥ `random` Hit@5 on the **history**
-      task set. (Not vs popularity — popularity is a strong baseline.)
+Expected:
 
-### 1.5 Plug in a *new* engine (this is the real test of the contract)
+- `/home` returns 200.
+- The email lookup returns `"Alice Tran"` + `"1525 Mission St"`.
+- `/api/users/3107` returns `"Gabe Jensen"` and `"3107"`.
+- The login POST returns a successful auth response.
 
-If the next person can add an engine in < 10 minutes, the harness works.
+Then in a browser at `http://localhost:3000/login`:
 
-- [ ] Create `lib/reco/engines/my-engine.ts`. Minimal stub:
-      ```ts
-      import type { RecommendationEngine } from '@/lib/reco/types';
-      export const myEngine: RecommendationEngine = {
-        name: 'my-engine',
-        version: '0.0.1',
-        description: 'returns the first k items in the candidate pool',
-        async recommend(ctx) {
-          const start = performance.now();
-          const items = (ctx.candidatePool ?? []).slice(0, ctx.k).map((id, i) => ({
-            id,
-            score: 1 - i / Math.max(ctx.k, 1),
-            kind: 'restaurant' as const,
-          }));
-          return {
-            items,
-            engine: 'my-engine',
-            version: '0.0.1',
-            latencyMs: performance.now() - start,
-          };
-        },
-      };
-      ```
-- [ ] Register it in `lib/reco/engines/index.ts` — add to the
-      `builtin` array.
-- [ ] Restart the dev server.
-- [ ] `curl -s http://localhost:3000/api/reco/engines` now shows 4
-      engines. ✓ contract works.
-- [ ] Run an eval including `my-engine`. It should not error; metrics
-      will likely be near-zero since it ignores the request. ✓ runner
-      works with arbitrary engines.
+1. Sign in with `alice.tran@personas.demo` / `password`.
+2. Land on `/home` — confirm the address is "1525 Mission St" and
+   no console errors.
+3. Repeat with `gabe.jensen@personas.demo` (a family persona) to
+   confirm no family-specific path breaks.
 
-### 1.6 Visual check in the demo UI
+If the persona is missing from the DB, re-seed:
 
-- [ ] Open `http://localhost:3000/reco-eval`.
-- [ ] All engines appear in the checkbox list.
-- [ ] "Run eval" → aggregate table populates, per-task drilldowns
-      expand and show predicted ids.
-- [ ] Errors (e.g. Gorse down) appear in the drilldown as
-      `error: …` strings; the rest of the run completes.
+```
+npx tsx scripts/gen-personas-seed.ts
+sqlite3 data/db/dashdoor.db < data/db/schema/personas_seed.sql
+```
 
-### 1.7 Regression check on the rest of Dashdoor
+## 4. OpenSearch engine smoke (Phase 3)
 
-The reco harness must not break the existing UI.
+The OpenSearch recommend service is separate from the Next.js app — three
+things must be running before you can hit it.
 
-- [ ] `/home` loads: `curl -sI http://localhost:3000/home` → 200.
-- [ ] `/store/202` loads (or any valid restaurant id).
-- [ ] The full unit suite still passes:
-      `scripts/n.sh npm run test:unit` — count should be unchanged
-      from baseline.
-- [ ] Chromium e2e (longer, only run before PR):
-      `scripts/n.sh npm run test:e2e:chromium`.
+**Why not `npm run dev`?** `npm run dev` starts Next.js on :3000. The
+recommend engine is a standalone Express server on :4001 that needs a live
+OpenSearch instance to query. They are independent processes.
 
----
+### Start everything
 
-## Goal 2: LLM-agent track
+```bash
+# Terminal 1 — start OpenSearch (wait ~30 s for the health-check to go green)
+docker compose -f config/docker-compose.demo.yaml up
 
-**Status: not yet built.** The agent driver, action loop, and
-score-extraction are scheduled for Phase 4 of `RECO_PLAN.md`. This
-section describes (a) what the test *will* look like once Phase 4
-ships, and (b) a **manual fallback** you can run today by piloting the
-UI yourself in place of the agent.
+# Terminal 2 — seed the index (idempotent, run once per OpenSearch start)
+npm run seed:opensearch
 
-### 2.1 Future automated test (after Phase 4 lands)
+# Terminal 2 — then start the engine server
+npm run reco:opensearch
+```
 
-When Phase 4 is implemented, this section will read:
+### Smoke test
 
-- [ ] Start the gym: `RECO_DEMO=1 scripts/n.sh npm run dev`
-      (or via the compose file).
-- [ ] Pick a task from `data/reco-tasks/seed.json`. Note its
-      `taskId`, `userEmail`, and `expectedItemIds`.
-- [ ] Launch the agent against that task:
-      ```sh
-      scripts/n.sh npx tsx tools/reco-agent/run.ts \
-        --task <taskId> --model claude-opus-4-7 --headed
-      ```
-- [ ] The agent drives the UI via Playwright. The verifier store
-      captures each click/view/cart-add as an event.
-- [ ] When the agent finishes (or hits a step cap), the runner builds
-      a `RecommendationResponse` from the agent's actions:
-      - First N restaurants visited → ranked list
-      - Items added to cart → top-1
-      - Final ordered restaurant/items → hard target
-- [ ] The same metrics (Hit@K, NDCG@K, MRR) from Goal 1 are applied to
-      that response.
-- [ ] Trace is saved under `data/reco-agent-runs/<runId>/` with
-      screenshots, DOM snapshots, and the action log.
-- [ ] Open `/reco-eval/agent/<runId>` to replay the trace and see the
-      score next to the engine-track scores.
+```bash
+curl -s -X POST http://localhost:4001/recommend \
+  -H 'Content-Type: application/json' \
+  -d '{"personaId":"alice-tran","topK":10}' | jq .
+```
 
-**Tracking checkbox:** none of the above paths exist yet. The
-`RecoTask` shape (`lib/reco/eval/task-loader.ts`) is already
-agent-ready — it carries the user email, lat/lng, statement, and
-expected ids.
+Expected:
+- `ranked_ids` is a non-empty array of integers.
+- Thai restaurants appear near the top (alice-tran has `Thai: 0.9` affinity).
+- `trajectory.steps` has 4 steps: `query`, `candidate_gen`, `score`, `final`.
 
-### 2.2 Manual test you can run today
+Quick summary view:
 
-You can validate the *measurement* half of Goal 2 without the agent:
-a human plays the role of the agent and we observe whether the
-existing verifier captures enough to score them.
+```bash
+curl -s -X POST http://localhost:4001/recommend \
+  -H 'Content-Type: application/json' \
+  -d '{"personaId":"alice-tran","topK":10}' \
+  | jq '{ranked_ids, step_count: (.trajectory.steps | length)}'
+```
 
-- [ ] Start the gym: `RECO_DEMO=1 scripts/n.sh npm run dev`.
-- [ ] Pick a seed task — for example:
-      ```sh
-      python3 -c "import json; t = json.load(open('data/reco-tasks/seed.json'))[0]; print(t)"
-      ```
-      You'll get something like:
-      ```
-      taskId: item-addon-order-001
-      user: xavier.ingram898@mail.test
-      expected: ['202']   # West Diner
-      statement: Order mac & cheese from West diner, select the extra cheese add on
-      ```
-- [ ] Open `http://localhost:3000` in a private/incognito window.
-- [ ] Log in as that user (passwords are in the user db; for synthetic
-      users they're often documented in `MERCHANT_README.md` or can be
-      pulled by `sqlite3 data/db/dashdoor.db 'SELECT email, password FROM users WHERE email = ?'`).
-- [ ] Follow the `statement` literally — you are now the agent.
-- [ ] When you order, the verifier store records the order:
-      `recordOrderCompletion({ orderId, storeName, items, ... })`. Open
-      DevTools and check: `localStorage.getItem('verifier-state')` —
-      `lastOrderInfo.storeName` should be "West Diner".
-- [ ] Score yourself the same way the future agent will be scored:
-      did the store you ordered from match `expectedItemIds`?
-      That's Hit@1 for the agent track on that task.
+Health check (no OpenSearch needed):
 
-This proves: the **signal** the agent track needs (which store/item
-the user committed to) is already being captured by the existing
-verifier store; only the driver is missing.
+```bash
+curl -s http://localhost:4001/health
+# → {"status":"ok","engine":"opensearch"}
+```
 
-### 2.3 Smoke test for the agent-track plumbing that exists
+### Try all personas
 
-Even pre-Phase-4, some pieces are testable.
+```bash
+for id in alice-tran ben-kowalski chloe-okafor diego-mendoza eli-nakamura \
+           fatima-rashid gabe-jensen hana-park idris-mensah julia-volkov; do
+  count=$(curl -s -X POST http://localhost:4001/recommend \
+    -H 'Content-Type: application/json' \
+    -d "{\"personaId\":\"$id\",\"topK\":10}" | jq '.ranked_ids | length')
+  echo "$id → $count results"
+done
+```
 
-- [ ] `RecoTask` shape carries everything an agent needs:
-      ```sh
-      curl -s -X POST http://localhost:3000/api/reco/eval \
-        -H 'content-type: application/json' \
-        -d '{"engineNames":["random"],"taskSetId":"seed","k":5}' \
-        | python3 -c "
-      import sys,json
-      d=json.load(sys.stdin)
-      for row in d['report']['perTask'][:3]:
-          print(row['taskId'], 'expects', row['expectedItemIds'], '-', row['statement'][:80])
-      "
-      ```
-      Each row contains task id, statement, expected ids — that's the
-      full agent input.
-- [ ] `tasks/dashdoor.csv` has the rich version (start_url,
-      `simulator_config.bootstrap_data`, full grader config). Phase 4
-      will read both.
+All 10 should return `10`.
 
----
+## 5. End-to-end (Playwright)
 
-## What "passing" means for each goal
+```
+npm run test:e2e:chromium
+```
 
-| Goal | Pass when… |
-|------|------------|
-| 1 | `random`, `popularity`, and a third (new or external) engine all run via `/api/reco/eval` without error, return metrics, and a stakeholder can read them off `/reco-eval`. |
-| 2 | A Playwright-driven LLM agent (Phase 4) finishes ≥ 1 task from `data/reco-tasks/seed.json` and gets a Hit@1 ≥ 0 score that appears next to the engine scores in `/reco-eval`. **Until Phase 4 ships, the manual fallback in §2.2 is the test.** |
+Boots its own server. Suite is independent of the persona work —
+use it to make sure base Dashdoor flows still pass after a change.
 
----
+## Re-running the persona seed
 
-## Related docs
+The seed is **idempotent**: it deletes the persona slice (users
+3101–3110 and their child rows) and rewrites it. Safe to re-run
+whenever `data/reco-personas/personas.json` changes.
 
-- `RECO_PLAN.md` — phased plan, where each goal sits.
-- `EXECUTION.md` — current phase's detailed steps.
-- `GORSE_VERIFY.md` — bringing up + verifying the Gorse external engine.
-- `lib/reco/README.md` — adapter contract for new engines.
-- `docs/reco-decisions.md` — Phase 1 decisions, including the metric
-  definitions used by both goals.
+```
+npx tsx scripts/gen-personas-seed.ts                            # JSON → SQL
+sqlite3 data/db/dashdoor.db < data/db/schema/personas_seed.sql  # apply
+```
+
+Verification queries (from `.scratch/phase1_apply_verify.sh`):
+
+```
+sqlite3 data/db/dashdoor.db "SELECT COUNT(*) FROM users WHERE id BETWEEN 3101 AND 3110;"   -- 10
+sqlite3 data/db/dashdoor.db "SELECT COUNT(*) FROM user_preferences;"                       -- 10
+sqlite3 data/db/dashdoor.db "SELECT COUNT(*) FROM user_family;"                            --  5
+sqlite3 data/db/dashdoor.db "SELECT user_id, COUNT(*) FROM orders WHERE user_id BETWEEN 3101 AND 3110 GROUP BY user_id;"
+sqlite3 data/db/dashdoor.db "SELECT user_id, SUM(CASE WHEN rating <= 2 THEN 1 ELSE 0 END) FROM user_reviews WHERE user_id BETWEEN 3101 AND 3110 GROUP BY user_id;"
+```

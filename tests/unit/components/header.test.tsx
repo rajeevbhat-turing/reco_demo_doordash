@@ -37,10 +37,6 @@ vi.mock('@/components/search-bar', () => ({
   default: () => <div data-testid="search-bar">SearchBar</div>,
 }));
 
-vi.mock('@/components/reco-engine-picker', () => ({
-  default: () => null,
-}));
-
 vi.mock('@/components/cart-sidebar', () => ({
   default: ({ isOpen }: { isOpen: boolean; onClose: () => void }) =>
     isOpen ? <div data-testid="cart-sidebar">CartSidebar</div> : null,
