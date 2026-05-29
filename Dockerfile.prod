@@ -12,10 +12,6 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# Gate /reco-eval at build time (Next inlines server env during `next build`).
-ARG RECO_DEMO=1
-ENV RECO_DEMO=${RECO_DEMO}
-
 RUN npm run build
 
 FROM base AS runner

@@ -1,87 +1,125 @@
-# Execution — Phase 5: Trajectory visibility
+# Execution — Phase 6: Smoke + demo polish
 
-**Goal:** every engine emits a `RecoTrajectory` alongside its ranked
-results, and `/reco-eval` shows a drilldown modal for each result row
-so you can see *why* an engine ranked the way it did.
+**Goal:** a clean, no-friction demo path — smoke script, walkthrough
+doc, and `/reco-eval` accessible without login. Personas are ordinary
+users: they log in through the **standard auth flow** (no special demo
+mode, no flag, no OTP bypass), and `/home` personalizes automatically
+whenever the logged-in user is a persona.
+
+> **Design change (2026-05-29):** the `NEXT_PUBLIC_RECO_DEMO` flag was
+> removed entirely. It was inlined at build time and never propagated
+> reliably to the Next dev worker, which is what blocked step 3.2.
+> Personalization, the `/reco-eval` link, and `/reco-eval` access are
+> now unconditional; auth is unchanged from stock Dashdoor.
 
 When this phase exits, clear this file's body and replace it with
-Phase 6's detailed steps. Then tick Phase 5 in `plan.md`.
+Phase 7's detailed steps (or mark the project done). Then tick
+Phase 6 in `plan.md`.
 
 ---
 
-## 1. Types
+## 1. Smoke script
 
-- [ ] **1.1** `RecoTrajectory` is already in `lib/reco/types.ts` —
-      verify the shape matches what the OpenSearch engine emits and
-      adjust if needed. No new file needed.
+- [x] **1.1** Write `scripts/persona-demo-smoke.sh` that:
+      - starts OpenSearch (docker compose), waits for `:9200`
+      - seeds the index (`npx tsx scripts/seed-opensearch.ts`)
+      - starts the sidecar, waits for `:4001/health`
+      - hits `POST :4001/recommend` for alice-tran and asserts
+        `ranked_ids` is non-empty and `trajectory.steps` includes
+        `candidate_gen`, `score`, `final`
+      - exits 0 on success, 1 on any failure
 
-## 2. OpenSearch engine — full trajectory via `_explain`
+## 2. Walkthrough doc
 
-- [ ] **2.1** In `tools/reco-engines/opensearch/recommend.ts`, call
-      `_explain` on each hit and attach per-item score breakdowns to
-      the trajectory's `score` step (`scores` map: restaurant_id →
-      `_score`, plus a `raw_explain` field on `RecoTrajectory` for the
-      full OpenSearch payload).
-- [ ] **2.2** Confirm the `trajectory` field appears in the `POST
-      /recommend` response and matches the `RecoTrajectory` type.
+- [x] **2.1** Write `docs/PERSONA_DEMO.md` covering:
+      - prerequisites (docker, node, `.env`)
+      - `./run.sh` to bring everything up
+      - persona login IDs (all 10)
+      - what to look for on `/home` (cuisine sections)
+      - what to look for on `/reco-eval` (engine picker, Run, Details
+        per row, score contributions)
 
-## 3. Other engines — thin trajectory contract
+## 3. `/reco-eval` without login (public, unconditional)
 
-- [ ] **3.1** Document the minimum trajectory contract in
-      `docs/reco-trajectory-shape.md`: engines must emit at least
-      `candidate_gen` and `final` steps. OpenSearch additionally emits
-      `query`, `score`. This makes the drilldown degrade gracefully for
-      engines that only have the thin shape.
+- [x] **3.1** Exempt `/reco-eval` from the client-side redirect guard
+      in `app/main-layout.tsx` — unconditionally (`pathname !==
+      '/reco-eval'`), no flag.
+- [x] **3.2** Exempt `/reco-eval` from the **content gate** in
+      `components/layout-wrapper.tsx` (`shouldShowContent`), which
+      otherwise renders an empty `<main>` for anonymous users with no
+      temp address. Verified: an anonymous (no-cookie) headless browser
+      loads the full eval UI on `/reco-eval` — heading, engine picker,
+      persona selector, Run button — with zero redirects. (Repro:
+      `.scratch/verify-reco-eval-anon.ts`.)
 
-## 4. `/reco-eval` drilldown modal
+## 4. ~~Skip OTP in demo mode~~ — dropped
 
-- [ ] **4.1** Add a "Details" button (or clickable row) to the results
-      table in `app/reco-eval/reco-eval-client.tsx`. Clicking it opens
-      an inline modal/drawer showing the trajectory steps for that run.
-- [ ] **4.2** The modal renders each `TrajectoryStep` as a collapsible
-      row: `stage` label + `restaurant_ids` count + optional `scores`
-      table + optional `notes`. For OpenSearch, expand `raw_explain`
-      into readable score contributions (field name → weight → value).
-- [ ] **4.3** Store the last trajectory result in component state
-      alongside `ranked_ids` so the modal can be opened/closed without
-      re-fetching.
+> **Obsolete (2026-05-29):** per the design change above, personas use
+> the **standard auth flow** unchanged. The OTP-bypass branch in
+> `components/authentication/sign-in.tsx` was reverted. There is no
+> demo-only login path.
 
 ## Exit criteria
 
-**Setup (do this first):**
+- [ ] **Smoke script passes** — `bash scripts/persona-demo-smoke.sh`
+      exits 0 on a clean machine with docker running.
 
-```bash
-docker compose -f config/docker-compose.demo.yaml up -d opensearch
-npx tsx scripts/seed-opensearch.ts
-(cd tools/reco-engines/opensearch && npm start) &     # serves :4001
-NEXT_PUBLIC_RECO_DEMO=1 npm run dev                   # serves :3000
-```
+      _How to verify (no login needed):_
+      1. Ensure Docker Desktop is running.
+      2. From repo root: `bash scripts/persona-demo-smoke.sh`
+      3. Watch stdout — it should print progress lines for each stage
+         (OpenSearch up, seed complete, sidecar up, recommend call).
+      4. Final exit: `echo $?` → must print `0`.
+      5. The recommend response for `alice-tran` must log `ranked_ids`
+         with at least one entry and `trajectory.steps` containing
+         `candidate_gen`, `score`, and `final`.
 
-Login IDs (seeded users 3101–3110, password is literally `password`):
-- **Persona:** `alice.tran@personas.demo` / `password`. `/reco-eval`
-  itself needs no login (it reads personas from disk); login is only
-  needed if you also re-check the `/home` sections from Phase 4.
-- **Non-persona control:** `john.doe@example.com` / `password`.
+- [x] **`/reco-eval` anonymous** — visiting the page without a session
+      loads the eval UI (no redirect). Unconditional; no flag.
 
-- [ ] **`trajectory` in raw response** — `POST /recommend` for
-      alice-tran returns a `trajectory` with at least `candidate_gen`,
-      `score`, and `final` steps:
-      ```bash
-      curl -s -X POST http://localhost:4001/recommend \
-        -H 'Content-Type: application/json' \
-        -d '{"personaId":"alice-tran","topK":5}' \
-        | jq '{ranked_ids, steps: [.trajectory.steps[].stage]}'
-      ```
-      Expect `steps` to include `candidate_gen`, `score`, `final`.
-- [ ] **"Details" button works** — open `http://localhost:3000/reco-eval`,
-      keep OpenSearch (baseline), pick alice-tran, click **Run**, then
-      click **Details** on a result row → drilldown modal opens.
-- [ ] **Score contributions render** — in that modal, the OpenSearch
-      `_explain` breakdown shows field weights (field name → weight →
-      value) for at least one restaurant.
-- [ ] **Types clean** — `npx tsc --noEmit` passes with no errors.
-- [ ] **Unit tests green** — `npm run test:unit` still passes.
+      _How to verify (no login — use incognito):_
+      1. Start the app: `npm run dev`
+      2. Open a **private/incognito** browser window (no cookies).
+      3. Navigate to `http://localhost:3000/reco-eval`.
+      4. Pass: the eval page renders (engine picker, persona selector,
+         Run button visible). Fail: you are redirected, or `<main>` is
+         empty.
+      5. Confirm by checking the address bar — it must still read
+         `/reco-eval`.
 
-> **On exit:** when every box above is checked, tick **Phase 5** in
-> `plan.md`, clear this file's body, and replace it with Phase 6's
-> detailed steps.
+- [x] ~~**OTP bypassed**~~ — dropped. Personas use the standard auth
+      flow; there is no demo-only OTP bypass to verify.
+
+- [x] **`PERSONA_DEMO.md` exists** — doc is present and describes the
+      full demo path end-to-end.
+
+      _How to verify (no login needed):_
+      1. `ls docs/PERSONA_DEMO.md` — file must exist.
+      2. Open the file and confirm it contains all of:
+         - Prerequisites section (docker, node, `.env`)
+         - `./run.sh` (or equivalent) startup instructions
+         - All 10 persona login IDs (format `<first>.<last>@personas.demo` / `password`)
+         - What to look for on `/home` (labeled cuisine sections,
+           "Try something new" card)
+         - What to look for on `/reco-eval` (engine picker, Run button,
+           ranked table, Details drilldown, score contributions)
+
+- [x] **Types clean** — `npx tsc --noEmit` passes.
+
+      _How to verify (no login needed):_
+      1. From repo root: `npx tsc --noEmit`
+      2. Pass: command exits 0 with no output (or only warnings, no
+         errors).
+      3. Fail: any `error TS…` lines in the output.
+
+- [x] **Unit tests green** — `npm run test:unit` still passes.
+
+      _How to verify (no login needed):_
+      1. From repo root: `npm run test:unit`
+      2. Pass: all test suites show green; process exits 0.
+      3. Fail: any test suite reports a failure or the process exits
+         non-zero.
+
+> **On exit:** when every box above is checked, tick **Phase 6** in
+> `plan.md`, clear this file's body, and note the project complete (or
+> replace with Phase 7 if scope has grown).

@@ -10,6 +10,8 @@ export default function LayoutWrapper({ children }: { children: React.ReactNode 
   const pathname = usePathname();
   const isCheckoutPage = pathname === '/checkout';
   const isAuthPage = pathname?.startsWith('/auth') || pathname?.startsWith('/password_reset');
+  // /reco-eval is a public eval tool — always render it, even without a session.
+  const isRecoEvalPage = pathname === '/reco-eval';
 
   // Check if it's an order detail page (e.g., /orders/123) but not the order list page (/orders)
   const isOrderDetailPage = pathname?.startsWith('/orders/') && pathname !== '/orders';
@@ -23,9 +25,11 @@ export default function LayoutWrapper({ children }: { children: React.ReactNode 
   // Hide content if:
   // 1. User is not logged in AND there is no temp address, OR
   // 2. User is logged in AND there are no addresses
-  const shouldShowContent = isAuthenticated
-    ? addresses.length > 0
-    : isAuthPage || tempAddress !== null;
+  const shouldShowContent = isRecoEvalPage
+    ? true
+    : isAuthenticated
+      ? addresses.length > 0
+      : isAuthPage || tempAddress !== null;
 
   return (
     <>

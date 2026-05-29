@@ -9,6 +9,20 @@ const ROOT = join(__dirname, '../../..');
 const PERSONAS_PATH = join(ROOT, 'data/reco-personas/personas.json');
 
 const app = express();
+
+// Allow the Next.js app (different origin/port) to call this sidecar
+// directly from the browser. Handles the CORS preflight too.
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type');
+  if (req.method === 'OPTIONS') {
+    res.sendStatus(204);
+    return;
+  }
+  next();
+});
+
 app.use(express.json());
 
 function loadPersonas(): Persona[] {

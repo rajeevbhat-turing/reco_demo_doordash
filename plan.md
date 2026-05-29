@@ -36,7 +36,7 @@ When a task finishes, tick the box in both files in the same commit.
 
 - [x] `/reco-eval` page — engine picker, results table, opensearch pinned as baseline
 - [x] `components/cuisine-section.tsx` (3 familiar + 1 new)
-- [x] `/home` renders sections when logged in as a persona (`RECO_DEMO=1`)
+- [x] `/home` renders sections when logged in as a persona
 - [x] Non-persona users see untouched home feed
 
 ### How to test Phase 4
@@ -48,13 +48,13 @@ Login IDs (seeded users 3101–3110, password is literally `password`):
 
 Steps:
 
-1. Seed + start OpenSearch (baseline engine), then the app with the flag:
+1. Seed + start OpenSearch (baseline engine), then the app:
    ```bash
    sqlite3 data/db/dashdoor.db < data/db/schema/personas_seed.sql   # if not already seeded
    docker compose -f config/docker-compose.demo.yaml up -d opensearch
    npx tsx scripts/seed-opensearch.ts
    (cd tools/reco-engines/opensearch && npm start) &              # serves :4001
-   NEXT_PUBLIC_RECO_DEMO=1 npm run dev                            # serves :3000
+   npm run dev                                                    # serves :3000
    ```
 2. **`/reco-eval`:** open `http://localhost:3000/reco-eval`. OpenSearch
    shows a "baseline" badge and cannot be unchecked. Pick a persona
@@ -66,9 +66,8 @@ Steps:
    feed; one card per section is tagged "Try something new".
 4. **Non-persona control:** sign in as `john.doe@example.com` /
    `password`, open `/home` → no cuisine sections, standard feed only.
-5. **Flag off:** restart with plain `npm run dev` (no
-   `NEXT_PUBLIC_RECO_DEMO`) → no "Reco Eval" header link and no cuisine
-   sections for anyone.
+   Personalization keys off whether the logged-in user is a persona
+   (user_id 3101–3110), so non-personas always see the stock feed.
 
 > ⚠️ Phase 4 code is implemented and working but **not yet committed**
 > (`app/reco-eval/`, `app/api/reco/`, `components/cuisine-section.tsx`
@@ -77,13 +76,22 @@ Steps:
 
 ## Phase 5 — Trajectory visibility
 
-- [ ] `RecoTrajectory` type added to `lib/reco/types.ts`
-- [ ] OpenSearch emits full trajectory via `_explain`
-- [ ] Other engines emit thin trajectories (candidate-gen + final)
-- [ ] `/reco-eval` drilldown modal renders the steps
+- [x] `RecoTrajectory` type added to `lib/reco/types.ts`
+- [x] OpenSearch emits full trajectory via `_explain`
+- [x] Other engines emit thin trajectories (candidate-gen + final)
+- [x] `/reco-eval` drilldown modal renders the steps
 
 ## Phase 6 — Smoke + demo polish
 
-- [ ] `scripts/persona-demo-smoke.sh` end-to-end
-- [ ] `docs/PERSONA_DEMO.md` walkthrough
+- [x] `scripts/persona-demo-smoke.sh` end-to-end
+- [x] `docs/PERSONA_DEMO.md` walkthrough
 - [ ] `/demo` landing page updated with the persona story
+- [x] **Make `/reco-eval` reachable without login.** Two client-side
+      gates had to be exempted, both **unconditionally** (no flag):
+      the redirect guard in `app/main-layout.tsx` and the
+      `shouldShowContent` content gate in `components/layout-wrapper.tsx`
+      (the latter was rendering an empty `<main>` for anon users).
+- [x] ~~**Skip the OTP screen (demo only).**~~ Dropped — personas use
+      the standard auth flow; no demo-only login path. The
+      `NEXT_PUBLIC_RECO_DEMO` flag was removed entirely (it never
+      propagated reliably to the Next dev worker).

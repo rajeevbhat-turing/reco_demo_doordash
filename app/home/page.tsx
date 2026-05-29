@@ -30,7 +30,6 @@ import {
 import CuisineSection from '@/components/cuisine-section';
 import type { ExpectedSection } from '@/lib/reco/types';
 
-const RECO_DEMO = process.env.NEXT_PUBLIC_RECO_DEMO === '1';
 const PERSONA_ID_MIN = 3101;
 const PERSONA_ID_MAX = 3110;
 
@@ -95,9 +94,9 @@ function HomeContent() {
     cartStore.setCategory('restaurant');
   }, []);
 
-  // Fetch persona-aware sections when RECO_DEMO is on and user is a persona
+  // Fetch persona-aware sections when the logged-in user is a persona
   useEffect(() => {
-    if (!RECO_DEMO || !currentUser) return;
+    if (!currentUser) return;
     const uid = parseInt(currentUser.id, 10);
     if (uid < PERSONA_ID_MIN || uid > PERSONA_ID_MAX) return;
 
@@ -582,7 +581,7 @@ function HomeContent() {
       <div className="mt-4">
         {!showStayTuned && !hasActiveFilters() && <PromoBanners restaurants={actualRestaurants} />}
 
-        {/* Persona-aware cuisine sections (RECO_DEMO only) */}
+        {/* Persona-aware cuisine sections — shown when the user is a persona */}
         {personaSections.length > 0 && !hasActiveFilters() && (
           <div className="flex flex-col gap-3 mb-6">
             {personaSections.map(section => {

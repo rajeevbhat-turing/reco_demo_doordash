@@ -32,11 +32,6 @@ if (prefixHostname) {
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Mirror the server-side RECO_DEMO into a NEXT_PUBLIC_* so the header
-  // can read it on the client. The Phase 3 engine picker is gated on this.
-  env: {
-    NEXT_PUBLIC_RECO_DEMO: process.env.RECO_DEMO ?? '',
-  },
   eslint: {
     ignoreDuringBuilds: true,
   },

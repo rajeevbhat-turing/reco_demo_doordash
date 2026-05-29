@@ -150,8 +150,9 @@ per hot cuisine** ("More Thai for you"). Each section is **4 cards**:
 ranking fills the slots.
 
 Non-persona users see today's standard home feed, untouched.
-Gated by `RECO_DEMO=1`; production with the flag unset is bit-
-identical to today.
+Personalization keys off whether the signed-in user is a persona
+(user_id 3101–3110) — there is no feature flag. Any non-persona user
+gets a feed bit-identical to today's.
 
 ## Trajectories
 

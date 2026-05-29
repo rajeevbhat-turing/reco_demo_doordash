@@ -21,10 +21,6 @@ function loadOverrides(): Record<string, any> {
 }
 
 export async function GET(request: NextRequest) {
-  if (!process.env.NEXT_PUBLIC_RECO_DEMO) {
-    return NextResponse.json({ sections: [], blocked_restaurant_ids: [] });
-  }
-
   const userId = parseInt(request.nextUrl.searchParams.get('userId') ?? '0', 10);
   if (!userId) {
     return NextResponse.json({ error: 'userId required' }, { status: 400 });

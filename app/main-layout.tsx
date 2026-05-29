@@ -80,7 +80,8 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
       !pathname.startsWith('/auth') &&
       !pathname.startsWith('/delivery') &&
       !pathname.startsWith('/merchant') &&
-      !isPasswordResetPage
+      !isPasswordResetPage &&
+      pathname !== '/reco-eval'
     ) {
       // If user is not logged in, has no temp address, and is not on "/" or "/auth" or "/delivery" paths, redirect to "/"
       // Note: /delivery paths have their own authentication flow handled by the delivery layout
