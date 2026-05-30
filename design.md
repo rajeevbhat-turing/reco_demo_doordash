@@ -2,10 +2,15 @@
 
 ## Goal
 
-Compare recommendation engines and LLM agents against **persona-aware
-ground truth**, with **OpenSearch as the named baseline**. The same
-persona logic also drives the `/home` UI, and every engine emits a
-**trajectory** so we can see *why* it ranked the way it did.
+Let a client **bring their own ranking model** and A/B it against
+**persona-aware ground truth**, with **OpenSearch as the named
+baseline**. The client's ranker scores the same candidate set the
+baseline saw (Shopify-style: retrieve candidates → rank by features);
+two BYO paths — a client-hosted `/recommend` endpoint, or their LLM
+key/endpoint driving our ranking prompt. The same persona logic drives
+the `/home` UI, and every engine emits a **trajectory** so we can see
+*why* it ranked the way it did. (The open-source Python engines and the
+agentic-browse path are out — see `plan.md` Phase 7.)
 
 ## 10 personas
 
@@ -98,6 +103,15 @@ needs different numbers.
 | `SECTION_SIZE` | `4` | Cards per cuisine section (3 familiar + 1 new). |
 | `FAMILIAR_COUNT` | `3` | Familiar slots per section before the novelty slot. |
 
+**Planned refinements (Phase 8 — see `plan.md`):** outlier/misattribution
+removal (a 2× catering order or a one-off cuisine shouldn't become a
+"hot cuisine"); an **adaptive explore/exploit ratio** driven by
+`novelty_appetite` (explorer → 3-of-4 new, homebody → 1-of-4); and
+**complementary novelty** — explore slots prefer adjacent cuisines
+("ordered Thai → try Vietnamese") via a cuisine-adjacency map, scored at
+the set level rather than exact-ID. The fixed `FAMILIAR_COUNT` below is
+superseded by the ratio function once 8b lands.
+
 **Other rule choices (v1, called out so they're easy to revisit):**
 
 - **Sections require both familiar and novel.** A cuisine that has
@@ -135,19 +149,20 @@ needs different numbers.
 
 OpenSearch runs as a sidecar in the demo stack
 (`config/docker-compose.demo.yaml`), speaking the same `POST
-/recommend` contract as Gorse / LightFM / Implicit
+/recommend` contract as the BYO engines
 (`docs/reco-http-contract.md`). It is **the named baseline**:
 
 - Always selected on `/reco-eval` — can't be unchecked.
 - Its column is highlighted in the metric table — the "line to beat".
-- `/demo` copy: "agents and engines are scored against OpenSearch."
+- `/demo` copy: "your ranking model is scored against OpenSearch."
 
 ## Cuisine sections — UI
 
 When a persona is signed in, `/home` renders one **labeled section
 per hot cuisine** ("More Thai for you"). Each section is **4 cards**:
-3 familiar + 1 marked "Try something new". The active engine's
-ranking fills the slots.
+in v1, 3 familiar + 1 marked "Try something new". The active engine's
+ranking fills the slots. (Phase 8 makes the familiar/explore split
+adaptive to `novelty_appetite` and tags every explore card.)
 
 Non-persona users see today's standard home feed, untouched.
 Personalization keys off whether the signed-in user is a persona
@@ -156,31 +171,29 @@ gets a feed bit-identical to today's.
 
 ## Trajectories
 
-Every engine emits a `RecoTrajectory` alongside its
-`RecommendationResponse`:
+Every engine emits a `RecoTrajectory` alongside its `/recommend`
+response. The implemented shape (`lib/reco/types.ts`) is:
 
 ```ts
 type RecoTrajectory = {
-  engineId: string;
-  surface: string;
-  steps: TrajectoryStep[];
-  // ^ ordered: query → candidate_gen → filter → score → rerank → final
-  scoreBreakdowns?: Record<itemId, FeatureContribution[]>;
+  engine: string;
+  steps: TrajectoryStep[];   // query → candidate_gen → filter → score → rerank → final
+  raw_explain?: unknown;     // OpenSearch _explain tree, rendered as score contributions
 };
 
-type TrajectoryStep =
-  | { kind: 'query'; rawQuery: unknown }            // OpenSearch DSL, agent prompt, …
-  | { kind: 'candidate_gen'; ids: string[] }
-  | { kind: 'filter'; reason: string; droppedIds: string[] }
-  | { kind: 'score'; scores: Record<string, number> }
-  | { kind: 'rerank'; from: string[]; to: string[] }
-  | { kind: 'final'; ids: string[] };
+type TrajectoryStep = {
+  stage: 'query' | 'candidate_gen' | 'filter' | 'score' | 'rerank' | 'final';
+  restaurant_ids: number[];
+  scores?: Record<number, number>;
+  notes?: string;            // query DSL / prompt as JSON string, or a filter reason
+};
 ```
 
-OpenSearch fills this out fully via `_explain`. Other engines emit
-what they have (a thin candidate-gen + final is fine). The
-`/reco-eval` drilldown modal renders the steps; a side-by-side mode
-lets two engines' trajectories be compared on the same task.
+OpenSearch fills this out fully via `_explain` (→ `raw_explain`). BYO
+engines emit what they have — a thin `query` (prompt) + `candidate_gen`
++ `final`, plus their per-candidate `scores`. The `/reco-eval` drilldown
+modal renders the steps; the score contributions panel reads
+`raw_explain` for OpenSearch and `scores` for BYO engines.
 
 ## Data shapes — where things live
 

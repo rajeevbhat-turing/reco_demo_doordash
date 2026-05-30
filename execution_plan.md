@@ -1,125 +1,137 @@
-# Execution — Phase 6: Smoke + demo polish
+# Execution — Phase 7: BYO re-ranker, A/B vs. baseline
 
-**Goal:** a clean, no-friction demo path — smoke script, walkthrough
-doc, and `/reco-eval` accessible without login. Personas are ordinary
-users: they log in through the **standard auth flow** (no special demo
-mode, no flag, no OTP bypass), and `/home` personalizes automatically
-whenever the logged-in user is a persona.
+**Goal:** a client who wants to improve their ranking model points it at
+the gym and A/Bs it against the OpenSearch baseline on persona ground
+truth. We hand the ranker the **same candidate set the baseline saw,
+plus per-candidate features**; it returns an ordered list (+ scores); we
+score against `buildExpected(persona)` and render baseline vs. BYO
+side-by-side on `/reco-eval`, with per-section win/loss and score
+attribution.
 
-> **Design change (2026-05-29):** the `NEXT_PUBLIC_RECO_DEMO` flag was
-> removed entirely. It was inlined at build time and never propagated
-> reliably to the Next dev worker, which is what blocked step 3.2.
-> Personalization, the `/reco-eval` link, and `/reco-eval` access are
-> now unconditional; auth is unchanged from stock Dashdoor.
+Two BYO paths, one A/B table:
+- **Path A — BYO endpoint (headline):** client hosts `POST /recommend`
+  receiving `{ personaId, topK, candidates:[{id, features}] }`.
+- **Path B — BYO LLM key (on-ramp):** client gives base URL + key +
+  model; we run the ranking prompt over the same candidates against
+  *their* model. Key is request-scoped, never persisted.
+
+Reference code to port (commit `519ac1e` on `main`):
+`lib/reco/metrics.ts`, `lib/reco/eval/runner.ts`, `lib/reco/engines/`
+(`makeHttpEngine`, `customEngineUrl`/`agentLlmUrl` passthrough).
+
+> Out of scope here: agentic browse (shelved), Python engines (dropped),
+> and all Phase 8 label-quality work (outliers, adaptive exploration).
 
 When this phase exits, clear this file's body and replace it with
-Phase 7's detailed steps (or mark the project done). Then tick
-Phase 6 in `plan.md`.
+Phase 8's detailed steps, then tick **Phase 7** in `plan.md`.
 
 ---
 
-## 1. Smoke script
+## 1. Candidate + features contract (everything keys off this)
 
-- [x] **1.1** Write `scripts/persona-demo-smoke.sh` that:
-      - starts OpenSearch (docker compose), waits for `:9200`
-      - seeds the index (`npx tsx scripts/seed-opensearch.ts`)
-      - starts the sidecar, waits for `:4001/health`
-      - hits `POST :4001/recommend` for alice-tran and asserts
-        `ranked_ids` is non-empty and `trajectory.steps` includes
-        `candidate_gen`, `score`, `final`
-      - exits 0 on success, 1 on any failure
+- [ ] **1.1** Add a candidate builder in `lib/reco/` (e.g.
+      `candidates.ts`): given a persona, return the radius-filtered
+      candidate pool (reuse `CANDIDATE_RADIUS_MILES`) — the *same* set
+      OpenSearch ranks, so the A/B is apples-to-apples.
+- [ ] **1.2** Define the per-candidate feature vector: cuisine-affinity
+      match, price-tier match, distance (mi), avg rating, persona
+      past-order count, promo/discount, `dash_pass`. Type it in
+      `lib/reco/types.ts` (`CandidateFeatures`, `RecommendRequest`,
+      `RecommendResponse`).
+- [ ] **1.3** Recreate `docs/reco-http-contract.md` documenting the
+      `POST /recommend` request (`{ personaId, topK, candidates }`) and
+      response (`{ engine, personaId, ranked_ids, scores?, trajectory }`).
+      design.md already references this file — make it real.
+- [ ] **1.4** Update the OpenSearch sidecar (`tools/reco-engines/opensearch/`)
+      to accept the candidates payload (rank within the provided set)
+      rather than retrieving its own pool, so baseline + BYO rank the
+      identical candidate set. Keep `_explain` → `raw_explain`.
 
-## 2. Walkthrough doc
+## 2. Metrics
 
-- [x] **2.1** Write `docs/PERSONA_DEMO.md` covering:
-      - prerequisites (docker, node, `.env`)
-      - `./run.sh` to bring everything up
-      - persona login IDs (all 10)
-      - what to look for on `/home` (cuisine sections)
-      - what to look for on `/reco-eval` (engine picker, Run, Details
-        per row, score contributions)
+- [ ] **2.1** Port `lib/reco/metrics.ts` from `519ac1e`: `scoreTask`
+      (precision@k, recall@k, NDCG@k, overlap) + `aggregate`. Score
+      against `buildExpected(persona).flat_ranked_ids`.
+- [ ] **2.2** Add a `blocked_restaurant_ids` penalty: any blocked ID in
+      the ranked output is a hard miss (surface as its own metric, e.g.
+      `blocked_hits`).
+- [ ] **2.3** Unit tests in `lib/reco/__tests__/` — exact ranking →
+      perfect scores; shuffled, partial, and blocked-hit cases.
 
-## 3. `/reco-eval` without login (public, unconditional)
+## 3. Path B — LLM re-ranker sidecar
 
-- [x] **3.1** Exempt `/reco-eval` from the client-side redirect guard
-      in `app/main-layout.tsx` — unconditionally (`pathname !==
-      '/reco-eval'`), no flag.
-- [x] **3.2** Exempt `/reco-eval` from the **content gate** in
-      `components/layout-wrapper.tsx` (`shouldShowContent`), which
-      otherwise renders an empty `<main>` for anonymous users with no
-      temp address. Verified: an anonymous (no-cookie) headless browser
-      loads the full eval UI on `/reco-eval` — heading, engine picker,
-      persona selector, Run button — with zero redirects. (Repro:
-      `.scratch/verify-reco-eval-anon.ts`.)
+- [ ] **3.1** Scaffold `tools/reco-engines/llm-ranker/` (mirror the
+      opensearch sidecar layout: `server.ts`, `recommend.ts`,
+      `package.json`, `tsconfig.json`). Serve `:4002`, with `/health`.
+- [ ] **3.2** Implement the ranking prompt: persona profile + order
+      history + the candidate list (id, name, cuisine, price, rating,
+      distance) → model returns candidate IDs in ranked order. Constrain
+      output to the provided candidate set; validate/repair the IDs.
+- [ ] **3.3** BYO routing: read `llm:{ baseUrl, apiKey, model }` from the
+      request; fall back to a server-default key from env when absent.
+      Set `source: 'byo-gateway' | 'server-default'` + `gatewayHost` in
+      the response. **Never log or persist the key.**
+- [ ] **3.4** Emit a thin trajectory: `query` (the prompt), `candidate_gen`
+      (candidate IDs), `final` (ranked IDs); include returned `scores`.
 
-## 4. ~~Skip OTP in demo mode~~ — dropped
+## 4. Path A — transient client endpoint
 
-> **Obsolete (2026-05-29):** per the design change above, personas use
-> the **standard auth flow** unchanged. The OTP-bypass branch in
-> `components/authentication/sign-in.tsx` was reverted. There is no
-> demo-only login path.
+- [ ] **4.1** Port `makeHttpEngine` (`lib/reco/engines/http.ts`): wrap an
+      arbitrary `/recommend` URL as an engine with a timeout.
+- [ ] **4.2** `/reco-eval` accepts a client-hosted URL and registers it
+      as a transient `custom` engine for that run only (not written to
+      `config/reco-engines.json`).
+
+## 5. BYO panel UI (`/reco-eval`)
+
+- [ ] **5.1** Add a BYO panel with two tabs: **"Use my endpoint"** (URL)
+      and **"Use my LLM"** (base URL + API key + model). State clearly
+      that the key is request-scoped and never stored.
+- [ ] **5.2** Wire panel inputs into the run request; clear the key field
+      from state after the run.
+
+## 6. Multi-engine fan-out + A/B table
+
+- [ ] **6.1** Change `handleRun` to fan out to **all** selected engines +
+      any BYO engine concurrently (today it runs only the first selected
+      engine). Collect a result per engine.
+- [ ] **6.2** Render a **comparison table**: rows = metrics
+      (precision@k, recall@k, NDCG@k, blocked_hits), columns = engines,
+      **OpenSearch column highlighted** as the line to beat.
+- [ ] **6.3** Per-section win/loss: for each persona section, show which
+      engine matched the expected familiar/explore slots.
+
+## 7. Score attribution in drilldown
+
+- [ ] **7.1** Keep the OpenSearch `_explain` breakdown (already present).
+- [ ] **7.2** For BYO engines, render the returned per-candidate `scores`
+      in the trajectory modal so "why did this rank here" works for any
+      engine, not just OpenSearch.
+
+## 8. Registry + docs + demo cleanup
+
+- [ ] **8.1** `config/reco-engines.json` = opensearch (baseline) +
+      llm-ranker (byo). Remove any Python-engine references from docs.
+- [ ] **8.2** Extend `scripts/persona-demo-smoke.sh`: bring up the
+      llm-ranker sidecar with a server-default key; assert a scored A/B
+      result for alice-tran (baseline + llm-ranker both return
+      `ranked_ids`, metrics computed).
+- [ ] **8.3** Update `docs/PERSONA_DEMO.md` and the `/demo` landing page
+      with the BYO-ranker A/B story (closes the two Phase 6 carry-overs).
 
 ## Exit criteria
 
-- [ ] **Smoke script passes** — `bash scripts/persona-demo-smoke.sh`
-      exits 0 on a clean machine with docker running.
+- [ ] **A/B works end-to-end** — on `/reco-eval`, selecting OpenSearch +
+      a BYO engine for a persona and clicking Run produces a comparison
+      table with metrics for both, baseline highlighted.
+- [ ] **BYO LLM path** — pasting a base URL + key + model ranks via that
+      model; response shows `source: 'byo-gateway'`; key is not persisted
+      anywhere.
+- [ ] **Smoke passes** — `bash scripts/persona-demo-smoke.sh` exits 0,
+      including the llm-ranker A/B assertion.
+- [ ] **Types clean** — `npx tsc --noEmit` passes.
+- [ ] **Unit tests green** — `npm run test:unit` (incl. new metrics
+      tests) passes.
 
-      _How to verify (no login needed):_
-      1. Ensure Docker Desktop is running.
-      2. From repo root: `bash scripts/persona-demo-smoke.sh`
-      3. Watch stdout — it should print progress lines for each stage
-         (OpenSearch up, seed complete, sidecar up, recommend call).
-      4. Final exit: `echo $?` → must print `0`.
-      5. The recommend response for `alice-tran` must log `ranked_ids`
-         with at least one entry and `trajectory.steps` containing
-         `candidate_gen`, `score`, and `final`.
-
-- [x] **`/reco-eval` anonymous** — visiting the page without a session
-      loads the eval UI (no redirect). Unconditional; no flag.
-
-      _How to verify (no login — use incognito):_
-      1. Start the app: `npm run dev`
-      2. Open a **private/incognito** browser window (no cookies).
-      3. Navigate to `http://localhost:3000/reco-eval`.
-      4. Pass: the eval page renders (engine picker, persona selector,
-         Run button visible). Fail: you are redirected, or `<main>` is
-         empty.
-      5. Confirm by checking the address bar — it must still read
-         `/reco-eval`.
-
-- [x] ~~**OTP bypassed**~~ — dropped. Personas use the standard auth
-      flow; there is no demo-only OTP bypass to verify.
-
-- [x] **`PERSONA_DEMO.md` exists** — doc is present and describes the
-      full demo path end-to-end.
-
-      _How to verify (no login needed):_
-      1. `ls docs/PERSONA_DEMO.md` — file must exist.
-      2. Open the file and confirm it contains all of:
-         - Prerequisites section (docker, node, `.env`)
-         - `./run.sh` (or equivalent) startup instructions
-         - All 10 persona login IDs (format `<first>.<last>@personas.demo` / `password`)
-         - What to look for on `/home` (labeled cuisine sections,
-           "Try something new" card)
-         - What to look for on `/reco-eval` (engine picker, Run button,
-           ranked table, Details drilldown, score contributions)
-
-- [x] **Types clean** — `npx tsc --noEmit` passes.
-
-      _How to verify (no login needed):_
-      1. From repo root: `npx tsc --noEmit`
-      2. Pass: command exits 0 with no output (or only warnings, no
-         errors).
-      3. Fail: any `error TS…` lines in the output.
-
-- [x] **Unit tests green** — `npm run test:unit` still passes.
-
-      _How to verify (no login needed):_
-      1. From repo root: `npm run test:unit`
-      2. Pass: all test suites show green; process exits 0.
-      3. Fail: any test suite reports a failure or the process exits
-         non-zero.
-
-> **On exit:** when every box above is checked, tick **Phase 6** in
-> `plan.md`, clear this file's body, and note the project complete (or
-> replace with Phase 7 if scope has grown).
+> **On exit:** tick **Phase 7** in `plan.md`, clear this file's body,
+> replace with Phase 8 (label quality) steps.
