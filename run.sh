@@ -8,6 +8,14 @@ cd "$(dirname "$0")"
 
 COMPOSE_FILE="config/docker-compose.demo.yaml"
 
+# ── Load .env so sidecars inherit OPENAI_API_KEY etc. ───────────────────────────
+if [[ -f .env ]]; then
+  set -a
+  # shellcheck disable=SC1091
+  source .env
+  set +a
+fi
+
 # ── Free a host port without killing Docker Desktop ─────────────────────────────
 # Docker Desktop's backend itself LISTENs on published ports (it proxies
 # them to containers), so "kill whatever listens on :PORT" would kill
