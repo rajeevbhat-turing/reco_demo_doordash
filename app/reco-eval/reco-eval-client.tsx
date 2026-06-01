@@ -341,7 +341,7 @@ function ComparisonTable({
     return (val * 100).toFixed(1) + '%';
   }
 
-  const allHaveMetrics = [...results.values()].every((r) => r.metrics);
+  const anyHaveMetrics = [...results.values()].some((r) => r.metrics);
 
   return (
     <div className="border border-gray-200 rounded-lg overflow-hidden">
@@ -376,8 +376,10 @@ function ComparisonTable({
                     </div>
                   )}
                   {result.error && (
-                    <div className="text-xs font-normal text-red-500 mt-0.5 truncate max-w-32">
-                      {result.error}
+                    <div className="text-xs font-normal text-red-500 mt-0.5 max-w-48 whitespace-normal">
+                      {result.error.includes('fetch')
+                        ? 'sidecar not running'
+                        : result.error}
                     </div>
                   )}
                 </th>
@@ -386,7 +388,7 @@ function ComparisonTable({
           </tr>
         </thead>
         <tbody>
-          {allHaveMetrics &&
+          {anyHaveMetrics &&
             metricKeys.map((metric) => {
               const best = bestEngineFor(metric);
               return (
