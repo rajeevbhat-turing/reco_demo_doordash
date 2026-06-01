@@ -108,31 +108,58 @@ async function callLlm(
     return { content, source: 'byo-gateway', gatewayHost };
   }
 
-  const defaultKey = process.env.ANTHROPIC_API_KEY;
-  if (!defaultKey) {
-    throw new Error('ANTHROPIC_API_KEY not set and no BYO LLM config provided');
+  // Server-default: prefer OPENAI_API_KEY (gpt-4o-mini), fall back to ANTHROPIC_API_KEY.
+  const openaiKey = process.env.OPENAI_API_KEY;
+  const anthropicKey = process.env.ANTHROPIC_API_KEY;
+
+  if (openaiKey) {
+    const res = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${openaiKey}`,
+      },
+      body: JSON.stringify({
+        model: 'gpt-4o-mini',
+        messages: [{ role: 'user', content: prompt }],
+        temperature: 0,
+      }),
+    });
+    if (!res.ok) {
+      const text = await res.text();
+      throw new Error(`OpenAI API ${res.status}: ${text}`);
+    }
+    const data = (await res.json()) as {
+      choices?: Array<{ message?: { content?: string } }>;
+    };
+    const content = data.choices?.[0]?.message?.content ?? '';
+    return { content, source: 'server-default' };
   }
 
-  const res = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': defaultKey,
-      'anthropic-version': '2023-06-01',
-    },
-    body: JSON.stringify({
-      model: 'claude-haiku-4-5-20251001',
-      max_tokens: 1024,
-      messages: [{ role: 'user', content: prompt }],
-    }),
-  });
-  if (!res.ok) {
-    const text = await res.text();
-    throw new Error(`Anthropic API ${res.status}: ${text}`);
+  if (anthropicKey) {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': anthropicKey,
+        'anthropic-version': '2023-06-01',
+      },
+      body: JSON.stringify({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 1024,
+        messages: [{ role: 'user', content: prompt }],
+      }),
+    });
+    if (!res.ok) {
+      const text = await res.text();
+      throw new Error(`Anthropic API ${res.status}: ${text}`);
+    }
+    const data = (await res.json()) as { content?: Array<{ text?: string }> };
+    const content = data.content?.[0]?.text ?? '';
+    return { content, source: 'server-default' };
   }
-  const data = (await res.json()) as { content?: Array<{ text?: string }> };
-  const content = data.content?.[0]?.text ?? '';
-  return { content, source: 'server-default' };
+
+  throw new Error('No server-default LLM key available — set OPENAI_API_KEY or ANTHROPIC_API_KEY in .env');
 }
 
 export async function recommend(
