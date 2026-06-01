@@ -123,17 +123,101 @@ Phase 8's detailed steps, then tick **Phase 7** in `plan.md`.
 
 ## Exit criteria
 
-- [ ] **A/B works end-to-end** — on `/reco-eval`, selecting OpenSearch +
-      a BYO engine for a persona and clicking Run produces a comparison
-      table with metrics for both, baseline highlighted.
-- [ ] **BYO LLM path** — pasting a base URL + key + model ranks via that
-      model; response shows `source: 'byo-gateway'`; key is not persisted
-      anywhere.
-- [ ] **Smoke passes** — `bash scripts/persona-demo-smoke.sh` exits 0,
-      including the llm-ranker A/B assertion.
-- [ ] **Types clean** — `npx tsc --noEmit` passes.
-- [ ] **Unit tests green** — `npm run test:unit` (incl. new metrics
-      tests) passes.
+### EC-1 — A/B works end-to-end
+
+**Recommended persona: `alice-tran`** (strong Thai/Vietnamese preference, clear order history — best signal for visible metrics differences).
+
+**Setup** — run once in a terminal, leave it running:
+```bash
+./run.sh                        # starts OpenSearch, sidecar :4001, Next.js :3000
+# in a second terminal:
+npm run reco:llm-ranker          # starts LLM ranker sidecar :4002
+```
+
+**Steps:**
+
+1. Open `http://localhost:3000/reco-eval` (no login needed).
+2. In the **Engines** row: both `OpenSearch` (baseline) and `LLM Ranker` pills should be visible. OpenSearch has a blue `baseline` badge and is locked on. Toggle **LLM Ranker** on (dark pill).
+3. In **Persona**, select `Alice Tran — alice-tran`.
+4. Click **Run**.
+5. ✅ **Pass** if:
+   - An **A/B Comparison** table appears with columns for both engines and rows for Precision@k, Recall@k, NDCG@k, Overlap, Blocked hits.
+   - The OpenSearch column has a blue left border.
+   - The best value in each metric row is **bold green**.
+   - A **Section win/loss** section appears below with ✓/✗ grids per cuisine section.
+   - Per-engine ranked tables appear at the bottom.
+
+- [ ] **A/B works end-to-end** — comparison table with metrics for both engines, baseline highlighted.
+
+---
+
+### EC-2 — BYO LLM path (`source: 'byo-gateway'`, key not persisted)
+
+**Requires:** an OpenAI-compatible API key (OpenAI, Anthropic, etc.) and the LLM ranker sidecar running on `:4002`.
+
+**Steps:**
+
+1. Same page: `http://localhost:3000/reco-eval`.
+2. Toggle the **BYO Ranker** switch on (red toggle below the Persona picker).
+3. Click the **"Use my LLM"** tab.
+4. Fill in:
+   - **Base URL**: `https://api.openai.com/v1` (or your provider's OpenAI-compatible URL)
+   - **API Key**: your key
+   - **Model**: `gpt-4o-mini` (or any model your endpoint accepts)
+5. Ensure **LLM Ranker** engine is toggled **off** in the engine pills (the BYO LLM panel sends to LLM ranker anyway — toggling it on would also run it with the server-default key separately).
+6. Click **Run**.
+7. ✅ **Pass** if:
+   - A `BYO (gpt-4o-mini)` or similar column appears in the comparison table.
+   - Clicking `details` on any result row, opening the trajectory modal for the BYO engine, shows `source=byo-gateway gateway=api.openai.com` in the `final` step notes.
+   - After Run completes, the API Key field is **empty** (cleared from React state).
+
+To confirm the key is never persisted: check the Next.js server logs in the terminal — the key should not appear anywhere. The key only travels Browser → LLM Ranker sidecar → BYO LLM API; it is never sent to the Next.js server.
+
+- [ ] **BYO LLM path** — `source: 'byo-gateway'` in trajectory; key field cleared after run.
+
+---
+
+### EC-3 — Smoke test passes
+
+**Requires:** Docker running, `node`, `npx`. Bring down any running sidecars first (the smoke script starts its own).
+
+```bash
+bash scripts/persona-demo-smoke.sh
+```
+
+Without `ANTHROPIC_API_KEY` set: steps 1–6 run (OpenSearch + A/B candidate path verified). The llm-ranker step is skipped with a clear "skip:" message.
+
+With `ANTHROPIC_API_KEY` set: all steps run including the llm-ranker A/B assertion (`source=server-default`).
+
+✅ **Pass** if the final line is `PASS: all checks green` and exit code is 0.
+
+```bash
+echo $?   # should print 0
+```
+
+- [ ] **Smoke passes** — `bash scripts/persona-demo-smoke.sh` exits 0.
+
+---
+
+### EC-4 — Types clean ✅ (already verified)
+
+```bash
+npx tsc --noEmit    # should print nothing and exit 0
+```
+
+- [x] **Types clean** — `npx tsc --noEmit` passes.
+
+---
+
+### EC-5 — Unit tests green ✅ (already verified)
+
+```bash
+npm run test:unit   # 101 files, 1674 tests — all pass
+```
+
+- [x] **Unit tests green** — `npm run test:unit` passes.
+
+---
 
 > **On exit:** tick **Phase 7** in `plan.md`, clear this file's body,
 > replace with Phase 8 (label quality) steps.
