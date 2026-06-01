@@ -546,7 +546,7 @@ export default function RecoEvalClient({ initialPersonas }: Props) {
   const [byoEnabled, setByoEnabled] = useState(false);
   const [byoTab, setByoTab] = useState<'endpoint' | 'llm'>('endpoint');
   const [byoUrl, setByoUrl] = useState('');
-  const [byoLlmBaseUrl, setByoLlmBaseUrl] = useState('');
+  const [byoLlmBaseUrl, setByoLlmBaseUrl] = useState('https://api.openai.com/v1');
   const [byoLlmKey, setByoLlmKey] = useState('');
   const [byoLlmModel, setByoLlmModel] = useState('gpt-4o-mini');
 
