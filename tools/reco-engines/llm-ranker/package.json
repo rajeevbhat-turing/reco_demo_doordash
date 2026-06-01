@@ -1,0 +1,10 @@
+{
+  "name": "@dashdoor/reco-engine-llm-ranker",
+  "version": "1.0.0",
+  "description": "LLM-backed BYO ranking engine for Dashdoor reco eval",
+  "private": true,
+  "scripts": {
+    "start": "npx tsx server.ts",
+    "dev": "npx tsx --watch server.ts"
+  }
+}

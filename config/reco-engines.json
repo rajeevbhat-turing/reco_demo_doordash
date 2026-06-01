@@ -4,5 +4,10 @@
     "label": "OpenSearch",
     "url": "http://localhost:4001",
     "baseline": true
+  },
+  {
+    "id": "llm-ranker",
+    "label": "LLM Ranker",
+    "url": "http://localhost:4002"
   }
 ]

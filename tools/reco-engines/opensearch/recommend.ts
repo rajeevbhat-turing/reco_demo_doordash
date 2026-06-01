@@ -1,4 +1,4 @@
-import type { Persona, RecoTrajectory } from '../../../lib/reco/types';
+import type { Persona, RecoTrajectory, Candidate } from '../../../lib/reco/types';
 import { INDEX_NAME } from './index-schema';
 
 const OPENSEARCH_URL = process.env.OPENSEARCH_URL ?? 'http://localhost:9200';
@@ -7,6 +7,7 @@ const DEFAULT_TOP_K = 20;
 export type RecommendRequest = {
   personaId: string;
   topK?: number;
+  candidates?: Candidate[];
 };
 
 export type RecommendResponse = {
@@ -47,19 +48,26 @@ export async function recommend(
   const topK = req.topK ?? DEFAULT_TOP_K;
   const { cuisine_affinity } = persona.preferences;
   const city = persona.address.city;
+  const candidates = req.candidates;
 
-  // Build per-cuisine weight functions (affinity × 10 so scores are human-readable)
   const cuisineFunctions = Object.entries(cuisine_affinity).map(([cuisine, affinity]) => ({
     filter: { term: { cuisine } },
     weight: affinity * 10,
   }));
+
+  // When a candidate set is provided, filter to exactly those IDs (A/B apples-to-apples).
+  // Without candidates, fall back to city-based retrieval.
+  const baseQuery =
+    candidates && candidates.length > 0
+      ? { ids: { values: candidates.map((c) => String(c.id)) } }
+      : { term: { city } };
 
   const query = {
     size: topK,
     explain: true,
     query: {
       function_score: {
-        query: { term: { city } },
+        query: baseQuery,
         functions: [
           ...cuisineFunctions,
           {
@@ -95,7 +103,9 @@ export async function recommend(
       {
         stage: 'candidate_gen',
         restaurant_ids: ranked_ids,
-        notes: `city=${city}, topK=${topK}`,
+        notes: candidates?.length
+          ? `${candidates.length} candidates from A/B set, topK=${topK}`
+          : `city=${city}, topK=${topK}`,
       },
       {
         stage: 'score',
@@ -108,7 +118,11 @@ export async function recommend(
         restaurant_ids: ranked_ids,
       },
     ],
-    raw_explain: hits.map((h) => ({ id: h._source.id, score: h._score, explanation: h._explanation })),
+    raw_explain: hits.map((h) => ({
+      id: h._source.id,
+      score: h._score,
+      explanation: h._explanation,
+    })),
   };
 
   return { engine: 'opensearch', personaId: req.personaId, ranked_ids, trajectory };

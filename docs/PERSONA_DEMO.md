@@ -15,8 +15,8 @@ End-to-end guide for running and exploring the persona-driven recommendation eva
 - Dependencies installed:
   ```bash
   npm install
-  cd tools/reco-engines/opensearch && npm install && cd -
   ```
+- **Optional — LLM Ranker A/B:** set `ANTHROPIC_API_KEY` in `.env` (or export it) to enable the server-default LLM path. For BYO LLM, you supply your own key at run time in the `/reco-eval` UI.
 
 ---
 
@@ -36,6 +36,12 @@ This does, in order:
 4. Seeds the restaurant index (`scripts/seed-opensearch.ts`) — idempotent
 5. Starts the OpenSearch reco sidecar on `:4001` in the background
 6. Starts the Next.js dev server on `:3000`
+
+To also start the LLM ranker sidecar (needed for Path B A/B):
+
+```bash
+npm run reco:llm-ranker &   # starts :4002 in background
+```
 
 ---
 
@@ -77,28 +83,69 @@ After signing in as any persona user:
 
 `/reco-eval` is accessible **without login** — open it in a fresh incognito window if you want to verify.
 
-1. **Engine picker** — OpenSearch is shown with a `baseline` badge and cannot be unchecked. Additional engines (if registered in `config/reco-engines.json`) appear as toggleable pills.
+### Engine picker
 
-2. **Persona selector** — dropdown of all 10 personas. Defaults to Alice Tran.
+OpenSearch shows a `baseline` badge and cannot be unchecked. The **LLM Ranker** engine appears as an optional toggle (requires the `:4002` sidecar to be running).
 
-3. **Run** — fires `POST :4001/recommend` for the selected persona and engine, then renders a ranked table of restaurants (rank, ID, name, cuisine).
+### Persona selector
 
-4. **Details drilldown** — each row has a `details` link that opens the **Trajectory modal**, showing the steps the engine took:
-   - `candidate_gen` — how many restaurants were retrieved from the index
-   - `score` — the per-restaurant scores at ranking time (top 10 shown)
-   - `final` — the final ordered list
-   - `query` — the full OpenSearch query JSON (collapsible)
+Dropdown of all 10 personas. Defaults to Alice Tran.
 
-5. **Score contributions** — at the bottom of the trajectory modal, a table shows how each function (cuisine match, rating boost, etc.) contributed to the top restaurant's score, derived from OpenSearch `_explain`.
+### BYO Ranker panel
+
+A toggle below the persona picker opens the BYO panel with two tabs:
+
+**"Use my endpoint"** — paste the base URL of any server that speaks the `/recommend` contract (see `docs/reco-http-contract.md`). Your server receives the same candidate set and returns ranked IDs + scores + trajectory. No registration required — it runs for this evaluation only.
+
+**"Use my LLM"** — paste:
+- **Base URL** (OpenAI-compatible, e.g. `https://api.openai.com/v1`)
+- **API Key** — used for this request only; cleared from state immediately after Run; never logged or persisted
+- **Model** (e.g. `gpt-4o-mini`)
+
+The request routes through the LLM Ranker sidecar (`:4002`), which builds a ranking prompt from the persona profile and candidate features, calls your LLM, and returns ranked IDs.
+
+### Run and A/B table
+
+Click **Run** to:
+
+1. Fetch the canonical candidate set from `/api/reco/candidates?personaId=<id>` (radius-filtered, feature-annotated)
+2. Fan out to all selected engines + any BYO engine **concurrently**, passing the same candidate set
+3. Render an **A/B comparison table** — rows are metrics (Precision@k, Recall@k, NDCG@k, Overlap, Blocked hits), columns are engines. The OpenSearch baseline column is highlighted in blue; best-performing cell in each row is **bold green**.
+
+### Section win/loss
+
+Below the comparison table, each expected persona section (e.g. "More Thai for you") shows a grid of ✓/✗ cells — one per expected restaurant. Green ✓ = the engine included that restaurant in its results. The ringed cell is the novelty slot. This tells you at a glance which sections each engine "won".
+
+### Details drilldown
+
+Each row in the per-engine ranked table has a `details` link that opens the **Trajectory modal**:
+
+- **OpenSearch** — full `_explain` tree → score contributions panel at the bottom (cuisine match, rating boost, etc.)
+- **LLM Ranker / BYO endpoint** — prompt shown in `query` step; per-candidate scores shown in the `final` step and in the score attribution panel
 
 ---
 
 ## Smoke test
 
-To verify the stack end-to-end without the browser:
+To verify the full stack end-to-end without the browser:
 
 ```bash
 bash scripts/persona-demo-smoke.sh
 ```
 
-Exits 0 if OpenSearch, seeding, sidecar, and the alice-tran recommend call all pass.
+The script:
+1. Starts OpenSearch, seeds the index
+2. Starts the OpenSearch sidecar on `:4001`
+3. Verifies the backwards-compat recommend call (no candidates)
+4. Builds the candidate set for alice-tran and calls OpenSearch with it (A/B path)
+5. If `ANTHROPIC_API_KEY` is set: starts the LLM ranker sidecar on `:4002` and verifies a ranked response with `source=server-default`
+
+Exits 0 on success.
+
+---
+
+## The client pitch
+
+> "Your ranking model is scored against OpenSearch. Send us your `/recommend` endpoint — or paste your LLM API key — and we run both on the same candidate pool, score them against the same ground truth, and show you exactly where yours wins and where it doesn't."
+
+This is `design.md` §OpenSearch as baseline in action.

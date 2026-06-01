@@ -1,5 +1,4 @@
 export * from './types';
-// TrajectoryStep and RecoTrajectory are included via the wildcard above
 export {
   buildExpected,
   buildExpectedWithOverrides,
@@ -9,3 +8,7 @@ export {
   SECTION_SIZE,
   FAMILIAR_COUNT,
 } from './eval/persona-truth';
+export { buildCandidates } from './candidates';
+export { scoreTask, aggregate } from './metrics';
+export type { ScoreResult } from './metrics';
+export { makeHttpEngine } from './engines/http';

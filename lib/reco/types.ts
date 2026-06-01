@@ -83,3 +83,42 @@ export type RecoTrajectory = {
   steps: TrajectoryStep[];
   raw_explain?: unknown;
 };
+
+// ── Phase 7: BYO ranker A/B contract ─────────────────────────────────────────
+
+export type CandidateFeatures = {
+  cuisine_affinity_match: number;
+  price_tier_match: boolean;
+  distance_miles: number;
+  avg_rating: number;
+  persona_order_count: number;
+  promo_discount: number;
+  dash_pass: boolean;
+};
+
+export type Candidate = {
+  id: number;
+  features: CandidateFeatures;
+};
+
+// Canonical HTTP contract for all /recommend engines (docs/reco-http-contract.md)
+export type RecommendRequest = {
+  personaId: string;
+  topK?: number;
+  candidates?: Candidate[];
+  llm?: {
+    baseUrl: string;
+    apiKey: string;
+    model: string;
+  };
+};
+
+export type RecommendResponse = {
+  engine: string;
+  personaId: string;
+  ranked_ids: number[];
+  scores?: Record<number, number>;
+  trajectory: RecoTrajectory;
+  source?: 'byo-gateway' | 'server-default';
+  gatewayHost?: string;
+};
