@@ -942,8 +942,9 @@ export default function Header() {
                   <div className="ml-4">
                     <Link
                       href="/reco-eval"
-                      className="text-xs font-semibold text-gray-600 hover:text-gray-900 bg-gray-100 hover:bg-gray-200 rounded-full px-3 h-8 flex items-center transition-colors"
+                      className="text-xs font-bold text-white bg-red-600 hover:bg-red-700 rounded-full px-4 h-8 flex items-center gap-1.5 transition-colors shadow-sm"
                     >
+                      <span className="inline-block w-1.5 h-1.5 rounded-full bg-white/80 animate-pulse" />
                       Reco Eval
                     </Link>
                   </div>
