@@ -59,7 +59,7 @@ export function buildCandidates(persona: Persona, db: Database): Candidate[] {
     )
     .all() as RestRow[];
 
-  return rows
+  const candidates = rows
     .filter((r) => r.latitude != null && r.longitude != null)
     .filter(
       (r) =>
@@ -84,4 +84,20 @@ export function buildCandidates(persona: Persona, db: Database): Candidate[] {
       };
       return { id: r.id, features };
     });
+
+  // Sort by relevance so the most useful candidates appear first when sliced.
+  // Primary: cuisine affinity × 10 (preferred cuisines first).
+  // Secondary: past orders (familiar restaurants bubble up).
+  // Tertiary: avg rating.
+  candidates.sort((a, b) => {
+    const scoreA = a.features.cuisine_affinity_match * 10 +
+                   a.features.persona_order_count * 2 +
+                   a.features.avg_rating;
+    const scoreB = b.features.cuisine_affinity_match * 10 +
+                   b.features.persona_order_count * 2 +
+                   b.features.avg_rating;
+    return scoreB - scoreA;
+  });
+
+  return candidates;
 }
