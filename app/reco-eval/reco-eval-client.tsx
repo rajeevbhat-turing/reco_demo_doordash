@@ -816,7 +816,8 @@ export default function RecoEvalClient({ initialPersonas }: Props) {
                       Base URL (OpenAI-compatible)
                     </label>
                     <input
-                      type="url"
+                      type="text"
+                      autoComplete="off"
                       placeholder="https://api.openai.com/v1"
                       value={byoLlmBaseUrl}
                       onChange={(e) => setByoLlmBaseUrl(e.target.value)}
@@ -828,22 +829,27 @@ export default function RecoEvalClient({ initialPersonas }: Props) {
                       API Key
                     </label>
                     <input
-                      type="password"
-                      placeholder="sk-..."
+                      type="text"
+                      autoComplete="new-password"
+                      placeholder="sk-…"
                       value={byoLlmKey}
                       onChange={(e) => setByoLlmKey(e.target.value)}
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900"
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 font-mono"
                     />
                   </div>
                   <div>
                     <label className="block text-xs font-medium text-gray-600 mb-1">Model</label>
-                    <input
-                      type="text"
-                      placeholder="gpt-4o-mini"
+                    <select
                       value={byoLlmModel}
                       onChange={(e) => setByoLlmModel(e.target.value)}
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900"
-                    />
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 bg-white"
+                    >
+                      <option value="gpt-4o-mini">gpt-4o-mini — fast &amp; cheap</option>
+                      <option value="gpt-4o">gpt-4o — flagship</option>
+                      <option value="gpt-4.1">gpt-4.1 — latest GPT-4 class</option>
+                      <option value="gpt-4.1-mini">gpt-4.1-mini — fast GPT-4.1</option>
+                      <option value="o4-mini">o4-mini — reasoning</option>
+                    </select>
                   </div>
                 </div>
               </div>
