@@ -183,13 +183,64 @@ per hot cuisine** ("More Thai for you"). Each section is **4 cards**;
 the familiar/explore split is driven by `novelty_appetite` (Phase 8b) —
 an explorer (alice-tran, eli-nakamura) sees 3 "Try something new" cards,
 a homebody (ben-kowalski) sees 1. Every explore-slot card (positions in
-`novelty_indices`) is tagged. The active engine's ranking fills the
-slots.
+`novelty_indices`) is tagged. The **applied engine's** ranking fills the
+slots (see "Apply a reco to the home feed" below) — with no applied
+engine, the ground-truth rule order is used.
 
 Non-persona users see today's standard home feed, untouched.
 Personalization keys off whether the signed-in user is a persona
 (user_id 3101–3110) — there is no feature flag. Any non-persona user
 gets a feed bit-identical to today's.
+
+## Apply a reco to the home feed
+
+The reco lab is a **loop**, not a one-way report: evaluate engines on
+`/reco-eval` → **pick a winner** → see the *actual home feed* that engine
+produces. This closes the gap between "your model scored X" and "here's
+what your customer would see."
+
+**Flow:**
+
+1. Run an A/B on `/reco-eval` (baseline + LLM ranker + any BYO engine,
+   one or more models).
+2. Each engine column gets an **"Apply to home feed"** action. Clicking
+   it captures *that engine's result for that persona* into a persisted
+   selection (one per persona).
+3. `/home`, for that persona, now fills its cuisine-section slots from
+   the applied engine's ranking and shows a banner:
+   *"Home feed personalized by **LLM Ranker · gpt-4o-mini** — your pick
+   from Reco Eval (2026-06-01). [Reset to default]"*.
+4. **Reset** clears the selection → home returns to the ground-truth rule.
+
+**What is persisted — and what is not.** We store the engine's **captured
+ranked output** (`engineId`, `label`, `model?`, `ranked_ids`, `scores?`,
+`capturedAt`), keyed by `personaId`, in a Zustand store backed by
+`localStorage` (`store/reco-selection-store.ts`). We deliberately do
+**not** persist credentials: a BYO LLM key is request-scoped (see
+Phase 7), so re-calling the model from `/home` is impossible by design.
+Replaying the *snapshot* the eval already produced sidesteps that
+entirely — it's faster (no engine round-trip on home load), deterministic
+(home shows exactly the reco you evaluated), and keeps the key in the one
+request that needed it.
+
+**Section scaffolding vs. slot fill.** The section structure — which hot
+cuisines, the familiar/explore split, `novelty_indices`,
+`explore_valid_ids`, labels — always comes from the rule (`buildExpected`,
+Phase 8). It is the engine-independent *task definition*, so two engines
+are visually comparable. The **applied engine only decides which
+restaurants land in the slots and in what order**: each section reorders
+its cuisine's candidates by the engine's captured `ranked_ids` (familiar
+slots take the engine's top in-cuisine picks the persona has ordered,
+explore slots its top picks they haven't), falling back to rule order for
+any id the engine didn't rank. The reorder happens client-side from the
+selection store, so no credential ever leaves the original eval request.
+
+**Multiple models, one loop.** Because a single `/reco-eval` run fans out
+to every selected engine plus the BYO panel (which can target different
+models across runs), the user can line up `gpt-4o-mini` vs `gpt-4o` vs
+OpenSearch in the A/B table, then apply each in turn and flip to `/home`
+to *see* the difference — not just read the metric delta. The applied
+selection is the bridge between the scored table and the lived feed.
 
 ## Trajectories
 
@@ -228,6 +279,7 @@ modal renders the steps; the score contributions panel reads
 | Metrics (scoreTask / aggregate) | `lib/reco/metrics.ts` |
 | LLM ranker (BYO) engine | `tools/reco-engines/llm-ranker/` |
 | Precomputed expected output | `data/reco-personas/expected.json` |
+| Applied-reco selection store (Phase 9) | `store/reco-selection-store.ts` (localStorage-backed) |
 | Preference + family schema | `data/db/schema/personas_schema.sql` |
 | Persona DB seed | `data/db/schema/personas_seed.sql` |
 | Persona shape doc | `docs/reco-persona-shape.md` |

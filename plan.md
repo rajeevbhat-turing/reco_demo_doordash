@@ -233,3 +233,27 @@ here's a related Y to try."
       match (did the engine put a valid adjacent-cuisine candidate
       there?) rather than exact-ID, to avoid over-penalizing reasonable
       exploration. (Update `lib/reco/metrics.ts`.)
+
+## Phase 9 — Apply a reco to the home feed
+
+Close the loop: evaluate on `/reco-eval` → **pick a winner** → see the
+actual `/home` feed that engine produces, with the choice shown. See
+`design.md` §"Apply a reco to the home feed" for the full design and the
+key-never-persisted rationale.
+
+- [ ] **Selection store** — `store/reco-selection-store.ts` (Zustand +
+      `localStorage`), one entry per `personaId`: `{ engineId, label,
+      model?, ranked_ids, scores?, capturedAt }`. Persists the engine's
+      **captured ranked output**, never credentials.
+- [ ] **"Apply to home feed" action** — each engine column on
+      `/reco-eval` gets a button that writes its result for the selected
+      persona into the store.
+- [ ] **Home feed slot fill from applied engine** — `/home` reorders each
+      cuisine section's slots by the applied engine's `ranked_ids`
+      (client-side, from the store); rule order is the fallback and the
+      no-selection default. Section scaffolding stays from `buildExpected`.
+- [ ] **Banner + reset** — `/home` shows "personalized by <label> ·
+      <model> — your pick from Reco Eval (<date>)" with a **Reset to
+      default** that clears the persona's selection.
+- [ ] **Multiple-models demo** — verify A/B of `gpt-4o-mini` vs `gpt-4o`
+      vs OpenSearch can each be applied and visibly change `/home`.
