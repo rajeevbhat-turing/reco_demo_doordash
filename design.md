@@ -72,13 +72,27 @@ per persona, per surface.
 
 **Rule (home_feed):**
 
-1. Compute *hot cuisines*: `affinity × historical_order_count`. Keep
-   cuisines above threshold (default `2.0`, tunable).
-2. For each hot cuisine, build a **section of 4 restaurants**:
-   - **3 familiar:** top by past orders for this persona, matching
-     price tier + dietary, not rated ≤ 2★.
-   - **1 new:** highest-rated cuisine match the persona has never
-     ordered from, same constraints.
+0. **Clean the order signal first (Phase 8a):** drop basket-size
+   outliers (robust median + `OUTLIER_BASKET_MAD_K`·MAD over each
+   persona's order subtotals — a one-off catering order shouldn't make
+   a cuisine "hot") and treat cuisines with fewer than
+   `MIN_CUISINE_SUPPORT` distinct orders as one-offs (not familiar).
+   Excluded orders are recorded in `ExpectedTask.filters` with a reason
+   so the demo can *show* the cleaning.
+1. Compute *hot cuisines* from the **cleaned** orders:
+   `affinity × historical_order_count`. Keep cuisines above threshold
+   (default `2.0`, tunable).
+2. For each hot cuisine, build a **section of `SECTION_SIZE` (4)
+   restaurants**, split by `novelty_appetite` (Phase 8b):
+   - **familiar** (`SECTION_SIZE − exploreCount(appetite)` slots): top
+     by past orders for this persona, matching price tier, not rated
+     ≤ 2★.
+   - **explore** (`exploreCount(appetite)` slots): prefer new
+     restaurants in the loved cuisine, then **adjacent** cuisines the
+     persona hasn't tried (Phase 8c, via the cuisine-adjacency map),
+     same constraints. The valid explore set per section is precomputed
+     into `explore_valid_ids` so scoring stays DB-free.
+   - `novelty_indices` lists which slot positions are explore slots.
 3. **Block list:** every restaurant the persona has rated ≤ 2★ — not
    allowed anywhere in the expected output.
 4. **Family constraints** (if `family` is set): exclude restaurants
@@ -99,30 +113,36 @@ needs different numbers.
 | Constant | Default | Purpose |
 |---|---|---|
 | `HOT_CUISINE_THRESHOLD` | `2.0` | A cuisine becomes "hot" when `affinity × historical_order_count ≥ 2.0`. Below this, no section is emitted. |
-| `CANDIDATE_RADIUS_MILES` | `15` | Haversine distance from the persona's `address.lat`/`lng` — restaurants outside this are not candidates. |
-| `SECTION_SIZE` | `4` | Cards per cuisine section (3 familiar + 1 new). |
-| `FAMILIAR_COUNT` | `3` | Familiar slots per section before the novelty slot. |
+| `CANDIDATE_RADIUS_MILES` | `25` | Haversine distance from the persona's `address.lat`/`lng` — restaurants outside this are not candidates. |
+| `SECTION_SIZE` | `4` | Cards per cuisine section. |
+| `FAMILIAR_COUNT` | `3` | **Deprecated (Phase 8b)** — superseded by `exploreCount(appetite)`. Kept for back-compat only. |
+| `OUTLIER_BASKET_MAD_K` | `3.0` | Phase 8a. An order is a basket-size outlier when `subtotal > median + K·MAD` over the persona's own orders. |
+| `MIN_CUISINE_SUPPORT` | `2` | Phase 8a. Distinct kept orders a cuisine needs to seed a *familiar* section; below this it's a one-off. |
+| `EXPLORE_HI` / `EXPLORE_LO` | `0.66` / `0.33` | Phase 8b. `novelty_appetite` thresholds: explorer (≥HI) → 3 explore / 1 familiar, mid → 2/2, homebody (<LO) → 1/3. |
 
-**Planned refinements (Phase 8 — see `plan.md`):** outlier/misattribution
-removal (a 2× catering order or a one-off cuisine shouldn't become a
-"hot cuisine"); an **adaptive explore/exploit ratio** driven by
-`novelty_appetite` (explorer → 3-of-4 new, homebody → 1-of-4); and
-**complementary novelty** — explore slots prefer adjacent cuisines
-("ordered Thai → try Vietnamese") via a cuisine-adjacency map, scored at
-the set level rather than exact-ID. The fixed `FAMILIAR_COUNT` below is
-superseded by the ratio function once 8b lands.
+**Phase 8 in progress — see `execution_plan.md` for steps.** It changes
+three documented contracts, reflected above and in the type/data tables:
+
+- `ExpectedSection.novelty_index: number` → **`novelty_indices: number[]`**
+  (multiple explore slots), plus a new **`explore_valid_ids: number[]`**
+  (loved + adjacent in-pool candidates) so set-level explore scoring in
+  `metrics.ts` needs no DB.
+- `ExpectedTask` gains **`filters?: { order_id?, cuisine?, reason }[]`** —
+  the orders/cuisines the 8a cleaning dropped, rendered as an
+  expected-side `filter` panel on `/reco-eval`.
+- New data file **`data/reco-personas/cuisine-adjacency.json`** +
+  `lib/reco/adjacency.ts`.
 
 **Other rule choices (v1, called out so they're easy to revisit):**
 
-- **Sections require both familiar and novel.** A cuisine that has
-  no familiar match, or no in-pool novelty match, is dropped rather
-  than emitted as a partial section. This keeps the demo's "3+1"
-  story honest.
+- **Sections require both familiar and explore.** A cuisine with no
+  familiar match, or no in-pool explore match, is dropped rather than
+  emitted as a partial section. This keeps the section story honest.
 - **Insufficient familiar candidates** are topped up with the
   highest-rated cuisine matches from the candidate pool (computed
   from `user_reviews` aggregates; `featured` flag is the tiebreak
-  when there are no reviews). The novelty slot is always positioned
-  after any filler — `novelty_index = familiar.length + filler.length`.
+  when there are no reviews). Explore slots are always positioned
+  after any filler — `novelty_indices` lists those trailing positions.
 - **`family.kid_friendly_required` is deferred in v1.** The original
   heuristic (any `menu_items.name LIKE '%kid%'` or category) matched
   only 55 of 594 restaurants — too narrow, collapsing family-persona
@@ -159,10 +179,12 @@ OpenSearch runs as a sidecar in the demo stack
 ## Cuisine sections — UI
 
 When a persona is signed in, `/home` renders one **labeled section
-per hot cuisine** ("More Thai for you"). Each section is **4 cards**:
-in v1, 3 familiar + 1 marked "Try something new". The active engine's
-ranking fills the slots. (Phase 8 makes the familiar/explore split
-adaptive to `novelty_appetite` and tags every explore card.)
+per hot cuisine** ("More Thai for you"). Each section is **4 cards**;
+the familiar/explore split is driven by `novelty_appetite` (Phase 8b) —
+an explorer (alice-tran, eli-nakamura) sees 3 "Try something new" cards,
+a homebody (ben-kowalski) sees 1. Every explore-slot card (positions in
+`novelty_indices`) is tagged. The active engine's ranking fills the
+slots.
 
 Non-persona users see today's standard home feed, untouched.
 Personalization keys off whether the signed-in user is a persona
@@ -201,6 +223,11 @@ modal renders the steps; the score contributions panel reads
 |---|---|
 | Personas (source of truth) | `data/reco-personas/personas.json` |
 | Hand overrides | `data/reco-personas/overrides.json` |
+| Cuisine adjacency map (Phase 8c) | `data/reco-personas/cuisine-adjacency.json` |
+| Candidate builder + HTTP contract | `lib/reco/candidates.ts`, `docs/reco-http-contract.md` |
+| Metrics (scoreTask / aggregate) | `lib/reco/metrics.ts` |
+| LLM ranker (BYO) engine | `tools/reco-engines/llm-ranker/` |
+| Precomputed expected output | `data/reco-personas/expected.json` |
 | Preference + family schema | `data/db/schema/personas_schema.sql` |
 | Persona DB seed | `data/db/schema/personas_seed.sql` |
 | Persona shape doc | `docs/reco-persona-shape.md` |

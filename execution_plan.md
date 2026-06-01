@@ -1,142 +1,200 @@
 # Execution — Phase 8: Label quality
 
-**Goal:** make the ground truth smarter so A/B scores reflect what a
-good recommender actually does. Three sub-phases build on each other:
+**Goal:** make the ground truth smarter so A/B scores reward what a good
+recommender actually does. Three sub-phases, each independently shippable:
 
-- **8a** — remove outlier/misattributed orders before deriving hot cuisines
+- **8a** — drop outlier/misattributed orders before deriving hot cuisines
 - **8b** — replace the fixed 3-familiar+1-new split with a ratio driven
   by `novelty_appetite`
-- **8c** — make explore slots pick *relevant* adjacent cuisines rather
-  than any novel restaurant
+- **8c** — make explore slots pick *relevant* adjacent cuisines, scored
+  at the set level
 
-All changes live in `lib/reco/eval/persona-truth.ts` (and supporting
-data files). Each addition is:
-- Exposed as a named constant (one place to tune)
-- Surfaced in the trajectory as a `filter` step so the demo can *show*
-  the cleaning
+Almost everything lives in `lib/reco/eval/persona-truth.ts`. Each rule
+is (a) a named exported constant, (b) surfaced in the trajectory as a
+`filter` step so the demo can *show* the cleaning.
 
 On exit: tick **Phase 8** in `plan.md`, clear this file's body.
 
 ---
 
+## Persona reference (drives the demos)
+
+| Bucket (`novelty_appetite`) | Personas | 8b split (explore/familiar) |
+|---|---|---|
+| Explorer (≥ `EXPLORE_HI` 0.66) | alice-tran (0.70), eli-nakamura (0.90) | 3 / 1 |
+| Mid (0.33–0.66) | chloe-okafor (.50), fatima-rashid (.40), hana-park (.50), julia-volkov (.60) | 2 / 2 |
+| Homebody (< `EXPLORE_LO` 0.33) | ben-kowalski (.20), diego-mendoza (.30), gabe-jensen (.30), idris-mensah (.20) | 1 / 3 |
+
+> ⚠️ **8b flips alice-tran** from 3-familiar/1-new (today) to
+> 1-familiar/3-explore. Expect her `flat_ranked_ids` and section win/loss
+> to change. Use **ben-kowalski** (homebody) as the "stable familiar"
+> contrast in the demo.
+
+---
+
 ## 8a — Outlier / misattribution removal
 
-Stop one-off or anomalous orders from polluting the preference signal.
-Run *before* computing hot cuisines and familiar slots.
+Runs *before* hot-cuisine and familiar computation. Add an exported
+`cleanOrderSignals(...)` helper (or inline) that returns the kept set
+plus a list of `{order_id, reason}` exclusions for the trajectory.
 
-- [ ] **8a.1 — Basket-size outlier flag**
-      For each persona, compute `median` and `MAD` of order totals
-      (item count × price, or total spend). Flag orders where
-      `total > median + OUTLIER_BASKET_MAD_K × MAD`
-      (default `OUTLIER_BASKET_MAD_K = 3.0`).
-      Excluded from `ordersByCuisine` and `ordersByStore` tallies.
-      Emit a `filter` trajectory step listing excluded order IDs with
-      reason `"basket outlier: Nx median"`.
+- [ ] **8a.1 — Pull order detail in `loadPersonaSignals`**
+      Extend the orders query to also select `subtotal` (cents) and
+      `order_date` per order (today it only does `COUNT(*)` by store).
+      Need per-order rows, not just store tallies, to compute the
+      distribution. Keep the existing aggregates too.
 
-- [ ] **8a.2 — Cuisine one-off filter**
-      A cuisine needs ≥ `MIN_CUISINE_SUPPORT` distinct orders (default
-      `2`) to count as established. A single order in a normally-uneaten
-      cuisine is treated as noise for the familiar slot (may still seed
-      an explore slot). Emit as `filter` step: `"one-off cuisine: only
-      N order(s)"`.
+- [ ] **8a.2 — Basket-size outlier flag**
+      Constant `OUTLIER_BASKET_MAD_K = 3.0`. Compute `median` and `MAD`
+      of the persona's order `subtotal`s. Flag any order with
+      `subtotal > median + OUTLIER_BASKET_MAD_K × MAD` (guard MAD=0 →
+      no exclusions). Excluded orders don't count toward `ordersByStore`
+      or `ordersByCuisine`. Reason string:
+      `"order #<id>: <ratio>× median basket — outlier"`.
 
-- [ ] **8a.3 — Affinity vs. behavior mismatch flag (surface only)**
-      High `order_count` + near-zero affinity → possible
-      misattribution (flag in trajectory, don't exclude). High affinity
-      + low order_count → stated-but-unproven (good explore candidate,
-      not familiar slot). No hard exclusion in v1 — just a visible
-      trajectory annotation.
+- [ ] **8a.3 — Cuisine one-off filter**
+      Constant `MIN_CUISINE_SUPPORT = 2`. A cuisine needs ≥ this many
+      *distinct kept orders* to seed a **familiar** section. A single
+      order from an otherwise-uneaten cuisine is excluded from familiar
+      (may still seed an explore slot in 8c). Reason:
+      `"<cuisine>: only <n> order — below support, not familiar"`.
 
-- [ ] **8a.4 — Unit tests**
-      In `tests/unit/reco/persona-truth.test.ts`:
-      - catering-sized outlier is excluded from hot-cuisine tally
-      - one-off cuisine doesn't produce a familiar section
-      - normal orders unaffected
+- [ ] **8a.4 — Affinity vs. behavior mismatch (surface only, no drop)**
+      High `order_count` + near-zero stated affinity → annotate
+      `"possible misattribution"`. High affinity + low order_count →
+      annotate `"stated-but-unproven (explore candidate)"`. v1 only
+      writes these into the trajectory; no exclusion.
 
-- [ ] **8a.5 — Outlier eval scenario**
-      Seed a known catering order for alice-tran (large basket, Thai
-      restaurant she hasn't otherwise ordered from). Assert: (a) cleaned
-      rule ignores it, (b) naive rule would have counted it. Use as a
-      demo case on `/reco-eval` trajectory drilldown.
+- [ ] **8a.5 — Emit the `filter` trajectory step**
+      `buildExpected` already returns `ExpectedTask`; the *engines* emit
+      trajectories. So the cleaning needs to surface where the demo
+      reads it. Decision: add `filters?: {order_id?, cuisine?, reason}[]`
+      to `ExpectedTask` (rule output), and have the OpenSearch sidecar +
+      `/reco-eval` render an expected-side `filter` panel. (Engines'
+      own trajectories are unchanged.) Document in design.md.
+
+- [ ] **8a.6 — Unit tests** (`tests/unit/reco/persona-truth.test.ts`)
+      - catering-sized order (≫ median) excluded from hot-cuisine tally
+      - cuisine with 1 order → no familiar section emitted
+      - normal orders untouched; MAD=0 path safe
+      - filters list populated with correct reasons
+
+- [ ] **8a.7 — Outlier eval scenario (seed)**
+      Add one large Thai catering order for alice-tran to
+      `data/db/schema/personas_seed.sql` **and** the live `dashdoor.db`
+      (a restaurant she hasn't otherwise ordered from). Assert the
+      cleaned rule ignores it while a naive tally would have made that
+      restaurant/cuisine hot. Regenerate `expected.json` (8d.1).
 
 ---
 
 ## 8b — Adaptive exploration ratio
 
-Replace the fixed `FAMILIAR_COUNT = 3` with a ratio driven by
-`novelty_appetite`.
+Replace fixed `FAMILIAR_COUNT = 3` with a ratio from `novelty_appetite`.
 
-- [ ] **8b.1 — `exploreCount(appetite)` function**
-      Export from `persona-truth.ts`:
-      ```
-      appetite >= EXPLORE_HI (default 0.66) → 3 explore / 1 familiar
-      EXPLORE_LO <= appetite < EXPLORE_HI   → 2 explore / 2 familiar
-      appetite <  EXPLORE_LO (default 0.33) → 1 explore / 3 familiar
-      ```
-      `FAMILIAR_COUNT` constant kept for backwards compat but
-      superseded by the ratio function.
+- [ ] **8b.1 — `exploreCount(appetite)` exported fn**
+      Constants `EXPLORE_HI = 0.66`, `EXPLORE_LO = 0.33`.
+      `appetite ≥ HI → 3`, `LO ≤ appetite < HI → 2`, `< LO → 1`
+      (out of `SECTION_SIZE = 4`). Keep `FAMILIAR_COUNT` exported but
+      mark `@deprecated — superseded by exploreCount()`.
 
-- [ ] **8b.2 — Wire into `buildExpected`**
-      Replace `familiar.slice(0, FAMILIAR_COUNT)` with
-      `familiar.slice(0, SECTION_SIZE - exploreCount(appetite))`.
-      `novelty_index` generalises to a *set* of explore indices.
+- [ ] **8b.2 — Type change: `novelty_index` → `novelty_indices: number[]`**
+      Breaking rename on `ExpectedSection`. Touch every call site:
+      - `lib/reco/types.ts:59` — field definition (+ keep optional
+        `novelty_index` getter? No — clean rename, update all consumers)
+      - `lib/reco/eval/persona-truth.ts:179,185` — set the array
+      - `components/cuisine-section.tsx:26` — `indices.includes(idx)`
+      - `app/reco-eval/reco-eval-client.tsx:499` — section win/loss ring
+      - `scripts/dump-persona-truth.ts:42,45` — CLI dump
+      - `tests/unit/reco/persona-truth.test.ts` — asserts (lines ~180,
+        211, 221)
+      - `data/reco-personas/expected.json` — regenerate (8d.1)
+      - `data/reco-personas/overrides.json` — currently `{}`, but
+        `ExpectedOverride` shape follows the type; note in design.md
 
-- [ ] **8b.3 — UI — `cuisine-section.tsx`**
-      Tag *all* explore-slot cards "Try something new" (not just the
-      last one). `novelty_index` becomes `novelty_indices: number[]`.
+- [ ] **8b.3 — Wire into `buildExpected`**
+      `const explore = exploreCount(persona.preferences.novelty_appetite);`
+      `const familiarN = SECTION_SIZE - explore;` Take `familiarN`
+      familiar; fill the rest with explore picks (8c). Explore slots are
+      the trailing `explore` positions →
+      `novelty_indices = [familiarN, …, SECTION_SIZE-1]`.
 
-- [ ] **8b.4 — Unit tests**
-      Explorer persona (appetite 0.8) → 3 explore slots.
-      Homebody persona (appetite 0.2) → 1 explore slot.
-      Mid persona (appetite 0.5) → 2 explore slots.
+- [ ] **8b.4 — UI tags all explore cards**
+      `cuisine-section.tsx`: tag every card whose index is in
+      `novelty_indices` with "Try something new" (not just one).
+
+- [ ] **8b.5 — Unit tests**
+      explorer (0.8)→3 explore indices; homebody (0.2)→1; mid (0.5)→2.
+      Boundary: exactly 0.66→explorer, exactly 0.33→mid.
 
 ---
 
 ## 8c — Complementary / next-order novelty
 
-Make explore slots *relevant* instead of random.
+Make explore slots *relevant* and score them as a set.
 
 - [ ] **8c.1 — Cuisine-adjacency map**
-      Create `data/reco-personas/cuisine-adjacency.json` (hand-curated
-      v1). Suggested adjacencies:
-      Thai ↔ Vietnamese ↔ Malaysian
-      Italian ↔ Mediterranean ↔ Greek
-      Mexican ↔ Tex-Mex ↔ Latin American
-      Japanese ↔ Korean ↔ Chinese
-      Indian ↔ Pakistani ↔ Middle Eastern
+      `data/reco-personas/cuisine-adjacency.json` — symmetric map,
+      hand-curated v1 (keys must match `restaurants.cuisine` values):
+      Thai↔Vietnamese↔Malaysian · Italian↔Mediterranean↔Greek ·
+      Mexican↔Latin American · Japanese↔Korean↔Chinese ·
+      Indian↔Mediterranean. New `lib/reco/adjacency.ts` exports
+      `loadAdjacencies(path)` and `adjacentCuisines(cuisine, map)`.
+      (Verify against actual distinct cuisines in the DB first.)
 
 - [ ] **8c.2 — Explore-slot fill priority**
-      Explore slots prefer, in order:
-      1. New restaurants in the persona's *loved* cuisine (not yet
-         ordered from)
-      2. Restaurants in an *adjacent* cuisine not yet tried
-      Subject to the same block list / price / family constraints.
-      Export `loadAdjacencies(path)` from a new `lib/reco/adjacency.ts`.
+      For each section's explore slots, prefer in order:
+      1. new restaurants in the persona's *loved* cuisine (never ordered)
+      2. restaurants in an *adjacent* cuisine never tried
+      Subject to the same block-list / price / family constraints as
+      familiar slots. Replaces today's single "highest-rated novel" pick.
 
-- [ ] **8c.3 — Set-level scoring for explore slots**
-      In `lib/reco/metrics.ts`: explore slots have no single right
-      answer. Score them as a *category match* — did the engine put
-      a valid loved-or-adjacent-cuisine candidate in that position?
-      New function: `scoreExploreSlot(id, section, adjacency) → bool`.
-      Update `scoreTask` to use set-level scoring for positions >=
-      `novelty_indices[0]`.
+- [ ] **8c.3 — Set-level scoring (keep `metrics.ts` DB-free)**
+      Explore slots have no single right answer. To avoid passing a
+      restaurant→cuisine map into `scoreTask`, **precompute** the valid
+      set into the rule output: add `explore_valid_ids: number[]` to
+      `ExpectedSection` (all loved+adjacent in-pool candidates for that
+      section). In `metrics.ts`: a ranked id landing in an explore slot
+      scores as a hit if it ∈ that section's `explore_valid_ids`;
+      familiar slots stay exact-ID. New `scoreTask` option
+      `{ sectionAware: true }` or a sibling `scoreTaskBySection`.
 
 - [ ] **8c.4 — Unit tests**
-      Exact adjacent pick → explore slot scores as hit.
-      Irrelevant cuisine → miss.
-      Loved-cuisine restaurant → hit.
+      adjacent-cuisine pick in explore slot → hit; irrelevant cuisine →
+      miss; loved-cuisine new restaurant → hit; familiar slot still
+      exact-ID.
+
+---
+
+## 8d — Regen + docs
+
+- [ ] **8d.1 — Regenerate `expected.json`**
+      Re-run `scripts/dump-persona-truth.ts` (or its write path) so the
+      committed ground truth matches the new rule. Confirm
+      `/api/reco/persona-home` and `/reco-eval` still render.
+
+- [ ] **8d.2 — design.md** — already updated for the contract changes
+      this phase introduces (constants, `novelty_indices`,
+      `explore_valid_ids`, `filters`, adjacency file). Verify it matches
+      the shipped code at exit.
+
+- [ ] **8d.3 — Smoke** — `scripts/persona-demo-smoke.sh` still exits 0;
+      add an assertion that alice-tran's trajectory/expected carries a
+      non-empty `filters` list (the seeded catering outlier).
 
 ---
 
 ## Exit criteria
 
-- [ ] **Outlier scenario passes** — trajectory modal for alice-tran
-      shows the catering order excluded with reason; naive vs. cleaned
-      rule produce different hot-cuisine scores.
-- [ ] **Adaptive ratio visible** — explorer persona sections show 3
-      "Try something new" tags; homebody shows 1.
-- [ ] **Adjacent explore** — for a Thai-loving persona, explore slots
-      come from Vietnamese/Malaysian (or Thai), not random cuisines.
+- [ ] **Outlier scenario passes** — alice-tran's expected output shows
+      the seeded catering order in `filters` with a reason; the naive
+      tally vs. cleaned rule produce different hot cuisines (unit test
+      proves it).
+- [ ] **Adaptive ratio visible** — `/home` as eli-nakamura (explorer)
+      shows 3 "Try something new" cards per section; ben-kowalski
+      (homebody) shows 1.
+- [ ] **Adjacent explore** — alice-tran (Thai) explore slots are filled
+      from Vietnamese/Malaysian or new Thai, never random cuisines.
 - [ ] **Types clean** — `npx tsc --noEmit` passes.
 - [ ] **Unit tests green** — `npm run test:unit` passes (incl. new
       8a/8b/8c tests).
