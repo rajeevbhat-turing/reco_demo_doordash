@@ -51,9 +51,10 @@ if ! docker info >/dev/null 2>&1; then
 fi
 echo "→ Docker daemon ready"
 
-# ── 2. Free the ports we need (3000 = Next.js, 4001 = sidecar) ──────────────────
+# ── 2. Free the ports we need (3000 = Next.js, 4001 = opensearch, 4002 = llm-ranker) ──
 free_port 3000
 free_port 4001
+free_port 4002
 sleep 1
 
 # ── 3. OpenSearch via Docker (idempotent) ───────────────────────────────────────
@@ -74,13 +75,18 @@ done
 echo "→ seeding OpenSearch"
 npx tsx scripts/seed-opensearch.ts
 
-# ── 5. Start the reco sidecar on :4001 ──────────────────────────────────────────
-echo "→ starting reco sidecar on :4001"
+# ── 5. Start the reco sidecars ───────────────────────────────────────────────────
+echo "→ starting opensearch sidecar on :4001"
 npm run reco:opensearch &
 SIDECAR_PID=$!
 echo "   sidecar PID $SIDECAR_PID"
 
-# ── 6. Start Next.js on :3000 (foreground; Ctrl-C tears down the sidecar) ───────
+echo "→ starting llm-ranker sidecar on :4002"
+npm run reco:llm-ranker &
+LLM_SIDECAR_PID=$!
+echo "   llm-ranker PID $LLM_SIDECAR_PID"
+
+# ── 6. Start Next.js on :3000 (foreground; Ctrl-C tears down sidecars) ───────────
 echo "→ starting Next.js on :3000"
-trap "kill $SIDECAR_PID 2>/dev/null || true; exit" INT TERM
+trap "kill $SIDECAR_PID $LLM_SIDECAR_PID 2>/dev/null || true; exit" INT TERM
 npm run dev
