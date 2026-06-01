@@ -16,7 +16,7 @@ DELETE FROM addresses       WHERE user_id BETWEEN 3101 AND 3110;
 -- =====================================================
 -- alice-tran (user 3101) — Brooklyn solo, orders Thai 3x/week, picky about pad see ew.
 -- =====================================================
-INSERT OR REPLACE INTO users (id, name, email, phone_number, password, country_id, avatar, is_restricted) VALUES (3101, 'Alice Tran', 'alice.tran@personas.demo', '5550003101', 'password', 2, NULL, 0);
+INSERT OR REPLACE INTO users (id, name, email, phone_number, password, country_id, avatar, is_restricted) VALUES (3101, 'Alice Tran', 'alice.tran@example.com', '5550003101', 'password', 2, NULL, 0);
 INSERT INTO addresses (id, user_id, street, city, state, zip_code, latitude, longitude, address_type, is_default) VALUES (9001, 3101, '750 Nostrand Ave', 'Brooklyn', 'NY', '11216', 40.6782, -73.9442, 'house', 1);
 INSERT INTO user_preferences (user_id, cuisine_affinity, price_tier, dietary, spice_tolerance, novelty_appetite, delivery_time_tolerance, promo_sensitivity) VALUES (3101, '{"Thai":0.9,"Vietnamese":0.6,"Japanese":0.4}', 'mid', '["no-pork"]', 'hot', 0.7, 'quick', 'mid');
 INSERT INTO orders (id, user_id, store_id, store_category, payment_method_id, address_id, delivery_type, delivery_time_str, extra_fee, phone_country_code, phone_number, tip_amount, subtotal, service_fee, delivery_fee, total, order_date, status) VALUES (9000001, 3101, 289, 'restaurant', NULL, 9001, 'delivery', '25-40 min', 0, '+1', '5550003101', 195, 1948, 234, 399, 2776, '2026-05-28T01:00:00.000Z', 'delivered');
@@ -51,7 +51,7 @@ INSERT INTO user_reviews (id, store_id, store_category, user_id, rating, content
 -- =====================================================
 -- ben-kowalski (user 3102) — Manhattan Beach homebody, sticks to the same four trattorias, hates surprises.
 -- =====================================================
-INSERT OR REPLACE INTO users (id, name, email, phone_number, password, country_id, avatar, is_restricted) VALUES (3102, 'Ben Kowalski', 'ben.kowalski@personas.demo', '5550003102', 'password', 2, NULL, 0);
+INSERT OR REPLACE INTO users (id, name, email, phone_number, password, country_id, avatar, is_restricted) VALUES (3102, 'Ben Kowalski', 'ben.kowalski@example.com', '5550003102', 'password', 2, NULL, 0);
 INSERT INTO addresses (id, user_id, street, city, state, zip_code, latitude, longitude, address_type, is_default) VALUES (9002, 3102, '401 Manhattan Beach Blvd', 'Manhattan Beach', 'CA', '90266', 33.8847, -118.4109, 'house', 1);
 INSERT INTO user_preferences (user_id, cuisine_affinity, price_tier, dietary, spice_tolerance, novelty_appetite, delivery_time_tolerance, promo_sensitivity) VALUES (3102, '{"Italian":0.8,"Mediterranean":0.5,"American":0.4}', 'premium', '[]', 'mild', 0.2, 'flexible', 'low');
 INSERT INTO orders (id, user_id, store_id, store_category, payment_method_id, address_id, delivery_type, delivery_time_str, extra_fee, phone_country_code, phone_number, tip_amount, subtotal, service_fee, delivery_fee, total, order_date, status) VALUES (9000012, 3102, 430, 'restaurant', NULL, 9002, 'delivery', '25-40 min', 0, '+1', '5550003102', 364, 3636, 436, 399, 4835, '2026-05-28T01:00:00.000Z', 'delivered');
@@ -86,7 +86,7 @@ INSERT INTO user_reviews (id, store_id, store_category, user_id, rating, content
 -- =====================================================
 -- chloe-okafor (user 3103) — LA grad student, vegetarian, lives on Indian thalis and deals.
 -- =====================================================
-INSERT OR REPLACE INTO users (id, name, email, phone_number, password, country_id, avatar, is_restricted) VALUES (3103, 'Chloe Okafor', 'chloe.okafor@personas.demo', '5550003103', 'password', 2, NULL, 0);
+INSERT OR REPLACE INTO users (id, name, email, phone_number, password, country_id, avatar, is_restricted) VALUES (3103, 'Chloe Okafor', 'chloe.okafor@example.com', '5550003103', 'password', 2, NULL, 0);
 INSERT INTO addresses (id, user_id, street, city, state, zip_code, latitude, longitude, address_type, is_default) VALUES (9003, 3103, '1645 Sunset Blvd', 'Los Angeles', 'CA', '90026', 34.0768, -118.2606, 'house', 1);
 INSERT INTO user_preferences (user_id, cuisine_affinity, price_tier, dietary, spice_tolerance, novelty_appetite, delivery_time_tolerance, promo_sensitivity) VALUES (3103, '{"Indian":0.9,"Mediterranean":0.6,"Mexican":0.3}', 'budget', '["vegetarian"]', 'hot', 0.5, 'quick', 'high');
 INSERT INTO orders (id, user_id, store_id, store_category, payment_method_id, address_id, delivery_type, delivery_time_str, extra_fee, phone_country_code, phone_number, tip_amount, subtotal, service_fee, delivery_fee, total, order_date, status) VALUES (9000023, 3103, 468, 'restaurant', NULL, 9003, 'delivery', '25-40 min', 0, '+1', '5550003103', 48, 479, 199, 399, 1125, '2026-05-28T01:00:00.000Z', 'delivered');
@@ -121,7 +121,7 @@ INSERT INTO user_reviews (id, store_id, store_category, user_id, rating, content
 -- =====================================================
 -- diego-mendoza (user 3104) — LA plumber, weeknight tacos and Wednesday wings, quick delivery only.
 -- =====================================================
-INSERT OR REPLACE INTO users (id, name, email, phone_number, password, country_id, avatar, is_restricted) VALUES (3104, 'Diego Mendoza', 'diego.mendoza@personas.demo', '5550003104', 'password', 2, NULL, 0);
+INSERT OR REPLACE INTO users (id, name, email, phone_number, password, country_id, avatar, is_restricted) VALUES (3104, 'Diego Mendoza', 'diego.mendoza@example.com', '5550003104', 'password', 2, NULL, 0);
 INSERT INTO addresses (id, user_id, street, city, state, zip_code, latitude, longitude, address_type, is_default) VALUES (9004, 3104, '1500 Pico Blvd', 'Los Angeles', 'CA', '90015', 34.0418, -118.2752, 'house', 1);
 INSERT INTO user_preferences (user_id, cuisine_affinity, price_tier, dietary, spice_tolerance, novelty_appetite, delivery_time_tolerance, promo_sensitivity) VALUES (3104, '{"Mexican":0.9,"American":0.5}', 'mid', '[]', 'medium', 0.3, 'quick', 'mid');
 INSERT INTO orders (id, user_id, store_id, store_category, payment_method_id, address_id, delivery_type, delivery_time_str, extra_fee, phone_country_code, phone_number, tip_amount, subtotal, service_fee, delivery_fee, total, order_date, status) VALUES (9000034, 3104, 495, 'restaurant', NULL, 9004, 'delivery', '25-40 min', 0, '+1', '5550003104', 140, 1399, 199, 399, 2137, '2026-05-28T01:00:00.000Z', 'delivered');
@@ -153,7 +153,7 @@ INSERT INTO user_reviews (id, store_id, store_category, user_id, rating, content
 -- =====================================================
 -- eli-nakamura (user 3105) — Williamsburg food explorer, will try anything if the rating is above 4.3.
 -- =====================================================
-INSERT OR REPLACE INTO users (id, name, email, phone_number, password, country_id, avatar, is_restricted) VALUES (3105, 'Eli Nakamura', 'eli.nakamura@personas.demo', '5550003105', 'password', 2, NULL, 0);
+INSERT OR REPLACE INTO users (id, name, email, phone_number, password, country_id, avatar, is_restricted) VALUES (3105, 'Eli Nakamura', 'eli.nakamura@example.com', '5550003105', 'password', 2, NULL, 0);
 INSERT INTO addresses (id, user_id, street, city, state, zip_code, latitude, longitude, address_type, is_default) VALUES (9005, 3105, '65 N 6th St', 'Brooklyn', 'NY', '11249', 40.7173, -73.9606, 'house', 1);
 INSERT INTO user_preferences (user_id, cuisine_affinity, price_tier, dietary, spice_tolerance, novelty_appetite, delivery_time_tolerance, promo_sensitivity) VALUES (3105, '{"Japanese":0.9,"Korean":0.7,"Chinese":0.4}', 'premium', '[]', 'medium', 0.9, 'flexible', 'low');
 INSERT INTO orders (id, user_id, store_id, store_category, payment_method_id, address_id, delivery_type, delivery_time_str, extra_fee, phone_country_code, phone_number, tip_amount, subtotal, service_fee, delivery_fee, total, order_date, status) VALUES (9000044, 3105, 312, 'restaurant', NULL, 9005, 'delivery', '25-40 min', 0, '+1', '5550003105', 104, 1038, 199, 399, 1740, '2026-05-28T01:00:00.000Z', 'delivered');
@@ -187,7 +187,7 @@ INSERT INTO user_reviews (id, store_id, store_category, user_id, rating, content
 -- =====================================================
 -- fatima-rashid (user 3106) — Brooklyn family of four, halal-only, big Sunday orders for the household.
 -- =====================================================
-INSERT OR REPLACE INTO users (id, name, email, phone_number, password, country_id, avatar, is_restricted) VALUES (3106, 'Fatima Rashid', 'fatima.rashid@personas.demo', '5550003106', 'password', 2, NULL, 0);
+INSERT OR REPLACE INTO users (id, name, email, phone_number, password, country_id, avatar, is_restricted) VALUES (3106, 'Fatima Rashid', 'fatima.rashid@example.com', '5550003106', 'password', 2, NULL, 0);
 INSERT INTO addresses (id, user_id, street, city, state, zip_code, latitude, longitude, address_type, is_default) VALUES (9006, 3106, '2055 Coney Island Ave', 'Brooklyn', 'NY', '11223', 40.6035, -73.9618, 'house', 1);
 INSERT INTO user_preferences (user_id, cuisine_affinity, price_tier, dietary, spice_tolerance, novelty_appetite, delivery_time_tolerance, promo_sensitivity) VALUES (3106, '{"Mediterranean":0.85,"Mexican":0.5,"American":0.4}', 'mid', '["halal"]', 'medium', 0.4, 'flexible', 'high');
 INSERT INTO user_family (user_id, adults, kids, kid_ages, shared_dietary, kid_friendly_required, notes) VALUES (3106, 2, 2, '[5,9]', '["halal"]', 1, 'Sunday family-night is the big order; weekdays are usually solo lunches.');
@@ -233,7 +233,7 @@ INSERT INTO user_reviews (id, store_id, store_category, user_id, rating, content
 -- =====================================================
 -- gabe-jensen (user 3107) — Park Slope couple with a toddler, nut-free everything, kid-friendly menus only.
 -- =====================================================
-INSERT OR REPLACE INTO users (id, name, email, phone_number, password, country_id, avatar, is_restricted) VALUES (3107, 'Gabe Jensen', 'gabe.jensen@personas.demo', '5550003107', 'password', 2, NULL, 0);
+INSERT OR REPLACE INTO users (id, name, email, phone_number, password, country_id, avatar, is_restricted) VALUES (3107, 'Gabe Jensen', 'gabe.jensen@example.com', '5550003107', 'password', 2, NULL, 0);
 INSERT INTO addresses (id, user_id, street, city, state, zip_code, latitude, longitude, address_type, is_default) VALUES (9007, 3107, '560 7th Ave', 'Brooklyn', 'NY', '11215', 40.6651, -73.9823, 'house', 1);
 INSERT INTO user_preferences (user_id, cuisine_affinity, price_tier, dietary, spice_tolerance, novelty_appetite, delivery_time_tolerance, promo_sensitivity) VALUES (3107, '{"American":0.85,"Italian":0.6,"Mexican":0.4}', 'mid', '["nut-free"]', 'mild', 0.3, 'flexible', 'high');
 INSERT INTO user_family (user_id, adults, kids, kid_ages, shared_dietary, kid_friendly_required, notes) VALUES (3107, 2, 1, '[3]', '["nut-free"]', 1, 'Toddler with a real nut allergy — nut-free is a hard block, not guidance.');
@@ -282,7 +282,7 @@ INSERT INTO user_reviews (id, store_id, store_category, user_id, rating, content
 -- =====================================================
 -- hana-park (user 3108) — Koreatown LA family of four with older kids, Korean BBQ and dumpling nights.
 -- =====================================================
-INSERT OR REPLACE INTO users (id, name, email, phone_number, password, country_id, avatar, is_restricted) VALUES (3108, 'Hana Park', 'hana.park@personas.demo', '5550003108', 'password', 2, NULL, 0);
+INSERT OR REPLACE INTO users (id, name, email, phone_number, password, country_id, avatar, is_restricted) VALUES (3108, 'Hana Park', 'hana.park@example.com', '5550003108', 'password', 2, NULL, 0);
 INSERT INTO addresses (id, user_id, street, city, state, zip_code, latitude, longitude, address_type, is_default) VALUES (9008, 3108, '3450 W 6th St', 'Los Angeles', 'CA', '90020', 34.0625, -118.3007, 'house', 1);
 INSERT INTO user_preferences (user_id, cuisine_affinity, price_tier, dietary, spice_tolerance, novelty_appetite, delivery_time_tolerance, promo_sensitivity) VALUES (3108, '{"Korean":0.85,"Chinese":0.6,"Japanese":0.4}', 'mid', '[]', 'medium', 0.5, 'quick', 'mid');
 INSERT INTO user_family (user_id, adults, kids, kid_ages, shared_dietary, kid_friendly_required, notes) VALUES (3108, 2, 2, '[8,11]', '[]', 0, 'Kids are old enough that kid-friendly menus aren''t required.');
@@ -329,7 +329,7 @@ INSERT INTO user_reviews (id, store_id, store_category, user_id, rating, content
 -- =====================================================
 -- idris-mensah (user 3109) — Brooklyn family of five, three kids under 13, value-conscious bulk orders.
 -- =====================================================
-INSERT OR REPLACE INTO users (id, name, email, phone_number, password, country_id, avatar, is_restricted) VALUES (3109, 'Idris Mensah', 'idris.mensah@personas.demo', '5550003109', 'password', 2, NULL, 0);
+INSERT OR REPLACE INTO users (id, name, email, phone_number, password, country_id, avatar, is_restricted) VALUES (3109, 'Idris Mensah', 'idris.mensah@example.com', '5550003109', 'password', 2, NULL, 0);
 INSERT INTO addresses (id, user_id, street, city, state, zip_code, latitude, longitude, address_type, is_default) VALUES (9009, 3109, '1825 Pitkin Ave', 'Brooklyn', 'NY', '11212', 40.6644, -73.9128, 'house', 1);
 INSERT INTO user_preferences (user_id, cuisine_affinity, price_tier, dietary, spice_tolerance, novelty_appetite, delivery_time_tolerance, promo_sensitivity) VALUES (3109, '{"Chinese":0.8,"American":0.6,"Italian":0.4}', 'budget', '[]', 'mild', 0.2, 'flexible', 'high');
 INSERT INTO user_family (user_id, adults, kids, kid_ages, shared_dietary, kid_friendly_required, notes) VALUES (3109, 2, 3, '[4,7,12]', '[]', 1, 'Big orders, two-and-three-entree share plates dominate the cart.');
@@ -375,7 +375,7 @@ INSERT INTO user_reviews (id, store_id, store_category, user_id, rating, content
 -- =====================================================
 -- julia-volkov (user 3110) — Brooklyn Heights couple with one child, gluten-free, weekend pho ritual.
 -- =====================================================
-INSERT OR REPLACE INTO users (id, name, email, phone_number, password, country_id, avatar, is_restricted) VALUES (3110, 'Julia Volkov', 'julia.volkov@personas.demo', '5550003110', 'password', 2, NULL, 0);
+INSERT OR REPLACE INTO users (id, name, email, phone_number, password, country_id, avatar, is_restricted) VALUES (3110, 'Julia Volkov', 'julia.volkov@example.com', '5550003110', 'password', 2, NULL, 0);
 INSERT INTO addresses (id, user_id, street, city, state, zip_code, latitude, longitude, address_type, is_default) VALUES (9010, 3110, '110 Henry St', 'Brooklyn', 'NY', '11201', 40.6957, -73.9938, 'house', 1);
 INSERT INTO user_preferences (user_id, cuisine_affinity, price_tier, dietary, spice_tolerance, novelty_appetite, delivery_time_tolerance, promo_sensitivity) VALUES (3110, '{"Vietnamese":0.85,"Thai":0.6,"Chinese":0.4}', 'premium', '["gluten-free"]', 'hot', 0.6, 'quick', 'low');
 INSERT INTO user_family (user_id, adults, kids, kid_ages, shared_dietary, kid_friendly_required, notes) VALUES (3110, 2, 1, '[6]', '["gluten-free"]', 1, 'Celiac household — gluten-free is non-negotiable on every order.');

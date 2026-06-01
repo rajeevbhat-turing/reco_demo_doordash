@@ -42,8 +42,8 @@ When a task finishes, tick the box in both files in the same commit.
 ### How to test Phase 4
 
 Login IDs (seeded users 3101–3110, password is literally `password`):
-- **Persona:** `alice.tran@personas.demo` / `password` (Thai-heavy, no
-  family). Any of the 10 `<first>.<last>@personas.demo` users works.
+- **Persona:** `alice.tran@example.com` / `password` (Thai-heavy, no
+  family). Any of the 10 `<first>.<last>@example.com` users works.
 - **Non-persona control:** `john.doe@example.com` / `password`.
 
 Steps:
@@ -61,7 +61,7 @@ Steps:
    (default alice-tran), click **Run** → ranked table of restaurant
    names + cuisine appears.
 3. **Persona sections:** sign in at `/login` as
-   `alice.tran@personas.demo` / `password`, open `/home`. Labeled
+   `alice.tran@example.com` / `password`, open `/home`. Labeled
    cuisine sections ("More Thai for you", etc.) render above the normal
    feed; one card per section is tagged "Try something new".
 4. **Non-persona control:** sign in as `john.doe@example.com` /

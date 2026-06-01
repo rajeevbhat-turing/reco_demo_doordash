@@ -24,10 +24,7 @@ function buildPrompt(persona: Persona, candidates: Candidate[]): string {
     )
     .join('\n');
 
-  const exampleIds = candidates
-    .slice(0, 3)
-    .map((c) => c.id)
-    .join(', ');
+  const allIds = candidates.map((c) => c.id).join(', ');
 
   return `You are a restaurant recommendation engine. Rank these restaurants for a user.
 
@@ -40,10 +37,9 @@ User preferences:
 Candidates (${candidates.length} restaurants):
 ${candidateLines}
 
-Return ONLY a JSON array of restaurant IDs in ranked order (best first).
-Example format: [${exampleIds}, ...]
-
-Include all ${candidates.length} IDs exactly once. No other text.`;
+Respond with ONLY a JSON array of all ${candidates.length} IDs ranked best-first.
+Use exactly these IDs: ${allIds}
+No explanation, no extra text — just the JSON array.`;
 }
 
 function parseRankedIds(
@@ -51,37 +47,38 @@ function parseRankedIds(
   candidates: Candidate[]
 ): { ranked_ids: number[]; scores: Record<number, number> } {
   const candidateIdSet = new Set(candidates.map((c) => c.id));
-  const match = content.match(/\[[\d,\s]+\]/);
+
+  // Extract the first [...] block — strip non-numeric chars inside so "..." or
+  // stray text from the model doesn't break JSON.parse.
+  const match = content.match(/\[([^\]]*)\]/);
   if (match) {
     try {
-      const parsed: unknown[] = JSON.parse(match[0]);
+      const cleaned = '[' + match[1].replace(/[^\d,\s]/g, ' ') + ']';
+      const parsed: unknown[] = JSON.parse(cleaned);
       const validIds = parsed.filter(
-        (x): x is number => typeof x === 'number' && candidateIdSet.has(x)
+        (x): x is number => typeof x === 'number' && Number.isFinite(x) && candidateIdSet.has(x)
       );
       const deduped = [...new Set(validIds)];
       const missing = candidates.map((c) => c.id).filter((id) => !deduped.includes(id));
       const ranked_ids = [...deduped, ...missing];
       const scores: Record<number, number> = {};
-      ranked_ids.forEach((id, i) => {
-        scores[id] = 1 / (i + 1);
-      });
+      ranked_ids.forEach((id, i) => { scores[id] = 1 / (i + 1); });
       return { ranked_ids, scores };
     } catch {
       // fall through to fallback
     }
   }
+
   const ranked_ids = candidates.map((c) => c.id);
   const scores: Record<number, number> = {};
-  ranked_ids.forEach((id, i) => {
-    scores[id] = 1 / (i + 1);
-  });
+  ranked_ids.forEach((id, i) => { scores[id] = 1 / (i + 1); });
   return { ranked_ids, scores };
 }
 
 async function callLlm(
   prompt: string,
   llm?: LlmConfig
-): Promise<{ content: string; source: 'byo-gateway' | 'server-default'; gatewayHost?: string }> {
+): Promise<{ content: string; source: 'byo-gateway' | 'server-default'; model: string; gatewayHost?: string }> {
   if (llm) {
     const url = `${llm.baseUrl.replace(/\/$/, '')}/chat/completions`;
     // Omit temperature — reasoning models (o1/o3/o4-*) reject temperature=0.
@@ -105,7 +102,7 @@ async function callLlm(
     };
     const content = data.choices?.[0]?.message?.content ?? '';
     const gatewayHost = new URL(llm.baseUrl).hostname;
-    return { content, source: 'byo-gateway', gatewayHost };
+    return { content, source: 'byo-gateway', model: llm.model, gatewayHost };
   }
 
   // Server-default: prefer OPENAI_API_KEY (gpt-4o-mini), fall back to ANTHROPIC_API_KEY.
@@ -122,7 +119,6 @@ async function callLlm(
       body: JSON.stringify({
         model: 'gpt-4o-mini',
         messages: [{ role: 'user', content: prompt }],
-        temperature: 0,
       }),
     });
     if (!res.ok) {
@@ -133,7 +129,7 @@ async function callLlm(
       choices?: Array<{ message?: { content?: string } }>;
     };
     const content = data.choices?.[0]?.message?.content ?? '';
-    return { content, source: 'server-default' };
+    return { content, source: 'server-default', model: 'gpt-4o-mini' };
   }
 
   if (anthropicKey) {
@@ -156,7 +152,7 @@ async function callLlm(
     }
     const data = (await res.json()) as { content?: Array<{ text?: string }> };
     const content = data.content?.[0]?.text ?? '';
-    return { content, source: 'server-default' };
+    return { content, source: 'server-default', model: 'claude-haiku-4-5-20251001' };
   }
 
   throw new Error('No server-default LLM key available — set OPENAI_API_KEY or ANTHROPIC_API_KEY in .env');
@@ -168,19 +164,16 @@ export async function recommend(
 ): Promise<RecommendResponse> {
   const candidates = req.candidates ?? [];
   const topK = req.topK ?? 20;
-  // Give the LLM up to 3× topK candidates to rank, then slice the final result.
-  const pool = candidates.slice(0, topK * 3);
+  // Cap at topK — asking the LLM to rank more than topK IDs is unreliable.
+  const pool = candidates.slice(0, topK);
 
   const prompt = buildPrompt(persona, pool);
-  const { content, source, gatewayHost } = await callLlm(prompt, req.llm);
+  const { content, source, model, gatewayHost } = await callLlm(prompt, req.llm);
 
-  const { ranked_ids: allRanked, scores } = parseRankedIds(content, pool);
-  const ranked_ids = allRanked.slice(0, topK);
+  const { ranked_ids, scores } = parseRankedIds(content, pool);
 
   const finalScores: Record<number, number> = {};
-  ranked_ids.forEach((id) => {
-    finalScores[id] = scores[id];
-  });
+  ranked_ids.forEach((id) => { finalScores[id] = scores[id]; });
 
   const trajectory: RecoTrajectory = {
     engine: 'llm-ranker',
@@ -193,13 +186,13 @@ export async function recommend(
       {
         stage: 'candidate_gen',
         restaurant_ids: pool.map((c) => c.id),
-        notes: `${pool.length} candidates from A/B set (topK=${topK})`,
+        notes: `${pool.length} candidates from A/B set`,
       },
       {
         stage: 'final',
         restaurant_ids: ranked_ids,
         scores: finalScores,
-        notes: `source=${source}${gatewayHost ? ` gateway=${gatewayHost}` : ''}`,
+        notes: `model=${model} source=${source}${gatewayHost ? ` gateway=${gatewayHost}` : ''}`,
       },
     ],
   };
@@ -211,6 +204,7 @@ export async function recommend(
     scores: finalScores,
     trajectory,
     source,
+    model,
     ...(gatewayHost ? { gatewayHost } : {}),
   };
 }

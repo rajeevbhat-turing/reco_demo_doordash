@@ -31,11 +31,11 @@ npm run dev
 
 # (another tab) checks
 curl -s -o /dev/null -w "/home  HTTP %{http_code}\n" http://localhost:3000/home
-curl -s http://localhost:3000/api/users/email/alice.tran@personas.demo | jq '.data.name, .data.addresses[0].street'
+curl -s http://localhost:3000/api/users/email/alice.tran@example.com | jq '.data.name, .data.addresses[0].street'
 curl -s http://localhost:3000/api/users/3107 | jq '.data.name, .data.id'
 
 curl -s -X POST -H 'content-type: application/json' \
-  -d '{"email":"alice.tran@personas.demo","password":"password"}' \
+  -d '{"email":"alice.tran@example.com","password":"password"}' \
   http://localhost:3000/api/auth/login | jq '.success, .data.name, .data.addresses[0].street'
 ```
 
@@ -51,10 +51,10 @@ Expected:
 
 Then in a browser at `http://localhost:3000/login`:
 
-1. Sign in with `alice.tran@personas.demo` / `password`.
+1. Sign in with `alice.tran@example.com` / `password`.
 2. Land on `/home` — confirm the address is "1525 Mission St" and
    no console errors.
-3. Repeat with `gabe.jensen@personas.demo` (a family persona) to
+3. Repeat with `gabe.jensen@example.com` (a family persona) to
    confirm no family-specific path breaks.
 
 If the persona is missing from the DB, re-seed:
@@ -156,7 +156,7 @@ npm run dev
 4. A ranked results table appears with restaurant names and cuisine.
 
 **Test persona sections on `/home`:**
-1. Sign in as `alice.tran@personas.demo` / `password` (standard auth flow).
+1. Sign in as `alice.tran@example.com` / `password` (standard auth flow).
 2. Open `http://localhost:3000/home`
 3. Cuisine sections (e.g. "More Thai for you") appear above the regular feed.
 

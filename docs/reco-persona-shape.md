@@ -70,7 +70,7 @@ The rule only recognizes these values (anything else is ignored):
     "id": "alice-tran",
     "user_id": 3101,
     "display_name": "Alice Tran",
-    "email": "alice.tran@personas.demo",
+    "email": "alice.tran@example.com",
     "address": {
       "label": "Home",
       "line1": "1525 Mission St",

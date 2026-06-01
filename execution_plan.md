@@ -147,7 +147,7 @@ npm run reco:llm-ranker          # starts LLM ranker sidecar :4002
    - A **Section win/loss** section appears below with ✓/✗ grids per cuisine section.
    - Per-engine ranked tables appear at the bottom.
 
-- [ ] **A/B works end-to-end** — comparison table with metrics for both engines, baseline highlighted.
+- [x] **A/B works end-to-end** — comparison table with metrics for both engines, baseline highlighted.
 
 ---
 

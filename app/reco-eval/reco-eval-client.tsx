@@ -20,6 +20,7 @@ type EngineResult = {
   metrics?: ScoreResult;
   error?: string;
   source?: string;
+  model?: string;
   gatewayHost?: string;
 };
 
@@ -369,6 +370,11 @@ function ComparisonTable({
                       </span>
                     )}
                   </div>
+                  {result.model && (
+                    <div className="text-xs font-normal text-gray-500 mt-0.5 font-mono">
+                      {result.model}
+                    </div>
+                  )}
                   {result.source && (
                     <div className="text-xs font-normal text-gray-400 mt-0.5">
                       {result.source}
@@ -662,6 +668,7 @@ export default function RecoEvalClient({ initialPersonas }: Props) {
               trajectory: data.trajectory,
               metrics,
               source: data.source,
+              model: data.model,
               gatewayHost: data.gatewayHost,
             },
           ];

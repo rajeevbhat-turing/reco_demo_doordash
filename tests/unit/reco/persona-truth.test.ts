@@ -60,7 +60,7 @@ function makePersona(overrides: Partial<Persona> = {}): Persona {
     id: 'test-persona',
     user_id: 9000,
     display_name: 'Test Persona',
-    email: 'test@personas.demo',
+    email: 'test@example.com',
     address: {
       label: 'Home',
       line1: '1 Test St',

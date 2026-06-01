@@ -51,16 +51,16 @@ All persona accounts use the password `password`.
 
 | Persona | Email |
 |---|---|
-| Alice Tran | `alice.tran@personas.demo` |
-| Ben Kowalski | `ben.kowalski@personas.demo` |
-| Chloe Okafor | `chloe.okafor@personas.demo` |
-| Diego Mendoza | `diego.mendoza@personas.demo` |
-| Eli Nakamura | `eli.nakamura@personas.demo` |
-| Fatima Rashid | `fatima.rashid@personas.demo` |
-| Gabe Jensen | `gabe.jensen@personas.demo` |
-| Hana Park | `hana.park@personas.demo` |
-| Idris Mensah | `idris.mensah@personas.demo` |
-| Julia Volkov | `julia.volkov@personas.demo` |
+| Alice Tran | `alice.tran@example.com` |
+| Ben Kowalski | `ben.kowalski@example.com` |
+| Chloe Okafor | `chloe.okafor@example.com` |
+| Diego Mendoza | `diego.mendoza@example.com` |
+| Eli Nakamura | `eli.nakamura@example.com` |
+| Fatima Rashid | `fatima.rashid@example.com` |
+| Gabe Jensen | `gabe.jensen@example.com` |
+| Hana Park | `hana.park@example.com` |
+| Idris Mensah | `idris.mensah@example.com` |
+| Julia Volkov | `julia.volkov@example.com` |
 
 Personas log in through the **standard Dashdoor auth flow** (email → Continue → OTP). The OTP code is returned in the `generate-otp` response body, as it is for every gym user — there is no separate demo login.
 

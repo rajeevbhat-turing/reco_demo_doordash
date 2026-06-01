@@ -3,7 +3,7 @@
     "id": "alice-tran",
     "user_id": 3101,
     "display_name": "Alice Tran",
-    "email": "alice.tran@personas.demo",
+    "email": "alice.tran@example.com",
     "address": {
       "label": "Home",
       "line1": "750 Nostrand Ave",
@@ -30,7 +30,7 @@
     "id": "ben-kowalski",
     "user_id": 3102,
     "display_name": "Ben Kowalski",
-    "email": "ben.kowalski@personas.demo",
+    "email": "ben.kowalski@example.com",
     "address": {
       "label": "Home",
       "line1": "401 Manhattan Beach Blvd",
@@ -57,7 +57,7 @@
     "id": "chloe-okafor",
     "user_id": 3103,
     "display_name": "Chloe Okafor",
-    "email": "chloe.okafor@personas.demo",
+    "email": "chloe.okafor@example.com",
     "address": {
       "label": "Home",
       "line1": "1645 Sunset Blvd",
@@ -84,7 +84,7 @@
     "id": "diego-mendoza",
     "user_id": 3104,
     "display_name": "Diego Mendoza",
-    "email": "diego.mendoza@personas.demo",
+    "email": "diego.mendoza@example.com",
     "address": {
       "label": "Home",
       "line1": "1500 Pico Blvd",
@@ -111,7 +111,7 @@
     "id": "eli-nakamura",
     "user_id": 3105,
     "display_name": "Eli Nakamura",
-    "email": "eli.nakamura@personas.demo",
+    "email": "eli.nakamura@example.com",
     "address": {
       "label": "Home",
       "line1": "65 N 6th St",
@@ -138,7 +138,7 @@
     "id": "fatima-rashid",
     "user_id": 3106,
     "display_name": "Fatima Rashid",
-    "email": "fatima.rashid@personas.demo",
+    "email": "fatima.rashid@example.com",
     "address": {
       "label": "Home",
       "line1": "2055 Coney Island Ave",
@@ -172,7 +172,7 @@
     "id": "gabe-jensen",
     "user_id": 3107,
     "display_name": "Gabe Jensen",
-    "email": "gabe.jensen@personas.demo",
+    "email": "gabe.jensen@example.com",
     "address": {
       "label": "Home",
       "line1": "560 7th Ave",
@@ -206,7 +206,7 @@
     "id": "hana-park",
     "user_id": 3108,
     "display_name": "Hana Park",
-    "email": "hana.park@personas.demo",
+    "email": "hana.park@example.com",
     "address": {
       "label": "Home",
       "line1": "3450 W 6th St",
@@ -240,7 +240,7 @@
     "id": "idris-mensah",
     "user_id": 3109,
     "display_name": "Idris Mensah",
-    "email": "idris.mensah@personas.demo",
+    "email": "idris.mensah@example.com",
     "address": {
       "label": "Home",
       "line1": "1825 Pitkin Ave",
@@ -274,7 +274,7 @@
     "id": "julia-volkov",
     "user_id": 3110,
     "display_name": "Julia Volkov",
-    "email": "julia.volkov@personas.demo",
+    "email": "julia.volkov@example.com",
     "address": {
       "label": "Home",
       "line1": "110 Henry St",

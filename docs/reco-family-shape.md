@@ -45,7 +45,7 @@ When `family` is `null`, neither check applies.
   "id": "noah-patel",
   "user_id": 3106,
   "display_name": "Noah Patel",
-  "email": "noah.patel@personas.demo",
+  "email": "noah.patel@example.com",
   "address": {
     "label": "Home",
     "line1": "440 Castro St",

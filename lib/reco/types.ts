@@ -121,4 +121,5 @@ export type RecommendResponse = {
   trajectory: RecoTrajectory;
   source?: 'byo-gateway' | 'server-default';
   gatewayHost?: string;
+  model?: string;
 };
