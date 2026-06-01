@@ -683,7 +683,6 @@ export default function RecoEvalClient({ initialPersonas }: Props) {
       setRunError(err instanceof Error ? err.message : String(err));
     } finally {
       setLoading(false);
-      setByoLlmKey(''); // Key is request-scoped — clear from state immediately after run
     }
   };
 
@@ -806,9 +805,9 @@ export default function RecoEvalClient({ initialPersonas }: Props) {
               <div className="px-5 py-4 space-y-3">
                 <p className="text-xs text-gray-500">
                   We send the ranking prompt to your LLM. Requires the LLM Ranker sidecar on{' '}
-                  <code className="bg-gray-100 px-1 rounded">:4002</code>. Your API key is used
-                  for this request only —{' '}
-                  <strong>never logged or persisted anywhere.</strong>
+                  <code className="bg-gray-100 px-1 rounded">:4002</code>. Your API key is sent
+                  only to the sidecar —{' '}
+                  <strong>never logged or stored server-side.</strong>
                 </p>
                 <div className="grid grid-cols-2 gap-3">
                   <div className="col-span-2">
