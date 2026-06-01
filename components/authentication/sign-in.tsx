@@ -149,32 +149,12 @@ export default function SignIn({
     }
   };
 
-  // Handles email form submission - checks if email exists and generates OTP
-  const handleSubmit = async (e: React.FormEvent) => {
+  // Handles email form submission - goes straight to password (no OTP)
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!validateEmail()) {
-      return;
-    }
-
-    try {
-      // Call generate OTP API
-      const { otp, user } = await generateOTP({ email: formData.email });
-
-      // Save the OTP to the form data
-      handleFormDataChange('otp', otp);
-
-      setFoundUser(user);
-      setCurrentForm('otp');
-      setErrors({});
-
-      // Start the resend timer
-      startResendTimer();
-    } catch (error: any) {
-      // Email not found or other error
-      setErrors({
-        general: error.message || 'Something went wrong. Please try again.',
-      });
-    }
+    if (!validateEmail()) return;
+    setCurrentForm('password');
+    setErrors({});
   };
 
   // Handles OTP input change
@@ -663,11 +643,9 @@ export default function SignIn({
       {/* Continue to Sign In Button */}
       <Button
         type="submit"
-        disabled={isGeneratingOTP}
-        className={`w-full bg-red-600 hover:bg-red-700 text-white font-bold text-[15px] py-3 rounded-3xl mt-4 disabled:opacity-50 
-          disabled:cursor-not-allowed ${style?.continueButton ?? ''}`}
+        className={`w-full bg-red-600 hover:bg-red-700 text-white font-bold text-[15px] py-3 rounded-3xl mt-4 ${style?.continueButton ?? ''}`}
       >
-        Continue to Sign In
+        Sign In
       </Button>
 
       {/* Legal Text */}

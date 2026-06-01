@@ -48,24 +48,20 @@ function parseRankedIds(
 ): { ranked_ids: number[]; scores: Record<number, number> } {
   const candidateIdSet = new Set(candidates.map((c) => c.id));
 
-  // Extract the first [...] block — strip non-numeric chars inside so "..." or
-  // stray text from the model doesn't break JSON.parse.
+  // Extract all integers from the first [...] block. This handles any model output
+  // format: "[1, 2, 3]", "[1, 2, ...]", numbered lists, stray text, etc.
   const match = content.match(/\[([^\]]*)\]/);
   if (match) {
-    try {
-      const cleaned = '[' + match[1].replace(/[^\d,\s]/g, ' ') + ']';
-      const parsed: unknown[] = JSON.parse(cleaned);
-      const validIds = parsed.filter(
-        (x): x is number => typeof x === 'number' && Number.isFinite(x) && candidateIdSet.has(x)
-      );
+    const numbers = match[1].match(/\d+/g);
+    if (numbers && numbers.length > 0) {
+      const ids = numbers.map(Number);
+      const validIds = ids.filter((x) => candidateIdSet.has(x));
       const deduped = [...new Set(validIds)];
       const missing = candidates.map((c) => c.id).filter((id) => !deduped.includes(id));
       const ranked_ids = [...deduped, ...missing];
       const scores: Record<number, number> = {};
       ranked_ids.forEach((id, i) => { scores[id] = 1 / (i + 1); });
       return { ranked_ids, scores };
-    } catch {
-      // fall through to fallback
     }
   }
 
