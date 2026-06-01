@@ -845,9 +845,8 @@ export default function RecoEvalClient({ initialPersonas }: Props) {
                     >
                       <option value="gpt-4o-mini">gpt-4o-mini — fast &amp; cheap</option>
                       <option value="gpt-4o">gpt-4o — flagship</option>
-                      <option value="gpt-4.1">gpt-4.1 — latest GPT-4 class</option>
-                      <option value="gpt-4.1-mini">gpt-4.1-mini — fast GPT-4.1</option>
-                      <option value="o4-mini">o4-mini — reasoning</option>
+                      <option value="gpt-4.1">gpt-4.1 — latest</option>
+                      <option value="gpt-4.1-mini">gpt-4.1-mini</option>
                     </select>
                   </div>
                 </div>

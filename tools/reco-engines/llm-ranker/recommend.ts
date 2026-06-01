@@ -84,6 +84,7 @@ async function callLlm(
 ): Promise<{ content: string; source: 'byo-gateway' | 'server-default'; gatewayHost?: string }> {
   if (llm) {
     const url = `${llm.baseUrl.replace(/\/$/, '')}/chat/completions`;
+    // Omit temperature — reasoning models (o1/o3/o4-*) reject temperature=0.
     const res = await fetch(url, {
       method: 'POST',
       headers: {
@@ -93,7 +94,6 @@ async function callLlm(
       body: JSON.stringify({
         model: llm.model,
         messages: [{ role: 'user', content: prompt }],
-        temperature: 0,
       }),
     });
     if (!res.ok) {
