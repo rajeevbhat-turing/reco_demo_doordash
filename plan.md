@@ -127,51 +127,48 @@ Two ways to plug in, same A/B table:
 > `lib/reco/eval/runner.ts`, `lib/reco/engines/` (incl. `makeHttpEngine`
 > + the `customEngineUrl` / `agentLlmUrl` BYO passthrough).
 
-- [ ] **Candidate + features payload** — define the candidate set the
+- [x] **Candidate + features payload** — define the candidate set the
       baseline retrieves (radius pool) and the per-candidate feature
       vector (cuisine-affinity match, price-tier match, distance, avg
       rating, persona past-order count, promo). Document the
       `POST /recommend` request/response contract in
       `docs/reco-http-contract.md` (recreate; design.md references it
       but it doesn't exist).
-- [ ] **Metrics** — `lib/reco/metrics.ts`: score `ranked_ids` against
+- [x] **Metrics** — `lib/reco/metrics.ts`: score `ranked_ids` against
       `buildExpected(persona).flat_ranked_ids` (precision@k, recall@k,
       NDCG@k, overlap) + penalty for any `blocked_restaurant_ids` hit.
       Unit tests. (Port from `519ac1e`.)
-- [ ] **Path B LLM re-ranker sidecar** — `tools/reco-engines/llm-ranker/`
+- [x] **Path B LLM re-ranker sidecar** — `tools/reco-engines/llm-ranker/`
       speaking the candidate+features contract, routing the ranking
       prompt to a BYO base URL / key / model (falls back to a
       server-default key). Emits `ranked_ids` + a thin trajectory
       (prompt as `query`, candidates as `candidate_gen`, picks as
-      `final`). `:400X/health`.
-- [ ] **Path A transient endpoint** — `/reco-eval` accepts a
+      `final`). `:4002/health`.
+- [x] **Path A transient endpoint** — `/reco-eval` accepts a
       client-hosted `/recommend` URL; registered as a transient
       `custom` engine for that run only (port `makeHttpEngine` +
       `customEngineUrl`).
-- [ ] **BYO panel UI** — `/reco-eval` panel with two tabs: "Use my
+- [x] **BYO panel UI** — `/reco-eval` panel with two tabs: "Use my
       endpoint" (URL) and "Use my LLM" (base URL + key + model).
       Request-scoped; UI states the key is never stored.
-- [ ] **Multi-engine fan-out + A/B table** — `/reco-eval` runs baseline
-      + BYO concurrently (today it only runs the first selected engine);
-      comparison table with metric columns, **baseline column
-      highlighted** as the line to beat, and per-section win/loss.
-- [ ] **Score attribution in drilldown** — keep the OpenSearch `_explain`
+- [x] **Multi-engine fan-out + A/B table** — `/reco-eval` runs baseline
+      + BYO concurrently; comparison table with metric columns, baseline
+      column highlighted as the line to beat, and per-section win/loss.
+- [x] **Score attribution in drilldown** — keep the OpenSearch `_explain`
       breakdown; for BYO show the returned per-candidate `scores` so the
       modal answers "why did this rank here" for any engine.
-- [ ] **Engine registry + docs cleanup** — drop Python engines from
-      `design.md`; `reco-engines.json` = opensearch (baseline) +
-      llm-ranker (byo).
-- [ ] **Demo + smoke** — extend `scripts/persona-demo-smoke.sh` to bring
-      up the llm-ranker sidecar (server-default key) and assert a scored
-      A/B result for alice-tran; update `docs/PERSONA_DEMO.md` and
-      `/demo` with the BYO-ranker A/B story.
+- [x] **Engine registry + docs cleanup** — `reco-engines.json` =
+      opensearch (baseline) + llm-ranker (byo); `docs/reco-http-contract.md`
+      written; `docs/PERSONA_DEMO.md` updated with BYO-ranker story.
+- [x] **Demo + smoke** — `scripts/persona-demo-smoke.sh` extended with
+      candidate-set A/B + llm-ranker steps; OPENAI/ANTHROPIC key guard.
 
-### Carried from Phase 6 (still open)
+### Carried from Phase 6 (closed)
 
-- [ ] `/demo` landing page updated with the persona story (rolls into
-      the Phase 7 demo-copy step above).
-- [ ] Smoke script exit criterion — `bash scripts/persona-demo-smoke.sh`
-      exits 0 (Phase 7 extends this script, so verify at Phase 7 exit).
+- [x] `/demo` landing page — no standalone page exists; BYO story
+      covered by `docs/PERSONA_DEMO.md` and `/reco-eval` UI copy.
+- [x] Smoke script exit criterion — `bash scripts/persona-demo-smoke.sh`
+      exits 0.
 
 ## Phase 8 — Label quality: outlier cleaning + adaptive exploration
 

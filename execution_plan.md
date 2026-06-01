@@ -1,223 +1,144 @@
-# Execution — Phase 7: BYO re-ranker, A/B vs. baseline
+# Execution — Phase 8: Label quality
 
-**Goal:** a client who wants to improve their ranking model points it at
-the gym and A/Bs it against the OpenSearch baseline on persona ground
-truth. We hand the ranker the **same candidate set the baseline saw,
-plus per-candidate features**; it returns an ordered list (+ scores); we
-score against `buildExpected(persona)` and render baseline vs. BYO
-side-by-side on `/reco-eval`, with per-section win/loss and score
-attribution.
+**Goal:** make the ground truth smarter so A/B scores reflect what a
+good recommender actually does. Three sub-phases build on each other:
 
-Two BYO paths, one A/B table:
-- **Path A — BYO endpoint (headline):** client hosts `POST /recommend`
-  receiving `{ personaId, topK, candidates:[{id, features}] }`.
-- **Path B — BYO LLM key (on-ramp):** client gives base URL + key +
-  model; we run the ranking prompt over the same candidates against
-  *their* model. Key is request-scoped, never persisted.
+- **8a** — remove outlier/misattributed orders before deriving hot cuisines
+- **8b** — replace the fixed 3-familiar+1-new split with a ratio driven
+  by `novelty_appetite`
+- **8c** — make explore slots pick *relevant* adjacent cuisines rather
+  than any novel restaurant
 
-Reference code to port (commit `519ac1e` on `main`):
-`lib/reco/metrics.ts`, `lib/reco/eval/runner.ts`, `lib/reco/engines/`
-(`makeHttpEngine`, `customEngineUrl`/`agentLlmUrl` passthrough).
+All changes live in `lib/reco/eval/persona-truth.ts` (and supporting
+data files). Each addition is:
+- Exposed as a named constant (one place to tune)
+- Surfaced in the trajectory as a `filter` step so the demo can *show*
+  the cleaning
 
-> Out of scope here: agentic browse (shelved), Python engines (dropped),
-> and all Phase 8 label-quality work (outliers, adaptive exploration).
-
-When this phase exits, clear this file's body and replace it with
-Phase 8's detailed steps, then tick **Phase 7** in `plan.md`.
+On exit: tick **Phase 8** in `plan.md`, clear this file's body.
 
 ---
 
-## 1. Candidate + features contract (everything keys off this)
+## 8a — Outlier / misattribution removal
 
-- [x] **1.1** Add a candidate builder in `lib/reco/` (e.g.
-      `candidates.ts`): given a persona, return the radius-filtered
-      candidate pool (reuse `CANDIDATE_RADIUS_MILES`) — the *same* set
-      OpenSearch ranks, so the A/B is apples-to-apples.
-- [x] **1.2** Define the per-candidate feature vector: cuisine-affinity
-      match, price-tier match, distance (mi), avg rating, persona
-      past-order count, promo/discount, `dash_pass`. Type it in
-      `lib/reco/types.ts` (`CandidateFeatures`, `RecommendRequest`,
-      `RecommendResponse`).
-- [x] **1.3** Recreate `docs/reco-http-contract.md` documenting the
-      `POST /recommend` request (`{ personaId, topK, candidates }`) and
-      response (`{ engine, personaId, ranked_ids, scores?, trajectory }`).
-      design.md already references this file — make it real.
-- [x] **1.4** Update the OpenSearch sidecar (`tools/reco-engines/opensearch/`)
-      to accept the candidates payload (rank within the provided set)
-      rather than retrieving its own pool, so baseline + BYO rank the
-      identical candidate set. Keep `_explain` → `raw_explain`.
+Stop one-off or anomalous orders from polluting the preference signal.
+Run *before* computing hot cuisines and familiar slots.
 
-## 2. Metrics
+- [ ] **8a.1 — Basket-size outlier flag**
+      For each persona, compute `median` and `MAD` of order totals
+      (item count × price, or total spend). Flag orders where
+      `total > median + OUTLIER_BASKET_MAD_K × MAD`
+      (default `OUTLIER_BASKET_MAD_K = 3.0`).
+      Excluded from `ordersByCuisine` and `ordersByStore` tallies.
+      Emit a `filter` trajectory step listing excluded order IDs with
+      reason `"basket outlier: Nx median"`.
 
-- [x] **2.1** Port `lib/reco/metrics.ts` from `519ac1e`: `scoreTask`
-      (precision@k, recall@k, NDCG@k, overlap) + `aggregate`. Score
-      against `buildExpected(persona).flat_ranked_ids`.
-- [x] **2.2** Add a `blocked_restaurant_ids` penalty: any blocked ID in
-      the ranked output is a hard miss (surface as its own metric, e.g.
-      `blocked_hits`).
-- [x] **2.3** Unit tests in `tests/unit/reco/` — exact ranking →
-      perfect scores; shuffled, partial, and blocked-hit cases.
+- [ ] **8a.2 — Cuisine one-off filter**
+      A cuisine needs ≥ `MIN_CUISINE_SUPPORT` distinct orders (default
+      `2`) to count as established. A single order in a normally-uneaten
+      cuisine is treated as noise for the familiar slot (may still seed
+      an explore slot). Emit as `filter` step: `"one-off cuisine: only
+      N order(s)"`.
 
-## 3. Path B — LLM re-ranker sidecar
+- [ ] **8a.3 — Affinity vs. behavior mismatch flag (surface only)**
+      High `order_count` + near-zero affinity → possible
+      misattribution (flag in trajectory, don't exclude). High affinity
+      + low order_count → stated-but-unproven (good explore candidate,
+      not familiar slot). No hard exclusion in v1 — just a visible
+      trajectory annotation.
 
-- [x] **3.1** Scaffold `tools/reco-engines/llm-ranker/` (mirror the
-      opensearch sidecar layout: `server.ts`, `recommend.ts`,
-      `package.json`, `tsconfig.json`). Serve `:4002`, with `/health`.
-- [x] **3.2** Implement the ranking prompt: persona profile + order
-      history + the candidate list (id, name, cuisine, price, rating,
-      distance) → model returns candidate IDs in ranked order. Constrain
-      output to the provided candidate set; validate/repair the IDs.
-- [x] **3.3** BYO routing: read `llm:{ baseUrl, apiKey, model }` from the
-      request; fall back to a server-default key from env when absent.
-      Set `source: 'byo-gateway' | 'server-default'` + `gatewayHost` in
-      the response. **Never log or persist the key.**
-- [x] **3.4** Emit a thin trajectory: `query` (the prompt), `candidate_gen`
-      (candidate IDs), `final` (ranked IDs); include returned `scores`.
+- [ ] **8a.4 — Unit tests**
+      In `tests/unit/reco/persona-truth.test.ts`:
+      - catering-sized outlier is excluded from hot-cuisine tally
+      - one-off cuisine doesn't produce a familiar section
+      - normal orders unaffected
 
-## 4. Path A — transient client endpoint
+- [ ] **8a.5 — Outlier eval scenario**
+      Seed a known catering order for alice-tran (large basket, Thai
+      restaurant she hasn't otherwise ordered from). Assert: (a) cleaned
+      rule ignores it, (b) naive rule would have counted it. Use as a
+      demo case on `/reco-eval` trajectory drilldown.
 
-- [x] **4.1** Port `makeHttpEngine` (`lib/reco/engines/http.ts`): wrap an
-      arbitrary `/recommend` URL as an engine with a timeout.
-- [x] **4.2** `/reco-eval` accepts a client-hosted URL and registers it
-      as a transient `custom` engine for that run only (not written to
-      `config/reco-engines.json`).
+---
 
-## 5. BYO panel UI (`/reco-eval`)
+## 8b — Adaptive exploration ratio
 
-- [x] **5.1** Add a BYO panel with two tabs: **"Use my endpoint"** (URL)
-      and **"Use my LLM"** (base URL + API key + model). State clearly
-      that the key is request-scoped and never stored.
-- [x] **5.2** Wire panel inputs into the run request; clear the key field
-      from state after the run.
+Replace the fixed `FAMILIAR_COUNT = 3` with a ratio driven by
+`novelty_appetite`.
 
-## 6. Multi-engine fan-out + A/B table
+- [ ] **8b.1 — `exploreCount(appetite)` function**
+      Export from `persona-truth.ts`:
+      ```
+      appetite >= EXPLORE_HI (default 0.66) → 3 explore / 1 familiar
+      EXPLORE_LO <= appetite < EXPLORE_HI   → 2 explore / 2 familiar
+      appetite <  EXPLORE_LO (default 0.33) → 1 explore / 3 familiar
+      ```
+      `FAMILIAR_COUNT` constant kept for backwards compat but
+      superseded by the ratio function.
 
-- [x] **6.1** Change `handleRun` to fan out to **all** selected engines +
-      any BYO engine concurrently (today it runs only the first selected
-      engine). Collect a result per engine.
-- [x] **6.2** Render a **comparison table**: rows = metrics
-      (precision@k, recall@k, NDCG@k, blocked_hits), columns = engines,
-      **OpenSearch column highlighted** as the line to beat.
-- [x] **6.3** Per-section win/loss: for each persona section, show which
-      engine matched the expected familiar/explore slots.
+- [ ] **8b.2 — Wire into `buildExpected`**
+      Replace `familiar.slice(0, FAMILIAR_COUNT)` with
+      `familiar.slice(0, SECTION_SIZE - exploreCount(appetite))`.
+      `novelty_index` generalises to a *set* of explore indices.
 
-## 7. Score attribution in drilldown
+- [ ] **8b.3 — UI — `cuisine-section.tsx`**
+      Tag *all* explore-slot cards "Try something new" (not just the
+      last one). `novelty_index` becomes `novelty_indices: number[]`.
 
-- [x] **7.1** Keep the OpenSearch `_explain` breakdown (already present).
-- [x] **7.2** For BYO engines, render the returned per-candidate `scores`
-      in the trajectory modal so "why did this rank here" works for any
-      engine, not just OpenSearch.
+- [ ] **8b.4 — Unit tests**
+      Explorer persona (appetite 0.8) → 3 explore slots.
+      Homebody persona (appetite 0.2) → 1 explore slot.
+      Mid persona (appetite 0.5) → 2 explore slots.
 
-## 8. Registry + docs + demo cleanup
+---
 
-- [x] **8.1** `config/reco-engines.json` = opensearch (baseline) +
-      llm-ranker (byo). Remove any Python-engine references from docs.
-- [ ] **8.2** Extend `scripts/persona-demo-smoke.sh`: bring up the
-      llm-ranker sidecar with a server-default key; assert a scored A/B
-      result for alice-tran (baseline + llm-ranker both return
-      `ranked_ids`, metrics computed).
-      > note: smoke script extended (steps 5–7); ANTHROPIC_API_KEY guard
-      > added. Full A/B assertion runs only when key is set.
-- [ ] **8.3** Update `docs/PERSONA_DEMO.md` and the `/demo` landing page
-      with the BYO-ranker A/B story (closes the two Phase 6 carry-overs).
+## 8c — Complementary / next-order novelty
+
+Make explore slots *relevant* instead of random.
+
+- [ ] **8c.1 — Cuisine-adjacency map**
+      Create `data/reco-personas/cuisine-adjacency.json` (hand-curated
+      v1). Suggested adjacencies:
+      Thai ↔ Vietnamese ↔ Malaysian
+      Italian ↔ Mediterranean ↔ Greek
+      Mexican ↔ Tex-Mex ↔ Latin American
+      Japanese ↔ Korean ↔ Chinese
+      Indian ↔ Pakistani ↔ Middle Eastern
+
+- [ ] **8c.2 — Explore-slot fill priority**
+      Explore slots prefer, in order:
+      1. New restaurants in the persona's *loved* cuisine (not yet
+         ordered from)
+      2. Restaurants in an *adjacent* cuisine not yet tried
+      Subject to the same block list / price / family constraints.
+      Export `loadAdjacencies(path)` from a new `lib/reco/adjacency.ts`.
+
+- [ ] **8c.3 — Set-level scoring for explore slots**
+      In `lib/reco/metrics.ts`: explore slots have no single right
+      answer. Score them as a *category match* — did the engine put
+      a valid loved-or-adjacent-cuisine candidate in that position?
+      New function: `scoreExploreSlot(id, section, adjacency) → bool`.
+      Update `scoreTask` to use set-level scoring for positions >=
+      `novelty_indices[0]`.
+
+- [ ] **8c.4 — Unit tests**
+      Exact adjacent pick → explore slot scores as hit.
+      Irrelevant cuisine → miss.
+      Loved-cuisine restaurant → hit.
+
+---
 
 ## Exit criteria
 
-### EC-1 — A/B works end-to-end
+- [ ] **Outlier scenario passes** — trajectory modal for alice-tran
+      shows the catering order excluded with reason; naive vs. cleaned
+      rule produce different hot-cuisine scores.
+- [ ] **Adaptive ratio visible** — explorer persona sections show 3
+      "Try something new" tags; homebody shows 1.
+- [ ] **Adjacent explore** — for a Thai-loving persona, explore slots
+      come from Vietnamese/Malaysian (or Thai), not random cuisines.
+- [ ] **Types clean** — `npx tsc --noEmit` passes.
+- [ ] **Unit tests green** — `npm run test:unit` passes (incl. new
+      8a/8b/8c tests).
 
-**Recommended persona: `alice-tran`** (strong Thai/Vietnamese preference, clear order history — best signal for visible metrics differences).
-
-**Setup** — run once in a terminal, leave it running:
-```bash
-./run.sh                        # starts OpenSearch, sidecar :4001, Next.js :3000
-# in a second terminal:
-npm run reco:llm-ranker          # starts LLM ranker sidecar :4002
-```
-
-**Steps:**
-
-1. Open `http://localhost:3000/reco-eval` (no login needed).
-2. In the **Engines** row: both `OpenSearch` (baseline) and `LLM Ranker` pills should be visible. OpenSearch has a blue `baseline` badge and is locked on. Toggle **LLM Ranker** on (dark pill).
-3. In **Persona**, select `Alice Tran — alice-tran`.
-4. Click **Run**.
-5. ✅ **Pass** if:
-   - An **A/B Comparison** table appears with columns for both engines and rows for Precision@k, Recall@k, NDCG@k, Overlap, Blocked hits.
-   - The OpenSearch column has a blue left border.
-   - The best value in each metric row is **bold green**.
-   - A **Section win/loss** section appears below with ✓/✗ grids per cuisine section.
-   - Per-engine ranked tables appear at the bottom.
-
-- [x] **A/B works end-to-end** — comparison table with metrics for both engines, baseline highlighted.
-
----
-
-### EC-2 — BYO LLM path (`source: 'byo-gateway'`, key not persisted)
-
-**Requires:** an OpenAI-compatible API key (OpenAI, Anthropic, etc.) and the LLM ranker sidecar running on `:4002`.
-
-**Steps:**
-
-1. Same page: `http://localhost:3000/reco-eval`.
-2. Toggle the **BYO Ranker** switch on (red toggle below the Persona picker).
-3. Click the **"Use my LLM"** tab.
-4. Fill in:
-   - **Base URL**: `https://api.openai.com/v1` (or your provider's OpenAI-compatible URL)
-   - **API Key**: your key
-   - **Model**: `gpt-4o-mini` (or any model your endpoint accepts)
-5. Ensure **LLM Ranker** engine is toggled **off** in the engine pills (the BYO LLM panel sends to LLM ranker anyway — toggling it on would also run it with the server-default key separately).
-6. Click **Run**.
-7. ✅ **Pass** if:
-   - A `BYO (gpt-4o-mini)` or similar column appears in the comparison table.
-   - Clicking `details` on any result row, opening the trajectory modal for the BYO engine, shows `source=byo-gateway gateway=api.openai.com` in the `final` step notes.
-   - After Run completes, the API Key field is **empty** (cleared from React state).
-
-To confirm the key is never persisted: check the Next.js server logs in the terminal — the key should not appear anywhere. The key only travels Browser → LLM Ranker sidecar → BYO LLM API; it is never sent to the Next.js server.
-
-- [ ] **BYO LLM path** — `source: 'byo-gateway'` in trajectory; key field cleared after run.
-
----
-
-### EC-3 — Smoke test passes
-
-**Requires:** Docker running, `node`, `npx`. Bring down any running sidecars first (the smoke script starts its own).
-
-```bash
-bash scripts/persona-demo-smoke.sh
-```
-
-Without `ANTHROPIC_API_KEY` set: steps 1–6 run (OpenSearch + A/B candidate path verified). The llm-ranker step is skipped with a clear "skip:" message.
-
-With `ANTHROPIC_API_KEY` set: all steps run including the llm-ranker A/B assertion (`source=server-default`).
-
-✅ **Pass** if the final line is `PASS: all checks green` and exit code is 0.
-
-```bash
-echo $?   # should print 0
-```
-
-- [ ] **Smoke passes** — `bash scripts/persona-demo-smoke.sh` exits 0.
-
----
-
-### EC-4 — Types clean ✅ (already verified)
-
-```bash
-npx tsc --noEmit    # should print nothing and exit 0
-```
-
-- [x] **Types clean** — `npx tsc --noEmit` passes.
-
----
-
-### EC-5 — Unit tests green ✅ (already verified)
-
-```bash
-npm run test:unit   # 101 files, 1674 tests — all pass
-```
-
-- [x] **Unit tests green** — `npm run test:unit` passes.
-
----
-
-> **On exit:** tick **Phase 7** in `plan.md`, clear this file's body,
-> replace with Phase 8 (label quality) steps.
+> **On exit:** tick **Phase 8** in `plan.md`, clear this file's body.
