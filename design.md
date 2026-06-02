@@ -310,6 +310,68 @@ setActiveRun(personaKey, runKey | null)  →  switch without adding a new entry
 clearHistory(personaKey)          →  drop all history + active
 ```
 
+## Header eval switcher + persisted runs (Phase 11 — supersedes Phase 10 UI)
+
+Phases 9–10 produced **two** overlapping controls — the client-only
+per-persona selection store and the in-feed `RecoSwitcher` — that drift out
+of sync. Phase 11 collapses them into **one** control and moves run storage
+to the backend.
+
+**What changes from Phase 10:**
+
+1. **Runs persist server-side, globally.** Instead of a per-persona
+   `localStorage` history, each `/reco-eval` run is written to
+   `data/reco-traces/runs.json` via `POST /api/reco/runs`. The list is shared
+   across browsers and personas — "all available evals" is now a real global
+   list, not a per-browser artifact. The client store shrinks to a single
+   persisted pointer: `{ activeRunId: string | null }`.
+
+2. **The switcher moves to the site header, always visible.** It replaces the
+   Phase 10 note above (line 299): the dropdown is no longer part of the
+   persona sections area. The header `<select>` lists every saved run as
+   `Persona · Engine · model (time)` plus "— Rule default —", regardless of
+   login state.
+
+3. **The selected eval drives the persona shown on `/home`.** Because a run's
+   `ranked_ids` are over one persona's candidate pool, picking a run makes
+   `/home` render *that run's* persona sections (`activeRun.personaUserId`),
+   reordered by the run — decoupled from who is logged in. With no run
+   selected, `/home` keeps its prior login-driven behavior.
+
+4. **The banner stays, slimmed, on `/home`.** When a run is active:
+   *"Showing {Persona}'s feed ranked by {Engine} · {model} — run
+   {date, time}. [Clear]"*. `[Clear]` sets `activeRunId = null`.
+
+### Persisted run record
+
+```ts
+type RecoRun = {
+  id: string;            // `${personaUserId}:${engineId}:${model ?? ''}` — upsert key, latest wins
+  personaId: string;
+  personaUserId: number; // 3101..3110 — used to fetch persona-home
+  personaName: string;   // display_name — dropdown label
+  engineId: string;
+  label: string;
+  model?: string;
+  ranked_ids: number[];
+  scores?: Record<number, number>;
+  capturedAt: string;    // ISO — server-set; the banner/dropdown timestamp
+};
+```
+
+### API — `app/api/reco/runs/route.ts`
+
+- `GET` → all runs, newest-first by `capturedAt`.
+- `POST` → payload minus `id`/`capturedAt`; server computes `id`, sets
+  `capturedAt`, upserts (replace same-`id`), writes file.
+- `DELETE ?id=` → remove one; no param → clear all (optional, for reset).
+
+Credentials are never persisted — same invariant as Phases 9–10; only the
+captured `ranked_ids`/`scores` are stored.
+
+`components/reco-switcher.tsx` is deleted; its role is split between the
+header dropdown and the slim `/home` banner.
+
 `useRecoSelection(personaKey)` continues to return the currently-applied `RecoRunEntry | undefined` (derived from `activeRunKey`). `useRecoHistory(personaKey)` returns the sorted `RecoRunEntry[]`. The home page only needs `useRecoSelection`; the switcher dropdown uses `useRecoHistory`.
 
 ### Data shapes

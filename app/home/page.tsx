@@ -29,7 +29,8 @@ import {
 } from '@/lib/utils/filter-url-params';
 import CuisineSection from '@/components/cuisine-section';
 import type { ExpectedSection } from '@/lib/reco/types';
-import { useRecoSelection, useRecoSelectionStore } from '@/store/reco-selection-store';
+import { useRecoSelectionStore } from '@/store/reco-selection-store';
+import type { RecoRun } from '@/store/reco-selection-store';
 
 const PERSONA_ID_MIN = 3101;
 const PERSONA_ID_MAX = 3110;
@@ -68,8 +69,22 @@ function HomeContent() {
   // Get user's address for location-based filtering
   const currentUser = useUserStore(state => state.currentUser);
   const defaultAddress = currentUser?.addresses?.find(a => a.default);
-  const recoSelection = useRecoSelection(currentUser?.id ?? '');
-  const clearRecoSelection = useRecoSelectionStore((state) => state.clearSelection);
+
+  // Zustand persist reads localStorage only on the client. Gate usage behind
+  // a mounted flag so server HTML and initial client render always agree.
+  const [storeMounted, setStoreMounted] = useState(false);
+  useEffect(() => { setStoreMounted(true); }, []);
+
+  const activeRunIdRaw = useRecoSelectionStore((s) => s.activeRunId);
+  const setActiveRun = useRecoSelectionStore((s) => s.setActiveRun);
+  const activeRunId = storeMounted ? activeRunIdRaw : null;
+
+  const [allRuns, setAllRuns] = useState<RecoRun[]>([]);
+  useEffect(() => {
+    fetch('/api/reco/runs').then(r => r.json()).then(setAllRuns).catch(() => {});
+  }, []);
+
+  const activeRun = activeRunId ? (allRuns.find(r => r.id === activeRunId) ?? null) : null;
 
   // Get temp address for guest users
   const tempAddress = useSyncExternalStore(
@@ -97,8 +112,21 @@ function HomeContent() {
     cartStore.setCategory('restaurant');
   }, []);
 
-  // Fetch persona-aware sections when the logged-in user is a persona
+  // Fetch persona-aware sections: active run takes priority over login
   useEffect(() => {
+    if (!activeRun) return;
+    fetch(`/api/reco/persona-home?userId=${activeRun.personaUserId}`)
+      .then(r => r.json())
+      .then((data: { sections: ExpectedSection[]; blocked_restaurant_ids: number[] }) => {
+        setPersonaSections(data.sections ?? []);
+        setBlockedRestaurantIds(new Set(data.blocked_restaurant_ids ?? []));
+      })
+      .catch(() => {});
+  }, [activeRun?.id]);
+
+  // Fallback: fetch sections for the logged-in persona when no run is active
+  useEffect(() => {
+    if (activeRun) return;
     if (!currentUser) return;
     const uid = parseInt(currentUser.id, 10);
     if (uid < PERSONA_ID_MIN || uid > PERSONA_ID_MAX) return;
@@ -110,21 +138,19 @@ function HomeContent() {
         setBlockedRestaurantIds(new Set(data.blocked_restaurant_ids ?? []));
       })
       .catch(() => {});
-  }, [currentUser]);
+  }, [currentUser, activeRun?.id]);
 
-  // Reorder persona sections using the applied engine's ranking, if any
+  // Reorder persona sections using the active run's ranking, if any
   const effectiveSections = useMemo(() => {
-    if (!recoSelection || personaSections.length === 0) return personaSections;
-    const rankMap = new Map(recoSelection.ranked_ids.map((id, idx) => [id, idx]));
+    if (!activeRun || personaSections.length === 0) return personaSections;
+    const rankMap = new Map(activeRun.ranked_ids.map((id, idx) => [id, idx]));
     return personaSections.map(section => ({
       ...section,
-      ranked_restaurant_ids: [...section.ranked_restaurant_ids].sort((a, b) => {
-        const ra = rankMap.get(a) ?? Infinity;
-        const rb = rankMap.get(b) ?? Infinity;
-        return ra - rb;
-      }),
+      ranked_restaurant_ids: [...section.ranked_restaurant_ids].sort((a, b) =>
+        (rankMap.get(a) ?? Infinity) - (rankMap.get(b) ?? Infinity)
+      ),
     }));
-  }, [personaSections, recoSelection]);
+  }, [personaSections, activeRun]);
 
   // Get address from user store for location filtering
   const { getAddresses, getTempAddress } = useUserStore();
@@ -601,18 +627,21 @@ function HomeContent() {
         {/* Persona-aware cuisine sections — shown when the user is a persona */}
         {effectiveSections.length > 0 && !hasActiveFilters() && (
           <div className="flex flex-col gap-3 mb-6">
-            {recoSelection && (
-              <div className="flex items-center gap-3 px-4 py-2.5 bg-blue-50 border border-blue-200 rounded-lg text-sm">
-                <span className="text-blue-800">
-                  Personalized by <strong>{recoSelection.label}</strong>
-                  {recoSelection.model ? ` · ${recoSelection.model}` : ''}
-                  {' '}— your pick from Reco Eval ({new Date(recoSelection.capturedAt).toLocaleDateString()})
+            {activeRun && (
+              <div className="flex items-center gap-2 text-sm text-gray-600 px-1">
+                <span>
+                  Showing <strong>{activeRun.personaName}</strong>&apos;s feed ranked by{' '}
+                  <strong>
+                    {activeRun.label}
+                    {activeRun.model ? ` · ${activeRun.model}` : ''}
+                  </strong>
+                  {' '}— run {new Date(activeRun.capturedAt).toLocaleString()}
                 </span>
                 <button
-                  onClick={() => currentUser && clearRecoSelection(currentUser.id)}
-                  className="ml-auto text-blue-600 hover:text-blue-800 text-xs font-medium underline whitespace-nowrap"
+                  onClick={() => setActiveRun(null)}
+                  className="ml-2 text-xs text-red-600 underline"
                 >
-                  Reset to default
+                  Clear
                 </button>
               </div>
             )}

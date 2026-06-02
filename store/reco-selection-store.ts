@@ -3,42 +3,30 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-export type RecoSelection = {
+export type RecoRun = {
+  id: string;
+  personaId: string;
+  personaUserId: number;
+  personaName: string;
   engineId: string;
   label: string;
   model?: string;
   ranked_ids: number[];
   scores?: Record<number, number>;
-  capturedAt: string; // ISO date string
+  capturedAt: string;
 };
 
 type RecoSelectionStore = {
-  selections: Record<string, RecoSelection>; // keyed by String(user_id)
-  applyEngine: (personaKey: string, payload: Omit<RecoSelection, 'capturedAt'>) => void;
-  clearSelection: (personaKey: string) => void;
+  activeRunId: string | null;
+  setActiveRun: (id: string | null) => void;
 };
 
 export const useRecoSelectionStore = create<RecoSelectionStore>()(
   persist(
     (set) => ({
-      selections: {},
-      applyEngine: (personaKey, payload) =>
-        set((state) => ({
-          selections: {
-            ...state.selections,
-            [personaKey]: { ...payload, capturedAt: new Date().toISOString() },
-          },
-        })),
-      clearSelection: (personaKey) =>
-        set((state) => {
-          const { [personaKey]: _, ...rest } = state.selections;
-          return { selections: rest };
-        }),
+      activeRunId: null,
+      setActiveRun: (id) => set({ activeRunId: id }),
     }),
-    { name: 'reco-selections' }
+    { name: 'reco-active-run' }
   )
 );
-
-export function useRecoSelection(personaKey: string) {
-  return useRecoSelectionStore((state) => state.selections[personaKey]);
-}

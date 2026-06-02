@@ -550,20 +550,30 @@ export default function RecoEvalClient({ initialPersonas }: Props) {
   } | null>(null);
   const [applyToast, setApplyToast] = useState<string | null>(null);
 
-  const applyEngine = useRecoSelectionStore((state) => state.applyEngine);
+  const setActiveRun = useRecoSelectionStore((state) => state.setActiveRun);
 
   const selectedPersonaData = initialPersonas.find((p) => p.id === selectedPersona);
 
-  const handleApply = (engineId: string, result: EngineResult) => {
+  const handleApply = async (engineId: string, result: EngineResult) => {
     if (!selectedPersonaData || result.ranked_ids.length === 0) return;
-    const personaKey = String(selectedPersonaData.user_id);
-    applyEngine(personaKey, {
-      engineId,
-      label: result.label,
-      model: result.model,
-      ranked_ids: result.ranked_ids,
-      scores: result.scores,
+    const res = await fetch('/api/reco/runs', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        personaId: selectedPersonaData.id,
+        personaUserId: selectedPersonaData.user_id,
+        personaName: selectedPersonaData.display_name,
+        engineId,
+        label: result.label,
+        model: result.model,
+        ranked_ids: result.ranked_ids,
+        scores: result.scores,
+      }),
     });
+    if (res.ok) {
+      const saved = await res.json();
+      setActiveRun(saved.id);
+    }
     setApplyToast(`Applied ${result.label} to ${selectedPersonaData.display_name}'s home feed.`);
     setTimeout(() => setApplyToast(null), 3000);
   };
@@ -706,6 +716,36 @@ export default function RecoEvalClient({ initialPersonas }: Props) {
 
       const allResults = await Promise.all(runs);
       setResults(new Map(allResults));
+
+      // Persist every successful result to the backend so the header
+      // dropdown picks them up globally. Apply in reverse so the baseline
+      // (first in the list) ends up as the active run by default.
+      if (selectedPersonaData) {
+        for (const [engineId, result] of [...allResults].reverse()) {
+          if (result.ranked_ids.length > 0 && !result.error) {
+            await fetch('/api/reco/runs', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                personaId: selectedPersonaData.id,
+                personaUserId: selectedPersonaData.user_id,
+                personaName: selectedPersonaData.display_name,
+                engineId,
+                label: result.label,
+                model: result.model,
+                ranked_ids: result.ranked_ids,
+                scores: result.scores,
+              }),
+            });
+          }
+        }
+        // Activate the first (highest-priority) successful run
+        const firstSuccess = allResults.find(([, r]) => r.ranked_ids.length > 0 && !r.error);
+        if (firstSuccess) {
+          const [engineId, result] = firstSuccess;
+          setActiveRun(`${selectedPersonaData.user_id}:${engineId}:${result.model ?? ''}`);
+        }
+      }
     } catch (err) {
       setRunError(err instanceof Error ? err.message : String(err));
     } finally {

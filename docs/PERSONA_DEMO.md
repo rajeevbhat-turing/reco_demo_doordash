@@ -127,18 +127,21 @@ Each row in the per-engine ranked table has a `details` link that opens the **Tr
 
 ## Applying a winner to the home feed
 
-After evaluating engines on `/reco-eval`, you can push a winning ranking directly into a persona's `/home` feed:
+After evaluating engines on `/reco-eval`, you can push a winning ranking directly into `/home` feed via the **global eval dropdown in the site header**:
 
 1. **Run** the eval for a persona — e.g. Alice Tran with OpenSearch + LLM Ranker.
 2. In the **Ranked results** section, each engine has an **Apply to home feed** button. Click it for the engine you want.
-3. A toast confirms: *"Applied gpt-4o-mini to Alice Tran's home feed."*
-4. Navigate to `/home` while signed in as that persona.
-5. A **blue banner** at the top of the cuisine sections shows which engine was applied and when. The cuisine section cards are now ordered by the engine's ranking rather than the rule-derived order.
-6. Click **Reset to default** in the banner to revert to rule order.
+3. A toast confirms: *"Applied gpt-4o-mini to Alice Tran's home feed."* The run is written to `data/reco-traces/runs.json` on the server.
+4. The **header dropdown** (next to the Reco Eval pill, always visible) now lists the saved run as `Alice Tran · LLM Ranker · gpt-4o-mini (HH:MM)`.
+5. Select it from any page — `/home` renders Alice's persona sections reordered by that engine's `ranked_ids`, and a slim banner confirms: *"Showing Alice Tran's feed ranked by LLM Ranker · gpt-4o-mini — run …"*
+6. To compare: run again with a different model or engine, then use the header dropdown to flip between runs — the feed reorders instantly.
+7. To return to rule-derived order: select **— Rule default —** in the dropdown, or click **Clear** in the banner.
 
-**A/B demo:** apply `gpt-4o-mini`, observe the ordering; then go back to `/reco-eval`, apply `gpt-4o`, return to `/home` — the feed visibly reorders. Each apply overwrites the previous selection for that persona.
+**Global + durable:** runs are stored server-side in `data/reco-traces/runs.json`, not per-browser. The same dropdown is visible to all sessions; picking a run from any machine shows the same persona feed.
 
-The selection is stored in `localStorage` under the key `reco-selections`. No API keys or credentials are ever written — only the engine's captured `ranked_ids`.
+**A/B demo:** run with `gpt-4o-mini`, then `gpt-4o`, then `OpenSearch` — the header dropdown accumulates all three. Flip between them without re-running to show how each model changes the ordering.
+
+No API keys or credentials are ever written — only the engine's captured `ranked_ids` and scores.
 
 ---
 

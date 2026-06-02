@@ -1,68 +1,76 @@
-# Execution — Phase 10: Reco run history + home-feed switcher
+# Execution — Phase 11: Header eval switcher + persisted runs
 
-**Goal:** extend Phase 9. Instead of a single active selection per persona,
-the store keeps a **run history** (latest per engine-model combo). `/home`
-gains a **dropdown switcher** so the persona can flip between any past run
-(or rule default) without returning to `/reco-eval`. The applied banner text
-+ timestamp stays visible alongside the dropdown.
+**Goal:** collapse the two overlapping selection controls (the client-only
+per-persona store + the in-feed `RecoSwitcher`) into **one**: a dropdown in
+the **site header**, always visible, listing **all saved evals** from a
+**server-persisted** store. Selecting one auto-refreshes `/home` (rendering
+that run's persona sections, reordered by the run) and shows a slim banner
+with the engine's **model + run date/time**. The selected eval drives which
+persona's feed `/home` shows; with no selection, `/home` keeps prior behavior.
 
-See `design.md` §"Reco run history + home-feed switcher" for the full spec.
+See `design.md` §"Header eval switcher + persisted runs (Phase 11)".
 
-On exit: tick **Phase 10** in `plan.md`, clear this file's body.
+On exit: tick **Phase 11** in `plan.md`, clear this file's body.
 
 ---
 
 ## Steps
 
-- [ ] **10.1 — Store migration (`store/reco-selection-store.ts`)**
-      Replace `selections: Record<string, RecoSelection>` with
-      `runs: Record<string, { history: RecoRunEntry[]; activeRunKey: string | null }>`.
-      `RecoRunEntry` = `RecoSelection` + `runKey: string`.
-      Actions:
-      - `applyRun(personaKey, entry)` — compute `runKey = engineId + ':' + (model ?? '')`,
-        upsert into `history` (replace same-runKey, else append), set `activeRunKey = runKey`,
-        stamp `capturedAt`.
-      - `setActiveRun(personaKey, runKey | null)` — switch active without adding.
-      - `clearHistory(personaKey)` — drop the persona's entry entirely.
-      Keep `useRecoSelection(personaKey)` returning the active `RecoRunEntry | undefined`
-      (derived from `activeRunKey`). Add `useRecoHistory(personaKey)` → sorted
-      (newest-first) `RecoRunEntry[]`.
-      Bump persist `name` or `version` so the old `reco-selections` shape doesn't
-      crash the new reducer (add a `migrate`/`version` or new key).
+- [x] **11.1 — Persisted runs API (`app/api/reco/runs/route.ts` + `data/reco-traces/runs.json`)**
+      Follow the `fs`/`path`/`process.cwd()` style of
+      `app/api/reco/persona-home/route.ts`. `readRuns()/writeRuns()` helpers
+      handle a missing dir/file (`mkdirSync(..., { recursive: true })`).
+      - `GET` → all runs, newest-first by `capturedAt`.
+      - `POST` → body minus `id`/`capturedAt`; compute
+        `id = ${personaUserId}:${engineId}:${model ?? ''}`, set `capturedAt`,
+        upsert (replace same-`id`), write file, return saved record.
+      - `DELETE` → `?id=` removes one; no param clears all.
+      Record shape: `id, personaId, personaUserId, personaName, engineId,
+      label, model?, ranked_ids, scores?, capturedAt`.
 
-- [ ] **10.2 — "Apply to home feed" wiring (`app/reco-eval/reco-eval-client.tsx`)**
-      Swap `applyEngine` for `applyRun`. Pass the full entry (engineId, label,
-      model, ranked_ids, scores); the store computes `runKey` + `capturedAt`.
-      Toast copy unchanged.
+- [x] **11.2 — Shrink selection store (`store/reco-selection-store.ts`)**
+      Replace the per-persona `runs/history` API with
+      `{ activeRunId: string | null; setActiveRun(id|null) }`, persisted
+      (bump key to `reco-active-run`). Export the `RecoRun` type for reuse.
+      Drop `applyRun`/`useRecoHistory`/`clearHistory`/`useRecoSelection`.
 
-- [ ] **10.3 — `RecoSwitcher` component (`components/reco-switcher.tsx`)**
-      Props: `{ personaKey, history, activeRun, onSelect(runKey|null), onReset() }`.
-      Renders a `<select>` with a leading "— Rule default —" option then each
-      history entry newest-first (label · model + `(date)`), pre-selecting the
-      active run. To the right: inline text mirroring the Phase 9 banner
-      (`Personalized by <label> · <model> — your pick from Reco Eval (<date>)`),
-      and a **Reset to default** link. Selecting an option calls `onSelect`;
-      Rule default → `onSelect(null)`.
+- [x] **11.3 — Header dropdown (`components/header.tsx`)**
+      By the "Reco Eval" pill (~line 941): fetch `/api/reco/runs` on mount and
+      on `pathname` change into local state. Add a compact `<select>` bound to
+      `activeRunId`; options = "— Rule default —" + each run as
+      `${personaName} · ${label}${model ? ' · '+model : ''} (${time})`.
+      `onChange → setActiveRun(value || null)`. Always rendered.
 
-- [ ] **10.4 — Wire switcher into `/home` (`app/home/page.tsx`)**
-      Replace the inline Phase 9 banner with `<RecoSwitcher>` when
-      `useRecoHistory(personaKey)` is non-empty. Feed it `activeRun`
-      (`useRecoSelection`), `onSelect → setActiveRun`, `onReset → setActiveRun(null)`.
-      `effectiveSections` is unchanged — it already reads `useRecoSelection`.
+- [x] **11.4 — Home applies active run (`app/home/page.tsx`)**
+      Resolve active run: read `activeRunId` (gated by `storeMounted`), fetch
+      `/api/reco/runs`, find by id. Persona source: if active run → fetch
+      persona-home for `activeRun.personaUserId`; else keep current
+      `currentUser` path. Reuse `effectiveSections` reorder via
+      `activeRun.ranked_ids`. Replace the `RecoSwitcher` block (lines ~615–622)
+      with a slim banner (engine · model · `toLocaleString()` + Clear →
+      `setActiveRun(null)`). Remove `RecoSwitcher`/`useRecoHistory` imports.
 
-- [ ] **10.5 — Docs**
-      Update `docs/PERSONA_DEMO.md` "Applying a winner" section: switching runs
-      from the `/home` dropdown without re-running, latest-per-model dedup.
+- [x] **11.5 — `/reco-eval` writes to backend (`app/reco-eval/reco-eval-client.tsx`)**
+      `handleRun`: after fan-out, `await POST /api/reco/runs` for each
+      successful, non-error result (persona name/id from `selectedPersonaData`).
+      `handleApply`: POST (or reuse saved id) then `setActiveRun(id)`; keep toast.
+      Drop the `applyRun` import; use slimmed store's `setActiveRun`.
+
+- [x] **11.6 — Delete `components/reco-switcher.tsx`** — superseded.
+
+- [x] **11.7 — Docs** — `docs/PERSONA_DEMO.md` "Applying a winner": pick an
+      eval from the header dropdown (global list), banner shows model + run time.
 
 ---
 
 ## Exit criteria
 
-- [ ] Apply 2+ engine/model runs for one persona → `/home` dropdown lists each (latest per combo) + Rule default.
-- [ ] Selecting a run reorders the feed instantly (no network call); banner text + timestamp update.
-- [ ] Re-applying the same engine+model replaces its prior history entry (no duplicate).
-- [ ] Reset / Rule default returns to `buildExpected` order.
-- [ ] `npx tsc --noEmit` passes.
-- [ ] `npm run test:unit` passes.
+- [x] `/reco-eval` Run for a persona → `data/reco-traces/runs.json` created;
+      `GET /api/reco/runs` returns the records.
+- [x] Header dropdown (any page) lists saved runs; selecting one refreshes
+      `/home`: persona sections reorder, banner shows engine · model · run time.
+- [x] "— Rule default —" clears the active run; feed returns to rule order.
+- [x] `npx tsc --noEmit` passes.
+- [x] `npm run test:unit` passes (pre-existing sign-in.test.tsx failures aside).
 
-> **On exit:** tick **Phase 10** in `plan.md`, clear this file's body.
+> **On exit:** tick **Phase 11** in `plan.md`, clear this file's body.

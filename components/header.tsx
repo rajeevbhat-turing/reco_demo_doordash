@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState, useSyncExternalStore, useMemo, useCallback } from 'react';
+import { useEffect, useState, useSyncExternalStore, useMemo, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { MapPin, ChevronDown, ShoppingCart, ChevronRight, Plus } from 'lucide-react';
@@ -28,9 +28,17 @@ import ChooseLabelModal from './modals/choose-label-modal';
 import AddressSelectionModal from './modals/address-selection-modal';
 import { DashDoorLogoMark, DashDoorWordMark } from './common/Icons';
 import addressesData from '@/data/addresses.json';
+import { useRecoSelectionStore } from '@/store/reco-selection-store';
+import type { RecoRun } from '@/store/reco-selection-store';
 
 export default function Header() {
   const pathname = usePathname();
+
+  // Eval switcher
+  const [runs, setRuns] = useState<RecoRun[]>([]);
+  const [headerMounted, setHeaderMounted] = useState(false);
+  const activeRunId = useRecoSelectionStore((s) => s.activeRunId);
+  const setActiveRun = useRecoSelectionStore((s) => s.setActiveRun);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [authModalMode, setAuthModalMode] = useState<'signin' | 'signup' | null>(null);
   const [cartItemCount, setCartItemCount] = useState(0);
@@ -87,6 +95,15 @@ export default function Header() {
     () => useUserStore.getState().isAuthenticated(),
     () => false // fallback for SSR
   );
+
+  // Mount guard + fetch runs for eval switcher
+  useEffect(() => { setHeaderMounted(true); }, []);
+  useEffect(() => {
+    fetch('/api/reco/runs')
+      .then((r) => r.json())
+      .then((data: RecoRun[]) => setRuns(data))
+      .catch(() => {});
+  }, [pathname]);
 
   // Always sync with default address when addresses change
   useEffect(() => {
@@ -948,6 +965,30 @@ export default function Header() {
                       Reco Eval
                     </Link>
                   </div>
+
+                  {/* Eval run switcher */}
+                  {headerMounted && (
+                    <div className="ml-3">
+                      <select
+                        value={(headerMounted ? activeRunId : null) ?? ''}
+                        onChange={(e) => setActiveRun(e.target.value || null)}
+                        className="text-xs border border-gray-300 rounded-full px-3 h-8 bg-white focus:outline-none focus:ring-1 focus:ring-red-400 max-w-[220px] truncate"
+                      >
+                        <option value="">— Rule default —</option>
+                        {runs.map((run) => (
+                          <option key={run.id} value={run.id}>
+                            {run.personaName} · {run.label}
+                            {run.model ? ` · ${run.model}` : ''} (
+                            {new Date(run.capturedAt).toLocaleTimeString([], {
+                              hour: '2-digit',
+                              minute: '2-digit',
+                            })}
+                            )
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
 
                   {/* Cart */}
                   <div className="ml-4">
