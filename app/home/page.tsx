@@ -29,6 +29,7 @@ import {
 } from '@/lib/utils/filter-url-params';
 import CuisineSection from '@/components/cuisine-section';
 import type { ExpectedSection } from '@/lib/reco/types';
+import { useRecoSelection, useRecoSelectionStore } from '@/store/reco-selection-store';
 
 const PERSONA_ID_MIN = 3101;
 const PERSONA_ID_MAX = 3110;
@@ -67,6 +68,8 @@ function HomeContent() {
   // Get user's address for location-based filtering
   const currentUser = useUserStore(state => state.currentUser);
   const defaultAddress = currentUser?.addresses?.find(a => a.default);
+  const recoSelection = useRecoSelection(currentUser?.id ?? '');
+  const clearRecoSelection = useRecoSelectionStore((state) => state.clearSelection);
 
   // Get temp address for guest users
   const tempAddress = useSyncExternalStore(
@@ -108,6 +111,20 @@ function HomeContent() {
       })
       .catch(() => {});
   }, [currentUser]);
+
+  // Reorder persona sections using the applied engine's ranking, if any
+  const effectiveSections = useMemo(() => {
+    if (!recoSelection || personaSections.length === 0) return personaSections;
+    const rankMap = new Map(recoSelection.ranked_ids.map((id, idx) => [id, idx]));
+    return personaSections.map(section => ({
+      ...section,
+      ranked_restaurant_ids: [...section.ranked_restaurant_ids].sort((a, b) => {
+        const ra = rankMap.get(a) ?? Infinity;
+        const rb = rankMap.get(b) ?? Infinity;
+        return ra - rb;
+      }),
+    }));
+  }, [personaSections, recoSelection]);
 
   // Get address from user store for location filtering
   const { getAddresses, getTempAddress } = useUserStore();
@@ -582,9 +599,24 @@ function HomeContent() {
         {!showStayTuned && !hasActiveFilters() && <PromoBanners restaurants={actualRestaurants} />}
 
         {/* Persona-aware cuisine sections — shown when the user is a persona */}
-        {personaSections.length > 0 && !hasActiveFilters() && (
+        {effectiveSections.length > 0 && !hasActiveFilters() && (
           <div className="flex flex-col gap-3 mb-6">
-            {personaSections.map(section => {
+            {recoSelection && (
+              <div className="flex items-center gap-3 px-4 py-2.5 bg-blue-50 border border-blue-200 rounded-lg text-sm">
+                <span className="text-blue-800">
+                  Personalized by <strong>{recoSelection.label}</strong>
+                  {recoSelection.model ? ` · ${recoSelection.model}` : ''}
+                  {' '}— your pick from Reco Eval ({new Date(recoSelection.capturedAt).toLocaleDateString()})
+                </span>
+                <button
+                  onClick={() => currentUser && clearRecoSelection(currentUser.id)}
+                  className="ml-auto text-blue-600 hover:text-blue-800 text-xs font-medium underline whitespace-nowrap"
+                >
+                  Reset to default
+                </button>
+              </div>
+            )}
+            {effectiveSections.map(section => {
               const sectionRestaurants = section.ranked_restaurant_ids
                 .map(id => baseRestaurants.find(r => Number(r.id) === id || r.id === String(id)))
                 .filter((r): r is Restaurant => r != null);

@@ -242,6 +242,83 @@ OpenSearch in the A/B table, then apply each in turn and flip to `/home`
 to *see* the difference — not just read the metric delta. The applied
 selection is the bridge between the scored table and the lived feed.
 
+## Reco run history + home-feed switcher (Phase 10)
+
+Extends "Apply a reco to the home feed" so the persona can switch between any past run without going back to `/reco-eval`.
+
+### Persistent run history
+
+The store changes from a single active selection per persona to a **run history**, keyed by `personaId` → `RecoRunEntry[]`:
+
+```ts
+type RecoRunEntry = {
+  engineId: string;          // "opensearch" | "llm-ranker" | "custom"
+  label: string;             // "OpenSearch" | "LLM Ranker" | "BYO (my-server.com)"
+  model?: string;            // "gpt-4o-mini" etc. — undefined for OpenSearch
+  ranked_ids: number[];
+  scores?: Record<number, number>;
+  capturedAt: string;        // ISO — used as the display timestamp
+  runKey: string;            // engineId + ":" + (model ?? "") — dedup key
+};
+```
+
+On every **"Apply to home feed"** click the store:
+1. Computes `runKey = engineId + ":" + (model ?? "")`.
+2. Upserts into the array — replaces an existing entry with the same `runKey` (keeping only the latest run for each engine-model combo), appends otherwise.
+3. Sets `activeRunKey` for that persona to this `runKey`.
+
+Storage is still `localStorage` via Zustand `persist` (`store/reco-selection-store.ts`). Credentials are never stored — same invariant as Phase 9.
+
+**Why per-combo dedup:** A second `gpt-4o-mini` run replaces the first; a `gpt-4o` run is kept separately. A prospect demoing three models ends up with exactly three history entries for their persona — clean, no unbounded growth.
+
+### Home-feed switcher UI
+
+When a persona is signed in and at least one run exists for them, a **switcher row** replaces the plain Phase 9 banner. It lives directly above the cuisine sections (same position as the banner):
+
+```
+[ OpenSearch ▼ ]  ·  Personalized by OpenSearch — 6/2/2026    Reset to default
+```
+
+The leftmost element is a **`<select>` dropdown** listing every entry in the run history for this persona, plus a leading "— Rule default —" option:
+
+```
+— Rule default —
+OpenSearch  (6/2/2026)
+LLM Ranker · gpt-4o-mini  (6/2/2026)
+LLM Ranker · gpt-4o  (6/1/2026)
+```
+
+- Entries are sorted newest-first.
+- The currently active run is pre-selected.
+- "— Rule default —" maps to no active run (same as clicking Reset).
+
+Selecting a different entry immediately updates `activeRunKey` in the store; `effectiveSections` in the home page re-derives from the newly selected run's `ranked_ids` — no network request, instant.
+
+The inline text to the right of the dropdown mirrors Phase 9's banner text so context is always visible without opening the dropdown. **Reset to default** is a link that sets activeRunKey to `null`.
+
+**Placement**: the switcher row is part of the persona sections area (inside the `<div className="flex flex-col gap-3 mb-6">` block), not the site header. The header already has a **Reco Eval** pill for navigation; the switcher on `/home` is the complementary "which run is live here" control.
+
+### Store API changes
+
+```ts
+// existing (Phase 9) — removed
+applyEngine(personaKey, payload)  →  single selection per persona
+
+// new (Phase 10)
+applyRun(personaKey, entry)       →  upsert into history by runKey, set activeRunKey
+setActiveRun(personaKey, runKey | null)  →  switch without adding a new entry
+clearHistory(personaKey)          →  drop all history + active
+```
+
+`useRecoSelection(personaKey)` continues to return the currently-applied `RecoRunEntry | undefined` (derived from `activeRunKey`). `useRecoHistory(personaKey)` returns the sorted `RecoRunEntry[]`. The home page only needs `useRecoSelection`; the switcher dropdown uses `useRecoHistory`.
+
+### Data shapes
+
+| What | Where |
+|---|---|
+| Run history store | `store/reco-selection-store.ts` — replaces Phase 9 single-selection shape |
+| Switcher component | `components/reco-switcher.tsx` (new) — renders the dropdown + inline text + Reset |
+
 ## Trajectories
 
 Every engine emits a `RecoTrajectory` alongside its `/recommend`

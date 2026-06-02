@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { scoreTask } from '@/lib/reco/metrics';
 import type { Persona, RecoTrajectory, ExpectedTask, Candidate } from '@/lib/reco/types';
 import type { ScoreResult } from '@/lib/reco/metrics';
+import { useRecoSelectionStore } from '@/store/reco-selection-store';
 
 type Engine = {
   id: string;
@@ -547,6 +548,25 @@ export default function RecoEvalClient({ initialPersonas }: Props) {
     engineId: string;
     restaurantId: number;
   } | null>(null);
+  const [applyToast, setApplyToast] = useState<string | null>(null);
+
+  const applyEngine = useRecoSelectionStore((state) => state.applyEngine);
+
+  const selectedPersonaData = initialPersonas.find((p) => p.id === selectedPersona);
+
+  const handleApply = (engineId: string, result: EngineResult) => {
+    if (!selectedPersonaData || result.ranked_ids.length === 0) return;
+    const personaKey = String(selectedPersonaData.user_id);
+    applyEngine(personaKey, {
+      engineId,
+      label: result.label,
+      model: result.model,
+      ranked_ids: result.ranked_ids,
+      scores: result.scores,
+    });
+    setApplyToast(`Applied ${result.label} to ${selectedPersonaData.display_name}'s home feed.`);
+    setTimeout(() => setApplyToast(null), 3000);
+  };
 
   // BYO panel state
   const [byoEnabled, setByoEnabled] = useState(false);
@@ -698,6 +718,11 @@ export default function RecoEvalClient({ initialPersonas }: Props) {
 
   return (
     <div className="w-full max-w-5xl mx-auto px-4 py-8 pt-24">
+      {applyToast && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-gray-900 text-white text-sm px-5 py-3 rounded-full shadow-lg whitespace-nowrap">
+          {applyToast}
+        </div>
+      )}
       <h1 className="text-2xl font-bold mb-6">Reco Eval</h1>
 
       {/* Engine picker */}
@@ -915,17 +940,27 @@ export default function RecoEvalClient({ initialPersonas }: Props) {
             const engine = engines.find((e) => e.id === engineId);
             return (
               <div key={engineId}>
-                <h3 className="text-sm font-medium text-gray-700 mb-2">
-                  {result.label ?? engine?.label ?? engineId}
-                  {engine?.baseline && (
-                    <span className="ml-2 text-xs bg-blue-500 text-white rounded px-1.5 py-0.5">
-                      baseline
-                    </span>
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="text-sm font-medium text-gray-700">
+                    {result.label ?? engine?.label ?? engineId}
+                    {engine?.baseline && (
+                      <span className="ml-2 text-xs bg-blue-500 text-white rounded px-1.5 py-0.5">
+                        baseline
+                      </span>
+                    )}
+                    {result.error && (
+                      <span className="ml-2 text-xs text-red-600">{result.error}</span>
+                    )}
+                  </h3>
+                  {result.ranked_ids.length > 0 && selectedPersonaData && (
+                    <button
+                      onClick={() => handleApply(engineId, result)}
+                      className="text-xs bg-red-600 text-white px-3 py-1 rounded-full hover:bg-red-700 transition-colors"
+                    >
+                      Apply to home feed
+                    </button>
                   )}
-                  {result.error && (
-                    <span className="ml-2 text-xs text-red-600">{result.error}</span>
-                  )}
-                </h3>
+                </div>
                 {result.ranked_ids.length > 0 && (
                   <div className="border border-gray-200 rounded-lg overflow-hidden">
                     <table className="w-full text-sm">
