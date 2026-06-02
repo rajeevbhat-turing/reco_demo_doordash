@@ -40,6 +40,12 @@ COPY ./data/db/dashdoor.db /app/dashdoor.db
 COPY ./data/db/delivery.db /app/delivery.db
 COPY ./data/db/merchant.db /app/merchant.db
 
+# Persona data + adjacency (needed by /api/reco/* at runtime)
+COPY --from=builder --chown=nextjs:nodejs /app/data/reco-personas ./data/reco-personas
+
+# Client demo guide (rendered on /reco-eval)
+COPY --from=builder --chown=nextjs:nodejs /app/docs/CLIENT_DEMO.md ./docs/CLIENT_DEMO.md
+
 # Database URLs - can be overridden at build time or runtime
 ARG LIBSQL_URL=file:/app/dashdoor.db
 ARG DELIVERY_LIBSQL_URL=file:/app/delivery.db

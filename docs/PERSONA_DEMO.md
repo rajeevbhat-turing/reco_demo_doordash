@@ -130,12 +130,11 @@ Each row in the per-engine ranked table has a `details` link that opens the **Tr
 After evaluating engines on `/reco-eval`, you can push a winning ranking directly into `/home` feed via the **global eval dropdown in the site header**:
 
 1. **Run** the eval for a persona — e.g. Alice Tran with OpenSearch + LLM Ranker.
-2. In the **Ranked results** section, each engine has an **Apply to home feed** button. Click it for the engine you want.
-3. A toast confirms: *"Applied gpt-4o-mini to Alice Tran's home feed."* The run is written to `data/reco-traces/runs.json` on the server.
-4. The **header dropdown** (next to the Reco Eval pill, always visible) now lists the saved run as `Alice Tran · LLM Ranker · gpt-4o-mini (HH:MM)`.
-5. Select it from any page — `/home` renders Alice's persona sections reordered by that engine's `ranked_ids`, and a slim banner confirms: *"Showing Alice Tran's feed ranked by LLM Ranker · gpt-4o-mini — run …"*
-6. To compare: run again with a different model or engine, then use the header dropdown to flip between runs — the feed reorders instantly.
-7. To return to rule-derived order: select **— Rule default —** in the dropdown, or click **Clear** in the banner.
+2. Runs are saved automatically to `data/reco-traces/runs.json` on the server.
+3. The **header dropdown** (next to the Reco Eval pill, always visible) now lists each saved run as `Alice Tran · LLM Ranker · gpt-4o-mini (HH:MM)`.
+4. Select a run from any page — `/home` renders Alice's persona sections reordered by that engine's `ranked_ids`, and a slim banner confirms: *"Showing Alice Tran's feed ranked by LLM Ranker · gpt-4o-mini — run …"*
+5. To compare: run again with a different model or engine, then use the header dropdown to flip between runs — the feed reorders instantly.
+6. To return to rule-derived order: select **— Rule default —** in the dropdown, or click **Clear** in the banner.
 
 **Global + durable:** runs are stored server-side in `data/reco-traces/runs.json`, not per-browser. The same dropdown is visible to all sessions; picking a run from any machine shows the same persona feed.
 

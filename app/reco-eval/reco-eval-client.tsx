@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { scoreTask } from '@/lib/reco/metrics';
 import type { Persona, RecoTrajectory, ExpectedTask, Candidate } from '@/lib/reco/types';
 import type { ScoreResult } from '@/lib/reco/metrics';
@@ -33,6 +33,7 @@ type RestaurantRow = {
 
 type Props = {
   initialPersonas: Persona[];
+  guideHtml?: string;
 };
 
 type OSExplainNode = {
@@ -530,9 +531,55 @@ function SectionWinLoss({
   );
 }
 
+// ── Guide panel with Mermaid rendering ───────────────────────────────────────
+
+function GuideBody({ html }: { html: string }) {
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    import('mermaid').then((m) => {
+      m.default.initialize({
+        startOnLoad: false,
+        theme: 'base',
+        themeVariables: {
+          primaryColor: '#eff6ff',
+          primaryBorderColor: '#93c5fd',
+          primaryTextColor: '#1e3a5f',
+          lineColor: '#60a5fa',
+          secondaryColor: '#f0fdf4',
+          tertiaryColor: '#fefce8',
+          edgeLabelBackground: '#ffffff',
+          background: '#ffffff',
+        },
+        fontSize: 15,
+        flowchart: { nodeSpacing: 40, rankSpacing: 60, padding: 20, useMaxWidth: true },
+      });
+      if (ref.current) {
+        const nodes = ref.current.querySelectorAll<HTMLElement>('.language-mermaid');
+        // Wrap each diagram in a scrollable div before rendering
+        nodes.forEach((node) => {
+          const wrapper = document.createElement('div');
+          wrapper.style.overflowX = 'auto';
+          wrapper.style.padding = '8px 0';
+          node.parentNode?.insertBefore(wrapper, node);
+          wrapper.appendChild(node);
+        });
+        m.default.run({ nodes });
+      }
+    });
+  }, [html]);
+  return (
+    <div
+      ref={ref}
+      className="px-6 py-5 prose prose-base prose-blue max-w-none border-t border-blue-200 bg-white"
+      dangerouslySetInnerHTML={{ __html: html }}
+    />
+  );
+}
+
 // ── Main component ────────────────────────────────────────────────────────────
 
-export default function RecoEvalClient({ initialPersonas }: Props) {
+export default function RecoEvalClient({ initialPersonas, guideHtml }: Props) {
+  const [guideOpen, setGuideOpen] = useState(false);
   const [engines, setEngines] = useState<Engine[]>([]);
   const [restaurantMap, setRestaurantMap] = useState<Map<number, RestaurantRow>>(new Map());
 
@@ -548,35 +595,9 @@ export default function RecoEvalClient({ initialPersonas }: Props) {
     engineId: string;
     restaurantId: number;
   } | null>(null);
-  const [applyToast, setApplyToast] = useState<string | null>(null);
-
-  const setActiveRun = useRecoSelectionStore((state) => state.setActiveRun);
+  const setActiveRun = useRecoSelectionStore((s) => s.setActiveRun);
 
   const selectedPersonaData = initialPersonas.find((p) => p.id === selectedPersona);
-
-  const handleApply = async (engineId: string, result: EngineResult) => {
-    if (!selectedPersonaData || result.ranked_ids.length === 0) return;
-    const res = await fetch('/api/reco/runs', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        personaId: selectedPersonaData.id,
-        personaUserId: selectedPersonaData.user_id,
-        personaName: selectedPersonaData.display_name,
-        engineId,
-        label: result.label,
-        model: result.model,
-        ranked_ids: result.ranked_ids,
-        scores: result.scores,
-      }),
-    });
-    if (res.ok) {
-      const saved = await res.json();
-      setActiveRun(saved.id);
-    }
-    setApplyToast(`Applied ${result.label} to ${selectedPersonaData.display_name}'s home feed.`);
-    setTimeout(() => setApplyToast(null), 3000);
-  };
 
   // BYO panel state
   const [byoEnabled, setByoEnabled] = useState(false);
@@ -758,9 +779,16 @@ export default function RecoEvalClient({ initialPersonas }: Props) {
 
   return (
     <div className="w-full max-w-5xl mx-auto px-4 py-8 pt-24">
-      {applyToast && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-gray-900 text-white text-sm px-5 py-3 rounded-full shadow-lg whitespace-nowrap">
-          {applyToast}
+      {guideHtml && (
+        <div className="mb-8 rounded-xl border border-blue-200 bg-blue-50">
+          <button
+            onClick={() => setGuideOpen((o) => !o)}
+            className="w-full flex items-center justify-between px-5 py-3 text-left text-sm font-semibold text-blue-800 hover:bg-blue-100 transition-colors"
+          >
+            <span>📋 Getting Started — Demo Guide</span>
+            <span className="text-blue-500 text-xs">{guideOpen ? '▲ collapse' : '▼ expand'}</span>
+          </button>
+          {guideOpen && <GuideBody html={guideHtml} />}
         </div>
       )}
       <h1 className="text-2xl font-bold mb-6">Reco Eval</h1>
@@ -992,14 +1020,6 @@ export default function RecoEvalClient({ initialPersonas }: Props) {
                       <span className="ml-2 text-xs text-red-600">{result.error}</span>
                     )}
                   </h3>
-                  {result.ranked_ids.length > 0 && selectedPersonaData && (
-                    <button
-                      onClick={() => handleApply(engineId, result)}
-                      className="text-xs bg-red-600 text-white px-3 py-1 rounded-full hover:bg-red-700 transition-colors"
-                    >
-                      Apply to home feed
-                    </button>
-                  )}
                 </div>
                 {result.ranked_ids.length > 0 && (
                   <div className="border border-gray-200 rounded-lg overflow-hidden">
