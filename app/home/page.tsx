@@ -84,7 +84,10 @@ function HomeContent() {
     fetch('/api/reco/runs').then(r => r.json()).then(setAllRuns).catch(() => {});
   }, []);
 
-  const activeRun = activeRunId ? (allRuns.find(r => r.id === activeRunId) ?? null) : null;
+  const currentUserId = currentUser ? parseInt(currentUser.id, 10) : null;
+  const activeRun = activeRunId && currentUserId
+    ? (allRuns.find(r => r.id === activeRunId && r.personaUserId === currentUserId) ?? null)
+    : null;
 
   // Get temp address for guest users
   const tempAddress = useSyncExternalStore(
@@ -628,7 +631,7 @@ function HomeContent() {
         {effectiveSections.length > 0 && !hasActiveFilters() && (
           <div className="flex flex-col gap-3 mb-6">
             {activeRun && (
-              <div className="flex items-center gap-2 text-sm text-gray-600 px-1">
+              <div className="flex items-center justify-between gap-2 rounded-lg bg-blue-50 border border-blue-200 px-4 py-2.5 text-sm text-blue-800">
                 <span>
                   Showing <strong>{activeRun.personaName}</strong>&apos;s feed ranked by{' '}
                   <strong>
@@ -639,7 +642,7 @@ function HomeContent() {
                 </span>
                 <button
                   onClick={() => setActiveRun(null)}
-                  className="ml-2 text-xs text-red-600 underline"
+                  className="shrink-0 text-xs text-blue-600 hover:text-blue-800 underline"
                 >
                   Clear
                 </button>

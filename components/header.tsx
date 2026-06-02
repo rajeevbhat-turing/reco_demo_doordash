@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState, useSyncExternalStore, useMemo, useCallback, useRef } from 'react';
+import { useEffect, useState, useSyncExternalStore, useMemo, useCallback } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { MapPin, ChevronDown, ShoppingCart, ChevronRight, Plus } from 'lucide-react';
@@ -35,10 +35,19 @@ export default function Header() {
   const pathname = usePathname();
 
   // Eval switcher
-  const [runs, setRuns] = useState<RecoRun[]>([]);
+  const [allRuns, setAllRuns] = useState<RecoRun[]>([]);
   const [headerMounted, setHeaderMounted] = useState(false);
   const activeRunId = useRecoSelectionStore((s) => s.activeRunId);
   const setActiveRun = useRecoSelectionStore((s) => s.setActiveRun);
+  const headerCurrentUser = useSyncExternalStore(
+    useUserStore.subscribe,
+    () => useUserStore.getState().currentUser,
+    () => null,
+  );
+  const headerUserId = headerCurrentUser ? parseInt(headerCurrentUser.id, 10) : null;
+  const runs = headerMounted && headerUserId
+    ? allRuns.filter((r) => r.personaUserId === headerUserId)
+    : [];
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [authModalMode, setAuthModalMode] = useState<'signin' | 'signup' | null>(null);
   const [cartItemCount, setCartItemCount] = useState(0);
@@ -101,7 +110,7 @@ export default function Header() {
   useEffect(() => {
     fetch('/api/reco/runs')
       .then((r) => r.json())
-      .then((data: RecoRun[]) => setRuns(data))
+      .then((data: RecoRun[]) => setAllRuns(data))
       .catch(() => {});
   }, [pathname]);
 
@@ -970,7 +979,7 @@ export default function Header() {
                   {headerMounted && (
                     <div className="ml-3">
                       <select
-                        value={(headerMounted ? activeRunId : null) ?? ''}
+                        value={activeRunId ?? ''}
                         onChange={(e) => setActiveRun(e.target.value || null)}
                         className="text-xs border border-gray-300 rounded-full px-3 h-8 bg-white focus:outline-none focus:ring-1 focus:ring-red-400 max-w-[220px] truncate"
                       >
