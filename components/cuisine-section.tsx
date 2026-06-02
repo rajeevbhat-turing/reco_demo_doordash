@@ -23,7 +23,7 @@ export default function CuisineSection({ section, restaurants }: Props) {
       </div>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {restaurants.map((restaurant, idx) => {
-          const isNovel = idx === section.novelty_index;
+          const isNovel = section.novelty_indices.includes(idx);
           const rating = getDefaultRating(restaurant.rating);
           return (
             <Link

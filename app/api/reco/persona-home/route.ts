@@ -5,6 +5,7 @@ import { join } from 'path';
 import Database from 'better-sqlite3';
 import type { Persona } from '@/lib/reco/types';
 import { buildExpectedWithOverrides } from '@/lib/reco';
+import { loadAdjacencies } from '@/lib/reco/adjacency';
 
 const ROOT = process.cwd();
 
@@ -15,6 +16,14 @@ function loadPersonas(): Persona[] {
 function loadOverrides(): Record<string, any> {
   try {
     return JSON.parse(readFileSync(join(ROOT, 'data/reco-personas/overrides.json'), 'utf8'));
+  } catch {
+    return {};
+  }
+}
+
+function loadAdjacencyMap() {
+  try {
+    return loadAdjacencies(join(ROOT, 'data/reco-personas/cuisine-adjacency.json'));
   } catch {
     return {};
   }
@@ -36,7 +45,8 @@ export async function GET(request: NextRequest) {
   const sqlite = new Database(dbPath, { readonly: true });
   try {
     const overrides = loadOverrides();
-    const task = buildExpectedWithOverrides(persona, sqlite, overrides);
+    const adjacencyMap = loadAdjacencyMap();
+    const task = buildExpectedWithOverrides(persona, sqlite, overrides, adjacencyMap);
     return NextResponse.json({
       sections: task.sections,
       blocked_restaurant_ids: task.blocked_restaurant_ids,

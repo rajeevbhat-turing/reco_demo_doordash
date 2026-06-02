@@ -170,7 +170,7 @@ Two ways to plug in, same A/B table:
 - [x] Smoke script exit criterion — `bash scripts/persona-demo-smoke.sh`
       exits 0.
 
-## Phase 8 — Label quality: outlier cleaning + adaptive exploration
+## ✅ Phase 8 — Label quality: outlier cleaning + adaptive exploration
 
 Makes the ground truth (and therefore the A/B scores) smarter. All in
 `lib/reco/eval/persona-truth.ts`; each addition is exposed as a tunable
@@ -182,23 +182,23 @@ double as eval scenarios ("did your model get fooled by the outlier?").
 
 Stop one-off or anomalous orders from polluting the preference signal.
 
-- [ ] **Basket-size outliers** — flag orders whose item count / total is
+- [x] **Basket-size outliers** — flag orders whose item count / total is
       far above the persona's own distribution (robust: median + K·MAD,
-      `OUTLIER_BASKET_MAD_K` default `3.0`). E.g. a 2× catering order
+      `OUTLIER_BASKET_MAD_K` default `6.0`). E.g. a catering order
       shouldn't inflate that restaurant/cuisine's weight. Excluded from
       hot-cuisine and familiar-slot computation.
-- [ ] **Cuisine one-offs** — a cuisine needs ≥ `MIN_CUISINE_SUPPORT`
+- [x] **Cuisine one-offs** — a cuisine needs ≥ `MIN_CUISINE_SUPPORT`
       (default `2`) orders to count as *established/familiar*; a single
       order from a normally-uneaten cuisine is treated as noise, not a
       familiar cuisine (it may still seed an *explore* slot).
-- [ ] **Affinity vs. behavior mismatch** — high order_count but ~0 stated
+- [x] **Affinity vs. behavior mismatch** — high order_count but ~0 stated
       affinity ⇒ possible misattribution (flag); high affinity but low
       order_count ⇒ stated-but-unproven (good explore candidate, not
       familiar).
-- [ ] **Transparency** — excluded orders appear in the trajectory as a
+- [x] **Transparency** — excluded orders appear in the trajectory as a
       `filter` step with a reason ("order #X: 3.2× median basket —
       treated as outlier"). Unit tests for each rule.
-- [ ] **Outlier eval scenario** — seed a known outlier into one
+- [x] **Outlier eval scenario** — seed a known outlier into one
       persona's history; assert the cleaned rule ignores it, and use it
       as a demo case ("baseline ignored alice's one-time office order;
       did your model?").
@@ -208,11 +208,11 @@ Stop one-off or anomalous orders from polluting the preference signal.
 Replace the fixed "3 familiar + 1 new" with a ratio driven by the
 persona's `novelty_appetite` (0..1).
 
-- [ ] **Ratio function** — `exploreCount(appetite)` over `SECTION_SIZE`:
+- [x] **Ratio function** — `exploreCount(appetite)` over `SECTION_SIZE`:
       explorer (≥ `EXPLORE_HI`, default `0.66`) → 3 explore / 1 familiar;
       mid → 2 / 2; homebody (< `EXPLORE_LO`, default `0.33`) → 1 explore
       / 3 familiar. Replaces the `FAMILIAR_COUNT` constant.
-- [ ] **UI** — `cuisine-section.tsx` tags *all* explore-slot cards "Try
+- [x] **UI** — `cuisine-section.tsx` tags *all* explore-slot cards "Try
       something new" (not just one); `novelty_index` generalizes to a
       set of explore indices.
 
@@ -221,14 +221,14 @@ persona's `novelty_appetite` (0..1).
 Make the explore slots *relevant* instead of random: "you ordered X →
 here's a related Y to try."
 
-- [ ] **Cuisine-adjacency map** — `data/reco-personas/cuisine-adjacency.json`
+- [x] **Cuisine-adjacency map** — `data/reco-personas/cuisine-adjacency.json`
       (hand-curated v1: Thai↔Vietnamese↔Malaysian, Italian↔Mediterranean,
       …). Optionally derived later from cross-user co-order patterns.
-- [ ] **Explore-slot fill** — explore slots prefer (1) new restaurants in
+- [x] **Explore-slot fill** — explore slots prefer (1) new restaurants in
       the loved cuisine, then (2) restaurants in *adjacent* cuisines the
       persona hasn't tried, subject to the same block list / price /
       family constraints.
-- [ ] **Set-level scoring for explore slots** — exploratory picks have no
+- [x] **Set-level scoring for explore slots** — exploratory picks have no
       single right answer, so score explore slots as a *category/set*
       match (did the engine put a valid adjacent-cuisine candidate
       there?) rather than exact-ID, to avoid over-penalizing reasonable

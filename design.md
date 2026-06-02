@@ -116,7 +116,7 @@ needs different numbers.
 | `CANDIDATE_RADIUS_MILES` | `25` | Haversine distance from the persona's `address.lat`/`lng` — restaurants outside this are not candidates. |
 | `SECTION_SIZE` | `4` | Cards per cuisine section. |
 | `FAMILIAR_COUNT` | `3` | **Deprecated (Phase 8b)** — superseded by `exploreCount(appetite)`. Kept for back-compat only. |
-| `OUTLIER_BASKET_MAD_K` | `3.0` | Phase 8a. An order is a basket-size outlier when `subtotal > median + K·MAD` over the persona's own orders. |
+| `OUTLIER_BASKET_MAD_K` | `6.0` | Phase 8a. An order is a basket-size outlier when `subtotal > median + K·MAD` over the persona's own orders. K=6 isolates true anomalies (e.g. catering) without clipping a persona's normal larger orders when spending is bimodal. |
 | `MIN_CUISINE_SUPPORT` | `2` | Phase 8a. Distinct kept orders a cuisine needs to seed a *familiar* section; below this it's a one-off. |
 | `EXPLORE_HI` / `EXPLORE_LO` | `0.66` / `0.33` | Phase 8b. `novelty_appetite` thresholds: explorer (≥HI) → 3 explore / 1 familiar, mid → 2/2, homebody (<LO) → 1/3. |
 

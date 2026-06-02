@@ -496,7 +496,7 @@ function SectionWinLoss({
                     <div className="flex items-center gap-1 flex-wrap flex-1">
                       {section.ranked_restaurant_ids.map((id, idx) => {
                         const hit = ranked.has(id);
-                        const isNovelty = idx === section.novelty_index;
+                        const isNovelty = section.novelty_indices.includes(idx);
                         return (
                           <span
                             key={id}

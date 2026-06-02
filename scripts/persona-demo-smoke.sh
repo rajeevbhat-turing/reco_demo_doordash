@@ -168,5 +168,15 @@ else
   ok "A/B result: opensearch=$AB_LEN ids, llm-ranker=$LLM_LEN ids"
 fi
 
+# ── 8a: alice-tran expected.json must carry a non-empty filters list ──────────
+echo "==> checking alice-tran expected.json has catering outlier in filters"
+ALICE_FILTERS=$(node -e "
+  const data = require('./data/reco-personas/expected.json');
+  const alice = data.find(p => p.personaId === 'alice-tran');
+  process.stdout.write(String((alice && alice.filters || []).length));
+")
+[[ "$ALICE_FILTERS" -gt 0 ]] || fail "alice-tran expected.json has no filters (catering outlier not detected)"
+ok "alice-tran filters has $ALICE_FILTERS entries (catering outlier present)"
+
 echo ""
 echo "PASS: all checks green"

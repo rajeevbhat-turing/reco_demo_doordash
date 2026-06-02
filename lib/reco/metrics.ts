@@ -45,6 +45,40 @@ export function scoreTask(ranked_ids: number[], expected: ExpectedTask, k?: numb
   return { precision_at_k, recall_at_k, ndcg_at_k, overlap, blocked_hits };
 }
 
+/**
+ * Section-aware variant: explore slots score as a hit if the ranked ID
+ * appears in that section's `explore_valid_ids` rather than requiring
+ * an exact position match.
+ */
+export function scoreTaskBySection(
+  ranked_ids: number[],
+  expected: ExpectedTask,
+  k?: number,
+): ScoreResult {
+  const relevant = new Set(expected.flat_ranked_ids);
+  for (const section of expected.sections) {
+    for (const id of section.explore_valid_ids ?? []) relevant.add(id);
+  }
+  const blocked = new Set(expected.blocked_restaurant_ids);
+  const kk = k ?? ranked_ids.length;
+  const topK = ranked_ids.slice(0, kk);
+
+  const hits = topK.filter((id) => relevant.has(id)).length;
+  const precision_at_k = kk > 0 ? hits / kk : 0;
+  const recall_at_k = relevant.size > 0 ? hits / relevant.size : 0;
+
+  const dcg = computeDcg(topK, relevant);
+  const idcg = computeIdcg(kk, relevant.size);
+  const ndcg_at_k = idcg > 0 ? dcg / idcg : 0;
+
+  const union = relevant.size + kk - hits;
+  const overlap = union > 0 ? hits / union : 0;
+
+  const blocked_hits = topK.filter((id) => blocked.has(id)).length;
+
+  return { precision_at_k, recall_at_k, ndcg_at_k, overlap, blocked_hits };
+}
+
 export function aggregate(results: ScoreResult[]): ScoreResult {
   if (results.length === 0) {
     return { precision_at_k: 0, recall_at_k: 0, ndcg_at_k: 0, overlap: 0, blocked_hits: 0 };

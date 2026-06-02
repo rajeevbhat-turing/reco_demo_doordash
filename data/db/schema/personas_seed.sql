@@ -41,6 +41,12 @@ INSERT INTO orders (id, user_id, store_id, store_category, payment_method_id, ad
 INSERT INTO order_items (id, order_id, menu_item_id, quantity) VALUES (9000013, 9000010, 7342, 1);
 INSERT INTO orders (id, user_id, store_id, store_category, payment_method_id, address_id, delivery_type, delivery_time_str, extra_fee, phone_country_code, phone_number, tip_amount, subtotal, service_fee, delivery_fee, total, order_date, status) VALUES (9000011, 3101, 316, 'restaurant', NULL, 9001, 'delivery', '25-40 min', 0, '+1', '5550003101', 190, 1899, 228, 399, 2716, '2026-05-04T01:00:00.000Z', 'delivered');
 INSERT INTO order_items (id, order_id, menu_item_id, quantity) VALUES (9000014, 9000011, 7357, 1), (9000015, 9000011, 7358, 1);
+-- Outlier scenario (8a.7): large catering order at Bangkok Thai Kitchen (218).
+-- alice has never ordered here before; the basket is ~20x her median order.
+-- The outlier-cleaning rule (8a) excludes this from familiar computation;
+-- a naive tally would have added Bangkok Thai Kitchen as a "familiar" Thai restaurant.
+INSERT INTO orders (id, user_id, store_id, store_category, payment_method_id, address_id, delivery_type, delivery_time_str, extra_fee, phone_country_code, phone_number, tip_amount, subtotal, service_fee, delivery_fee, total, order_date, status) VALUES (9000134, 3101, 218, 'restaurant', NULL, 9001, 'delivery', '45-60 min', 0, '+1', '5550003101', 1500, 15000, 1800, 599, 18899, '2026-03-15T18:00:00.000Z', 'delivered');
+INSERT INTO order_items (id, order_id, menu_item_id, quantity) VALUES (9000311, 9000134, 5413, 10), (9000312, 9000134, 5410, 8);
 INSERT INTO user_reviews (id, store_id, store_category, user_id, rating, content, timestamp, order_id, approval_status) VALUES (9000001, 291, 'restaurant', 3101, 1.0, 'Tried Siam Thai House once, didn''t land. Won''t reorder.', '2026-05-24T01:00:00.000Z', NULL, 'approved');
 INSERT INTO user_reviews (id, store_id, store_category, user_id, rating, content, timestamp, order_id, approval_status) VALUES (9000002, 203, 'restaurant', 3101, 1.0, 'Tried Rosa''s Pho once, didn''t land. Won''t reorder.', '2026-05-20T01:00:00.000Z', NULL, 'approved');
 INSERT INTO user_reviews (id, store_id, store_category, user_id, rating, content, timestamp, order_id, approval_status) VALUES (9000003, 289, 'restaurant', 3101, 4.0, 'Solid Thai from The Empire Basil. Consistently good.', '2026-05-16T01:00:00.000Z', NULL, 'approved');

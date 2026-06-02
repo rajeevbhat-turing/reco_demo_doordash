@@ -52,11 +52,18 @@ export type Persona = {
   family: Family | null;
 };
 
+export type FilterEntry = {
+  order_id?: number;
+  cuisine?: string;
+  reason: string;
+};
+
 export type ExpectedSection = {
   label: string;
   cuisine: string;
   ranked_restaurant_ids: number[];
-  novelty_index: number;
+  novelty_indices: number[];
+  explore_valid_ids?: number[];
 };
 
 export type ExpectedTask = {
@@ -65,6 +72,7 @@ export type ExpectedTask = {
   sections: ExpectedSection[];
   blocked_restaurant_ids: number[];
   flat_ranked_ids: number[];
+  filters?: FilterEntry[];
 };
 
 export type ExpectedOverride = Partial<Omit<ExpectedTask, 'personaId' | 'surface'>>;

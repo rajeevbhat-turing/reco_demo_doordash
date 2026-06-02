@@ -7,8 +7,15 @@ export {
   CANDIDATE_RADIUS_MILES,
   SECTION_SIZE,
   FAMILIAR_COUNT,
+  OUTLIER_BASKET_MAD_K,
+  MIN_CUISINE_SUPPORT,
+  EXPLORE_HI,
+  EXPLORE_LO,
+  exploreCount,
 } from './eval/persona-truth';
 export { buildCandidates } from './candidates';
-export { scoreTask, aggregate } from './metrics';
+export { scoreTask, scoreTaskBySection, aggregate } from './metrics';
 export type { ScoreResult } from './metrics';
 export { makeHttpEngine } from './engines/http';
+export { adjacentCuisines, loadAdjacencies } from './adjacency';
+export type { AdjacencyMap } from './adjacency';
